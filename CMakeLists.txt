@@ -6,6 +6,10 @@ set (CMAKE_C_COMPILER "mpicc")
 set (COMPILE_FLAGS "-O3")
 set (LINK_FLAGS "")
 
+#add_definitions (-DSMALL_VALUES="")
+add_definitions (-DFULL_VALUES="")
+add_definitions (-std=c++11)
+
 find_package (MPI REQUIRED)
 message ("${MPI_INCLUDE_PATH}")
 
@@ -39,12 +43,12 @@ add_subdirectory (${PROJECT_SOURCE_DIR}/third-party/EasyBMP)
 set (LIBS ${LIBS} EasyBMP)
 
 
-# Add Core library
-# Include headers of Core
-include_directories ("${PROJECT_SOURCE_DIR}/Core")
+# Add Field library
+# Include headers of Field
+include_directories ("${PROJECT_SOURCE_DIR}/Field")
 # Include CMakeLists.txt from the subfolder
-#add_subdirectory (Core)
-#set (LIBS ${LIBS} Core)
+add_subdirectory (Field)
+set (LIBS ${LIBS} Field)
 
 
 add_executable (fdtd ultimateFDTD3D.cpp)
