@@ -6,10 +6,10 @@
  * Full values define all field values as double.
  * Small values decrease memory usage, full values increase accuracy.
  */
-#ifdef SMALL_VALUES
+#if defined (SMALL_VALUES)
 typedef float FieldValue;
 #else
-#ifdef FULL_VALUES
+#if defined (FULL_VALUES)
 typedef double FieldValue;
 #endif
 #endif
@@ -20,10 +20,32 @@ typedef double FieldValue;
 class FieldPointValue
 {
 private:
-  FieldValue* values; 
+  FieldValue currentValue;
+
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEP)
+  FieldValue previousValue;
+
+#if defined (TWO_TIME_STEP)
+  FieldValue previousPreviousValue;
+#endif
+#endif
+
 public:
   FieldPointValue ();
   ~FieldPointValue ();
+
+  FieldValue getCurrentValue ();
+  void setCurrentValue (FieldValue val);
+
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEP)
+  FieldValue getPrevValue ();
+  void setPrevValue (FieldValue val);
+
+#if defined (TWO_TIME_STEP)
+  FieldValue getPrevPrevValue ();
+  void setPrevPrevValue (FieldValue val);
+#endif
+#endif
 };
 
 #endif /* FIELD_POINT_VALUE_H */

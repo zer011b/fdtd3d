@@ -8,6 +8,7 @@ set (LINK_FLAGS "")
 
 #add_definitions (-DSMALL_VALUES="")
 add_definitions (-DFULL_VALUES="")
+add_definitions (-DTWO_TIME_STEP="")
 add_definitions (-std=c++11)
 
 find_package (MPI REQUIRED)
