@@ -1,13 +1,21 @@
 # fdtd3d
 3D FDTD solver.
 
-# Build process
+# Build Process
 Build is done using cmake & make.
-```
+```sh
 mkdir build
 cd build
 cmake ..
 make
+```
+
+# Build Flags
+```c_cpp
+SMALL_VALUES - use float
+FULL_VALUES - use double
+ONE_TIME_STEP - one previous time step is saved
+TWO_TIME_STEPS - two previous time steps are saved
 ```
 
 # About
