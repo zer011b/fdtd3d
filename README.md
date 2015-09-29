@@ -16,6 +16,9 @@ SMALL_VALUES - use float
 FULL_VALUES - use double
 ONE_TIME_STEP - one previous time step is saved
 TWO_TIME_STEPS - two previous time steps are saved
+GRID_1D - one-dimensional solver
+GRID_2D - two-dimensional solver
+GRID_3D - three-dimensional solver
 ```
 
 # About
