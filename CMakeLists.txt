@@ -53,7 +53,7 @@ add_subdirectory (Field)
 set (LIBS ${LIBS} Field)
 
 
-add_executable (fdtd ultimateFDTD3D.cpp)
+add_executable (fdtd main.cpp)
 target_link_libraries (fdtd ${LIBS})
 
 set_target_properties (fdtd PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")

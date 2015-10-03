@@ -19,7 +19,6 @@ typedef double FieldValue;
  */
 class FieldPointValue
 {
-private:
   FieldValue currentValue;
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
