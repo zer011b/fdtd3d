@@ -21,7 +21,19 @@ private:
 
 public:
 
-  GridSize ();
+  // Constructor for all cases
+  GridSize (
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    grid_size sx = 0
+#if defined (GRID_2D) || defined (GRID_3D)
+    , grid_size sy = 0
+#if defined (GRID_3D)
+    , grid_size sz = 0
+#endif
+#endif
+#endif
+  );
+
   ~GridSize ();
 };
 

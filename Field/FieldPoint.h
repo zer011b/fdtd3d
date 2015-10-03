@@ -31,16 +31,18 @@ private:
 #endif
 
 public:
-  FieldPointValue ();
-  FieldPointValue (FieldValue curVal);
 
+  // Constructor for all cases
+  FieldPointValue (
+    FieldValue curVal = 0
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  FieldPointValue (FieldValue curVal, FieldValue prevVal);
-
+    , FieldValue prevVal = 0
 #if defined (TWO_TIME_STEPS)
-    FieldPointValue (FieldValue curVal, FieldValue prevVal, FieldValue prevPrevVal);
+    , FieldValue prevPrevVal = 0
 #endif
 #endif
+  );
+
   ~FieldPointValue ();
 
   FieldValue getCurrentValue ();

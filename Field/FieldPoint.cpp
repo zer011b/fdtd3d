@@ -1,58 +1,26 @@
 #include "FieldPoint.h"
 
 /**
- * Initialize all values with zeros. 
+ * Initialize all values. 
  */
-FieldPointValue::FieldPointValue ()
-{
-  currentValue = 0;
-
+FieldPointValue::FieldPointValue (
+  FieldValue curVal
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  previousValue = 0;
-
+  , FieldValue prevVal
 #if defined (TWO_TIME_STEPS)
-  previousPreviousValue = 0;
+  , FieldValue prevPrevVal
 #endif
 #endif
-}
-
-/**
- * Initialize current value and all others with zero. 
- */
-FieldPointValue::FieldPointValue (FieldValue curVal) :
+  ) :
   currentValue (curVal)
-{
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  previousValue = 0;
-
+  , previousValue (prevVal)
 #if defined (TWO_TIME_STEPS)
-  previousPreviousValue = 0;
+  , previousPreviousValue (prevPrevVal)
 #endif
 #endif
-}
-
-/**
- * Initialize current, previous values and all others with zero. 
- */
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-FieldPointValue::FieldPointValue (FieldValue curVal, FieldValue prevVal) :
-  currentValue (curVal), previousValue (prevVal)
-{
-#if defined (TWO_TIME_STEPS)
-  previousPreviousValue = 0;
-#endif
-}
-
-/**
- * Initialize current and two previous values and all others with zero. 
- */
-#if defined (TWO_TIME_STEPS)
-FieldPointValue::FieldPointValue (FieldValue curVal, FieldValue prevVal, FieldValue prevPrevVal) :
-  currentValue (curVal), previousValue (prevVal), previousPreviousValue (prevPrevVal)
 {
 }
-#endif
-#endif
 
 /**
  * Destructor. Empty.
