@@ -6,19 +6,19 @@
 
 #include "FieldPoint.h"
 
-typedef uint16_t grid_size;
+typedef uint16_t grid_coord;
 
 /**
  * Size of the grid
  */
-class GridSize
+class GridCoordinate
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_size sizeX;
+  grid_coord x;
 #if defined (GRID_2D) || defined (GRID_3D)
-  grid_size sizeY;
+  grid_coord y;
 #if defined (GRID_3D)
-  grid_size sizeZ;
+  grid_coord z;
 #endif
 #endif
 #endif
@@ -26,44 +26,50 @@ class GridSize
 public:
 
   // Constructor for all cases
-  GridSize (
+  GridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    grid_size sx = 0
+    grid_coord sx = 0
 #if defined (GRID_2D) || defined (GRID_3D)
-    , grid_size sy = 0
+    , grid_coord sy = 0
 #if defined (GRID_3D)
-    , grid_size sz = 0
+    , grid_coord sz = 0
 #endif
 #endif
 #endif
   );
 
-  ~GridSize ();
+  ~GridCoordinate ();
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_size getTotalSize ();
-  grid_size getSizeX ();
+  grid_coord getTotalCoord ();
+  grid_coord getX ();
 #if defined (GRID_2D) || defined (GRID_3D)
-  grid_size getSizeY ();
+  grid_coord getY ();
 #if defined (GRID_3D)
-  grid_size getSizeZ ();
+  grid_coord getZ ();
 #endif
 #endif
 #endif
 };
 
+
+typedef std::vector<FieldPointValue> VectorFieldPointValues;
 /**
  * Grid itself
  */
 class Grid
 {
-  GridSize size;
-  std::vector<FieldPointValue> gridValues;
+  GridCoordinate size;
+  VectorFieldPointValues gridValues;
 
 public:
 
-  Grid (GridSize s);
+  Grid (GridCoordinate& s);
   ~Grid ();
+
+  GridCoordinate& getSize ();
+  VectorFieldPointValues& getValues ();
+  void setFieldPointValue (FieldPointValue& value, GridCoordinate& position);
 };
 
 #endif /* FIELD_GRID_H */

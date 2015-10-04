@@ -3,75 +3,159 @@
 #include "FieldGrid.h"
 
 // ================================ GridSize ================================
-GridSize::GridSize (
+GridCoordinate::GridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_size sx
+  grid_coord sx
 #if defined (GRID_2D) || defined (GRID_3D)
-  , grid_size sy
+  , grid_coord sy
 #if defined (GRID_3D)
-  , grid_size sz
+  , grid_coord sz
 #endif
 #endif
 #endif
   ) :
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  sizeX (sx)
+  x (sx)
 #if defined (GRID_2D) || defined (GRID_3D)
-  , sizeY (sy)
+  , y (sy)
 #if defined (GRID_3D)
-  , sizeZ (sz)
+  , z (sz)
 #endif
 #endif
 #endif 
 {
 }
 
-GridSize::~GridSize ()
+GridCoordinate::~GridCoordinate ()
 {
 }
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-grid_size GridSize::getSizeX ()
+grid_coord
+GridCoordinate::getX ()
 {
-  return sizeX;
+  return x;
 }
 #if defined (GRID_2D) || defined (GRID_3D)
-grid_size GridSize::getSizeY ()
+grid_coord
+GridCoordinate::getY ()
 {
-  return sizeY;
+  return y;
 }
 #if defined (GRID_3D)
-grid_size GridSize::getSizeZ ()
+grid_coord
+GridCoordinate::getZ ()
 {
-  return sizeZ;
+  return z;
 }
 #endif
 #endif
 #endif
 
-grid_size GridSize::getTotalSize ()
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+grid_coord
+GridCoordinate::getTotalCoord ()
 {
 #if defined (GRID_1D)
-  return sizeX;
+  return x;
 #else
 #if defined (GRID_2D)
-  return sizeX * sizeY;
+  return x * y;
 #else
 #if defined (GRID_3D)
-  return sizeX * sizeY * sizeZ;
+  return x * y * z;
 #endif
 #endif
 #endif
 }
+#endif
 
 // ================================ Grid ================================
-Grid::Grid(GridSize s) :
+Grid::Grid(GridCoordinate& s) :
   size (s)
 {
-  gridValues.resize (size.getTotalSize ());
+  gridValues.resize (size.getTotalCoord ());
   std::cout << "New grid with size: " << gridValues.size () << std::endl;
 }
 
 Grid::~Grid ()
 {
+}
+
+GridCoordinate& Grid::getSize ()
+{
+  return size;
+}
+
+VectorFieldPointValues& Grid::getValues ()
+{
+  return gridValues;
+}
+
+void
+Grid::setFieldPointValue (FieldPointValue& value, GridCoordinate& position)
+{
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  grid_coord px = position.getX ();
+  grid_coord sx = size.getX ();
+#if defined (GRID_2D) || defined (GRID_3D)
+  grid_coord py = position.getY ();
+  grid_coord sy = position.getY ();
+#if defined (GRID_3D)
+  grid_coord pz = position.getZ ();
+  grid_coord sz = position.getZ ();
+#endif
+#endif
+#endif
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  grid_coord coord;
+
+#if defined (GRID_1D)
+  if (px < 0 || px >= sx)
+  {
+    return;
+  }
+  else
+  {
+    coord = px;
+  }
+#else
+#if defined (GRID_2D)
+  if (px < 0 || px >= sx)
+  {
+    return;
+  }
+  else if (py < 0 || py >= sy)
+  {
+    return;
+  }
+  else
+  {
+    coord = px * sy + py;
+  }
+#else
+#if defined (GRID_3D)
+  if (px < 0 || px >= sx)
+  {
+    return;
+  }
+  else if (py < 0 || py >= sy)
+  {
+    return;
+  }
+  else if (pz < 0 || pz >= sz)
+  {
+    return;
+  }
+  else
+  {
+    coord = px * sy * sz + py * sz + pz;
+  }
+#endif
+#endif
+#endif
+
+  gridValues[coord] = value;
+#endif
 }
