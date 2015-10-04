@@ -62,6 +62,11 @@ class Grid
   GridCoordinate size;
   VectorFieldPointValues gridValues;
 
+private:
+
+  bool isLegitIndex (GridCoordinate& position);
+  grid_coord calculateIndex (GridCoordinate& position);
+
 public:
 
   Grid (GridCoordinate& s);
@@ -69,7 +74,9 @@ public:
 
   GridCoordinate& getSize ();
   VectorFieldPointValues& getValues ();
+
   void setFieldPointValue (FieldPointValue& value, GridCoordinate& position);
+  FieldPointValue& getFieldPointValue (GridCoordinate& position);
 };
 
 #endif /* FIELD_GRID_H */

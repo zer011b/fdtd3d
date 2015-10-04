@@ -92,8 +92,46 @@ VectorFieldPointValues& Grid::getValues ()
   return gridValues;
 }
 
-void
-Grid::setFieldPointValue (FieldPointValue& value, GridCoordinate& position)
+bool
+Grid::isLegitIndex (GridCoordinate& position)
+{
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  grid_coord px = position.getX ();
+  grid_coord sx = size.getX ();
+#if defined (GRID_2D) || defined (GRID_3D)
+  grid_coord py = position.getY ();
+  grid_coord sy = position.getY ();
+#if defined (GRID_3D)
+  grid_coord pz = position.getZ ();
+  grid_coord sz = position.getZ ();
+#endif
+#endif
+#endif
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  if (px < 0 || px >= sx)
+  {
+    return false;
+  }
+#if defined (GRID_2D) || defined (GRID_3D)
+  else if (py < 0 || py >= sy)
+  {
+    return false;
+  }
+#if defined (GRID_3D)
+  else if (pz < 0 || pz >= sz)
+  {
+    return false;
+  }
+#endif
+#endif
+#endif
+
+  return true;
+}
+
+grid_coord
+Grid::calculateIndex (GridCoordinate& position)
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   grid_coord px = position.getX ();
@@ -112,50 +150,35 @@ Grid::setFieldPointValue (FieldPointValue& value, GridCoordinate& position)
   grid_coord coord;
 
 #if defined (GRID_1D)
-  if (px < 0 || px >= sx)
-  {
-    return;
-  }
-  else
-  {
-    coord = px;
-  }
+  coord = px;
 #else
 #if defined (GRID_2D)
-  if (px < 0 || px >= sx)
-  {
-    return;
-  }
-  else if (py < 0 || py >= sy)
-  {
-    return;
-  }
-  else
-  {
-    coord = px * sy + py;
-  }
+  coord = px * sy + py;
 #else
 #if defined (GRID_3D)
-  if (px < 0 || px >= sx)
-  {
-    return;
-  }
-  else if (py < 0 || py >= sy)
-  {
-    return;
-  }
-  else if (pz < 0 || pz >= sz)
-  {
-    return;
-  }
-  else
-  {
-    coord = px * sy * sz + py * sz + pz;
-  }
+  coord = px * sy * sz + py * sz + pz;
 #endif
 #endif
 #endif
 
-  gridValues[coord] = value;
+  return coord;
 #endif
+}
+
+void
+Grid::setFieldPointValue (FieldPointValue& value, GridCoordinate& position)
+{
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  if (isLegitIndex (position))
+  {
+    grid_coord coord = calculateIndex (position);
+    gridValues[coord] = value;
+  }
+#endif
+}
+
+FieldPointValue&
+Grid::getFieldPointValue (GridCoordinate& position)
+{
+  
 }
