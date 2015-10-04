@@ -9,7 +9,7 @@ set (LINK_FLAGS "")
 #add_definitions (-DSMALL_VALUES="")
 add_definitions (-DFULL_VALUES="")
 add_definitions (-DTWO_TIME_STEPS="")
-add_definitions (-DGRID_3D="")
+add_definitions (-DGRID_1D="")
 add_definitions (-std=c++11)
 
 find_package (MPI REQUIRED)
@@ -42,7 +42,6 @@ endif ()
 include_directories ("${PROJECT_SOURCE_DIR}/third-party/EasyBMP/source")
 # Include CMakeLists.txt from the subfolder
 add_subdirectory (${PROJECT_SOURCE_DIR}/third-party/EasyBMP)
-set (LIBS ${LIBS} EasyBMP)
 
 
 # Add Field library
@@ -51,6 +50,14 @@ include_directories ("${PROJECT_SOURCE_DIR}/Field")
 # Include CMakeLists.txt from the subfolder
 add_subdirectory (Field)
 set (LIBS ${LIBS} Field)
+
+
+# Add Dumper library
+# Include headers of Dumper
+include_directories ("${PROJECT_SOURCE_DIR}/Dumper")
+# Include CMakeLists.txt from the subfolder
+add_subdirectory (Dumper)
+set (LIBS ${LIBS} Dumper)
 
 
 add_executable (fdtd main.cpp)

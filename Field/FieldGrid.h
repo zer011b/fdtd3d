@@ -7,6 +7,7 @@
 #include "FieldPoint.h"
 
 typedef uint16_t grid_coord;
+typedef uint64_t grid_iter;
 
 /**
  * Size of the grid
@@ -28,11 +29,11 @@ public:
   // Constructor for all cases
   GridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    grid_coord sx = 0
+    const grid_coord& sx = 0
 #if defined (GRID_2D) || defined (GRID_3D)
-    , grid_coord sy = 0
+    , const grid_coord& sy = 0
 #if defined (GRID_3D)
-    , grid_coord sz = 0
+    , const grid_coord& sz = 0
 #endif
 #endif
 #endif
@@ -41,12 +42,12 @@ public:
   ~GridCoordinate ();
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_coord getTotalCoord ();
-  grid_coord getX ();
+  grid_coord calculateTotalCoord ();
+  grid_coord& getX ();
 #if defined (GRID_2D) || defined (GRID_3D)
-  grid_coord getY ();
+  grid_coord& getY ();
 #if defined (GRID_3D)
-  grid_coord getZ ();
+  grid_coord& getZ ();
 #endif
 #endif
 #endif
@@ -65,15 +66,17 @@ class Grid
 private:
 
   bool isLegitIndex (GridCoordinate& position);
-  grid_coord calculateIndex (GridCoordinate& position);
+  grid_coord calculateIndexFromPosition (GridCoordinate& position);
 
 public:
 
-  Grid (GridCoordinate& s);
+  Grid (const GridCoordinate& s);
   ~Grid ();
 
   GridCoordinate& getSize ();
   VectorFieldPointValues& getValues ();
+
+  GridCoordinate calculatePositionFromIndex (grid_coord index);
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   void setFieldPointValue (FieldPointValue& value, GridCoordinate& position);

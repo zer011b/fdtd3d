@@ -5,11 +5,11 @@
  * Initialize all values. 
  */
 FieldPointValue::FieldPointValue (
-  FieldValue curVal
+  const FieldValue& curVal
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  , FieldValue prevVal
+  , const FieldValue& prevVal
 #if defined (TWO_TIME_STEPS)
-  , FieldValue prevPrevVal
+  , const FieldValue& prevPrevVal
 #endif
 #endif
   ) :
@@ -33,13 +33,13 @@ FieldPointValue::~FieldPointValue ()
 /**
  * Getter/Setter for current value.
  */
-FieldValue
-FieldPointValue::getCurrentValue ()
+FieldValue&
+FieldPointValue::getCurValue ()
 {
   return currentValue;
 }
 void
-FieldPointValue::setCurrentValue (FieldValue val)
+FieldPointValue::setCurValue (FieldValue& val)
 {
   currentValue = val;
 }
@@ -48,13 +48,13 @@ FieldPointValue::setCurrentValue (FieldValue val)
  * Getter/Setter for previous value.
  */
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-FieldValue
+FieldValue&
 FieldPointValue::getPrevValue ()
 {
   return previousValue;
 }
 void
-FieldPointValue::setPrevValue (FieldValue val)
+FieldPointValue::setPrevValue (FieldValue& val)
 {
   previousValue = val;
 }
@@ -63,13 +63,13 @@ FieldPointValue::setPrevValue (FieldValue val)
  * Getter/Setter for the second previous value.
  */
 #if defined (TWO_TIME_STEPS)
-FieldValue
+FieldValue&
 FieldPointValue::getPrevPrevValue ()
 {
   return previousPreviousValue;
 }
 void
-FieldPointValue::setPrevPrevValue (FieldValue val)
+FieldPointValue::setPrevPrevValue (FieldValue& val)
 {
   previousPreviousValue = val;
 }

@@ -33,27 +33,27 @@ public:
 
   // Constructor for all cases
   FieldPointValue (
-    FieldValue curVal = 0
+    const FieldValue& curVal = 0
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    , FieldValue prevVal = 0
+    , const FieldValue& prevVal = 0
 #if defined (TWO_TIME_STEPS)
-    , FieldValue prevPrevVal = 0
+    , const FieldValue& prevPrevVal = 0
 #endif
 #endif
   );
 
   ~FieldPointValue ();
 
-  FieldValue getCurrentValue ();
-  void setCurrentValue (FieldValue val);
+  FieldValue& getCurValue ();
+  void setCurValue (FieldValue& val);
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  FieldValue getPrevValue ();
-  void setPrevValue (FieldValue val);
+  FieldValue& getPrevValue ();
+  void setPrevValue (FieldValue& val);
 
 #if defined (TWO_TIME_STEPS)
-  FieldValue getPrevPrevValue ();
-  void setPrevPrevValue (FieldValue val);
+  FieldValue& getPrevPrevValue ();
+  void setPrevPrevValue (FieldValue& val);
 #endif
 #endif
 };
