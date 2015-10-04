@@ -100,10 +100,10 @@ Grid::isLegitIndex (GridCoordinate& position)
   grid_coord sx = size.getX ();
 #if defined (GRID_2D) || defined (GRID_3D)
   grid_coord py = position.getY ();
-  grid_coord sy = position.getY ();
+  grid_coord sy = size.getY ();
 #if defined (GRID_3D)
   grid_coord pz = position.getZ ();
-  grid_coord sz = position.getZ ();
+  grid_coord sz = size.getZ ();
 #endif
 #endif
 #endif
@@ -146,8 +146,7 @@ Grid::calculateIndex (GridCoordinate& position)
 #endif
 #endif
 
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_coord coord;
+  grid_coord coord = 0;
 
 #if defined (GRID_1D)
   coord = px;
@@ -162,23 +161,26 @@ Grid::calculateIndex (GridCoordinate& position)
 #endif
 
   return coord;
-#endif
 }
 
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
 void
 Grid::setFieldPointValue (FieldPointValue& value, GridCoordinate& position)
 {
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   if (isLegitIndex (position))
   {
     grid_coord coord = calculateIndex (position);
     gridValues[coord] = value;
   }
-#endif
 }
 
 FieldPointValue&
 Grid::getFieldPointValue (GridCoordinate& position)
 {
-  
+  if (isLegitIndex (position))
+  {
+    grid_coord coord = calculateIndex (position);
+    return gridValues[coord];
+  }
 }
+#endif

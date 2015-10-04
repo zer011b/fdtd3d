@@ -75,8 +75,10 @@ public:
   GridCoordinate& getSize ();
   VectorFieldPointValues& getValues ();
 
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   void setFieldPointValue (FieldPointValue& value, GridCoordinate& position);
   FieldPointValue& getFieldPointValue (GridCoordinate& position);
+#endif
 };
 
 #endif /* FIELD_GRID_H */
