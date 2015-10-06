@@ -8,11 +8,11 @@ int main (int argc, char** argv)
   GridCoordinate size (3);
   Grid grid (size);
 
-  FieldPointValue val1 (0, 100, 200);
+  FieldPointValue val1 (100, 100, 100);
   GridCoordinate pos1 (0);
   grid.setFieldPointValue(val1, pos1);
 
-  FieldPointValue val2 (-50, -100, -150);
+  FieldPointValue val2 (0, 0, 0);
   GridCoordinate pos2 (1);
   grid.setFieldPointValue(val2, pos2);
 

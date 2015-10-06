@@ -52,6 +52,7 @@ BMPDumper::setPixel (const FieldValue& val, const FieldValue& maxNeg,
     pixel.Green = tmp * 255;
     pixel.Blue = (1.0 - tmp) * 255;
   }
+
   return pixel;
 }
 
