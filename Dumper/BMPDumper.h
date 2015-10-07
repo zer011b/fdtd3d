@@ -21,8 +21,16 @@ private:
 #endif
 #endif
 
+  /*
+   * Sets pixel colors
+   */
   RGBApixel setPixel (const FieldValue& value, const FieldValue& maxNeg,
                       const FieldValue& max);
+
+  /*
+   * Dumps flat grids: 1D and 2D
+   */
+  void dumpFlat (Grid& grid, grid_iter sx, grid_iter sy);
 
 public:
 

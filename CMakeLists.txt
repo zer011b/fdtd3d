@@ -9,7 +9,7 @@ set (LINK_FLAGS "")
 #add_definitions (-DSMALL_VALUES="")
 add_definitions (-DFULL_VALUES="")
 add_definitions (-DTWO_TIME_STEPS="")
-add_definitions (-DGRID_1D="")
+add_definitions (-DGRID_2D="")
 add_definitions (-std=c++11)
 
 find_package (MPI REQUIRED)

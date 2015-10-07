@@ -56,18 +56,12 @@ BMPDumper::setPixel (const FieldValue& val, const FieldValue& maxNeg,
   return pixel;
 }
 
-#if defined (GRID_1D)
 void
-BMPDumper::dump1D (Grid& grid)
+BMPDumper::dumpFlat (Grid& grid, grid_iter sx, grid_iter sy)
 {
-  GridCoordinate& size = grid.getSize ();
-  grid_coord sx = size.getX ();
-
-  std::cout << "Saving 1D to BMP image. Size: " << sx << "x1. " << std::endl;
-
-  // Create image for current values and max/min values
+// Create image for current values and max/min values
   BMP imageCur;
-  imageCur.SetSize (sx, 1);
+  imageCur.SetSize (sx, sy);
   imageCur.SetBitDepth (24);
 
   FieldValue maxPosCur = grid.getValues ()[0].getCurValue ();
@@ -76,7 +70,7 @@ BMPDumper::dump1D (Grid& grid)
   // Create image for previous values and max/min values
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
   BMP imagePrev;
-  imagePrev.SetSize (sx, 1);
+  imagePrev.SetSize (sx, sy);
   imagePrev.SetBitDepth (24);
 
   FieldValue maxPosPrev = grid.getValues ()[0].getPrevValue ();
@@ -85,7 +79,7 @@ BMPDumper::dump1D (Grid& grid)
   // Create image for previous previous values and max/min values
 #if defined (TWO_TIME_STEPS)
   BMP imagePrevPrev;
-  imagePrevPrev.SetSize (sx, 1);
+  imagePrevPrev.SetSize (sx, sy);
   imagePrevPrev.SetBitDepth (24);
 
   FieldValue maxPosPrevPrev = grid.getValues ()[0].getPrevPrevValue ();
@@ -144,6 +138,17 @@ BMPDumper::dump1D (Grid& grid)
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     FieldPointValue& current = values[iter];
+    GridCoordinate coord = grid.calculatePositionFromIndex (iter);
+
+#if defined (GRID_1D)
+    grid_iter px = coord.getX ();
+    grid_iter py = 0;
+#else
+#if defined (GRID_2D)
+    grid_iter px = coord.getX ();
+    grid_iter py = coord.getY ();
+#endif
+#endif
 
     FieldValue& cur = current.getCurValue ();
     RGBApixel pixelCur = setPixel (cur, maxNegCur, maxCur);
@@ -156,11 +161,11 @@ BMPDumper::dump1D (Grid& grid)
 #endif
 #endif
 
-    imageCur.SetPixel(iter, 0, pixelCur);
+    imageCur.SetPixel(px, py, pixelCur);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    imagePrev.SetPixel(iter, 0, pixelPrev);
+    imagePrev.SetPixel(px, py, pixelPrev);
 #if defined (TWO_TIME_STEPS)
-    imagePrevPrev.SetPixel(iter, 0, pixelPrevPrev);
+    imagePrevPrev.SetPixel(px, py, pixelPrevPrev);
 #endif
 #endif
   }
@@ -178,6 +183,18 @@ BMPDumper::dump1D (Grid& grid)
   imagePrevPrev.WriteToFile(prevPrev.str().c_str());
 #endif
 #endif
+}
+
+#if defined (GRID_1D)
+void
+BMPDumper::dump1D (Grid& grid)
+{
+  GridCoordinate& size = grid.getSize ();
+  grid_coord sx = size.getX ();
+
+  std::cout << "Saving 1D to BMP image. Size: " << sx << "x1. " << std::endl;
+
+  dumpFlat (grid, sx, 1);
 
   std::cout << "Saved. " << std::endl;
 }
@@ -187,82 +204,15 @@ BMPDumper::dump1D (Grid& grid)
 void
 BMPDumper::dump2D (Grid& grid)
 {
-/*  BMP image;
+  GridCoordinate& size = grid.getSize ();
+  grid_coord sx = size.getX ();
+  grid_coord sy = size.getY ();
 
-  image.SetSize(sizeX, sizeY);
-  image.SetBitDepth(24);
+  std::cout << "Saving 2D to BMP image. Size: " << sx << "x" << sy << ". " << std::endl;
 
-  std::cout << "Saving to BMP image. " << sizeX << " " << sizeY << std::endl;
+  dumpFlat (grid, sx, sy);
 
-	double maxP = data[0][0][0];
-	double maxM = data[0][0][0];
-	for (int i = 0; i < sizeX; ++i)
-	for (int j = 0; j < sizeY; ++j)
-  //for (int k = 0; k < sizeZ; ++k)
-  {
-  	if (data[i][j][K] > maxP)
-    	maxP = data[i][j][K];
-  	if (data[i][j][K] < maxM)
-    	maxM = data[i][j][K];
-  }
-	double max = maxP - maxM;
-
-	for (int i = 0; i < image.TellWidth(); ++i)
-	for (int j = 0; j < image.TellHeight(); ++j)
-  {
-  	RGBApixel a;
-  	a.Alpha = 1.0;
-
-//    if (data[i][j] > 0)
-//    {
-//  	a.Red = 0.0;// data[i][j] * 255 / max;
-//  	a.Blue = 0.0;// data[i][j] * 255 / max;
-//  	a.Green = data[i][j] * 255 / max;
-//    }
-//  	else
-//    {
-//  	a.Red = -data[i][j] * 255 / max;
-//  	a.Blue = 0.0;// data[i][j] * 255 / max;
-//  	a.Green = 0.0;// data[i][j] * 255 / max;
-//    }
-
-  	double value = data[i][j][K] - maxM;
-  	if (value > max / 2.0)
-    {
-    	value -= max / 2;
-    	float tmp = 2 * value / max;
-    	a.Red = tmp * 255;
-    	a.Green = (1.0 - tmp) * 255;
-    	a.Blue = 0.0;
-
-      //std::cout << "!" << tmp * 255 << " " << (1.0 - tmp) * 255 << " " << maxP << " " << maxM << " " <<
-      //	max << " " << maxP - maxM << std::endl;
-    }
-  	else
-    {  
-    	double tmp;
-    	if (max == 0)
-      	tmp = 0.0;
-    	else
-      	tmp = 2 * value / max;
-    	a.Red = 0.0;
-    	a.Green = tmp * 255;
-    	a.Blue = (1.0 - tmp) * 255;
-    }
-
-  	image.SetPixel(i, j, a);
-  }
-
-  //std::string fff("mkdir ");
-  //fff += dest;
-  //system(fff.c_str());
-
-	std::stringstream s;
-	s << dest << "\\" << filename;
-
-	image.WriteToFile(s.str().c_str());
-
-	std::cout << "Saved. " << std::endl;*/
+  std::cout << "Saved. " << std::endl;
 }
 #endif
 
