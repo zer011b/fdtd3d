@@ -138,10 +138,10 @@ Grid::calculateIndexFromPosition (GridCoordinate& position)
   grid_coord& sx = size.getX ();
 #if defined (GRID_2D) || defined (GRID_3D)
   grid_coord& py = position.getY ();
-  grid_coord& sy = position.getY ();
+  grid_coord& sy = size.getY ();
 #if defined (GRID_3D)
   grid_coord& pz = position.getZ ();
-  grid_coord& sz = position.getZ ();
+  grid_coord& sz = size.getZ ();
 #endif
 #endif
 #endif
