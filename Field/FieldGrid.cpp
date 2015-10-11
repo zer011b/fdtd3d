@@ -31,20 +31,20 @@ GridCoordinate::~GridCoordinate ()
 }
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-grid_coord&
-GridCoordinate::getX ()
+const grid_coord&
+GridCoordinate::getX () const
 {
   return x;
 }
 #if defined (GRID_2D) || defined (GRID_3D)
-grid_coord&
-GridCoordinate::getY ()
+const grid_coord&
+GridCoordinate::getY () const
 {
   return y;
 }
 #if defined (GRID_3D)
-grid_coord&
-GridCoordinate::getZ ()
+const grid_coord&
+GridCoordinate::getZ () const
 {
   return z;
 }
@@ -54,7 +54,7 @@ GridCoordinate::getZ ()
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
 grid_coord
-GridCoordinate::calculateTotalCoord ()
+GridCoordinate::calculateTotalCoord () const
 {
 #if defined (GRID_1D)
   return x;
@@ -82,7 +82,7 @@ Grid::~Grid ()
 {
 }
 
-GridCoordinate& Grid::getSize ()
+const GridCoordinate& Grid::getSize () const
 {
   return size;
 }
@@ -93,17 +93,17 @@ VectorFieldPointValues& Grid::getValues ()
 }
 
 bool
-Grid::isLegitIndex (GridCoordinate& position)
+Grid::isLegitIndex (const GridCoordinate& position) const
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_coord& px = position.getX ();
-  grid_coord& sx = size.getX ();
+  const grid_coord& px = position.getX ();
+  const grid_coord& sx = size.getX ();
 #if defined (GRID_2D) || defined (GRID_3D)
-  grid_coord& py = position.getY ();
-  grid_coord& sy = size.getY ();
+  const grid_coord& py = position.getY ();
+  const grid_coord& sy = size.getY ();
 #if defined (GRID_3D)
-  grid_coord& pz = position.getZ ();
-  grid_coord& sz = size.getZ ();
+  const grid_coord& pz = position.getZ ();
+  const grid_coord& sz = size.getZ ();
 #endif
 #endif
 #endif
@@ -131,17 +131,17 @@ Grid::isLegitIndex (GridCoordinate& position)
 }
 
 grid_coord
-Grid::calculateIndexFromPosition (GridCoordinate& position)
+Grid::calculateIndexFromPosition (const GridCoordinate& position) const
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_coord& px = position.getX ();
-  grid_coord& sx = size.getX ();
+  const grid_coord& px = position.getX ();
+  const grid_coord& sx = size.getX ();
 #if defined (GRID_2D) || defined (GRID_3D)
-  grid_coord& py = position.getY ();
-  grid_coord& sy = size.getY ();
+  const grid_coord& py = position.getY ();
+  const grid_coord& sy = size.getY ();
 #if defined (GRID_3D)
-  grid_coord& pz = position.getZ ();
-  grid_coord& sz = size.getZ ();
+  const grid_coord& pz = position.getZ ();
+  const grid_coord& sz = size.getZ ();
 #endif
 #endif
 #endif
@@ -164,14 +164,14 @@ Grid::calculateIndexFromPosition (GridCoordinate& position)
 }
 
 GridCoordinate
-Grid::calculatePositionFromIndex (grid_coord index)
+Grid::calculatePositionFromIndex (grid_coord index) const
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_coord& sx = size.getX ();
+  const grid_coord& sx = size.getX ();
 #if defined (GRID_2D) || defined (GRID_3D)
-  grid_coord& sy = size.getY ();
+  const grid_coord& sy = size.getY ();
 #if defined (GRID_3D)
-  grid_coord& sz = size.getZ ();
+  const grid_coord& sz = size.getZ ();
 #endif
 #endif
 #endif
@@ -201,7 +201,7 @@ Grid::calculatePositionFromIndex (grid_coord index)
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
 void
-Grid::setFieldPointValue (FieldPointValue& value, GridCoordinate& position)
+Grid::setFieldPointValue (const FieldPointValue& value, const GridCoordinate& position)
 {
   if (isLegitIndex (position))
   {
@@ -211,7 +211,7 @@ Grid::setFieldPointValue (FieldPointValue& value, GridCoordinate& position)
 }
 
 FieldPointValue&
-Grid::getFieldPointValue (GridCoordinate& position)
+Grid::getFieldPointValue (const GridCoordinate& position)
 {
   if (isLegitIndex (position))
   {

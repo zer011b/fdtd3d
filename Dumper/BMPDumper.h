@@ -10,31 +10,34 @@ class BMPDumper: public Dumper
 private:
 
 #if defined (GRID_1D)
-  void dump1D (Grid& grid);
+  void dump1D (Grid& grid) const;
 #else
 #if defined (GRID_2D)
-  void dump2D (Grid& grid);
+  void dump2D (Grid& grid) const;
 #else
 #if defined (GRID_3D)
-  void dump3D (Grid& grid);
+  void dump3D (Grid& grid) const;
 #endif
 #endif
 #endif
 
   /*
-   * Sets pixel colors
+   * Return pixel with colors according to values
    */
-  RGBApixel setPixel (const FieldValue& value, const FieldValue& maxNeg,
-                      const FieldValue& max);
+  RGBApixel getPixel (const FieldValue& value, const FieldValue& maxNeg,
+                      const FieldValue& max) const;
 
   /*
    * Dumps flat grids: 1D and 2D
    */
-  void dumpFlat (Grid& grid, grid_iter sx, grid_iter sy);
+  void dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const;
 
 public:
 
-  void dumpGrid (Grid& grid) override;
+  /**
+   * Dump function to call for every grid type
+   */
+  void dumpGrid (Grid& grid, const grid_iter& timeStep) const override;
 };
 
 #endif /* BMP_DUMPER_H */

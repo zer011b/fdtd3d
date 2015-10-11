@@ -6,7 +6,7 @@
 class Dumper
 {
 public:
-  virtual void dumpGrid (Grid& grid) = 0;
+  virtual void dumpGrid (Grid& grid, const grid_iter& timeStep) const = 0;
 };
 
 #endif /* DUMPER_H */

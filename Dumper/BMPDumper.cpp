@@ -4,8 +4,12 @@
 
 #include "BMPDumper.h"
 
+/**
+ * Dump grid.
+ * Choose actual dumper by mode.
+ */
 void
-BMPDumper::dumpGrid (Grid& grid)
+BMPDumper::dumpGrid (Grid& grid, const grid_iter& timeStep) const
 {
 #if defined (GRID_1D)
   dump1D (grid);
@@ -20,9 +24,13 @@ BMPDumper::dumpGrid (Grid& grid)
 #endif
 }
 
+/*
+ * Return pixel with colors according to values.
+ * Blue-Green-Red scheme.
+ */
 RGBApixel
-BMPDumper::setPixel (const FieldValue& val, const FieldValue& maxNeg,
-                     const FieldValue& max)
+BMPDumper::getPixel (const FieldValue& val, const FieldValue& maxNeg,
+                     const FieldValue& max) const
 {
   RGBApixel pixel;
   pixel.Alpha = 1.0;
@@ -56,10 +64,13 @@ BMPDumper::setPixel (const FieldValue& val, const FieldValue& maxNeg,
   return pixel;
 }
 
+/**
+ * Dumper for 1D and 2D grids.
+ */
 void
-BMPDumper::dumpFlat (Grid& grid, grid_iter sx, grid_iter sy)
+BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 {
-// Create image for current values and max/min values
+  // Create image for current values and max/min values
   BMP imageCur;
   imageCur.SetSize (sx, sy);
   imageCur.SetBitDepth (24);
@@ -87,10 +98,12 @@ BMPDumper::dumpFlat (Grid& grid, grid_iter sx, grid_iter sy)
 #endif
 #endif
 
-  // Calculate max values
+
+  // Go through all values and calculate max/min.
   for (FieldPointValue& current : grid.getValues ())
   {
-    FieldValue& cur = current.getCurValue ();
+    // Calculate max/min values for current values
+    const FieldValue& cur = current.getCurValue ();
     if (cur > maxPosCur)
     {
       maxPosCur = cur;
@@ -100,8 +113,9 @@ BMPDumper::dumpFlat (Grid& grid, grid_iter sx, grid_iter sy)
       maxNegCur = cur;
     }
 
+  // Calculate max/min values for previous values
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    FieldValue& prev = current.getPrevValue ();
+    const FieldValue& prev = current.getPrevValue ();
     if (prev > maxPosPrev)
     {
       maxPosPrev = prev;
@@ -111,8 +125,9 @@ BMPDumper::dumpFlat (Grid& grid, grid_iter sx, grid_iter sy)
       maxNegPrev = prev;
     }
 
+  // Calculate max/min values for previous previous values
 #if defined (TWO_TIME_STEPS)
-    FieldValue& prevPrev = current.getPrevPrevValue ();
+    const FieldValue& prevPrev = current.getPrevPrevValue ();
     if (prevPrev > maxPosPrevPrev)
     {
       maxPosPrevPrev = prevPrev;
@@ -125,21 +140,28 @@ BMPDumper::dumpFlat (Grid& grid, grid_iter sx, grid_iter sy)
 #endif
   }
 
-  FieldValue maxCur = maxPosCur - maxNegCur;
+
+  // Set max (diff between max positive and max negative)
+  const FieldValue maxCur = maxPosCur - maxNegCur;
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  FieldValue maxPrev = maxPosPrev - maxNegPrev;
+  const FieldValue maxPrev = maxPosPrev - maxNegPrev;
 #if defined (TWO_TIME_STEPS)
-  FieldValue maxPrevPrev = maxPosPrevPrev - maxNegPrevPrev;
+  const FieldValue maxPrevPrev = maxPosPrevPrev - maxNegPrevPrev;
 #endif
 #endif
 
+
+  // Go through all values and set pixels
   VectorFieldPointValues& values = grid.getValues ();
   grid_iter end = values.size ();
   for (grid_iter iter = 0; iter < end; ++iter)
   {
+    // Get current point value
     FieldPointValue& current = values[iter];
+    // Calculate its positiob from index in array
     GridCoordinate coord = grid.calculatePositionFromIndex (iter);
 
+    // Pixel coordinate
 #if defined (GRID_1D)
     grid_iter px = coord.getX ();
     grid_iter py = 0;
@@ -150,25 +172,32 @@ BMPDumper::dumpFlat (Grid& grid, grid_iter sx, grid_iter sy)
 #endif
 #endif
 
-    FieldValue& cur = current.getCurValue ();
-    RGBApixel pixelCur = setPixel (cur, maxNegCur, maxCur);
+    // Get pixel for current image
+    const FieldValue& cur = current.getCurValue ();
+    RGBApixel pixelCur = getPixel (cur, maxNegCur, maxCur);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    FieldValue& prev = current.getPrevValue ();
-    RGBApixel pixelPrev = setPixel (prev, maxNegPrev, maxPrev);
+    // Get pixel for previous image
+    const FieldValue& prev = current.getPrevValue ();
+    RGBApixel pixelPrev = getPixel (prev, maxNegPrev, maxPrev);
 #if defined (TWO_TIME_STEPS)
-    FieldValue& prevPrev = current.getPrevPrevValue ();
-    RGBApixel pixelPrevPrev = setPixel (prevPrev, maxNegPrevPrev, maxPrevPrev);
+    // Get pixel for previous previous image
+    const FieldValue& prevPrev = current.getPrevPrevValue ();
+    RGBApixel pixelPrevPrev = getPixel (prevPrev, maxNegPrevPrev, maxPrevPrev);
 #endif
 #endif
 
+    // Set pixel for current image
     imageCur.SetPixel(px, py, pixelCur);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+    // Set pixel for previous image
     imagePrev.SetPixel(px, py, pixelPrev);
 #if defined (TWO_TIME_STEPS)
+    // Set pixel for previous previous image
     imagePrevPrev.SetPixel(px, py, pixelPrevPrev);
 #endif
 #endif
   }
+
 
   std::stringstream cur;
   cur << "cur.bmp";
@@ -185,9 +214,10 @@ BMPDumper::dumpFlat (Grid& grid, grid_iter sx, grid_iter sy)
 #endif
 }
 
+
 #if defined (GRID_1D)
 void
-BMPDumper::dump1D (Grid& grid)
+BMPDumper::dump1D (Grid& grid) const
 {
   GridCoordinate& size = grid.getSize ();
   grid_coord sx = size.getX ();
@@ -202,9 +232,9 @@ BMPDumper::dump1D (Grid& grid)
 
 #if defined (GRID_2D)
 void
-BMPDumper::dump2D (Grid& grid)
+BMPDumper::dump2D (Grid& grid) const
 {
-  GridCoordinate& size = grid.getSize ();
+  const GridCoordinate& size = grid.getSize ();
   grid_coord sx = size.getX ();
   grid_coord sy = size.getY ();
 
@@ -218,7 +248,7 @@ BMPDumper::dump2D (Grid& grid)
 
 #if defined (GRID_3D)
 void
-BMPDumper::dump3D (Grid& grid)
+BMPDumper::dump3D (Grid& grid) const
 {
 
 }

@@ -14,6 +14,7 @@ typedef double FieldValue;
 #endif
 #endif
 
+
 /**
  * FieldPointValue defines all values in time at the grid point.
  */
@@ -44,18 +45,19 @@ public:
 
   ~FieldPointValue ();
 
-  FieldValue& getCurValue ();
-  void setCurValue (FieldValue& val);
+  const FieldValue& getCurValue () const;
+  void setCurValue (const FieldValue& val);
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  FieldValue& getPrevValue ();
-  void setPrevValue (FieldValue& val);
+  const FieldValue& getPrevValue () const;
+  void setPrevValue (const FieldValue& val);
 
 #if defined (TWO_TIME_STEPS)
-  FieldValue& getPrevPrevValue ();
-  void setPrevPrevValue (FieldValue& val);
+  const FieldValue& getPrevPrevValue () const;
+  void setPrevPrevValue (const FieldValue& val);
 #endif
 #endif
 };
+
 
 #endif /* FIELD_POINT_H */
