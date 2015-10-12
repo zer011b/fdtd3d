@@ -1,15 +1,49 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
 #include "BMPDumper.h"
+
+void
+BMPDumper::init(const grid_iter& timeStep, DumpType newType)
+{
+  step = timeStep;
+  type = newType;
+
+  setFileNames ();
+}
+
+void
+BMPDumper::setStep (const grid_iter& timeStep)
+{
+  step = timeStep;
+
+  setFileNames();
+}
+
+void
+BMPDumper::setDumpType (DumpType newType)
+{
+  type = newType;
+}
+
+void
+BMPDumper::setFileNames ()
+{
+  cur.clear ();
+  cur = std::string ("current[") + std::to_string (step) + std::string ("].bmp");
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+  prev.clear ();
+  prev = std::string ("previous[") + std::to_string (step) + std::string ("].bmp");
+#if defined (TWO_TIME_STEPS)
+  prevPrev.clear ();
+  prevPrev = std::string ("previous2[") + std::to_string (step) + std::string ("].bmp");
+#endif
+#endif
+}
 
 /**
  * Dump grid.
  * Choose actual dumper by mode.
  */
 void
-BMPDumper::dumpGrid (Grid& grid, const grid_iter& timeStep) const
+BMPDumper::dumpGrid (Grid& grid) const
 {
 #if defined (GRID_1D)
   dump1D (grid);
@@ -115,26 +149,32 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 
   // Calculate max/min values for previous values
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    const FieldValue& prev = current.getPrevValue ();
-    if (prev > maxPosPrev)
+    if (type == DUMP_ALL)
     {
-      maxPosPrev = prev;
-    }
-    if (prev < maxNegPrev)
-    {
-      maxNegPrev = prev;
+      const FieldValue& prev = current.getPrevValue ();
+      if (prev > maxPosPrev)
+      {
+        maxPosPrev = prev;
+      }
+      if (prev < maxNegPrev)
+      {
+        maxNegPrev = prev;
+      }
     }
 
   // Calculate max/min values for previous previous values
 #if defined (TWO_TIME_STEPS)
-    const FieldValue& prevPrev = current.getPrevPrevValue ();
-    if (prevPrev > maxPosPrevPrev)
+    if (type == DUMP_ALL)
     {
-      maxPosPrevPrev = prevPrev;
-    }
-    if (prevPrev < maxNegPrevPrev)
-    {
-      maxNegPrevPrev = prevPrev;
+      const FieldValue& prevPrev = current.getPrevPrevValue ();
+      if (prevPrev > maxPosPrevPrev)
+      {
+        maxPosPrevPrev = prevPrev;
+      }
+      if (prevPrev < maxNegPrevPrev)
+      {
+        maxNegPrevPrev = prevPrev;
+      }
     }
 #endif
 #endif
@@ -190,26 +230,32 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
     imageCur.SetPixel(px, py, pixelCur);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     // Set pixel for previous image
-    imagePrev.SetPixel(px, py, pixelPrev);
+    if (type == DUMP_ALL)
+    {
+      imagePrev.SetPixel(px, py, pixelPrev);
+    }
 #if defined (TWO_TIME_STEPS)
     // Set pixel for previous previous image
-    imagePrevPrev.SetPixel(px, py, pixelPrevPrev);
+    if (type == DUMP_ALL)
+    {
+      imagePrevPrev.SetPixel(px, py, pixelPrevPrev);
+    }
 #endif
 #endif
   }
 
 
-  std::stringstream cur;
-  cur << "cur.bmp";
-  imageCur.WriteToFile(cur.str().c_str());
+  imageCur.WriteToFile(cur.c_str());
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  std::stringstream prev;
-  prev << "prev.bmp";
-  imagePrev.WriteToFile(prev.str().c_str());
+  if (type == DUMP_ALL)
+  {
+    imagePrev.WriteToFile(prev.c_str());
+  }
 #if defined (TWO_TIME_STEPS)
-  std::stringstream prevPrev;
-  prevPrev << "prevPrev.bmp";
-  imagePrevPrev.WriteToFile(prevPrev.str().c_str());
+  if (type == DUMP_ALL)
+  {
+    imagePrevPrev.WriteToFile(prevPrev.c_str());
+  }
 #endif
 #endif
 }

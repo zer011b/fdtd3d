@@ -32,12 +32,17 @@ private:
    */
   void dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const;
 
+  void setFileNames ();
+
 public:
 
   /**
    * Dump function to call for every grid type
    */
-  void dumpGrid (Grid& grid, const grid_iter& timeStep) const override;
+  void dumpGrid (Grid& grid) const override;
+  void init (const grid_iter& timeStep, DumpType newType) override;
+  void setStep (const grid_iter& timeStep) override;
+  void setDumpType (DumpType newType) override;
 };
 
 #endif /* BMP_DUMPER_H */
