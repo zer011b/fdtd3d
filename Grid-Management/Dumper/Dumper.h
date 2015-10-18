@@ -4,19 +4,13 @@
 #include <string>
 
 #include "FieldGrid.h"
-
-enum DumpType
-{
-  DUMP_CURRENT,
-  DUMP_ALL
-};
-
+#include "commons.h"
 
 class Dumper
 {
 protected:
   grid_iter step;
-  DumpType type;
+  GridFileType type;
 
   std::string cur;
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
@@ -28,14 +22,14 @@ protected:
 
 public:
 
-  Dumper () : step (0), type (DUMP_ALL)
+  Dumper () : step (0), type (ALL)
   {
   }
 
   virtual void dumpGrid (Grid& grid) const = 0;
-  virtual void init (const grid_iter& timeStep, DumpType newType) = 0;
+  virtual void init (const grid_iter& timeStep, GridFileType newType) = 0;
   virtual void setStep (const grid_iter& timeStep) = 0;
-  virtual void setDumpType (DumpType newType) = 0;
+  virtual void setGridFileType (GridFileType newType) = 0;
 };
 
 #endif /* DUMPER_H */

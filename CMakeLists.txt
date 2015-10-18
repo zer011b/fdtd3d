@@ -52,11 +52,14 @@ add_subdirectory (Field)
 set (LIBS ${LIBS} Field)
 
 
-# Add Dumper library
-# Include headers of Dumper
-include_directories ("${PROJECT_SOURCE_DIR}/Dumper")
+# Add Field library
+# Include headers of Loader and Dumper
+include_directories ("${PROJECT_SOURCE_DIR}/Grid-Management/")
+include_directories ("${PROJECT_SOURCE_DIR}/Grid-Management/Loader")
+include_directories ("${PROJECT_SOURCE_DIR}/Grid-Management/Dumper")
 # Include CMakeLists.txt from the subfolder
-add_subdirectory (Dumper)
+add_subdirectory (Grid-Management)
+set (LIBS ${LIBS} Loader)
 set (LIBS ${LIBS} Dumper)
 
 

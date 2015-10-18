@@ -49,7 +49,7 @@ int main (int argc, char** argv)
     val_1.getPrevValue() << ", " << val_1.getPrevPrevValue() << std::endl;
 
   BMPDumper dumper;
-  dumper.init (1, DUMP_CURRENT);
+  dumper.init (1, CURRENT);
   dumper.dumpGrid (grid);
 
   std::cout << "Main." << std::endl;

@@ -1,7 +1,7 @@
 #include "BMPDumper.h"
 
 void
-BMPDumper::init(const grid_iter& timeStep, DumpType newType)
+BMPDumper::init(const grid_iter& timeStep, GridFileType newType)
 {
   step = timeStep;
   type = newType;
@@ -18,7 +18,7 @@ BMPDumper::setStep (const grid_iter& timeStep)
 }
 
 void
-BMPDumper::setDumpType (DumpType newType)
+BMPDumper::setGridFileType (GridFileType newType)
 {
   type = newType;
 }
@@ -149,7 +149,7 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 
   // Calculate max/min values for previous values
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    if (type == DUMP_ALL)
+    if (type == ALL)
     {
       const FieldValue& prev = current.getPrevValue ();
       if (prev > maxPosPrev)
@@ -164,7 +164,7 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 
   // Calculate max/min values for previous previous values
 #if defined (TWO_TIME_STEPS)
-    if (type == DUMP_ALL)
+    if (type == ALL)
     {
       const FieldValue& prevPrev = current.getPrevPrevValue ();
       if (prevPrev > maxPosPrevPrev)
@@ -230,13 +230,13 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
     imageCur.SetPixel(px, py, pixelCur);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     // Set pixel for previous image
-    if (type == DUMP_ALL)
+    if (type == ALL)
     {
       imagePrev.SetPixel(px, py, pixelPrev);
     }
 #if defined (TWO_TIME_STEPS)
     // Set pixel for previous previous image
-    if (type == DUMP_ALL)
+    if (type == ALL)
     {
       imagePrevPrev.SetPixel(px, py, pixelPrevPrev);
     }
@@ -247,12 +247,12 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 
   imageCur.WriteToFile(cur.c_str());
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  if (type == DUMP_ALL)
+  if (type == ALL)
   {
     imagePrev.WriteToFile(prev.c_str());
   }
 #if defined (TWO_TIME_STEPS)
-  if (type == DUMP_ALL)
+  if (type == ALL)
   {
     imagePrevPrev.WriteToFile(prevPrev.c_str());
   }

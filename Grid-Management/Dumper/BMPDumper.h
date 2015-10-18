@@ -40,9 +40,9 @@ public:
    * Dump function to call for every grid type
    */
   void dumpGrid (Grid& grid) const override;
-  void init (const grid_iter& timeStep, DumpType newType) override;
+  void init (const grid_iter& timeStep, GridFileType newType) override;
   void setStep (const grid_iter& timeStep) override;
-  void setDumpType (DumpType newType) override;
+  void setGridFileType (GridFileType newType) override;
 };
 
 #endif /* BMP_DUMPER_H */
