@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "BMPDumper.h"
 
 void
@@ -79,7 +81,7 @@ BMPDumper::getPixel (const FieldValue& val, const FieldValue& maxNeg,
     pixel.Blue = 0.0;
   }
   else
-  {  
+  {
     FieldValue tmp = 0;
     if (max == 0)
     {
@@ -296,6 +298,6 @@ BMPDumper::dump2D (Grid& grid) const
 void
 BMPDumper::dump3D (Grid& grid) const
 {
-
+  std::cout << "Not implemented." << std::endl;
 }
 #endif

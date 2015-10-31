@@ -1,15 +1,13 @@
 #ifndef LOADER_H
 #define LOADER_H
 
-#include <string>
-
-#include "FieldGrid.h"
 #include "commons.h"
 
-class Loader
+class Loader: public GridFileManager
 {
 public:
 
+  virtual void LoadGrid (Grid& grid) const = 0;
 };
 
 #endif /* LOADER_H */

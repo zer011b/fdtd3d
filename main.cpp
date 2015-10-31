@@ -2,6 +2,7 @@
 
 #include "FieldGrid.h"
 #include "BMPDumper.h"
+#include "BMPLoader.h"
 
 int main (int argc, char** argv)
 {
@@ -51,6 +52,8 @@ int main (int argc, char** argv)
   BMPDumper dumper;
   dumper.init (1, CURRENT);
   dumper.dumpGrid (grid);
+
+  BMPLoader loader;
 
   std::cout << "Main." << std::endl;
   return 0;
