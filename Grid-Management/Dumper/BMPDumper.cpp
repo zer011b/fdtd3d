@@ -2,44 +2,6 @@
 
 #include "BMPDumper.h"
 
-void
-BMPDumper::init(const grid_iter& timeStep, GridFileType newType)
-{
-  step = timeStep;
-  type = newType;
-
-  setFileNames ();
-}
-
-void
-BMPDumper::setStep (const grid_iter& timeStep)
-{
-  step = timeStep;
-
-  setFileNames();
-}
-
-void
-BMPDumper::setGridFileType (GridFileType newType)
-{
-  type = newType;
-}
-
-void
-BMPDumper::setFileNames ()
-{
-  cur.clear ();
-  cur = std::string ("current[") + std::to_string (step) + std::string ("].bmp");
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  prev.clear ();
-  prev = std::string ("previous[") + std::to_string (step) + std::string ("].bmp");
-#if defined (TWO_TIME_STEPS)
-  prevPrev.clear ();
-  prevPrev = std::string ("previous2[") + std::to_string (step) + std::string ("].bmp");
-#endif
-#endif
-}
-
 /**
  * Dump grid.
  * Choose actual dumper by mode.

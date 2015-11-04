@@ -25,15 +25,45 @@ protected:
 #endif
 #endif
 
+  void setFileNames ()
+  {
+    cur.clear ();
+    cur = std::string ("current[") + std::to_string (step) + std::string ("].bmp");
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+    prev.clear ();
+    prev = std::string ("previous[") + std::to_string (step) + std::string ("].bmp");
+#if defined (TWO_TIME_STEPS)
+    prevPrev.clear ();
+    prevPrev = std::string ("previous2[") + std::to_string (step) + std::string ("].bmp");
+#endif
+#endif
+  }
+
 public:
 
   GridFileManager () : step (0), type (ALL)
   {
   }
 
-  virtual void init (const grid_iter& timeStep, GridFileType newType) = 0;
-  virtual void setStep (const grid_iter& timeStep) = 0;
-  virtual void setGridFileType (GridFileType newType) = 0;
+  void init (const grid_iter& timeStep, GridFileType newType)
+  {
+    step = timeStep;
+    type = newType;
+
+    setFileNames ();
+  }
+
+  void setStep (const grid_iter& timeStep)
+  {
+    step = timeStep;
+
+    setFileNames();
+  }
+
+  void setGridFileType (GridFileType newType)
+  {
+    type = newType;
+  }
 };
 
 #endif /* COMMONS_H */
