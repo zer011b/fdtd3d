@@ -23,7 +23,7 @@ private:
   /*
    * Return pixel with colors according to values
    */
-  RGBApixel getPixel (const FieldValue& value, const FieldValue& maxNeg,
+  RGBApixel getPixelFromValue (const FieldValue& value, const FieldValue& maxNeg,
                       const FieldValue& max) const;
 
   /*

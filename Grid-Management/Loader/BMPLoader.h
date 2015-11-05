@@ -20,6 +20,12 @@ private:
 #endif
 #endif
 
+  /*
+   * Return pixel with colors according to values
+   */
+  FieldValue getValueFromPixel (const RGBApixel& pixel, const FieldValue& maxNeg,
+                                const FieldValue& max) const;
+
   void loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const;
 
 public:

@@ -54,6 +54,8 @@ int main (int argc, char** argv)
   dumper.dumpGrid (grid);
 
   BMPLoader loader;
+  loader.init (1, CURRENT);
+  loader.LoadGrid (grid);
 
   std::cout << "Main." << std::endl;
   return 0;

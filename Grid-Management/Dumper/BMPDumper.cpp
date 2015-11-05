@@ -27,7 +27,7 @@ BMPDumper::dumpGrid (Grid& grid) const
  * Blue-Green-Red scheme.
  */
 RGBApixel
-BMPDumper::getPixel (const FieldValue& val, const FieldValue& maxNeg,
+BMPDumper::getPixelFromValue (const FieldValue& val, const FieldValue& maxNeg,
                      const FieldValue& max) const
 {
   RGBApixel pixel;
@@ -162,7 +162,7 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
   {
     // Get current point value
     FieldPointValue& current = values[iter];
-    // Calculate its positiob from index in array
+    // Calculate its position from index in array
     GridCoordinate coord = grid.calculatePositionFromIndex (iter);
 
     // Pixel coordinate
@@ -178,15 +178,15 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 
     // Get pixel for current image
     const FieldValue& cur = current.getCurValue ();
-    RGBApixel pixelCur = getPixel (cur, maxNegCur, maxCur);
+    RGBApixel pixelCur = getPixelFromValue (cur, maxNegCur, maxCur);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     // Get pixel for previous image
     const FieldValue& prev = current.getPrevValue ();
-    RGBApixel pixelPrev = getPixel (prev, maxNegPrev, maxPrev);
+    RGBApixel pixelPrev = getPixelFromValue (prev, maxNegPrev, maxPrev);
 #if defined (TWO_TIME_STEPS)
     // Get pixel for previous previous image
     const FieldValue& prevPrev = current.getPrevPrevValue ();
-    RGBApixel pixelPrevPrev = getPixel (prevPrev, maxNegPrevPrev, maxPrevPrev);
+    RGBApixel pixelPrevPrev = getPixelFromValue (prevPrev, maxNegPrevPrev, maxPrevPrev);
 #endif
 #endif
 
