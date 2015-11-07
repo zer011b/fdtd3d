@@ -24,7 +24,7 @@ private:
    * Return pixel with colors according to values
    */
   RGBApixel getPixelFromValue (const FieldValue& value, const FieldValue& maxNeg,
-                      const FieldValue& max) const;
+                               const FieldValue& max) const;
 
   /*
    * Dumps flat grids: 1D and 2D
