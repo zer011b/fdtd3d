@@ -1,5 +1,5 @@
-#ifndef BMPLOADER_H
-#define BMPLOADER_H
+#ifndef BMP_LOADER_H
+#define BMP_LOADER_H
 
 #include "Loader.h"
 #include "EasyBMP.h"
@@ -33,4 +33,4 @@ public:
   void LoadGrid (Grid& grid) const override;
 };
 
-#endif /* BMPLOADER_H */
+#endif /* BMP_LOADER_H */

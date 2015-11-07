@@ -59,6 +59,7 @@ public:
 #endif
 
   void setZero ();
+  void shiftInTime ();
 };
 
 

@@ -89,3 +89,15 @@ FieldPointValue::setZero ()
 #endif
 #endif
 }
+
+void
+FieldPointValue::shiftInTime ()
+{
+#if defined (TWO_TIME_STEPS)
+  previousPreviousValue = previousValue;
+#endif
+
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+  previousValue = currentValue;
+#endif
+}

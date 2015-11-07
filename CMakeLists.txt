@@ -44,6 +44,7 @@ include_directories ("${PROJECT_SOURCE_DIR}/third-party/EasyBMP/source")
 add_subdirectory (${PROJECT_SOURCE_DIR}/third-party/EasyBMP)
 
 include_directories ("${PROJECT_SOURCE_DIR}/Helpers")
+add_subdirectory (Helpers)
 
 # Add Field library
 # Include headers of Field
@@ -64,8 +65,8 @@ set (LIBS ${LIBS} Loader)
 set (LIBS ${LIBS} Dumper)
 
 
-add_executable (fdtd main.cpp)
-target_link_libraries (fdtd ${LIBS})
+add_executable (fdtd3d main.cpp)
+target_link_libraries (fdtd3d ${LIBS})
 
-set_target_properties (fdtd PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-set_target_properties (fdtd PROPERTIES LINK_FLAGS "${LINK_FLAGS}")
+set_target_properties (fdtd3d PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+set_target_properties (fdtd3d PROPERTIES LINK_FLAGS "${LINK_FLAGS}")

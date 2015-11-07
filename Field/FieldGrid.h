@@ -86,6 +86,8 @@ public:
   void setFieldPointValue (const FieldPointValue& value, const GridCoordinate& position);
   FieldPointValue& getFieldPointValue (const GridCoordinate& position);
 #endif
+
+  void shiftInTime ();
 };
 
 

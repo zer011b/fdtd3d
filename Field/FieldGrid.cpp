@@ -224,3 +224,12 @@ Grid::getFieldPointValue (const GridCoordinate& position)
   }
 }
 #endif
+
+void
+Grid::shiftInTime ()
+{
+  for (FieldPointValue& current : getValues ())
+  {
+    current.shiftInTime ();
+  }
+}
