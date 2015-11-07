@@ -22,7 +22,7 @@ GridCoordinate::GridCoordinate (
   , z (sz)
 #endif
 #endif
-#endif 
+#endif
 {
 }
 
@@ -75,6 +75,10 @@ Grid::Grid(const GridCoordinate& s) :
   size (s)
 {
   gridValues.resize (size.calculateTotalCoord ());
+  for (FieldPointValue& current : getValues ())
+  {
+    current.setZero ();
+  }
   std::cout << "New grid with size: " << gridValues.size () << std::endl;
 }
 

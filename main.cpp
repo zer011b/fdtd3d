@@ -9,7 +9,7 @@ int main (int argc, char** argv)
   GridCoordinate size (3, 3);
   Grid grid (size);
 
-  FieldPointValue val1 (0, 100, 100);
+  /*FieldPointValue val1 (0, 100, 100);
   GridCoordinate pos1 (0, 0);
   grid.setFieldPointValue(val1, pos1);
 
@@ -43,19 +43,26 @@ int main (int argc, char** argv)
 
   FieldPointValue val9 (100, 0, 100);
   GridCoordinate pos9 (2, 2);
-  grid.setFieldPointValue(val9, pos9);
+  grid.setFieldPointValue(val9, pos9);*/
 
+
+
+  /*BMPDumper dumper;
+  dumper.init (1, CURRENT);
+  dumper.dumpGrid (grid);*/
+
+  BMPLoader loader;
+  FieldPointValue val10 (100, 100, 100);
+  loader.setMaxValuePos (val10);
+  FieldPointValue val11 (0, 0, 0);
+  loader.setMaxValueNeg (val11);
+  loader.init (1, CURRENT);
+  loader.LoadGrid (grid);
+
+  GridCoordinate pos1 (1, 1);
   FieldPointValue& val_1 = grid.getFieldPointValue (pos1);
   std::cout << val_1.getCurValue () << ", " <<
     val_1.getPrevValue() << ", " << val_1.getPrevPrevValue() << std::endl;
-
-  BMPDumper dumper;
-  dumper.init (1, CURRENT);
-  dumper.dumpGrid (grid);
-
-  BMPLoader loader;
-  loader.init (1, CURRENT);
-  loader.LoadGrid (grid);
 
   std::cout << "Main." << std::endl;
   return 0;

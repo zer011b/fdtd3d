@@ -43,6 +43,7 @@ include_directories ("${PROJECT_SOURCE_DIR}/third-party/EasyBMP/source")
 # Include CMakeLists.txt from the subfolder
 add_subdirectory (${PROJECT_SOURCE_DIR}/third-party/EasyBMP)
 
+include_directories ("${PROJECT_SOURCE_DIR}/Helpers")
 
 # Add Field library
 # Include headers of Field

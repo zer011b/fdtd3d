@@ -2,7 +2,7 @@
 
 // ================================ FieldPointValue ================================
 /**
- * Initialize all values. 
+ * Initialize all values.
  */
 FieldPointValue::FieldPointValue (
   const FieldValue& curVal
@@ -75,3 +75,17 @@ FieldPointValue::setPrevPrevValue (const FieldValue& val)
 }
 #endif
 #endif
+
+void
+FieldPointValue::setZero ()
+{
+  currentValue = 0;
+
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+  previousValue = 0;
+
+#if defined (TWO_TIME_STEPS)
+  previousPreviousValue = 0;
+#endif
+#endif
+}

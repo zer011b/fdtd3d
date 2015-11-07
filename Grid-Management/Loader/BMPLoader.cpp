@@ -27,6 +27,24 @@ BMPLoader::getValueFromPixel (const RGBApixel& pixel, const FieldValue& maxNeg,
                               const FieldValue& max) const
 {
   FieldValue retval = 0;
+  FieldValue max_2 = max / 2.0;
+
+  if (pixel.Blue == 0 && pixel.Red == 0)
+  {
+    retval = max_2;
+  }
+  else if (pixel.Blue == 0)
+  {
+    retval = (((FieldValue) pixel.Red) / 255 + 1) * max_2;
+  }
+  else if (pixel.Red == 0)
+  {
+    retval = (((FieldValue) pixel.Green) / 255) * max_2;
+  }
+  else
+  {
+    UNREACHABLE;
+  }
 
   return retval;
 }
@@ -101,22 +119,22 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 #endif
 #endif
 
-  // Get pixel for current image
-  RGBApixel pixelCur = imageCur.GetPixel(px, py);
+    // Get pixel for current image
+    RGBApixel pixelCur = imageCur.GetPixel(px, py);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  // Get pixel for previous image
-  RGBApixel pixelPrev;
-  if (type == ALL)
-  {
-    pixelPrev = imagePrev.GetPixel(px, py);
-  }
+    // Get pixel for previous image
+    RGBApixel pixelPrev;
+    if (type == ALL)
+    {
+      pixelPrev = imagePrev.GetPixel(px, py);
+    }
 #if defined (TWO_TIME_STEPS)
-  // Get pixel for previous previous image
-  RGBApixel pixelPrevPrev;
-  if (type == ALL)
-  {
-    pixelPrevPrev = imagePrevPrev.GetPixel(px, py);
-  }
+    // Get pixel for previous previous image
+    RGBApixel pixelPrevPrev;
+    if (type == ALL)
+    {
+      pixelPrevPrev = imagePrevPrev.GetPixel(px, py);
+    }
 #endif
 #endif
 
@@ -125,12 +143,18 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
     current.setCurValue (currentVal);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     // Set value for previous image
-    FieldValue prevVal = getValueFromPixel (pixelPrev, maxValueNeg.getPrevValue (), maxPrev);
-    current.setPrevValue (prevVal);
+    if (type == ALL)
+    {
+      FieldValue prevVal = getValueFromPixel (pixelPrev, maxValueNeg.getPrevValue (), maxPrev);
+      current.setPrevValue (prevVal);
+    }
 #if defined (TWO_TIME_STEPS)
     // Set value for previous previous image
-    FieldValue prevPrevVal = getValueFromPixel (pixelPrevPrev, maxValueNeg.getPrevPrevValue (), maxPrevPrev);
-    current.setPrevPrevValue (prevPrevVal);
+    if (type == ALL)
+    {
+      FieldValue prevPrevVal = getValueFromPixel (pixelPrevPrev, maxValueNeg.getPrevPrevValue (), maxPrevPrev);
+      current.setPrevPrevValue (prevPrevVal);
+    }
 #endif
 #endif
   }
@@ -140,7 +164,14 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 void
 BMPLoader::load1D (Grid& grid) const
 {
+  GridCoordinate& size = grid.getSize ();
+  grid_coord sx = size.getX ();
 
+  std::cout << "Loading 1D from BMP image. Size: " << sx << "x1. " << std::endl;
+
+  loadFlat (grid, sx, 1);
+
+  std::cout << "Loaded. " << std::endl;
 }
 #endif
 
@@ -148,7 +179,15 @@ BMPLoader::load1D (Grid& grid) const
 void
 BMPLoader::load2D (Grid& grid) const
 {
+  const GridCoordinate& size = grid.getSize ();
+  grid_coord sx = size.getX ();
+  grid_coord sy = size.getY ();
 
+  std::cout << "Loading 2D from BMP image. Size: " << sx << "x" << sy << ". " << std::endl;
+
+  loadFlat (grid, sx, sy);
+
+  std::cout << "Loaded. " << std::endl;
 }
 #endif
 

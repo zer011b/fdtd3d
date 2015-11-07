@@ -28,16 +28,17 @@ BMPDumper::dumpGrid (Grid& grid) const
  */
 RGBApixel
 BMPDumper::getPixelFromValue (const FieldValue& val, const FieldValue& maxNeg,
-                     const FieldValue& max) const
+                              const FieldValue& max) const
 {
   RGBApixel pixel;
   pixel.Alpha = 1.0;
 
-  double value = val - maxNeg;
-  if (value > max / 2.0)
+  FieldValue value = val - maxNeg;
+  FieldValue max_2 = max / 2.0;
+  if (value > max_2)
   {
-    value -= max / 2;
-    FieldValue tmp = 2 * value / max;
+    value -= max_2;
+    FieldValue tmp = value / max_2;
     pixel.Red = tmp * 255;
     pixel.Green = (1.0 - tmp) * 255;
     pixel.Blue = 0.0;
@@ -51,7 +52,7 @@ BMPDumper::getPixelFromValue (const FieldValue& val, const FieldValue& maxNeg,
     }
     else
     {
-      tmp = 2 * value / max;
+      tmp = value / max_2;
     }
 
     pixel.Red = 0.0;

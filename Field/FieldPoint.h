@@ -57,6 +57,8 @@ public:
   void setPrevPrevValue (const FieldValue& val);
 #endif
 #endif
+
+  void setZero ();
 };
 
 

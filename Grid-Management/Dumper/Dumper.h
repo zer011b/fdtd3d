@@ -1,7 +1,7 @@
 #ifndef DUMPER_H
 #define DUMPER_H
 
-#include "commons.h"
+#include "Commons.h"
 
 class Dumper: public GridFileManager
 {

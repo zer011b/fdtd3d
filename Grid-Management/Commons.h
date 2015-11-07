@@ -4,6 +4,7 @@
 #include <string>
 
 #include "FieldGrid.h"
+#include "Assert.h"
 
 enum GridFileType
 {
