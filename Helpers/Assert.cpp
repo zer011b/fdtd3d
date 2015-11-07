@@ -1,6 +1,8 @@
 #include "Assert.h"
 
+#include <cstdlib>
+
 void program_fail ()
 {
-  return;
+  exit (1);
 }
