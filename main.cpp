@@ -3,6 +3,8 @@
 #include "FieldGrid.h"
 #include "BMPDumper.h"
 #include "BMPLoader.h"
+#include "DATDumper.h"
+#include "DATLoader.h"
 
 int main (int argc, char** argv)
 {
@@ -47,17 +49,17 @@ int main (int argc, char** argv)
 
 
 
-  BMPDumper dumper;
+  DATDumper dumper;
   dumper.init (1, CURRENT);
   dumper.dumpGrid (grid);*/
 
-  BMPLoader loader;
-  FieldPointValue val10 (100, 100, 100);
-  loader.setMaxValuePos (val10);
-  FieldPointValue val11 (0, 0, 0);
-  loader.setMaxValueNeg (val11);
+  DATLoader loader;
+  //FieldPointValue val10 (100, 100, 100);
+  //loader.setMaxValuePos (val10);
+  //FieldPointValue val11 (0, 0, 0);
+  //loader.setMaxValueNeg (val11);
   loader.init (1, CURRENT);
-  loader.LoadGrid (grid);
+  loader.loadGrid (grid);
 
   GridCoordinate pos1 (1, 1);
   FieldPointValue& val_1 = grid.getFieldPointValue (pos1);

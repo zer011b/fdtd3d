@@ -207,16 +207,19 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 
 
   // Write images to files.
-  imageCur.WriteToFile(cur.c_str());
+  std::string cur_bmp = cur + std::string (".bmp");
+  imageCur.WriteToFile(cur_bmp.c_str());
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
   if (type == ALL)
   {
-    imagePrev.WriteToFile(prev.c_str());
+    std::string prev_bmp = prev + std::string (".bmp");
+    imagePrev.WriteToFile(prev_bmp.c_str());
   }
 #if defined (TWO_TIME_STEPS)
   if (type == ALL)
   {
-    imagePrevPrev.WriteToFile(prevPrev.c_str());
+    std::string prevPrev_bmp = prevPrev + std::string (".bmp");
+    imagePrevPrev.WriteToFile(prevPrev_bmp.c_str());
   }
 #endif
 #endif
@@ -227,7 +230,7 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 void
 BMPDumper::dump1D (Grid& grid) const
 {
-  GridCoordinate& size = grid.getSize ();
+  const GridCoordinate& size = grid.getSize ();
   grid_coord sx = size.getX ();
 
   std::cout << "Saving 1D to BMP image. Size: " << sx << "x1. " << std::endl;

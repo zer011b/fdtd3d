@@ -14,16 +14,16 @@ void program_fail ();
 }
 
 // Unconditional assert with message.
-#define ASSERT_MESSAGE (x) \
+#define ASSERT_MESSAGE(x) \
 { \
   printf ("Assert '%s' at %s:%d", x, __FILE__, __LINE__); \
   program_fail (); \
 }
 
 // Conditional assert with default message.
-#define ASSERT (x) \
+#define ASSERT(x) \
 { \
-  if (!x) \
+  if (!(x)) \
   { \
     printf ("Assert at %s:%d", __FILE__, __LINE__); \
     program_fail (); \

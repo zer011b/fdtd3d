@@ -7,7 +7,10 @@
 // Grid loader from BMP files.
 class BMPLoader: public Loader
 {
-private:
+  // Maximum positive value in grid.
+  FieldPointValue maxValuePos;
+  // Maximum negative value in grid.
+  FieldPointValue maxValueNeg;
 
 #if defined (GRID_1D)
   // Load one-dimensional grid.
@@ -34,7 +37,27 @@ private:
 public:
 
   // Function to call for every grid type.
-  void LoadGrid (Grid& grid) const override;
+  void loadGrid (Grid& grid) const override;
+
+  // Setter and getter for maximum positive value.
+  void setMaxValuePos (FieldPointValue& value)
+  {
+    maxValuePos = value;
+  }
+  const FieldPointValue& getMaxValuePos () const
+  {
+    return maxValuePos;
+  }
+
+  // Setter and getter for maximum negative value.
+  void setMaxValueNeg (FieldPointValue& value)
+  {
+    maxValueNeg = value;
+  }
+  const FieldPointValue& getMaxValueNeg () const
+  {
+    return maxValueNeg;
+  }
 };
 
 #endif /* BMP_LOADER_H */

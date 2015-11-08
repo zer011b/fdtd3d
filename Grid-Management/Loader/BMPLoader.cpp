@@ -3,7 +3,7 @@
 #include "BMPLoader.h"
 
 void
-BMPLoader::LoadGrid (Grid& grid) const
+BMPLoader::loadGrid (Grid& grid) const
 {
   #if defined (GRID_1D)
     load1D (grid);
@@ -83,15 +83,18 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 
 
   // Load images from files.
-  imageCur.ReadFromFile (cur.c_str());
+  std::string cur_bmp = cur + std::string (".bmp");
+  imageCur.ReadFromFile (cur_bmp.c_str());
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
   if (type == ALL)
   {
-    imagePrev.ReadFromFile (prev.c_str());
+    std::string prev_bmp = prev + std::string (".bmp");
+    imagePrev.ReadFromFile (prev_bmp.c_str());
   }
 #if defined (TWO_TIME_STEPS)
   if (type == ALL)
   {
+    std::string prevPrev_bmp = prevPrev + std::string (".bmp");
     imagePrevPrev.ReadFromFile (prevPrev.c_str());
   }
 #endif

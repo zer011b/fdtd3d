@@ -12,6 +12,8 @@
 enum GridFileType
 {
   CURRENT,
+  PREVIOUS,
+  PREVIOUS2,
   ALL
 };
 
@@ -38,13 +40,13 @@ protected:
   void setFileNames ()
   {
     cur.clear ();
-    cur = std::string ("current[") + std::to_string (step) + std::string ("].bmp");
+    cur = std::string ("current[") + std::to_string (step) + std::string ("]");
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     prev.clear ();
-    prev = std::string ("previous[") + std::to_string (step) + std::string ("].bmp");
+    prev = std::string ("previous[") + std::to_string (step) + std::string ("]");
 #if defined (TWO_TIME_STEPS)
     prevPrev.clear ();
-    prevPrev = std::string ("previous2[") + std::to_string (step) + std::string ("].bmp");
+    prevPrev = std::string ("previous2[") + std::to_string (step) + std::string ("]");
 #endif
 #endif
   }
