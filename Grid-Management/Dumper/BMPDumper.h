@@ -4,38 +4,36 @@
 #include "Dumper.h"
 #include "EasyBMP.h"
 
+// Grid saver in BMP files.
 class BMPDumper: public Dumper
 {
 private:
 
 #if defined (GRID_1D)
+  // Save one-dimensional grid.
   void dump1D (Grid& grid) const;
 #else
 #if defined (GRID_2D)
+  // Save two-dimensional grid.
   void dump2D (Grid& grid) const;
 #else
 #if defined (GRID_3D)
+  // Save three-dimensional grid.
   void dump3D (Grid& grid) const;
 #endif
 #endif
 #endif
 
-  /*
-   * Return pixel with colors according to values
-   */
+  // Return pixel with colors according to values.
   RGBApixel getPixelFromValue (const FieldValue& value, const FieldValue& maxNeg,
                                const FieldValue& max) const;
 
-  /*
-   * Dumps flat grids: 1D and 2D
-   */
+  // Save flat grids: 1D and 2D.
   void dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const;
 
 public:
 
-  /**
-   * Dump function to call for every grid type
-   */
+  // Function to call for every grid type.
   void dumpGrid (Grid& grid) const override;
 };
 

@@ -1,9 +1,6 @@
 #include "FieldPoint.h"
 
 // ================================ FieldPointValue ================================
-/**
- * Initialize all values.
- */
 FieldPointValue::FieldPointValue (
   const FieldValue& curVal
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
@@ -23,16 +20,11 @@ FieldPointValue::FieldPointValue (
 {
 }
 
-/**
- * Destructor. Empty.
- */
 FieldPointValue::~FieldPointValue ()
 {
 }
 
-/**
- * Getter/Setter for current value.
- */
+
 const FieldValue&
 FieldPointValue::getCurValue () const
 {
@@ -44,9 +36,7 @@ FieldPointValue::setCurValue (const FieldValue& val)
   currentValue = val;
 }
 
-/**
- * Getter/Setter for previous value.
- */
+
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
 const FieldValue&
 FieldPointValue::getPrevValue () const
@@ -59,9 +49,7 @@ FieldPointValue::setPrevValue (const FieldValue& val)
   previousValue = val;
 }
 
-/**
- * Getter/Setter for the second previous value.
- */
+
 #if defined (TWO_TIME_STEPS)
 const FieldValue&
 FieldPointValue::getPrevPrevValue () const
@@ -76,6 +64,7 @@ FieldPointValue::setPrevPrevValue (const FieldValue& val)
 #endif
 #endif
 
+
 void
 FieldPointValue::setZero ()
 {
@@ -89,6 +78,7 @@ FieldPointValue::setZero ()
 #endif
 #endif
 }
+
 
 void
 FieldPointValue::shiftInTime ()

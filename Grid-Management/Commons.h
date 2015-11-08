@@ -6,18 +6,26 @@
 #include "FieldGrid.h"
 #include "Assert.h"
 
+// Type of save/load from file.
+// CURRENT: save/load only current layer.
+// ALL: save/load all layers.
 enum GridFileType
 {
   CURRENT,
   ALL
 };
 
+// Basic class for all dumpers/loaders.
 class GridFileManager
 {
 protected:
+  // Time step number (used in file naming).
   grid_iter step;
+
+  // Save/load type.
   GridFileType type;
 
+  // File names.
   std::string cur;
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
   std::string prev;
@@ -26,6 +34,7 @@ protected:
 #endif
 #endif
 
+  // Set file names according to time step.
   void setFileNames ()
   {
     cur.clear ();
@@ -46,6 +55,7 @@ public:
   {
   }
 
+  // Initialize dumper with time step number and save/load type.
   void init (const grid_iter& timeStep, GridFileType newType)
   {
     step = timeStep;
@@ -54,6 +64,7 @@ public:
     setFileNames ();
   }
 
+  // Set time step.
   void setStep (const grid_iter& timeStep)
   {
     step = timeStep;
@@ -61,6 +72,7 @@ public:
     setFileNames();
   }
 
+  // Set save/load type.
   void setGridFileType (GridFileType newType)
   {
     type = newType;

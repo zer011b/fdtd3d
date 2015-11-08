@@ -53,7 +53,7 @@ GridCoordinate::getZ () const
 #endif
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-grid_coord
+grid_iter
 GridCoordinate::calculateTotalCoord () const
 {
 #if defined (GRID_1D)
@@ -134,7 +134,7 @@ Grid::isLegitIndex (const GridCoordinate& position) const
   return true;
 }
 
-grid_coord
+grid_iter
 Grid::calculateIndexFromPosition (const GridCoordinate& position) const
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
@@ -168,7 +168,7 @@ Grid::calculateIndexFromPosition (const GridCoordinate& position) const
 }
 
 GridCoordinate
-Grid::calculatePositionFromIndex (grid_coord index) const
+Grid::calculatePositionFromIndex (grid_iter index) const
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   const grid_coord& sx = size.getX ();
@@ -209,7 +209,7 @@ Grid::setFieldPointValue (const FieldPointValue& value, const GridCoordinate& po
 {
   if (isLegitIndex (position))
   {
-    grid_coord coord = calculateIndexFromPosition (position);
+    grid_iter coord = calculateIndexFromPosition (position);
     gridValues[coord] = value;
   }
 }
@@ -219,7 +219,7 @@ Grid::getFieldPointValue (const GridCoordinate& position)
 {
   if (isLegitIndex (position))
   {
-    grid_coord coord = calculateIndexFromPosition (position);
+    grid_iter coord = calculateIndexFromPosition (position);
     return gridValues[coord];
   }
 }

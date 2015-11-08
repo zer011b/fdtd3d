@@ -52,19 +52,19 @@ BMPLoader::getValueFromPixel (const RGBApixel& pixel, const FieldValue& maxNeg,
 void
 BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 {
-  // Create image for current values and max/min values
+  // Create image for current values and max/min values.
   BMP imageCur;
   imageCur.SetSize (sx, sy);
   imageCur.SetBitDepth (24);
 
-  // Create image for previous values and max/min values
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+  // Create image for previous values and max/min values.
   BMP imagePrev;
   imagePrev.SetSize (sx, sy);
   imagePrev.SetBitDepth (24);
 
-  // Create image for previous previous values and max/min values
 #if defined (TWO_TIME_STEPS)
+  // Create image for previous previous values and max/min values.
   BMP imagePrevPrev;
   imagePrevPrev.SetSize (sx, sy);
   imagePrevPrev.SetBitDepth (24);
@@ -72,7 +72,7 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 #endif
 
 
-  // Set max
+  // Set max.
   const FieldValue maxCur = maxValuePos.getCurValue () - maxValueNeg.getCurValue ();
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
   const FieldValue maxPrev = maxValuePos.getPrevValue () - maxValueNeg.getPrevValue ();
@@ -82,7 +82,7 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 #endif
 
 
-  // Load images from files
+  // Load images from files.
   imageCur.ReadFromFile (cur.c_str());
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
   if (type == ALL)
@@ -98,17 +98,17 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 #endif
 
 
-  // Go through all values and set them
+  // Go through all values and set them.
   VectorFieldPointValues& values = grid.getValues ();
   grid_iter end = values.size ();
   for (grid_iter iter = 0; iter < end; ++iter)
   {
-    // Get current point value
+    // Get current point value.
     FieldPointValue& current = values[iter];
-    // Calculate its position from index in array
+    // Calculate its position from index in array.
     GridCoordinate coord = grid.calculatePositionFromIndex (iter);
 
-    // Pixel coordinate
+    // Pixel coordinate.
 #if defined (GRID_1D)
     grid_iter px = coord.getX ();
     grid_iter py = 0;
@@ -119,17 +119,17 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 #endif
 #endif
 
-    // Get pixel for current image
+    // Get pixel for current image.
     RGBApixel pixelCur = imageCur.GetPixel(px, py);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    // Get pixel for previous image
+    // Get pixel for previous image.
     RGBApixel pixelPrev;
     if (type == ALL)
     {
       pixelPrev = imagePrev.GetPixel(px, py);
     }
 #if defined (TWO_TIME_STEPS)
-    // Get pixel for previous previous image
+    // Get pixel for previous previous image.
     RGBApixel pixelPrevPrev;
     if (type == ALL)
     {
@@ -138,18 +138,18 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 #endif
 #endif
 
-    // Set value for current image
+    // Set value for current image.
     FieldValue currentVal = getValueFromPixel (pixelCur, maxValueNeg.getCurValue (), maxCur);
     current.setCurValue (currentVal);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    // Set value for previous image
+    // Set value for previous image.
     if (type == ALL)
     {
       FieldValue prevVal = getValueFromPixel (pixelPrev, maxValueNeg.getPrevValue (), maxPrev);
       current.setPrevValue (prevVal);
     }
 #if defined (TWO_TIME_STEPS)
-    // Set value for previous previous image
+    // Set value for previous previous image.
     if (type == ALL)
     {
       FieldValue prevPrevVal = getValueFromPixel (pixelPrevPrev, maxValueNeg.getPrevPrevValue (), maxPrevPrev);

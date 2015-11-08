@@ -7,15 +7,16 @@
 #include "FieldPoint.h"
 
 
+// Type of one-dimensional coordinate.
 typedef uint16_t grid_coord;
+// Type of three-dimensional coordinate.
 typedef uint64_t grid_iter;
 
 
-/**
- * Size of the grid
- */
+// Coordinate in the grid.
 class GridCoordinate
 {
+  // One dimensional coordinates.
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   grid_coord x;
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -28,7 +29,7 @@ class GridCoordinate
 
 public:
 
-  // Constructor for all cases
+  // Constructor for all cases.
   GridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     const grid_coord& sx = 0
@@ -44,7 +45,10 @@ public:
   ~GridCoordinate ();
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_coord calculateTotalCoord () const;
+  // Calculate three-dimensional coordinate.
+  grid_iter calculateTotalCoord () const;
+
+  // Get one-dimensional coordinates.
   const grid_coord& getX () const;
 #if defined (GRID_2D) || defined (GRID_3D)
   const grid_coord& getY () const;
@@ -56,37 +60,50 @@ public:
 };
 
 
+// Vector of points in grid.
 typedef std::vector<FieldPointValue> VectorFieldPointValues;
 
 
-/**
- * Grid itself
- */
+// Grid itself.
 class Grid
 {
+  // Size of the grid.
   GridCoordinate size;
+
+  // Vector of points in grid.
   VectorFieldPointValues gridValues;
 
 private:
 
+  // Check whether position is appropriate to get/set value from.
   bool isLegitIndex (const GridCoordinate& position) const;
-  grid_coord calculateIndexFromPosition (const GridCoordinate& position) const;
+
+  // Calculate three-dimensional coordinate from position.
+  grid_iter calculateIndexFromPosition (const GridCoordinate& position) const;
 
 public:
 
   Grid (const GridCoordinate& s);
   ~Grid ();
 
+  // Get size of the grid.
   const GridCoordinate& getSize () const;
+
+  // Get values in the grid.
   VectorFieldPointValues& getValues ();
 
-  GridCoordinate calculatePositionFromIndex (grid_coord index) const;
+  // Calculate position from three-dimensional coordinate.
+  GridCoordinate calculatePositionFromIndex (grid_iter index) const;
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  // Set field point at coordinate in grid.
   void setFieldPointValue (const FieldPointValue& value, const GridCoordinate& position);
+
+  // Get field point at coordinate in grid.
   FieldPointValue& getFieldPointValue (const GridCoordinate& position);
 #endif
 
+  // Replace previous layer with current and so on.
   void shiftInTime ();
 };
 

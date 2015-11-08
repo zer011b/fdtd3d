@@ -3,6 +3,7 @@
 
 #include "Commons.h"
 
+// Basic class for all dumpers.
 class Dumper: public GridFileManager
 {
 public:
