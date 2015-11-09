@@ -50,7 +50,7 @@ int main (int argc, char** argv)
 
 
   DATDumper dumper;
-  dumper.init (1, CURRENT);
+  dumper.init (1, ALL);
   dumper.dumpGrid (grid);*/
 
   DATLoader loader;
@@ -58,11 +58,11 @@ int main (int argc, char** argv)
   //loader.setMaxValuePos (val10);
   //FieldPointValue val11 (0, 0, 0);
   //loader.setMaxValueNeg (val11);
-  loader.init (1, CURRENT);
+  loader.init (1, ALL);
   loader.loadGrid (grid);
 
-  GridCoordinate pos1 (1, 1);
-  FieldPointValue* val_1 = grid.getFieldPointValue (pos1);
+  GridCoordinate pos5 (2, 1);
+  FieldPointValue* val_1 = grid.getFieldPointValue (pos5);
   std::cout << val_1->getCurValue () << ", " <<
     val_1->getPrevValue() << ", " << val_1->getPrevPrevValue() << std::endl;
 

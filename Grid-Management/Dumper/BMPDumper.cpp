@@ -59,103 +59,93 @@ BMPDumper::getPixelFromValue (const FieldValue& val, const FieldValue& maxNeg,
   return pixel;
 }
 
-/**
- * Dumper for 1D and 2D grids.
- */
 void
-BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
+BMPDumper::writeToFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, GridFileType dump_type) const
 {
   // Create image for current values and max/min values.
-  BMP imageCur;
-  imageCur.SetSize (sx, sy);
-  imageCur.SetBitDepth (24);
+  BMP image;
+  image.SetSize (sx, sy);
+  image.SetBitDepth (24);
 
   FieldPointValue* value0 = grid.getValues ()[0];
   ASSERT (value0);
 
-  FieldValue maxPosCur = value0->getCurValue ();
-  FieldValue maxNegCur = value0->getCurValue ();
+  FieldValue maxPos = 0;
+  FieldValue maxNeg = 0;
 
+  switch (dump_type)
+  {
+    case CURRENT:
+    {
+      maxNeg = maxPos = value0->getCurValue ();
+      break;
+    }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  // Create image for previous values and max/min values.
-  BMP imagePrev;
-  imagePrev.SetSize (sx, sy);
-  imagePrev.SetBitDepth (24);
-
-  FieldValue maxPosPrev = value0->getPrevValue ();
-  FieldValue maxNegPrev = value0->getPrevValue ();
-
+    case PREVIOUS:
+    {
+      maxNeg = maxPos = value0->getPrevValue ();
+      break;
+    }
 #if defined (TWO_TIME_STEPS)
-  // Create image for previous previous values and max/min values.
-  BMP imagePrevPrev;
-  imagePrevPrev.SetSize (sx, sy);
-  imagePrevPrev.SetBitDepth (24);
-
-  FieldValue maxPosPrevPrev = value0->getPrevPrevValue ();
-  FieldValue maxNegPrevPrev = value0->getPrevPrevValue ();
+    case PREVIOUS2:
+    {
+      maxNeg = maxPos = value0->getPrevPrevValue ();
+      break;
+    }
 #endif
 #endif
-
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
 
   // Go through all values and calculate max/min.
   for (FieldPointValue* current : grid.getValues ())
   {
-    // Calculate max/min values for current values.
     ASSERT (current);
 
-    const FieldValue& cur = current->getCurValue ();
-    if (cur > maxPosCur)
-    {
-      maxPosCur = cur;
-    }
-    if (cur < maxNegCur)
-    {
-      maxNegCur = cur;
-    }
+    FieldValue value = 0;
 
+    switch (dump_type)
+    {
+      case CURRENT:
+      {
+        value = current->getCurValue ();
+        break;
+      }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    // Calculate max/min values for previous values.
-    if (type == ALL)
-    {
-      const FieldValue& prev = current->getPrevValue ();
-      if (prev > maxPosPrev)
+      case PREVIOUS:
       {
-        maxPosPrev = prev;
+        value = current->getPrevValue ();
+        break;
       }
-      if (prev < maxNegPrev)
+#if defined (TWO_TIME_STEPS)
+      case PREVIOUS2:
       {
-        maxNegPrev = prev;
+        value = current->getPrevPrevValue ();
+        break;
+      }
+#endif
+#endif
+      default:
+      {
+        UNREACHABLE;
       }
     }
 
-#if defined (TWO_TIME_STEPS)
-    // Calculate max/min values for previous previous values.
-    if (type == ALL)
+    if (value > maxPos)
     {
-      const FieldValue& prevPrev = current->getPrevPrevValue ();
-      if (prevPrev > maxPosPrevPrev)
-      {
-        maxPosPrevPrev = prevPrev;
-      }
-      if (prevPrev < maxNegPrevPrev)
-      {
-        maxNegPrevPrev = prevPrev;
-      }
+      maxPos = value;
     }
-#endif
-#endif
+    if (value < maxNeg)
+    {
+      maxNeg = value;
+    }
   }
 
-
   // Set max (diff between max positive and max negative).
-  const FieldValue maxCur = maxPosCur - maxNegCur;
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  const FieldValue maxPrev = maxPosPrev - maxNegPrev;
-#if defined (TWO_TIME_STEPS)
-  const FieldValue maxPrevPrev = maxPosPrevPrev - maxNegPrevPrev;
-#endif
-#endif
-
+  const FieldValue max = maxPos - maxNeg;
 
   // Go through all values and set pixels.
   VectorFieldPointValues& values = grid.getValues ();
@@ -180,53 +170,88 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 #endif
 #endif
 
-    // Get pixel for current image.
-    const FieldValue& cur = current->getCurValue ();
-    RGBApixel pixelCur = getPixelFromValue (cur, maxNegCur, maxCur);
+    // Get pixel for image.
+    FieldValue value = 0;
+    switch (dump_type)
+    {
+      case CURRENT:
+      {
+        value = current->getCurValue ();
+        break;
+      }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    // Get pixel for previous image.
-    const FieldValue& prev = current->getPrevValue ();
-    RGBApixel pixelPrev = getPixelFromValue (prev, maxNegPrev, maxPrev);
+      case PREVIOUS:
+      {
+        value = current->getPrevValue ();
+        break;
+      }
 #if defined (TWO_TIME_STEPS)
-    // Get pixel for previous previous image.
-    const FieldValue& prevPrev = current->getPrevPrevValue ();
-    RGBApixel pixelPrevPrev = getPixelFromValue (prevPrev, maxNegPrevPrev, maxPrevPrev);
+      case PREVIOUS2:
+      {
+        value = current->getPrevPrevValue ();
+        break;
+      }
 #endif
 #endif
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+    RGBApixel pixel = getPixelFromValue (value, maxNeg, max);
 
     // Set pixel for current image.
-    imageCur.SetPixel(px, py, pixelCur);
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    // Set pixel for previous image.
-    if (type == ALL)
+    image.SetPixel(px, py, pixel);
+  }
+
+  // Write image to file.
+  switch (dump_type)
+  {
+    case CURRENT:
     {
-      imagePrev.SetPixel(px, py, pixelPrev);
+      std::string cur_bmp = cur + std::string (".bmp");
+      image.WriteToFile(cur_bmp.c_str());
+      break;
+    }
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+    case PREVIOUS:
+    {
+      std::string prev_bmp = prev + std::string (".bmp");
+      image.WriteToFile(prev_bmp.c_str());
+      break;
     }
 #if defined (TWO_TIME_STEPS)
-    // Set pixel for previous previous image.
-    if (type == ALL)
+    case PREVIOUS2:
     {
-      imagePrevPrev.SetPixel(px, py, pixelPrevPrev);
+      std::string prevPrev_bmp = prevPrev + std::string (".bmp");
+      image.WriteToFile(prevPrev_bmp.c_str());
+      break;
     }
 #endif
 #endif
+    default:
+    {
+      UNREACHABLE;
+    }
   }
+}
 
-
-  // Write images to files.
-  std::string cur_bmp = cur + std::string (".bmp");
-  imageCur.WriteToFile(cur_bmp.c_str());
+/**
+ * Dumper for 1D and 2D grids.
+ */
+void
+BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
+{
+  writeToFile (grid, sx, sy, CURRENT);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
   if (type == ALL)
   {
-    std::string prev_bmp = prev + std::string (".bmp");
-    imagePrev.WriteToFile(prev_bmp.c_str());
+    writeToFile (grid, sx, sy, PREVIOUS);
   }
 #if defined (TWO_TIME_STEPS)
   if (type == ALL)
   {
-    std::string prevPrev_bmp = prevPrev + std::string (".bmp");
-    imagePrevPrev.WriteToFile(prevPrev_bmp.c_str());
+    writeToFile (grid, sx, sy, PREVIOUS2);
   }
 #endif
 #endif

@@ -31,6 +31,8 @@ private:
   // Save flat grids: 1D and 2D.
   void dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const;
 
+  void writeToFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, GridFileType dump_type) const;
+
 public:
 
   // Function to call for every grid type.

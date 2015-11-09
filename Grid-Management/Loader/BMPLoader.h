@@ -34,6 +34,8 @@ class BMPLoader: public Loader
   // Load flat grids: 1D and 2D.
   void loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const;
 
+  void loadFromFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, GridFileType load_type) const;
+
 public:
 
   // Function to call for every grid type.

@@ -50,56 +50,53 @@ BMPLoader::getValueFromPixel (const RGBApixel& pixel, const FieldValue& maxNeg,
 }
 
 void
-BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
+BMPLoader::loadFromFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, GridFileType load_type) const
 {
-  // Create image for current values and max/min values.
-  BMP imageCur;
-  imageCur.SetSize (sx, sy);
-  imageCur.SetBitDepth (24);
+  // Create image for values and max/min values.
+  BMP image;
+  image.SetSize (sx, sy);
+  image.SetBitDepth (24);
 
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  // Create image for previous values and max/min values.
-  BMP imagePrev;
-  imagePrev.SetSize (sx, sy);
-  imagePrev.SetBitDepth (24);
-
-#if defined (TWO_TIME_STEPS)
-  // Create image for previous previous values and max/min values.
-  BMP imagePrevPrev;
-  imagePrevPrev.SetSize (sx, sy);
-  imagePrevPrev.SetBitDepth (24);
-#endif
-#endif
-
-
-  // Set max.
-  const FieldValue maxCur = maxValuePos.getCurValue () - maxValueNeg.getCurValue ();
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  const FieldValue maxPrev = maxValuePos.getPrevValue () - maxValueNeg.getPrevValue ();
-#if defined (TWO_TIME_STEPS)
-  const FieldValue maxPrevPrev = maxValuePos.getPrevPrevValue () - maxValueNeg.getPrevPrevValue ();
-#endif
-#endif
-
-
-  // Load images from files.
-  std::string cur_bmp = cur + std::string (".bmp");
-  imageCur.ReadFromFile (cur_bmp.c_str());
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  if (type == ALL)
+  FieldValue max = 0;
+  FieldValue maxNeg = 0;
+  switch (load_type)
   {
-    std::string prev_bmp = prev + std::string (".bmp");
-    imagePrev.ReadFromFile (prev_bmp.c_str());
-  }
-#if defined (TWO_TIME_STEPS)
-  if (type == ALL)
-  {
-    std::string prevPrev_bmp = prevPrev + std::string (".bmp");
-    imagePrevPrev.ReadFromFile (prevPrev.c_str());
-  }
-#endif
-#endif
+    case CURRENT:
+    {
+      max = maxValuePos.getCurValue () - maxValueNeg.getCurValue ();
+      maxNeg = maxValueNeg.getCurValue ();
 
+      std::string cur_bmp = cur + std::string (".bmp");
+      image.ReadFromFile (cur_bmp.c_str());
+      break;
+    }
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+    case PREVIOUS:
+    {
+      max = maxValuePos.getPrevValue () - maxValueNeg.getPrevValue ();
+      maxNeg = maxValueNeg.getPrevValue ();
+
+      std::string prev_bmp = prev + std::string (".bmp");
+      image.ReadFromFile (prev_bmp.c_str());
+      break;
+    }
+#if defined (TWO_TIME_STEPS)
+    case PREVIOUS2:
+    {
+      max = maxValuePos.getPrevPrevValue () - maxValueNeg.getPrevPrevValue ();
+      maxNeg = maxValueNeg.getPrevPrevValue ();
+
+      std::string prevPrev_bmp = prevPrev + std::string (".bmp");
+      image.ReadFromFile (prevPrev_bmp.c_str());
+      break;
+    }
+#endif
+#endif
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
 
   // Go through all values and set them.
   VectorFieldPointValues& values = grid.getValues ();
@@ -124,45 +121,55 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 #endif
 #endif
 
-    // Get pixel for current image.
-    RGBApixel pixelCur = imageCur.GetPixel(px, py);
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    // Get pixel for previous image.
-    RGBApixel pixelPrev;
-    if (type == ALL)
-    {
-      pixelPrev = imagePrev.GetPixel(px, py);
-    }
-#if defined (TWO_TIME_STEPS)
-    // Get pixel for previous previous image.
-    RGBApixel pixelPrevPrev;
-    if (type == ALL)
-    {
-      pixelPrevPrev = imagePrevPrev.GetPixel(px, py);
-    }
-#endif
-#endif
+    RGBApixel pixel = image.GetPixel(px, py);
 
-    // Set value for current image.
-    FieldValue currentVal = getValueFromPixel (pixelCur, maxValueNeg.getCurValue (), maxCur);
-    current->setCurValue (currentVal);
+    // Get pixel for image.
+    FieldValue currentVal = getValueFromPixel (pixel, maxNeg, max);
+    switch (load_type)
+    {
+      case CURRENT:
+      {
+        current->setCurValue (currentVal);
+        break;
+      }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    // Set value for previous image.
-    if (type == ALL)
-    {
-      FieldValue prevVal = getValueFromPixel (pixelPrev, maxValueNeg.getPrevValue (), maxPrev);
-      current->setPrevValue (prevVal);
-    }
+      case PREVIOUS:
+      {
+        current->setPrevValue (currentVal);
+        break;
+      }
 #if defined (TWO_TIME_STEPS)
-    // Set value for previous previous image.
-    if (type == ALL)
-    {
-      FieldValue prevPrevVal = getValueFromPixel (pixelPrevPrev, maxValueNeg.getPrevPrevValue (), maxPrevPrev);
-      current->setPrevPrevValue (prevPrevVal);
+      case PREVIOUS2:
+      {
+        current->setPrevPrevValue (currentVal);
+        break;
+      }
+#endif
+#endif
+      default:
+      {
+        UNREACHABLE;
+      }
     }
-#endif
-#endif
   }
+}
+
+void
+BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
+{
+  loadFromFile (grid, sx, sy, CURRENT);
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+  if (type == ALL)
+  {
+    loadFromFile (grid, sx, sy, PREVIOUS);
+  }
+#if defined (TWO_TIME_STEPS)
+  if (type == ALL)
+  {
+    loadFromFile (grid, sx, sy, PREVIOUS2);
+  }
+#endif
+#endif
 }
 
 #if defined (GRID_1D)
