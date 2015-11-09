@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.0.2)
 set (CMAKE_CXX_COMPILER "mpicxx")
 set (CMAKE_C_COMPILER "mpicc")
 
-set (COMPILE_FLAGS "-O3")
+set (COMPILE_FLAGS "")
 set (LINK_FLAGS "")
 
 #add_definitions (-DSMALL_VALUES="")

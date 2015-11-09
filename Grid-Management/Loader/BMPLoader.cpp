@@ -107,7 +107,9 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    FieldPointValue& current = values[iter];
+    FieldPointValue* current = values[iter];
+    ASSERT (current);
+
     // Calculate its position from index in array.
     GridCoordinate coord = grid.calculatePositionFromIndex (iter);
 
@@ -143,20 +145,20 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 
     // Set value for current image.
     FieldValue currentVal = getValueFromPixel (pixelCur, maxValueNeg.getCurValue (), maxCur);
-    current.setCurValue (currentVal);
+    current->setCurValue (currentVal);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     // Set value for previous image.
     if (type == ALL)
     {
       FieldValue prevVal = getValueFromPixel (pixelPrev, maxValueNeg.getPrevValue (), maxPrev);
-      current.setPrevValue (prevVal);
+      current->setPrevValue (prevVal);
     }
 #if defined (TWO_TIME_STEPS)
     // Set value for previous previous image.
     if (type == ALL)
     {
       FieldValue prevPrevVal = getValueFromPixel (pixelPrevPrev, maxValueNeg.getPrevPrevValue (), maxPrevPrev);
-      current.setPrevPrevValue (prevPrevVal);
+      current->setPrevPrevValue (prevPrevVal);
     }
 #endif
 #endif

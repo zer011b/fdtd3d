@@ -3,7 +3,6 @@
 
 #include "DATDumper.h"
 
-
 void
 DATDumper::writeToFile (Grid& grid, GridFileType type) const
 {
@@ -46,25 +45,26 @@ DATDumper::writeToFile (Grid& grid, GridFileType type) const
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    FieldPointValue& current = values[iter];
+    FieldPointValue* current = values[iter];
+    ASSERT (current);
 
     switch (type)
     {
       case CURRENT:
       {
-        file.write ((char*) &(current.getCurValue ()), sizeof (FieldValue));
+        file.write ((char*) &(current->getCurValue ()), sizeof (FieldValue));
         break;
       }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
-        file.write ((char*) &(current.getPrevValue ()), sizeof (FieldValue));
+        file.write ((char*) &(current->getPrevValue ()), sizeof (FieldValue));
         break;
       }
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
-        file.write ((char*) &(current.getPrevPrevValue ()), sizeof (FieldValue));
+        file.write ((char*) &(current->getPrevPrevValue ()), sizeof (FieldValue));
         break;
       }
 #endif

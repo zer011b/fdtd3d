@@ -70,8 +70,11 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
   imageCur.SetSize (sx, sy);
   imageCur.SetBitDepth (24);
 
-  FieldValue maxPosCur = grid.getValues ()[0].getCurValue ();
-  FieldValue maxNegCur = grid.getValues ()[0].getCurValue ();
+  FieldPointValue* value0 = grid.getValues ()[0];
+  ASSERT (value0);
+
+  FieldValue maxPosCur = value0->getCurValue ();
+  FieldValue maxNegCur = value0->getCurValue ();
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
   // Create image for previous values and max/min values.
@@ -79,8 +82,8 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
   imagePrev.SetSize (sx, sy);
   imagePrev.SetBitDepth (24);
 
-  FieldValue maxPosPrev = grid.getValues ()[0].getPrevValue ();
-  FieldValue maxNegPrev = grid.getValues ()[0].getPrevValue ();
+  FieldValue maxPosPrev = value0->getPrevValue ();
+  FieldValue maxNegPrev = value0->getPrevValue ();
 
 #if defined (TWO_TIME_STEPS)
   // Create image for previous previous values and max/min values.
@@ -88,17 +91,19 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
   imagePrevPrev.SetSize (sx, sy);
   imagePrevPrev.SetBitDepth (24);
 
-  FieldValue maxPosPrevPrev = grid.getValues ()[0].getPrevPrevValue ();
-  FieldValue maxNegPrevPrev = grid.getValues ()[0].getPrevPrevValue ();
+  FieldValue maxPosPrevPrev = value0->getPrevPrevValue ();
+  FieldValue maxNegPrevPrev = value0->getPrevPrevValue ();
 #endif
 #endif
 
 
   // Go through all values and calculate max/min.
-  for (FieldPointValue& current : grid.getValues ())
+  for (FieldPointValue* current : grid.getValues ())
   {
     // Calculate max/min values for current values.
-    const FieldValue& cur = current.getCurValue ();
+    ASSERT (current);
+
+    const FieldValue& cur = current->getCurValue ();
     if (cur > maxPosCur)
     {
       maxPosCur = cur;
@@ -112,7 +117,7 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
     // Calculate max/min values for previous values.
     if (type == ALL)
     {
-      const FieldValue& prev = current.getPrevValue ();
+      const FieldValue& prev = current->getPrevValue ();
       if (prev > maxPosPrev)
       {
         maxPosPrev = prev;
@@ -127,7 +132,7 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
     // Calculate max/min values for previous previous values.
     if (type == ALL)
     {
-      const FieldValue& prevPrev = current.getPrevPrevValue ();
+      const FieldValue& prevPrev = current->getPrevPrevValue ();
       if (prevPrev > maxPosPrevPrev)
       {
         maxPosPrevPrev = prevPrev;
@@ -158,7 +163,9 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    FieldPointValue& current = values[iter];
+    FieldPointValue* current = values[iter];
+    ASSERT (current);
+
     // Calculate its position from index in array.
     GridCoordinate coord = grid.calculatePositionFromIndex (iter);
 
@@ -174,15 +181,15 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 #endif
 
     // Get pixel for current image.
-    const FieldValue& cur = current.getCurValue ();
+    const FieldValue& cur = current->getCurValue ();
     RGBApixel pixelCur = getPixelFromValue (cur, maxNegCur, maxCur);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     // Get pixel for previous image.
-    const FieldValue& prev = current.getPrevValue ();
+    const FieldValue& prev = current->getPrevValue ();
     RGBApixel pixelPrev = getPixelFromValue (prev, maxNegPrev, maxPrev);
 #if defined (TWO_TIME_STEPS)
     // Get pixel for previous previous image.
-    const FieldValue& prevPrev = current.getPrevPrevValue ();
+    const FieldValue& prevPrev = current->getPrevPrevValue ();
     RGBApixel pixelPrevPrev = getPixelFromValue (prevPrev, maxNegPrevPrev, maxPrevPrev);
 #endif
 #endif
@@ -261,6 +268,6 @@ BMPDumper::dump2D (Grid& grid) const
 void
 BMPDumper::dump3D (Grid& grid) const
 {
-  std::cout << "Not implemented." << std::endl;
+  ASSERT_MESSAGE ("3D Dumper is not implemented.")
 }
 #endif

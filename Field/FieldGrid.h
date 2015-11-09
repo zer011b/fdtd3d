@@ -61,7 +61,7 @@ public:
 
 
 // Vector of points in grid.
-typedef std::vector<FieldPointValue> VectorFieldPointValues;
+typedef std::vector<FieldPointValue*> VectorFieldPointValues;
 
 
 // Grid itself.
@@ -97,10 +97,10 @@ public:
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   // Set field point at coordinate in grid.
-  void setFieldPointValue (const FieldPointValue& value, const GridCoordinate& position);
+  void setFieldPointValue (FieldPointValue* value, const GridCoordinate& position);
 
   // Get field point at coordinate in grid.
-  FieldPointValue& getFieldPointValue (const GridCoordinate& position);
+  FieldPointValue* getFieldPointValue (const GridCoordinate& position);
 #endif
 
   // Replace previous layer with current and so on.

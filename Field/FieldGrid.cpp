@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "FieldGrid.h"
+#include "Assert.h"
 
 // ================================ GridSize ================================
 GridCoordinate::GridCoordinate (
@@ -75,15 +76,20 @@ Grid::Grid(const GridCoordinate& s) :
   size (s)
 {
   gridValues.resize (size.calculateTotalCoord ());
-  for (FieldPointValue& current : getValues ())
+  grid_iter end = gridValues.size ();
+  for (grid_iter iter = 0; iter < end; ++iter)
   {
-    current.setZero ();
+    gridValues[iter] = new FieldPointValue ();
   }
-  std::cout << "New grid with size: " << gridValues.size () << std::endl;
+  std::cout << "New grid with size: " << gridValues.size () << ". " << std::endl;
 }
 
 Grid::~Grid ()
 {
+  for (FieldPointValue* current : gridValues)
+  {
+    delete current;
+  }
 }
 
 const GridCoordinate& Grid::getSize () const
@@ -205,31 +211,29 @@ Grid::calculatePositionFromIndex (grid_iter index) const
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
 void
-Grid::setFieldPointValue (const FieldPointValue& value, const GridCoordinate& position)
+Grid::setFieldPointValue (FieldPointValue* value, const GridCoordinate& position)
 {
-  if (isLegitIndex (position))
-  {
-    grid_iter coord = calculateIndexFromPosition (position);
-    gridValues[coord] = value;
-  }
+  ASSERT (isLegitIndex (position));
+
+  grid_iter coord = calculateIndexFromPosition (position);
+  gridValues[coord] = value;
 }
 
-FieldPointValue&
+FieldPointValue*
 Grid::getFieldPointValue (const GridCoordinate& position)
 {
-  if (isLegitIndex (position))
-  {
-    grid_iter coord = calculateIndexFromPosition (position);
-    return gridValues[coord];
-  }
+  ASSERT (isLegitIndex (position));
+
+  grid_iter coord = calculateIndexFromPosition (position);
+  return gridValues[coord];
 }
 #endif
 
 void
 Grid::shiftInTime ()
 {
-  for (FieldPointValue& current : getValues ())
+  for (FieldPointValue* current : getValues ())
   {
-    current.shiftInTime ();
+    current->shiftInTime ();
   }
 }

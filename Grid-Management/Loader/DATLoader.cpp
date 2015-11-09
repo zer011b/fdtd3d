@@ -48,28 +48,29 @@ DATLoader::loadFromFile (Grid& grid, GridFileType type) const
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    FieldPointValue& current = values[iter];
+    FieldPointValue* current = values[iter];
+    ASSERT (current);
 
     switch (type)
     {
       case CURRENT:
       {
         file.read (memblock, sizeof (FieldValue));
-        current.setCurValue (*((FieldValue*) memblock));
+        current->setCurValue (*((FieldValue*) memblock));
         break;
       }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
         file.read (memblock, sizeof (FieldValue));
-        current.setPrevValue (*((FieldValue*) memblock));
+        current->setPrevValue (*((FieldValue*) memblock));
         break;
       }
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
         file.read (memblock, sizeof (FieldValue));
-        current.setPrevPrevValue (*((FieldValue*) memblock));
+        current->setPrevPrevValue (*((FieldValue*) memblock));
         break;
       }
 #endif
