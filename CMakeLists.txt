@@ -54,15 +54,31 @@ endif ()
 
 message ("Grid dimension: ${GRID_DIMENSION}.")
 
-set (DEBUG_FLAGS "")
-set (RELEASE_FLAGS "")
-
-set (COMPILE_FLAGS "")
-set (LINK_FLAGS "")
-
 add_definitions (-DTWO_TIME_STEPS="")
 add_definitions (-DGRID_2D="")
 add_definitions (-std=c++11)
+
+
+set (BUILD_FLAGS "")
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+  set (BUILD_FLAGS "${BUILD_FLAGS} -flto -fno-fat-lto-objects")
+endif ()
+
+#set (BUILD_FLAGS "${BUILD_FLAGS} -fno-stack-protector")
+#set (BUILD_FLAGS "${BUILD_FLAGS} -fno-exceptions -fno-rtti")
+#set (BUILD_FLAGS "${BUILD_FLAGS} -Wall -Wextra -pedantic")
+#set (BUILD_FLAGS "${BUILD_FLAGS} -Wformat-nonliteral -Winit-self -Wno-stack-protector")
+#set (BUILD_FLAGS "${BUILD_FLAGS} -Wconversion -Wsign-conversion -Wformat-security")
+#set (BUILD_FLAGS "${BUILD_FLAGS} -Wmissing-declarations -Wno-attributes")
+#set (BUILD_FLAGS "${BUILD_FLAGS} -Wfatal-errors")
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+  set (BUILD_FLAGS "${BUILD_FLAGS} -O3")
+endif ()
+
+set (COMPILE_FLAGS "${COMPILE_FLAGS} ${BUILD_FLAGS}")
+
 
 find_package (MPI REQUIRED)
 message ("${MPI_INCLUDE_PATH}")
@@ -81,6 +97,10 @@ endif ()
 if (MPI_LINK_FLAGS)
   set (LINK_FLAGS ${LINK_FLAGS} ${MPI_LINK_FLAGS})
 endif ()
+
+message ("Compile flags: ${COMPILE_FLAGS}")
+message ("Link flags: ${LINK_FLAGS}")
+
 
 if (NOT EXISTS "${PROJECT_SOURCE_DIR}/third-party/EasyBMP/source")
   execute_process (COMMAND wget http://prdownloads.sourceforge.net/easybmp/EasyBMP_1.06.zip)
