@@ -4,12 +4,10 @@
 // Small values define all field values as float.
 // Full values define all field values as double.
 // Small values decrease memory usage, full values increase accuracy.
-#if defined (SMALL_VALUES)
-typedef float FieldValue;
-#else
-#if defined (FULL_VALUES)
+#if FULL_VALUES
 typedef double FieldValue;
-#endif
+#else
+typedef float FieldValue;
 #endif
 
 

@@ -12,8 +12,15 @@ make
 
 # Build Flags
 ```c_cpp
-SMALL_VALUES - use float
-FULL_VALUES - use double
+-DCMAKE_BUILD_TYPE - build type (Debug or Release)
+-DFULL_VALUES - use double (ON) or float (OFF)
+-DTIME_STEPS - number of steps in time (1 or 2)
+-DGRID_DIMENSION - number of dimensions in grid (1, 2 or 3)
+```
+
+# Preprocessor variables
+```c_cpp
+FULL_VALUES - use double (TRUE) or float (FALSE)
 ONE_TIME_STEP - one previous time step is saved
 TWO_TIME_STEPS - two previous time steps are saved
 GRID_1D - one-dimensional solver

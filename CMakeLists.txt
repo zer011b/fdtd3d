@@ -1,13 +1,65 @@
 cmake_minimum_required (VERSION 3.0.2)
 
-set (CMAKE_CXX_COMPILER "mpicxx")
-set (CMAKE_C_COMPILER "mpicc")
+option(FULL_VALUES "Use double values" ON)
+
+set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
+set(GRID_DIMENSION "2" CACHE STRING "Defines number dimension in grid")
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
+  set (CMAKE_BUILD_TYPE "Debug")
+endif ()
+
+if ("${CMAKE_CXX_COMPILER}" STREQUAL "")
+  set (CMAKE_CXX_COMPILER "mpicxx")
+endif ()
+
+if ("${CMAKE_C_COMPILER}" STREQUAL "")
+  set (CMAKE_C_COMPILER "mpicc")
+endif ()
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+  message ("Build type: ${CMAKE_BUILD_TYPE}.")
+elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+  message ("Build type: ${CMAKE_BUILD_TYPE}.")
+endif ()
+
+message ("C++ compiler: ${CMAKE_CXX_COMPILER}.")
+message ("C compiler: ${CMAKE_C_COMPILER}.")
+
+if ("${FULL_VALUES}")
+  message ("Values: double.")
+else ()
+  message ("Values: float.")
+endif ()
+
+if ("${TIME_STEPS}" STREQUAL "1")
+  add_definitions (-DONE_TIME_STEP="")
+elseif ("${TIME_STEPS}" STREQUAL "2")
+  add_definitions (-DTWO_TIME_STEPS="")
+else ()
+  message(FATAL_ERROR "Unknown TIME_STEPS")
+endif ()
+
+message ("Time steps: ${TIME_STEPS}.")
+
+if ("${GRID_DIMENSION}" STREQUAL "1")
+  add_definitions (-DGRID_1D="")
+elseif ("${GRID_DIMENSION}" STREQUAL "2")
+  add_definitions (-DGRID_2D="")
+elseif ("${GRID_DIMENSION}" STREQUAL "3")
+  add_definitions (-DGRID_3D="")
+else ()
+  message(FATAL_ERROR "Unknown GRID_DIMENSION")
+endif ()
+
+message ("Grid dimension: ${GRID_DIMENSION}.")
+
+set (DEBUG_FLAGS "")
+set (RELEASE_FLAGS "")
 
 set (COMPILE_FLAGS "")
 set (LINK_FLAGS "")
 
-#add_definitions (-DSMALL_VALUES="")
-add_definitions (-DFULL_VALUES="")
 add_definitions (-DTWO_TIME_STEPS="")
 add_definitions (-DGRID_2D="")
 add_definitions (-std=c++11)
