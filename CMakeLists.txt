@@ -137,6 +137,16 @@ set (LIBS ${LIBS} Loader)
 set (LIBS ${LIBS} Dumper)
 
 
+include_directories ("${PROJECT_SOURCE_DIR}/Scheme")
+add_subdirectory (Scheme)
+set (LIBS ${LIBS} Scheme)
+
+
+include_directories ("${PROJECT_SOURCE_DIR}/Solver")
+add_subdirectory (Solver)
+set (LIBS ${LIBS} Solver)
+
+
 add_executable (fdtd3d main.cpp)
 target_link_libraries (fdtd3d ${LIBS})
 
