@@ -43,12 +43,11 @@ DATLoader::loadFromFile (Grid& grid, GridFileType type) const
   char* memblock = new char [sizeof (FieldValue)];
 
   // Go through all values and write to file.
-  VectorFieldPointValues& values = grid.getValues ();
-  grid_iter end = values.size ();
+  grid_iter end = grid.getSize().calculateTotalCoord ();
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    FieldPointValue* current = values[iter];
+    FieldPointValue* current = grid.getFieldPointValue (iter);
     ASSERT (current);
 
     switch (type)

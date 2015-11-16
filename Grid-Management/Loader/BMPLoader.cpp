@@ -99,12 +99,11 @@ BMPLoader::loadFromFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, G
   }
 
   // Go through all values and set them.
-  VectorFieldPointValues& values = grid.getValues ();
-  grid_iter end = values.size ();
+  grid_iter end = grid.getSize().calculateTotalCoord ();
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    FieldPointValue* current = values[iter];
+    FieldPointValue* current = grid.getFieldPointValue (iter);
     ASSERT (current);
 
     // Calculate its position from index in array.

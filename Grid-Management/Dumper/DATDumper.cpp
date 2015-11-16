@@ -40,12 +40,11 @@ DATDumper::writeToFile (Grid& grid, GridFileType type) const
   ASSERT (file.is_open());
 
   // Go through all values and write to file.
-  VectorFieldPointValues& values = grid.getValues ();
-  grid_iter end = values.size ();
+  grid_iter end = grid.getSize().calculateTotalCoord ();
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    FieldPointValue* current = values[iter];
+    const FieldPointValue* current = grid.getFieldPointValue (iter);
     ASSERT (current);
 
     switch (type)

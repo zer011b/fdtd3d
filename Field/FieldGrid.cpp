@@ -76,11 +76,7 @@ Grid::Grid(const GridCoordinate& s) :
   size (s)
 {
   gridValues.resize (size.calculateTotalCoord ());
-  grid_iter end = gridValues.size ();
-  for (grid_iter iter = 0; iter < end; ++iter)
-  {
-    gridValues[iter] = new FieldPointValue ();
-  }
+
   std::cout << "New grid with size: " << gridValues.size () << ". " << std::endl;
 }
 
@@ -88,7 +84,10 @@ Grid::~Grid ()
 {
   for (FieldPointValue* current : gridValues)
   {
-    delete current;
+    if (current)
+    {
+      delete current;
+    }
   }
 }
 
@@ -214,8 +213,15 @@ void
 Grid::setFieldPointValue (FieldPointValue* value, const GridCoordinate& position)
 {
   ASSERT (isLegitIndex (position));
+  ASSERT (value);
 
   grid_iter coord = calculateIndexFromPosition (position);
+
+  if (gridValues[coord])
+  {
+    delete gridValues[coord];
+  }
+
   gridValues[coord] = value;
 }
 
@@ -225,7 +231,23 @@ Grid::getFieldPointValue (const GridCoordinate& position)
   ASSERT (isLegitIndex (position));
 
   grid_iter coord = calculateIndexFromPosition (position);
-  return gridValues[coord];
+  FieldPointValue* value = gridValues[coord];
+
+  ASSERT (value);
+
+  return value;
+}
+
+FieldPointValue*
+Grid::getFieldPointValue (grid_iter coord)
+{
+  ASSERT (coord >= 0 && coord < size.calculateTotalCoord ());
+
+  FieldPointValue* value = gridValues[coord];
+
+  ASSERT (value);
+
+  return value;
 }
 #endif
 

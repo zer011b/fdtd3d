@@ -62,7 +62,7 @@ int main (int argc, char** argv)
   loader.loadGrid (grid);
 
   GridCoordinate pos5 (2, 1);*/
-  FieldPointValue* val_1 = grid.getFieldPointValue (pos5);
+  const FieldPointValue* val_1 = grid.getFieldPointValue (pos5);
   std::cout << val_1->getCurValue () << ", " <<
     val_1->getPrevValue() << ", " << val_1->getPrevPrevValue() << std::endl;
 

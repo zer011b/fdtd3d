@@ -67,7 +67,7 @@ BMPDumper::writeToFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, Gr
   image.SetSize (sx, sy);
   image.SetBitDepth (24);
 
-  FieldPointValue* value0 = grid.getValues ()[0];
+  const FieldPointValue* value0 = grid.getFieldPointValue (0);
   ASSERT (value0);
 
   FieldValue maxPos = 0;
@@ -101,8 +101,10 @@ BMPDumper::writeToFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, Gr
   }
 
   // Go through all values and calculate max/min.
-  for (FieldPointValue* current : grid.getValues ())
+  for (grid_iter i = 0; i < grid.getSize ().calculateTotalCoord (); ++i)
   {
+    const FieldPointValue* current = grid.getFieldPointValue (i);
+
     ASSERT (current);
 
     FieldValue value = 0;
@@ -148,12 +150,11 @@ BMPDumper::writeToFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, Gr
   const FieldValue max = maxPos - maxNeg;
 
   // Go through all values and set pixels.
-  VectorFieldPointValues& values = grid.getValues ();
-  grid_iter end = values.size ();
+  grid_iter end = grid.getSize().calculateTotalCoord ();
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    FieldPointValue* current = values[iter];
+    const FieldPointValue* current = grid.getFieldPointValue (iter);
     ASSERT (current);
 
     // Calculate its position from index in array.

@@ -71,6 +71,7 @@ class Grid
   GridCoordinate size;
 
   // Vector of points in grid.
+  // Owns this. Deletes all FieldPointValue* itself.
   VectorFieldPointValues gridValues;
 
 private:
@@ -81,6 +82,9 @@ private:
   // Calculate three-dimensional coordinate from position.
   grid_iter calculateIndexFromPosition (const GridCoordinate& position) const;
 
+  // Get values in the grid.
+  VectorFieldPointValues& getValues ();
+
 public:
 
   Grid (const GridCoordinate& s);
@@ -89,8 +93,6 @@ public:
   // Get size of the grid.
   const GridCoordinate& getSize () const;
 
-  // Get values in the grid.
-  VectorFieldPointValues& getValues ();
 
   // Calculate position from three-dimensional coordinate.
   GridCoordinate calculatePositionFromIndex (grid_iter index) const;
@@ -101,6 +103,7 @@ public:
 
   // Get field point at coordinate in grid.
   FieldPointValue* getFieldPointValue (const GridCoordinate& position);
+  FieldPointValue* getFieldPointValue (grid_iter coord);
 #endif
 
   // Replace previous layer with current and so on.
