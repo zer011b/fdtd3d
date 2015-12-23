@@ -72,13 +72,34 @@ GridCoordinate::calculateTotalCoord () const
 #endif
 
 // ================================ Grid ================================
+#if defined (PARALLEL_GRID)
+Grid::Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
+            const GridCoordinate& bufSizeL, const GridCoordinate& bufSizeR,
+            const int process, const int totalProc) :
+  size (curSize + bufSizeL + bufSizeR),
+  currentSize (curSize),
+  bufferSizeLeft (bufSizeL),
+  bufferSizeRight (bufSizeR),
+  totalSize (totSize),
+  processId (process),
+  totalProcCount (totalProc)
+{
+  gridValues.resize (size.calculateTotalCoord ());
+
+  //std::cout << "New grid for proc: " << process << " (of " << totalProcCount << ") with size: "
+  //  << gridValues.size () << ". " << std::endl;
+  printf ("New grid for proc: %d (of %d) with raw size: %lu.\n", process, totalProcCount, gridValues.size ());
+}
+#else
 Grid::Grid(const GridCoordinate& s) :
   size (s)
 {
   gridValues.resize (size.calculateTotalCoord ());
 
-  std::cout << "New grid with size: " << gridValues.size () << ". " << std::endl;
+  //std::cout << "New grid with raw size: " << gridValues.size () << ". " << std::endl;
+  printf ("New grid with raw size: %lu.\n", gridValues.size ());
 }
+#endif
 
 Grid::~Grid ()
 {
@@ -248,6 +269,181 @@ Grid::getFieldPointValue (grid_iter coord)
   ASSERT (value);
 
   return value;
+}
+
+/*#if defined (PARALLEL_GRID)
+FieldPointValue*
+Grid::getFieldPointValueGlobal (const GridCoordinate& position)
+{
+  return NULL;
+}
+
+FieldPointValue*
+Grid::getFieldPointValueGlobal (grid_iter coord)
+{
+  return NULL;
+}
+#endif*/
+
+#endif
+
+#if defined (PARALLEL_GRID)
+void
+Grid::SendBuffer (BufferPosition buffer, int processTo)
+{
+#if defined (GRID_1D)
+  switch (buffer)
+  {
+    case LEFT:
+    {
+      int numTimeValues = sizeof (FieldPointValue) / sizeof (FieldValue);
+      FieldValue* raw_values = new FieldValue[bufferSizeLeft.getX () * numTimeValues];
+
+      int j = 0;
+      for (int i = bufferSizeLeft.getX (); i < 2*bufferSizeLeft.getX (); ++i)
+      {
+        FieldPointValue* val = getFieldPointValue (i);
+        raw_values[j++] = val->getCurValue ();
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+        raw_values[j++] = val->getPrevValue ();
+#if defined (TWO_TIME_STEPS)
+        raw_values[j++] = val->getPrevPrevValue ();
+#endif
+#endif
+      }
+
+#if FULL_VALUES
+      MPI_Ssend (raw_values, bufferSizeLeft.getX () * numTimeValues, MPI_DOUBLE, processTo, processId, MPI_COMM_WORLD);
+#else
+      MPI_Ssend (raw_values, bufferSizeLeft.getX () * numTimeValues, MPI_FLOAT, processTo, processId, MPI_COMM_WORLD);
+#endif
+
+      delete[] raw_values;
+      break;
+    }
+    case RIGHT:
+    {
+      int numTimeValues = sizeof (FieldPointValue) / sizeof (FieldValue);
+      FieldValue* raw_values = new FieldValue[bufferSizeRight.getX () * numTimeValues];
+
+      int j = 0;
+      for (int i = size.getX() - 2*bufferSizeRight.getX (); i < size.getX () - bufferSizeRight.getX (); ++i)
+      {
+        FieldPointValue* val = getFieldPointValue (i);
+        raw_values[j++] = val->getCurValue ();
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+        raw_values[j++] = val->getPrevValue ();
+#if defined (TWO_TIME_STEPS)
+        raw_values[j++] = val->getPrevPrevValue ();
+#endif
+#endif
+      }
+
+#if FULL_VALUES
+      MPI_Ssend (raw_values, bufferSizeRight.getX () * numTimeValues, MPI_DOUBLE, processTo, processId, MPI_COMM_WORLD);
+#else
+      MPI_Ssend (raw_values, bufferSizeRight.getX () * numTimeValues, MPI_FLOAT, processTo, processId, MPI_COMM_WORLD);
+#endif
+
+      delete[] raw_values;
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+#endif
+#if defined (GRID_2D)
+
+#endif
+#if defined (GRID_3D)
+
+#endif
+}
+
+void
+Grid::ReceiveBuffer (BufferPosition buffer, int processFrom)
+{
+#if defined (GRID_1D)
+  switch (buffer)
+  {
+    case LEFT:
+    {
+      int numTimeValues = sizeof (FieldPointValue) / sizeof (FieldValue);
+      FieldValue* raw_values = new FieldValue[bufferSizeLeft.getX () * numTimeValues];
+
+      MPI_Status status;
+
+#if FULL_VALUES
+      MPI_Recv (raw_values, bufferSizeLeft.getX () * numTimeValues, MPI_DOUBLE, processFrom, processId, MPI_COMM_WORLD, &status);
+#else
+      MPI_Recv (raw_values, bufferSizeLeft.getX () * numTimeValues, MPI_FLOAT, processFrom, processId, MPI_COMM_WORLD, &status);
+#endif
+
+      int j = 0;
+      for (int i = 0; i < bufferSizeLeft.getX (); ++i)
+      {
+#if defined (TWO_TIME_STEPS)
+        FieldPointValue* val = new FieldPointValue (raw_values[j++], raw_values[j++], raw_values[j++]);
+#else
+#if defined (ONE_TIME_STEP)
+        FieldPointValue* val = new FieldPointValue (raw_values[j++], raw_values[j++]);
+#else
+        FieldPointValue* val = new FieldPointValue (raw_values[j++]);
+#endif
+#endif
+
+        setFieldPointValue (val, GridCoordinate (i));
+      }
+
+      delete[] raw_values;
+      break;
+    }
+    case RIGHT:
+    {
+      int numTimeValues = sizeof (FieldPointValue) / sizeof (FieldValue);
+      FieldValue* raw_values = new FieldValue[bufferSizeRight.getX () * numTimeValues];
+
+      MPI_Status status;
+
+#if FULL_VALUES
+      MPI_Recv (raw_values, bufferSizeRight.getX () * numTimeValues, MPI_DOUBLE, processFrom, processId, MPI_COMM_WORLD, &status);
+#else
+      MPI_Recv (raw_values, bufferSizeRight.getX () * numTimeValues, MPI_FLOAT, processFrom, processId, MPI_COMM_WORLD, &status);
+#endif
+
+      int j = 0;
+      for (int i = size.getX() - bufferSizeRight.getX (); i < size.getX(); ++i)
+      {
+#if defined (TWO_TIME_STEPS)
+        FieldPointValue* val = new FieldPointValue (raw_values[j++], raw_values[j++], raw_values[j++]);
+#else
+#if defined (ONE_TIME_STEP)
+        FieldPointValue* val = new FieldPointValue (raw_values[j++], raw_values[j++]);
+#else
+        FieldPointValue* val = new FieldPointValue (raw_values[j++]);
+#endif
+#endif
+
+        setFieldPointValue (val, GridCoordinate (i));
+      }
+
+      delete[] raw_values;
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+#endif
+#if defined (GRID_2D)
+
+#endif
+#if defined (GRID_3D)
+
+#endif
 }
 #endif
 

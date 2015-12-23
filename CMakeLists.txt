@@ -54,6 +54,7 @@ endif ()
 
 message ("Grid dimension: ${GRID_DIMENSION}.")
 
+add_definitions (-DPARALLEL_GRID="")
 add_definitions (-DTWO_TIME_STEPS="")
 add_definitions (-DGRID_2D="")
 add_definitions (-std=c++11)
@@ -74,7 +75,11 @@ endif ()
 #set (BUILD_FLAGS "${BUILD_FLAGS} -Wfatal-errors")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-  set (BUILD_FLAGS "${BUILD_FLAGS} -O3")
+  set (BUILD_FLAGS "${BUILD_FLAGS} -O2")
+endif ()
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+  set (BUILD_FLAGS "${BUILD_FLAGS} -O0")
 endif ()
 
 set (COMPILE_FLAGS "${COMPILE_FLAGS} ${BUILD_FLAGS}")

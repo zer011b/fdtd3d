@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <mpi.h>
+
 #include "FieldGrid.h"
 #include "BMPDumper.h"
 #include "BMPLoader.h"
@@ -8,7 +10,22 @@
 
 int main (int argc, char** argv)
 {
-  GridCoordinate size (3, 3);
+  MPI_Init(&argc, &argv);
+
+  int rank, numProcs;
+
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
+
+  printf ("Start process %d of %d\n", rank, numProcs);
+
+  GridCoordinate overallSize (100, 100);
+  GridCoordinate size (10, 10);
+  GridCoordinate bufferLeft (10, 10);
+  GridCoordinate bufferRight (10, 10);
+  Grid grid (overallSize, size, bufferLeft, bufferRight, rank, numProcs);
+
+  /*GridCoordinate size (3, 3);
   Grid grid (size);
 
   FieldPointValue* val1 = new FieldPointValue (0, 100, 100);
@@ -51,7 +68,7 @@ int main (int argc, char** argv)
 
   DATDumper dumper;
   dumper.init (1, ALL);
-  dumper.dumpGrid (grid);
+  dumper.dumpGrid (grid);*/
 
   /*DATLoader loader;
   //FieldPointValue val10 (100, 100, 100);
@@ -61,11 +78,14 @@ int main (int argc, char** argv)
   loader.init (1, ALL);
   loader.loadGrid (grid);
 
-  GridCoordinate pos5 (2, 1);*/
+  GridCoordinate pos5 (2, 1);
   const FieldPointValue* val_1 = grid.getFieldPointValue (pos5);
   std::cout << val_1->getCurValue () << ", " <<
-    val_1->getPrevValue() << ", " << val_1->getPrevPrevValue() << std::endl;
+    val_1->getPrevValue() << ", " << val_1->getPrevPrevValue() << std::endl;*/
 
-  std::cout << "Main." << std::endl;
+  printf ("Main process %d.\n", rank);
+
+	MPI_Finalize();
+
   return 0;
 }
