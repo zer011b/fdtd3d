@@ -7,15 +7,15 @@ BMPDumper::dumpGrid (Grid& grid) const
 {
 #if defined (GRID_1D)
   dump1D (grid);
-#else
+#else /* GRID_1D */
 #if defined (GRID_2D)
   dump2D (grid);
-#else
+#else /* GRID_2D */
 #if defined (GRID_3D)
   dump3D (grid);
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* !GRID_2D */
+#endif /* !GRID_1D */
 }
 
 /*
@@ -92,8 +92,8 @@ BMPDumper::writeToFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, Gr
       maxNeg = maxPos = value0->getPrevPrevValue ();
       break;
     }
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
     default:
     {
       UNREACHABLE;
@@ -128,8 +128,8 @@ BMPDumper::writeToFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, Gr
         value = current->getPrevPrevValue ();
         break;
       }
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
       default:
       {
         UNREACHABLE;
@@ -164,12 +164,12 @@ BMPDumper::writeToFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, Gr
 #if defined (GRID_1D)
     grid_iter px = coord.getX ();
     grid_iter py = 0;
-#else
+#else /* GRID_1D */
 #if defined (GRID_2D)
     grid_iter px = coord.getX ();
     grid_iter py = coord.getY ();
-#endif
-#endif
+#endif /* GRID_2D */
+#endif /* !GRID_1D */
 
     // Get pixel for image.
     FieldValue value = 0;
@@ -192,8 +192,8 @@ BMPDumper::writeToFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, Gr
         value = current->getPrevPrevValue ();
         break;
       }
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
       default:
       {
         UNREACHABLE;
@@ -228,8 +228,8 @@ BMPDumper::writeToFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, Gr
       image.WriteToFile(prevPrev_bmp.c_str());
       break;
     }
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
     default:
     {
       UNREACHABLE;
@@ -254,8 +254,8 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
   {
     writeToFile (grid, sx, sy, PREVIOUS2);
   }
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 }
 
 
@@ -264,15 +264,15 @@ void
 BMPDumper::dump1D (Grid& grid) const
 {
   const GridCoordinate& size = grid.getSize ();
-  grid_coord sx = size.getX ();
 
+  grid_coord sx = size.getX ();
   std::cout << "Saving 1D to BMP image. Size: " << sx << "x1. " << std::endl;
 
   dumpFlat (grid, sx, 1);
 
   std::cout << "Saved. " << std::endl;
 }
-#endif
+#endif /* GRID_1D */
 
 #if defined (GRID_2D)
 void
@@ -288,7 +288,7 @@ BMPDumper::dump2D (Grid& grid) const
 
   std::cout << "Saved. " << std::endl;
 }
-#endif
+#endif /* GRID_2D */
 
 #if defined (GRID_3D)
 void
@@ -296,4 +296,4 @@ BMPDumper::dump3D (Grid& grid) const
 {
   ASSERT_MESSAGE ("3D Dumper is not implemented.")
 }
-#endif
+#endif /* GRID_3D */

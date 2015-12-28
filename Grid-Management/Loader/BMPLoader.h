@@ -15,17 +15,17 @@ class BMPLoader: public Loader
 #if defined (GRID_1D)
   // Load one-dimensional grid.
   void load1D (Grid& grid) const;
-#else
+#else /* GRID_1D */
 #if defined (GRID_2D)
   // Load two-dimensional grid.
   void load2D (Grid& grid) const;
-#else
+#else /* GRID_2D */
 #if defined (GRID_3D)
   // Load three-dimensional grid.
   void load3D (Grid& grid) const;
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* !GRID_2D */
+#endif /* !GRID_1D */
 
   // Return pixel with colors according to values.
   FieldValue getValueFromPixel (const RGBApixel& pixel, const FieldValue& maxNeg,

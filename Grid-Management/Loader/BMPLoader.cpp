@@ -7,15 +7,15 @@ BMPLoader::loadGrid (Grid& grid) const
 {
   #if defined (GRID_1D)
     load1D (grid);
-  #else
+  #else /* GRID_1D */
   #if defined (GRID_2D)
     load2D (grid);
-  #else
+  #else /* GRID_2D */
   #if defined (GRID_3D)
     load3D (grid);
-  #endif
-  #endif
-  #endif
+  #endif /* GRID_3D */
+  #endif /* !GRID_2D */
+  #endif /* !GRID_1D */
 }
 
 /*
@@ -90,8 +90,8 @@ BMPLoader::loadFromFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, G
       image.ReadFromFile (prevPrev_bmp.c_str());
       break;
     }
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
     default:
     {
       UNREACHABLE;
@@ -113,12 +113,12 @@ BMPLoader::loadFromFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, G
 #if defined (GRID_1D)
     grid_iter px = coord.getX ();
     grid_iter py = 0;
-#else
+#else /* GRID_1D */
 #if defined (GRID_2D)
     grid_iter px = coord.getX ();
     grid_iter py = coord.getY ();
-#endif
-#endif
+#endif /* GRID_2D */
+#endif /* GRID_1D */
 
     RGBApixel pixel = image.GetPixel(px, py);
 
@@ -143,8 +143,8 @@ BMPLoader::loadFromFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, G
         current->setPrevPrevValue (currentVal);
         break;
       }
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
       default:
       {
         UNREACHABLE;
@@ -167,15 +167,15 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
   {
     loadFromFile (grid, sx, sy, PREVIOUS2);
   }
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 }
 
 #if defined (GRID_1D)
 void
 BMPLoader::load1D (Grid& grid) const
 {
-  GridCoordinate& size = grid.getSize ();
+  const GridCoordinate& size = grid.getSize ();
   grid_coord sx = size.getX ();
 
   std::cout << "Loading 1D from BMP image. Size: " << sx << "x1. " << std::endl;
@@ -184,7 +184,7 @@ BMPLoader::load1D (Grid& grid) const
 
   std::cout << "Loaded. " << std::endl;
 }
-#endif
+#endif /* GRID_1D */
 
 #if defined (GRID_2D)
 void
@@ -200,7 +200,7 @@ BMPLoader::load2D (Grid& grid) const
 
   std::cout << "Loaded. " << std::endl;
 }
-#endif
+#endif /* GRID_2D */
 
 #if defined (GRID_3D)
 void
@@ -208,4 +208,4 @@ BMPLoader::load3D (Grid& grid) const
 {
 
 }
-#endif
+#endif /* GRID_3D */

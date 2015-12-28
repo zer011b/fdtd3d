@@ -11,8 +11,8 @@ enum BufferPosition
 {
 #if defined (GRID_1D)
   LEFT,
-  RIGHT
-#endif
+  RIGHT,
+#endif /* GRID_1D */
 #if defined (GRID_2D)
   LEFT,
   RIGHT,
@@ -21,8 +21,8 @@ enum BufferPosition
   LEFT_UP,
   LEFT_DOWN,
   RIGHT_UP,
-  RIGHT_DOWN
-#endif
+  RIGHT_DOWN,
+#endif /* GRID_2D */
 #if defined (GRID_3D)
   LEFT,
   RIGHT,
@@ -49,8 +49,9 @@ enum BufferPosition
   RIGHT_UP_FRONT,
   RIGHT_UP_BACK,
   RIGHT_DOWN_FRONT,
-  RIGHT_DOWN_BACK
-#endif
+  RIGHT_DOWN_BACK,
+#endif /* GRID_3D */
+  BUFFER_COUNT
 };
 
 
@@ -70,9 +71,9 @@ class GridCoordinate
   grid_coord y;
 #if defined (GRID_3D)
   grid_coord z;
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
 
 public:
 
@@ -84,9 +85,9 @@ public:
     , const grid_coord& sy = 0
 #if defined (GRID_3D)
     , const grid_coord& sz = 0
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D*/
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
   );
 
   GridCoordinate (const GridCoordinate& pos)
@@ -97,9 +98,9 @@ public:
     y = pos.getY ();
 #if defined (GRID_3D)
     z = pos.getZ ();
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D*/
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
   }
 
   ~GridCoordinate ();
@@ -114,27 +115,36 @@ public:
   const grid_coord& getY () const;
 #if defined (GRID_3D)
   const grid_coord& getZ () const;
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D*/
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
 
   friend GridCoordinate operator+ (GridCoordinate lhs, const GridCoordinate& rhs)
   {
 #if defined (GRID_1D)
     return GridCoordinate (lhs.getX () + rhs.getX ());
-#endif
+#endif /* GRID_1D */
 #if defined (GRID_2D)
     return GridCoordinate (lhs.getX () + rhs.getX (), lhs.getY () + rhs.getY ());
-#endif
+#endif /* GRID_2D */
 #if defined (GRID_3D)
     return GridCoordinate (lhs.getX () + rhs.getX (), lhs.getY () + rhs.getY (), lhs.getZ () + rhs.getZ ());
-#endif
+#endif /* GRID_3D */
   }
 };
 
 
 // Vector of points in grid.
 typedef std::vector<FieldPointValue*> VectorFieldPointValues;
+
+// Type for buffer of values.
+typedef std::vector<FieldValue> VectorBufferValues;
+
+// Type for vector of buffer
+typedef std::vector<VectorBufferValues> VectorBuffers;
+
+// Type for vector of buffer
+typedef std::vector<MPI_Request> VectorRequests;
 
 
 // Grid itself.
@@ -161,18 +171,66 @@ class Grid
 
   // Size of current piece
   GridCoordinate totalSize;
-#endif
+
+  // Send/Receive buffers for independent send and receive
+  VectorBuffers buffersSend;
+  VectorBuffers buffersReceive;
+
+  // Send/Receive MPI requests
+  VectorRequests requestsSend;
+  VectorRequests requestsReceive;
+
+#endif /* PARALLEL_GRID */
 
 private:
 
   // Check whether position is appropriate to get/set value from.
+  bool isLegitIndexWithSize (const GridCoordinate& position, const GridCoordinate& sizeCoord) const;
   bool isLegitIndex (const GridCoordinate& position) const;
 
   // Calculate three-dimensional coordinate from position.
+  grid_iter calculateIndexFromPositionWithSize (const GridCoordinate& position,
+                                                const GridCoordinate& sizeCoord) const;
   grid_iter calculateIndexFromPosition (const GridCoordinate& position) const;
 
   // Get values in the grid.
   VectorFieldPointValues& getValues ();
+
+#if defined (PARALLEL_GRID)
+  // Check whether position in buffer is appropriate to get/set value from.
+  //bool isLegitIndexInBuffer (BufferPosition buffer, const GridCoordinate& position) const;
+
+  // Calculate three-dimensional coordinate in buffer from position.
+  //grid_iter calculateIndexFromPositionInBuffer (BufferPosition buffer,
+  //                                              const GridCoordinate& position) const;
+
+  // Set field point at coordinate in grid buffer.
+  //void setFieldPointValueInBuffer (BufferPosition buffer, FieldPointValue* value,
+  //                                 const GridCoordinate& position);
+
+  // Get field point at coordinate in grid.
+  //FieldPointValue* getFieldPointValueInBuffer (BufferPosition buffer, const GridCoordinate& position);
+  //FieldPointValue* getFieldPointValueInBuffer (BufferPosition buffer, grid_iter coord);
+
+  // Raw send
+  void SendRawBuffer (FieldValue* rawBuffer, int processTo, grid_iter size, MPI_Request* request);
+
+  // Raw receive
+  void ReceiveRawBuffer (FieldValue* rawBuffer, int processFrom, grid_iter size, MPI_Request* request);
+
+#if defined (GRID_1D)
+  void SendBuffer1D (BufferPosition buffer, int processTo);
+  void ReceiveBuffer1D (BufferPosition buffer, int processFrom);
+#endif /* GRID_1D */
+#if defined (GRID_2D)
+  void SendBuffer2D (BufferPosition buffer, int processTo);
+  void ReceiveBuffer2D (BufferPosition buffer, int processFrom);
+#endif /* GRID_2D */
+#if defined (GRID_3D)
+  void SendBuffer3D (BufferPosition buffer, int processTo);
+  void ReceiveBuffer3D (BufferPosition buffer, int processFrom);
+#endif /* GRID_3D */
+#endif /* PARALLEL_GRID */
 
 public:
 
@@ -180,9 +238,9 @@ public:
   Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
         const GridCoordinate& bufSizeL, const GridCoordinate& bufSizeR,
         const int process, const int totalProc);
-#else
+#else /* PARALLEL_GRID */
   Grid (const GridCoordinate& s);
-#endif
+#endif /* !PARALLEL_GRID */
 
   ~Grid ();
 
@@ -204,12 +262,12 @@ public:
   FieldPointValue* getFieldPointValueGlobal (const GridCoordinate& position);
   FieldPointValue* getFieldPointValueGlobal (grid_iter coord);
 #endif*/
-#endif
+#endif  /* GRID_1D || GRID_2D || GRID_3D*/
 
 #if defined (PARALLEL_GRID)
   void SendBuffer (BufferPosition buffer, int processTo);
   void ReceiveBuffer (BufferPosition buffer, int processFrom);
-#endif
+#endif /* PARALLEL_GRID */
 
   // Replace previous layer with current and so on.
   void shiftInTime ();

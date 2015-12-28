@@ -3,14 +3,16 @@
 
 #include "Assert.h"
 
+#include <mpi.h>
+
 // Small values define all field values as float.
 // Full values define all field values as double.
 // Small values decrease memory usage, full values increase accuracy.
 #if FULL_VALUES
 typedef double FieldValue;
-#else
+#else /* FULL_VALUES */
 typedef float FieldValue;
-#endif
+#endif /* !FULL_VALUES */
 
 
 // FieldPointValue defines all values in time at the grid point.
@@ -26,8 +28,8 @@ class FieldPointValue
 #if defined (TWO_TIME_STEPS)
   // Previous for previous value in time.
   FieldValue previousPreviousValue;
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 
 public:
 
@@ -38,8 +40,8 @@ public:
     , const FieldValue& prevVal = 0
 #if defined (TWO_TIME_STEPS)
     , const FieldValue& prevPrevVal = 0
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
   );
 
   ~FieldPointValue ();
@@ -57,8 +59,8 @@ public:
   // Getter and setter for previous for previous value.
   const FieldValue& getPrevPrevValue () const;
   void setPrevPrevValue (const FieldValue& val);
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 
   // Set all values zero.
   void setZero ();

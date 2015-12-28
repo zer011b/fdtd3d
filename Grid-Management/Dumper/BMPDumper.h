@@ -12,17 +12,17 @@ private:
 #if defined (GRID_1D)
   // Save one-dimensional grid.
   void dump1D (Grid& grid) const;
-#else
+#else /* GRID_1D */
 #if defined (GRID_2D)
   // Save two-dimensional grid.
   void dump2D (Grid& grid) const;
-#else
+#else /* GRID_2D */
 #if defined (GRID_3D)
   // Save three-dimensional grid.
   void dump3D (Grid& grid) const;
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* !GRID_2D */
+#endif /* !GRID_1D */
 
   // Return pixel with colors according to values.
   RGBApixel getPixelFromValue (const FieldValue& value, const FieldValue& maxNeg,

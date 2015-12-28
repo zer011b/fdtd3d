@@ -30,8 +30,8 @@ DATLoader::loadFromFile (Grid& grid, GridFileType type) const
       file.open (prevPrev_dat.c_str (), std::ios::in | std::ios::binary);
       break;
     }
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
     default:
     {
       UNREACHABLE;
@@ -72,8 +72,8 @@ DATLoader::loadFromFile (Grid& grid, GridFileType type) const
         current->setPrevPrevValue (*((FieldValue*) memblock));
         break;
       }
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
       default:
       {
         UNREACHABLE;
@@ -103,8 +103,8 @@ DATLoader::loadGrid (Grid& grid) const
   {
     loadFromFile (grid, PREVIOUS2);
   }
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 
   std::cout << "Loaded. " << std::endl;
 }

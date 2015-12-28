@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 3.0.2)
 
 option(FULL_VALUES "Use double values" ON)
+option(PRINT_MESSAGE "Print all messages" OFF)
 
 set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
 set(GRID_DIMENSION "2" CACHE STRING "Defines number dimension in grid")
@@ -28,8 +29,23 @@ message ("C compiler: ${CMAKE_C_COMPILER}.")
 
 if ("${FULL_VALUES}")
   message ("Values: double.")
+  add_definitions (-DFULL_VALUES=1)
 else ()
   message ("Values: float.")
+  add_definitions (-DFULL_VALUES=0)
+endif ()
+
+if ("${PRINT_MESSAGE}")
+  if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    message ("Print messages.")
+    add_definitions (-DPRINT_MESSAGE=1)
+  else ()
+    message ("Do not print messages.")
+    add_definitions (-DPRINT_MESSAGE=0)
+  endif ()
+else ()
+  message ("Do not print messages.")
+  add_definitions (-DPRINT_MESSAGE=0)
 endif ()
 
 if ("${TIME_STEPS}" STREQUAL "1")
@@ -37,7 +53,8 @@ if ("${TIME_STEPS}" STREQUAL "1")
 elseif ("${TIME_STEPS}" STREQUAL "2")
   add_definitions (-DTWO_TIME_STEPS="")
 else ()
-  message(FATAL_ERROR "Unknown TIME_STEPS")
+  #message(FATAL_ERROR "Unknown TIME_STEPS")
+  add_definitions (-DTWO_TIME_STEPS="")
 endif ()
 
 message ("Time steps: ${TIME_STEPS}.")
@@ -49,14 +66,13 @@ elseif ("${GRID_DIMENSION}" STREQUAL "2")
 elseif ("${GRID_DIMENSION}" STREQUAL "3")
   add_definitions (-DGRID_3D="")
 else ()
-  message(FATAL_ERROR "Unknown GRID_DIMENSION")
+  #message(FATAL_ERROR "Unknown GRID_DIMENSION")
+  add_definitions (-DGRID_2D="")
 endif ()
 
 message ("Grid dimension: ${GRID_DIMENSION}.")
 
 add_definitions (-DPARALLEL_GRID="")
-add_definitions (-DTWO_TIME_STEPS="")
-add_definitions (-DGRID_2D="")
 add_definitions (-std=c++11)
 
 

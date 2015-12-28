@@ -33,8 +33,8 @@ protected:
   std::string prev;
 #if defined (TWO_TIME_STEPS)
   std::string prevPrev;
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 
   // Set file names according to time step.
   void setFileNames ()
@@ -47,8 +47,8 @@ protected:
 #if defined (TWO_TIME_STEPS)
     prevPrev.clear ();
     prevPrev = std::string ("previous2[") + std::to_string (step) + std::string ("]");
-#endif
-#endif
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
   }
 
 public:

@@ -11,9 +11,9 @@ GridCoordinate::GridCoordinate (
   , const grid_coord& sy
 #if defined (GRID_3D)
   , const grid_coord& sz
-#endif
-#endif
-#endif
+#endif  /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
   ) :
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   x (sx)
@@ -21,9 +21,9 @@ GridCoordinate::GridCoordinate (
   , y (sy)
 #if defined (GRID_3D)
   , z (sz)
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
 {
 }
 
@@ -49,9 +49,9 @@ GridCoordinate::getZ () const
 {
   return z;
 }
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
 grid_iter
@@ -59,17 +59,17 @@ GridCoordinate::calculateTotalCoord () const
 {
 #if defined (GRID_1D)
   return x;
-#else
+#else /* GRID_1D */
 #if defined (GRID_2D)
   return x * y;
-#else
+#else /* GRID_2D */
 #if defined (GRID_3D)
   return x * y * z;
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* !GRID_2D */
+#endif /* !GRID_1D */
 }
-#endif
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
 
 // ================================ Grid ================================
 #if defined (PARALLEL_GRID)
@@ -86,20 +86,50 @@ Grid::Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
 {
   gridValues.resize (size.calculateTotalCoord ());
 
-  //std::cout << "New grid for proc: " << process << " (of " << totalProcCount << ") with size: "
-  //  << gridValues.size () << ". " << std::endl;
+#if PRINT_MESSAGE
   printf ("New grid for proc: %d (of %d) with raw size: %lu.\n", process, totalProcCount, gridValues.size ());
+#endif
+
+#if defined (ONE_TIME_STEP)
+  grid_iter numTimeStepsInBuild = 2;
+#endif
+#if defined (TWO_TIME_STEPS)
+  grid_iter numTimeStepsInBuild = 3;
+#endif
+
+  buffersSend.resize (BUFFER_COUNT);
+  buffersReceive.resize (BUFFER_COUNT);
+
+  requestsSend.resize (BUFFER_COUNT);
+  requestsReceive.resize (BUFFER_COUNT);
+
+#if defined (GRID_1D)
+  buffersSend[LEFT].resize (bufferSizeLeft.calculateTotalCoord () * numTimeStepsInBuild);
+  buffersSend[RIGHT].resize (bufferSizeRight.calculateTotalCoord () * numTimeStepsInBuild);
+
+  buffersReceive[LEFT].resize (bufferSizeLeft.calculateTotalCoord () * numTimeStepsInBuild);
+  buffersReceive[RIGHT].resize (bufferSizeRight.calculateTotalCoord () * numTimeStepsInBuild);
+#endif
+
+#if defined (GRID_2D)
+
+#endif
+
+#if defined (GRID_3D)
+
+#endif
 }
-#else
+#else /* PARALLEL_GRID */
 Grid::Grid(const GridCoordinate& s) :
   size (s)
 {
   gridValues.resize (size.calculateTotalCoord ());
 
-  //std::cout << "New grid with raw size: " << gridValues.size () << ". " << std::endl;
+#if PRINT_MESSAGE
   printf ("New grid with raw size: %lu.\n", gridValues.size ());
-}
 #endif
+}
+#endif /* !PARALLEL_GRID */
 
 Grid::~Grid ()
 {
@@ -123,20 +153,20 @@ VectorFieldPointValues& Grid::getValues ()
 }
 
 bool
-Grid::isLegitIndex (const GridCoordinate& position) const
+Grid::isLegitIndexWithSize (const GridCoordinate& position, const GridCoordinate& sizeCoord) const
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   const grid_coord& px = position.getX ();
-  const grid_coord& sx = size.getX ();
+  const grid_coord& sx = sizeCoord.getX ();
 #if defined (GRID_2D) || defined (GRID_3D)
   const grid_coord& py = position.getY ();
-  const grid_coord& sy = size.getY ();
+  const grid_coord& sy = sizeCoord.getY ();
 #if defined (GRID_3D)
   const grid_coord& pz = position.getZ ();
-  const grid_coord& sz = size.getZ ();
-#endif
-#endif
-#endif
+  const grid_coord& sz = sizeCoord.getZ ();
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   if (px < 0 || px >= sx)
@@ -153,44 +183,57 @@ Grid::isLegitIndex (const GridCoordinate& position) const
   {
     return false;
   }
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
 
   return true;
 }
 
+bool
+Grid::isLegitIndex (const GridCoordinate& position) const
+{
+  return isLegitIndexWithSize (position, size);
+}
+
 grid_iter
-Grid::calculateIndexFromPosition (const GridCoordinate& position) const
+Grid::calculateIndexFromPositionWithSize (const GridCoordinate& position,
+                                          const GridCoordinate& sizeCoord) const
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   const grid_coord& px = position.getX ();
-  const grid_coord& sx = size.getX ();
+  const grid_coord& sx = sizeCoord.getX ();
 #if defined (GRID_2D) || defined (GRID_3D)
   const grid_coord& py = position.getY ();
-  const grid_coord& sy = size.getY ();
+  const grid_coord& sy = sizeCoord.getY ();
 #if defined (GRID_3D)
   const grid_coord& pz = position.getZ ();
-  const grid_coord& sz = size.getZ ();
-#endif
-#endif
-#endif
+  const grid_coord& sz = sizeCoord.getZ ();
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
 
   grid_coord coord = 0;
 
 #if defined (GRID_1D)
   coord = px;
-#else
+#else /* GRID_1D */
 #if defined (GRID_2D)
   coord = px * sy + py;
-#else
+#else /* GRID_2D */
 #if defined (GRID_3D)
   coord = px * sy * sz + py * sz + pz;
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* !GRID_2D */
+#endif /* !GRID_1D */
 
   return coord;
+}
+
+grid_iter
+Grid::calculateIndexFromPosition (const GridCoordinate& position) const
+{
+  return calculateIndexFromPositionWithSize (position, size);
 }
 
 GridCoordinate
@@ -202,20 +245,20 @@ Grid::calculatePositionFromIndex (grid_iter index) const
   const grid_coord& sy = size.getY ();
 #if defined (GRID_3D)
   const grid_coord& sz = size.getZ ();
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
 
 #if defined (GRID_1D)
   grid_coord x = index;
   return GridCoordinate (x);
-#else
+#else /* GRID_1D */
 #if defined (GRID_2D)
   grid_coord x = index / sy;
   index %= sy;
   grid_coord y = index;
   return GridCoordinate (x, y);
-#else
+#else /* GRID_2D */
 #if defined (GRID_3D)
   grid_coord tmp = sy * sz;
   grid_coord x = index / tmp;
@@ -224,9 +267,9 @@ Grid::calculatePositionFromIndex (grid_iter index) const
   index %= sz;
   grid_coord z = index;
   return GridCoordinate (x, y, z);
-#endif
-#endif
-#endif
+#endif /* GRID_3D */
+#endif /* !GRID_2D */
+#endif /* !GRID_1D */
 }
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
@@ -285,74 +328,26 @@ Grid::getFieldPointValueGlobal (grid_iter coord)
 }
 #endif*/
 
-#endif
+#endif /* GRID_1D || GRID_2D || GRID_3D */
 
+// =================================================================================================
+// Parallel features of the grid
 #if defined (PARALLEL_GRID)
-void
-Grid::SendBuffer (BufferPosition buffer, int processTo)
+
+/*bool
+Grid::isLegitIndexInBuffer (BufferPosition buffer, const GridCoordinate& position) const
 {
-#if defined (GRID_1D)
   switch (buffer)
   {
+#if defined (GRID_1D)
     case LEFT:
     {
-      int numTimeValues = sizeof (FieldPointValue) / sizeof (FieldValue);
-      FieldValue* raw_values = new FieldValue[bufferSizeLeft.getX () * numTimeValues];
-
-      int j = 0;
-      for (int i = bufferSizeLeft.getX (); i < 2*bufferSizeLeft.getX (); ++i)
-      {
-        FieldPointValue* val = getFieldPointValue (i);
-        raw_values[j++] = val->getCurValue ();
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-        raw_values[j++] = val->getPrevValue ();
-#if defined (TWO_TIME_STEPS)
-        raw_values[j++] = val->getPrevPrevValue ();
-#endif
-#endif
-      }
-
-#if FULL_VALUES
-      MPI_Ssend (raw_values, bufferSizeLeft.getX () * numTimeValues, MPI_DOUBLE, processTo, processId, MPI_COMM_WORLD);
-#else
-      MPI_Ssend (raw_values, bufferSizeLeft.getX () * numTimeValues, MPI_FLOAT, processTo, processId, MPI_COMM_WORLD);
-#endif
-
-      delete[] raw_values;
-      break;
+      return isLegitIndexWithSize (position, bufferSizeLeft);
     }
     case RIGHT:
     {
-      int numTimeValues = sizeof (FieldPointValue) / sizeof (FieldValue);
-      FieldValue* raw_values = new FieldValue[bufferSizeRight.getX () * numTimeValues];
-
-      int j = 0;
-      for (int i = size.getX() - 2*bufferSizeRight.getX (); i < size.getX () - bufferSizeRight.getX (); ++i)
-      {
-        FieldPointValue* val = getFieldPointValue (i);
-        raw_values[j++] = val->getCurValue ();
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-        raw_values[j++] = val->getPrevValue ();
-#if defined (TWO_TIME_STEPS)
-        raw_values[j++] = val->getPrevPrevValue ();
-#endif
-#endif
-      }
-
-#if FULL_VALUES
-      MPI_Ssend (raw_values, bufferSizeRight.getX () * numTimeValues, MPI_DOUBLE, processTo, processId, MPI_COMM_WORLD);
-#else
-      MPI_Ssend (raw_values, bufferSizeRight.getX () * numTimeValues, MPI_FLOAT, processTo, processId, MPI_COMM_WORLD);
-#endif
-
-      delete[] raw_values;
-      break;
+      return isLegitIndexWithSize (position, bufferSizeRight);
     }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
 #endif
 #if defined (GRID_2D)
 
@@ -360,92 +355,280 @@ Grid::SendBuffer (BufferPosition buffer, int processTo)
 #if defined (GRID_3D)
 
 #endif
+  }
 }
+
+grid_iter
+Grid::calculateIndexFromPositionInBuffer (BufferPosition buffer,
+                                          const GridCoordinate& position) const
+{
+  switch (buffer)
+  {
+#if defined (GRID_1D)
+    case LEFT:
+    {
+      return calculateIndexFromPositionWithSize (position, bufferSizeLeft);
+    }
+    case RIGHT:
+    {
+      return calculateIndexFromPositionWithSize (position, bufferSizeRight);
+    }
+#endif
+#if defined (GRID_2D)
+
+#endif
+#if defined (GRID_3D)
+
+#endif
+  }
+}
+
+void
+Grid::setFieldPointValueInBuffer (BufferPosition buffer, FieldPointValue* value,
+                                  const GridCoordinate& position)
+{
+  ASSERT (isLegitIndexInBuffer (buffer, position));
+  ASSERT (value);
+
+  grid_iter coord = calculateIndexFromPositionInBuffer (buffer, position);
+
+  if (buffers[buffer][coord])
+  {
+    delete buffers[buffer][coord];
+  }
+
+  buffers[buffer][coord] = value;
+}
+
+// Get field point at coordinate in grid.
+FieldPointValue* getFieldPointValueInBuffer (BufferPosition buffer, const GridCoordinate& position)
+{
+  return NULL;
+}
+FieldPointValue* getFieldPointValueInBuffer (BufferPosition buffer, grid_iter coord)
+{
+  return NULL;
+}
+*/
+void
+Grid::SendRawBuffer (FieldValue* rawBuffer, int processTo, grid_iter size, MPI_Request* request)
+{
+#if defined (TWO_TIME_STEPS)
+  int timeSteps = 3;
+#else /* TWO_TIME_STEPS */
+#if defined (ONE_TIME_STEP)
+  int timeSteps = 2;
+#endif /* ONE_TIME_STEP */
+#endif /* !TWO_TIME_STEPS */
+
+#if FULL_VALUES
+  int retCode = MPI_Isend (rawBuffer, (int) size * timeSteps, MPI_DOUBLE, processTo, processId, MPI_COMM_WORLD, request);
+#else /* FULL_VALUES */
+  int retCode = MPI_Isend (rawBuffer, (int) size * timeSteps, MPI_FLOAT, processTo, processId, MPI_COMM_WORLD, request);
+#endif
+
+  ASSERT (retCode == MPI_SUCCESS);
+}
+
+void
+Grid::ReceiveRawBuffer (FieldValue* rawBuffer, int processFrom, grid_iter size, MPI_Request* request)
+{
+#if defined (TWO_TIME_STEPS)
+  int timeSteps = 3;
+#else /* TWO_TIME_STEPS */
+#if defined (ONE_TIME_STEP)
+  int timeSteps = 2;
+#endif /* ONE_TIME_STEP */
+#endif /* !TWO_TIME_STEPS */
+
+#if FULL_VALUES
+  int retCode = MPI_Irecv (rawBuffer, (int) size * timeSteps, MPI_DOUBLE, processFrom, processFrom, MPI_COMM_WORLD, request);
+#else /* FULL_VALUES */
+  int retCode = MPI_Irecv (rawBuffer, (int) size * timeSteps, MPI_FLOAT, processFrom, processFrom, MPI_COMM_WORLD, request);
+#endif
+
+  ASSERT (retCode == MPI_SUCCESS);
+}
+
+#if defined (GRID_1D)
+void
+Grid::SendBuffer1D (BufferPosition buffer, int processTo)
+{
+  grid_iter pos1 = 0;
+  grid_iter pos2 = 0;
+
+  grid_iter index = 0;
+  grid_iter total = 0;
+
+  switch (buffer)
+  {
+    case LEFT:
+    {
+      total = bufferSizeLeft.calculateTotalCoord ();
+
+      pos1 = total;
+      pos2 = 2 * total;
+
+      break;
+    }
+    case RIGHT:
+    {
+      total = bufferSizeRight.calculateTotalCoord ();
+
+      pos1 = size.calculateTotalCoord() - 2 * total;
+      pos2 = size.calculateTotalCoord () - total;
+
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  for (grid_iter pos = pos1;
+       pos < pos2;
+       ++pos)
+  {
+    FieldPointValue* val = getFieldPointValue (pos);
+    buffersSend[buffer][index++] = val->getCurValue ();
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+    buffersSend[buffer][index++] = val->getPrevValue ();
+#if defined (TWO_TIME_STEPS)
+    buffersSend[buffer][index++] = val->getPrevPrevValue ();
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+  }
+
+  FieldValue* rawValues = buffersSend[buffer].data ();
+  SendRawBuffer (rawValues, processTo, total, &requestsSend[buffer]);
+}
+#endif /* GRID_1D */
+#if defined (GRID_2D)
+void
+Grid::SendBuffer2D (BufferPosition buffer, int processTo)
+{
+
+}
+#endif /* GRID_2D */
+#if defined (GRID_3D)
+void
+Grid::SendBuffer3D (BufferPosition buffer, int processTo)
+{
+
+}
+#endif /* GRID_3D */
+
+void
+Grid::SendBuffer (BufferPosition buffer, int processTo)
+{
+#if PRINT_MESSAGE
+  printf ("Send #%d %d.\n", processId, buffer);
+#endif
+
+#if defined (GRID_1D)
+  SendBuffer1D (buffer, processTo);
+#endif /* GRID_1D */
+#if defined (GRID_2D)
+  SendBuffer2D (buffer, processTo);
+#endif /* GRID_2D */
+#if defined (GRID_3D)
+  SendBuffer3D (buffer, processTo);
+#endif /* GRID_3D */
+}
+
+#if defined (GRID_1D)
+void
+Grid::ReceiveBuffer1D (BufferPosition buffer, int processFrom)
+{
+  FieldValue* rawValues = buffersReceive[buffer].data ();
+
+  grid_iter pos1 = 0;
+  grid_iter pos2 = 0;
+
+  grid_iter index = 0;
+  grid_iter total = 0;
+
+  switch (buffer)
+  {
+    case LEFT:
+    {
+      total = bufferSizeLeft.calculateTotalCoord ();
+
+      pos1 = 0;
+      pos2 = total;
+
+      break;
+    }
+    case RIGHT:
+    {
+      total = bufferSizeRight.calculateTotalCoord ();
+
+      pos1 = size.calculateTotalCoord () - total;
+      pos2 = size.calculateTotalCoord ();
+
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  ReceiveRawBuffer (rawValues, processFrom, total, &requestsReceive[buffer]);
+
+  for (grid_iter pos = pos1; pos < pos2; ++pos)
+  {
+#if defined (TWO_TIME_STEPS)
+    FieldPointValue* val = new FieldPointValue (rawValues[index++], rawValues[index++], rawValues[index++]);
+#else /* TWO_TIME_STEPS */
+#if defined (ONE_TIME_STEP)
+    FieldPointValue* val = new FieldPointValue (rawValues[index++], rawValues[index++]);
+#else /* ONE_TIME_STEP */
+    FieldPointValue* val = new FieldPointValue (rawValues[index++]);
+#endif /* !ONE_TIME_STEP */
+#endif /* !TWO_TIME_STEPS */
+
+    setFieldPointValue (val, GridCoordinate (pos));
+  }
+}
+#endif /* GRID_1D */
+#if defined (GRID_2D)
+void
+Grid::ReceiveBuffer2D (BufferPosition buffer, int processFrom)
+{
+
+}
+#endif /* GRID_2D */
+#if defined (GRID_3D)
+void
+Grid::ReceiveBuffer3D (BufferPosition buffer, int processFrom)
+{
+
+}
+#endif /* GRID_3D */
+
 
 void
 Grid::ReceiveBuffer (BufferPosition buffer, int processFrom)
 {
+#if PRINT_MESSAGE
+  printf ("Receive #%d %d.\n", processId, buffer);
+#endif
+
 #if defined (GRID_1D)
-  switch (buffer)
-  {
-    case LEFT:
-    {
-      int numTimeValues = sizeof (FieldPointValue) / sizeof (FieldValue);
-      FieldValue* raw_values = new FieldValue[bufferSizeLeft.getX () * numTimeValues];
-
-      MPI_Status status;
-
-#if FULL_VALUES
-      MPI_Recv (raw_values, bufferSizeLeft.getX () * numTimeValues, MPI_DOUBLE, processFrom, processId, MPI_COMM_WORLD, &status);
-#else
-      MPI_Recv (raw_values, bufferSizeLeft.getX () * numTimeValues, MPI_FLOAT, processFrom, processId, MPI_COMM_WORLD, &status);
-#endif
-
-      int j = 0;
-      for (int i = 0; i < bufferSizeLeft.getX (); ++i)
-      {
-#if defined (TWO_TIME_STEPS)
-        FieldPointValue* val = new FieldPointValue (raw_values[j++], raw_values[j++], raw_values[j++]);
-#else
-#if defined (ONE_TIME_STEP)
-        FieldPointValue* val = new FieldPointValue (raw_values[j++], raw_values[j++]);
-#else
-        FieldPointValue* val = new FieldPointValue (raw_values[j++]);
-#endif
-#endif
-
-        setFieldPointValue (val, GridCoordinate (i));
-      }
-
-      delete[] raw_values;
-      break;
-    }
-    case RIGHT:
-    {
-      int numTimeValues = sizeof (FieldPointValue) / sizeof (FieldValue);
-      FieldValue* raw_values = new FieldValue[bufferSizeRight.getX () * numTimeValues];
-
-      MPI_Status status;
-
-#if FULL_VALUES
-      MPI_Recv (raw_values, bufferSizeRight.getX () * numTimeValues, MPI_DOUBLE, processFrom, processId, MPI_COMM_WORLD, &status);
-#else
-      MPI_Recv (raw_values, bufferSizeRight.getX () * numTimeValues, MPI_FLOAT, processFrom, processId, MPI_COMM_WORLD, &status);
-#endif
-
-      int j = 0;
-      for (int i = size.getX() - bufferSizeRight.getX (); i < size.getX(); ++i)
-      {
-#if defined (TWO_TIME_STEPS)
-        FieldPointValue* val = new FieldPointValue (raw_values[j++], raw_values[j++], raw_values[j++]);
-#else
-#if defined (ONE_TIME_STEP)
-        FieldPointValue* val = new FieldPointValue (raw_values[j++], raw_values[j++]);
-#else
-        FieldPointValue* val = new FieldPointValue (raw_values[j++]);
-#endif
-#endif
-
-        setFieldPointValue (val, GridCoordinate (i));
-      }
-
-      delete[] raw_values;
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-#endif
+  ReceiveBuffer1D (buffer, processFrom);
+#endif /* GRID_1D */
 #if defined (GRID_2D)
-
-#endif
+  ReceiveBuffer2D (buffer, processFrom);
+#endif /* GRID_2D */
 #if defined (GRID_3D)
-
-#endif
+  ReceiveBuffer3D (buffer, processFrom);
+#endif /* GRID_3D */
 }
-#endif
+
+
+#endif /* PARALLEL_GRID */
 
 void
 Grid::shiftInTime ()
