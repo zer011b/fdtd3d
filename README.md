@@ -2,12 +2,30 @@
 3D FDTD solver.
 
 # Build Process
+
 Build is done using cmake & make.
+
+## Release Build
+
 ```sh
-mkdir build
-cd build
-cmake ..
+mkdir Release
+cd Release
+cmake .. -DCMAKE_BUILD_TYPE=Release
 make
+```
+
+## Debug Build
+
+```sh
+mkdir Debug
+cd Debug
+cmake .. -DCMAKE_BUILD_TYPE=Debug
+make
+```
+## Additional Example
+
+```sh
+cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=ON -DTIME_STEPS=2 -DGRID_DIMENSION=1 -DPRINT_MESSAGE=OFF
 ```
 
 # Build Flags
@@ -16,6 +34,7 @@ make
 -DFULL_VALUES - use double (ON) or float (OFF)
 -DTIME_STEPS - number of steps in time (1 or 2)
 -DGRID_DIMENSION - number of dimensions in grid (1, 2 or 3)
+-DPRINT_MESSAGE - print output (ON or OFF)
 ```
 
 # Preprocessor variables
@@ -26,6 +45,7 @@ TWO_TIME_STEPS - two previous time steps are saved
 GRID_1D - one-dimensional solver
 GRID_2D - two-dimensional solver
 GRID_3D - three-dimensional solver
+PRINT_MESSAGE - print output (TRUE of FALSE)
 ```
 
 # About
