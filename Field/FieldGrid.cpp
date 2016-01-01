@@ -289,6 +289,17 @@ Grid::setFieldPointValue (FieldPointValue* value, const GridCoordinate& position
   gridValues[coord] = value;
 }
 
+void
+Grid::setFieldPointValueCurrent (const FieldValue& value,
+                                 const GridCoordinate& position)
+{
+  ASSERT (isLegitIndex (position));
+
+  grid_iter coord = calculateIndexFromPosition (position);
+
+  gridValues[coord]->setCurValue (value);
+}
+
 FieldPointValue*
 Grid::getFieldPointValue (const GridCoordinate& position)
 {
@@ -334,82 +345,6 @@ Grid::getFieldPointValueGlobal (grid_iter coord)
 // Parallel features of the grid
 #if defined (PARALLEL_GRID)
 
-/*bool
-Grid::isLegitIndexInBuffer (BufferPosition buffer, const GridCoordinate& position) const
-{
-  switch (buffer)
-  {
-#if defined (GRID_1D)
-    case LEFT:
-    {
-      return isLegitIndexWithSize (position, bufferSizeLeft);
-    }
-    case RIGHT:
-    {
-      return isLegitIndexWithSize (position, bufferSizeRight);
-    }
-#endif
-#if defined (GRID_2D)
-
-#endif
-#if defined (GRID_3D)
-
-#endif
-  }
-}
-
-grid_iter
-Grid::calculateIndexFromPositionInBuffer (BufferPosition buffer,
-                                          const GridCoordinate& position) const
-{
-  switch (buffer)
-  {
-#if defined (GRID_1D)
-    case LEFT:
-    {
-      return calculateIndexFromPositionWithSize (position, bufferSizeLeft);
-    }
-    case RIGHT:
-    {
-      return calculateIndexFromPositionWithSize (position, bufferSizeRight);
-    }
-#endif
-#if defined (GRID_2D)
-
-#endif
-#if defined (GRID_3D)
-
-#endif
-  }
-}
-
-void
-Grid::setFieldPointValueInBuffer (BufferPosition buffer, FieldPointValue* value,
-                                  const GridCoordinate& position)
-{
-  ASSERT (isLegitIndexInBuffer (buffer, position));
-  ASSERT (value);
-
-  grid_iter coord = calculateIndexFromPositionInBuffer (buffer, position);
-
-  if (buffers[buffer][coord])
-  {
-    delete buffers[buffer][coord];
-  }
-
-  buffers[buffer][coord] = value;
-}
-
-// Get field point at coordinate in grid.
-FieldPointValue* getFieldPointValueInBuffer (BufferPosition buffer, const GridCoordinate& position)
-{
-  return NULL;
-}
-FieldPointValue* getFieldPointValueInBuffer (BufferPosition buffer, grid_iter coord)
-{
-  return NULL;
-}
-*/
 void
 Grid::SendRawBuffer (FieldValue* rawBuffer, int processTo, grid_iter size, MPI_Request* request)
 {

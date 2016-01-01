@@ -197,21 +197,6 @@ private:
   VectorFieldPointValues& getValues ();
 
 #if defined (PARALLEL_GRID)
-  // Check whether position in buffer is appropriate to get/set value from.
-  //bool isLegitIndexInBuffer (BufferPosition buffer, const GridCoordinate& position) const;
-
-  // Calculate three-dimensional coordinate in buffer from position.
-  //grid_iter calculateIndexFromPositionInBuffer (BufferPosition buffer,
-  //                                              const GridCoordinate& position) const;
-
-  // Set field point at coordinate in grid buffer.
-  //void setFieldPointValueInBuffer (BufferPosition buffer, FieldPointValue* value,
-  //                                 const GridCoordinate& position);
-
-  // Get field point at coordinate in grid.
-  //FieldPointValue* getFieldPointValueInBuffer (BufferPosition buffer, const GridCoordinate& position);
-  //FieldPointValue* getFieldPointValueInBuffer (BufferPosition buffer, grid_iter coord);
-
   // Raw send
   void SendRawBuffer (FieldValue* rawBuffer, int processTo, grid_iter size, MPI_Request* request);
 
@@ -230,6 +215,7 @@ private:
   void SendBuffer3D (BufferPosition buffer, int processTo);
   void ReceiveBuffer3D (BufferPosition buffer, int processFrom);
 #endif /* GRID_3D */
+
 #endif /* PARALLEL_GRID */
 
 public:
@@ -254,6 +240,9 @@ public:
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   // Set field point at coordinate in grid.
   void setFieldPointValue (FieldPointValue* value, const GridCoordinate& position);
+
+  void setFieldPointValueCurrent (const FieldValue& value,
+                                  const GridCoordinate& position);
 
   // Get field point at coordinate in grid.
   FieldPointValue* getFieldPointValue (const GridCoordinate& position);

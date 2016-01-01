@@ -30,7 +30,7 @@ int main (int argc, char** argv)
   GridCoordinate sizeTotal = size + bufferLeft + bufferRight;
   for (int i = 0; i < sizeTotal.calculateTotalCoord (); ++i)
   {
-    FieldPointValue* val = new FieldPointValue (0, 100, 100);
+    FieldPointValue* val = new FieldPointValue (0, 0, 0);
     GridCoordinate pos (i);
     grid.setFieldPointValue(val, pos);
   }
@@ -54,6 +54,11 @@ int main (int argc, char** argv)
 
     if (rank != numProcs - 1)
     {
+      grid.ReceiveBuffer (RIGHT, rank + 1);
+    }
+
+    if (rank != numProcs - 1)
+    {
       grid.SendBuffer (RIGHT, rank + 1);
     }
 
@@ -62,14 +67,15 @@ int main (int argc, char** argv)
       grid.ReceiveBuffer (LEFT, rank - 1);
     }
 
-    if (rank != numProcs - 1)
-    {
-      grid.ReceiveBuffer (RIGHT, rank + 1);
-    }
-
     MPI_Barrier (MPI_COMM_WORLD);
 
     grid.shiftInTime ();
+
+    for (int i = 0; i < sizeTotal.calculateTotalCoord (); ++i)
+    {
+      GridCoordinate pos (i);
+      grid.setFieldPointValueCurrent (t, pos);
+    }
   }
 
   /*GridCoordinate size (3, 3);
@@ -131,6 +137,11 @@ int main (int argc, char** argv)
     val_1->getPrevValue() << ", " << val_1->getPrevPrevValue() << std::endl;*/
 
 #if PRINT_MESSAGE
+  GridCoordinate pos (15);
+  const FieldPointValue* val = grid.getFieldPointValue (pos);
+  printf ("%f %f %f\n", val->getCurValue (), val->getPrevValue(),
+    val->getPrevPrevValue());
+
   printf ("Main process %d.\n", rank);
 #endif
 
