@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 #include "FieldGrid.h"
 #include "Assert.h"
@@ -104,15 +105,31 @@ Grid::Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
   requestsReceive.resize (BUFFER_COUNT);
 
 #if defined (GRID_1D)
-  buffersSend[LEFT].resize (bufferSizeLeft.calculateTotalCoord () * numTimeStepsInBuild);
-  buffersSend[RIGHT].resize (bufferSizeRight.calculateTotalCoord () * numTimeStepsInBuild);
+  buffersSend[LEFT].resize (bufferSizeLeft.getX () * numTimeStepsInBuild);
+  buffersSend[RIGHT].resize (bufferSizeRight.getX () * numTimeStepsInBuild);
 
-  buffersReceive[LEFT].resize (bufferSizeLeft.calculateTotalCoord () * numTimeStepsInBuild);
-  buffersReceive[RIGHT].resize (bufferSizeRight.calculateTotalCoord () * numTimeStepsInBuild);
+  buffersReceive[LEFT].resize (bufferSizeLeft.getX () * numTimeStepsInBuild);
+  buffersReceive[RIGHT].resize (bufferSizeRight.getX () * numTimeStepsInBuild);
 #endif
 
 #if defined (GRID_2D)
+  buffersSend[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
+  buffersSend[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * numTimeStepsInBuild);
+  buffersSend[DOWN].resize (bufferSizeLeft.getY () * currentSize.getX () * numTimeStepsInBuild);
+  buffersSend[UP].resize (bufferSizeRight.getY () * currentSize.getX () * numTimeStepsInBuild);
+  buffersSend[LEFT_DOWN].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
+  buffersSend[LEFT_UP].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
+  buffersSend[RIGHT_DOWN].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
+  buffersSend[RIGHT_UP].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
 
+  buffersReceive[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
+  buffersReceive[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * numTimeStepsInBuild);
+  buffersReceive[DOWN].resize (bufferSizeLeft.getY () * currentSize.getX () * numTimeStepsInBuild);
+  buffersReceive[UP].resize (bufferSizeRight.getY () * currentSize.getX () * numTimeStepsInBuild);
+  buffersReceive[LEFT_DOWN].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
+  buffersReceive[LEFT_UP].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
+  buffersReceive[RIGHT_DOWN].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
+  buffersReceive[RIGHT_UP].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
 #endif
 
 #if defined (GRID_3D)
@@ -348,18 +365,10 @@ Grid::getFieldPointValueGlobal (grid_iter coord)
 void
 Grid::SendRawBuffer (FieldValue* rawBuffer, int processTo, grid_iter size, MPI_Request* request)
 {
-#if defined (TWO_TIME_STEPS)
-  int timeSteps = 3;
-#else /* TWO_TIME_STEPS */
-#if defined (ONE_TIME_STEP)
-  int timeSteps = 2;
-#endif /* ONE_TIME_STEP */
-#endif /* !TWO_TIME_STEPS */
-
 #if FULL_VALUES
-  int retCode = MPI_Isend (rawBuffer, (int) size * timeSteps, MPI_DOUBLE, processTo, processId, MPI_COMM_WORLD, request);
+  int retCode = MPI_Isend (rawBuffer, (int) size , MPI_DOUBLE, processTo, processId, MPI_COMM_WORLD, request);
 #else /* FULL_VALUES */
-  int retCode = MPI_Isend (rawBuffer, (int) size * timeSteps, MPI_FLOAT, processTo, processId, MPI_COMM_WORLD, request);
+  int retCode = MPI_Isend (rawBuffer, (int) size, MPI_FLOAT, processTo, processId, MPI_COMM_WORLD, request);
 #endif
 
   ASSERT (retCode == MPI_SUCCESS);
@@ -368,18 +377,10 @@ Grid::SendRawBuffer (FieldValue* rawBuffer, int processTo, grid_iter size, MPI_R
 void
 Grid::ReceiveRawBuffer (FieldValue* rawBuffer, int processFrom, grid_iter size, MPI_Request* request)
 {
-#if defined (TWO_TIME_STEPS)
-  int timeSteps = 3;
-#else /* TWO_TIME_STEPS */
-#if defined (ONE_TIME_STEP)
-  int timeSteps = 2;
-#endif /* ONE_TIME_STEP */
-#endif /* !TWO_TIME_STEPS */
-
 #if FULL_VALUES
-  int retCode = MPI_Irecv (rawBuffer, (int) size * timeSteps, MPI_DOUBLE, processFrom, processFrom, MPI_COMM_WORLD, request);
+  int retCode = MPI_Irecv (rawBuffer, (int) size, MPI_DOUBLE, processFrom, processFrom, MPI_COMM_WORLD, request);
 #else /* FULL_VALUES */
-  int retCode = MPI_Irecv (rawBuffer, (int) size * timeSteps, MPI_FLOAT, processFrom, processFrom, MPI_COMM_WORLD, request);
+  int retCode = MPI_Irecv (rawBuffer, (int) size, MPI_FLOAT, processFrom, processFrom, MPI_COMM_WORLD, request);
 #endif
 
   ASSERT (retCode == MPI_SUCCESS);
@@ -421,9 +422,7 @@ Grid::SendBuffer1D (BufferPosition buffer, int processTo)
     }
   }
 
-  for (grid_iter pos = pos1;
-       pos < pos2;
-       ++pos)
+  for (grid_iter pos = pos1; pos < pos2; ++pos)
   {
     FieldPointValue* val = getFieldPointValue (pos);
     buffersSend[buffer][index++] = val->getCurValue ();
@@ -436,14 +435,118 @@ Grid::SendBuffer1D (BufferPosition buffer, int processTo)
   }
 
   FieldValue* rawValues = buffersSend[buffer].data ();
-  SendRawBuffer (rawValues, processTo, total, &requestsSend[buffer]);
+  SendRawBuffer (rawValues, processTo, buffersSend[buffer].size (), &requestsSend[buffer]);
 }
 #endif /* GRID_1D */
 #if defined (GRID_2D)
 void
 Grid::SendBuffer2D (BufferPosition buffer, int processTo)
 {
+  grid_iter pos1 = 0;
+  grid_iter pos2 = 0;
+  grid_iter pos3 = 0;
+  grid_iter pos4 = 0;
 
+  grid_iter index = 0;
+
+  switch (buffer)
+  {
+    case LEFT:
+    {
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = 2 * bufferSizeLeft.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      break;
+    }
+    case RIGHT:
+    {
+      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      break;
+    }
+    case UP:
+    {
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      break;
+    }
+    case DOWN:
+    {
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = 2 * bufferSizeLeft.getY ();
+
+      break;
+    }
+    case LEFT_UP:
+    {
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = 2 * bufferSizeLeft.getX ();
+      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      break;
+    }
+    case LEFT_DOWN:
+    {
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = 2 * bufferSizeLeft.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = 2 * bufferSizeLeft.getY ();
+
+      break;
+    }
+    case RIGHT_UP:
+    {
+      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      break;
+    }
+    case RIGHT_DOWN:
+    {
+      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = 2 * bufferSizeLeft.getY ();
+
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  for (grid_coord i = pos1; i < pos2; ++i)
+  {
+    for (grid_coord j = pos3; j < pos4; ++j)
+    {
+      GridCoordinate pos (i, j);
+      FieldPointValue* val = getFieldPointValue (pos);
+      buffersSend[buffer][index++] = val->getCurValue ();
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+      buffersSend[buffer][index++] = val->getPrevValue ();
+#if defined (TWO_TIME_STEPS)
+      buffersSend[buffer][index++] = val->getPrevPrevValue ();
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+    }
+  }
+
+  FieldValue* rawValues = buffersSend[buffer].data ();
+  SendRawBuffer (rawValues, processTo, buffersSend[buffer].size (), &requestsSend[buffer]);
 }
 #endif /* GRID_2D */
 #if defined (GRID_3D)
@@ -510,7 +613,7 @@ Grid::ReceiveBuffer1D (BufferPosition buffer, int processFrom)
     }
   }
 
-  ReceiveRawBuffer (rawValues, processFrom, total, &requestsReceive[buffer]);
+  ReceiveRawBuffer (rawValues, processFrom, buffersReceive[buffer].size (), &requestsReceive[buffer]);
 
   for (grid_iter pos = pos1; pos < pos2; ++pos)
   {
@@ -532,7 +635,115 @@ Grid::ReceiveBuffer1D (BufferPosition buffer, int processFrom)
 void
 Grid::ReceiveBuffer2D (BufferPosition buffer, int processFrom)
 {
+  FieldValue* rawValues = buffersReceive[buffer].data ();
 
+  grid_iter pos1 = 0;
+  grid_iter pos2 = 0;
+  grid_iter pos3 = 0;
+  grid_iter pos4 = 0;
+
+  grid_iter index = 0;
+
+  switch (buffer)
+  {
+    case LEFT:
+    {
+      pos1 = 0;
+      pos2 = bufferSizeLeft.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      break;
+    }
+    case RIGHT:
+    {
+      pos1 = size.getX () - bufferSizeRight.getX ();
+      pos2 = size.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      break;
+    }
+    case UP:
+    {
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = size.getY () - bufferSizeRight.getY ();
+      pos4 = size.getY ();
+
+      break;
+    }
+    case DOWN:
+    {
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = 0;
+      pos4 = bufferSizeLeft.getY ();
+
+      break;
+    }
+    case LEFT_UP:
+    {
+      pos1 = 0;
+      pos2 = bufferSizeLeft.getX ();
+      pos3 = size.getY () - bufferSizeRight.getY ();
+      pos4 = size.getY ();
+
+      break;
+    }
+    case LEFT_DOWN:
+    {
+      pos1 = 0;
+      pos2 = bufferSizeLeft.getX ();
+      pos3 = 0;
+      pos4 = bufferSizeLeft.getY ();
+
+      break;
+    }
+    case RIGHT_UP:
+    {
+      pos1 = size.getX () - bufferSizeRight.getX ();
+      pos2 = size.getX ();
+      pos3 = size.getY () - bufferSizeRight.getY ();
+      pos4 = size.getY ();
+
+      break;
+    }
+    case RIGHT_DOWN:
+    {
+      pos1 = size.getX () - bufferSizeRight.getX ();
+      pos2 = size.getX ();
+      pos3 = 0;
+      pos4 = bufferSizeLeft.getY ();
+
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  ReceiveRawBuffer (rawValues, processFrom, buffersReceive[buffer].size (), &requestsReceive[buffer]);
+
+  for (grid_coord i = pos1; i < pos2; ++i)
+  {
+    for (grid_coord j = pos3; j < pos4; ++j)
+    {
+#if defined (TWO_TIME_STEPS)
+      FieldPointValue* val = new FieldPointValue (rawValues[index++], rawValues[index++], rawValues[index++]);
+#else /* TWO_TIME_STEPS */
+#if defined (ONE_TIME_STEP)
+      FieldPointValue* val = new FieldPointValue (rawValues[index++], rawValues[index++]);
+#else /* ONE_TIME_STEP */
+      FieldPointValue* val = new FieldPointValue (rawValues[index++]);
+#endif /* !ONE_TIME_STEP */
+#endif /* !TWO_TIME_STEPS */
+
+      GridCoordinate pos (i, j);
+      setFieldPointValue (val, GridCoordinate (pos));
+    }
+  }
 }
 #endif /* GRID_2D */
 #if defined (GRID_3D)
@@ -562,6 +773,128 @@ Grid::ReceiveBuffer (BufferPosition buffer, int processFrom)
 #endif /* GRID_3D */
 }
 
+void
+Grid::Send ()
+{
+#if defined (GRID_1D)
+  if (processId != 0)
+  {
+    SendBuffer (LEFT, processId - 1);
+  }
+  if (processId != totalProcCount - 1)
+  {
+    SendBuffer (RIGHT, processId + 1);
+  }
+#endif
+
+#if defined (GRID_2D)
+  int sqrtProc = (int) sqrt (totalProcCount);
+
+  if (processId >= sqrtProc)
+  {
+    SendBuffer (DOWN, processId - sqrtProc);
+
+    if (processId % sqrtProc != 0)
+    {
+      SendBuffer (LEFT_DOWN, processId - sqrtProc - 1);
+    }
+    if ((processId + 1) % sqrtProc != 0)
+    {
+      SendBuffer (RIGHT_DOWN, processId - sqrtProc + 1);
+    }
+  }
+  if (processId % sqrtProc != 0)
+  {
+    SendBuffer (LEFT, processId - 1);
+  }
+  if ((processId + 1) % sqrtProc != 0)
+  {
+    SendBuffer (RIGHT, processId - 1);
+  }
+  if (processId < totalProcCount - sqrtProc)
+  {
+    SendBuffer (UP, processId + sqrtProc);
+
+    if (processId % sqrtProc != 0)
+    {
+      SendBuffer (LEFT_UP, processId + sqrtProc - 1);
+    }
+    if ((processId + 1) % sqrtProc != 0)
+    {
+      SendBuffer (RIGHT_UP, processId + sqrtProc + 1);
+    }
+  }
+#endif
+
+#if defined (GRID_3D)
+
+#endif
+}
+
+void
+Grid::Receive ()
+{
+#if defined (GRID_1D)
+  if (processId != 0)
+  {
+    ReceiveBuffer (LEFT, processId - 1);
+  }
+  if (processId != totalProcCount - 1)
+  {
+    ReceiveBuffer (RIGHT, processId + 1);
+  }
+#endif
+
+#if defined (GRID_2D)
+  int sqrtProc = (int) sqrt (totalProcCount);
+
+  if (processId >= sqrtProc)
+  {
+    ReceiveBuffer (DOWN, processId - sqrtProc);
+
+    if (processId % sqrtProc != 0)
+    {
+      ReceiveBuffer (LEFT_DOWN, processId - sqrtProc - 1);
+    }
+    if ((processId + 1) % sqrtProc != 0)
+    {
+      ReceiveBuffer (RIGHT_DOWN, processId - sqrtProc + 1);
+    }
+  }
+  if (processId % sqrtProc != 0)
+  {
+    ReceiveBuffer (LEFT, processId - 1);
+  }
+  if ((processId + 1) % sqrtProc != 0)
+  {
+    ReceiveBuffer (RIGHT, processId - 1);
+  }
+  if (processId < totalProcCount - sqrtProc)
+  {
+    ReceiveBuffer (UP, processId + sqrtProc);
+
+    if (processId % sqrtProc != 0)
+    {
+      ReceiveBuffer (LEFT_UP, processId + sqrtProc - 1);
+    }
+    if ((processId + 1) % sqrtProc != 0)
+    {
+      ReceiveBuffer (RIGHT_UP, processId + sqrtProc + 1);
+    }
+  }
+#endif
+
+#if defined (GRID_3D)
+
+#endif
+}
+
+void
+Grid::Share ()
+{
+  Send ();
+  Receive ();
+}
 
 #endif /* PARALLEL_GRID */
 

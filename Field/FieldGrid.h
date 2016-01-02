@@ -216,6 +216,11 @@ private:
   void ReceiveBuffer3D (BufferPosition buffer, int processFrom);
 #endif /* GRID_3D */
 
+  void SendBuffer (BufferPosition buffer, int processTo);
+  void ReceiveBuffer (BufferPosition buffer, int processFrom);
+
+  void Send ();
+  void Receive ();
 #endif /* PARALLEL_GRID */
 
 public:
@@ -254,8 +259,7 @@ public:
 #endif  /* GRID_1D || GRID_2D || GRID_3D*/
 
 #if defined (PARALLEL_GRID)
-  void SendBuffer (BufferPosition buffer, int processTo);
-  void ReceiveBuffer (BufferPosition buffer, int processFrom);
+  void Share ();
 #endif /* PARALLEL_GRID */
 
   // Replace previous layer with current and so on.

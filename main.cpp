@@ -21,60 +21,38 @@ int main (int argc, char** argv)
   printf ("Start process %d of %d\n", rank, numProcs);
 #endif
 
-  GridCoordinate overallSize (100/*, 100*/);
-  GridCoordinate size (10/*, 10*/);
-  GridCoordinate bufferLeft (10/*, 10*/);
-  GridCoordinate bufferRight (10/*, 10*/);
+  GridCoordinate overallSize (100, 100);
+  GridCoordinate size (10, 10);
+  GridCoordinate bufferLeft (10, 10);
+  GridCoordinate bufferRight (10, 10);
   Grid grid (overallSize, size, bufferLeft, bufferRight, rank, numProcs);
 
   GridCoordinate sizeTotal = size + bufferLeft + bufferRight;
-  for (int i = 0; i < sizeTotal.calculateTotalCoord (); ++i)
+  for (int i = 0; i < sizeTotal.getX (); ++i)
   {
-    FieldPointValue* val = new FieldPointValue (0, 0, 0);
-    GridCoordinate pos (i);
-    grid.setFieldPointValue(val, pos);
+    for (int j = 0; j < sizeTotal.getY (); ++j)
+    {
+      FieldPointValue* val = new FieldPointValue (0, 0, 0);
+      GridCoordinate pos (i, j);
+      grid.setFieldPointValue(val, pos);
+    }
   }
 
-  /*if (rank == 0)
-  {
-    printf ("Rank %d.\n", rank);
-    grid.SendBuffer (LEFT, 0);
-  }*/
-
-  /*if (rank == 0)
-  {
-    grid.ReceiveBuffer (RIGHT, 1);
-  }*/
   for (int t = 0; t < 1000; ++t)
   {
-    if (rank != 0)
-    {
-      grid.SendBuffer (LEFT, rank - 1);
-    }
-
-    if (rank != numProcs - 1)
-    {
-      grid.ReceiveBuffer (RIGHT, rank + 1);
-    }
-
-    if (rank != numProcs - 1)
-    {
-      grid.SendBuffer (RIGHT, rank + 1);
-    }
-
-    if (rank != 0)
-    {
-      grid.ReceiveBuffer (LEFT, rank - 1);
-    }
+    grid.Share ();
 
     MPI_Barrier (MPI_COMM_WORLD);
 
     grid.shiftInTime ();
 
-    for (int i = 0; i < sizeTotal.calculateTotalCoord (); ++i)
+    for (int i = 0; i < sizeTotal.getX (); ++i)
     {
-      GridCoordinate pos (i);
-      grid.setFieldPointValueCurrent (t, pos);
+      for (int j = 0; j < sizeTotal.getY (); ++j)
+      {
+        GridCoordinate pos (i, j);
+        grid.setFieldPointValueCurrent (t, pos);
+      }
     }
   }
 
