@@ -45,7 +45,7 @@ enum BufferPosition
   LEFT_UP_FRONT,
   LEFT_UP_BACK,
   LEFT_DOWN_FRONT,
-  LEFT_DOWN_BACK
+  LEFT_DOWN_BACK,
   RIGHT_UP_FRONT,
   RIGHT_UP_BACK,
   RIGHT_DOWN_FRONT,
@@ -160,6 +160,10 @@ class Grid
 #if defined (PARALLEL_GRID)
   int processId;
 
+#if defined (GRID_2D)
+  int sqrtProc;
+#endif
+
   int totalProcCount;
 
   // Size of current piece
@@ -205,22 +209,26 @@ private:
 
 #if defined (GRID_1D)
   void SendBuffer1D (BufferPosition buffer, int processTo);
-  void ReceiveBuffer1D (BufferPosition buffer, int processFrom);
+  void CopyReceiveBuffer1D (BufferPosition buffer);
 #endif /* GRID_1D */
 #if defined (GRID_2D)
   void SendBuffer2D (BufferPosition buffer, int processTo);
-  void ReceiveBuffer2D (BufferPosition buffer, int processFrom);
+  void CopyReceiveBuffer2D (BufferPosition buffer);
 #endif /* GRID_2D */
 #if defined (GRID_3D)
   void SendBuffer3D (BufferPosition buffer, int processTo);
-  void ReceiveBuffer3D (BufferPosition buffer, int processFrom);
+  void CopyReceiveBuffer3D (BufferPosition buffer, int processFrom);
 #endif /* GRID_3D */
 
   void SendBuffer (BufferPosition buffer, int processTo);
   void ReceiveBuffer (BufferPosition buffer, int processFrom);
+  void CopyReceiveBuffer (BufferPosition buffer);
 
   void Send ();
   void Receive ();
+  void CopyReceive ();
+
+  void AwaitSendReceive ();
 #endif /* PARALLEL_GRID */
 
 public:

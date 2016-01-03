@@ -38,11 +38,11 @@ int main (int argc, char** argv)
     }
   }
 
+  MPI_Barrier (MPI_COMM_WORLD);
+
   for (int t = 0; t < 1000; ++t)
   {
     grid.Share ();
-
-    MPI_Barrier (MPI_COMM_WORLD);
 
     grid.shiftInTime ();
 

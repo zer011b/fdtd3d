@@ -73,6 +73,55 @@ GridCoordinate::calculateTotalCoord () const
 #endif /* GRID_1D || GRID_2D || GRID_3D*/
 
 // ================================ Grid ================================
+
+#if defined (PRINT_MESSAGE)
+const char* BufferPositionNames[] =
+{
+#if defined (GRID_1D)
+  "LEFT",
+  "RIGHT"
+#endif
+#if defined (GRID_2D)
+  "LEFT",
+  "RIGHT",
+  "UP",
+  "DOWN",
+  "LEFT_UP",
+  "LEFT_DOWN",
+  "RIGHT_UP",
+  "RIGHT_DOWN",
+#endif
+#if defined (GRID_3D)
+  "LEFT",
+  "RIGHT",
+  "UP",
+  "DOWN",
+  "FRONT",
+  "BACK",
+  "LEFT_FRONT",
+  "LEFT_BACK",
+  "LEFT_UP",
+  "LEFT_DOWN",
+  "RIGHT_FRONT",
+  "RIGHT_BACK",
+  "RIGHT_UP",
+  "RIGHT_DOWN",
+  "UP_FRONT",
+  "UP_BACK",
+  "DOWN_FRONT",
+  "DOWN_BACK",
+  "LEFT_UP_FRONT",
+  "LEFT_UP_BACK",
+  "LEFT_DOWN_FRONT",
+  "LEFT_DOWN_BACK",
+  "RIGHT_UP_FRONT",
+  "RIGHT_UP_BACK",
+  "RIGHT_DOWN_FRONT",
+  "RIGHT_DOWN_BACK",
+#endif /* GRID_3D */
+};
+#endif
+
 #if defined (PARALLEL_GRID)
 Grid::Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
             const GridCoordinate& bufSizeL, const GridCoordinate& bufSizeR,
@@ -113,6 +162,10 @@ Grid::Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
 #endif
 
 #if defined (GRID_2D)
+  FieldValue sqrtVal = sqrt ((FieldValue) totalProcCount);
+  ASSERT (sqrtVal == floor (sqrtVal));
+  sqrtProc = (int) sqrtVal;
+
   buffersSend[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
   buffersSend[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * numTimeStepsInBuild);
   buffersSend[DOWN].resize (bufferSizeLeft.getY () * currentSize.getX () * numTimeStepsInBuild);
@@ -561,7 +614,7 @@ void
 Grid::SendBuffer (BufferPosition buffer, int processTo)
 {
 #if PRINT_MESSAGE
-  printf ("Send #%d %d.\n", processId, buffer);
+  printf ("Send #%d %s.\n", processId, BufferPositionNames[buffer]);
 #endif
 
 #if defined (GRID_1D)
@@ -577,10 +630,8 @@ Grid::SendBuffer (BufferPosition buffer, int processTo)
 
 #if defined (GRID_1D)
 void
-Grid::ReceiveBuffer1D (BufferPosition buffer, int processFrom)
+Grid::CopyReceiveBuffer1D (BufferPosition buffer)
 {
-  FieldValue* rawValues = buffersReceive[buffer].data ();
-
   grid_iter pos1 = 0;
   grid_iter pos2 = 0;
 
@@ -613,17 +664,18 @@ Grid::ReceiveBuffer1D (BufferPosition buffer, int processFrom)
     }
   }
 
-  ReceiveRawBuffer (rawValues, processFrom, buffersReceive[buffer].size (), &requestsReceive[buffer]);
-
   for (grid_iter pos = pos1; pos < pos2; ++pos)
   {
 #if defined (TWO_TIME_STEPS)
-    FieldPointValue* val = new FieldPointValue (rawValues[index++], rawValues[index++], rawValues[index++]);
+    FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++],
+                                                buffersReceive[buffer][index++],
+                                                buffersReceive[buffer][index++]);
 #else /* TWO_TIME_STEPS */
 #if defined (ONE_TIME_STEP)
-    FieldPointValue* val = new FieldPointValue (rawValues[index++], rawValues[index++]);
+    FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++],
+                                                buffersReceive[buffer][index++]);
 #else /* ONE_TIME_STEP */
-    FieldPointValue* val = new FieldPointValue (rawValues[index++]);
+    FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++]);
 #endif /* !ONE_TIME_STEP */
 #endif /* !TWO_TIME_STEPS */
 
@@ -633,10 +685,8 @@ Grid::ReceiveBuffer1D (BufferPosition buffer, int processFrom)
 #endif /* GRID_1D */
 #if defined (GRID_2D)
 void
-Grid::ReceiveBuffer2D (BufferPosition buffer, int processFrom)
+Grid::CopyReceiveBuffer2D (BufferPosition buffer)
 {
-  FieldValue* rawValues = buffersReceive[buffer].data ();
-
   grid_iter pos1 = 0;
   grid_iter pos2 = 0;
   grid_iter pos3 = 0;
@@ -724,19 +774,20 @@ Grid::ReceiveBuffer2D (BufferPosition buffer, int processFrom)
     }
   }
 
-  ReceiveRawBuffer (rawValues, processFrom, buffersReceive[buffer].size (), &requestsReceive[buffer]);
-
   for (grid_coord i = pos1; i < pos2; ++i)
   {
     for (grid_coord j = pos3; j < pos4; ++j)
     {
 #if defined (TWO_TIME_STEPS)
-      FieldPointValue* val = new FieldPointValue (rawValues[index++], rawValues[index++], rawValues[index++]);
+      FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++],
+                                                  buffersReceive[buffer][index++],
+                                                  buffersReceive[buffer][index++]);
 #else /* TWO_TIME_STEPS */
 #if defined (ONE_TIME_STEP)
-      FieldPointValue* val = new FieldPointValue (rawValues[index++], rawValues[index++]);
+      FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++],
+                                                  buffersReceive[buffer][index++]);
 #else /* ONE_TIME_STEP */
-      FieldPointValue* val = new FieldPointValue (rawValues[index++]);
+      FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++]);
 #endif /* !ONE_TIME_STEP */
 #endif /* !TWO_TIME_STEPS */
 
@@ -748,28 +799,35 @@ Grid::ReceiveBuffer2D (BufferPosition buffer, int processFrom)
 #endif /* GRID_2D */
 #if defined (GRID_3D)
 void
-Grid::ReceiveBuffer3D (BufferPosition buffer, int processFrom)
+Grid::CopyReceiveBuffer3D (BufferPosition buffer)
 {
 
 }
 #endif /* GRID_3D */
 
-
 void
 Grid::ReceiveBuffer (BufferPosition buffer, int processFrom)
 {
+  FieldValue* rawValues = buffersReceive[buffer].data ();
+
+  ReceiveRawBuffer (rawValues, processFrom, buffersReceive[buffer].size (), &requestsReceive[buffer]);
+}
+
+void
+Grid::CopyReceiveBuffer (BufferPosition buffer)
+{
 #if PRINT_MESSAGE
-  printf ("Receive #%d %d.\n", processId, buffer);
+  printf ("Receive #%d %s.\n", processId, BufferPositionNames[buffer]);
 #endif
 
 #if defined (GRID_1D)
-  ReceiveBuffer1D (buffer, processFrom);
+  CopyReceiveBuffer1D (buffer);
 #endif /* GRID_1D */
 #if defined (GRID_2D)
-  ReceiveBuffer2D (buffer, processFrom);
+  CopyReceiveBuffer2D (buffer);
 #endif /* GRID_2D */
 #if defined (GRID_3D)
-  ReceiveBuffer3D (buffer, processFrom);
+  CopyReceiveBuffer3D (buffer);
 #endif /* GRID_3D */
 }
 
@@ -788,8 +846,6 @@ Grid::Send ()
 #endif
 
 #if defined (GRID_2D)
-  int sqrtProc = (int) sqrt (totalProcCount);
-
   if (processId >= sqrtProc)
   {
     SendBuffer (DOWN, processId - sqrtProc);
@@ -846,8 +902,6 @@ Grid::Receive ()
 #endif
 
 #if defined (GRID_2D)
-  int sqrtProc = (int) sqrt (totalProcCount);
-
   if (processId >= sqrtProc)
   {
     ReceiveBuffer (DOWN, processId - sqrtProc);
@@ -890,10 +944,275 @@ Grid::Receive ()
 }
 
 void
+Grid::CopyReceive ()
+{
+#if defined (GRID_1D)
+  if (processId != 0)
+  {
+    CopyReceiveBuffer (LEFT);
+  }
+  if (processId != totalProcCount - 1)
+  {
+    CopyReceiveBuffer (RIGHT);
+  }
+#endif
+
+#if defined (GRID_2D)
+  if (processId >= sqrtProc)
+  {
+    CopyReceiveBuffer (DOWN);
+
+    if (processId % sqrtProc != 0)
+    {
+      CopyReceiveBuffer (LEFT_DOWN);
+    }
+    if ((processId + 1) % sqrtProc != 0)
+    {
+      CopyReceiveBuffer (RIGHT_DOWN);
+    }
+  }
+  if (processId % sqrtProc != 0)
+  {
+    CopyReceiveBuffer (LEFT);
+  }
+  if ((processId + 1) % sqrtProc != 0)
+  {
+    CopyReceiveBuffer (RIGHT);
+  }
+  if (processId < totalProcCount - sqrtProc)
+  {
+    CopyReceiveBuffer (UP);
+
+    if (processId % sqrtProc != 0)
+    {
+      CopyReceiveBuffer (LEFT_UP);
+    }
+    if ((processId + 1) % sqrtProc != 0)
+    {
+      CopyReceiveBuffer (RIGHT_UP);
+    }
+  }
+#endif
+
+#if defined (GRID_3D)
+
+#endif
+}
+
+void
+Grid::AwaitSendReceive ()
+{
+  MPI_Status statusSend;
+  MPI_Status statusReceive;
+
+  int retCodeSend = 0;
+  int retCodeReceive = 0;
+
+#if defined (GRID_1D)
+  if (processId != 0)
+  {
+#if PRINT_MESSAGE
+    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[LEFT]);
+#endif
+    retCodeSend = MPI_Wait (&requestsSend[LEFT], &statusSend);
+    ASSERT (retCodeSend == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[LEFT]);
+#endif
+    retCodeReceive = MPI_Wait (&requestsReceive[LEFT], &statusReceive);
+    ASSERT (retCodeReceive == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[LEFT]);
+#endif
+  }
+  if (processId != totalProcCount - 1)
+  {
+#if PRINT_MESSAGE
+    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[RIGHT]);
+#endif
+    retCodeSend = MPI_Wait (&requestsSend[RIGHT], &statusSend);
+    ASSERT (retCodeSend == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[RIGHT]);
+#endif
+    retCodeReceive = MPI_Wait (&requestsReceive[RIGHT], &statusReceive);
+    ASSERT (retCodeReceive == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[RIGHT]);
+#endif
+  }
+#endif
+
+#if defined (GRID_2D)
+  if (processId >= sqrtProc)
+  {
+#if PRINT_MESSAGE
+    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[DOWN]);
+#endif
+    retCodeSend = MPI_Wait (&requestsSend[DOWN], &statusSend);
+    ASSERT (retCodeSend == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[DOWN]);
+#endif
+    retCodeReceive = MPI_Wait (&requestsReceive[DOWN], &statusReceive);
+    ASSERT (retCodeReceive == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[DOWN]);
+#endif
+
+    if (processId % sqrtProc != 0)
+    {
+#if PRINT_MESSAGE
+      printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[LEFT_DOWN]);
+#endif
+      retCodeSend = MPI_Wait (&requestsSend[LEFT_DOWN], &statusSend);
+      ASSERT (retCodeSend == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+      printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[LEFT_DOWN]);
+#endif
+      retCodeReceive = MPI_Wait (&requestsReceive[LEFT_DOWN], &statusReceive);
+      ASSERT (retCodeReceive == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+      printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[LEFT_DOWN]);
+#endif
+    }
+    if ((processId + 1) % sqrtProc != 0)
+    {
+#if PRINT_MESSAGE
+      printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[RIGHT_DOWN]);
+#endif
+      retCodeSend = MPI_Wait (&requestsSend[RIGHT_DOWN], &statusSend);
+      ASSERT (retCodeSend == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+      printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[RIGHT_DOWN]);
+#endif
+      retCodeReceive = MPI_Wait (&requestsReceive[RIGHT_DOWN], &statusReceive);
+      ASSERT (retCodeReceive == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+      printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[RIGHT_DOWN]);
+#endif
+    }
+  }
+  if (processId % sqrtProc != 0)
+  {
+#if PRINT_MESSAGE
+    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[LEFT]);
+#endif
+    retCodeSend = MPI_Wait (&requestsSend[LEFT], &statusSend);
+    ASSERT (retCodeSend == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[LEFT]);
+#endif
+    retCodeReceive = MPI_Wait (&requestsReceive[LEFT], &statusReceive);
+    ASSERT (retCodeReceive == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[LEFT]);
+#endif
+  }
+  if ((processId + 1) % sqrtProc != 0)
+  {
+#if PRINT_MESSAGE
+    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[RIGHT]);
+#endif
+    retCodeSend = MPI_Wait (&requestsSend[RIGHT], &statusSend);
+    ASSERT (retCodeSend == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[RIGHT]);
+#endif
+    retCodeReceive = MPI_Wait (&requestsReceive[RIGHT], &statusReceive);
+    ASSERT (retCodeReceive == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[RIGHT]);
+#endif
+  }
+  if (processId < totalProcCount - sqrtProc)
+  {
+#if PRINT_MESSAGE
+    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[UP]);
+#endif
+    retCodeSend = MPI_Wait (&requestsSend[UP], &statusSend);
+    ASSERT (retCodeSend == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[UP]);
+#endif
+    retCodeReceive = MPI_Wait (&requestsReceive[UP], &statusReceive);
+    ASSERT (retCodeReceive == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[UP]);
+#endif
+
+    if (processId % sqrtProc != 0)
+    {
+#if PRINT_MESSAGE
+      printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[LEFT_UP]);
+#endif
+      retCodeSend = MPI_Wait (&requestsSend[LEFT_UP], &statusSend);
+      ASSERT (retCodeSend == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+      printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[LEFT_UP]);
+#endif
+      retCodeReceive = MPI_Wait (&requestsReceive[LEFT_UP], &statusReceive);
+      ASSERT (retCodeReceive == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+      printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[LEFT_UP]);
+#endif
+    }
+    if ((processId + 1) % sqrtProc != 0)
+    {
+#if PRINT_MESSAGE
+      printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[RIGHT_UP]);
+#endif
+      retCodeSend = MPI_Wait (&requestsSend[RIGHT_UP], &statusSend);
+      ASSERT (retCodeSend == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+      printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[RIGHT_UP]);
+#endif
+      retCodeReceive = MPI_Wait (&requestsReceive[RIGHT_UP], &statusReceive);
+      ASSERT (retCodeReceive == MPI_SUCCESS);
+
+#if PRINT_MESSAGE
+      printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[RIGHT_UP]);
+#endif
+    }
+  }
+#endif
+
+#if defined (GRID_3D)
+
+#endif
+}
+
+void
 Grid::Share ()
 {
   Send ();
+
   Receive ();
+
+  //MPI_Barrier (MPI_COMM_WORLD);
+
+  AwaitSendReceive ();
+
+  CopyReceive ();
 }
 
 #endif /* PARALLEL_GRID */
