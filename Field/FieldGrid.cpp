@@ -150,9 +150,6 @@ Grid::Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
   buffersSend.resize (BUFFER_COUNT);
   buffersReceive.resize (BUFFER_COUNT);
 
-  requestsSend.resize (BUFFER_COUNT);
-  requestsReceive.resize (BUFFER_COUNT);
-
 #if defined (GRID_1D)
   buffersSend[LEFT].resize (bufferSizeLeft.getX () * numTimeStepsInBuild);
   buffersSend[RIGHT].resize (bufferSizeRight.getX () * numTimeStepsInBuild);
@@ -416,355 +413,144 @@ Grid::getFieldPointValueGlobal (grid_iter coord)
 #if defined (PARALLEL_GRID)
 
 void
-Grid::SendRawBuffer (FieldValue* rawBuffer, int processTo, grid_iter size, MPI_Request* request)
-{
-#if FULL_VALUES
-  int retCode = MPI_Isend (rawBuffer, (int) size , MPI_DOUBLE, processTo, processId, MPI_COMM_WORLD, request);
-#else /* FULL_VALUES */
-  int retCode = MPI_Isend (rawBuffer, (int) size, MPI_FLOAT, processTo, processId, MPI_COMM_WORLD, request);
-#endif
-
-  ASSERT (retCode == MPI_SUCCESS);
-}
-
-void
-Grid::ReceiveRawBuffer (FieldValue* rawBuffer, int processFrom, grid_iter size, MPI_Request* request)
-{
-#if FULL_VALUES
-  int retCode = MPI_Irecv (rawBuffer, (int) size, MPI_DOUBLE, processFrom, processFrom, MPI_COMM_WORLD, request);
-#else /* FULL_VALUES */
-  int retCode = MPI_Irecv (rawBuffer, (int) size, MPI_FLOAT, processFrom, processFrom, MPI_COMM_WORLD, request);
-#endif
-
-  ASSERT (retCode == MPI_SUCCESS);
-}
-
-#if defined (GRID_1D)
-void
-Grid::SendBuffer1D (BufferPosition buffer, int processTo)
-{
-  grid_iter pos1 = 0;
-  grid_iter pos2 = 0;
-
-  grid_iter index = 0;
-  grid_iter total = 0;
-
-  switch (buffer)
-  {
-    case LEFT:
-    {
-      total = bufferSizeLeft.calculateTotalCoord ();
-
-      pos1 = total;
-      pos2 = 2 * total;
-
-      break;
-    }
-    case RIGHT:
-    {
-      total = bufferSizeRight.calculateTotalCoord ();
-
-      pos1 = size.calculateTotalCoord() - 2 * total;
-      pos2 = size.calculateTotalCoord () - total;
-
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  for (grid_iter pos = pos1; pos < pos2; ++pos)
-  {
-    FieldPointValue* val = getFieldPointValue (pos);
-    buffersSend[buffer][index++] = val->getCurValue ();
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    buffersSend[buffer][index++] = val->getPrevValue ();
-#if defined (TWO_TIME_STEPS)
-    buffersSend[buffer][index++] = val->getPrevPrevValue ();
-#endif /* TWO_TIME_STEPS */
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-  }
-
-  FieldValue* rawValues = buffersSend[buffer].data ();
-  SendRawBuffer (rawValues, processTo, buffersSend[buffer].size (), &requestsSend[buffer]);
-}
-#endif /* GRID_1D */
-#if defined (GRID_2D)
-void
-Grid::SendBuffer2D (BufferPosition buffer, int processTo)
-{
-  grid_iter pos1 = 0;
-  grid_iter pos2 = 0;
-  grid_iter pos3 = 0;
-  grid_iter pos4 = 0;
-
-  grid_iter index = 0;
-
-  switch (buffer)
-  {
-    case LEFT:
-    {
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-
-      break;
-    }
-    case RIGHT:
-    {
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-
-      break;
-    }
-    case UP:
-    {
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-
-      break;
-    }
-    case DOWN:
-    {
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = 2 * bufferSizeLeft.getY ();
-
-      break;
-    }
-    case LEFT_UP:
-    {
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-
-      break;
-    }
-    case LEFT_DOWN:
-    {
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = 2 * bufferSizeLeft.getY ();
-
-      break;
-    }
-    case RIGHT_UP:
-    {
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-
-      break;
-    }
-    case RIGHT_DOWN:
-    {
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = 2 * bufferSizeLeft.getY ();
-
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  for (grid_coord i = pos1; i < pos2; ++i)
-  {
-    for (grid_coord j = pos3; j < pos4; ++j)
-    {
-      GridCoordinate pos (i, j);
-      FieldPointValue* val = getFieldPointValue (pos);
-      buffersSend[buffer][index++] = val->getCurValue ();
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-      buffersSend[buffer][index++] = val->getPrevValue ();
-#if defined (TWO_TIME_STEPS)
-      buffersSend[buffer][index++] = val->getPrevPrevValue ();
-#endif /* TWO_TIME_STEPS */
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-    }
-  }
-
-  FieldValue* rawValues = buffersSend[buffer].data ();
-  SendRawBuffer (rawValues, processTo, buffersSend[buffer].size (), &requestsSend[buffer]);
-}
-#endif /* GRID_2D */
-#if defined (GRID_3D)
-void
-Grid::SendBuffer3D (BufferPosition buffer, int processTo)
-{
-
-}
-#endif /* GRID_3D */
-
-void
-Grid::SendBuffer (BufferPosition buffer, int processTo)
+Grid::SendRawBuffer (BufferPosition buffer, int processTo)
 {
 #if PRINT_MESSAGE
-  printf ("Send #%d %s.\n", processId, BufferPositionNames[buffer]);
+  printf ("Send raw #%d direction %s.\n", processId, BufferPositionNames[buffer]);
+#endif
+  MPI_Status status;
+
+  FieldValue* rawBuffer = buffersSend[buffer].data ();
+
+#if FULL_VALUES
+  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_DOUBLE,
+                          processTo, processId, MPI_COMM_WORLD);
+#else /* FULL_VALUES */
+  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_FLOAT,
+                          processTo, processId, MPI_COMM_WORLD);
 #endif
 
-#if defined (GRID_1D)
-  SendBuffer1D (buffer, processTo);
-#endif /* GRID_1D */
-#if defined (GRID_2D)
-  SendBuffer2D (buffer, processTo);
-#endif /* GRID_2D */
-#if defined (GRID_3D)
-  SendBuffer3D (buffer, processTo);
-#endif /* GRID_3D */
+  ASSERT (retCode == MPI_SUCCESS);
+}
+
+void
+Grid::ReceiveRawBuffer (BufferPosition buffer, int processFrom)
+{
+#if PRINT_MESSAGE
+  printf ("Receive raw #%d direction %s.\n", processId, BufferPositionNames[buffer]);
+#endif
+  MPI_Status status;
+
+  FieldValue* rawBuffer = buffersReceive[buffer].data ();
+
+#if FULL_VALUES
+  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_DOUBLE,
+                          processFrom, processFrom, MPI_COMM_WORLD, &status);
+#else /* FULL_VALUES */
+  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_FLOAT,
+                          processFrom, processFrom, MPI_COMM_WORLD, &status);
+#endif
+
+  ASSERT (retCode == MPI_SUCCESS);
+}
+
+void
+Grid::SendReceiveRawBuffer (BufferPosition bufferSend, int processTo,
+                            BufferPosition bufferReceive, int processFrom)
+{
+#if PRINT_MESSAGE
+  printf ("Send/Receive raw #%d directions %s %s.\n", processId, BufferPositionNames[bufferSend],
+          BufferPositionNames[bufferReceive]);
+#endif
+  MPI_Status status;
+
+  FieldValue* rawBufferSend = buffersSend[bufferSend].data ();
+  FieldValue* rawBufferReceive = buffersReceive[bufferReceive].data ();
+
+#if FULL_VALUES
+  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_DOUBLE,
+                              processTo, processId,
+                              rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_DOUBLE,
+                              processFrom, processFrom,
+                              MPI_COMM_WORLD, &status);
+#else /* FULL_VALUES */
+  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_FLOAT,
+                              processTo, processId,
+                              rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_FLOAT,
+                              processFrom, processFrom,
+                              MPI_COMM_WORLD, &status);
+#endif
+
+  ASSERT (retCode == MPI_SUCCESS);
 }
 
 #if defined (GRID_1D)
 void
-Grid::CopyReceiveBuffer1D (BufferPosition buffer)
+Grid::SendReceiveBuffer1D (BufferPosition bufferDirection)
 {
   grid_iter pos1 = 0;
   grid_iter pos2 = 0;
 
-  grid_iter index = 0;
-  grid_iter total = 0;
-
-  switch (buffer)
-  {
-    case LEFT:
-    {
-      total = bufferSizeLeft.calculateTotalCoord ();
-
-      pos1 = 0;
-      pos2 = total;
-
-      break;
-    }
-    case RIGHT:
-    {
-      total = bufferSizeRight.calculateTotalCoord ();
-
-      pos1 = size.calculateTotalCoord () - total;
-      pos2 = size.calculateTotalCoord ();
-
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  for (grid_iter pos = pos1; pos < pos2; ++pos)
-  {
-#if defined (TWO_TIME_STEPS)
-    FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++],
-                                                buffersReceive[buffer][index++],
-                                                buffersReceive[buffer][index++]);
-#else /* TWO_TIME_STEPS */
-#if defined (ONE_TIME_STEP)
-    FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++],
-                                                buffersReceive[buffer][index++]);
-#else /* ONE_TIME_STEP */
-    FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++]);
-#endif /* !ONE_TIME_STEP */
-#endif /* !TWO_TIME_STEPS */
-
-    setFieldPointValue (val, GridCoordinate (pos));
-  }
-}
-#endif /* GRID_1D */
-#if defined (GRID_2D)
-void
-Grid::CopyReceiveBuffer2D (BufferPosition buffer)
-{
-  grid_iter pos1 = 0;
-  grid_iter pos2 = 0;
   grid_iter pos3 = 0;
   grid_iter pos4 = 0;
 
-  grid_iter index = 0;
+  int processTo;
+  int processFrom;
 
-  switch (buffer)
+  BufferPosition opposite;
+
+  bool doSend = true;
+  bool doReceive = true;
+
+  switch (bufferDirection)
   {
     case LEFT:
     {
-      pos1 = 0;
-      pos2 = bufferSizeLeft.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
+      // Send coordinates
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = 2 * bufferSizeLeft.getX ();
+
+      // Opposite receive coordinates
+      pos3 = size.getX () - bufferSizeRight.getX ();
+      pos4 = size.getX ();
+
+      opposite = RIGHT;
+      processTo = processId - 1;
+      processFrom = processId + 1;
+
+      if (processId == 0)
+      {
+        doSend = false;
+      }
+      else if (processId == totalProcCount - 1)
+      {
+        doReceive = false;
+      }
 
       break;
     }
     case RIGHT:
     {
-      pos1 = size.getX () - bufferSizeRight.getX ();
-      pos2 = size.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-
-      break;
-    }
-    case UP:
-    {
-      pos1 = bufferSizeLeft.getX ();
+      // Send coordinates
+      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
       pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = size.getY () - bufferSizeRight.getY ();
-      pos4 = size.getY ();
 
-      break;
-    }
-    case DOWN:
-    {
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
+      // Opposite receive coordinates
       pos3 = 0;
-      pos4 = bufferSizeLeft.getY ();
+      pos4 = bufferSizeLeft.getX ();
 
-      break;
-    }
-    case LEFT_UP:
-    {
-      pos1 = 0;
-      pos2 = bufferSizeLeft.getX ();
-      pos3 = size.getY () - bufferSizeRight.getY ();
-      pos4 = size.getY ();
+      opposite = LEFT;
+      processTo = processId + 1;
+      processFrom = processId - 1;
 
-      break;
-    }
-    case LEFT_DOWN:
-    {
-      pos1 = 0;
-      pos2 = bufferSizeLeft.getX ();
-      pos3 = 0;
-      pos4 = bufferSizeLeft.getY ();
-
-      break;
-    }
-    case RIGHT_UP:
-    {
-      pos1 = size.getX () - bufferSizeRight.getX ();
-      pos2 = size.getX ();
-      pos3 = size.getY () - bufferSizeRight.getY ();
-      pos4 = size.getY ();
-
-      break;
-    }
-    case RIGHT_DOWN:
-    {
-      pos1 = size.getX () - bufferSizeRight.getX ();
-      pos2 = size.getX ();
-      pos3 = 0;
-      pos4 = bufferSizeLeft.getY ();
+      if (processId == 0)
+      {
+        doReceive = false;
+      }
+      else if (processId == totalProcCount - 1)
+      {
+        doSend = false;
+      }
 
       break;
     }
@@ -774,445 +560,436 @@ Grid::CopyReceiveBuffer2D (BufferPosition buffer)
     }
   }
 
-  for (grid_coord i = pos1; i < pos2; ++i)
+  if (doSend)
   {
-    for (grid_coord j = pos3; j < pos4; ++j)
+    // Copy to send buffer
+    for (grid_iter index = 0, pos = pos1; pos < pos2; ++pos)
+    {
+      FieldPointValue* val = getFieldPointValue (pos);
+      buffersSend[bufferDirection][index++] = val->getCurValue ();
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+      buffersSend[bufferDirection][index++] = val->getPrevValue ();
+#if defined (TWO_TIME_STEPS)
+      buffersSend[bufferDirection][index++] = val->getPrevPrevValue ();
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+    }
+  }
+
+  if (doSend && !doReceive)
+  {
+    SendRawBuffer (bufferDirection, processTo);
+  }
+  else if (!doSend && doReceive)
+  {
+    ReceiveRawBuffer (opposite, processFrom);
+  }
+  else if (doSend && doReceive)
+  {
+    SendReceiveRawBuffer (bufferDirection, processTo, opposite, processFrom);
+  }
+  else
+  {
+    // Do nothing
+  }
+
+  // Copy from receive buffer
+  if (doReceive)
+  {
+    for (grid_iter index = 0, pos = pos3; pos < pos4; ++pos)
     {
 #if defined (TWO_TIME_STEPS)
-      FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++],
-                                                  buffersReceive[buffer][index++],
-                                                  buffersReceive[buffer][index++]);
+      FieldPointValue* val = new FieldPointValue (buffersReceive[opposite][index++],
+                                                  buffersReceive[opposite][index++],
+                                                  buffersReceive[opposite][index++]);
 #else /* TWO_TIME_STEPS */
 #if defined (ONE_TIME_STEP)
-      FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++],
-                                                  buffersReceive[buffer][index++]);
+      FieldPointValue* val = new FieldPointValue (buffersReceive[opposite][index++],
+                                                  buffersReceive[opposite][index++]);
 #else /* ONE_TIME_STEP */
-      FieldPointValue* val = new FieldPointValue (buffersReceive[buffer][index++]);
+      FieldPointValue* val = new FieldPointValue (buffersReceive[opposite][index++]);
 #endif /* !ONE_TIME_STEP */
 #endif /* !TWO_TIME_STEPS */
 
-      GridCoordinate pos (i, j);
       setFieldPointValue (val, GridCoordinate (pos));
     }
   }
 }
-#endif /* GRID_2D */
+#endif
+
+#if defined (GRID_2D)
+void
+Grid::SendReceiveBuffer2D (BufferPosition bufferDirection)
+{
+  grid_iter pos1 = 0;
+  grid_iter pos2 = 0;
+  grid_iter pos3 = 0;
+  grid_iter pos4 = 0;
+
+  grid_iter pos5 = 0;
+  grid_iter pos6 = 0;
+  grid_iter pos7 = 0;
+  grid_iter pos8 = 0;
+
+  int processTo;
+  int processFrom;
+
+  BufferPosition opposite;
+
+  bool doSend = true;
+  bool doReceive = true;
+
+  switch (bufferDirection)
+  {
+    case LEFT:
+    {
+      // Send coordinates
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = 2 * bufferSizeLeft.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      // Opposite receive coordinates
+      pos5 = size.getX () - bufferSizeRight.getX ();
+      pos6 = size.getX ();
+      pos7 = bufferSizeLeft.getY ();
+      pos8 = size.getY () - bufferSizeRight.getY ();
+
+      opposite = RIGHT;
+      processTo = processId - 1;
+      processFrom = processId + 1;
+
+      if (processId % sqrtProc == 0)
+      {
+        doSend = false;
+      }
+      else if ((processId + 1) % sqrtProc == 0)
+      {
+        doReceive = false;
+      }
+
+      break;
+    }
+    case RIGHT:
+    {
+      // Send coordinates
+      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      // Opposite receive coordinates
+      pos5 = 0;
+      pos6 = bufferSizeLeft.getX ();
+      pos7 = bufferSizeLeft.getY ();
+      pos8 = size.getY () - bufferSizeRight.getY ();
+
+      opposite = LEFT;
+      processTo = processId + 1;
+      processFrom = processId - 1;
+
+      if (processId % sqrtProc == 0)
+      {
+        doReceive = false;
+      }
+      else if ((processId + 1) % sqrtProc == 0)
+      {
+        doSend = false;
+      }
+
+      break;
+    }
+    case UP:
+    {
+      // Send coordinates
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      // Opposite receive coordinates
+      pos5 = bufferSizeLeft.getX ();
+      pos6 = size.getX () - bufferSizeRight.getX ();
+      pos7 = 0;
+      pos8 = bufferSizeLeft.getY ();
+
+      opposite = DOWN;
+      processTo = processId + sqrtProc;
+      processFrom = processId - sqrtProc;
+
+      if (processId < sqrtProc)
+      {
+        doReceive = false;
+      }
+      else if (processId >= totalProcCount - sqrtProc)
+      {
+        doSend = false;
+      }
+
+      break;
+    }
+    case DOWN:
+    {
+      // Send coordinates
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = 2 * bufferSizeLeft.getY ();
+
+      // Opposite receive coordinates
+      pos5 = bufferSizeLeft.getX ();
+      pos6 = size.getX () - bufferSizeRight.getX ();
+      pos7 = size.getY () - bufferSizeRight.getY ();
+      pos8 = size.getY ();
+
+      opposite = UP;
+      processTo = processId - sqrtProc;
+      processFrom = processId + sqrtProc;
+
+      if (processId < sqrtProc)
+      {
+        doSend = false;
+      }
+      else if (processId >= totalProcCount - sqrtProc)
+      {
+        doReceive = false;
+      }
+
+      break;
+    }
+    case LEFT_UP:
+    {
+      // Send coordinates
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = 2 * bufferSizeLeft.getX ();
+      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      // Opposite receive coordinates
+      pos5 = size.getX () - bufferSizeRight.getX ();
+      pos6 = size.getX ();
+      pos7 = 0;
+      pos8 = bufferSizeLeft.getY ();
+
+      opposite = RIGHT_DOWN;
+      processTo = processId + sqrtProc - 1;
+      processFrom = processId - sqrtProc + 1;;
+
+      if (processId < sqrtProc || (processId + 1) % sqrtProc == 0)
+      {
+        doReceive = false;
+      }
+      if (processId >= totalProcCount - sqrtProc || processId % sqrtProc == 0)
+      {
+        doSend = false;
+      }
+
+      break;
+    }
+    case LEFT_DOWN:
+    {
+      // Send coordinates
+      pos1 = bufferSizeLeft.getX ();
+      pos2 = 2 * bufferSizeLeft.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = 2 * bufferSizeLeft.getY ();
+
+      // Opposite receive coordinates
+      pos5 = size.getX () - bufferSizeRight.getX ();
+      pos6 = size.getX ();
+      pos7 = size.getY () - bufferSizeRight.getY ();
+      pos8 = size.getY ();
+
+      opposite = RIGHT_UP;
+      processTo = processId - sqrtProc - 1;
+      processFrom = processId + sqrtProc + 1;
+
+      if (processId < sqrtProc || processId % sqrtProc == 0)
+      {
+        doSend = false;
+      }
+      if (processId >= totalProcCount - sqrtProc || (processId + 1) % sqrtProc == 0)
+      {
+        doReceive = false;
+      }
+
+      break;
+    }
+    case RIGHT_UP:
+    {
+      // Send coordinates
+      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
+      pos4 = size.getY () - bufferSizeRight.getY ();
+
+      // Opposite receive coordinates
+      pos5 = 0;
+      pos6 = bufferSizeLeft.getX ();
+      pos7 = 0;
+      pos8 = bufferSizeLeft.getY ();
+
+      opposite = LEFT_DOWN;
+      processTo = processId + sqrtProc + 1;
+      processFrom = processId - sqrtProc - 1;
+
+      if (processId < sqrtProc || processId % sqrtProc == 0)
+      {
+        doReceive = false;
+      }
+      if (processId >= totalProcCount - sqrtProc || (processId + 1) % sqrtProc == 0)
+      {
+        doSend = false;
+      }
+
+      break;
+    }
+    case RIGHT_DOWN:
+    {
+      // Send coordinates
+      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
+      pos2 = size.getX () - bufferSizeRight.getX ();
+      pos3 = bufferSizeLeft.getY ();
+      pos4 = 2 * bufferSizeLeft.getY ();
+
+      // Opposite receive coordinates
+      pos5 = 0;
+      pos6 = bufferSizeLeft.getX ();
+      pos7 = size.getY () - bufferSizeRight.getY ();
+      pos8 = size.getY ();
+
+      opposite = LEFT_UP;
+      processTo = processId - sqrtProc + 1;
+      processFrom = processId + sqrtProc - 1;
+
+      if (processId < sqrtProc || (processId + 1) % sqrtProc == 0)
+      {
+        doSend = false;
+      }
+      if (processId >= totalProcCount - sqrtProc || processId % sqrtProc == 0)
+      {
+        doReceive = false;
+      }
+
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  if (doSend)
+  {
+    for (grid_iter index = 0, i = pos1; i < pos2; ++i)
+    {
+      for (grid_coord j = pos3; j < pos4; ++j)
+      {
+        GridCoordinate pos (i, j);
+        FieldPointValue* val = getFieldPointValue (pos);
+        buffersSend[bufferDirection][index++] = val->getCurValue ();
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+        buffersSend[bufferDirection][index++] = val->getPrevValue ();
+#if defined (TWO_TIME_STEPS)
+        buffersSend[bufferDirection][index++] = val->getPrevPrevValue ();
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+      }
+    }
+  }
+
+#if PRINT_MESSAGE
+  printf ("===Raw #%d directions %s %s %d %d [%d %d].\n", processId, BufferPositionNames[bufferDirection],
+          BufferPositionNames[opposite], doSend, doReceive, processTo, processFrom);
+#endif
+
+  if (doSend && !doReceive)
+  {
+    SendRawBuffer (bufferDirection, processTo);
+  }
+  else if (!doSend && doReceive)
+  {
+    ReceiveRawBuffer (opposite, processFrom);
+  }
+  else if (doSend && doReceive)
+  {
+    SendReceiveRawBuffer (bufferDirection, processTo, opposite, processFrom);
+  }
+  else
+  {
+    // Do nothing
+  }
+
+  if (doReceive)
+  {
+    for (grid_iter index = 0, i = pos5; i < pos6; ++i)
+    {
+      for (grid_coord j = pos7; j < pos8; ++j)
+      {
+#if defined (TWO_TIME_STEPS)
+        FieldPointValue* val = new FieldPointValue (buffersReceive[opposite][index++],
+                                                    buffersReceive[opposite][index++],
+                                                    buffersReceive[opposite][index++]);
+#else /* TWO_TIME_STEPS */
+#if defined (ONE_TIME_STEP)
+        FieldPointValue* val = new FieldPointValue (buffersReceive[opposite][index++],
+                                                    buffersReceive[opposite][index++]);
+#else /* ONE_TIME_STEP */
+        FieldPointValue* val = new FieldPointValue (buffersReceive[opposite][index++]);
+#endif /* !ONE_TIME_STEP */
+#endif /* !TWO_TIME_STEPS */
+
+        GridCoordinate pos (i, j);
+        setFieldPointValue (val, GridCoordinate (pos));
+      }
+    }
+  }
+}
+#endif
+
 #if defined (GRID_3D)
 void
-Grid::CopyReceiveBuffer3D (BufferPosition buffer)
+Grid::SendReceiveBuffer3D (BufferPosition bufferDirection)
 {
 
 }
 #endif /* GRID_3D */
 
 void
-Grid::ReceiveBuffer (BufferPosition buffer, int processFrom)
+Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 {
-  FieldValue* rawValues = buffersReceive[buffer].data ();
-
-  ReceiveRawBuffer (rawValues, processFrom, buffersReceive[buffer].size (), &requestsReceive[buffer]);
-}
-
-void
-Grid::CopyReceiveBuffer (BufferPosition buffer)
-{
-#if PRINT_MESSAGE
-  printf ("Receive #%d %s.\n", processId, BufferPositionNames[buffer]);
-#endif
+// #if PRINT_MESSAGE
+//   printf ("Send/Receive #%d direction %s.\n", processId, BufferPositionNames[bufferDirection]);
+// #endif
 
 #if defined (GRID_1D)
-  CopyReceiveBuffer1D (buffer);
+  SendReceiveBuffer1D (bufferDirection);
 #endif /* GRID_1D */
 #if defined (GRID_2D)
-  CopyReceiveBuffer2D (buffer);
+  SendReceiveBuffer2D (bufferDirection);
 #endif /* GRID_2D */
 #if defined (GRID_3D)
-  CopyReceiveBuffer3D (buffer);
+  SendReceiveBuffer3D (bufferDirection);
 #endif /* GRID_3D */
 }
 
 void
-Grid::Send ()
+Grid::SendReceive ()
 {
-#if defined (GRID_1D)
-  if (processId != 0)
+// #if PRINT_MESSAGE
+//   printf ("Send/Receive %d\n", processId);
+// #endif
+
+  for (int buf = 0; buf < BUFFER_COUNT; ++buf)
   {
-    SendBuffer (LEFT, processId - 1);
+    SendReceiveBuffer ((BufferPosition) buf);
   }
-  if (processId != totalProcCount - 1)
-  {
-    SendBuffer (RIGHT, processId + 1);
-  }
-#endif
-
-#if defined (GRID_2D)
-  if (processId >= sqrtProc)
-  {
-    SendBuffer (DOWN, processId - sqrtProc);
-
-    if (processId % sqrtProc != 0)
-    {
-      SendBuffer (LEFT_DOWN, processId - sqrtProc - 1);
-    }
-    if ((processId + 1) % sqrtProc != 0)
-    {
-      SendBuffer (RIGHT_DOWN, processId - sqrtProc + 1);
-    }
-  }
-  if (processId % sqrtProc != 0)
-  {
-    SendBuffer (LEFT, processId - 1);
-  }
-  if ((processId + 1) % sqrtProc != 0)
-  {
-    SendBuffer (RIGHT, processId - 1);
-  }
-  if (processId < totalProcCount - sqrtProc)
-  {
-    SendBuffer (UP, processId + sqrtProc);
-
-    if (processId % sqrtProc != 0)
-    {
-      SendBuffer (LEFT_UP, processId + sqrtProc - 1);
-    }
-    if ((processId + 1) % sqrtProc != 0)
-    {
-      SendBuffer (RIGHT_UP, processId + sqrtProc + 1);
-    }
-  }
-#endif
-
-#if defined (GRID_3D)
-
-#endif
-}
-
-void
-Grid::Receive ()
-{
-#if defined (GRID_1D)
-  if (processId != 0)
-  {
-    ReceiveBuffer (LEFT, processId - 1);
-  }
-  if (processId != totalProcCount - 1)
-  {
-    ReceiveBuffer (RIGHT, processId + 1);
-  }
-#endif
-
-#if defined (GRID_2D)
-  if (processId >= sqrtProc)
-  {
-    ReceiveBuffer (DOWN, processId - sqrtProc);
-
-    if (processId % sqrtProc != 0)
-    {
-      ReceiveBuffer (LEFT_DOWN, processId - sqrtProc - 1);
-    }
-    if ((processId + 1) % sqrtProc != 0)
-    {
-      ReceiveBuffer (RIGHT_DOWN, processId - sqrtProc + 1);
-    }
-  }
-  if (processId % sqrtProc != 0)
-  {
-    ReceiveBuffer (LEFT, processId - 1);
-  }
-  if ((processId + 1) % sqrtProc != 0)
-  {
-    ReceiveBuffer (RIGHT, processId - 1);
-  }
-  if (processId < totalProcCount - sqrtProc)
-  {
-    ReceiveBuffer (UP, processId + sqrtProc);
-
-    if (processId % sqrtProc != 0)
-    {
-      ReceiveBuffer (LEFT_UP, processId + sqrtProc - 1);
-    }
-    if ((processId + 1) % sqrtProc != 0)
-    {
-      ReceiveBuffer (RIGHT_UP, processId + sqrtProc + 1);
-    }
-  }
-#endif
-
-#if defined (GRID_3D)
-
-#endif
-}
-
-void
-Grid::CopyReceive ()
-{
-#if defined (GRID_1D)
-  if (processId != 0)
-  {
-    CopyReceiveBuffer (LEFT);
-  }
-  if (processId != totalProcCount - 1)
-  {
-    CopyReceiveBuffer (RIGHT);
-  }
-#endif
-
-#if defined (GRID_2D)
-  if (processId >= sqrtProc)
-  {
-    CopyReceiveBuffer (DOWN);
-
-    if (processId % sqrtProc != 0)
-    {
-      CopyReceiveBuffer (LEFT_DOWN);
-    }
-    if ((processId + 1) % sqrtProc != 0)
-    {
-      CopyReceiveBuffer (RIGHT_DOWN);
-    }
-  }
-  if (processId % sqrtProc != 0)
-  {
-    CopyReceiveBuffer (LEFT);
-  }
-  if ((processId + 1) % sqrtProc != 0)
-  {
-    CopyReceiveBuffer (RIGHT);
-  }
-  if (processId < totalProcCount - sqrtProc)
-  {
-    CopyReceiveBuffer (UP);
-
-    if (processId % sqrtProc != 0)
-    {
-      CopyReceiveBuffer (LEFT_UP);
-    }
-    if ((processId + 1) % sqrtProc != 0)
-    {
-      CopyReceiveBuffer (RIGHT_UP);
-    }
-  }
-#endif
-
-#if defined (GRID_3D)
-
-#endif
-}
-
-void
-Grid::AwaitSendReceive ()
-{
-  MPI_Status statusSend;
-  MPI_Status statusReceive;
-
-  int retCodeSend = 0;
-  int retCodeReceive = 0;
-
-#if defined (GRID_1D)
-  if (processId != 0)
-  {
-#if PRINT_MESSAGE
-    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[LEFT]);
-#endif
-    retCodeSend = MPI_Wait (&requestsSend[LEFT], &statusSend);
-    ASSERT (retCodeSend == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[LEFT]);
-#endif
-    retCodeReceive = MPI_Wait (&requestsReceive[LEFT], &statusReceive);
-    ASSERT (retCodeReceive == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[LEFT]);
-#endif
-  }
-  if (processId != totalProcCount - 1)
-  {
-#if PRINT_MESSAGE
-    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[RIGHT]);
-#endif
-    retCodeSend = MPI_Wait (&requestsSend[RIGHT], &statusSend);
-    ASSERT (retCodeSend == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[RIGHT]);
-#endif
-    retCodeReceive = MPI_Wait (&requestsReceive[RIGHT], &statusReceive);
-    ASSERT (retCodeReceive == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[RIGHT]);
-#endif
-  }
-#endif
-
-#if defined (GRID_2D)
-  if (processId >= sqrtProc)
-  {
-#if PRINT_MESSAGE
-    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[DOWN]);
-#endif
-    retCodeSend = MPI_Wait (&requestsSend[DOWN], &statusSend);
-    ASSERT (retCodeSend == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[DOWN]);
-#endif
-    retCodeReceive = MPI_Wait (&requestsReceive[DOWN], &statusReceive);
-    ASSERT (retCodeReceive == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[DOWN]);
-#endif
-
-    if (processId % sqrtProc != 0)
-    {
-#if PRINT_MESSAGE
-      printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[LEFT_DOWN]);
-#endif
-      retCodeSend = MPI_Wait (&requestsSend[LEFT_DOWN], &statusSend);
-      ASSERT (retCodeSend == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-      printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[LEFT_DOWN]);
-#endif
-      retCodeReceive = MPI_Wait (&requestsReceive[LEFT_DOWN], &statusReceive);
-      ASSERT (retCodeReceive == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-      printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[LEFT_DOWN]);
-#endif
-    }
-    if ((processId + 1) % sqrtProc != 0)
-    {
-#if PRINT_MESSAGE
-      printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[RIGHT_DOWN]);
-#endif
-      retCodeSend = MPI_Wait (&requestsSend[RIGHT_DOWN], &statusSend);
-      ASSERT (retCodeSend == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-      printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[RIGHT_DOWN]);
-#endif
-      retCodeReceive = MPI_Wait (&requestsReceive[RIGHT_DOWN], &statusReceive);
-      ASSERT (retCodeReceive == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-      printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[RIGHT_DOWN]);
-#endif
-    }
-  }
-  if (processId % sqrtProc != 0)
-  {
-#if PRINT_MESSAGE
-    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[LEFT]);
-#endif
-    retCodeSend = MPI_Wait (&requestsSend[LEFT], &statusSend);
-    ASSERT (retCodeSend == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[LEFT]);
-#endif
-    retCodeReceive = MPI_Wait (&requestsReceive[LEFT], &statusReceive);
-    ASSERT (retCodeReceive == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[LEFT]);
-#endif
-  }
-  if ((processId + 1) % sqrtProc != 0)
-  {
-#if PRINT_MESSAGE
-    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[RIGHT]);
-#endif
-    retCodeSend = MPI_Wait (&requestsSend[RIGHT], &statusSend);
-    ASSERT (retCodeSend == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[RIGHT]);
-#endif
-    retCodeReceive = MPI_Wait (&requestsReceive[RIGHT], &statusReceive);
-    ASSERT (retCodeReceive == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[RIGHT]);
-#endif
-  }
-  if (processId < totalProcCount - sqrtProc)
-  {
-#if PRINT_MESSAGE
-    printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[UP]);
-#endif
-    retCodeSend = MPI_Wait (&requestsSend[UP], &statusSend);
-    ASSERT (retCodeSend == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[UP]);
-#endif
-    retCodeReceive = MPI_Wait (&requestsReceive[UP], &statusReceive);
-    ASSERT (retCodeReceive == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-    printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[UP]);
-#endif
-
-    if (processId % sqrtProc != 0)
-    {
-#if PRINT_MESSAGE
-      printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[LEFT_UP]);
-#endif
-      retCodeSend = MPI_Wait (&requestsSend[LEFT_UP], &statusSend);
-      ASSERT (retCodeSend == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-      printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[LEFT_UP]);
-#endif
-      retCodeReceive = MPI_Wait (&requestsReceive[LEFT_UP], &statusReceive);
-      ASSERT (retCodeReceive == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-      printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[LEFT_UP]);
-#endif
-    }
-    if ((processId + 1) % sqrtProc != 0)
-    {
-#if PRINT_MESSAGE
-      printf ("Wait for share send #%d %s.\n", processId, BufferPositionNames[RIGHT_UP]);
-#endif
-      retCodeSend = MPI_Wait (&requestsSend[RIGHT_UP], &statusSend);
-      ASSERT (retCodeSend == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-      printf ("Wait for share receive #%d %s.\n", processId, BufferPositionNames[RIGHT_UP]);
-#endif
-      retCodeReceive = MPI_Wait (&requestsReceive[RIGHT_UP], &statusReceive);
-      ASSERT (retCodeReceive == MPI_SUCCESS);
-
-#if PRINT_MESSAGE
-      printf ("Wait for share OK #%d %s.\n", processId, BufferPositionNames[RIGHT_UP]);
-#endif
-    }
-  }
-#endif
-
-#if defined (GRID_3D)
-
-#endif
 }
 
 void
 Grid::Share ()
 {
-  Send ();
-
-  Receive ();
-
-  //MPI_Barrier (MPI_COMM_WORLD);
-
-  AwaitSendReceive ();
-
-  CopyReceive ();
+  SendReceive ();
 }
 
 #endif /* PARALLEL_GRID */

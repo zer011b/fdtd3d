@@ -180,10 +180,6 @@ class Grid
   VectorBuffers buffersSend;
   VectorBuffers buffersReceive;
 
-  // Send/Receive MPI requests
-  VectorRequests requestsSend;
-  VectorRequests requestsReceive;
-
 #endif /* PARALLEL_GRID */
 
 private:
@@ -202,33 +198,29 @@ private:
 
 #if defined (PARALLEL_GRID)
   // Raw send
-  void SendRawBuffer (FieldValue* rawBuffer, int processTo, grid_iter size, MPI_Request* request);
+  void SendRawBuffer (BufferPosition buffer, int processTo);
 
   // Raw receive
-  void ReceiveRawBuffer (FieldValue* rawBuffer, int processFrom, grid_iter size, MPI_Request* request);
+  void ReceiveRawBuffer (BufferPosition buffer, int processFrom);
+
+  // Raw send/receive
+  void SendReceiveRawBuffer (BufferPosition bufferSend, int processTo,
+                             BufferPosition bufferReceive, int processFrom);
 
 #if defined (GRID_1D)
-  void SendBuffer1D (BufferPosition buffer, int processTo);
-  void CopyReceiveBuffer1D (BufferPosition buffer);
+  void SendReceiveBuffer1D (BufferPosition bufferDirection);
 #endif /* GRID_1D */
 #if defined (GRID_2D)
-  void SendBuffer2D (BufferPosition buffer, int processTo);
-  void CopyReceiveBuffer2D (BufferPosition buffer);
+  void SendReceiveBuffer2D (BufferPosition bufferDirection);
 #endif /* GRID_2D */
 #if defined (GRID_3D)
-  void SendBuffer3D (BufferPosition buffer, int processTo);
-  void CopyReceiveBuffer3D (BufferPosition buffer, int processFrom);
+  void SendReceiveBuffer3D (BufferPosition bufferDirection);
 #endif /* GRID_3D */
 
-  void SendBuffer (BufferPosition buffer, int processTo);
-  void ReceiveBuffer (BufferPosition buffer, int processFrom);
-  void CopyReceiveBuffer (BufferPosition buffer);
+  void SendReceiveBuffer (BufferPosition bufferDirection);
 
-  void Send ();
-  void Receive ();
-  void CopyReceive ();
+  void SendReceive ();
 
-  void AwaitSendReceive ();
 #endif /* PARALLEL_GRID */
 
 public:
