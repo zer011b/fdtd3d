@@ -40,7 +40,7 @@ int main (int argc, char** argv)
 
   MPI_Barrier (MPI_COMM_WORLD);
 
-  for (int t = 0; t < 1000; ++t)
+  for (int t = 2; t < 1000; ++t)
   {
     grid.Share ();
 
@@ -51,6 +51,14 @@ int main (int argc, char** argv)
       for (int j = 0; j < sizeTotal.getY (); ++j)
       {
         GridCoordinate pos (i, j);
+        FieldPointValue* val = grid.getFieldPointValue (pos);
+
+        if ((val->getPrevValue () != t - 1 ||
+            val->getPrevPrevValue () != t - 2) && t > 5)
+        {
+          printf("%f %d\n", val->getPrevValue (), t - 1);
+          return 1;
+        }
         grid.setFieldPointValueCurrent (t, pos);
       }
     }

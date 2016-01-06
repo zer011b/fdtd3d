@@ -560,9 +560,9 @@ Grid::SendReceiveBuffer1D (BufferPosition bufferDirection)
     }
   }
 
+  // Copy to send buffer
   if (doSend)
   {
-    // Copy to send buffer
     for (grid_iter index = 0, pos = pos1; pos < pos2; ++pos)
     {
       FieldPointValue* val = getFieldPointValue (pos);
@@ -879,6 +879,7 @@ Grid::SendReceiveBuffer2D (BufferPosition bufferDirection)
     }
   }
 
+  // Copy to send buffer
   if (doSend)
   {
     for (grid_iter index = 0, i = pos1; i < pos2; ++i)
@@ -920,6 +921,7 @@ Grid::SendReceiveBuffer2D (BufferPosition bufferDirection)
     // Do nothing
   }
 
+  // Copy from receive buffer
   if (doReceive)
   {
     for (grid_iter index = 0, i = pos5; i < pos6; ++i)
@@ -990,6 +992,8 @@ void
 Grid::Share ()
 {
   SendReceive ();
+
+  MPI_Barrier (MPI_COMM_WORLD);
 }
 
 #endif /* PARALLEL_GRID */
