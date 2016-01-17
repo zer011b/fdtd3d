@@ -180,6 +180,8 @@ class Grid
   VectorBuffers buffersSend;
   VectorBuffers buffersReceive;
 
+  uint32_t timeStep;
+
 #endif /* PARALLEL_GRID */
 
 private:
@@ -228,9 +230,9 @@ public:
 #if defined (PARALLEL_GRID)
   Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
         const GridCoordinate& bufSizeL, const GridCoordinate& bufSizeR,
-        const int process, const int totalProc);
+        const int process, const int totalProc, uint32_t step);
 #else /* PARALLEL_GRID */
-  Grid (const GridCoordinate& s);
+  Grid (const GridCoordinate& s, uint32_t step);
 #endif /* !PARALLEL_GRID */
 
   ~Grid ();
@@ -258,12 +260,15 @@ public:
 #endif*/
 #endif  /* GRID_1D || GRID_2D || GRID_3D*/
 
+  // Replace previous layer with current and so on.
+  void shiftInTime ();
+
+  // Switch to next time step.
+  //void nextTimeStep ();
+
 #if defined (PARALLEL_GRID)
   void Share ();
 #endif /* PARALLEL_GRID */
-
-  // Replace previous layer with current and so on.
-  void shiftInTime ();
 };
 
 

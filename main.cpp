@@ -25,7 +25,7 @@ int main (int argc, char** argv)
   GridCoordinate size (10, 10);
   GridCoordinate bufferLeft (10, 10);
   GridCoordinate bufferRight (10, 10);
-  Grid grid (overallSize, size, bufferLeft, bufferRight, rank, numProcs);
+  Grid grid (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
 
   GridCoordinate sizeTotal = size + bufferLeft + bufferRight;
   for (int i = 0; i < sizeTotal.getX (); ++i)

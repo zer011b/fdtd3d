@@ -125,14 +125,15 @@ const char* BufferPositionNames[] =
 #if defined (PARALLEL_GRID)
 Grid::Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
             const GridCoordinate& bufSizeL, const GridCoordinate& bufSizeR,
-            const int process, const int totalProc) :
+            const int process, const int totalProc, uint32_t step) :
   size (curSize + bufSizeL + bufSizeR),
   currentSize (curSize),
   bufferSizeLeft (bufSizeL),
   bufferSizeRight (bufSizeR),
   totalSize (totSize),
   processId (process),
-  totalProcCount (totalProc)
+  totalProcCount (totalProc),
+  timeStep (step)
 {
   gridValues.resize (size.calculateTotalCoord ());
 
@@ -187,8 +188,9 @@ Grid::Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
 #endif
 }
 #else /* PARALLEL_GRID */
-Grid::Grid(const GridCoordinate& s) :
-  size (s)
+Grid::Grid(const GridCoordinate& s, uint32_t step) :
+  size (s),
+  timeStep (step)
 {
   gridValues.resize (size.calculateTotalCoord ());
 
@@ -1005,4 +1007,9 @@ Grid::shiftInTime ()
   {
     current->shiftInTime ();
   }
+}
+
+void nextTimeStep ()
+{
+
 }
