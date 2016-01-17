@@ -56,7 +56,7 @@ enum BufferPosition
 
 
 // Type of one-dimensional coordinate.
-typedef uint16_t grid_coord;
+typedef uint32_t grid_coord;
 // Type of three-dimensional coordinate.
 typedef uint64_t grid_iter;
 
@@ -180,9 +180,9 @@ class Grid
   VectorBuffers buffersSend;
   VectorBuffers buffersReceive;
 
-  uint32_t timeStep;
-
 #endif /* PARALLEL_GRID */
+
+  uint32_t timeStep;
 
 private:
 

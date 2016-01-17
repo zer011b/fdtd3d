@@ -21,22 +21,12 @@ int main (int argc, char** argv)
   printf ("Start process %d of %d\n", rank, numProcs);
 #endif
 
-  GridCoordinate overallSize (100, 100);
-  GridCoordinate size (10, 10);
+  GridCoordinate overallSize (1000, 1000);
+  GridCoordinate size (500, 500);
   GridCoordinate bufferLeft (10, 10);
   GridCoordinate bufferRight (10, 10);
-  //Grid grid (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
 
   GridCoordinate sizeTotal = size + bufferLeft + bufferRight;
-  /*for (int i = 0; i < sizeTotal.getX (); ++i)
-  {
-    for (int j = 0; j < sizeTotal.getY (); ++j)
-    {
-      FieldPointValue* val = new FieldPointValue (0, 0, 0);
-      GridCoordinate pos (i, j);
-      grid.setFieldPointValue(val, pos);
-    }
-  }*/
 
   Grid Eps (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
   Grid Mu (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
@@ -45,12 +35,20 @@ int main (int argc, char** argv)
   Grid Hx (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
   Grid Hy (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
 
+  FieldValue lambda = 0.000003;
+  FieldValue stepLambda = 20;
+  FieldValue delta = lambda / stepLambda;
+  FieldValue cc = 2.99792458e+8;
+  FieldValue dt = delta / (2.0 * cc);
+  FieldValue eps0 = 0.0000000000088541878176203892;
+  FieldValue mu0 = 0.0000012566370614359173;
+
   for (int i = 0; i < sizeTotal.getX (); ++i)
   {
     for (int j = 0; j < sizeTotal.getY (); ++j)
     {
-      FieldPointValue* eps = new FieldPointValue (1, 1, 1);
-      FieldPointValue* mu = new FieldPointValue (1, 1, 1);
+      FieldPointValue* eps = new FieldPointValue (1*eps0, 1*eps0, 1*eps0);
+      FieldPointValue* mu = new FieldPointValue (1*mu0, 1*mu0, 1*mu0);
 
       FieldPointValue* valE = new FieldPointValue (0, 0, 0);
       FieldPointValue* valHx = new FieldPointValue (0, 0, 0);
@@ -72,20 +70,9 @@ int main (int argc, char** argv)
   Eps.Share ();
   Mu.Share ();
 
-  FieldValue lambda = 0.000003;
-  FieldValue stepLambda = 20;
-  FieldValue delta = lambda / stepLambda;
-  FieldValue cc = 2.99792458e+8;
-  FieldValue dt = delta / (2.0 * cc);
-
-  for (int t = 2; t < 1000; ++t)
+  for (int t = 0; t < 100; ++t)
   {
-    GridCoordinate pos (sizeTotal.getX () / 2, sizeTotal.getY () / 2);
-    Ez.setFieldPointValueCurrent (10.0, pos);
-
-    Ez.shiftInTime ();
-    Hx.shiftInTime ();
-    Hy.shiftInTime ();
+    //printf ("Step %d #%d.\n", t, rank);
 
     for (int i = 1; i < sizeTotal.getX (); ++i)
     {
@@ -111,6 +98,13 @@ int main (int argc, char** argv)
       }
     }
 
+    if (rank == 0)
+    {
+      GridCoordinate pos (sizeTotal.getX () / 2, sizeTotal.getY () / 2);
+      Ez.setFieldPointValueCurrent (cos (t * 3.1415 / 12),  pos);
+    }
+
+    Ez.shiftInTime ();
     Ez.Share ();
 
     for (int i = 1; i < sizeTotal.getX (); ++i)
@@ -152,6 +146,9 @@ int main (int argc, char** argv)
         Hy.setFieldPointValueCurrent (val, pos1);
       }
     }
+
+    Hx.shiftInTime ();
+    Hy.shiftInTime ();
 
     Hx.Share ();
     Hy.Share ();
@@ -240,22 +237,25 @@ int main (int argc, char** argv)
     val_1->getPrevValue() << ", " << val_1->getPrevPrevValue() << std::endl;*/
 
 
-  GridCoordinate pos (1, 1);
-  const FieldPointValue* val = Ez.getFieldPointValue (pos);
-  printf ("%f %f %f\n", val->getCurValue (), val->getPrevValue(),
-    val->getPrevPrevValue());
+  if (rank == 0)
+  {
+    GridCoordinate pos (1, 1);
+    const FieldPointValue* val = Ez.getFieldPointValue (pos);
+    printf ("%f %f %f\n", val->getCurValue (), val->getPrevValue(),
+      val->getPrevPrevValue());
 
-  BMPDumper dumper;
-  dumper.init (1000, CURRENT);
-  dumper.dumpGrid (Ez);
-  /*dumper.dumpGrid (Hx);
-  dumper.dumpGrid (Hy);*/
+    BMPDumper dumper;
+    dumper.init (1000, CURRENT);
+    dumper.dumpGrid (Ez);
+    /*dumper.dumpGrid (Hx);
+    dumper.dumpGrid (Hy);*/
+  }
 
 #if PRINT_MESSAGE
   printf ("Main process %d.\n", rank);
 #endif
 
-	MPI_Finalize();
+  MPI_Finalize();
 
   return 0;
 }
