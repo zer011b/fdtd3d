@@ -25,10 +25,10 @@ int main (int argc, char** argv)
   GridCoordinate size (10, 10);
   GridCoordinate bufferLeft (10, 10);
   GridCoordinate bufferRight (10, 10);
-  Grid grid (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
+  //Grid grid (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
 
   GridCoordinate sizeTotal = size + bufferLeft + bufferRight;
-  for (int i = 0; i < sizeTotal.getX (); ++i)
+  /*for (int i = 0; i < sizeTotal.getX (); ++i)
   {
     for (int j = 0; j < sizeTotal.getY (); ++j)
     {
@@ -36,11 +36,128 @@ int main (int argc, char** argv)
       GridCoordinate pos (i, j);
       grid.setFieldPointValue(val, pos);
     }
+  }*/
+
+  Grid Eps (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Mu (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
+
+  Grid Ez (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Hx (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Hy (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
+
+  for (int i = 0; i < sizeTotal.getX (); ++i)
+  {
+    for (int j = 0; j < sizeTotal.getY (); ++j)
+    {
+      FieldPointValue* eps = new FieldPointValue (1, 1, 1);
+      FieldPointValue* mu = new FieldPointValue (1, 1, 1);
+
+      FieldPointValue* valE = new FieldPointValue (0, 0, 0);
+      FieldPointValue* valHx = new FieldPointValue (0, 0, 0);
+      FieldPointValue* valHy = new FieldPointValue (0, 0, 0);
+
+      GridCoordinate pos (i, j);
+
+      Eps.setFieldPointValue(eps, pos);
+      Mu.setFieldPointValue(mu, pos);
+
+      Ez.setFieldPointValue(valE, pos);
+      Hx.setFieldPointValue(valHx, pos);
+      Hy.setFieldPointValue(valHy, pos);
+    }
   }
 
   MPI_Barrier (MPI_COMM_WORLD);
 
+  Eps.Share ();
+  Mu.Share ();
+
+  FieldValue lambda = 0.000003;
+  FieldValue stepLambda = 20;
+  FieldValue delta = lambda / stepLambda;
+  FieldValue cc = 2.99792458e+8;
+  FieldValue dt = delta / (2.0 * cc);
+
   for (int t = 2; t < 1000; ++t)
+  {
+    GridCoordinate pos (sizeTotal.getX () / 2, sizeTotal.getY () / 2);
+    Ez.setFieldPointValueCurrent (10.0, pos);
+
+    Ez.shiftInTime ();
+    Hx.shiftInTime ();
+    Hy.shiftInTime ();
+
+    for (int i = 1; i < sizeTotal.getX (); ++i)
+    {
+      for (int j = 1; j < sizeTotal.getY (); ++j)
+      {
+        GridCoordinate pos1 (i, j);
+        GridCoordinate pos2 (i - 1, j);
+        GridCoordinate pos3 (i, j - 1);
+
+        FieldPointValue* valEz = Ez.getFieldPointValue (pos1);
+        FieldPointValue* valEps = Eps.getFieldPointValue (pos1);
+
+        FieldPointValue* valHx1 = Hx.getFieldPointValue (pos3);
+        FieldPointValue* valHx2 = Hx.getFieldPointValue (pos1);
+
+        FieldPointValue* valHy1 = Hy.getFieldPointValue (pos1);
+        FieldPointValue* valHy2 = Hy.getFieldPointValue (pos2);
+
+        FieldValue val = valEz->getPrevValue () + (dt / (valEps->getCurValue () * delta)) *
+          (valHx1->getPrevValue () - valHx2->getPrevValue () + valHy1->getPrevValue () - valHy2->getPrevValue ());
+
+        Ez.setFieldPointValueCurrent (val, pos1);
+      }
+    }
+
+    Ez.Share ();
+
+    for (int i = 1; i < sizeTotal.getX (); ++i)
+    {
+      for (int j = 0; j < sizeTotal.getY () - 1; ++j)
+      {
+        GridCoordinate pos1 (i, j);
+        GridCoordinate pos2 (i, j + 1);
+
+        FieldPointValue* valHx = Hx.getFieldPointValue (pos1);
+        FieldPointValue* valMu = Mu.getFieldPointValue (pos1);
+
+        FieldPointValue* valEz1 = Ez.getFieldPointValue (pos1);
+        FieldPointValue* valEz2 = Ez.getFieldPointValue (pos2);
+
+        FieldValue val = valHx->getPrevValue () + (dt / (valMu->getCurValue () * delta)) *
+          (valEz1->getPrevValue () - valEz2->getPrevValue ());
+
+        Hx.setFieldPointValueCurrent (val, pos1);
+      }
+    }
+
+    for (int i = 0; i < sizeTotal.getX () - 1; ++i)
+    {
+      for (int j = 1; j < sizeTotal.getY (); ++j)
+      {
+        GridCoordinate pos1 (i, j);
+        GridCoordinate pos2 (i + 1, j);
+
+        FieldPointValue* valHy = Hy.getFieldPointValue (pos1);
+        FieldPointValue* valMu = Mu.getFieldPointValue (pos1);
+
+        FieldPointValue* valEz1 = Ez.getFieldPointValue (pos2);
+        FieldPointValue* valEz2 = Ez.getFieldPointValue (pos1);
+
+        FieldValue val = valHy->getPrevValue () + (dt / (valMu->getCurValue () * delta)) *
+          (valEz1->getPrevValue () - valEz2->getPrevValue ());
+
+        Hy.setFieldPointValueCurrent (val, pos1);
+      }
+    }
+
+    Hx.Share ();
+    Hy.Share ();
+  }
+
+  /*for (int t = 2; t < 1000; ++t)
   {
     grid.Share ();
 
@@ -62,7 +179,7 @@ int main (int argc, char** argv)
         grid.setFieldPointValueCurrent (t, pos);
       }
     }
-  }
+  }*/
 
   /*GridCoordinate size (3, 3);
   Grid grid (size);
@@ -122,12 +239,19 @@ int main (int argc, char** argv)
   std::cout << val_1->getCurValue () << ", " <<
     val_1->getPrevValue() << ", " << val_1->getPrevPrevValue() << std::endl;*/
 
-#if PRINT_MESSAGE
-  GridCoordinate pos (15);
-  const FieldPointValue* val = grid.getFieldPointValue (pos);
+
+  GridCoordinate pos (1, 1);
+  const FieldPointValue* val = Ez.getFieldPointValue (pos);
   printf ("%f %f %f\n", val->getCurValue (), val->getPrevValue(),
     val->getPrevPrevValue());
 
+  BMPDumper dumper;
+  dumper.init (1000, CURRENT);
+  dumper.dumpGrid (Ez);
+  /*dumper.dumpGrid (Hx);
+  dumper.dumpGrid (Hy);*/
+
+#if PRINT_MESSAGE
   printf ("Main process %d.\n", rank);
 #endif
 
