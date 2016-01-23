@@ -1,3 +1,7 @@
+[![Build](https://img.shields.io/travis/rust-lang/rust.svg)](https://github.com/zer011b/fdtd3d)
+[![Parallel grid](https://img.shields.io/badge/Parallel%20Grid-1D%20and%202D-blue.svg)](https://github.com/zer011b/fdtd3d)
+[![FDTD mode](https://img.shields.io/badge/FDTD-Ez%20mode%20only-red.svg)](https://github.com/zer011b/fdtd3d)
+
 # fdtd3d
 3D FDTD solver.
 
