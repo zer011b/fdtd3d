@@ -7,6 +7,7 @@
 #include "FieldPoint.h"
 
 
+#if defined (PARALLEL_GRID)
 enum BufferPosition
 {
 #if defined (GRID_1D)
@@ -53,6 +54,7 @@ enum BufferPosition
 #endif /* GRID_3D */
   BUFFER_COUNT
 };
+#endif
 
 
 // Type of one-dimensional coordinate.

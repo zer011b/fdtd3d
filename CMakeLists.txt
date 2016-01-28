@@ -2,9 +2,11 @@ cmake_minimum_required (VERSION 3.0.2)
 
 option(FULL_VALUES "Use double values" ON)
 option(PRINT_MESSAGE "Print all messages" OFF)
+option(PARALLEL_GRID "Use parallel grid" OFF)
 
 set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
 set(GRID_DIMENSION "2" CACHE STRING "Defines number dimension in grid")
+set(PARALLEL_BUFFER_DIMENSION "1" CACHE STRING "Defines dimension of parallel grid")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set (CMAKE_BUILD_TYPE "Debug")
@@ -72,7 +74,59 @@ endif ()
 
 message ("Grid dimension: ${GRID_DIMENSION}.")
 
-add_definitions (-DPARALLEL_GRID="")
+if ("${PARALLEL_GRID}")
+  message ("Parallel grid: ON.")
+  add_definitions (-DPARALLEL_GRID="")
+
+  if ("${GRID_DIMENSION}" STREQUAL "1")
+
+    if ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "1")
+      add_definitions (-DPARALLEL_BUFFER_DIMENSION_1D="")
+      message ("Parallel dimension: 1.")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "2")
+      message(FATAL_ERROR "Unsupported PARALLEL_BUFFER_DIMENSION for this GRID_DIMENSION")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "3")
+      message(FATAL_ERROR "Unsupported PARALLEL_BUFFER_DIMENSION for this GRID_DIMENSION")
+    else ()
+      message(FATAL_ERROR "Unknown PARALLEL_BUFFER_DIMENSION")
+    endif ()
+
+  elseif ("${GRID_DIMENSION}" STREQUAL "2")
+
+    if ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "1")
+      message ("Parallel dimension: 1.")
+      add_definitions (-DPARALLEL_BUFFER_DIMENSION_1D="")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "2")
+      message ("Parallel dimension: 2.")
+      add_definitions (-DPARALLEL_BUFFER_DIMENSION_2D="")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "3")
+      message(FATAL_ERROR "Unsupported PARALLEL_BUFFER_DIMENSION for this GRID_DIMENSION")
+    else ()
+      message(FATAL_ERROR "Unknown PARALLEL_BUFFER_DIMENSION")
+    endif ()
+
+  elseif ("${GRID_DIMENSION}" STREQUAL "3")
+
+    if ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "1")
+      message ("Parallel dimension: 1.")
+      add_definitions (-DPARALLEL_BUFFER_DIMENSION_1D="")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "2")
+      message ("Parallel dimension: 2.")
+      add_definitions (-DPARALLEL_BUFFER_DIMENSION_2D="")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "3")
+      message ("Parallel dimension: 3.")
+      add_definitions (-DPARALLEL_BUFFER_DIMENSION_3D="")
+    else ()
+      message(FATAL_ERROR "Unknown PARALLEL_BUFFER_DIMENSION")
+    endif ()
+
+  else ()
+    message(FATAL_ERROR "Unknown GRID_DIMENSION")
+  endif ()
+else ()
+  message ("Parallel grid: OFF.")
+endif ()
+
 add_definitions (-std=c++11)
 
 

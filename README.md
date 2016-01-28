@@ -3,7 +3,10 @@
 [![FDTD mode](https://img.shields.io/badge/FDTD-Ez%20mode%20only-red.svg)](https://github.com/zer011b/fdtd3d)
 
 # fdtd3d
-3D FDTD solver.
+
+This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP) if required. The key idea is building of solver for your specific needs with different components, i.e. concurrency support, parallel buffer types, specific dimension and others.  
+
+For additional info on current project development status and future plans check issues and milestones.
 
 # Build Process
 
@@ -28,8 +31,10 @@ make
 ```
 ## Additional Example
 
+Build for current main.cpp
+
 ```sh
-cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=ON -DTIME_STEPS=2 -DGRID_DIMENSION=1 -DPRINT_MESSAGE=OFF
+cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=ON -DTIME_STEPS=2 -DGRID_DIMENSION=2 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=2
 ```
 
 # Build Flags
@@ -39,6 +44,8 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=ON -DTIME_STEPS=2 -DGRID_DIMEN
 -DTIME_STEPS - number of steps in time (1 or 2)
 -DGRID_DIMENSION - number of dimensions in grid (1, 2 or 3)
 -DPRINT_MESSAGE - print output (ON or OFF)
+-DPARALLEL_GRID - use parallel grid or not (ON or OFF)
+-DPARALLEL_BUFFER_DIMENSION - dimension of parallel buffers (1, 2 or 3)
 ```
 
 # Preprocessor variables
@@ -50,9 +57,14 @@ GRID_1D - one-dimensional solver
 GRID_2D - two-dimensional solver
 GRID_3D - three-dimensional solver
 PRINT_MESSAGE - print output (TRUE of FALSE)
+PARALLEL_GRID - use parallel grid or not (TRUE or FALSE)
+PARALLEL_BUFFER_DIMENSION_1D - one dimensional parallel buffer
+PARALLEL_BUFFER_DIMENSION_2D - two dimensional parallel buffer
+PARALLEL_BUFFER_DIMENSION_3D - three dimensional parallel buffer
 ```
 
 # About
-This solver is an MPI/OpenMP implementation of fdtd solver. Solver currently supports only 3D grids. Solver is manually set to perform calculations of one specific problem and needs to be manually modified to perform other calculations. Current code structure is not the best and will be modified in future. Performance will be tested and improved as well.
+
+Feel free to ask any questions.
 
 EasyBMP lib is used to output resulting electromagnetic fields. It is downloaded from sourceforge and used as is.
