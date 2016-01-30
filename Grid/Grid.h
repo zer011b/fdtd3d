@@ -4,17 +4,30 @@
 #include <cstdint>
 #include <vector>
 
+#include "GridCoordinate.h"
 #include "FieldPoint.h"
 
 
+/*
+ * Parallel grid buffer types.
+ */
 #if defined (PARALLEL_GRID)
 enum BufferPosition
 {
-#if defined (GRID_1D)
+/*
+ * One dimension buffers.
+ */
+#if defined (GRID_1D) && defined (PARALLEL_BUFFER_DIMENSION_1D) || \
+    defined (GRID_2D) && defined (PARALLEL_BUFFER_DIMENSION_1D) || \
+    defined (GRID_3D) && defined (PARALLEL_BUFFER_DIMENSION_1D)
   LEFT,
   RIGHT,
-#endif /* GRID_1D */
-#if defined (GRID_2D)
+#endif
+/*
+ * Two dimension buffers.
+ */
+#if defined (GRID_2D) && defined (PARALLEL_BUFFER_DIMENSION_2D) || \
+    defined (GRID_3D) && defined (PARALLEL_BUFFER_DIMENSION_2D)
   LEFT,
   RIGHT,
   UP,
@@ -23,8 +36,11 @@ enum BufferPosition
   LEFT_DOWN,
   RIGHT_UP,
   RIGHT_DOWN,
-#endif /* GRID_2D */
-#if defined (GRID_3D)
+#endif
+/*
+ * Three dimension buffers.
+ */
+#if defined (GRID_3D) && defined (PARALLEL_BUFFER_DIMENSION_3D)
   LEFT,
   RIGHT,
   UP,
@@ -51,89 +67,14 @@ enum BufferPosition
   RIGHT_UP_BACK,
   RIGHT_DOWN_FRONT,
   RIGHT_DOWN_BACK,
-#endif /* GRID_3D */
+#endif
+
+/*
+ * Overall number of buffers for current dimension.
+ */
   BUFFER_COUNT
 };
 #endif
-
-
-// Type of one-dimensional coordinate.
-typedef uint32_t grid_coord;
-// Type of three-dimensional coordinate.
-typedef uint64_t grid_iter;
-
-
-// Coordinate in the grid.
-class GridCoordinate
-{
-  // One dimensional coordinates.
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_coord x;
-#if defined (GRID_2D) || defined (GRID_3D)
-  grid_coord y;
-#if defined (GRID_3D)
-  grid_coord z;
-#endif /* GRID_3D */
-#endif /* GRID_2D || GRID_3D */
-#endif /* GRID_1D || GRID_2D || GRID_3D*/
-
-public:
-
-  // Constructor for all cases.
-  GridCoordinate (
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    const grid_coord& sx = 0
-#if defined (GRID_2D) || defined (GRID_3D)
-    , const grid_coord& sy = 0
-#if defined (GRID_3D)
-    , const grid_coord& sz = 0
-#endif /* GRID_3D */
-#endif /* GRID_2D || GRID_3D*/
-#endif /* GRID_1D || GRID_2D || GRID_3D*/
-  );
-
-  GridCoordinate (const GridCoordinate& pos)
-  {
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    x = pos.getX ();
-#if defined (GRID_2D) || defined (GRID_3D)
-    y = pos.getY ();
-#if defined (GRID_3D)
-    z = pos.getZ ();
-#endif /* GRID_3D */
-#endif /* GRID_2D || GRID_3D*/
-#endif /* GRID_1D || GRID_2D || GRID_3D*/
-  }
-
-  ~GridCoordinate ();
-
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  // Calculate three-dimensional coordinate.
-  grid_iter calculateTotalCoord () const;
-
-  // Get one-dimensional coordinates.
-  const grid_coord& getX () const;
-#if defined (GRID_2D) || defined (GRID_3D)
-  const grid_coord& getY () const;
-#if defined (GRID_3D)
-  const grid_coord& getZ () const;
-#endif /* GRID_3D */
-#endif /* GRID_2D || GRID_3D*/
-#endif /* GRID_1D || GRID_2D || GRID_3D*/
-
-  friend GridCoordinate operator+ (GridCoordinate lhs, const GridCoordinate& rhs)
-  {
-#if defined (GRID_1D)
-    return GridCoordinate (lhs.getX () + rhs.getX ());
-#endif /* GRID_1D */
-#if defined (GRID_2D)
-    return GridCoordinate (lhs.getX () + rhs.getX (), lhs.getY () + rhs.getY ());
-#endif /* GRID_2D */
-#if defined (GRID_3D)
-    return GridCoordinate (lhs.getX () + rhs.getX (), lhs.getY () + rhs.getY (), lhs.getZ () + rhs.getZ ());
-#endif /* GRID_3D */
-  }
-};
 
 
 // Vector of points in grid.
@@ -153,38 +94,41 @@ typedef std::vector<MPI_Request> VectorRequests;
 class Grid
 {
   // Size of the grid.
+  // For parallel grid - size of current node plus size of buffers.
   GridCoordinate size;
 
   // Vector of points in grid.
   // Owns this. Deletes all FieldPointValue* itself.
   VectorFieldPointValues gridValues;
 
+  // Current time step.
+  uint32_t timeStep;
+
+  // ======== Parallel parts. ========
 #if defined (PARALLEL_GRID)
+  // Current node (process) identificator.
   int processId;
 
-#if defined (GRID_2D)
-  int sqrtProc;
-#endif
-
+  // Overall count of nodes (processes).
   int totalProcCount;
 
-  // Size of current piece
+#if defined (GRID_2D)
+  // Size of square grid.
+  int nodeGridSize;
+#endif
+
+  // Size of current node without buffers.
   GridCoordinate currentSize;
 
-  // Size of buffer zone
+  // Size of buffer zone.
   GridCoordinate bufferSizeLeft;
   GridCoordinate bufferSizeRight;
-
-  // Size of current piece
-  GridCoordinate totalSize;
 
   // Send/Receive buffers for independent send and receive
   VectorBuffers buffersSend;
   VectorBuffers buffersReceive;
 
 #endif /* PARALLEL_GRID */
-
-  uint32_t timeStep;
 
 private:
 
@@ -211,26 +155,18 @@ private:
   void SendReceiveRawBuffer (BufferPosition bufferSend, int processTo,
                              BufferPosition bufferReceive, int processFrom);
 
-#if defined (GRID_1D)
-  void SendReceiveBuffer1D (BufferPosition bufferDirection);
-#endif /* GRID_1D */
-#if defined (GRID_2D)
-  void SendReceiveBuffer2D (BufferPosition bufferDirection);
-#endif /* GRID_2D */
-#if defined (GRID_3D)
-  void SendReceiveBuffer3D (BufferPosition bufferDirection);
-#endif /* GRID_3D */
-
   void SendReceiveBuffer (BufferPosition bufferDirection);
 
   void SendReceive ();
+
+  void ParallelGridConstructor (grid_iter numTimeStepsInBuild);
 
 #endif /* PARALLEL_GRID */
 
 public:
 
 #if defined (PARALLEL_GRID)
-  Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
+  Grid (const GridCoordinate& curSize,
         const GridCoordinate& bufSizeL, const GridCoordinate& bufSizeR,
         const int process, const int totalProc, uint32_t step);
 #else /* PARALLEL_GRID */

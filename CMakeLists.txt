@@ -6,7 +6,7 @@ option(PARALLEL_GRID "Use parallel grid" OFF)
 
 set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
 set(GRID_DIMENSION "2" CACHE STRING "Defines number dimension in grid")
-set(PARALLEL_BUFFER_DIMENSION "1" CACHE STRING "Defines dimension of parallel grid")
+set(PARALLEL_BUFFER_DIMENSION "x" CACHE STRING "Defines dimension of parallel grid")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set (CMAKE_BUILD_TYPE "Debug")
@@ -80,12 +80,12 @@ if ("${PARALLEL_GRID}")
 
   if ("${GRID_DIMENSION}" STREQUAL "1")
 
-    if ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "1")
+    if ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "x")
       add_definitions (-DPARALLEL_BUFFER_DIMENSION_1D="")
-      message ("Parallel dimension: 1.")
-    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "2")
+      message ("Parallel dimension: ${PARALLEL_BUFFER_DIMENSION}.")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "xy")
       message(FATAL_ERROR "Unsupported PARALLEL_BUFFER_DIMENSION for this GRID_DIMENSION")
-    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "3")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "xyz")
       message(FATAL_ERROR "Unsupported PARALLEL_BUFFER_DIMENSION for this GRID_DIMENSION")
     else ()
       message(FATAL_ERROR "Unknown PARALLEL_BUFFER_DIMENSION")
@@ -93,13 +93,13 @@ if ("${PARALLEL_GRID}")
 
   elseif ("${GRID_DIMENSION}" STREQUAL "2")
 
-    if ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "1")
-      message ("Parallel dimension: 1.")
+    if ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "x")
+      message ("Parallel dimension: ${PARALLEL_BUFFER_DIMENSION}.")
       add_definitions (-DPARALLEL_BUFFER_DIMENSION_1D="")
-    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "2")
-      message ("Parallel dimension: 2.")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "xy")
+      message ("Parallel dimension: ${PARALLEL_BUFFER_DIMENSION}.")
       add_definitions (-DPARALLEL_BUFFER_DIMENSION_2D="")
-    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "3")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "xyz")
       message(FATAL_ERROR "Unsupported PARALLEL_BUFFER_DIMENSION for this GRID_DIMENSION")
     else ()
       message(FATAL_ERROR "Unknown PARALLEL_BUFFER_DIMENSION")
@@ -107,14 +107,14 @@ if ("${PARALLEL_GRID}")
 
   elseif ("${GRID_DIMENSION}" STREQUAL "3")
 
-    if ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "1")
-      message ("Parallel dimension: 1.")
+    if ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "x")
+      message ("Parallel dimension: ${PARALLEL_BUFFER_DIMENSION}.")
       add_definitions (-DPARALLEL_BUFFER_DIMENSION_1D="")
-    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "2")
-      message ("Parallel dimension: 2.")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "xy")
+      message ("Parallel dimension: ${PARALLEL_BUFFER_DIMENSION}.")
       add_definitions (-DPARALLEL_BUFFER_DIMENSION_2D="")
-    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "3")
-      message ("Parallel dimension: 3.")
+    elseif ("${PARALLEL_BUFFER_DIMENSION}" STREQUAL "xyz")
+      message ("Parallel dimension: ${PARALLEL_BUFFER_DIMENSION}.")
       add_definitions (-DPARALLEL_BUFFER_DIMENSION_3D="")
     else ()
       message(FATAL_ERROR "Unknown PARALLEL_BUFFER_DIMENSION")
@@ -193,21 +193,21 @@ add_subdirectory (${PROJECT_SOURCE_DIR}/third-party/EasyBMP)
 include_directories ("${PROJECT_SOURCE_DIR}/Helpers")
 add_subdirectory (Helpers)
 
-# Add Field library
-# Include headers of Field
-include_directories ("${PROJECT_SOURCE_DIR}/Field")
+# Add Grid library
+# Include headers of Grid
+include_directories ("${PROJECT_SOURCE_DIR}/Grid")
 # Include CMakeLists.txt from the subfolder
-add_subdirectory (Field)
-set (LIBS ${LIBS} Field)
+add_subdirectory (Grid)
+set (LIBS ${LIBS} Grid)
 
 
-# Add Field library
+# Add File management library
 # Include headers of Loader and Dumper
-include_directories ("${PROJECT_SOURCE_DIR}/Grid-Management/")
-include_directories ("${PROJECT_SOURCE_DIR}/Grid-Management/Loader")
-include_directories ("${PROJECT_SOURCE_DIR}/Grid-Management/Dumper")
+include_directories ("${PROJECT_SOURCE_DIR}/File-Management/")
+include_directories ("${PROJECT_SOURCE_DIR}/File-Management/Loader")
+include_directories ("${PROJECT_SOURCE_DIR}/File-Management/Dumper")
 # Include CMakeLists.txt from the subfolder
-add_subdirectory (Grid-Management)
+add_subdirectory (File-Management)
 set (LIBS ${LIBS} Loader)
 set (LIBS ${LIBS} Dumper)
 

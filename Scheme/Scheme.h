@@ -1,7 +1,7 @@
 #ifndef SCHEME_H
 #define SCHEME_H
 
-#include "FieldGrid.h"
+#include "Grid.h"
 
 class Scheme
 {

@@ -1,6 +1,6 @@
-message ("Field build.")
+message ("Grid build.")
 
 file(GLOB_RECURSE FIELD_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
 # Add EasyBMP library
-add_library (Field ${FIELD_SOURCES})
+add_library (Grid ${FIELD_SOURCES})

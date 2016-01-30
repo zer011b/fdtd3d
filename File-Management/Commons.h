@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "FieldGrid.h"
+#include "Grid.h"
 #include "Assert.h"
 
 // Type of save/load from file.
