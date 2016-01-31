@@ -14,6 +14,9 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   nodeGridSizeX = totalProcCount;
   nodeGridSizeY = 1;
 
+  currentSize = GridCoordinate (totalSize.getX () / nodeGridSizeX, totalSize.getY ());
+  size = currentSize + bufferSizeLeft + bufferSizeRight;
+
   if (processId % nodeGridSizeX != 0)
   {
     buffersSend[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
@@ -107,6 +110,21 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   }
 
   ASSERT (nodeGridSizeX > 1 && nodeGridSizeY > 1);
+
+  grid_coord xc;
+  grid_coord yc;
+  if ((processId + 1) % nodeGridSizeX != 0)
+    xc = totalSize.getX () / nodeGridSizeX;
+  else
+    xc = totalSize.getX () - (nodeGridSizeX - 1) * (totalSize.getX () / nodeGridSizeX);
+
+  if (processId < nodeGridSizeX * nodeGridSizeY - nodeGridSizeX)
+    yc = totalSize.getY () / nodeGridSizeY;
+  else
+    yc = totalSize.getY () - (nodeGridSizeY - 1) * (totalSize.getY () / nodeGridSizeY);
+
+  currentSize = GridCoordinate (xc, yc);
+  size = currentSize + bufferSizeLeft + bufferSizeRight;
 
 #if PRINT_MESSAGE
   printf ("Nodes' grid process #%d: %dx%d. %d node(s) unused.\n", processId,

@@ -22,18 +22,18 @@ int main (int argc, char** argv)
 #endif
 
   GridCoordinate overallSize (1000, 1000);
-  GridCoordinate size (100, 100);
+  //GridCoordinate size (100, 100);
   GridCoordinate bufferLeft (10, 10);
   GridCoordinate bufferRight (10, 10);
 
-  GridCoordinate sizeTotal = size + bufferLeft + bufferRight;
+  Grid Eps (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Mu (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
 
-  Grid Eps (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
-  Grid Mu (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Ez (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Hx (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Hy (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
 
-  Grid Ez (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
-  Grid Hx (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
-  Grid Hy (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
+  GridCoordinate sizeTotal = Eps.getSize ();
 
   FieldValue lambda = 0.000003;
   FieldValue stepLambda = 20;

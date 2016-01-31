@@ -6,24 +6,16 @@
 extern const char* BufferPositionNames[];
 
 #if defined (PARALLEL_GRID)
-Grid::Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
+Grid::Grid (const GridCoordinate& totSize,
             const GridCoordinate& bufSizeL, const GridCoordinate& bufSizeR,
             const int process, const int totalProc, uint32_t step) :
-  size (curSize + bufSizeL + bufSizeR),
   totalSize (totSize),
-  currentSize (curSize),
   bufferSizeLeft (bufSizeL),
   bufferSizeRight (bufSizeR),
   processId (process),
   totalProcCount (totalProc),
   timeStep (step)
 {
-  gridValues.resize (size.calculateTotalCoord ());
-
-#if PRINT_MESSAGE
-  printf ("New grid for proc: %d (of %d) with raw size: %lu.\n", process, totalProcCount, gridValues.size ());
-#endif
-
 #if defined (ONE_TIME_STEP)
   grid_iter numTimeStepsInBuild = 2;
 #endif
@@ -36,6 +28,12 @@ Grid::Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
 
   // Call specific constructor.
   ParallelGridConstructor (numTimeStepsInBuild);
+
+  gridValues.resize (size.calculateTotalCoord ());
+
+#if PRINT_MESSAGE
+  printf ("New grid for proc: %d (of %d) with raw size: %lu.\n", process, totalProcCount, gridValues.size ());
+#endif
 }
 #else /* PARALLEL_GRID */
 Grid::Grid(const GridCoordinate& s, uint32_t step) :
