@@ -1,5 +1,7 @@
 #include "Grid.h"
 
+extern const char* BufferPositionNames[];
+
 #ifdef GRID_3D
 
 

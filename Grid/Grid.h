@@ -114,8 +114,12 @@ class Grid
 
 #if defined (GRID_2D)
   // Size of square grid.
-  int nodeGridSize;
+  int nodeGridSizeX;
+  int nodeGridSizeY;
 #endif
+
+  // Size of current node without buffers.
+  GridCoordinate totalSize;
 
   // Size of current node without buffers.
   GridCoordinate currentSize;
@@ -166,7 +170,7 @@ private:
 public:
 
 #if defined (PARALLEL_GRID)
-  Grid (const GridCoordinate& curSize,
+  Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
         const GridCoordinate& bufSizeL, const GridCoordinate& bufSizeR,
         const int process, const int totalProc, uint32_t step);
 #else /* PARALLEL_GRID */

@@ -1,5 +1,7 @@
 #include "Grid.h"
 
+extern const char* BufferPositionNames[];
+
 #ifdef GRID_1D
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D

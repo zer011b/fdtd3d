@@ -3,11 +3,14 @@
 #include "Grid.h"
 #include "Assert.h"
 
+extern const char* BufferPositionNames[];
+
 #if defined (PARALLEL_GRID)
-Grid::Grid (const GridCoordinate& curSize,
+Grid::Grid (const GridCoordinate& totSize, const GridCoordinate& curSize,
             const GridCoordinate& bufSizeL, const GridCoordinate& bufSizeR,
             const int process, const int totalProc, uint32_t step) :
   size (curSize + bufSizeL + bufSizeR),
+  totalSize (totSize),
   currentSize (curSize),
   bufferSizeLeft (bufSizeL),
   bufferSizeRight (bufSizeR),

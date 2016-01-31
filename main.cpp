@@ -21,18 +21,19 @@ int main (int argc, char** argv)
   printf ("Start process %d of %d\n", rank, numProcs);
 #endif
 
-  GridCoordinate size (500, 500);
+  GridCoordinate overallSize (1000, 1000);
+  GridCoordinate size (100, 100);
   GridCoordinate bufferLeft (10, 10);
   GridCoordinate bufferRight (10, 10);
 
   GridCoordinate sizeTotal = size + bufferLeft + bufferRight;
 
-  Grid Eps (size, bufferLeft, bufferRight, rank, numProcs, 0);
-  Grid Mu (size, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Eps (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Mu (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
 
-  Grid Ez (size, bufferLeft, bufferRight, rank, numProcs, 0);
-  Grid Hx (size, bufferLeft, bufferRight, rank, numProcs, 0);
-  Grid Hy (size, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Ez (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Hx (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
+  Grid Hy (overallSize, size, bufferLeft, bufferRight, rank, numProcs, 0);
 
   FieldValue lambda = 0.000003;
   FieldValue stepLambda = 20;
@@ -69,7 +70,7 @@ int main (int argc, char** argv)
   Eps.Share ();
   Mu.Share ();
 
-  for (int t = 0; t < 100; ++t)
+  for (int t = 0; t < 1; ++t)
   {
     //printf ("Step %d #%d.\n", t, rank);
 

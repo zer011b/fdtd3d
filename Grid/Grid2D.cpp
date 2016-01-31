@@ -2,6 +2,8 @@
 
 #include "Grid.h"
 
+extern const char* BufferPositionNames[];
+
 #ifdef GRID_2D
 
 
@@ -9,15 +11,16 @@
 void
 Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 {
-  nodeGridSize = totalProcCount;
+  nodeGridSizeX = totalProcCount;
+  nodeGridSizeY = 1;
 
-  if (processId != 0)
+  if (processId % nodeGridSizeX != 0)
   {
     buffersSend[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
     buffersReceive[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
   }
 
-  if (processId != totalProcCount - 1)
+  if ((processId + 1) % nodeGridSizeX != 0)
   {
     buffersSend[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * numTimeStepsInBuild);
     buffersReceive[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * numTimeStepsInBuild);
@@ -30,31 +33,112 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 void
 Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 {
-  FieldValue sqrtVal = sqrt ((FieldValue) totalProcCount);
+  if (totalProcCount < 4)
+  {
+    ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
+  }
+
+  grid_coord overall_x = totalSize.getX ();
+  grid_coord overall_y = totalSize.getY ();
+
+  FieldValue alpha = 0;
+  if (overall_x > overall_y)
+  {
+    alpha = overall_x / overall_y;
+  }
+  else
+  {
+    alpha = overall_y / overall_x;
+  }
+
+  FieldValue sqrtVal = ((FieldValue) (totalProcCount)) / alpha;
+  sqrtVal = sqrt (sqrtVal);
+
+  if (sqrtVal <= 1)
+  {
+    ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
+  }
+
+  sqrtVal = round (sqrtVal);
   ASSERT (sqrtVal == floor (sqrtVal));
-  nodeGridSize = (int) sqrtVal;
+
+  if (overall_x > overall_y)
+  {
+    nodeGridSizeY = (int) sqrtVal;
+    nodeGridSizeX = totalProcCount / nodeGridSizeX;
+  }
+  else
+  {
+    nodeGridSizeX = (int) sqrtVal;
+    nodeGridSizeY = totalProcCount / nodeGridSizeX;
+  }
+
+  int left = totalProcCount - nodeGridSizeX * nodeGridSizeY;
+
+  // Considerable. Could give up if only one left
+  if (left > 0) /* left > 1 */
+  {
+    // Bad case, too many nodes left unused. Let's change proportion.
+    bool find = true;
+    bool directionX = nodeGridSizeX > nodeGridSizeY ? true : false;
+    while (find)
+    {
+      find = false;
+      if (directionX && nodeGridSizeX > 2)
+      {
+        find = true;
+        --nodeGridSizeX;
+        nodeGridSizeY = totalProcCount / nodeGridSizeX;
+      }
+      else if (!directionX && nodeGridSizeY > 2)
+      {
+        find = true;
+        --nodeGridSizeY;
+        nodeGridSizeX = totalProcCount / nodeGridSizeY;
+      }
+
+      left = totalProcCount - nodeGridSizeX * nodeGridSizeY;
+
+      if (find && left == 0)
+      {
+        find = false;
+      }
+    }
+  }
+
+  ASSERT (nodeGridSizeX > 1 && nodeGridSizeY > 1);
+
+#if PRINT_MESSAGE
+  printf ("Nodes' grid process #%d: %dx%d. %d node(s) unused.\n", processId,
+    nodeGridSizeX, nodeGridSizeY, left);
+#endif
+
+  if (processId >= nodeGridSizeX * nodeGridSizeY)
+  {
+    return;
+  }
 
   bool hasL = false;
   bool hasR = false;
   bool hasU = false;
   bool hasD = false;
 
-  if (processId % nodeGridSize != 0)
+  if (processId % nodeGridSizeX != 0)
   {
     hasL = true;
   }
 
-  if ((processId + 1) % nodeGridSize != 0)
+  if ((processId + 1) % nodeGridSizeX != 0)
   {
     hasR = true;
   }
 
-  if (processId >= nodeGridSize)
+  if (processId >= nodeGridSizeX)
   {
     hasD = true;
   }
 
-  if (processId < totalProcCount - nodeGridSize)
+  if (processId < nodeGridSizeX * nodeGridSizeY - nodeGridSizeX)
   {
     hasU = true;
   }
@@ -111,6 +195,11 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 void
 Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 {
+  if (processId >= nodeGridSizeX * nodeGridSizeY)
+  {
+    return;
+  }
+
   grid_iter pos1 = 0;
   grid_iter pos2 = 0;
   grid_iter pos3 = 0;
@@ -149,11 +238,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       processTo = processId - 1;
       processFrom = processId + 1;
 
-      if (processId % nodeGridSize == 0)
+      if (processId % nodeGridSizeX == 0)
       {
         doSend = false;
       }
-      else if ((processId + 1) % nodeGridSize == 0)
+      else if ((processId + 1) % nodeGridSizeX == 0)
       {
         doReceive = false;
       }
@@ -178,11 +267,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       processTo = processId + 1;
       processFrom = processId - 1;
 
-      if (processId % nodeGridSize == 0)
+      if (processId % nodeGridSizeX == 0)
       {
         doReceive = false;
       }
-      else if ((processId + 1) % nodeGridSize == 0)
+      else if ((processId + 1) % nodeGridSizeX == 0)
       {
         doSend = false;
       }
@@ -205,14 +294,14 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos8 = bufferSizeLeft.getY ();
 
       opposite = DOWN;
-      processTo = processId + nodeGridSize;
-      processFrom = processId - nodeGridSize;
+      processTo = processId + nodeGridSizeX;
+      processFrom = processId - nodeGridSizeX;
 
-      if (processId < nodeGridSize)
+      if (processId < nodeGridSizeX)
       {
         doReceive = false;
       }
-      else if (processId >= totalProcCount - nodeGridSize)
+      else if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX)
       {
         doSend = false;
       }
@@ -234,14 +323,14 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos8 = size.getY ();
 
       opposite = UP;
-      processTo = processId - nodeGridSize;
-      processFrom = processId + nodeGridSize;
+      processTo = processId - nodeGridSizeX;
+      processFrom = processId + nodeGridSizeX;
 
-      if (processId < nodeGridSize)
+      if (processId < nodeGridSizeX)
       {
         doSend = false;
       }
-      else if (processId >= totalProcCount - nodeGridSize)
+      else if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX)
       {
         doReceive = false;
       }
@@ -263,14 +352,14 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos8 = bufferSizeLeft.getY ();
 
       opposite = RIGHT_DOWN;
-      processTo = processId + nodeGridSize - 1;
-      processFrom = processId - nodeGridSize + 1;;
+      processTo = processId + nodeGridSizeX - 1;
+      processFrom = processId - nodeGridSizeX + 1;;
 
-      if (processId < nodeGridSize || (processId + 1) % nodeGridSize == 0)
+      if (processId < nodeGridSizeX || (processId + 1) % nodeGridSizeX == 0)
       {
         doReceive = false;
       }
-      if (processId >= totalProcCount - nodeGridSize || processId % nodeGridSize == 0)
+      if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX || processId % nodeGridSizeX == 0)
       {
         doSend = false;
       }
@@ -292,14 +381,14 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos8 = size.getY ();
 
       opposite = RIGHT_UP;
-      processTo = processId - nodeGridSize - 1;
-      processFrom = processId + nodeGridSize + 1;
+      processTo = processId - nodeGridSizeX - 1;
+      processFrom = processId + nodeGridSizeX + 1;
 
-      if (processId < nodeGridSize || processId % nodeGridSize == 0)
+      if (processId < nodeGridSizeX || processId % nodeGridSizeX == 0)
       {
         doSend = false;
       }
-      if (processId >= totalProcCount - nodeGridSize || (processId + 1) % nodeGridSize == 0)
+      if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX || (processId + 1) % nodeGridSizeX == 0)
       {
         doReceive = false;
       }
@@ -321,14 +410,14 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos8 = bufferSizeLeft.getY ();
 
       opposite = LEFT_DOWN;
-      processTo = processId + nodeGridSize + 1;
-      processFrom = processId - nodeGridSize - 1;
+      processTo = processId + nodeGridSizeX + 1;
+      processFrom = processId - nodeGridSizeX - 1;
 
-      if (processId < nodeGridSize || processId % nodeGridSize == 0)
+      if (processId < nodeGridSizeX || processId % nodeGridSizeX == 0)
       {
         doReceive = false;
       }
-      if (processId >= totalProcCount - nodeGridSize || (processId + 1) % nodeGridSize == 0)
+      if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX || (processId + 1) % nodeGridSizeX == 0)
       {
         doSend = false;
       }
@@ -350,14 +439,14 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos8 = size.getY ();
 
       opposite = LEFT_UP;
-      processTo = processId - nodeGridSize + 1;
-      processFrom = processId + nodeGridSize - 1;
+      processTo = processId - nodeGridSizeX + 1;
+      processFrom = processId + nodeGridSizeX - 1;
 
-      if (processId < nodeGridSize || (processId + 1) % nodeGridSize == 0)
+      if (processId < nodeGridSizeX || (processId + 1) % nodeGridSizeX == 0)
       {
         doSend = false;
       }
-      if (processId >= totalProcCount - nodeGridSize || processId % nodeGridSize == 0)
+      if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX || processId % nodeGridSizeX == 0)
       {
         doReceive = false;
       }
