@@ -6,10 +6,9 @@ extern const char* BufferPositionNames[];
 
 #ifdef GRID_2D
 
-
-#ifdef PARALLEL_BUFFER_DIMENSION_1D
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
 void
-Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
+Grid::NodeGridInit ()
 {
   nodeGridSizeX = totalProcCount;
   nodeGridSizeY = 1;
@@ -17,24 +16,33 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   currentSize = GridCoordinate (totalSize.getX () / nodeGridSizeX, totalSize.getY ());
   size = currentSize + bufferSizeLeft + bufferSizeRight;
 
-  if (processId % nodeGridSizeX != 0)
-  {
-    buffersSend[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
-    buffersReceive[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
-  }
-
-  if ((processId + 1) % nodeGridSizeX != 0)
-  {
-    buffersSend[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * numTimeStepsInBuild);
-    buffersReceive[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * numTimeStepsInBuild);
-  }
+#if PRINT_MESSAGE
+  printf ("Nodes' grid process #%d: %dx%d.\n", processId,
+    nodeGridSizeX, nodeGridSizeY);
+#endif
 }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D */
+#endif
 
-
-#ifdef PARALLEL_BUFFER_DIMENSION_2D
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
 void
-Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
+Grid::NodeGridInit ()
+{
+  nodeGridSizeX = 1;
+  nodeGridSizeY = totalProcCount;
+
+  currentSize = GridCoordinate (totalSize.getX (), totalSize.getY () / nodeGridSizeY);
+  size = currentSize + bufferSizeLeft + bufferSizeRight;
+
+#if PRINT_MESSAGE
+  printf ("Nodes' grid process #%d: %dx%d.\n", processId,
+    nodeGridSizeX, nodeGridSizeY);
+#endif
+}
+#endif
+
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
+void
+Grid::NodeGridInit ()
 {
   if (totalProcCount < 4)
   {
@@ -130,16 +138,24 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   printf ("Nodes' grid process #%d: %dx%d. %d node(s) unused.\n", processId,
     nodeGridSizeX, nodeGridSizeY, left);
 #endif
+}
+#endif
 
+void
+Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
+{
+  NodeGridInit ();
+
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
   if (processId >= nodeGridSizeX * nodeGridSizeY)
   {
     return;
   }
+#endif
 
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
   bool hasL = false;
   bool hasR = false;
-  bool hasU = false;
-  bool hasD = false;
 
   if (processId % nodeGridSizeX != 0)
   {
@@ -150,6 +166,11 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   {
     hasR = true;
   }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+  bool hasU = false;
+  bool hasD = false;
 
   if (processId >= nodeGridSizeX)
   {
@@ -160,12 +181,15 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   {
     hasU = true;
   }
+#endif
 
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
   if (hasL)
   {
     buffersSend[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
     buffersReceive[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
 
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
     if (hasD)
     {
       buffersSend[LEFT_DOWN].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
@@ -176,6 +200,7 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
       buffersSend[LEFT_UP].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
       buffersReceive[LEFT_UP].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
     }
+#endif
   }
 
   if (hasR)
@@ -183,6 +208,7 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
     buffersSend[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * numTimeStepsInBuild);
     buffersReceive[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * numTimeStepsInBuild);
 
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
     if (hasD)
     {
       buffersSend[RIGHT_DOWN].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
@@ -193,8 +219,11 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
       buffersSend[RIGHT_UP].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
       buffersReceive[RIGHT_UP].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
     }
+#endif
   }
+#endif
 
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
   if (hasD)
   {
     buffersSend[DOWN].resize (bufferSizeLeft.getY () * currentSize.getX () * numTimeStepsInBuild);
@@ -206,17 +235,18 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
     buffersSend[UP].resize (bufferSizeRight.getY () * currentSize.getX () * numTimeStepsInBuild);
     buffersReceive[UP].resize (bufferSizeRight.getY () * currentSize.getX () * numTimeStepsInBuild);
   }
+#endif
 }
-#endif /* PARALLEL_BUFFER_DIMENSION_2D */
 
-#if defined (PARALLEL_BUFFER_DIMENSION_1D) || defined (PARALLEL_BUFFER_DIMENSION_2D)
 void
 Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 {
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
   if (processId >= nodeGridSizeX * nodeGridSizeY)
   {
     return;
   }
+#endif
 
   grid_iter pos1 = 0;
   grid_iter pos2 = 0;
@@ -236,8 +266,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
   bool doSend = true;
   bool doReceive = true;
 
+  //printf ("Buffer direction %s\n", BufferPositionNames[bufferDirection]);
+
   switch (bufferDirection)
   {
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
     case LEFT:
     {
       // Send coordinates
@@ -296,7 +329,8 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 
       break;
     }
-#ifdef PARALLEL_BUFFER_DIMENSION_2D
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
     case UP:
     {
       // Send coordinates
@@ -355,6 +389,8 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 
       break;
     }
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
     case LEFT_UP:
     {
       // Send coordinates
@@ -471,7 +507,7 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 
       break;
     }
-#endif /* PARALLEL_BUFFER_DIMENSION_2D */
+#endif
     default:
     {
       UNREACHABLE;
@@ -546,7 +582,5 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
     }
   }
 }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D || PARALLEL_BUFFER_DIMENSION_2D */
-
 
 #endif /* GRID_2D */

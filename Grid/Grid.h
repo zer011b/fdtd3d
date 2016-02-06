@@ -14,51 +14,55 @@
 #if defined (PARALLEL_GRID)
 enum BufferPosition
 {
-/*
- * One dimension buffers.
- */
-#if defined (GRID_1D) && defined (PARALLEL_BUFFER_DIMENSION_1D) || \
-    defined (GRID_2D) && defined (PARALLEL_BUFFER_DIMENSION_1D) || \
-    defined (GRID_3D) && defined (PARALLEL_BUFFER_DIMENSION_1D)
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   LEFT,
   RIGHT,
 #endif
-/*
- * Two dimension buffers.
- */
-#if defined (GRID_2D) && defined (PARALLEL_BUFFER_DIMENSION_2D) || \
-    defined (GRID_3D) && defined (PARALLEL_BUFFER_DIMENSION_2D)
-  LEFT,
-  RIGHT,
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   UP,
   DOWN,
-  LEFT_UP,
-  LEFT_DOWN,
-  RIGHT_UP,
-  RIGHT_DOWN,
 #endif
-/*
- * Three dimension buffers.
- */
-#if defined (GRID_3D) && defined (PARALLEL_BUFFER_DIMENSION_3D)
-  LEFT,
-  RIGHT,
-  UP,
-  DOWN,
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   FRONT,
   BACK,
-  LEFT_FRONT,
-  LEFT_BACK,
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   LEFT_UP,
   LEFT_DOWN,
-  RIGHT_FRONT,
-  RIGHT_BACK,
   RIGHT_UP,
   RIGHT_DOWN,
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  LEFT_FRONT,
+  LEFT_BACK,
+  RIGHT_FRONT,
+  RIGHT_BACK,
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   UP_FRONT,
   UP_BACK,
   DOWN_FRONT,
   DOWN_BACK,
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   LEFT_UP_FRONT,
   LEFT_UP_BACK,
   LEFT_DOWN_FRONT,
@@ -164,6 +168,7 @@ private:
   void SendReceive ();
 
   void ParallelGridConstructor (grid_iter numTimeStepsInBuild);
+  void NodeGridInit ();
 
 #endif /* PARALLEL_GRID */
 

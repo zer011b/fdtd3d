@@ -70,7 +70,7 @@ int main (int argc, char** argv)
   Eps.Share ();
   Mu.Share ();
 
-  for (int t = 0; t < 1; ++t)
+  for (int t = 0; t < 100; ++t)
   {
     //printf ("Step %d #%d.\n", t, rank);
 

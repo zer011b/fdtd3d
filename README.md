@@ -45,7 +45,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=ON -DTIME_STEPS=2 -DGRID_DIMEN
 -DGRID_DIMENSION - number of dimensions in grid (1, 2 or 3)
 -DPRINT_MESSAGE - print output (ON or OFF)
 -DPARALLEL_GRID - use parallel grid or not (ON or OFF)
--DPARALLEL_BUFFER_DIMENSION - dimension of parallel buffers (1, 2 or 3)
+-DPARALLEL_BUFFER_DIMENSION - dimension of parallel buffers, i.e. actual coordinate systems (x, y, z, xy, yz, xz, xyz)
 ```
 
 # Preprocessor variables
@@ -58,9 +58,13 @@ GRID_2D - two-dimensional solver
 GRID_3D - three-dimensional solver
 PRINT_MESSAGE - print output (TRUE of FALSE)
 PARALLEL_GRID - use parallel grid or not (TRUE or FALSE)
-PARALLEL_BUFFER_DIMENSION_1D - one dimensional parallel buffer
-PARALLEL_BUFFER_DIMENSION_2D - two dimensional parallel buffer
-PARALLEL_BUFFER_DIMENSION_3D - three dimensional parallel buffer
+PARALLEL_BUFFER_DIMENSION_1D_X - one dimensional parallel buffer
+PARALLEL_BUFFER_DIMENSION_1D_Y - one dimensional parallel buffer
+PARALLEL_BUFFER_DIMENSION_1D_Z - one dimensional parallel buffer
+PARALLEL_BUFFER_DIMENSION_2D_XY - two dimensional parallel buffer
+PARALLEL_BUFFER_DIMENSION_2D_YZ - two dimensional parallel buffer
+PARALLEL_BUFFER_DIMENSION_2D_XZ - two dimensional parallel buffer
+PARALLEL_BUFFER_DIMENSION_3D_XYZ - three dimensional parallel buffer
 ```
 
 # About
