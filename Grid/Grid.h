@@ -116,10 +116,14 @@ class Grid
   // Overall count of nodes (processes).
   int totalProcCount;
 
-#if defined (GRID_2D)
-  // Size of square grid.
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   int nodeGridSizeX;
+#endif
+#if defined (GRID_2D) || defined (GRID_3D)
   int nodeGridSizeY;
+#endif
+#if defined (GRID_3D)
+  int nodeGridSizeZ;
 #endif
 
   // Size of current node without buffers.
@@ -169,6 +173,16 @@ private:
 
   void ParallelGridConstructor (grid_iter numTimeStepsInBuild);
   void NodeGridInit ();
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+  void CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1);
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+  void FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left);
+  void NodeGridInitInner (FieldValue& overall1, FieldValue& overall2, int& nodeGridSize1, int& nodeGridSize2, int& left);
+
+  void CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1, grid_coord& c2, int nodeGridSize2, grid_coord size2);
+#endif
 
 #endif /* PARALLEL_GRID */
 

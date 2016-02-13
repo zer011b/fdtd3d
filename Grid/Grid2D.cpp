@@ -1,36 +1,32 @@
-#include <cmath>
-
 #include "Grid.h"
 
 extern const char* BufferPositionNames[];
 
 #ifdef GRID_2D
 
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
 void
 Grid::NodeGridInit ()
 {
+  grid_coord c1;
+  grid_coord c2;
+
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
   nodeGridSizeX = totalProcCount;
   nodeGridSizeY = 1;
 
-  currentSize = GridCoordinate (totalSize.getX () / nodeGridSizeX, totalSize.getY ());
-  size = currentSize + bufferSizeLeft + bufferSizeRight;
-
-#if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%d.\n", processId,
-    nodeGridSizeX, nodeGridSizeY);
+  CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX ());
+  c2 = totalSize.getY ();
 #endif
-}
-#endif
-
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-void
-Grid::NodeGridInit ()
-{
   nodeGridSizeX = 1;
   nodeGridSizeY = totalProcCount;
 
-  currentSize = GridCoordinate (totalSize.getX (), totalSize.getY () / nodeGridSizeY);
+  c1 = totalSize.getX ();
+  CalculateGridSizeForNode (c2, nodeGridSizeY, totalSize.getY ());
+#endif
+
+  currentSize = GridCoordinate (c1, c2);
   size = currentSize + bufferSizeLeft + bufferSizeRight;
 
 #if PRINT_MESSAGE
@@ -49,89 +45,18 @@ Grid::NodeGridInit ()
     ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
   }
 
-  grid_coord overall_x = totalSize.getX ();
-  grid_coord overall_y = totalSize.getY ();
+  FieldValue overall1 = (FieldValue) totalSize.getX ();
+  FieldValue overall2 = (FieldValue) totalSize.getY ();
 
-  FieldValue alpha = 0;
-  if (overall_x > overall_y)
-  {
-    alpha = overall_x / overall_y;
-  }
-  else
-  {
-    alpha = overall_y / overall_x;
-  }
+  int left;
+  NodeGridInitInner (overall1, overall2, nodeGridSizeX, nodeGridSizeY, left);
 
-  FieldValue sqrtVal = ((FieldValue) (totalProcCount)) / alpha;
-  sqrtVal = sqrt (sqrtVal);
+  grid_coord c1;
+  grid_coord c2;
 
-  if (sqrtVal <= 1)
-  {
-    ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
-  }
+  CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX (), c2, nodeGridSizeY, totalSize.getY ());
 
-  sqrtVal = round (sqrtVal);
-  ASSERT (sqrtVal == floor (sqrtVal));
-
-  if (overall_x > overall_y)
-  {
-    nodeGridSizeY = (int) sqrtVal;
-    nodeGridSizeX = totalProcCount / nodeGridSizeX;
-  }
-  else
-  {
-    nodeGridSizeX = (int) sqrtVal;
-    nodeGridSizeY = totalProcCount / nodeGridSizeX;
-  }
-
-  int left = totalProcCount - nodeGridSizeX * nodeGridSizeY;
-
-  // Considerable. Could give up if only one left
-  if (left > 0) /* left > 1 */
-  {
-    // Bad case, too many nodes left unused. Let's change proportion.
-    bool find = true;
-    bool directionX = nodeGridSizeX > nodeGridSizeY ? true : false;
-    while (find)
-    {
-      find = false;
-      if (directionX && nodeGridSizeX > 2)
-      {
-        find = true;
-        --nodeGridSizeX;
-        nodeGridSizeY = totalProcCount / nodeGridSizeX;
-      }
-      else if (!directionX && nodeGridSizeY > 2)
-      {
-        find = true;
-        --nodeGridSizeY;
-        nodeGridSizeX = totalProcCount / nodeGridSizeY;
-      }
-
-      left = totalProcCount - nodeGridSizeX * nodeGridSizeY;
-
-      if (find && left == 0)
-      {
-        find = false;
-      }
-    }
-  }
-
-  ASSERT (nodeGridSizeX > 1 && nodeGridSizeY > 1);
-
-  grid_coord xc;
-  grid_coord yc;
-  if ((processId + 1) % nodeGridSizeX != 0)
-    xc = totalSize.getX () / nodeGridSizeX;
-  else
-    xc = totalSize.getX () - (nodeGridSizeX - 1) * (totalSize.getX () / nodeGridSizeX);
-
-  if (processId < nodeGridSizeX * nodeGridSizeY - nodeGridSizeX)
-    yc = totalSize.getY () / nodeGridSizeY;
-  else
-    yc = totalSize.getY () - (nodeGridSizeY - 1) * (totalSize.getY () / nodeGridSizeY);
-
-  currentSize = GridCoordinate (xc, yc);
+  currentSize = GridCoordinate (c1, c2);
   size = currentSize + bufferSizeLeft + bufferSizeRight;
 
 #if PRINT_MESSAGE

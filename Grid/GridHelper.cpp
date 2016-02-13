@@ -66,7 +66,7 @@ const char* BufferPositionNames[] =
 /*
  * Overall number of buffers for current dimension.
  */
-  BUFFER_COUNT
+  "BUFFER_COUNT"
 };
 
 #endif /* PRINT_MESSAGE */
