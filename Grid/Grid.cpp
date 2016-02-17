@@ -359,6 +359,47 @@ Grid::Share ()
   MPI_Barrier (MPI_COMM_WORLD);
 }
 
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+void
+Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1)
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+void
+Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1,
+                                grid_coord& c2, int nodeGridSize2, grid_coord size2)
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+void
+Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1,
+                                grid_coord& c2, int nodeGridSize2, grid_coord size2,
+                                grid_coord& c3, int nodeGridSize3, grid_coord size3)
+#endif
+{
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if ((processId + 1) % nodeGridSize1 != 0)
+    c1 = size1 / nodeGridSize1;
+  else
+    c1 = size1 - (nodeGridSize1 - 1) * (size1 / nodeGridSize1);
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (processId < nodeGridSize1 * nodeGridSize2 - nodeGridSize1)
+    c2 = size2 / nodeGridSize2;
+  else
+    c2 = size2 - (nodeGridSize2 - 1) * (size2 / nodeGridSize2);
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (processId < nodeGridSize1 * nodeGridSize2 * nodeGridSize3 - nodeGridSize1 * nodeGridSize2)
+    c3 = size3 / nodeGridSize3;
+  else
+    c3 = size3 - (nodeGridSize3 - 1) * (size3 / nodeGridSize3);
+#endif
+}
+
 #endif /* PARALLEL_GRID */
 
 void

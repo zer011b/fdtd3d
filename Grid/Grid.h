@@ -181,7 +181,14 @@ private:
   void FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left);
   void NodeGridInitInner (FieldValue& overall1, FieldValue& overall2, int& nodeGridSize1, int& nodeGridSize2, int& left);
 
-  void CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1, grid_coord& c2, int nodeGridSize2, grid_coord size2);
+  void CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1,
+                                 grid_coord& c2, int nodeGridSize2, grid_coord size2);
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  void FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& nodeGridSize3, int& left);
+  void CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1,
+                                 grid_coord& c2, int nodeGridSize2, grid_coord size2,
+                                 grid_coord& c3, int nodeGridSize3, grid_coord size3);
 #endif
 
 #endif /* PARALLEL_GRID */
