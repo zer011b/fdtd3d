@@ -3,6 +3,7 @@
 extern const char* BufferPositionNames[];
 
 #ifdef GRID_1D
+#ifdef PARALLEL_GRID
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
 void
@@ -170,4 +171,5 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
   }
 }
 
+#endif /* PARALLEL_GRID */
 #endif /* GRID_1D */

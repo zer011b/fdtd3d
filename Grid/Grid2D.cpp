@@ -3,6 +3,7 @@
 extern const char* BufferPositionNames[];
 
 #ifdef GRID_2D
+#ifdef PARALLEL_GRID
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
 void
@@ -71,6 +72,7 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 {
   NodeGridInit ();
 
+  // Return if node not used.
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
   if (processId >= nodeGridSizeX * nodeGridSizeY)
   {
@@ -113,38 +115,11 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   {
     buffersSend[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
     buffersReceive[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * numTimeStepsInBuild);
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-    if (hasD)
-    {
-      buffersSend[LEFT_DOWN].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
-      buffersReceive[LEFT_DOWN].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
-    }
-    if (hasU)
-    {
-      buffersSend[LEFT_UP].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
-      buffersReceive[LEFT_UP].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
-    }
-#endif
   }
-
   if (hasR)
   {
     buffersSend[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * numTimeStepsInBuild);
     buffersReceive[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * numTimeStepsInBuild);
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-    if (hasD)
-    {
-      buffersSend[RIGHT_DOWN].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
-      buffersReceive[RIGHT_DOWN].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
-    }
-    if (hasU)
-    {
-      buffersSend[RIGHT_UP].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
-      buffersReceive[RIGHT_UP].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
-    }
-#endif
   }
 #endif
 
@@ -154,11 +129,33 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
     buffersSend[DOWN].resize (bufferSizeLeft.getY () * currentSize.getX () * numTimeStepsInBuild);
     buffersReceive[DOWN].resize (bufferSizeLeft.getY () * currentSize.getX () * numTimeStepsInBuild);
   }
-
   if (hasU)
   {
     buffersSend[UP].resize (bufferSizeRight.getY () * currentSize.getX () * numTimeStepsInBuild);
     buffersReceive[UP].resize (bufferSizeRight.getY () * currentSize.getX () * numTimeStepsInBuild);
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+  if (hasL && hasD)
+  {
+    buffersSend[LEFT_DOWN].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
+    buffersReceive[LEFT_DOWN].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
+  }
+  if (hasL && hasU)
+  {
+    buffersSend[LEFT_UP].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
+    buffersReceive[LEFT_UP].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
+  }
+  if (hasR && hasD)
+  {
+    buffersSend[RIGHT_DOWN].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
+    buffersReceive[RIGHT_DOWN].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild);
+  }
+  if (hasR && hasU)
+  {
+    buffersSend[RIGHT_UP].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
+    buffersReceive[RIGHT_UP].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * numTimeStepsInBuild);
   }
 #endif
 }
@@ -508,4 +505,5 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
   }
 }
 
+#endif /* PARALLEL_GRID */
 #endif /* GRID_2D */

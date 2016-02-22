@@ -8,15 +8,15 @@ void
 Grid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FieldValue alpha)
 {
   int min_left = left;
-  int min_size1 = nodeGridSize1
+  int min_size1 = nodeGridSize1;
   int min_size2 = nodeGridSize2;
   FieldValue min_alpha = ((FieldValue) min_size2) / ((FieldValue) min_size1);
 
   // Bad case, too many nodes left unused. Let's change proportion.
-  for (int size1 = 2, int size2, int left_new; size1 < totalProcCount / 2; ++size1)
+  for (int size1 = 2; size1 < totalProcCount / 2; ++size1)
   {
-    size2 = totalProcCount / size1;
-    left_new = totalProcCount - (size1 * size2);
+    int size2 = totalProcCount / size1;
+    int left_new = totalProcCount - (size1 * size2);
 
     if (left_new < min_left)
     {
@@ -29,8 +29,8 @@ Grid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& le
     {
       FieldValue new_alpha = ((FieldValue) size2) / ((FieldValue) size1);
 
-      diff_alpha = abs (new_alpha - alpha);
-      diff_alpha_min = abs (min_alpha - alpha);
+      FieldValue diff_alpha = fabs (new_alpha - alpha);
+      FieldValue diff_alpha_min = fabs (min_alpha - alpha);
 
       if (diff_alpha < diff_alpha_min)
       {
