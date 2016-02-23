@@ -27,13 +27,26 @@ Grid::NodeGridInit ()
 void
 Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 {
-  if (processId != 0)
+  hasL = false;
+  hasR = false;
+
+  if (processId > 0)
+  {
+    hasL = true;
+  }
+
+  if (processId < totalProcCount - 1)
+  {
+    hasR = true;
+  }
+
+  if (hasL)
   {
     buffersSend[LEFT].resize (bufferSizeLeft.getX () * numTimeStepsInBuild);
     buffersReceive[LEFT].resize (bufferSizeLeft.getX () * numTimeStepsInBuild);
   }
 
-  if (processId != totalProcCount - 1)
+  if (hasR)
   {
     buffersSend[RIGHT].resize (bufferSizeRight.getX () * numTimeStepsInBuild);
     buffersReceive[RIGHT].resize (bufferSizeRight.getX () * numTimeStepsInBuild);
@@ -73,11 +86,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       processTo = processId - 1;
       processFrom = processId + 1;
 
-      if (processId == 0)
+      if (!hasL)
       {
         doSend = false;
       }
-      else if (processId == totalProcCount - 1)
+      else if (!hasR)
       {
         doReceive = false;
       }
@@ -98,11 +111,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       processTo = processId + 1;
       processFrom = processId - 1;
 
-      if (processId == 0)
+      if (!hasL)
       {
         doReceive = false;
       }
-      else if (processId == totalProcCount - 1)
+      else if (!hasR)
       {
         doSend = false;
       }

@@ -67,7 +67,7 @@ Grid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& no
 
 void
 Grid::NodeGridInitInner (FieldValue& overall1, FieldValue& overall2, FieldValue& overall3,
-                         int& nodeGridSize1, int& nodeGridSize2, int& nodeGridSize3, int& left);
+                         int& nodeGridSize1, int& nodeGridSize2, int& nodeGridSize3, int& left)
 {
   FieldValue alpha = overall2 / overall1;
   FieldValue betta = overall3 / overall1;
@@ -82,7 +82,7 @@ Grid::NodeGridInitInner (FieldValue& overall1, FieldValue& overall2, FieldValue&
   cbrtVal = round (cbrtVal);
 
   nodeGridSize1 = (int) cbrtVal;
-  nodeGridSize2 = alpha * nodeGridSize1
+  nodeGridSize2 = alpha * nodeGridSize1;
   nodeGridSize3 = totalProcCount / (nodeGridSize1 * nodeGridSize2);
 
   left = totalProcCount - nodeGridSize1 * nodeGridSize2 * nodeGridSize3;

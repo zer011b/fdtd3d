@@ -378,7 +378,12 @@ Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord si
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if ((processId + 1) % nodeGridSize1 != 0)
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+  if (processId < nodeGridSize1 - 1)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+      defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (processId % nodeGridSize1 < nodeGridSize1 - 1)
+#endif
     c1 = size1 / nodeGridSize1;
   else
     c1 = size1 - (nodeGridSize1 - 1) * (size1 / nodeGridSize1);
@@ -386,7 +391,11 @@ Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord si
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
   if (processId < nodeGridSize1 * nodeGridSize2 - nodeGridSize1)
+#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if ((processId % (nodeGridSize1 * nodeGridSize2)) < nodeGridSize1 * nodeGridSize2 - nodeGridSize1)
+#endif
     c2 = size2 / nodeGridSize2;
   else
     c2 = size2 - (nodeGridSize2 - 1) * (size2 / nodeGridSize2);

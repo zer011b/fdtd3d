@@ -81,30 +81,46 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-  bool hasL = false;
-  bool hasR = false;
+  hasL = false;
+  hasR = false;
 
-  if (processId % nodeGridSizeX != 0)
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
+  if (processId > 0)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+  if (processId % nodeGridSizeX > 0)
+#endif
   {
     hasL = true;
   }
 
-  if ((processId + 1) % nodeGridSizeX != 0)
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
+  if (processId < nodeGridSizeX - 1)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+  if (processId % nodeGridSizeX < nodeGridSizeX - 1)
+#endif
   {
     hasR = true;
   }
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-  bool hasU = false;
-  bool hasD = false;
+  hasU = false;
+  hasD = false;
 
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
+  if (processId > 0)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
   if (processId >= nodeGridSizeX)
+#endif
   {
     hasD = true;
   }
 
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
+  if (processId < nodeGridSizeY - 1)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
   if (processId < nodeGridSizeX * nodeGridSizeY - nodeGridSizeX)
+#endif
   {
     hasU = true;
   }
@@ -163,6 +179,7 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 void
 Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 {
+  // Return if node not used.
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
   if (processId >= nodeGridSizeX * nodeGridSizeY)
   {
@@ -211,11 +228,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       processTo = processId - 1;
       processFrom = processId + 1;
 
-      if (processId % nodeGridSizeX == 0)
+      if (!hasL)
       {
         doSend = false;
       }
-      else if ((processId + 1) % nodeGridSizeX == 0)
+      else if (!hasR)
       {
         doReceive = false;
       }
@@ -240,11 +257,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       processTo = processId + 1;
       processFrom = processId - 1;
 
-      if (processId % nodeGridSizeX == 0)
+      if (!hasL)
       {
         doReceive = false;
       }
-      else if ((processId + 1) % nodeGridSizeX == 0)
+      else if (!hasR)
       {
         doSend = false;
       }
@@ -271,11 +288,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       processTo = processId + nodeGridSizeX;
       processFrom = processId - nodeGridSizeX;
 
-      if (processId < nodeGridSizeX)
+      if (!hasD)
       {
         doReceive = false;
       }
-      else if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX)
+      if (!hasU)
       {
         doSend = false;
       }
@@ -300,11 +317,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       processTo = processId - nodeGridSizeX;
       processFrom = processId + nodeGridSizeX;
 
-      if (processId < nodeGridSizeX)
+      if (!hasD)
       {
         doSend = false;
       }
-      else if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX)
+      else if (!hasU)
       {
         doReceive = false;
       }
@@ -329,13 +346,13 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 
       opposite = RIGHT_DOWN;
       processTo = processId + nodeGridSizeX - 1;
-      processFrom = processId - nodeGridSizeX + 1;;
+      processFrom = processId - nodeGridSizeX + 1;
 
-      if (processId < nodeGridSizeX || (processId + 1) % nodeGridSizeX == 0)
+      if (!hasR || !hasD)
       {
         doReceive = false;
       }
-      if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX || processId % nodeGridSizeX == 0)
+      if (!hasL || !hasU)
       {
         doSend = false;
       }
@@ -360,11 +377,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       processTo = processId - nodeGridSizeX - 1;
       processFrom = processId + nodeGridSizeX + 1;
 
-      if (processId < nodeGridSizeX || processId % nodeGridSizeX == 0)
+      if (!hasL || !hasD)
       {
         doSend = false;
       }
-      if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX || (processId + 1) % nodeGridSizeX == 0)
+      if (!hasR || !hasU)
       {
         doReceive = false;
       }
@@ -389,11 +406,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       processTo = processId + nodeGridSizeX + 1;
       processFrom = processId - nodeGridSizeX - 1;
 
-      if (processId < nodeGridSizeX || processId % nodeGridSizeX == 0)
+      if (!hasL || !hasD)
       {
         doReceive = false;
       }
-      if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX || (processId + 1) % nodeGridSizeX == 0)
+      if (!hasR || !hasU)
       {
         doSend = false;
       }
@@ -418,11 +435,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       processTo = processId - nodeGridSizeX + 1;
       processFrom = processId + nodeGridSizeX - 1;
 
-      if (processId < nodeGridSizeX || (processId + 1) % nodeGridSizeX == 0)
+      if (!hasR || !hasD)
       {
         doSend = false;
       }
-      if (processId >= nodeGridSizeX * nodeGridSizeY - nodeGridSizeX || processId % nodeGridSizeX == 0)
+      if (!hasL || !hasU)
       {
         doReceive = false;
       }
