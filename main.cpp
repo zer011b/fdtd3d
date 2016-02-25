@@ -21,7 +21,7 @@ int main (int argc, char** argv)
   printf ("Start process %d of %d\n", rank, numProcs);
 #endif
 
-  GridCoordinate overallSize (1000, 1000, 1000);
+  GridCoordinate overallSize (100, 100, 100);
   //GridCoordinate size (100, 100);
   GridCoordinate bufferLeft (10, 10, 10);
   GridCoordinate bufferRight (10, 10, 10);

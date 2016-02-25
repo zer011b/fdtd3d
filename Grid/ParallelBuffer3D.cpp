@@ -16,9 +16,9 @@ Grid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& no
   FieldValue min_betta = ((FieldValue) min_size3) / ((FieldValue) min_size1);
 
   // Bad case, too many nodes left unused. Let's change proportion.
-  for (int size1 = 2; size1 < totalProcCount / 2; ++size1)
+  for (int size1 = 2; size1 < totalProcCount / 4; ++size1)
   {
-    for (int size2 = 2; size2 < totalProcCount / 2; ++size2)
+    for (int size2 = 2; size2 < totalProcCount / 4; ++size2)
     {
       int size3 = totalProcCount / (size1 * size2);
       int left_new = totalProcCount - (size1 * size2 * size3);

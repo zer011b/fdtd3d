@@ -59,6 +59,7 @@ BMPDumper::getPixelFromValue (const FieldValue& val, const FieldValue& maxNeg,
   return pixel;
 }
 
+#if defined (GRID_1D) || defined (GRID_2D)
 void
 BMPDumper::writeToFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, GridFileType dump_type) const
 {
@@ -257,7 +258,7 @@ BMPDumper::dumpFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 }
-
+#endif
 
 #if defined (GRID_1D)
 void

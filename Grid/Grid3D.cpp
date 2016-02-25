@@ -70,7 +70,7 @@ Grid::NodeGridInit ()
   FieldValue overall1 = (FieldValue) totalSize.getY ();
   FieldValue overall2 = (FieldValue) totalSize.getZ ();
 #endif
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
   FieldValue overall1 = (FieldValue) totalSize.getX ();
   FieldValue overall2 = (FieldValue) totalSize.getZ ();
 #endif
@@ -100,7 +100,7 @@ Grid::NodeGridInit ()
   c1 = totalSize.getX ();
   CalculateGridSizeForNode (c2, nodeGridSizeY, totalSize.getY (), c3, nodeGridSizeZ, totalSize.getZ ());
 #endif
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
   nodeGridSizeX = nodeGridSizeTmp1;
   nodeGridSizeY = 1;
   nodeGridSizeZ = nodeGridSizeTmp2;
@@ -156,6 +156,7 @@ Grid::NodeGridInit ()
 #if PRINT_MESSAGE
   printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n", processId,
     nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ, left);
+  printf ("Grid size for #%d process: %dx%dx%d.\n", processId, c1, c2, c3);
 #endif
 }
 #endif

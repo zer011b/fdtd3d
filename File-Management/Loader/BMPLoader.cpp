@@ -49,6 +49,7 @@ BMPLoader::getValueFromPixel (const RGBApixel& pixel, const FieldValue& maxNeg,
   return retval;
 }
 
+#if defined (GRID_1D) || defined (GRID_2D)
 void
 BMPLoader::loadFromFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, GridFileType load_type) const
 {
@@ -170,6 +171,7 @@ BMPLoader::loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 }
+#endif
 
 #if defined (GRID_1D)
 void
@@ -206,6 +208,6 @@ BMPLoader::load2D (Grid& grid) const
 void
 BMPLoader::load3D (Grid& grid) const
 {
-
+  ASSERT_MESSAGE ("3D loader is not implemented.")
 }
 #endif /* GRID_3D */
