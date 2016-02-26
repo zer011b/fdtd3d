@@ -10,7 +10,7 @@ For additional info on current project development status and future plans check
 
 # Build Process
 
-Build is done using cmake & make.
+Build is done using cmake.
 
 ## Release Build
 
@@ -31,10 +31,10 @@ make
 ```
 ## Additional Example
 
-Build for current main.cpp
+main.cpp has example of parallel grid usage, independent of dimension. Build command for 3D grid:
 
 ```sh
-cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=ON -DTIME_STEPS=2 -DGRID_DIMENSION=2 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xy
+cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=ON -DTIME_STEPS=2 -DGRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xyz
 ```
 
 # Build Flags

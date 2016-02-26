@@ -23,6 +23,47 @@ GridCoordinate::GridCoordinate (
 {
 }
 
+#if defined (GRID_2D) || defined (GRID_3D)
+GridCoordinate::GridCoordinate (const grid_coord& s) :
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  x (s)
+#if defined (GRID_2D) || defined (GRID_3D)
+  , y (s)
+#if defined (GRID_3D)
+  , z (s)
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
+{
+}
+#endif
+
+GridCoordinate::GridCoordinate () :
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  x (0)
+#if defined (GRID_2D) || defined (GRID_3D)
+  , y (0)
+#if defined (GRID_3D)
+  , z (0)
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
+{
+}
+
+GridCoordinate::GridCoordinate (const GridCoordinate& pos) :
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  x (pos.getX ())
+#if defined (GRID_2D) || defined (GRID_3D)
+  , y (pos.getY ())
+#if defined (GRID_3D)
+  , z (pos.getZ ())
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D*/
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
+{
+}
+
 GridCoordinate::~GridCoordinate ()
 {
 }

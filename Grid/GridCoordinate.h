@@ -28,28 +28,23 @@ public:
   // Constructor for all cases.
   GridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    const grid_coord& sx = 0
+    const grid_coord& sx
 #if defined (GRID_2D) || defined (GRID_3D)
-    , const grid_coord& sy = 0
+    , const grid_coord& sy
 #if defined (GRID_3D)
-    , const grid_coord& sz = 0
+    , const grid_coord& sz
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D*/
 #endif /* GRID_1D || GRID_2D || GRID_3D*/
   );
 
-  GridCoordinate (const GridCoordinate& pos)
-  {
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    x = pos.getX ();
 #if defined (GRID_2D) || defined (GRID_3D)
-    y = pos.getY ();
-#if defined (GRID_3D)
-    z = pos.getZ ();
-#endif /* GRID_3D */
-#endif /* GRID_2D || GRID_3D*/
-#endif /* GRID_1D || GRID_2D || GRID_3D*/
-  }
+  // Constructor for case when grid has the same dimension for all axes.
+  GridCoordinate (const grid_coord& s);
+#endif
+
+  GridCoordinate ();
+  GridCoordinate (const GridCoordinate& pos);
 
   ~GridCoordinate ();
 

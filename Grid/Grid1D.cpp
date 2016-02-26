@@ -27,6 +27,8 @@ Grid::NodeGridInit ()
 void
 Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 {
+  NodeGridInit ();
+
   hasL = false;
   hasR = false;
 

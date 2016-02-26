@@ -21,10 +21,10 @@ int main (int argc, char** argv)
   printf ("Start process %d of %d\n", rank, numProcs);
 #endif
 
-  GridCoordinate overallSize (100, 100, 100);
+  GridCoordinate overallSize (100);
   //GridCoordinate size (100, 100);
-  GridCoordinate bufferLeft (10, 10, 10);
-  GridCoordinate bufferRight (10, 10, 10);
+  GridCoordinate bufferLeft (10);
+  GridCoordinate bufferRight (10);
 
   Grid Eps (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
   Grid Mu (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
@@ -43,12 +43,18 @@ int main (int argc, char** argv)
   FieldValue eps0 = 0.0000000000088541878176203892;
   FieldValue mu0 = 0.0000012566370614359173;
 
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   for (int i = 0; i < sizeTotal.getX (); ++i)
   {
+#endif
+#if defined (GRID_2D) || defined (GRID_3D)
     for (int j = 0; j < sizeTotal.getY (); ++j)
     {
+#endif
+#if defined (GRID_3D)
       for (int k = 0; k < sizeTotal.getZ (); ++k)
       {
+#endif
         FieldPointValue* eps = new FieldPointValue (1*eps0, 1*eps0, 1*eps0);
         FieldPointValue* mu = new FieldPointValue (1*mu0, 1*mu0, 1*mu0);
 
@@ -56,7 +62,15 @@ int main (int argc, char** argv)
         FieldPointValue* valHx = new FieldPointValue (0, 0, 0);
         FieldPointValue* valHy = new FieldPointValue (0, 0, 0);
 
+#if defined (GRID_1D)
+        GridCoordinate pos (i);
+#endif
+#if defined (GRID_2D)
+        GridCoordinate pos (i, j);
+#endif
+#if defined (GRID_3D)
         GridCoordinate pos (i, j, k);
+#endif
 
         Eps.setFieldPointValue(eps, pos);
         Mu.setFieldPointValue(mu, pos);
@@ -64,9 +78,15 @@ int main (int argc, char** argv)
         Ez.setFieldPointValue(valE, pos);
         Hx.setFieldPointValue(valHx, pos);
         Hy.setFieldPointValue(valHy, pos);
+#if defined (GRID_3D)
       }
+#endif
+#if defined (GRID_2D) || defined (GRID_3D)
     }
+#endif
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   }
+#endif
 
   MPI_Barrier (MPI_COMM_WORLD);
 
