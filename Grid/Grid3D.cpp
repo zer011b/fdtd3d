@@ -893,8 +893,8 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos12 = size.getZ ();
 
       opposite = DOWN_FRONT;
-      processTo = processId - nodeGridSizeX - nodeGridSizeX * nodeGridSizeY;
-      processFrom = processId + nodeGridSizeX + nodeGridSizeX * nodeGridSizeY;
+      processTo = processId + nodeGridSizeX - nodeGridSizeX * nodeGridSizeY;
+      processFrom = processId - nodeGridSizeX + nodeGridSizeX * nodeGridSizeY;
 
       if (!hasU || !hasB)
       {
@@ -926,8 +926,8 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos12 = bufferSizeLeft.getZ ();
 
       opposite = UP_BACK;
-      processTo = processId + nodeGridSizeX + nodeGridSizeX * nodeGridSizeY;
-      processFrom = processId - nodeGridSizeX - nodeGridSizeX * nodeGridSizeY;
+      processTo = processId - nodeGridSizeX + nodeGridSizeX * nodeGridSizeY;
+      processFrom = processId + nodeGridSizeX - nodeGridSizeX * nodeGridSizeY;
 
       if (!hasU || !hasB)
       {
@@ -959,8 +959,8 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos12 = size.getZ ();
 
       opposite = UP_FRONT;
-      processTo = processId - nodeGridSizeX + nodeGridSizeX * nodeGridSizeY;
-      processFrom = processId + nodeGridSizeX - nodeGridSizeX * nodeGridSizeY;
+      processTo = processId - nodeGridSizeX - nodeGridSizeX * nodeGridSizeY;
+      processFrom = processId + nodeGridSizeX + nodeGridSizeX * nodeGridSizeY;
 
       if (!hasD || !hasB)
       {
