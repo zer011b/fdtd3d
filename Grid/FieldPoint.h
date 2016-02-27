@@ -8,11 +8,15 @@
 // Small values define all field values as float.
 // Full values define all field values as double.
 // Small values decrease memory usage, full values increase accuracy.
-#if FULL_VALUES
-typedef double FieldValue;
-#else /* FULL_VALUES */
+#ifdef FLOAT_VALUES
 typedef float FieldValue;
-#endif /* !FULL_VALUES */
+#endif /* FLOAT_VALUES */
+#ifdef DOUBLE_VALUES
+typedef double FieldValue;
+#endif /* DOUBLE_VALUES */
+#ifdef LONG_DOUBLE_VALUES
+typedef long double FieldValue;
+#endif /* LONG_DOUBLE_VALUES */
 
 
 // FieldPointValue defines all values in time at the grid point.

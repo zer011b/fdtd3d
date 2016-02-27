@@ -34,13 +34,13 @@ make
 main.cpp has example of parallel grid usage, independent of dimension. Build command for 3D grid:
 
 ```sh
-cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=ON -DTIME_STEPS=2 -DGRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xyz
+cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=d -DTIME_STEPS=2 -DGRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xyz
 ```
 
 # Build Flags
 ```c_cpp
 -DCMAKE_BUILD_TYPE - build type (Debug or Release)
--DFULL_VALUES - use double (ON) or float (OFF)
+-DFULL_VALUES - use float (f), double (d) or long double (ld)
 -DTIME_STEPS - number of steps in time (1 or 2)
 -DGRID_DIMENSION - number of dimensions in grid (1, 2 or 3)
 -DPRINT_MESSAGE - print output (ON or OFF)
@@ -50,7 +50,9 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=ON -DTIME_STEPS=2 -DGRID_DIMEN
 
 # Preprocessor variables
 ```c_cpp
-FULL_VALUES - use double (TRUE) or float (FALSE)
+FLOAT_VALUES - use float
+DOUBLE_VALUES - use double
+LONG_DOUBLE_VALUES - use long double
 ONE_TIME_STEP - one previous time step is saved
 TWO_TIME_STEPS - two previous time steps are saved
 GRID_1D - one-dimensional solver

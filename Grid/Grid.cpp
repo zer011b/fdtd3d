@@ -272,13 +272,18 @@ Grid::SendRawBuffer (BufferPosition buffer, int processTo)
 
   FieldValue* rawBuffer = buffersSend[buffer].data ();
 
-#if FULL_VALUES
-  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_DOUBLE,
-                          processTo, processId, MPI_COMM_WORLD);
-#else /* FULL_VALUES */
+#ifdef FLOAT_VALUES
   int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_FLOAT,
                           processTo, processId, MPI_COMM_WORLD);
-#endif
+#endif /* FLOAT_VALUES */
+#ifdef DOUBLE_VALUES
+  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_DOUBLE,
+                          processTo, processId, MPI_COMM_WORLD);
+#endif /* DOUBLE_VALUES */
+#ifdef LONG_DOUBLE_VALUES
+  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_LONG_DOUBLE,
+                          processTo, processId, MPI_COMM_WORLD);
+#endif /* LONG_DOUBLE_VALUES */
 
   ASSERT (retCode == MPI_SUCCESS);
 }
@@ -293,13 +298,18 @@ Grid::ReceiveRawBuffer (BufferPosition buffer, int processFrom)
 
   FieldValue* rawBuffer = buffersReceive[buffer].data ();
 
-#if FULL_VALUES
-  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_DOUBLE,
-                          processFrom, processFrom, MPI_COMM_WORLD, &status);
-#else /* FULL_VALUES */
+#ifdef FLOAT_VALUES
   int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_FLOAT,
                           processFrom, processFrom, MPI_COMM_WORLD, &status);
-#endif
+#endif /* FLOAT_VALUES */
+#ifdef DOUBLE_VALUES
+  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_DOUBLE,
+                          processFrom, processFrom, MPI_COMM_WORLD, &status);
+#endif /* DOUBLE_VALUES */
+#ifdef LONG_DOUBLE_VALUES
+  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_LONG_DOUBLE,
+                          processFrom, processFrom, MPI_COMM_WORLD, &status);
+#endif /* LONG_DOUBLE_VALUES */
 
   ASSERT (retCode == MPI_SUCCESS);
 }
@@ -317,19 +327,28 @@ Grid::SendReceiveRawBuffer (BufferPosition bufferSend, int processTo,
   FieldValue* rawBufferSend = buffersSend[bufferSend].data ();
   FieldValue* rawBufferReceive = buffersReceive[bufferReceive].data ();
 
-#if FULL_VALUES
-  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_DOUBLE,
-                              processTo, processId,
-                              rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_DOUBLE,
-                              processFrom, processFrom,
-                              MPI_COMM_WORLD, &status);
-#else /* FULL_VALUES */
+#ifdef FLOAT_VALUES
   int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_FLOAT,
                               processTo, processId,
                               rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_FLOAT,
                               processFrom, processFrom,
                               MPI_COMM_WORLD, &status);
-#endif
+#endif /* FLOAT_VALUES */
+#ifdef DOUBLE_VALUES
+  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_DOUBLE,
+                              processTo, processId,
+                              rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_DOUBLE,
+                              processFrom, processFrom,
+                              MPI_COMM_WORLD, &status);
+#endif /* DOUBLE_VALUES */
+#ifdef LONG_DOUBLE_VALUES
+  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_LONG_DOUBLE,
+                              processTo, processId,
+                              rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_LONG_DOUBLE,
+                              processFrom, processFrom,
+                              MPI_COMM_WORLD, &status);
+#endif /* LONG_DOUBLE_VALUES */
+
 
   ASSERT (retCode == MPI_SUCCESS);
 }
