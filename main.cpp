@@ -10,6 +10,7 @@
 
 int main (int argc, char** argv)
 {
+#if defined (PARALLEL_GRID)
   MPI_Init(&argc, &argv);
 
   int rank, numProcs;
@@ -20,18 +21,28 @@ int main (int argc, char** argv)
 #if PRINT_MESSAGE
   printf ("Start process %d of %d\n", rank, numProcs);
 #endif
+#endif
 
   GridCoordinate overallSize (100);
   //GridCoordinate size (100, 100);
   GridCoordinate bufferLeft (10);
   GridCoordinate bufferRight (10);
 
+#if defined (PARALLEL_GRID)
   Grid Eps (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
   Grid Mu (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
 
   Grid Ez (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
   Grid Hx (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
   Grid Hy (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
+#else
+  Grid Eps (overallSize, 0);
+  Grid Mu (overallSize, 0);
+
+  Grid Ez (overallSize, 0);
+  Grid Hx (overallSize, 0);
+  Grid Hy (overallSize, 0);
+#endif
 
   GridCoordinate sizeTotal = Eps.getSize ();
 
@@ -88,10 +99,14 @@ int main (int argc, char** argv)
   }
 #endif
 
+#if defined (PARALLEL_GRID)
   MPI_Barrier (MPI_COMM_WORLD);
+#endif
 
+#if defined (PARALLEL_GRID)
   Eps.Share ();
   Mu.Share ();
+#endif
 
 /*  for (int t = 0; t < 100; ++t)
   {
@@ -274,11 +289,13 @@ int main (int argc, char** argv)
   //   dumper.dumpGrid (Hy);*/
   // }
 
+#if defined (PARALLEL_GRID)
 #if PRINT_MESSAGE
   printf ("Main process %d.\n", rank);
 #endif
 
   MPI_Finalize();
+#endif
 
   return 0;
 }
