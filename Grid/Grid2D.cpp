@@ -225,8 +225,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos8 = size.getY () - bufferSizeRight.getY ();
 
       opposite = RIGHT;
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
       processTo = processId - 1;
       processFrom = processId + 1;
+#endif
 
       if (!hasL)
       {
@@ -254,8 +257,11 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos8 = size.getY () - bufferSizeRight.getY ();
 
       opposite = LEFT;
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
       processTo = processId + 1;
       processFrom = processId - 1;
+#endif
 
       if (!hasL)
       {
@@ -285,8 +291,15 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos8 = bufferSizeLeft.getY ();
 
       opposite = DOWN;
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
+      processTo = processId + 1;
+      processFrom = processId - 1;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
       processTo = processId + nodeGridSizeX;
       processFrom = processId - nodeGridSizeX;
+#endif
 
       if (!hasD)
       {
@@ -314,8 +327,15 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       pos8 = size.getY ();
 
       opposite = UP;
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
+      processTo = processId - 1;
+      processFrom = processId + 1;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
       processTo = processId - nodeGridSizeX;
       processFrom = processId + nodeGridSizeX;
+#endif
 
       if (!hasD)
       {
