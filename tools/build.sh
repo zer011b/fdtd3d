@@ -45,4 +45,7 @@ if [ $STATUS_CODE -ne 0 ]; then
   exit 1
 fi
 
+cd ..
+
+echo "Build successful"
 exit 0

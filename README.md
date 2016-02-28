@@ -10,7 +10,7 @@ For additional info on current project development status and future plans check
 
 # Build Process
 
-Build is done using cmake.
+Build is done using cmake. Although, there are build and run scripts you could find useful.
 
 ## Release Build
 
@@ -31,10 +31,18 @@ make
 ```
 ## Additional Example
 
-main.cpp has example of parallel grid usage, independent of dimension. Build command for 3D grid:
+main.cpp has example of parallel grid usage, independent of all build parameters. Build command for 3D grid:
 
 ```sh
 cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=d -DTIME_STEPS=2 -DGRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xyz
+```
+
+## Build using scripts
+
+Example of build with scripts. This will build 2D parallel grid with x buffer, double values and two time steps. For more info check Docs folder.
+
+```sh
+./tools/build.sh . Debug double 2 2 OFF ON x
 ```
 
 # Build Flags

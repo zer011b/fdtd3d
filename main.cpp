@@ -66,12 +66,29 @@ int main (int argc, char** argv)
       for (int k = 0; k < sizeTotal.getZ (); ++k)
       {
 #endif
+
+#if defined (TWO_TIME_STEPS)
         FieldPointValue* eps = new FieldPointValue (1*eps0, 1*eps0, 1*eps0);
         FieldPointValue* mu = new FieldPointValue (1*mu0, 1*mu0, 1*mu0);
 
         FieldPointValue* valE = new FieldPointValue (0, 0, 0);
         FieldPointValue* valHx = new FieldPointValue (0, 0, 0);
         FieldPointValue* valHy = new FieldPointValue (0, 0, 0);
+#elif defined (ONE_TIME_STEP)
+        FieldPointValue* eps = new FieldPointValue (1*eps0, 1*eps0);
+        FieldPointValue* mu = new FieldPointValue (1*mu0, 1*mu0);
+
+        FieldPointValue* valE = new FieldPointValue (0, 0);
+        FieldPointValue* valHx = new FieldPointValue (0, 0);
+        FieldPointValue* valHy = new FieldPointValue (0, 0);
+#else
+        FieldPointValue* eps = new FieldPointValue (1*eps0);
+        FieldPointValue* mu = new FieldPointValue (1*mu0);
+
+        FieldPointValue* valE = new FieldPointValue (0);
+        FieldPointValue* valHx = new FieldPointValue (0);
+        FieldPointValue* valHy = new FieldPointValue (0);
+#endif
 
 #if defined (GRID_1D)
         GridCoordinate pos (i);

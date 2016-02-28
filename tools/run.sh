@@ -26,4 +26,5 @@ if [ $STATUS_CODE -ne 0 ]; then
   exit 1
 fi
 
+echo "Run successful"
 exit 0
