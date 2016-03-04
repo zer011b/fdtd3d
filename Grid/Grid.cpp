@@ -23,11 +23,32 @@ Grid::Grid (const GridCoordinate& totSize,
   grid_iter numTimeStepsInBuild = 3;
 #endif
 
+  oppositeDirections.resize (BUFFER_COUNT);
+  for (int i = 0; i < BUFFER_COUNT; ++i)
+  {
+    oppositeDirections[i] = getOpposite ((BufferPosition) i);
+  }
+
+  sendStart.resize (BUFFER_COUNT);
+  sendEnd.resize (BUFFER_COUNT);
+  recvStart.resize (BUFFER_COUNT);
+  recvEnd.resize (BUFFER_COUNT);
+
+  directions.resize (BUFFER_COUNT);
+
   buffersSend.resize (BUFFER_COUNT);
   buffersReceive.resize (BUFFER_COUNT);
 
   // Call specific constructor.
   ParallelGridConstructor (numTimeStepsInBuild);
+
+  doShare.resize (BUFFER_COUNT);
+  for (int i = 0; i < BUFFER_COUNT; ++i)
+  {
+    getShare ((BufferPosition) i, doShare[i]);
+  }
+
+  SendReceiveCoordinatesInit ();
 
   gridValues.resize (size.calculateTotalCoord ());
 
@@ -257,178 +278,6 @@ Grid::getFieldPointValueGlobal (grid_iter coord)
 #endif*/
 
 #endif /* GRID_1D || GRID_2D || GRID_3D */
-
-// =================================================================================================
-// Parallel features of the grid
-#if defined (PARALLEL_GRID)
-
-void
-Grid::SendRawBuffer (BufferPosition buffer, int processTo)
-{
-#if PRINT_MESSAGE
-  printf ("Send raw #%d direction %s.\n", processId, BufferPositionNames[buffer]);
-#endif
-  MPI_Status status;
-
-  FieldValue* rawBuffer = buffersSend[buffer].data ();
-
-#ifdef FLOAT_VALUES
-  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_FLOAT,
-                          processTo, processId, MPI_COMM_WORLD);
-#endif /* FLOAT_VALUES */
-#ifdef DOUBLE_VALUES
-  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_DOUBLE,
-                          processTo, processId, MPI_COMM_WORLD);
-#endif /* DOUBLE_VALUES */
-#ifdef LONG_DOUBLE_VALUES
-  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_LONG_DOUBLE,
-                          processTo, processId, MPI_COMM_WORLD);
-#endif /* LONG_DOUBLE_VALUES */
-
-  ASSERT (retCode == MPI_SUCCESS);
-}
-
-void
-Grid::ReceiveRawBuffer (BufferPosition buffer, int processFrom)
-{
-#if PRINT_MESSAGE
-  printf ("Receive raw #%d direction %s.\n", processId, BufferPositionNames[buffer]);
-#endif
-  MPI_Status status;
-
-  FieldValue* rawBuffer = buffersReceive[buffer].data ();
-
-#ifdef FLOAT_VALUES
-  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_FLOAT,
-                          processFrom, processFrom, MPI_COMM_WORLD, &status);
-#endif /* FLOAT_VALUES */
-#ifdef DOUBLE_VALUES
-  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_DOUBLE,
-                          processFrom, processFrom, MPI_COMM_WORLD, &status);
-#endif /* DOUBLE_VALUES */
-#ifdef LONG_DOUBLE_VALUES
-  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_LONG_DOUBLE,
-                          processFrom, processFrom, MPI_COMM_WORLD, &status);
-#endif /* LONG_DOUBLE_VALUES */
-
-  ASSERT (retCode == MPI_SUCCESS);
-}
-
-void
-Grid::SendReceiveRawBuffer (BufferPosition bufferSend, int processTo,
-                            BufferPosition bufferReceive, int processFrom)
-{
-#if PRINT_MESSAGE
-  printf ("Send/Receive raw #%d directions %s %s.\n", processId, BufferPositionNames[bufferSend],
-          BufferPositionNames[bufferReceive]);
-#endif
-  MPI_Status status;
-
-  FieldValue* rawBufferSend = buffersSend[bufferSend].data ();
-  FieldValue* rawBufferReceive = buffersReceive[bufferReceive].data ();
-
-#ifdef FLOAT_VALUES
-  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_FLOAT,
-                              processTo, processId,
-                              rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_FLOAT,
-                              processFrom, processFrom,
-                              MPI_COMM_WORLD, &status);
-#endif /* FLOAT_VALUES */
-#ifdef DOUBLE_VALUES
-  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_DOUBLE,
-                              processTo, processId,
-                              rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_DOUBLE,
-                              processFrom, processFrom,
-                              MPI_COMM_WORLD, &status);
-#endif /* DOUBLE_VALUES */
-#ifdef LONG_DOUBLE_VALUES
-  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_LONG_DOUBLE,
-                              processTo, processId,
-                              rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_LONG_DOUBLE,
-                              processFrom, processFrom,
-                              MPI_COMM_WORLD, &status);
-#endif /* LONG_DOUBLE_VALUES */
-
-
-  ASSERT (retCode == MPI_SUCCESS);
-}
-
-/**
- * Send/receive method to be called for all grid types.
- */
-void
-Grid::SendReceive ()
-{
-// #if PRINT_MESSAGE
-//   printf ("Send/Receive %d\n", processId);
-// #endif
-
-  // Go through all directions and send/receive.
-  for (int buf = 0; buf < BUFFER_COUNT; ++buf)
-  {
-    SendReceiveBuffer ((BufferPosition) buf);
-  }
-}
-
-void
-Grid::Share ()
-{
-  SendReceive ();
-
-  MPI_Barrier (MPI_COMM_WORLD);
-}
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-void
-Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1)
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-void
-Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1,
-                                grid_coord& c2, int nodeGridSize2, grid_coord size2)
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-void
-Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1,
-                                grid_coord& c2, int nodeGridSize2, grid_coord size2,
-                                grid_coord& c3, int nodeGridSize3, grid_coord size3)
-#endif
-{
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  if (processId < nodeGridSize1 - 1)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-      defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId % nodeGridSize1 < nodeGridSize1 - 1)
-#endif
-    c1 = size1 / nodeGridSize1;
-  else
-    c1 = size1 - (nodeGridSize1 - 1) * (size1 / nodeGridSize1);
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  if (processId < nodeGridSize1 * nodeGridSize2 - nodeGridSize1)
-#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if ((processId % (nodeGridSize1 * nodeGridSize2)) < nodeGridSize1 * nodeGridSize2 - nodeGridSize1)
-#endif
-    c2 = size2 / nodeGridSize2;
-  else
-    c2 = size2 - (nodeGridSize2 - 1) * (size2 / nodeGridSize2);
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId < nodeGridSize1 * nodeGridSize2 * nodeGridSize3 - nodeGridSize1 * nodeGridSize2)
-    c3 = size3 / nodeGridSize3;
-  else
-    c3 = size3 - (nodeGridSize3 - 1) * (size3 / nodeGridSize3);
-#endif
-}
-
-#endif /* PARALLEL_GRID */
 
 void
 Grid::shiftInTime ()

@@ -26,51 +26,51 @@ enum BufferPosition
     defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  UP,
   DOWN,
+  UP,
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FRONT,
   BACK,
+  FRONT,
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  LEFT_UP,
   LEFT_DOWN,
-  RIGHT_UP,
+  LEFT_UP,
   RIGHT_DOWN,
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  LEFT_FRONT,
-  LEFT_BACK,
-  RIGHT_FRONT,
-  RIGHT_BACK,
+  RIGHT_UP,
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  UP_FRONT,
-  UP_BACK,
-  DOWN_FRONT,
   DOWN_BACK,
+  DOWN_FRONT,
+  UP_BACK,
+  UP_FRONT,
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  LEFT_BACK,
+  LEFT_FRONT,
+  RIGHT_BACK,
+  RIGHT_FRONT,
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  LEFT_UP_FRONT,
-  LEFT_UP_BACK,
-  LEFT_DOWN_FRONT,
   LEFT_DOWN_BACK,
-  RIGHT_UP_FRONT,
-  RIGHT_UP_BACK,
-  RIGHT_DOWN_FRONT,
+  LEFT_DOWN_FRONT,
+  LEFT_UP_BACK,
+  LEFT_UP_FRONT,
   RIGHT_DOWN_BACK,
+  RIGHT_DOWN_FRONT,
+  RIGHT_UP_BACK,
+  RIGHT_UP_FRONT,
 #endif
 
 /*
@@ -124,6 +124,31 @@ class Grid
 #endif
 #if defined (GRID_3D)
   int nodeGridSizeZ;
+#endif
+
+  std::vector<GridCoordinate> sendStart;
+  std::vector<GridCoordinate> sendEnd;
+  std::vector<GridCoordinate> recvStart;
+  std::vector<GridCoordinate> recvEnd;
+
+  std::vector<BufferPosition> oppositeDirections;
+
+  std::vector<int> directions;
+
+  std::vector< std::pair<bool, bool> > doShare;
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  int nodeGridSizeXY;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  int nodeGridSizeYZ;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+  int nodeGridSizeXZ;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  int nodeGridSizeXYZ;
 #endif
 
   // Size of current node without buffers.
@@ -190,6 +215,42 @@ private:
   void ParallelGridConstructor (grid_iter numTimeStepsInBuild);
   void NodeGridInit ();
 
+  void SendReceiveCoordinatesInit ();
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  void SendReceiveCoordinatesInit1D_X ();
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  void SendReceiveCoordinatesInit1D_Y ();
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  void SendReceiveCoordinatesInit1D_Z ();
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  void SendReceiveCoordinatesInit2D_XY ();
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  void SendReceiveCoordinatesInit2D_YZ ();
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  void SendReceiveCoordinatesInit2D_XZ ();
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  void SendReceiveCoordinatesInit3D_XYZ ();
+#endif
+
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
   void CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, grid_coord size1);
 #endif
@@ -209,6 +270,9 @@ private:
                                  grid_coord& c2, int nodeGridSize2, grid_coord size2,
                                  grid_coord& c3, int nodeGridSize3, grid_coord size3);
 #endif
+
+  BufferPosition getOpposite (BufferPosition direction);
+  void getShare (BufferPosition direction, std::pair<bool, bool>& pair);
 
 #endif /* PARALLEL_GRID */
 

@@ -9,13 +9,17 @@ extern const char* BufferPositionNames[];
 void
 Grid::NodeGridInit ()
 {
-  nodeGridSizeX = totalProcCount;
   grid_coord c1;
+
+  nodeGridSizeX = totalProcCount;
 
   CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX ());
 
   currentSize = GridCoordinate (c1);
   size = currentSize + bufferSizeLeft + bufferSizeRight;
+
+  directions[LEFT] = processId - 1;
+  directions[RIGHT] = processId + 1;
 
 #if PRINT_MESSAGE
   printf ("Nodes' grid process #%d: %d.\n", processId,
@@ -58,82 +62,14 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 void
 Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 {
-  grid_iter pos1 = 0;
-  grid_iter pos2 = 0;
-
-  grid_iter pos3 = 0;
-  grid_iter pos4 = 0;
-
-  int processTo;
-  int processFrom;
-
-  BufferPosition opposite;
-
-  bool doSend = true;
-  bool doReceive = true;
-
-  switch (bufferDirection)
-  {
-    case LEFT:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-
-      // Opposite receive coordinates
-      pos3 = size.getX () - bufferSizeRight.getX ();
-      pos4 = size.getX ();
-
-      opposite = RIGHT;
-      processTo = processId - 1;
-      processFrom = processId + 1;
-
-      if (!hasL)
-      {
-        doSend = false;
-      }
-      else if (!hasR)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-    case RIGHT:
-    {
-      // Send coordinates
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-
-      // Opposite receive coordinates
-      pos3 = 0;
-      pos4 = bufferSizeLeft.getX ();
-
-      opposite = LEFT;
-      processTo = processId + 1;
-      processFrom = processId - 1;
-
-      if (!hasL)
-      {
-        doReceive = false;
-      }
-      else if (!hasR)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
+  bool doSend = doShare[bufferDirection].first;
+  bool doReceive = doShare[bufferDirection].second;
 
   // Copy to send buffer
   if (doSend)
   {
-    for (grid_iter index = 0, pos = pos1; pos < pos2; ++pos)
+    for (grid_iter index = 0, pos = sendStart[bufferDirection].getX ();
+         pos < sendEnd[bufferDirection].getX (); ++pos)
     {
       FieldPointValue* val = getFieldPointValue (pos);
       buffersSend[bufferDirection][index++] = val->getCurValue ();
@@ -145,6 +81,10 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
     }
   }
+
+  BufferPosition opposite = oppositeDirections[bufferDirection];
+  int processTo = directions[bufferDirection];
+  int processFrom = directions[opposite];
 
   if (doSend && !doReceive)
   {
@@ -166,7 +106,8 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
   // Copy from receive buffer
   if (doReceive)
   {
-    for (grid_iter index = 0, pos = pos3; pos < pos4; ++pos)
+    for (grid_iter index = 0, pos = recvStart[bufferDirection].getX ();
+         pos < recvEnd[bufferDirection].getX (); ++pos)
     {
 #if defined (TWO_TIME_STEPS)
       FieldPointValue* val = new FieldPointValue (buffersReceive[opposite][index++],

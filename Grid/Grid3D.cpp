@@ -20,6 +20,9 @@ Grid::NodeGridInit ()
   nodeGridSizeY = 1;
   nodeGridSizeZ = 1;
 
+  directions[LEFT] = processId - 1;
+  directions[RIGHT] = processId + 1;
+
   CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX ());
   c2 = totalSize.getY ();
   c3 = totalSize.getZ ();
@@ -29,6 +32,9 @@ Grid::NodeGridInit ()
   nodeGridSizeY = totalProcCount;
   nodeGridSizeZ = 1;
 
+  directions[DOWN] = processId - 1;
+  directions[UP] = processId + 1;
+
   c1 = totalSize.getX ();
   CalculateGridSizeForNode (c2, nodeGridSizeY, totalSize.getY ());
   c3 = totalSize.getZ ();
@@ -37,6 +43,9 @@ Grid::NodeGridInit ()
   nodeGridSizeX = 1;
   nodeGridSizeY = 1;
   nodeGridSizeZ = totalProcCount;
+
+  directions[BACK] = processId - 1;
+  directions[FRONT] = processId + 1;
 
   c1 = totalSize.getX ();
   c2 = totalSize.getY ();
@@ -89,6 +98,17 @@ Grid::NodeGridInit ()
   nodeGridSizeY = nodeGridSizeTmp2;
   nodeGridSizeZ = 1;
 
+  nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
+
+  directions[LEFT] = processId - 1;
+  directions[RIGHT] = processId + 1;
+  directions[DOWN] = processId - nodeGridSizeX;
+  directions[UP] = processId + nodeGridSizeX;
+  directions[LEFT_DOWN] = processId - nodeGridSizeX - 1;
+  directions[LEFT_UP] = processId + nodeGridSizeX - 1;
+  directions[RIGHT_DOWN] = processId - nodeGridSizeX + 1;
+  directions[RIGHT_UP] = processId + nodeGridSizeX + 1;
+
   CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX (), c2, nodeGridSizeY, totalSize.getY ());
   c3 = totalSize.getZ ();
 #endif
@@ -97,6 +117,17 @@ Grid::NodeGridInit ()
   nodeGridSizeY = nodeGridSizeTmp1;
   nodeGridSizeZ = nodeGridSizeTmp2;
 
+  nodeGridSizeYZ = nodeGridSizeY * nodeGridSizeZ;
+
+  directions[DOWN] = processId - 1;
+  directions[UP] = processId + 1;
+  directions[BACK] = processId - nodeGridSizeY;
+  directions[FRONT] = processId + nodeGridSizeY;
+  directions[DOWN_BACK] = processId - nodeGridSizeY - 1;
+  directions[DOWN_FRONT] = processId + nodeGridSizeY - 1;
+  directions[UP_BACK] = processId - nodeGridSizeY + 1;
+  directions[UP_FRONT] = processId + nodeGridSizeY + 1;
+
   c1 = totalSize.getX ();
   CalculateGridSizeForNode (c2, nodeGridSizeY, totalSize.getY (), c3, nodeGridSizeZ, totalSize.getZ ());
 #endif
@@ -104,6 +135,17 @@ Grid::NodeGridInit ()
   nodeGridSizeX = nodeGridSizeTmp1;
   nodeGridSizeY = 1;
   nodeGridSizeZ = nodeGridSizeTmp2;
+
+  nodeGridSizeXZ = nodeGridSizeX * nodeGridSizeZ;
+
+  directions[LEFT] = processId - 1;
+  directions[RIGHT] = processId + 1;
+  directions[BACK] = processId - nodeGridSizeX;
+  directions[FRONT] = processId + nodeGridSizeX;
+  directions[LEFT_BACK] = processId - nodeGridSizeX - 1;
+  directions[LEFT_FRONT] = processId + nodeGridSizeX - 1;
+  directions[RIGHT_BACK] = processId - nodeGridSizeX + 1;
+  directions[RIGHT_FRONT] = processId + nodeGridSizeX + 1;
 
   c2 = totalSize.getY ();
   CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX (), c3, nodeGridSizeZ, totalSize.getZ ());
@@ -146,6 +188,36 @@ Grid::NodeGridInit ()
   nodeGridSizeY = nodeGridSizeTmp2;
   nodeGridSizeZ = nodeGridSizeTmp3;
 
+  nodeGridSizeXYZ = nodeGridSizeX * nodeGridSizeY * nodeGridSizeZ;
+  nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
+
+  directions[LEFT] = processId - 1;
+  directions[RIGHT] = processId + 1;
+  directions[DOWN] = processId - nodeGridSizeX;
+  directions[UP] = processId + nodeGridSizeX;
+  directions[BACK] = processId - nodeGridSizeXY;
+  directions[FRONT] = processId + nodeGridSizeXY;
+  directions[LEFT_DOWN] = processId - nodeGridSizeX - 1;
+  directions[LEFT_UP] = processId + nodeGridSizeX - 1;
+  directions[RIGHT_DOWN] = processId - nodeGridSizeX + 1;
+  directions[RIGHT_UP] = processId + nodeGridSizeX + 1;
+  directions[LEFT_BACK] = processId - nodeGridSizeXY - 1;
+  directions[LEFT_FRONT] = processId + nodeGridSizeXY - 1;
+  directions[RIGHT_BACK] = processId - nodeGridSizeXY + 1;
+  directions[RIGHT_FRONT] = processId + nodeGridSizeXY + 1;
+  directions[DOWN_BACK] = processId - nodeGridSizeXY - nodeGridSizeX;
+  directions[DOWN_FRONT] = processId + nodeGridSizeXY - nodeGridSizeX;
+  directions[UP_BACK] = processId - nodeGridSizeXY + nodeGridSizeX;
+  directions[UP_FRONT] = processId + nodeGridSizeXY + nodeGridSizeX;
+  directions[LEFT_DOWN_BACK] = processId - nodeGridSizeXY - nodeGridSizeX - 1;
+  directions[LEFT_DOWN_FRONT] = processId + nodeGridSizeXY - nodeGridSizeX - 1;
+  directions[LEFT_UP_BACK] = processId - nodeGridSizeXY + nodeGridSizeX - 1;
+  directions[LEFT_UP_FRONT] = processId + nodeGridSizeXY + nodeGridSizeX - 1;
+  directions[RIGHT_DOWN_BACK] = processId - nodeGridSizeXY - nodeGridSizeX + 1;
+  directions[RIGHT_DOWN_FRONT] = processId + nodeGridSizeXY - nodeGridSizeX + 1;
+  directions[RIGHT_UP_BACK] = processId - nodeGridSizeXY + nodeGridSizeX + 1;
+  directions[RIGHT_UP_FRONT] = processId + nodeGridSizeXY + nodeGridSizeX + 1;
+
   CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX (),
                             c2, nodeGridSizeY, totalSize.getY (),
                             c3, nodeGridSizeZ, totalSize.getZ ());
@@ -168,28 +240,28 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 
   // Return if node not used.
 #ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
-  if (processId >= nodeGridSizeX * nodeGridSizeY * nodeGridSizeZ)
+  if (processId >= nodeGridSizeXYZ)
   {
     return;
   }
 #endif
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  if (processId >= nodeGridSizeX * nodeGridSizeY)
+  if (processId >= nodeGridSizeXY)
   {
     return;
   }
 #endif
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  if (processId >= nodeGridSizeY * nodeGridSizeZ)
+  if (processId >= nodeGridSizeYZ)
   {
     return;
   }
 #endif
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  if (processId >= nodeGridSizeX * nodeGridSizeZ)
+  if (processId >= nodeGridSizeXZ)
   {
     return;
   }
@@ -233,7 +305,7 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
   if (processId % nodeGridSizeY > 0)
 #elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if ((processId % (nodeGridSizeX * nodeGridSizeY)) >= nodeGridSizeX)
+  if ((processId % (nodeGridSizeXY)) >= nodeGridSizeX)
 #endif
   {
     hasD = true;
@@ -242,11 +314,11 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
   if (processId < nodeGridSizeY - 1)
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-  if (processId < nodeGridSizeX * nodeGridSizeY - nodeGridSizeX)
+  if (processId < nodeGridSizeXY - nodeGridSizeX)
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
   if (processId % nodeGridSizeY < nodeGridSizeY - 1)
 #elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if ((processId % (nodeGridSizeX * nodeGridSizeY)) < nodeGridSizeX * nodeGridSizeY - nodeGridSizeX)
+  if ((processId % (nodeGridSizeXY)) < nodeGridSizeXY - nodeGridSizeX)
 #endif
   {
     hasU = true;
@@ -265,7 +337,7 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
   if (processId >= nodeGridSizeX)
 #elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId >= nodeGridSizeX * nodeGridSizeY)
+  if (processId >= nodeGridSizeXY)
 #endif
   {
     hasB = true;
@@ -274,11 +346,11 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
   if (processId < nodeGridSizeZ - 1)
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  if (processId < nodeGridSizeY * nodeGridSizeZ - nodeGridSizeY)
+  if (processId < nodeGridSizeYZ - nodeGridSizeY)
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  if (processId < nodeGridSizeX * nodeGridSizeZ - nodeGridSizeX)
+  if (processId < nodeGridSizeXZ - nodeGridSizeX)
 #elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId < nodeGridSizeX * nodeGridSizeY * nodeGridSizeZ - nodeGridSizeX * nodeGridSizeY)
+  if (processId < nodeGridSizeXYZ - nodeGridSizeXY)
 #endif
   {
     hasF = true;
@@ -446,1068 +518,47 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 {
   // Return if node not used.
 #ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
-  if (processId >= nodeGridSizeX * nodeGridSizeY * nodeGridSizeZ)
+  if (processId >= nodeGridSizeXYZ)
   {
     return;
   }
 #endif
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  if (processId >= nodeGridSizeX * nodeGridSizeY)
+  if (processId >= nodeGridSizeXY)
   {
     return;
   }
 #endif
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  if (processId >= nodeGridSizeY * nodeGridSizeZ)
+  if (processId >= nodeGridSizeYZ)
   {
     return;
   }
 #endif
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  if (processId >= nodeGridSizeX * nodeGridSizeZ)
+  if (processId >= nodeGridSizeXZ)
   {
     return;
   }
 #endif
 
-  grid_iter pos1 = 0;
-  grid_iter pos2 = 0;
-  grid_iter pos3 = 0;
-  grid_iter pos4 = 0;
-  grid_iter pos5 = 0;
-  grid_iter pos6 = 0;
-
-  grid_iter pos7 = 0;
-  grid_iter pos8 = 0;
-  grid_iter pos9 = 0;
-  grid_iter pos10 = 0;
-  grid_iter pos11 = 0;
-  grid_iter pos12 = 0;
-
-  int processTo;
-  int processFrom;
-
-  BufferPosition opposite;
-
-  bool doSend = true;
-  bool doReceive = true;
-
-  //printf ("Buffer direction %s\n", BufferPositionNames[bufferDirection]);
-
-  switch (bufferDirection)
-  {
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case LEFT:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = size.getX () - bufferSizeRight.getX ();
-      pos8 = size.getX ();
-      pos9 = bufferSizeLeft.getY ();
-      pos10 = size.getY () - bufferSizeRight.getY ();
-      pos11 = bufferSizeLeft.getZ ();
-      pos12 = size.getZ () - bufferSizeRight.getZ ();
-
-      opposite = RIGHT;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId - 1;
-      processFrom = processId + 1;
-#endif
-
-      if (!hasL)
-      {
-        doSend = false;
-      }
-      else if (!hasR)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-    case RIGHT:
-    {
-      // Send coordinates
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = 0;
-      pos8 = bufferSizeLeft.getX ();
-      pos9 = bufferSizeLeft.getY ();
-      pos10 = size.getY () - bufferSizeRight.getY ();
-      pos11 = bufferSizeLeft.getZ ();
-      pos12 = size.getZ () - bufferSizeRight.getZ ();
-
-      opposite = LEFT;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId + 1;
-      processFrom = processId - 1;
-#endif
-
-      if (!hasL)
-      {
-        doReceive = false;
-      }
-      else if (!hasR)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case UP:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = bufferSizeLeft.getX ();
-      pos8 = size.getX () - bufferSizeRight.getX ();
-      pos9 = 0;
-      pos10 = bufferSizeLeft.getY ();
-      pos11 = bufferSizeLeft.getZ ();
-      pos12 = size.getZ () - bufferSizeRight.getZ ();
-
-      opposite = DOWN;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-      processTo = processId + 1;
-      processFrom = processId - 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId + nodeGridSizeX;
-      processFrom = processId - nodeGridSizeX;
-#endif
-
-      if (!hasD)
-      {
-        doReceive = false;
-      }
-      else if (!hasU)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case DOWN:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = 2 * bufferSizeLeft.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = bufferSizeLeft.getX ();
-      pos8 = size.getX () - bufferSizeRight.getX ();
-      pos9 = size.getY () - bufferSizeRight.getY ();
-      pos10 = size.getY ();
-      pos11 = bufferSizeLeft.getZ ();
-      pos12 = size.getZ () - bufferSizeRight.getZ ();
-
-      opposite = UP;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-      processTo = processId - 1;
-      processFrom = processId + 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId - nodeGridSizeX;
-      processFrom = processId + nodeGridSizeX;
-#endif
-
-      if (!hasD)
-      {
-        doSend = false;
-      }
-      else if (!hasU)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case FRONT:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = size.getZ () - 2 * bufferSizeRight.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = bufferSizeLeft.getX ();
-      pos8 = size.getX () - bufferSizeRight.getX ();
-      pos9 = bufferSizeLeft.getY ();
-      pos10 = size.getY () - bufferSizeRight.getY ();
-      pos11 = 0;
-      pos12 = bufferSizeLeft.getZ ();
-
-      opposite = BACK;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-      processTo = processId + 1;
-      processFrom = processId - 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-      processTo = processId + nodeGridSizeY;
-      processFrom = processId - nodeGridSizeY;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-      processTo = processId + nodeGridSizeX;
-      processFrom = processId - nodeGridSizeX;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId + nodeGridSizeX * nodeGridSizeY;
-      processFrom = processId - nodeGridSizeX * nodeGridSizeY;
-#endif
-
-      if (!hasB)
-      {
-        doReceive = false;
-      }
-      else if (!hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case BACK:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = 2 * bufferSizeLeft.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = bufferSizeLeft.getX ();
-      pos8 = size.getX () - bufferSizeRight.getX ();
-      pos9 = bufferSizeLeft.getY ();
-      pos10 = size.getY () - bufferSizeRight.getY ();
-      pos11 = size.getZ () - bufferSizeRight.getZ ();
-      pos12 = size.getZ ();
-
-      opposite = FRONT;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-      processTo = processId - 1;
-      processFrom = processId + 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-      processTo = processId - nodeGridSizeY;
-      processFrom = processId + nodeGridSizeY;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-      processTo = processId - nodeGridSizeX;
-      processFrom = processId + nodeGridSizeX;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId - nodeGridSizeX * nodeGridSizeY;
-      processFrom = processId + nodeGridSizeX * nodeGridSizeY;
-#endif
-
-      if (!hasB)
-      {
-        doSend = false;
-      }
-      else if (!hasF)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case LEFT_UP:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = size.getX () - bufferSizeRight.getX ();
-      pos8 = size.getX ();
-      pos9 = 0;
-      pos10 = bufferSizeLeft.getY ();
-      pos11 = bufferSizeLeft.getZ ();
-      pos12 = size.getZ () - bufferSizeRight.getZ ();
-
-      opposite = RIGHT_DOWN;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId + nodeGridSizeX - 1;
-      processFrom = processId - nodeGridSizeX + 1;
-#endif
-
-      if (!hasR || !hasD)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasU)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case LEFT_DOWN:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = 2 * bufferSizeLeft.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = size.getX () - bufferSizeRight.getX ();
-      pos8 = size.getX ();
-      pos9 = size.getY () - bufferSizeRight.getY ();
-      pos10 = size.getY ();
-      pos11 = bufferSizeLeft.getZ ();
-      pos12 = size.getZ () - bufferSizeRight.getZ ();
-
-      opposite = RIGHT_UP;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId - nodeGridSizeX - 1;
-      processFrom = processId + nodeGridSizeX + 1;
-#endif
-
-      if (!hasL || !hasD)
-      {
-        doSend = false;
-      }
-      if (!hasR || !hasU)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-    case RIGHT_UP:
-    {
-      // Send coordinates
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = 0;
-      pos8 = bufferSizeLeft.getX ();
-      pos9 = 0;
-      pos10 = bufferSizeLeft.getY ();
-      pos11 = bufferSizeLeft.getZ ();
-      pos12 = size.getZ () - bufferSizeRight.getZ ();
-
-      opposite = LEFT_DOWN;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId + nodeGridSizeX + 1;
-      processFrom = processId - nodeGridSizeX - 1;
-#endif
-
-      if (!hasL || !hasD)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasU)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_DOWN:
-    {
-      // Send coordinates
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = 2 * bufferSizeLeft.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = 0;
-      pos8 = bufferSizeLeft.getX ();
-      pos9 = size.getY () - bufferSizeRight.getY ();
-      pos10 = size.getY ();
-      pos11 = bufferSizeLeft.getZ ();
-      pos12 = size.getZ () - bufferSizeRight.getZ ();
-
-      opposite = LEFT_UP;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId - nodeGridSizeX + 1;
-      processFrom = processId + nodeGridSizeX - 1;
-#endif
-
-      if (!hasR || !hasD)
-      {
-        doSend = false;
-      }
-      if (!hasL || !hasU)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case UP_FRONT:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = size.getZ () - 2 * bufferSizeRight.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = bufferSizeLeft.getX ();
-      pos8 = size.getX () - bufferSizeRight.getX ();
-      pos9 = 0;
-      pos10 = bufferSizeLeft.getY ();
-      pos11 = 0;
-      pos12 = bufferSizeLeft.getZ ();
-
-      opposite = DOWN_BACK;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-      processTo = processId + nodeGridSizeY + 1;
-      processFrom = processId - nodeGridSizeY - 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId + nodeGridSizeX * nodeGridSizeY + nodeGridSizeX;
-      processFrom = processId - nodeGridSizeX * nodeGridSizeY - nodeGridSizeX;
-#endif
-
-      if (!hasD || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasU || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case UP_BACK:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos5 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos6 = size.getY () - bufferSizeRight.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = 2 * bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = bufferSizeLeft.getX ();
-      pos8 = size.getX () - bufferSizeRight.getX ();
-      pos9 = 0;
-      pos10 = bufferSizeLeft.getY ();
-      pos11 = size.getZ () - bufferSizeRight.getZ ();
-      pos12 = size.getZ ();
-
-      opposite = DOWN_FRONT;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-      processTo = processId - nodeGridSizeY + 1;
-      processFrom = processId + nodeGridSizeY - 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId - nodeGridSizeX * nodeGridSizeY + nodeGridSizeX;
-      processFrom = processId + nodeGridSizeX * nodeGridSizeY - nodeGridSizeX;
-#endif
-
-      if (!hasU || !hasB)
-      {
-        doSend = false;
-      }
-      if (!hasD || !hasF)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-    case DOWN_FRONT:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeRight.getY ();
-      pos4 = 2 * bufferSizeRight.getY ();
-      pos5 = size.getZ () - 2 * bufferSizeRight.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = bufferSizeLeft.getX ();
-      pos8 = size.getX () - bufferSizeRight.getX ();
-      pos9 = size.getY () - bufferSizeRight.getY ();
-      pos10 = size.getY ();
-      pos11 = 0;
-      pos12 = bufferSizeLeft.getZ ();
-
-      opposite = UP_BACK;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-      processTo = processId + nodeGridSizeY - 1;
-      processFrom = processId - nodeGridSizeY + 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId + nodeGridSizeX * nodeGridSizeY - nodeGridSizeX;
-      processFrom = processId - nodeGridSizeX * nodeGridSizeY + nodeGridSizeX;
-#endif
-
-      if (!hasU || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasD || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case DOWN_BACK:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = 2 * bufferSizeLeft.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = 2 * bufferSizeLeft.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = bufferSizeLeft.getX ();
-      pos8 = size.getX () - bufferSizeRight.getX ();
-      pos9 = size.getY () - bufferSizeRight.getY ();
-      pos10 = size.getY ();
-      pos11 = size.getZ () - bufferSizeRight.getZ ();
-      pos12 = size.getZ ();
-
-      opposite = UP_FRONT;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-      processTo = processId - nodeGridSizeY - 1;
-      processFrom = processId + nodeGridSizeY + 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId - nodeGridSizeX * nodeGridSizeY - nodeGridSizeX;
-      processFrom = processId + nodeGridSizeX * nodeGridSizeY + nodeGridSizeX;
-#endif
-
-      if (!hasD || !hasB)
-      {
-        doSend = false;
-      }
-      if (!hasU || !hasF)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case LEFT_FRONT:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = size.getZ () - 2 * bufferSizeRight.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = size.getX () - bufferSizeRight.getX ();
-      pos8 = size.getX ();
-      pos9 = bufferSizeLeft.getY ();
-      pos10 = size.getY () - bufferSizeRight.getY ();
-      pos11 = 0;
-      pos12 = bufferSizeLeft.getZ ();
-
-      opposite = RIGHT_BACK;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-      processTo = processId + nodeGridSizeX - 1;
-      processFrom = processId - nodeGridSizeX + 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId + nodeGridSizeX * nodeGridSizeY - 1;
-      processFrom = processId - nodeGridSizeX * nodeGridSizeY + 1;
-#endif
-
-      if (!hasR || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case LEFT_BACK:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = 2 * bufferSizeLeft.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = size.getX () - bufferSizeRight.getX ();
-      pos8 = size.getX ();
-      pos9 = bufferSizeLeft.getY ();
-      pos10 = size.getY () - bufferSizeRight.getY ();
-      pos11 = size.getZ () - bufferSizeRight.getZ ();
-      pos12 = size.getZ ();
-
-      opposite = RIGHT_FRONT;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-      processTo = processId - nodeGridSizeX - 1;
-      processFrom = processId + nodeGridSizeX + 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId - nodeGridSizeX * nodeGridSizeY - 1;
-      processFrom = processId + nodeGridSizeX * nodeGridSizeY + 1;
-#endif
-
-      if (!hasL || !hasB)
-      {
-        doSend = false;
-      }
-      if (!hasR || !hasF)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-    case RIGHT_FRONT:
-    {
-      // Send coordinates
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = size.getZ () - 2 * bufferSizeRight.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = 0;
-      pos8 = bufferSizeLeft.getX ();
-      pos9 = bufferSizeLeft.getY ();
-      pos10 = size.getY () - bufferSizeRight.getY ();
-      pos11 = 0;
-      pos12 = bufferSizeLeft.getZ ();
-
-      opposite = LEFT_BACK;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-      processTo = processId + nodeGridSizeX + 1;
-      processFrom = processId - nodeGridSizeX - 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId + nodeGridSizeX * nodeGridSizeY + 1;
-      processFrom = processId - nodeGridSizeX * nodeGridSizeY - 1;
-#endif
-
-      if (!hasL || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_BACK:
-    {
-      // Send coordinates
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = 2 * bufferSizeLeft.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = 0;
-      pos8 = bufferSizeLeft.getX ();
-      pos9 = bufferSizeLeft.getY ();
-      pos10 = size.getY () - bufferSizeRight.getY ();
-      pos11 = size.getZ () - bufferSizeRight.getZ ();
-      pos12 = size.getZ ();
-
-      opposite = LEFT_FRONT;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-      processTo = processId - nodeGridSizeX + 1;
-      processFrom = processId + nodeGridSizeX - 1;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-      processTo = processId - nodeGridSizeX * nodeGridSizeY + 1;
-      processFrom = processId + nodeGridSizeX * nodeGridSizeY - 1;
-#endif
-
-      if (!hasR || !hasB)
-      {
-        doSend = false;
-      }
-      if (!hasL || !hasF)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case LEFT_UP_FRONT:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = size.getZ () - 2 * bufferSizeRight.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = size.getX () - bufferSizeRight.getX ();
-      pos8 = size.getX ();
-      pos9 = 0;
-      pos10 = bufferSizeLeft.getY ();
-      pos11 = 0;
-      pos12 = bufferSizeLeft.getZ ();
-
-      opposite = RIGHT_DOWN_BACK;
-      processTo = processId + nodeGridSizeX + nodeGridSizeX * nodeGridSizeY - 1;
-      processFrom = processId - nodeGridSizeX - nodeGridSizeX * nodeGridSizeY + 1;
-
-      if (!hasR || !hasD || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasU || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case LEFT_UP_BACK:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = 2 * bufferSizeLeft.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = size.getX () - bufferSizeRight.getX ();
-      pos8 = size.getX ();
-      pos9 = 0;
-      pos10 = bufferSizeLeft.getY ();
-      pos11 = size.getZ () - bufferSizeRight.getZ ();
-      pos12 = size.getZ ();
-
-      opposite = RIGHT_DOWN_FRONT;
-      processTo = processId + nodeGridSizeX - nodeGridSizeX * nodeGridSizeY - 1;
-      processFrom = processId - nodeGridSizeX + nodeGridSizeX * nodeGridSizeY + 1;
-
-      if (!hasR || !hasD || !hasF)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasU || !hasB)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case LEFT_DOWN_FRONT:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = 2 * bufferSizeLeft.getY ();
-      pos5 = size.getZ () - 2 * bufferSizeRight.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = size.getX () - bufferSizeRight.getX ();
-      pos8 = size.getX ();
-      pos9 = size.getY () - bufferSizeRight.getY ();
-      pos10 = size.getY ();
-      pos11 = 0;
-      pos12 = bufferSizeLeft.getZ ();
-
-      opposite = RIGHT_UP_BACK;
-      processTo = processId - nodeGridSizeX + nodeGridSizeX * nodeGridSizeY - 1;
-      processFrom = processId + nodeGridSizeX - nodeGridSizeX * nodeGridSizeY + 1;
-
-      if (!hasR || !hasU || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasD || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case LEFT_DOWN_BACK:
-    {
-      // Send coordinates
-      pos1 = bufferSizeLeft.getX ();
-      pos2 = 2 * bufferSizeLeft.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = 2 * bufferSizeLeft.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = 2 * bufferSizeLeft.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = size.getX () - bufferSizeRight.getX ();
-      pos8 = size.getX ();
-      pos9 = size.getY () - bufferSizeRight.getY ();
-      pos10 = size.getY ();
-      pos11 = size.getZ () - bufferSizeRight.getZ ();
-      pos12 = size.getZ ();
-
-      opposite = RIGHT_UP_FRONT;
-      processTo = processId - nodeGridSizeX - nodeGridSizeX * nodeGridSizeY - 1;
-      processFrom = processId + nodeGridSizeX + nodeGridSizeX * nodeGridSizeY + 1;
-
-      if (!hasR || !hasU || !hasF)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasD || !hasB)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_UP_FRONT:
-    {
-      // Send coordinates
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = size.getZ () - 2 * bufferSizeRight.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = 0;
-      pos8 = bufferSizeLeft.getX ();
-      pos9 = 0;
-      pos10 = bufferSizeLeft.getY ();
-      pos11 = 0;
-      pos12 = bufferSizeLeft.getZ ();
-
-      opposite = LEFT_DOWN_BACK;
-      processTo = processId + nodeGridSizeX + nodeGridSizeX * nodeGridSizeY + 1;
-      processFrom = processId - nodeGridSizeX - nodeGridSizeX * nodeGridSizeY - 1;
-
-      if (!hasL || !hasD || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasU || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_UP_BACK:
-    {
-      // Send coordinates
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = size.getY () - 2 * bufferSizeRight.getY ();
-      pos4 = size.getY () - bufferSizeRight.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = 2 * bufferSizeLeft.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = 0;
-      pos8 = bufferSizeLeft.getX ();
-      pos9 = 0;
-      pos10 = bufferSizeLeft.getY ();
-      pos11 = size.getZ () - bufferSizeRight.getZ ();
-      pos12 = size.getZ ();
-
-      opposite = LEFT_DOWN_FRONT;
-      processTo = processId + nodeGridSizeX - nodeGridSizeX * nodeGridSizeY + 1;
-      processFrom = processId - nodeGridSizeX + nodeGridSizeX * nodeGridSizeY - 1;
-
-      if (!hasL || !hasD || !hasF)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasU || !hasB)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_DOWN_FRONT:
-    {
-      // Send coordinates
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = 2 * bufferSizeLeft.getY ();
-      pos5 = size.getZ () - 2 * bufferSizeRight.getZ ();
-      pos6 = size.getZ () - bufferSizeRight.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = 0;
-      pos8 = bufferSizeLeft.getX ();
-      pos9 = size.getY () - bufferSizeRight.getY ();
-      pos10 = size.getY ();
-      pos11 = 0;
-      pos12 = bufferSizeLeft.getZ ();
-
-      opposite = LEFT_UP_BACK;
-      processTo = processId - nodeGridSizeX + nodeGridSizeX * nodeGridSizeY + 1;
-      processFrom = processId + nodeGridSizeX - nodeGridSizeX * nodeGridSizeY - 1;
-
-      if (!hasL || !hasU || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasD || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_DOWN_BACK:
-    {
-      // Send coordinates
-      pos1 = size.getX () - 2 * bufferSizeRight.getX ();
-      pos2 = size.getX () - bufferSizeRight.getX ();
-      pos3 = bufferSizeLeft.getY ();
-      pos4 = 2 * bufferSizeLeft.getY ();
-      pos5 = bufferSizeLeft.getZ ();
-      pos6 = 2 * bufferSizeLeft.getZ ();
-
-      // Opposite receive coordinates
-      pos7 = 0;
-      pos8 = bufferSizeLeft.getX ();
-      pos9 = size.getY () - bufferSizeRight.getY ();
-      pos10 = size.getY ();
-      pos11 = size.getZ () - bufferSizeRight.getZ ();
-      pos12 = size.getZ ();
-
-      opposite = LEFT_UP_FRONT;
-      processTo = processId - nodeGridSizeX - nodeGridSizeX * nodeGridSizeY + 1;
-      processFrom = processId + nodeGridSizeX + nodeGridSizeX * nodeGridSizeY - 1;
-
-      if (!hasL || !hasU || !hasF)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasD || !hasB)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-#endif
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
+  bool doSend = doShare[bufferDirection].first;
+  bool doReceive = doShare[bufferDirection].second;
 
   // Copy to send buffer
   if (doSend)
   {
-    for (grid_iter index = 0, i = pos1; i < pos2; ++i)
+    for (grid_iter index = 0, i = sendStart[bufferDirection].getX ();
+         i < sendEnd[bufferDirection].getX (); ++i)
     {
-      for (grid_coord j = pos3; j < pos4; ++j)
+      for (grid_coord j = sendStart[bufferDirection].getY ();
+           j < sendEnd[bufferDirection].getY (); ++j)
       {
-        for (grid_coord k = pos5; k < pos6; ++k)
+        for (grid_coord k = sendStart[bufferDirection].getZ ();
+             k < sendEnd[bufferDirection].getZ (); ++k)
         {
           GridCoordinate pos (i, j, k);
           FieldPointValue* val = getFieldPointValue (pos);
@@ -1522,6 +573,10 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
       }
     }
   }
+
+  BufferPosition opposite = oppositeDirections[bufferDirection];
+  int processTo = directions[bufferDirection];
+  int processFrom = directions[opposite];
 
 #if PRINT_MESSAGE
   printf ("===Raw #%d directions %s %s %d %d [%d %d].\n", processId, BufferPositionNames[bufferDirection],
@@ -1548,11 +603,14 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
   // Copy from receive buffer
   if (doReceive)
   {
-    for (grid_iter index = 0, i = pos7; i < pos8; ++i)
+    for (grid_iter index = 0, i = recvStart[bufferDirection].getX ();
+         i < recvEnd[bufferDirection].getX (); ++i)
     {
-      for (grid_coord j = pos9; j < pos10; ++j)
+      for (grid_coord j = recvStart[bufferDirection].getY ();
+           j < recvEnd[bufferDirection].getY (); ++j)
       {
-        for (grid_coord k = pos11; k < pos12; ++k)
+        for (grid_coord k = recvStart[bufferDirection].getZ ();
+             k < recvEnd[bufferDirection].getZ (); ++k)
         {
 #if defined (TWO_TIME_STEPS)
           FieldPointValue* val = new FieldPointValue (buffersReceive[opposite][index++],
