@@ -34,7 +34,7 @@ make
 main.cpp has example of parallel grid usage, independent of all build parameters. Build command for 3D grid:
 
 ```sh
-cmake .. -DCMAKE_BUILD_TYPE=Release -DFULL_VALUES=d -DTIME_STEPS=2 -DGRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xyz
+cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DTIME_STEPS=2 -DGRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xyz
 ```
 
 ## Build using scripts
@@ -48,7 +48,7 @@ Example of build with scripts. This will build 2D parallel grid with x buffer, d
 # Build Flags
 ```c_cpp
 -DCMAKE_BUILD_TYPE - build type (Debug or Release)
--DFULL_VALUES - use float (f), double (d) or long double (ld)
+-DVALUE_TYPE - use float (f), double (d) or long double (ld)
 -DTIME_STEPS - number of steps in time (1 or 2)
 -DGRID_DIMENSION - number of dimensions in grid (1, 2 or 3)
 -DPRINT_MESSAGE - print output (ON or OFF)
