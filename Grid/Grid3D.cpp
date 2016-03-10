@@ -11,54 +11,53 @@ extern const char* BufferPositionNames[];
 void
 Grid::NodeGridInit ()
 {
-  grid_coord c1;
-  grid_coord c2;
-  grid_coord c3;
-
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
   nodeGridSizeX = totalProcCount;
   nodeGridSizeY = 1;
   nodeGridSizeZ = 1;
-
-  directions[LEFT] = processId - 1;
-  directions[RIGHT] = processId + 1;
-
-  CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX ());
-  c2 = totalSize.getY ();
-  c3 = totalSize.getZ ();
 #endif
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
   nodeGridSizeX = 1;
   nodeGridSizeY = totalProcCount;
   nodeGridSizeZ = 1;
-
-  directions[DOWN] = processId - 1;
-  directions[UP] = processId + 1;
-
-  c1 = totalSize.getX ();
-  CalculateGridSizeForNode (c2, nodeGridSizeY, totalSize.getY ());
-  c3 = totalSize.getZ ();
 #endif
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
   nodeGridSizeX = 1;
   nodeGridSizeY = 1;
   nodeGridSizeZ = totalProcCount;
-
-  directions[BACK] = processId - 1;
-  directions[FRONT] = processId + 1;
-
-  c1 = totalSize.getX ();
-  c2 = totalSize.getY ();
-  CalculateGridSizeForNode (c3, nodeGridSizeZ, totalSize.getZ ());
 #endif
-
-  currentSize = GridCoordinate (c1, c2, c3);
-  size = currentSize + bufferSizeLeft + bufferSizeRight;
 
 #if PRINT_MESSAGE
   printf ("Nodes' grid process #%d: %dx%dx%d.\n", processId,
     nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ);
 #endif
+}
+
+void
+Grid::GridInit ()
+{
+  grid_coord c1;
+  grid_coord c2;
+  grid_coord c3;
+
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
+  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX ());
+  c2 = totalSize.getY ();
+  c3 = totalSize.getZ ();
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
+  c1 = totalSize.getX ();
+  CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY ());
+  c3 = totalSize.getZ ();
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
+  c1 = totalSize.getX ();
+  c2 = totalSize.getY ();
+  CalculateGridSizeForNode (c3, nodeGridSizeZ, hasF, totalSize.getZ ());
+#endif
+
+  currentSize = GridCoordinate (c1, c2, c3);
+  size = currentSize + bufferSizeLeft + bufferSizeRight;
 }
 #endif
 
@@ -89,28 +88,12 @@ Grid::NodeGridInit ()
   int nodeGridSizeTmp2;
   NodeGridInitInner (overall1, overall2, nodeGridSizeTmp1, nodeGridSizeTmp2, left);
 
-  grid_coord c1;
-  grid_coord c2;
-  grid_coord c3;
-
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
   nodeGridSizeX = nodeGridSizeTmp1;
   nodeGridSizeY = nodeGridSizeTmp2;
   nodeGridSizeZ = 1;
 
   nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
-
-  directions[LEFT] = processId - 1;
-  directions[RIGHT] = processId + 1;
-  directions[DOWN] = processId - nodeGridSizeX;
-  directions[UP] = processId + nodeGridSizeX;
-  directions[LEFT_DOWN] = processId - nodeGridSizeX - 1;
-  directions[LEFT_UP] = processId + nodeGridSizeX - 1;
-  directions[RIGHT_DOWN] = processId - nodeGridSizeX + 1;
-  directions[RIGHT_UP] = processId + nodeGridSizeX + 1;
-
-  CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX (), c2, nodeGridSizeY, totalSize.getY ());
-  c3 = totalSize.getZ ();
 #endif
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
   nodeGridSizeX = 1;
@@ -118,18 +101,6 @@ Grid::NodeGridInit ()
   nodeGridSizeZ = nodeGridSizeTmp2;
 
   nodeGridSizeYZ = nodeGridSizeY * nodeGridSizeZ;
-
-  directions[DOWN] = processId - 1;
-  directions[UP] = processId + 1;
-  directions[BACK] = processId - nodeGridSizeY;
-  directions[FRONT] = processId + nodeGridSizeY;
-  directions[DOWN_BACK] = processId - nodeGridSizeY - 1;
-  directions[DOWN_FRONT] = processId + nodeGridSizeY - 1;
-  directions[UP_BACK] = processId - nodeGridSizeY + 1;
-  directions[UP_FRONT] = processId + nodeGridSizeY + 1;
-
-  c1 = totalSize.getX ();
-  CalculateGridSizeForNode (c2, nodeGridSizeY, totalSize.getY (), c3, nodeGridSizeZ, totalSize.getZ ());
 #endif
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
   nodeGridSizeX = nodeGridSizeTmp1;
@@ -137,27 +108,39 @@ Grid::NodeGridInit ()
   nodeGridSizeZ = nodeGridSizeTmp2;
 
   nodeGridSizeXZ = nodeGridSizeX * nodeGridSizeZ;
-
-  directions[LEFT] = processId - 1;
-  directions[RIGHT] = processId + 1;
-  directions[BACK] = processId - nodeGridSizeX;
-  directions[FRONT] = processId + nodeGridSizeX;
-  directions[LEFT_BACK] = processId - nodeGridSizeX - 1;
-  directions[LEFT_FRONT] = processId + nodeGridSizeX - 1;
-  directions[RIGHT_BACK] = processId - nodeGridSizeX + 1;
-  directions[RIGHT_FRONT] = processId + nodeGridSizeX + 1;
-
-  c2 = totalSize.getY ();
-  CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX (), c3, nodeGridSizeZ, totalSize.getZ ());
 #endif
-
-  currentSize = GridCoordinate (c1, c2, c3);
-  size = currentSize + bufferSizeLeft + bufferSizeRight;
 
 #if PRINT_MESSAGE
   printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n", processId,
     nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ, left);
 #endif
+}
+
+void
+Grid::GridInit ()
+{
+  grid_coord c1;
+  grid_coord c2;
+  grid_coord c3;
+
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
+  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
+                            c2, nodeGridSizeY, hasU, totalSize.getY ());
+  c3 = totalSize.getZ ();
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
+  c1 = totalSize.getX ();
+  CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY (),
+                            c3, nodeGridSizeZ, hasF, totalSize.getZ ());
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
+  c2 = totalSize.getY ();
+  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
+                            c3, nodeGridSizeZ, hasF, totalSize.getZ ());
+#endif
+
+  currentSize = GridCoordinate (c1, c2, c3);
+  size = currentSize + bufferSizeLeft + bufferSizeRight;
 }
 #endif
 
@@ -180,10 +163,6 @@ Grid::NodeGridInit ()
   int nodeGridSizeTmp3;
   NodeGridInitInner (overall1, overall2, overall3, nodeGridSizeTmp1, nodeGridSizeTmp2, nodeGridSizeTmp3, left);
 
-  grid_coord c1;
-  grid_coord c2;
-  grid_coord c3;
-
   nodeGridSizeX = nodeGridSizeTmp1;
   nodeGridSizeY = nodeGridSizeTmp2;
   nodeGridSizeZ = nodeGridSizeTmp3;
@@ -191,45 +170,26 @@ Grid::NodeGridInit ()
   nodeGridSizeXYZ = nodeGridSizeX * nodeGridSizeY * nodeGridSizeZ;
   nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
 
-  directions[LEFT] = processId - 1;
-  directions[RIGHT] = processId + 1;
-  directions[DOWN] = processId - nodeGridSizeX;
-  directions[UP] = processId + nodeGridSizeX;
-  directions[BACK] = processId - nodeGridSizeXY;
-  directions[FRONT] = processId + nodeGridSizeXY;
-  directions[LEFT_DOWN] = processId - nodeGridSizeX - 1;
-  directions[LEFT_UP] = processId + nodeGridSizeX - 1;
-  directions[RIGHT_DOWN] = processId - nodeGridSizeX + 1;
-  directions[RIGHT_UP] = processId + nodeGridSizeX + 1;
-  directions[LEFT_BACK] = processId - nodeGridSizeXY - 1;
-  directions[LEFT_FRONT] = processId + nodeGridSizeXY - 1;
-  directions[RIGHT_BACK] = processId - nodeGridSizeXY + 1;
-  directions[RIGHT_FRONT] = processId + nodeGridSizeXY + 1;
-  directions[DOWN_BACK] = processId - nodeGridSizeXY - nodeGridSizeX;
-  directions[DOWN_FRONT] = processId + nodeGridSizeXY - nodeGridSizeX;
-  directions[UP_BACK] = processId - nodeGridSizeXY + nodeGridSizeX;
-  directions[UP_FRONT] = processId + nodeGridSizeXY + nodeGridSizeX;
-  directions[LEFT_DOWN_BACK] = processId - nodeGridSizeXY - nodeGridSizeX - 1;
-  directions[LEFT_DOWN_FRONT] = processId + nodeGridSizeXY - nodeGridSizeX - 1;
-  directions[LEFT_UP_BACK] = processId - nodeGridSizeXY + nodeGridSizeX - 1;
-  directions[LEFT_UP_FRONT] = processId + nodeGridSizeXY + nodeGridSizeX - 1;
-  directions[RIGHT_DOWN_BACK] = processId - nodeGridSizeXY - nodeGridSizeX + 1;
-  directions[RIGHT_DOWN_FRONT] = processId + nodeGridSizeXY - nodeGridSizeX + 1;
-  directions[RIGHT_UP_BACK] = processId - nodeGridSizeXY + nodeGridSizeX + 1;
-  directions[RIGHT_UP_FRONT] = processId + nodeGridSizeXY + nodeGridSizeX + 1;
-
-  CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX (),
-                            c2, nodeGridSizeY, totalSize.getY (),
-                            c3, nodeGridSizeZ, totalSize.getZ ());
-
-  currentSize = GridCoordinate (c1, c2, c3);
-  size = currentSize + bufferSizeLeft + bufferSizeRight;
-
 #if PRINT_MESSAGE
   printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n", processId,
     nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ, left);
-  printf ("Grid size for #%d process: %dx%dx%d.\n", processId, c1, c2, c3);
+  //printf ("Grid size for #%d process: %dx%dx%d.\n", processId, c1, c2, c3);
 #endif
+}
+
+void
+Grid::GridInit ()
+{
+  grid_coord c1;
+  grid_coord c2;
+  grid_coord c3;
+
+  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
+                            c2, nodeGridSizeY, hasU, totalSize.getY (),
+                            c3, nodeGridSizeZ, hasF, totalSize.getZ ());
+
+  currentSize = GridCoordinate (c1, c2, c3);
+  size = currentSize + bufferSizeLeft + bufferSizeRight;
 }
 #endif
 
@@ -267,249 +227,14 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   }
 #endif
 
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  hasL = false;
-  hasR = false;
+  InitBuffers (numTimeStepsInBuild);
+  InitDirections ();
 
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
-  if (processId > 0)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-      defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId % nodeGridSizeX > 0)
-#endif
-  {
-    hasL = true;
-  }
+  GridInit ();
 
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
-  if (processId < nodeGridSizeX - 1)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-      defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId % nodeGridSizeX < nodeGridSizeX - 1)
-#endif
-  {
-    hasR = true;
-  }
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  hasU = false;
-  hasD = false;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
-  if (processId > 0)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-  if (processId >= nodeGridSizeX)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  if (processId % nodeGridSizeY > 0)
-#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if ((processId % (nodeGridSizeXY)) >= nodeGridSizeX)
-#endif
-  {
-    hasD = true;
-  }
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
-  if (processId < nodeGridSizeY - 1)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-  if (processId < nodeGridSizeXY - nodeGridSizeX)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  if (processId % nodeGridSizeY < nodeGridSizeY - 1)
-#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if ((processId % (nodeGridSizeXY)) < nodeGridSizeXY - nodeGridSizeX)
-#endif
-  {
-    hasU = true;
-  }
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  hasF = false;
-  hasB = false;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  if (processId > 0)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  if (processId >= nodeGridSizeY)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  if (processId >= nodeGridSizeX)
-#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId >= nodeGridSizeXY)
-#endif
-  {
-    hasB = true;
-  }
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  if (processId < nodeGridSizeZ - 1)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  if (processId < nodeGridSizeYZ - nodeGridSizeY)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  if (processId < nodeGridSizeXZ - nodeGridSizeX)
-#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId < nodeGridSizeXYZ - nodeGridSizeXY)
-#endif
-  {
-    hasF = true;
-  }
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (hasL)
-  {
-    buffersSend[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * currentSize.getZ () * numTimeStepsInBuild);
-    buffersReceive[LEFT].resize (bufferSizeLeft.getX () * currentSize.getY () * currentSize.getZ () * numTimeStepsInBuild);
-  }
-  if (hasR)
-  {
-    buffersSend[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * currentSize.getZ () * numTimeStepsInBuild);
-    buffersReceive[RIGHT].resize (bufferSizeRight.getX () * currentSize.getY () * currentSize.getZ () * numTimeStepsInBuild);
-  }
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (hasD)
-  {
-    buffersSend[DOWN].resize (bufferSizeLeft.getY () * currentSize.getX () * currentSize.getZ () * numTimeStepsInBuild);
-    buffersReceive[DOWN].resize (bufferSizeLeft.getY () * currentSize.getX () * currentSize.getZ () * numTimeStepsInBuild);
-  }
-  if (hasU)
-  {
-    buffersSend[UP].resize (bufferSizeRight.getY () * currentSize.getX () * currentSize.getZ () * numTimeStepsInBuild);
-    buffersReceive[UP].resize (bufferSizeRight.getY () * currentSize.getX () * currentSize.getZ () * numTimeStepsInBuild);
-  }
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (hasB)
-  {
-    buffersSend[BACK].resize (bufferSizeLeft.getZ () * currentSize.getX () * currentSize.getY () * numTimeStepsInBuild);
-    buffersReceive[BACK].resize (bufferSizeLeft.getZ () * currentSize.getX () * currentSize.getY () * numTimeStepsInBuild);
-  }
-  if (hasF)
-  {
-    buffersSend[FRONT].resize (bufferSizeRight.getZ () * currentSize.getX () * currentSize.getY () * numTimeStepsInBuild);
-    buffersReceive[FRONT].resize (bufferSizeRight.getZ () * currentSize.getX () * currentSize.getY () * numTimeStepsInBuild);
-  }
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (hasL && hasD)
-  {
-    buffersSend[LEFT_DOWN].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * currentSize.getZ () * numTimeStepsInBuild);
-    buffersReceive[LEFT_DOWN].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * currentSize.getZ () * numTimeStepsInBuild);
-  }
-  if (hasL && hasU)
-  {
-    buffersSend[LEFT_UP].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * currentSize.getZ () * numTimeStepsInBuild);
-    buffersReceive[LEFT_UP].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * currentSize.getZ () * numTimeStepsInBuild);
-  }
-  if (hasR && hasD)
-  {
-    buffersSend[RIGHT_DOWN].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * currentSize.getZ () * numTimeStepsInBuild);
-    buffersReceive[RIGHT_DOWN].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * currentSize.getZ () * numTimeStepsInBuild);
-  }
-  if (hasR && hasU)
-  {
-    buffersSend[RIGHT_UP].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * currentSize.getZ () * numTimeStepsInBuild);
-    buffersReceive[RIGHT_UP].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * currentSize.getZ () * numTimeStepsInBuild);
-  }
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (hasD && hasB)
-  {
-    buffersSend[DOWN_BACK].resize (bufferSizeLeft.getY () * bufferSizeLeft.getZ () * currentSize.getX () * numTimeStepsInBuild);
-    buffersReceive[DOWN_BACK].resize (bufferSizeLeft.getY () * bufferSizeLeft.getZ () * currentSize.getX () * numTimeStepsInBuild);
-  }
-  if (hasD && hasF)
-  {
-    buffersSend[DOWN_FRONT].resize (bufferSizeLeft.getY () * bufferSizeRight.getZ () * currentSize.getX () * numTimeStepsInBuild);
-    buffersReceive[DOWN_FRONT].resize (bufferSizeLeft.getY () * bufferSizeRight.getZ () * currentSize.getX () * numTimeStepsInBuild);
-  }
-  if (hasU && hasB)
-  {
-    buffersSend[UP_BACK].resize (bufferSizeRight.getY () * bufferSizeLeft.getZ () * currentSize.getX () * numTimeStepsInBuild);
-    buffersReceive[UP_BACK].resize (bufferSizeRight.getY () * bufferSizeLeft.getZ () * currentSize.getX () * numTimeStepsInBuild);
-  }
-  if (hasU && hasF)
-  {
-    buffersSend[UP_FRONT].resize (bufferSizeRight.getY () * bufferSizeRight.getZ () * currentSize.getX () * numTimeStepsInBuild);
-    buffersReceive[UP_FRONT].resize (bufferSizeRight.getY () * bufferSizeRight.getZ () * currentSize.getX () * numTimeStepsInBuild);
-  }
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (hasL && hasB)
-  {
-    buffersSend[LEFT_BACK].resize (bufferSizeLeft.getX () * bufferSizeLeft.getZ () * currentSize.getY () * numTimeStepsInBuild);
-    buffersReceive[LEFT_BACK].resize (bufferSizeLeft.getX () * bufferSizeLeft.getZ () * currentSize.getY () * numTimeStepsInBuild);
-  }
-  if (hasL && hasF)
-  {
-    buffersSend[LEFT_FRONT].resize (bufferSizeLeft.getX () * bufferSizeRight.getZ () * currentSize.getY () * numTimeStepsInBuild);
-    buffersReceive[LEFT_FRONT].resize (bufferSizeLeft.getX () * bufferSizeRight.getZ () * currentSize.getY () * numTimeStepsInBuild);
-  }
-  if (hasR && hasB)
-  {
-    buffersSend[RIGHT_BACK].resize (bufferSizeRight.getX () * bufferSizeLeft.getZ () * currentSize.getY () * numTimeStepsInBuild);
-    buffersReceive[RIGHT_BACK].resize (bufferSizeRight.getX () * bufferSizeLeft.getZ () * currentSize.getY () * numTimeStepsInBuild);
-  }
-  if (hasR && hasF)
-  {
-    buffersSend[RIGHT_FRONT].resize (bufferSizeRight.getX () * bufferSizeRight.getZ () * currentSize.getY () * numTimeStepsInBuild);
-    buffersReceive[RIGHT_FRONT].resize (bufferSizeRight.getX () * bufferSizeRight.getZ () * currentSize.getY () * numTimeStepsInBuild);
-  }
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (hasL && hasD && hasB)
-  {
-    buffersSend[LEFT_DOWN_BACK].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * bufferSizeLeft.getZ () * numTimeStepsInBuild);
-    buffersReceive[LEFT_DOWN_BACK].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * bufferSizeLeft.getZ () * numTimeStepsInBuild);
-  }
-  if (hasL && hasD && hasF)
-  {
-    buffersSend[LEFT_DOWN_FRONT].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * bufferSizeRight.getZ () * numTimeStepsInBuild);
-    buffersReceive[LEFT_DOWN_FRONT].resize (bufferSizeLeft.getX () * bufferSizeLeft.getY () * bufferSizeRight.getZ () * numTimeStepsInBuild);
-  }
-  if (hasL && hasU && hasB)
-  {
-    buffersSend[LEFT_UP_BACK].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * bufferSizeLeft.getZ () * numTimeStepsInBuild);
-    buffersReceive[LEFT_UP_BACK].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * bufferSizeLeft.getZ () * numTimeStepsInBuild);
-  }
-  if (hasL && hasU && hasF)
-  {
-    buffersSend[LEFT_UP_FRONT].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * bufferSizeRight.getZ () * numTimeStepsInBuild);
-    buffersReceive[LEFT_UP_FRONT].resize (bufferSizeLeft.getX () * bufferSizeRight.getY () * bufferSizeRight.getZ () * numTimeStepsInBuild);
-  }
-
-  if (hasR && hasD && hasB)
-  {
-    buffersSend[RIGHT_DOWN_BACK].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * bufferSizeLeft.getZ () * numTimeStepsInBuild);
-    buffersReceive[RIGHT_DOWN_BACK].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * bufferSizeLeft.getZ () * numTimeStepsInBuild);
-  }
-  if (hasR && hasD && hasF)
-  {
-    buffersSend[RIGHT_DOWN_FRONT].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * bufferSizeRight.getZ () * numTimeStepsInBuild);
-    buffersReceive[RIGHT_DOWN_FRONT].resize (bufferSizeRight.getX () * bufferSizeLeft.getY () * bufferSizeRight.getZ () * numTimeStepsInBuild);
-  }
-  if (hasR && hasU && hasB)
-  {
-    buffersSend[RIGHT_UP_BACK].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * bufferSizeLeft.getZ () * numTimeStepsInBuild);
-    buffersReceive[RIGHT_UP_BACK].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * bufferSizeLeft.getZ () * numTimeStepsInBuild);
-  }
-  if (hasR && hasU && hasF)
-  {
-    buffersSend[RIGHT_UP_FRONT].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * bufferSizeRight.getZ () * numTimeStepsInBuild);
-    buffersReceive[RIGHT_UP_FRONT].resize (bufferSizeRight.getX () * bufferSizeRight.getY () * bufferSizeRight.getZ () * numTimeStepsInBuild);
-  }
+#if PRINT_MESSAGE
+  printf ("Grid size for #%d process: %dx%dx%d.\n", processId,
+    currentSize.getX (), currentSize.getY (), currentSize.getZ ());
 #endif
 }
 

@@ -9,22 +9,23 @@ extern const char* BufferPositionNames[];
 void
 Grid::NodeGridInit ()
 {
-  grid_coord c1;
-
   nodeGridSizeX = totalProcCount;
-
-  CalculateGridSizeForNode (c1, nodeGridSizeX, totalSize.getX ());
-
-  currentSize = GridCoordinate (c1);
-  size = currentSize + bufferSizeLeft + bufferSizeRight;
-
-  directions[LEFT] = processId - 1;
-  directions[RIGHT] = processId + 1;
 
 #if PRINT_MESSAGE
   printf ("Nodes' grid process #%d: %d.\n", processId,
     nodeGridSizeX);
 #endif
+}
+
+void
+Grid::GridInit ()
+{
+  grid_coord c1;
+
+  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX ());
+
+  currentSize = GridCoordinate (c1);
+  size = currentSize + bufferSizeLeft + bufferSizeRight;
 }
 #endif
 
@@ -33,30 +34,15 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 {
   NodeGridInit ();
 
-  hasL = false;
-  hasR = false;
+  InitBuffers (numTimeStepsInBuild);
+  InitDirections ();
 
-  if (processId > 0)
-  {
-    hasL = true;
-  }
+  GridInit ();
 
-  if (processId < totalProcCount - 1)
-  {
-    hasR = true;
-  }
-
-  if (hasL)
-  {
-    buffersSend[LEFT].resize (bufferSizeLeft.getX () * numTimeStepsInBuild);
-    buffersReceive[LEFT].resize (bufferSizeLeft.getX () * numTimeStepsInBuild);
-  }
-
-  if (hasR)
-  {
-    buffersSend[RIGHT].resize (bufferSizeRight.getX () * numTimeStepsInBuild);
-    buffersReceive[RIGHT].resize (bufferSizeRight.getX () * numTimeStepsInBuild);
-  }
+#if PRINT_MESSAGE
+  printf ("Grid size for #%d process: %d.\n", processId,
+    currentSize.getX ());
+#endif
 }
 
 void
