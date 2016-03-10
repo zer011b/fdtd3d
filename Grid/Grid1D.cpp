@@ -34,10 +34,10 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 {
   NodeGridInit ();
 
+  GridInit ();
+
   InitBuffers (numTimeStepsInBuild);
   InitDirections ();
-
-  GridInit ();
 
 #if PRINT_MESSAGE
   printf ("Grid size for #%d process: %d.\n", processId,

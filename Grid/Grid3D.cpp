@@ -227,10 +227,10 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   }
 #endif
 
+  GridInit ();
+
   InitBuffers (numTimeStepsInBuild);
   InitDirections ();
-
-  GridInit ();
 
 #if PRINT_MESSAGE
   printf ("Grid size for #%d process: %dx%dx%d.\n", processId,
@@ -304,8 +304,9 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
   int processFrom = directions[opposite];
 
 #if PRINT_MESSAGE
-  printf ("===Raw #%d directions %s %s %d %d [%d %d].\n", processId, BufferPositionNames[bufferDirection],
-          BufferPositionNames[opposite], doSend, doReceive, processTo, processFrom);
+  printf ("\tSHARE RAW. PID=#%d. Directions TO(%d)=%s=#%d, FROM(%d)=%s=#%d.\n",
+    processId, doSend, BufferPositionNames[bufferDirection], processTo,
+               doReceive, BufferPositionNames[opposite], processFrom);
 #endif
 
   if (doSend && !doReceive)

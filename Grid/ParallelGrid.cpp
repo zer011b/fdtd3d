@@ -1139,7 +1139,8 @@ void
 Grid::SendRawBuffer (BufferPosition buffer, int processTo)
 {
 #if PRINT_MESSAGE
-  printf ("Send raw #%d direction %s.\n", processId, BufferPositionNames[buffer]);
+  printf ("\t\tSend RAW. PID=#%d. Direction TO=%s, size=%lu.\n",
+    processId, BufferPositionNames[buffer], buffersReceive[buffer].size ());
 #endif
   MPI_Status status;
 
@@ -1165,7 +1166,8 @@ void
 Grid::ReceiveRawBuffer (BufferPosition buffer, int processFrom)
 {
 #if PRINT_MESSAGE
-  printf ("Receive raw #%d direction %s.\n", processId, BufferPositionNames[buffer]);
+  printf ("\t\tReceive RAW. PID=#%d. Direction FROM=%s, size=%lu.\n",
+    processId, BufferPositionNames[buffer], buffersReceive[buffer].size ());
 #endif
   MPI_Status status;
 
@@ -1192,8 +1194,9 @@ Grid::SendReceiveRawBuffer (BufferPosition bufferSend, int processTo,
                             BufferPosition bufferReceive, int processFrom)
 {
 #if PRINT_MESSAGE
-  printf ("Send/Receive raw #%d directions %s %s.\n", processId, BufferPositionNames[bufferSend],
-          BufferPositionNames[bufferReceive]);
+  printf ("\t\tSend/Receive RAW. PID=#%d. Directions TO=%s FROM=%s. Size TO=%lu FROM=%lu.\n",
+    processId, BufferPositionNames[bufferSend], BufferPositionNames[bufferReceive],
+    buffersReceive[bufferSend].size (), buffersReceive[bufferReceive].size ());
 #endif
   MPI_Status status;
 
@@ -1931,10 +1934,10 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
   if (hasL)
   {
     int buf_size = bufferSizeLeft.getX () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+#if defined (GRID_2D) || defined (GRID_3D)
     buf_size *= currentSize.getY ();
 #endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+#if defined (GRID_3D)
     buf_size *= currentSize.getZ ();
 #endif
     buffersSend[LEFT].resize (buf_size);
@@ -1943,10 +1946,10 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
   if (hasR)
   {
     int buf_size = bufferSizeRight.getX () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+#if defined (GRID_2D) || defined (GRID_3D)
     buf_size *= currentSize.getY ();
 #endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+#if defined (GRID_3D)
     buf_size *= currentSize.getZ ();
 #endif
     buffersSend[RIGHT].resize (buf_size);
@@ -1958,11 +1961,8 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (hasD)
   {
-    int buf_size = bufferSizeLeft.getY () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getX ();
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+    int buf_size = bufferSizeLeft.getY () * currentSize.getX () * numTimeStepsInBuild;
+#if defined (GRID_3D)
     buf_size *= currentSize.getZ ();
 #endif
     buffersSend[DOWN].resize (buf_size);
@@ -1970,11 +1970,8 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
   }
   if (hasU)
   {
-    int buf_size = bufferSizeRight.getY () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getX ();
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+    int buf_size = bufferSizeRight.getY () * currentSize.getX () * numTimeStepsInBuild;
+#if defined (GRID_3D)
     buf_size *= currentSize.getZ ();
 #endif
     buffersSend[UP].resize (buf_size);
@@ -1986,25 +1983,13 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (hasB)
   {
-    int buf_size = bufferSizeLeft.getZ () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getY ();
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getX ();
-#endif
+    int buf_size = bufferSizeLeft.getZ () * currentSize.getY () * currentSize.getX () * numTimeStepsInBuild;
     buffersSend[BACK].resize (buf_size);
     buffersReceive[BACK].resize (buf_size);
   }
   if (hasF)
   {
-    int buf_size = bufferSizeRight.getZ () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getY ();
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getX ();
-#endif
+    int buf_size = bufferSizeRight.getZ () * currentSize.getY () * currentSize.getX () * numTimeStepsInBuild;
     buffersSend[FRONT].resize (buf_size);
     buffersReceive[FRONT].resize (buf_size);
   }
@@ -2014,7 +1999,7 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
   if (hasL && hasD)
   {
     int buf_size = bufferSizeLeft.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+#if defined (GRID_3D)
     buf_size *= currentSize.getZ ();
 #endif
     buffersSend[LEFT_DOWN].resize (buf_size);
@@ -2023,7 +2008,7 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
   if (hasL && hasU)
   {
     int buf_size = bufferSizeLeft.getX () * bufferSizeRight.getY () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+#if defined (GRID_3D)
     buf_size *= currentSize.getZ ();
 #endif
     buffersSend[LEFT_UP].resize (buf_size);
@@ -2032,7 +2017,7 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
   if (hasR && hasD)
   {
     int buf_size = bufferSizeRight.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+#if defined (GRID_3D)
     buf_size *= currentSize.getZ ();
 #endif
     buffersSend[RIGHT_DOWN].resize (buf_size);
@@ -2041,7 +2026,7 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
   if (hasR && hasU)
   {
     int buf_size = bufferSizeRight.getX () * bufferSizeRight.getY () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+#if defined (GRID_3D)
     buf_size *= currentSize.getZ ();
 #endif
     buffersSend[RIGHT_UP].resize (buf_size);
@@ -2052,37 +2037,25 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (hasD && hasB)
   {
-    int buf_size = bufferSizeLeft.getY () * bufferSizeLeft.getZ () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getX ();
-#endif
+    int buf_size = bufferSizeLeft.getY () * bufferSizeLeft.getZ () * currentSize.getX () * numTimeStepsInBuild;
     buffersSend[DOWN_BACK].resize (buf_size);
     buffersReceive[DOWN_BACK].resize (buf_size);
   }
   if (hasD && hasF)
   {
-    int buf_size = bufferSizeLeft.getY () * bufferSizeRight.getZ () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getX ();
-#endif
+    int buf_size = bufferSizeLeft.getY () * bufferSizeRight.getZ () * currentSize.getX () * numTimeStepsInBuild;
     buffersSend[DOWN_FRONT].resize (buf_size);
     buffersReceive[DOWN_FRONT].resize (buf_size);
   }
   if (hasU && hasB)
   {
-    int buf_size = bufferSizeRight.getY () * bufferSizeLeft.getZ () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getX ();
-#endif
+    int buf_size = bufferSizeRight.getY () * bufferSizeLeft.getZ () * currentSize.getX () * numTimeStepsInBuild;
     buffersSend[UP_BACK].resize (buf_size);
     buffersReceive[UP_BACK].resize (buf_size);
   }
   if (hasU && hasF)
   {
-    int buf_size = bufferSizeRight.getY () * bufferSizeRight.getZ () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getX ();
-#endif
+    int buf_size = bufferSizeRight.getY () * bufferSizeRight.getZ () * currentSize.getX () * numTimeStepsInBuild;
     buffersSend[UP_FRONT].resize (buf_size);
     buffersReceive[UP_FRONT].resize (buf_size);
   }
@@ -2091,37 +2064,25 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (hasL && hasB)
   {
-    int buf_size = bufferSizeLeft.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getY ();
-#endif
+    int buf_size = bufferSizeLeft.getX () * bufferSizeLeft.getY () * currentSize.getY () * numTimeStepsInBuild;
     buffersSend[LEFT_BACK].resize (buf_size);
     buffersReceive[LEFT_BACK].resize (buf_size);
   }
   if (hasL && hasF)
   {
-    int buf_size = bufferSizeLeft.getX () * bufferSizeRight.getY () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getY ();
-#endif
+    int buf_size = bufferSizeLeft.getX () * bufferSizeRight.getY () * currentSize.getY () * numTimeStepsInBuild;
     buffersSend[LEFT_FRONT].resize (buf_size);
     buffersReceive[LEFT_FRONT].resize (buf_size);
   }
   if (hasR && hasB)
   {
-    int buf_size = bufferSizeRight.getX () * bufferSizeLeft.getY () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getY ();
-#endif
+    int buf_size = bufferSizeRight.getX () * bufferSizeLeft.getY () * currentSize.getY () * numTimeStepsInBuild;
     buffersSend[RIGHT_BACK].resize (buf_size);
     buffersReceive[RIGHT_BACK].resize (buf_size);
   }
   if (hasR && hasF)
   {
-    int buf_size = bufferSizeRight.getX () * bufferSizeRight.getY () * numTimeStepsInBuild;
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    buf_size *= currentSize.getY ();
-#endif
+    int buf_size = bufferSizeRight.getX () * bufferSizeRight.getY () * currentSize.getY () * numTimeStepsInBuild;
     buffersSend[RIGHT_FRONT].resize (buf_size);
     buffersReceive[RIGHT_FRONT].resize (buf_size);
   }
