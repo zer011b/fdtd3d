@@ -34,6 +34,7 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 {
   NodeGridInit ();
 
+  InitBufferFlags ();
   GridInit ();
 
   InitBuffers (numTimeStepsInBuild);

@@ -216,6 +216,7 @@ private:
   void NodeGridInit ();
   void GridInit ();
   void InitDirections ();
+  void InitBufferFlags ();
   void InitBuffers (grid_iter numTimeStepsInBuild);
 
   void SendReceiveCoordinatesInit ();

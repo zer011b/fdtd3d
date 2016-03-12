@@ -1837,7 +1837,7 @@ Grid::InitDirections ()
 }
 
 void
-Grid::InitBuffers (grid_iter numTimeStepsInBuild)
+Grid::InitBufferFlags ()
 {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -1928,7 +1928,11 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
     hasF = true;
   }
 #endif
+}
 
+void
+Grid::InitBuffers (grid_iter numTimeStepsInBuild)
+{
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (hasL)

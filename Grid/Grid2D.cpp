@@ -94,6 +94,7 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   }
 #endif
 
+  InitBufferFlags ();
   GridInit ();
 
   InitBuffers (numTimeStepsInBuild);
