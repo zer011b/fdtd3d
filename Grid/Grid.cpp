@@ -16,6 +16,8 @@ Grid::Grid (const GridCoordinate& totSize,
   totalProcCount (totalProc),
   timeStep (step)
 {
+  ASSERT (bufferSizeLeft == bufferSizeRight);
+
 #if defined (ONE_TIME_STEP)
   grid_iter numTimeStepsInBuild = 2;
 #endif

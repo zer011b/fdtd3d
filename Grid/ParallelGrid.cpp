@@ -1789,20 +1789,35 @@ Grid::InitDirections ()
   directions[LEFT] = processId - 1;
   directions[RIGHT] = processId + 1;
 #endif
+
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  directions[DOWN] = processId - 1;
+  directions[UP] = processId + 1;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   directions[DOWN] = processId - nodeGridSizeX;
   directions[UP] = processId + nodeGridSizeX;
 #endif
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+  directions[BACK] = processId - 1;
+  directions[FRONT] = processId + 1;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  directions[BACK] = processId - nodeGridSizeY;
+  directions[FRONT] = processId + nodeGridSizeY;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+  directions[BACK] = processId - nodeGridSizeX;
+  directions[FRONT] = processId + nodeGridSizeX;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   directions[BACK] = processId - nodeGridSizeXY;
   directions[FRONT] = processId + nodeGridSizeXY;
 #endif
+
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   directions[LEFT_DOWN] = processId - nodeGridSizeX - 1;
@@ -1810,20 +1825,33 @@ Grid::InitDirections ()
   directions[RIGHT_DOWN] = processId - nodeGridSizeX + 1;
   directions[RIGHT_UP] = processId + nodeGridSizeX + 1;
 #endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  directions[DOWN_BACK] = processId - nodeGridSizeY - 1;
+  directions[DOWN_FRONT] = processId + nodeGridSizeY - 1;
+  directions[UP_BACK] = processId - nodeGridSizeY + 1;
+  directions[UP_FRONT] = processId + nodeGridSizeY + 1;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   directions[DOWN_BACK] = processId - nodeGridSizeXY - nodeGridSizeX;
   directions[DOWN_FRONT] = processId + nodeGridSizeXY - nodeGridSizeX;
   directions[UP_BACK] = processId - nodeGridSizeXY + nodeGridSizeX;
   directions[UP_FRONT] = processId + nodeGridSizeXY + nodeGridSizeX;
 #endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+  directions[LEFT_BACK] = processId - nodeGridSizeX - 1;
+  directions[LEFT_FRONT] = processId + nodeGridSizeX - 1;
+  directions[RIGHT_BACK] = processId - nodeGridSizeX + 1;
+  directions[RIGHT_FRONT] = processId + nodeGridSizeX + 1;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   directions[LEFT_BACK] = processId - nodeGridSizeXY - 1;
   directions[LEFT_FRONT] = processId + nodeGridSizeXY - 1;
   directions[RIGHT_BACK] = processId - nodeGridSizeXY + 1;
   directions[RIGHT_FRONT] = processId + nodeGridSizeXY + 1;
 #endif
+
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   directions[LEFT_DOWN_BACK] = processId - nodeGridSizeXY - nodeGridSizeX - 1;
   directions[LEFT_DOWN_FRONT] = processId + nodeGridSizeXY - nodeGridSizeX - 1;

@@ -74,6 +74,19 @@ public:
     return GridCoordinate (lhs.getX () + rhs.getX (), lhs.getY () + rhs.getY (), lhs.getZ () + rhs.getZ ());
 #endif /* GRID_3D */
   }
+
+  bool operator== (const GridCoordinate& rhs)
+  {
+#if defined (GRID_1D)
+    return getX () == rhs.getX ();
+#endif /* GRID_1D */
+#if defined (GRID_2D)
+    return getX () == rhs.getX () && getY () == rhs.getY ();
+#endif /* GRID_2D */
+#if defined (GRID_3D)
+    return getX () == rhs.getX () && getY () == rhs.getY () && getZ () == rhs.getZ ();
+#endif /* GRID_3D */
+  }
 };
 
 #endif /* GRID_COORDINATE_H */
