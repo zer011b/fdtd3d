@@ -71,6 +71,8 @@ public:
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D*/
 
+  grid_coord getMax () const;
+
   friend GridCoordinate operator+ (GridCoordinate lhs, const GridCoordinate& rhs)
   {
 #if defined (GRID_1D)

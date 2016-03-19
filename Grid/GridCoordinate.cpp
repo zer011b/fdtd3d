@@ -121,4 +121,25 @@ GridCoordinate::calculateTotalCoord () const
 #endif /* !GRID_2D */
 #endif /* !GRID_1D */
 }
+
+grid_coord
+GridCoordinate::getMax () const
+{
+  grid_coord max = 0;
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  if (x > max)
+    max = x;
+#if defined (GRID_2D) || defined (GRID_3D)
+  if (y > max)
+    max = y;
+#if defined (GRID_3D)
+  if (z > max)
+    max = z;
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D*/
+
+  return max;
+}
 #endif /* GRID_1D || GRID_2D || GRID_3D*/

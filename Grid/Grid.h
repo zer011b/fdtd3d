@@ -280,6 +280,9 @@ private:
 
 #endif /* PARALLEL_GRID */
 
+  // Replace previous layer with current and so on.
+  void shiftInTime ();
+
 public:
 
 #if defined (PARALLEL_GRID)
@@ -315,11 +318,8 @@ public:
 #endif*/
 #endif  /* GRID_1D || GRID_2D || GRID_3D*/
 
-  // Replace previous layer with current and so on.
-  void shiftInTime ();
-
   // Switch to next time step.
-  //void nextTimeStep ();
+  void nextTimeStep ();
 
 #if defined (PARALLEL_GRID)
   void Share ();

@@ -290,7 +290,16 @@ Grid::shiftInTime ()
   }
 }
 
-void nextTimeStep ()
+void
+Grid::nextTimeStep ()
 {
+  shiftInTime ();
 
+#if defined (PARALLEL_GRID)
+  grid_coord shiftCounter = bufferSizeLeft.getMax ();
+  if (timeStep % shiftCounter == 0)
+  {
+    Share ();
+  }
+#endif
 }

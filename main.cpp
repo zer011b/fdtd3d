@@ -159,7 +159,7 @@ int main (int argc, char** argv)
       Ez.setFieldPointValueCurrent (cos (t * 3.1415 / 12),  pos);
     }
 
-    Ez.shiftInTime ();
+    Ez.nextTimeStep ();
     Ez.Share ();
 
     for (int i = 1; i < sizeTotal.getX (); ++i)
@@ -202,18 +202,13 @@ int main (int argc, char** argv)
       }
     }
 
-    Hx.shiftInTime ();
-    Hy.shiftInTime ();
-
-    Hx.Share ();
-    Hy.Share ();
+    Hx.nextTimeStep ();
+    Hy.nextTimeStep ();
   }
 */
   /*for (int t = 2; t < 1000; ++t)
   {
-    grid.Share ();
-
-    grid.shiftInTime ();
+    grid.nextTimeStep ();
 
     for (int i = 0; i < sizeTotal.getX (); ++i)
     {
