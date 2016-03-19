@@ -214,7 +214,7 @@ private:
 
   void ParallelGridConstructor (grid_iter numTimeStepsInBuild);
   void NodeGridInit ();
-  void GridInit ();
+  GridCoordinate GridInit ();
   void InitDirections ();
   void InitBufferFlags ();
   void InitBuffers (grid_iter numTimeStepsInBuild);

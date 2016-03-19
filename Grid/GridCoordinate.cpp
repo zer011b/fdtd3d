@@ -74,17 +74,32 @@ GridCoordinate::getX () const
 {
   return x;
 }
+void
+GridCoordinate::setX (const grid_coord& new_x)
+{
+  x = new_x;
+}
 #if defined (GRID_2D) || defined (GRID_3D)
 const grid_coord&
 GridCoordinate::getY () const
 {
   return y;
 }
+void
+GridCoordinate::setY (const grid_coord& new_y)
+{
+  y = new_y;
+}
 #if defined (GRID_3D)
 const grid_coord&
 GridCoordinate::getZ () const
 {
   return z;
+}
+void
+GridCoordinate::setZ (const grid_coord& new_z)
+{
+  z = new_z;
 }
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */

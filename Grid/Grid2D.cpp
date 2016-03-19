@@ -24,7 +24,7 @@ Grid::NodeGridInit ()
 #endif
 }
 
-void
+GridCoordinate
 Grid::GridInit ()
 {
   grid_coord c1;
@@ -39,8 +39,7 @@ Grid::GridInit ()
   CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY ());
 #endif
 
-  currentSize = GridCoordinate (c1, c2);
-  size = currentSize + bufferSizeLeft + bufferSizeRight;
+  return GridCoordinate (c1, c2);
 }
 #endif
 
@@ -67,7 +66,7 @@ Grid::NodeGridInit ()
 #endif
 }
 
-void
+GridCoordinate
 Grid::GridInit ()
 {
   grid_coord c1;
@@ -76,8 +75,7 @@ Grid::GridInit ()
   CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
                             c2, nodeGridSizeY, hasU, totalSize.getY ());
 
-  currentSize = GridCoordinate (c1, c2);
-  size = currentSize + bufferSizeLeft + bufferSizeRight;
+  return GridCoordinate (c1, c2);
 }
 #endif
 
@@ -95,7 +93,32 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 #endif
 
   InitBufferFlags ();
-  GridInit ();
+  currentSize = GridInit ();
+
+  GridCoordinate bufferSizeLeftCurrent (bufferSizeLeft);
+  GridCoordinate bufferSizeRightCurrent (bufferSizeRight);
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+  if (!hasL)
+  {
+    bufferSizeLeftCurrent.setX (0);
+  }
+  if (!hasR)
+  {
+    bufferSizeRightCurrent.setX (0);
+  }
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+  if (!hasD)
+  {
+    bufferSizeLeftCurrent.setY (0);
+  }
+  if (!hasU)
+  {
+    bufferSizeRightCurrent.setY (0);
+  }
+#endif
+  size = currentSize + bufferSizeLeftCurrent + bufferSizeRightCurrent;
 
   InitBuffers (numTimeStepsInBuild);
   InitDirections ();

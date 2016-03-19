@@ -33,7 +33,7 @@ Grid::NodeGridInit ()
 #endif
 }
 
-void
+GridCoordinate
 Grid::GridInit ()
 {
   grid_coord c1;
@@ -56,8 +56,7 @@ Grid::GridInit ()
   CalculateGridSizeForNode (c3, nodeGridSizeZ, hasF, totalSize.getZ ());
 #endif
 
-  currentSize = GridCoordinate (c1, c2, c3);
-  size = currentSize + bufferSizeLeft + bufferSizeRight;
+  return GridCoordinate (c1, c2, c3);
 }
 #endif
 
@@ -116,7 +115,7 @@ Grid::NodeGridInit ()
 #endif
 }
 
-void
+GridCoordinate
 Grid::GridInit ()
 {
   grid_coord c1;
@@ -139,8 +138,7 @@ Grid::GridInit ()
                             c3, nodeGridSizeZ, hasF, totalSize.getZ ());
 #endif
 
-  currentSize = GridCoordinate (c1, c2, c3);
-  size = currentSize + bufferSizeLeft + bufferSizeRight;
+  return GridCoordinate (c1, c2, c3);
 }
 #endif
 
@@ -177,7 +175,7 @@ Grid::NodeGridInit ()
 #endif
 }
 
-void
+GridCoordinate
 Grid::GridInit ()
 {
   grid_coord c1;
@@ -188,8 +186,7 @@ Grid::GridInit ()
                             c2, nodeGridSizeY, hasU, totalSize.getY (),
                             c3, nodeGridSizeZ, hasF, totalSize.getZ ());
 
-  currentSize = GridCoordinate (c1, c2, c3);
-  size = currentSize + bufferSizeLeft + bufferSizeRight;
+  return GridCoordinate (c1, c2, c3);
 }
 #endif
 
@@ -228,7 +225,45 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 #endif
 
   InitBufferFlags ();
-  GridInit ();
+  currentSize = GridInit ();
+
+  GridCoordinate bufferSizeLeftCurrent (bufferSizeLeft);
+  GridCoordinate bufferSizeRightCurrent (bufferSizeRight);
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (!hasL)
+  {
+    bufferSizeLeftCurrent.setX (0);
+  }
+  if (!hasR)
+  {
+    bufferSizeRightCurrent.setX (0);
+  }
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (!hasD)
+  {
+    bufferSizeLeftCurrent.setY (0);
+  }
+  if (!hasU)
+  {
+    bufferSizeRightCurrent.setY (0);
+  }
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (!hasB)
+  {
+    bufferSizeLeftCurrent.setZ (0);
+  }
+  if (!hasF)
+  {
+    bufferSizeRightCurrent.setZ (0);
+  }
+#endif
+  size = currentSize + bufferSizeLeftCurrent + bufferSizeRightCurrent;
 
   InitBuffers (numTimeStepsInBuild);
   InitDirections ();

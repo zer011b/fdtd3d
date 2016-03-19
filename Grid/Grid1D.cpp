@@ -17,15 +17,14 @@ Grid::NodeGridInit ()
 #endif
 }
 
-void
+GridCoordinate
 Grid::GridInit ()
 {
   grid_coord c1;
 
   CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX ());
 
-  currentSize = GridCoordinate (c1);
-  size = currentSize + bufferSizeLeft + bufferSizeRight;
+  return GridCoordinate (c1);
 }
 #endif
 
@@ -35,7 +34,20 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   NodeGridInit ();
 
   InitBufferFlags ();
-  GridInit ();
+  currentSize = GridInit ();
+
+  GridCoordinate bufferSizeLeftCurrent (bufferSizeLeft);
+  GridCoordinate bufferSizeRightCurrent (bufferSizeRight);
+
+  if (!hasL)
+  {
+    bufferSizeLeftCurrent.setX (0);
+  }
+  if (!hasR)
+  {
+    bufferSizeRightCurrent.setX (0);
+  }
+  size = currentSize + bufferSizeLeftCurrent + bufferSizeRightCurrent;
 
   InitBuffers (numTimeStepsInBuild);
   InitDirections ();

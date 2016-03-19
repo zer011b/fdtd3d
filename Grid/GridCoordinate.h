@@ -62,6 +62,15 @@ public:
 #endif /* GRID_2D || GRID_3D*/
 #endif /* GRID_1D || GRID_2D || GRID_3D*/
 
+  // Set one-dimensional coordinates.
+  void setX (const grid_coord& new_x);
+#if defined (GRID_2D) || defined (GRID_3D)
+  void setY (const grid_coord& new_y);
+#if defined (GRID_3D)
+  void setZ (const grid_coord& new_z);
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D*/
+
   friend GridCoordinate operator+ (GridCoordinate lhs, const GridCoordinate& rhs)
   {
 #if defined (GRID_1D)
