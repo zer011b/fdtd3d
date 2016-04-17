@@ -4,7 +4,7 @@
 #include "Commons.h"
 
 // Basic class for all loaders.
-template <class TGrid>
+template <class TCoord>
 class Loader: public GridFileManager
 {
 protected:
@@ -13,7 +13,7 @@ protected:
 
 public:
 
-  virtual void loadGrid (TGrid& grid) const = 0;
+  virtual void loadGrid (Grid<TCoord> &grid) const = 0;
   virtual ~Loader () {}
 };
 

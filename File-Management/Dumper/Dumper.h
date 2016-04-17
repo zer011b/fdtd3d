@@ -4,7 +4,7 @@
 #include "Commons.h"
 
 // Basic class for all dumpers.
-template <class TGrid>
+template <class TCoord>
 class Dumper: public GridFileManager
 {
 protected:
@@ -13,7 +13,7 @@ protected:
 
 public:
 
-  virtual void dumpGrid (TGrid& grid) const = 0;
+  virtual void dumpGrid (Grid<TCoord> &grid) const = 0;
   virtual ~Dumper () {}
 };
 

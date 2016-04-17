@@ -2,10 +2,7 @@
 #define COMMONS_H
 
 #include "Assert.h"
-#include "GridTypes.h"
-#include "Grid1D.h"
-#include "Grid2D.h"
-#include "Grid3D.h"
+#include "Grid.h"
 
 #include <string>
 

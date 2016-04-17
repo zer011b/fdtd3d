@@ -9,10 +9,10 @@
 class SimpleScheme: public Scheme
 {
   // Does not own this.
-  Grid* E;
-  Grid* H;
-  Grid* Eps;
-  Grid* Mu;
+  Grid<GridCoordinate1D> *E;
+  Grid<GridCoordinate1D> *H;
+  Grid<GridCoordinate1D> *Eps;
+  Grid<GridCoordinate1D> *Mu;
 
 public:
   bool performStep () override
@@ -33,7 +33,7 @@ public:
     // }
   }
 
-  SimpleScheme (Grid* e, Grid* h, Grid* eps, Grid* mu);
+  SimpleScheme (Grid<GridCoordinate1D> *e, Grid<GridCoordinate1D> *h, Grid<GridCoordinate1D> *eps, Grid<GridCoordinate1D> *mu);
 
   ~SimpleScheme ();
 };

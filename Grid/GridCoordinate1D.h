@@ -1,7 +1,12 @@
 #ifndef GRID_COORDINATE_1D_H
 #define GRID_COORDINATE_1D_H
 
-#include "GridTypes.h"
+#include <cstdint>
+
+// Type of one-dimensional coordinate.
+typedef uint32_t grid_coord;
+// Type of three-dimensional coordinate.
+typedef uint64_t grid_iter;
 
 // Coordinate in the grid.
 class GridCoordinate1D

@@ -2,22 +2,359 @@
 #define GRID_H
 
 #include <vector>
+#include <cstdlib>
 
 #include "FieldPoint.h"
+#include "GridCoordinate3D.h"
+#include "Assert.h"
 
 // Vector of points in grid.
 typedef std::vector<FieldPointValue*> VectorFieldPointValues;
 
 // Grid interface.
+template <class TCoord>
 class Grid
 {
+  // Size of the grid.
+  // For parallel grid - size of current node plus size of buffers.
+  TCoord size;
+
+  // Vector of points in grid.
+  // Owns this. Deletes all FieldPointValue* itself.
+  VectorFieldPointValues gridValues;
+
+  // Current time step.
+  uint32_t timeStep;
+
+private:
+
+  // Check whether position is appropriate to get/set value from.
+  static bool isLegitIndex (const TCoord& position,
+                            const TCoord& sizeCoord);
+
+  // Calculate N-dimensional coordinate from position.
+  static grid_iter calculateIndexFromPosition (const TCoord& position,
+                                               const TCoord& sizeCoord);
+
+private:
+
+  // Get values in the grid.
+  VectorFieldPointValues& getValues ();
+
+  // Replace previous layer with current and so on.
+  void shiftInTime ();
+
+  // Check whether position is appropriate to get/set value from.
+  bool isLegitIndex (const TCoord& position) const;
+
+  // Calculate N-dimensional coordinate from position.
+  grid_iter calculateIndexFromPosition (const TCoord& position) const;
+
 public:
 
-  virtual ~Grid () {}
+  Grid (const TCoord& s, uint32_t step);
+  ~Grid ();
+
+  // Get size of the grid.
+  const TCoord& getSize () const;
+
+  // Calculate position from three-dimensional coordinate.
+  TCoord calculatePositionFromIndex (grid_iter index) const;
+
+  // Set field point at coordinate in grid.
+  void setFieldPointValue (FieldPointValue* value, const TCoord& position);
+
+  void setFieldPointValueCurrent (const FieldValue& value,
+                                  const TCoord& position);
+
+  // Get field point at coordinate in grid.
+  FieldPointValue* getFieldPointValue (const TCoord& position);
+  FieldPointValue* getFieldPointValue (grid_iter coord);
 
   // Switch to next time step.
-  virtual void nextTimeStep () = 0;
+  virtual void nextTimeStep ();
 };
 
+/**
+ * ======== Consructors and destructor ========
+ */
+template <class TCoord>
+Grid<TCoord>::Grid (const TCoord& s, uint32_t step) :
+  size (s),
+  gridValues (size.calculateTotalCoord ()),
+  timeStep (step)
+{
+  for (int i = 0; i < gridValues.size (); ++i)
+  {
+    gridValues[i] = nullptr;
+  }
+
+#if PRINT_MESSAGE
+  printf ("New grid with raw size: %lu.\n", gridValues.size ());
+#endif
+}
+
+template <class TCoord>
+Grid<TCoord>::~Grid ()
+{
+  for (FieldPointValue* i_p : gridValues)
+  {
+    delete i_p;
+  }
+}
+
+/**
+ * ======== Private methods ========
+ */
+
+template <class TCoord>
+VectorFieldPointValues&
+Grid<TCoord>::getValues ()
+{
+  return gridValues;
+}
+
+template <class TCoord>
+void
+Grid<TCoord>::shiftInTime ()
+{
+  for (FieldPointValue* i_p : getValues ())
+  {
+    i_p->shiftInTime ();
+  }
+}
+
+template <class TCoord>
+bool
+Grid<TCoord>::isLegitIndex (const TCoord& position) const
+{
+  return isLegitIndex (position, size);
+}
+
+template <class TCoord>
+grid_iter
+Grid<TCoord>::calculateIndexFromPosition (const TCoord& position) const
+{
+  return calculateIndexFromPosition (position, size);
+}
+
+/**
+ * ======== Static methods ========
+ */
+template<>
+bool
+Grid<GridCoordinate1D>::isLegitIndex (const GridCoordinate1D& position,
+                                      const GridCoordinate1D& sizeCoord)
+{
+  const grid_coord& px = position.getX ();
+  const grid_coord& sx = sizeCoord.getX ();
+
+  if (px < 0 || px >= sx)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+template<>
+grid_iter
+Grid<GridCoordinate1D>::calculateIndexFromPosition (const GridCoordinate1D& position,
+                                                    const GridCoordinate1D& sizeCoord)
+{
+  const grid_coord& px = position.getX ();
+
+  return px;
+}
+
+template<>
+bool
+Grid<GridCoordinate2D>::isLegitIndex (const GridCoordinate2D& position,
+                                      const GridCoordinate2D& sizeCoord)
+{
+  const grid_coord& px = position.getX ();
+  const grid_coord& sx = sizeCoord.getX ();
+
+  const grid_coord& py = position.getY ();
+  const grid_coord& sy = sizeCoord.getY ();
+
+  if (px < 0 || px >= sx)
+  {
+    return false;
+  }
+  else if (py < 0 || py >= sy)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+template<>
+grid_iter
+Grid<GridCoordinate2D>::calculateIndexFromPosition (const GridCoordinate2D& position,
+                                                    const GridCoordinate2D& sizeCoord)
+{
+  const grid_coord& px = position.getX ();
+
+  const grid_coord& py = position.getY ();
+  const grid_coord& sy = sizeCoord.getY ();
+
+  return px * sy + py;
+}
+
+template<>
+bool
+Grid<GridCoordinate3D>::isLegitIndex (const GridCoordinate3D& position,
+                                      const GridCoordinate3D& sizeCoord)
+{
+  const grid_coord& px = position.getX ();
+  const grid_coord& sx = sizeCoord.getX ();
+
+  const grid_coord& py = position.getY ();
+  const grid_coord& sy = sizeCoord.getY ();
+
+  const grid_coord& pz = position.getZ ();
+  const grid_coord& sz = sizeCoord.getZ ();
+
+  if (px < 0 || px >= sx)
+  {
+    return false;
+  }
+  else if (py < 0 || py >= sy)
+  {
+    return false;
+  }
+  else if (pz < 0 || pz >= sz)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+template<>
+grid_iter
+Grid<GridCoordinate3D>::calculateIndexFromPosition (const GridCoordinate3D& position,
+                                                    const GridCoordinate3D& sizeCoord)
+{
+  const grid_coord& px = position.getX ();
+
+  const grid_coord& py = position.getY ();
+  const grid_coord& sy = sizeCoord.getY ();
+
+  const grid_coord& pz = position.getZ ();
+  const grid_coord& sz = sizeCoord.getZ ();
+
+  return px * sy * sz + py * sz + pz;
+}
+
+/**
+ * ======== Public methods ========
+ */
+
+template <class TCoord>
+const TCoord&
+Grid<TCoord>::getSize () const
+{
+  return size;
+}
+
+template <>
+GridCoordinate1D
+Grid<GridCoordinate1D>::calculatePositionFromIndex (grid_iter index) const
+{
+  return GridCoordinate1D (index);
+}
+
+template <>
+GridCoordinate2D
+Grid<GridCoordinate2D>::calculatePositionFromIndex (grid_iter index) const
+{
+  const grid_coord& sx = size.getX ();
+  const grid_coord& sy = size.getY ();
+
+  grid_coord x = index / sy;
+  index %= sy;
+  grid_coord y = index;
+  return GridCoordinate2D (x, y);
+}
+
+template <>
+GridCoordinate3D
+Grid<GridCoordinate3D>::calculatePositionFromIndex (grid_iter index) const
+{
+  const grid_coord& sy = size.getY ();
+  const grid_coord& sz = size.getZ ();
+
+  grid_coord tmp = sy * sz;
+  grid_coord x = index / tmp;
+  index %= tmp;
+  grid_coord y = index / sz;
+  index %= sz;
+  grid_coord z = index;
+  return GridCoordinate3D (x, y, z);
+}
+
+template <class TCoord>
+void
+Grid<TCoord>::setFieldPointValue (FieldPointValue* value,
+                                  const TCoord& position)
+{
+  ASSERT (isLegitIndex (position));
+  ASSERT (value);
+
+  grid_iter coord = calculateIndexFromPosition (position);
+
+  delete gridValues[coord];
+
+  gridValues[coord] = value;
+}
+
+template <class TCoord>
+void
+Grid<TCoord>::setFieldPointValueCurrent (const FieldValue& value,
+                                          const TCoord& position)
+{
+  ASSERT (isLegitIndex (position));
+
+  grid_iter coord = calculateIndexFromPosition (position);
+
+  gridValues[coord]->setCurValue (value);
+}
+
+template <class TCoord>
+FieldPointValue*
+Grid<TCoord>::getFieldPointValue (const TCoord& position)
+{
+  ASSERT (isLegitIndex (position));
+
+  grid_iter coord = calculateIndexFromPosition (position);
+  FieldPointValue* value = gridValues[coord];
+
+  ASSERT (value);
+
+  return value;
+}
+
+template <class TCoord>
+FieldPointValue*
+Grid<TCoord>::getFieldPointValue (grid_iter coord)
+{
+  ASSERT (coord >= 0 && coord < size.calculateTotalCoord ());
+
+  FieldPointValue* value = gridValues[coord];
+
+  ASSERT (value);
+
+  return value;
+}
+
+template <class TCoord>
+void
+Grid<TCoord>::nextTimeStep ()
+{
+  shiftInTime ();
+}
 
 #endif /* GRID_H */

@@ -1,8 +1,6 @@
 #ifndef FIELD_POINT_H
 #define FIELD_POINT_H
 
-#include "Assert.h"
-
 #include <mpi.h>
 
 // Small values define all field values as float.

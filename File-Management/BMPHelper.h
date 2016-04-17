@@ -2,6 +2,7 @@
 #define BMP_HELPER_H
 
 #include "EasyBMP.h"
+#include "FieldPoint.h"
 
 class BMPHelper
 {

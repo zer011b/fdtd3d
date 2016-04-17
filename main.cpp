@@ -2,7 +2,7 @@
 
 #include <mpi.h>
 
-#include "Grid3D.h"
+#include "Grid.h"
 #include "BMPDumper.h"
 #include "BMPLoader.h"
 #include "DATDumper.h"
@@ -36,12 +36,12 @@ int main (int argc, char** argv)
   Grid Hx (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
   Grid Hy (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
 #else
-  Grid3D Eps (overallSize, 0);
-  Grid3D Mu (overallSize, 0);
+  Grid<GridCoordinate3D> Eps (overallSize, 0);
+  Grid<GridCoordinate3D> Mu (overallSize, 0);
 
-  Grid3D Ez (overallSize, 0);
-  Grid3D Hx (overallSize, 0);
-  Grid3D Hy (overallSize, 0);
+  Grid<GridCoordinate3D> Ez (overallSize, 0);
+  Grid<GridCoordinate3D> Hx (overallSize, 0);
+  Grid<GridCoordinate3D> Hy (overallSize, 0);
 #endif
 
   GridCoordinate3D sizeTotal = Eps.getSize ();

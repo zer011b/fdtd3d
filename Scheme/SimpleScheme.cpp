@@ -1,6 +1,6 @@
 #include "SimpleScheme.h"
 
-SimpleScheme::SimpleScheme (Grid* e, Grid* h, Grid* eps, Grid* mu)
+SimpleScheme::SimpleScheme (Grid<GridCoordinate1D> *e, Grid<GridCoordinate1D> *h, Grid<GridCoordinate1D> *eps, Grid<GridCoordinate1D> *mu)
 : E (e), H (h), Eps (eps), Mu (mu)
 {
   // Verify.
@@ -9,10 +9,10 @@ SimpleScheme::SimpleScheme (Grid* e, Grid* h, Grid* eps, Grid* mu)
   ASSERT (eps);
   ASSERT (mu);
 
-  GridCoordinate sizeE = E->getSize ();
-  GridCoordinate sizeH = H->getSize ();
-  GridCoordinate sizeEps = Eps->getSize ();
-  GridCoordinate sizeMu = Mu->getSize ();
+  GridCoordinate1D sizeE = E->getSize ();
+  GridCoordinate1D sizeH = H->getSize ();
+  GridCoordinate1D sizeEps = Eps->getSize ();
+  GridCoordinate1D sizeMu = Mu->getSize ();
 
 #if defined (GRID_1D)
   ASSERT (sizeE.getX () == sizeH.getX ());

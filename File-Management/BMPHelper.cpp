@@ -1,3 +1,4 @@
+#include "Assert.h"
 #include "BMPHelper.h"
 
 /*
