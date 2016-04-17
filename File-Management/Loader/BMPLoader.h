@@ -2,44 +2,30 @@
 #define BMP_LOADER_H
 
 #include "Loader.h"
-#include "EasyBMP.h"
+#include "BMPHelper.h"
 
 // Grid loader from BMP files.
-class BMPLoader: public Loader
+template <class TGrid>
+class BMPLoader: public Loader<TGrid>
 {
   // Maximum positive value in grid.
   FieldPointValue maxValuePos;
   // Maximum negative value in grid.
   FieldPointValue maxValueNeg;
 
-#if defined (GRID_1D)
-  // Load one-dimensional grid.
-  void load1D (Grid& grid) const;
-#else /* GRID_1D */
-#if defined (GRID_2D)
-  // Load two-dimensional grid.
-  void load2D (Grid& grid) const;
-#else /* GRID_2D */
-#if defined (GRID_3D)
-  // Load three-dimensional grid.
-  void load3D (Grid& grid) const;
-#endif /* GRID_3D */
-#endif /* !GRID_2D */
-#endif /* !GRID_1D */
+  static BMPHelper BMPhelper;
 
-  // Return pixel with colors according to values.
-  FieldValue getValueFromPixel (const RGBApixel& pixel, const FieldValue& maxNeg,
-                                const FieldValue& max) const;
+private:
 
-  // Load flat grids: 1D and 2D.
-  void loadFlat (Grid& grid, const grid_iter& sx, const grid_iter& sy) const;
-
-  void loadFromFile (Grid& grid, const grid_iter& sx, const grid_iter& sy, GridFileType load_type) const;
+  static void loadFromFile (TGrid &grid, GridFileType load_type);
+  static void loadFromFile (TGrid &grid);
 
 public:
 
+  virtual ~BMPLoader () {}
+
   // Function to call for every grid type.
-  void loadGrid (Grid& grid) const override;
+  virtual void loadGrid (TGrid &grid) const override;
 
   // Setter and getter for maximum positive value.
   void setMaxValuePos (FieldPointValue& value)

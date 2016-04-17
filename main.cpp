@@ -2,7 +2,7 @@
 
 #include <mpi.h>
 
-#include "Grid.h"
+#include "Grid3D.h"
 #include "BMPDumper.h"
 #include "BMPLoader.h"
 #include "DATDumper.h"
@@ -23,10 +23,10 @@ int main (int argc, char** argv)
 #endif
 #endif
 
-  GridCoordinate overallSize (100);
+  GridCoordinate3D overallSize (100);
   //GridCoordinate size (100, 100);
-  GridCoordinate bufferLeft (10);
-  GridCoordinate bufferRight (10);
+  GridCoordinate3D bufferLeft (10);
+  GridCoordinate3D bufferRight (10);
 
 #if defined (PARALLEL_GRID)
   Grid Eps (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
@@ -36,15 +36,15 @@ int main (int argc, char** argv)
   Grid Hx (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
   Grid Hy (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
 #else
-  Grid Eps (overallSize, 0);
-  Grid Mu (overallSize, 0);
+  Grid3D Eps (overallSize, 0);
+  Grid3D Mu (overallSize, 0);
 
-  Grid Ez (overallSize, 0);
-  Grid Hx (overallSize, 0);
-  Grid Hy (overallSize, 0);
+  Grid3D Ez (overallSize, 0);
+  Grid3D Hx (overallSize, 0);
+  Grid3D Hy (overallSize, 0);
 #endif
 
-  GridCoordinate sizeTotal = Eps.getSize ();
+  GridCoordinate3D sizeTotal = Eps.getSize ();
 
   FieldValue lambda = 0.000003;
   FieldValue stepLambda = 20;
@@ -97,7 +97,7 @@ int main (int argc, char** argv)
         GridCoordinate pos (i, j);
 #endif
 #if defined (GRID_3D)
-        GridCoordinate pos (i, j, k);
+        GridCoordinate3D pos (i, j, k);
 #endif
 
         Eps.setFieldPointValue(eps, pos);

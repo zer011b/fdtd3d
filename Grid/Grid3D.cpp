@@ -1,194 +1,193 @@
-#include "Grid.h"
+#include "Grid3D.h"
+#include "Assert.h"
 
-#include <cmath>
+#include <cstdlib>
 
 extern const char* BufferPositionNames[];
 
-#ifdef PARALLEL_GRID
-#ifdef GRID_3D
+/**
+ * ======== Consructors and destructor ========
+ */
 
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-void
-Grid::NodeGridInit ()
+Grid3D::Grid3D (const GridCoordinate3D& s, uint32_t step) :
+  size (s),
+  gridValues (size.calculateTotalCoord ()),
+  timeStep (step)
 {
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  nodeGridSizeX = totalProcCount;
-  nodeGridSizeY = 1;
-  nodeGridSizeZ = 1;
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  nodeGridSizeX = 1;
-  nodeGridSizeY = totalProcCount;
-  nodeGridSizeZ = 1;
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
-  nodeGridSizeX = 1;
-  nodeGridSizeY = 1;
-  nodeGridSizeZ = totalProcCount;
-#endif
-
-#if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%dx%d.\n", processId,
-    nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ);
-#endif
-}
-
-GridCoordinate
-Grid::GridInit ()
-{
-  grid_coord c1;
-  grid_coord c2;
-  grid_coord c3;
-
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX ());
-  c2 = totalSize.getY ();
-  c3 = totalSize.getZ ();
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  c1 = totalSize.getX ();
-  CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY ());
-  c3 = totalSize.getZ ();
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
-  c1 = totalSize.getX ();
-  c2 = totalSize.getY ();
-  CalculateGridSizeForNode (c3, nodeGridSizeZ, hasF, totalSize.getZ ());
-#endif
-
-  return GridCoordinate (c1, c2, c3);
-}
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-void
-Grid::NodeGridInit ()
-{
-  if (totalProcCount < 4)
+  for (int i = 0; i < gridValues.size (); ++i)
   {
-    ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
+    gridValues[i] = nullptr;
   }
 
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  FieldValue overall1 = (FieldValue) totalSize.getX ();
-  FieldValue overall2 = (FieldValue) totalSize.getY ();
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  FieldValue overall1 = (FieldValue) totalSize.getY ();
-  FieldValue overall2 = (FieldValue) totalSize.getZ ();
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  FieldValue overall1 = (FieldValue) totalSize.getX ();
-  FieldValue overall2 = (FieldValue) totalSize.getZ ();
-#endif
-
-  int left;
-  int nodeGridSizeTmp1;
-  int nodeGridSizeTmp2;
-  NodeGridInitInner (overall1, overall2, nodeGridSizeTmp1, nodeGridSizeTmp2, left);
-
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  nodeGridSizeX = nodeGridSizeTmp1;
-  nodeGridSizeY = nodeGridSizeTmp2;
-  nodeGridSizeZ = 1;
-
-  nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  nodeGridSizeX = 1;
-  nodeGridSizeY = nodeGridSizeTmp1;
-  nodeGridSizeZ = nodeGridSizeTmp2;
-
-  nodeGridSizeYZ = nodeGridSizeY * nodeGridSizeZ;
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  nodeGridSizeX = nodeGridSizeTmp1;
-  nodeGridSizeY = 1;
-  nodeGridSizeZ = nodeGridSizeTmp2;
-
-  nodeGridSizeXZ = nodeGridSizeX * nodeGridSizeZ;
-#endif
-
 #if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n", processId,
-    nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ, left);
+  printf ("New grid with raw size: %lu.\n", gridValues.size ());
 #endif
 }
 
-GridCoordinate
-Grid::GridInit ()
+Grid3D::~Grid3D ()
 {
-  grid_coord c1;
-  grid_coord c2;
-  grid_coord c3;
-
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
-                            c2, nodeGridSizeY, hasU, totalSize.getY ());
-  c3 = totalSize.getZ ();
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  c1 = totalSize.getX ();
-  CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY (),
-                            c3, nodeGridSizeZ, hasF, totalSize.getZ ());
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  c2 = totalSize.getY ();
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
-                            c3, nodeGridSizeZ, hasF, totalSize.getZ ());
-#endif
-
-  return GridCoordinate (c1, c2, c3);
-}
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-void
-Grid::NodeGridInit ()
-{
-  if (totalProcCount < 8)
+  for (FieldPointValue* i_p : gridValues)
   {
-    ASSERT_MESSAGE ("Unsupported number of nodes for 3D parallel buffers. Use 2D or 1D ones.");
+    delete i_p;
+  }
+}
+
+/**
+ * ======== Static methods ========
+ */
+
+bool
+Grid3D::isLegitIndex (const GridCoordinate3D& position,
+                      const GridCoordinate3D& sizeCoord)
+{
+  const grid_coord& px = position.getX ();
+  const grid_coord& sx = sizeCoord.getX ();
+
+  const grid_coord& py = position.getY ();
+  const grid_coord& sy = sizeCoord.getY ();
+
+  const grid_coord& pz = position.getZ ();
+  const grid_coord& sz = sizeCoord.getZ ();
+
+  if (px < 0 || px >= sx)
+  {
+    return false;
+  }
+  else if (py < 0 || py >= sy)
+  {
+    return false;
+  }
+  else if (pz < 0 || pz >= sz)
+  {
+    return false;
   }
 
-  FieldValue overall1 = (FieldValue) totalSize.getX ();
-  FieldValue overall2 = (FieldValue) totalSize.getY ();
-  FieldValue overall3 = (FieldValue) totalSize.getZ ();
-
-  int left;
-  int nodeGridSizeTmp1;
-  int nodeGridSizeTmp2;
-  int nodeGridSizeTmp3;
-  NodeGridInitInner (overall1, overall2, overall3, nodeGridSizeTmp1, nodeGridSizeTmp2, nodeGridSizeTmp3, left);
-
-  nodeGridSizeX = nodeGridSizeTmp1;
-  nodeGridSizeY = nodeGridSizeTmp2;
-  nodeGridSizeZ = nodeGridSizeTmp3;
-
-  nodeGridSizeXYZ = nodeGridSizeX * nodeGridSizeY * nodeGridSizeZ;
-  nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
-
-#if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n", processId,
-    nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ, left);
-  //printf ("Grid size for #%d process: %dx%dx%d.\n", processId, c1, c2, c3);
-#endif
+  return true;
 }
 
-GridCoordinate
-Grid::GridInit ()
+grid_iter
+Grid3D::calculateIndexFromPosition (const GridCoordinate3D& position,
+                                    const GridCoordinate3D& sizeCoord)
 {
-  grid_coord c1;
-  grid_coord c2;
-  grid_coord c3;
+  const grid_coord& px = position.getX ();
 
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
-                            c2, nodeGridSizeY, hasU, totalSize.getY (),
-                            c3, nodeGridSizeZ, hasF, totalSize.getZ ());
+  const grid_coord& py = position.getY ();
+  const grid_coord& sy = sizeCoord.getY ();
 
-  return GridCoordinate (c1, c2, c3);
+  const grid_coord& pz = position.getZ ();
+  const grid_coord& sz = sizeCoord.getZ ();
+
+  return px * sy * sz + py * sz + pz;
 }
-#endif
 
-#endif /* PARALLEL_GRID */
-#endif /* GRID_3D */
+/**
+ * ======== Private methods ========
+ */
+
+VectorFieldPointValues&
+Grid3D::getValues ()
+{
+  return gridValues;
+}
+
+void
+Grid3D::shiftInTime ()
+{
+  for (FieldPointValue* i_p : getValues ())
+  {
+    i_p->shiftInTime ();
+  }
+}
+
+bool
+Grid3D::isLegitIndex (const GridCoordinate3D& position) const
+{
+  return isLegitIndex (position, size);
+}
+
+grid_iter
+Grid3D::calculateIndexFromPosition (const GridCoordinate3D& position) const
+{
+  return calculateIndexFromPosition (position, size);
+}
+
+/**
+ * ======== Public methods ========
+ */
+
+const GridCoordinate3D&
+Grid3D::getSize () const
+{
+  return size;
+}
+
+GridCoordinate3D
+Grid3D::calculatePositionFromIndex (grid_iter index) const
+{
+  const grid_coord& sy = size.getY ();
+  const grid_coord& sz = size.getZ ();
+
+  grid_coord tmp = sy * sz;
+  grid_coord x = index / tmp;
+  index %= tmp;
+  grid_coord y = index / sz;
+  index %= sz;
+  grid_coord z = index;
+  return GridCoordinate3D (x, y, z);
+}
+
+void
+Grid3D::setFieldPointValue (FieldPointValue* value,
+                            const GridCoordinate3D& position)
+{
+  ASSERT (isLegitIndex (position));
+  ASSERT (value);
+
+  grid_iter coord = calculateIndexFromPosition (position);
+
+  delete gridValues[coord];
+
+  gridValues[coord] = value;
+}
+
+void
+Grid3D::setFieldPointValueCurrent (const FieldValue& value,
+                                   const GridCoordinate3D& position)
+{
+  ASSERT (isLegitIndex (position));
+
+  grid_iter coord = calculateIndexFromPosition (position);
+
+  gridValues[coord]->setCurValue (value);
+}
+
+FieldPointValue*
+Grid3D::getFieldPointValue (const GridCoordinate3D& position)
+{
+  ASSERT (isLegitIndex (position));
+
+  grid_iter coord = calculateIndexFromPosition (position);
+  FieldPointValue* value = gridValues[coord];
+
+  ASSERT (value);
+
+  return value;
+}
+
+FieldPointValue*
+Grid3D::getFieldPointValue (grid_iter coord)
+{
+  ASSERT (coord >= 0 && coord < size.calculateTotalCoord ());
+
+  FieldPointValue* value = gridValues[coord];
+
+  ASSERT (value);
+
+  return value;
+}
+
+void
+Grid3D::nextTimeStep ()
+{
+  shiftInTime ();
+}

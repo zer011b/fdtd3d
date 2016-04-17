@@ -1,10 +1,13 @@
 #ifndef COMMONS_H
 #define COMMONS_H
 
-#include <string>
-
-#include "Grid.h"
 #include "Assert.h"
+#include "GridTypes.h"
+#include "Grid1D.h"
+#include "Grid2D.h"
+#include "Grid3D.h"
+
+#include <string>
 
 // Type of save/load from file.
 // CURRENT: save/load only current layer.
@@ -51,11 +54,11 @@ protected:
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
   }
 
-public:
-
   GridFileManager () : step (0), type (ALL)
   {
   }
+
+public:
 
   // Initialize dumper with time step number and save/load type.
   void init (const grid_iter& timeStep, GridFileType newType)

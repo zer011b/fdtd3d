@@ -3,8 +3,9 @@
 
 #include "DATDumper.h"
 
+template<>
 void
-DATDumper::writeToFile (Grid& grid, GridFileType type) const
+DATDumper<TGrid>::writeToFile (TGrid& grid, GridFileType type) const
 {
   std::ofstream file;
   switch (type)
@@ -78,8 +79,9 @@ DATDumper::writeToFile (Grid& grid, GridFileType type) const
   file.close();
 }
 
+template<>
 void
-DATDumper::dumpGrid (Grid& grid) const
+DATDumper<TGrid>::dumpGrid (TGrid& grid) const
 {
   const GridCoordinate& size = grid.getSize ();
   std::cout << "Saving grid to binary. Size: " << size.calculateTotalCoord () << ". " << std::endl;

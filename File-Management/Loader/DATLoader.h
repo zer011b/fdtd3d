@@ -4,14 +4,15 @@
 #include "Loader.h"
 
 // Grid loader from binary files.
-class DATLoader: public Loader
+template <class TGrid>
+class DATLoader: public Loader<TGrid>
 {
-  void loadFromFile (Grid& grid, GridFileType type) const;
+  void loadFromFile (TGrid& grid, GridFileType type) const;
 
 public:
 
   // Function to call for every grid type.
-  void loadGrid (Grid& grid) const override;
+  void loadGrid (TGrid& grid) const override;
 };
 
 #endif /* DAT_LOADER_H */

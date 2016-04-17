@@ -3,9 +3,9 @@
 
 #include "DATLoader.h"
 
-
+template<>
 void
-DATLoader::loadFromFile (Grid& grid, GridFileType type) const
+DATLoader<TGrid>::loadFromFile (TGrid& grid, GridFileType type) const
 {
   std::ifstream file;
   switch (type)
@@ -86,8 +86,9 @@ DATLoader::loadFromFile (Grid& grid, GridFileType type) const
   file.close();
 }
 
+template<>
 void
-DATLoader::loadGrid (Grid& grid) const
+DATLoader<TGrid>::loadGrid (TGrid& grid) const
 {
   const GridCoordinate& size = grid.getSize ();
   std::cout << "Load grid from binary. Size: " << size.calculateTotalCoord () << ". " << std::endl;

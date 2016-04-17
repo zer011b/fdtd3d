@@ -1,83 +1,180 @@
-#include "Grid.h"
+#include "Grid2D.h"
+#include "Assert.h"
+
+#include <cstdlib>
 
 extern const char* BufferPositionNames[];
 
-#ifdef GRID_2D
-#ifdef PARALLEL_GRID
+/**
+ * ======== Consructors and destructor ========
+ */
 
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
-void
-Grid::NodeGridInit ()
+Grid2D::Grid2D (const GridCoordinate2D& s, uint32_t step) :
+  size (s),
+  gridValues (size.calculateTotalCoord ()),
+  timeStep (step)
 {
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  nodeGridSizeX = totalProcCount;
-  nodeGridSizeY = 1;
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  nodeGridSizeX = 1;
-  nodeGridSizeY = totalProcCount;
-#endif
-
-#if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%d.\n", processId,
-    nodeGridSizeX, nodeGridSizeY);
-#endif
-}
-
-GridCoordinate
-Grid::GridInit ()
-{
-  grid_coord c1;
-  grid_coord c2;
-
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX ());
-  c2 = totalSize.getY ();
-#endif
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  c1 = totalSize.getX ();
-  CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY ());
-#endif
-
-  return GridCoordinate (c1, c2);
-}
-#endif
-
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-void
-Grid::NodeGridInit ()
-{
-  if (totalProcCount < 4)
+  for (int i = 0; i < gridValues.size (); ++i)
   {
-    ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
+    gridValues[i] = nullptr;
   }
 
-  FieldValue overall1 = (FieldValue) totalSize.getX ();
-  FieldValue overall2 = (FieldValue) totalSize.getY ();
-
-  int left;
-  NodeGridInitInner (overall1, overall2, nodeGridSizeX, nodeGridSizeY, left);
-
-  nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
-
 #if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%d. %d node(s) unused.\n", processId,
-    nodeGridSizeX, nodeGridSizeY, left);
+  printf ("New grid with raw size: %lu.\n", gridValues.size ());
 #endif
 }
 
-GridCoordinate
-Grid::GridInit ()
+Grid2D::~Grid2D ()
 {
-  grid_coord c1;
-  grid_coord c2;
-
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
-                            c2, nodeGridSizeY, hasU, totalSize.getY ());
-
-  return GridCoordinate (c1, c2);
+  for (FieldPointValue* i_p : gridValues)
+  {
+    delete i_p;
+  }
 }
-#endif
 
-#endif /* PARALLEL_GRID */
-#endif /* GRID_2D */
+/**
+ * ======== Static methods ========
+ */
+
+bool
+Grid2D::isLegitIndex (const GridCoordinate2D& position,
+                      const GridCoordinate2D& sizeCoord)
+{
+  const grid_coord& px = position.getX ();
+  const grid_coord& sx = sizeCoord.getX ();
+
+  const grid_coord& py = position.getY ();
+  const grid_coord& sy = sizeCoord.getY ();
+
+  if (px < 0 || px >= sx)
+  {
+    return false;
+  }
+  else if (py < 0 || py >= sy)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+grid_iter
+Grid2D::calculateIndexFromPosition (const GridCoordinate2D& position,
+                                    const GridCoordinate2D& sizeCoord)
+{
+  const grid_coord& px = position.getX ();
+
+  const grid_coord& py = position.getY ();
+  const grid_coord& sy = sizeCoord.getY ();
+
+  return px * sy + py;
+}
+
+/**
+ * ======== Private methods ========
+ */
+
+VectorFieldPointValues&
+Grid2D::getValues ()
+{
+  return gridValues;
+}
+
+void
+Grid2D::shiftInTime ()
+{
+  for (FieldPointValue* i_p : getValues ())
+  {
+    i_p->shiftInTime ();
+  }
+}
+
+bool
+Grid2D::isLegitIndex (const GridCoordinate2D& position) const
+{
+  return isLegitIndex (position, size);
+}
+
+grid_iter
+Grid2D::calculateIndexFromPosition (const GridCoordinate2D& position) const
+{
+  return calculateIndexFromPosition (position, size);
+}
+
+/**
+ * ======== Public methods ========
+ */
+
+const GridCoordinate2D&
+Grid2D::getSize () const
+{
+  return size;
+}
+
+GridCoordinate2D
+Grid2D::calculatePositionFromIndex (grid_iter index) const
+{
+  const grid_coord& sx = size.getX ();
+  const grid_coord& sy = size.getY ();
+
+  grid_coord x = index / sy;
+  index %= sy;
+  grid_coord y = index;
+  return GridCoordinate2D (x, y);
+}
+
+void
+Grid2D::setFieldPointValue (FieldPointValue* value,
+                            const GridCoordinate2D& position)
+{
+  ASSERT (isLegitIndex (position));
+  ASSERT (value);
+
+  grid_iter coord = calculateIndexFromPosition (position);
+
+  delete gridValues[coord];
+
+  gridValues[coord] = value;
+}
+
+void
+Grid2D::setFieldPointValueCurrent (const FieldValue& value,
+                                   const GridCoordinate2D& position)
+{
+  ASSERT (isLegitIndex (position));
+
+  grid_iter coord = calculateIndexFromPosition (position);
+
+  gridValues[coord]->setCurValue (value);
+}
+
+FieldPointValue*
+Grid2D::getFieldPointValue (const GridCoordinate2D& position)
+{
+  ASSERT (isLegitIndex (position));
+
+  grid_iter coord = calculateIndexFromPosition (position);
+  FieldPointValue* value = gridValues[coord];
+
+  ASSERT (value);
+
+  return value;
+}
+
+FieldPointValue*
+Grid2D::getFieldPointValue (grid_iter coord)
+{
+  ASSERT (coord >= 0 && coord < size.calculateTotalCoord ());
+
+  FieldPointValue* value = gridValues[coord];
+
+  ASSERT (value);
+
+  return value;
+}
+
+void
+Grid2D::nextTimeStep ()
+{
+  shiftInTime ();
+}

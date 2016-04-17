@@ -4,14 +4,15 @@
 #include "Dumper.h"
 
 // Grid saver in binary files.
-class DATDumper: public Dumper
+template <class TGrid>
+class DATDumper: public Dumper<TGrid>
 {
-  void writeToFile (Grid& grid, GridFileType type) const;
+  void writeToFile (TGrid& grid, GridFileType type) const;
 
 public:
 
   // Function to call for every grid type.
-  void dumpGrid (Grid& grid) const override;
+  void dumpGrid (TGrid& grid) const override;
 };
 
 #endif /* DAT_DUMPER_H */

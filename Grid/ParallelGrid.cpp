@@ -1,8 +1,19 @@
 #include "Grid.h"
 
-extern const char* BufferPositionNames[];
-
 #if defined (PARALLEL_GRID)
+
+#ifdef PRINT_MESSAGE
+
+// Names of buffers of parallel grid for debug purposes.
+const char* BufferPositionNames[] =
+{
+#define FUNCTION(X) #X,
+#include "BufferPosition.inc.h"
+#undef FUNCTION
+};
+
+#endif /* PRINT_MESSAGE */
+
 void
 Grid::SendReceiveCoordinatesInit ()
 {

@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#if defined (PARALLEL_GRID)
+
 #ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
 
 void
@@ -96,4 +98,5 @@ Grid::NodeGridInitInner (FieldValue& overall1, FieldValue& overall2, FieldValue&
   ASSERT (nodeGridSize1 > 1 && nodeGridSize2 > 1 && nodeGridSize3 > 1);
 }
 
+#endif
 #endif
