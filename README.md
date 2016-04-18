@@ -1,5 +1,5 @@
-[![Build](https://img.shields.io/travis/rust-lang/rust.svg)](https://github.com/zer011b/fdtd3d)
-[![Parallel grid](https://img.shields.io/badge/Parallel%20Grid-1D%20and%202D-blue.svg)](https://github.com/zer011b/fdtd3d)
+[![Build](https://img.shields.io/wercker/ci/wercker/docs.svg)](https://github.com/zer011b/fdtd3d)
+[![Parallel grid](https://img.shields.io/badge/Parallel%20Grid-1D%2C%202D%2C%203D-blue.svg)](https://github.com/zer011b/fdtd3d)
 [![FDTD mode](https://img.shields.io/badge/FDTD-Ez%20mode%20only-red.svg)](https://github.com/zer011b/fdtd3d)
 
 # fdtd3d
@@ -50,7 +50,7 @@ Example of build with scripts. This will build 2D parallel grid with x buffer, d
 -DCMAKE_BUILD_TYPE - build type (Debug or Release)
 -DVALUE_TYPE - use float (f), double (d) or long double (ld)
 -DTIME_STEPS - number of steps in time (1 or 2)
--DGRID_DIMENSION - number of dimensions in grid (1, 2 or 3)
+-DGRID_DIMENSION - number of dimensions in parallel grid (1, 2 or 3)
 -DPRINT_MESSAGE - print output (ON or OFF)
 -DPARALLEL_GRID - use parallel grid or not (ON or OFF)
 -DPARALLEL_BUFFER_DIMENSION - dimension of parallel buffers, i.e. actual coordinate systems (x, y, z, xy, yz, xz, xyz)
@@ -63,9 +63,9 @@ DOUBLE_VALUES - use double
 LONG_DOUBLE_VALUES - use long double
 ONE_TIME_STEP - one previous time step is saved
 TWO_TIME_STEPS - two previous time steps are saved
-GRID_1D - one-dimensional solver
-GRID_2D - two-dimensional solver
-GRID_3D - three-dimensional solver
+GRID_1D - one-dimensional parallel solver
+GRID_2D - two-dimensional parallel solver
+GRID_3D - three-dimensional parallel solver
 PRINT_MESSAGE - print output (TRUE of FALSE)
 PARALLEL_GRID - use parallel grid or not (TRUE or FALSE)
 PARALLEL_BUFFER_DIMENSION_1D_X - one dimensional parallel buffer
