@@ -2,7 +2,12 @@
 
 #include <mpi.h>
 
+#if defined (PARALLEL_GRID)
+#include "ParallelGrid.h"
+#else
 #include "Grid.h"
+#endif
+
 #include "BMPDumper.h"
 #include "BMPLoader.h"
 #include "DATDumper.h"
@@ -29,12 +34,12 @@ int main (int argc, char** argv)
   GridCoordinate3D bufferRight (10);
 
 #if defined (PARALLEL_GRID)
-  Grid Eps (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
-  Grid Mu (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
+  ParallelGrid Eps (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
+  ParallelGrid Mu (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
 
-  Grid Ez (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
-  Grid Hx (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
-  Grid Hy (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
+  ParallelGrid Ez (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
+  ParallelGrid Hx (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
+  ParallelGrid Hy (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
 #else
   Grid<GridCoordinate3D> Eps (overallSize, 0);
   Grid<GridCoordinate3D> Mu (overallSize, 0);
@@ -54,18 +59,18 @@ int main (int argc, char** argv)
   FieldValue eps0 = 0.0000000000088541878176203892;
   FieldValue mu0 = 0.0000012566370614359173;
 
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+//#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   for (int i = 0; i < sizeTotal.getX (); ++i)
   {
-#endif
-#if defined (GRID_2D) || defined (GRID_3D)
+//#endif
+//#if defined (GRID_2D) || defined (GRID_3D)
     for (int j = 0; j < sizeTotal.getY (); ++j)
     {
-#endif
-#if defined (GRID_3D)
+//#endif
+//#if defined (GRID_3D)
       for (int k = 0; k < sizeTotal.getZ (); ++k)
       {
-#endif
+//#endif
 
 #if defined (TWO_TIME_STEPS)
         FieldPointValue* eps = new FieldPointValue (1*eps0, 1*eps0, 1*eps0);
@@ -91,10 +96,10 @@ int main (int argc, char** argv)
 #endif
 
 #if defined (GRID_1D)
-        GridCoordinate pos (i);
+        GridCoordinate1D pos (i);
 #endif
 #if defined (GRID_2D)
-        GridCoordinate pos (i, j);
+        GridCoordinate2D pos (i, j);
 #endif
 #if defined (GRID_3D)
         GridCoordinate3D pos (i, j, k);
@@ -106,15 +111,15 @@ int main (int argc, char** argv)
         Ez.setFieldPointValue(valE, pos);
         Hx.setFieldPointValue(valHx, pos);
         Hy.setFieldPointValue(valHy, pos);
-#if defined (GRID_3D)
+//#if defined (GRID_3D)
       }
-#endif
-#if defined (GRID_2D) || defined (GRID_3D)
+//#endif
+//#if defined (GRID_2D) || defined (GRID_3D)
     }
-#endif
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+//#endif
+//#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   }
-#endif
+//#endif
 
 #if defined (PARALLEL_GRID)
   MPI_Barrier (MPI_COMM_WORLD);

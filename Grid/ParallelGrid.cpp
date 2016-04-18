@@ -1,4 +1,4 @@
-#include "Grid.h"
+#include "ParallelGrid.h"
 
 #if defined (PARALLEL_GRID)
 
@@ -14,8 +14,61 @@ const char* BufferPositionNames[] =
 
 #endif /* PRINT_MESSAGE */
 
+ParallelGrid::ParallelGrid (const ParallelGridCoordinate& totSize,
+              const ParallelGridCoordinate& bufSizeL, const ParallelGridCoordinate& bufSizeR,
+              const int process, const int totalProc, uint32_t step) :
+  ParallelGridBase (step),
+  totalSize (totSize),
+  bufferSizeLeft (bufSizeL),
+  bufferSizeRight (bufSizeR),
+  processId (process),
+  totalProcCount (totalProc)
+{
+  ASSERT (bufferSizeLeft == bufferSizeRight);
+
+#if defined (ONE_TIME_STEP)
+  grid_iter numTimeStepsInBuild = 2;
+#endif
+#if defined (TWO_TIME_STEPS)
+  grid_iter numTimeStepsInBuild = 3;
+#endif
+
+  oppositeDirections.resize (BUFFER_COUNT);
+  for (int i = 0; i < BUFFER_COUNT; ++i)
+  {
+    oppositeDirections[i] = getOpposite ((BufferPosition) i);
+  }
+
+  sendStart.resize (BUFFER_COUNT);
+  sendEnd.resize (BUFFER_COUNT);
+  recvStart.resize (BUFFER_COUNT);
+  recvEnd.resize (BUFFER_COUNT);
+
+  directions.resize (BUFFER_COUNT);
+
+  buffersSend.resize (BUFFER_COUNT);
+  buffersReceive.resize (BUFFER_COUNT);
+
+  // Call specific constructor.
+  ParallelGridConstructor (numTimeStepsInBuild);
+
+  doShare.resize (BUFFER_COUNT);
+  for (int i = 0; i < BUFFER_COUNT; ++i)
+  {
+    getShare ((BufferPosition) i, doShare[i]);
+  }
+
+  SendReceiveCoordinatesInit ();
+
+  gridValues.resize (size.calculateTotalCoord ());
+
+#if PRINT_MESSAGE
+  printf ("New grid for proc: %d (of %d) with raw size: %lu.\n", process, totalProcCount, gridValues.size ());
+#endif
+}
+
 void
-Grid::SendReceiveCoordinatesInit ()
+ParallelGrid::SendReceiveCoordinatesInit ()
 {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
@@ -64,9 +117,9 @@ Grid::SendReceiveCoordinatesInit ()
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 void
-Grid::SendReceiveCoordinatesInit1D_X ()
+ParallelGrid::SendReceiveCoordinatesInit1D_X ()
 {
-  sendStart[LEFT] = GridCoordinate (
+  sendStart[LEFT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -78,7 +131,7 @@ Grid::SendReceiveCoordinatesInit1D_X ()
 #endif
   );
 
-  sendEnd[LEFT] = GridCoordinate (
+  sendEnd[LEFT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     2 * bufferSizeLeft.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -90,7 +143,7 @@ Grid::SendReceiveCoordinatesInit1D_X ()
 #endif
   );
 
-  recvStart[LEFT] = GridCoordinate (
+  recvStart[LEFT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -102,7 +155,7 @@ Grid::SendReceiveCoordinatesInit1D_X ()
 #endif
   );
 
-  recvEnd[LEFT] = GridCoordinate (
+  recvEnd[LEFT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -114,7 +167,7 @@ Grid::SendReceiveCoordinatesInit1D_X ()
 #endif
   );
 
-  sendStart[RIGHT] = GridCoordinate (
+  sendStart[RIGHT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX () - 2 * bufferSizeRight.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -126,7 +179,7 @@ Grid::SendReceiveCoordinatesInit1D_X ()
 #endif
   );
 
-  sendEnd[RIGHT] = GridCoordinate (
+  sendEnd[RIGHT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -138,7 +191,7 @@ Grid::SendReceiveCoordinatesInit1D_X ()
 #endif
   );
 
-  recvStart[RIGHT] = GridCoordinate (
+  recvStart[RIGHT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     0
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -150,7 +203,7 @@ Grid::SendReceiveCoordinatesInit1D_X ()
 #endif
   );
 
-  recvEnd[RIGHT] = GridCoordinate (
+  recvEnd[RIGHT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -170,9 +223,9 @@ Grid::SendReceiveCoordinatesInit1D_X ()
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 void
-Grid::SendReceiveCoordinatesInit1D_Y ()
+ParallelGrid::SendReceiveCoordinatesInit1D_Y ()
 {
-  sendStart[DOWN] = GridCoordinate (
+  sendStart[DOWN] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -184,7 +237,7 @@ Grid::SendReceiveCoordinatesInit1D_Y ()
 #endif
   );
 
-  sendEnd[DOWN] = GridCoordinate (
+  sendEnd[DOWN] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -196,7 +249,7 @@ Grid::SendReceiveCoordinatesInit1D_Y ()
 #endif
   );
 
-  recvStart[DOWN] = GridCoordinate (
+  recvStart[DOWN] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -208,7 +261,7 @@ Grid::SendReceiveCoordinatesInit1D_Y ()
 #endif
   );
 
-  recvEnd[DOWN] = GridCoordinate (
+  recvEnd[DOWN] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -220,7 +273,7 @@ Grid::SendReceiveCoordinatesInit1D_Y ()
 #endif
   );
 
-  sendStart[UP] = GridCoordinate (
+  sendStart[UP] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -232,7 +285,7 @@ Grid::SendReceiveCoordinatesInit1D_Y ()
 #endif
   );
 
-  sendEnd[UP] = GridCoordinate (
+  sendEnd[UP] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -244,7 +297,7 @@ Grid::SendReceiveCoordinatesInit1D_Y ()
 #endif
   );
 
-  recvStart[UP] = GridCoordinate (
+  recvStart[UP] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -256,7 +309,7 @@ Grid::SendReceiveCoordinatesInit1D_Y ()
 #endif
   );
 
-  recvEnd[UP] = GridCoordinate (
+  recvEnd[UP] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -276,9 +329,9 @@ Grid::SendReceiveCoordinatesInit1D_Y ()
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 void
-Grid::SendReceiveCoordinatesInit1D_Z ()
+ParallelGrid::SendReceiveCoordinatesInit1D_Z ()
 {
-  sendStart[BACK] = GridCoordinate (
+  sendStart[BACK] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -290,7 +343,7 @@ Grid::SendReceiveCoordinatesInit1D_Z ()
 #endif
   );
 
-  sendEnd[BACK] = GridCoordinate (
+  sendEnd[BACK] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -302,7 +355,7 @@ Grid::SendReceiveCoordinatesInit1D_Z ()
 #endif
   );
 
-  recvStart[BACK] = GridCoordinate (
+  recvStart[BACK] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -314,7 +367,7 @@ Grid::SendReceiveCoordinatesInit1D_Z ()
 #endif
   );
 
-  recvEnd[BACK] = GridCoordinate (
+  recvEnd[BACK] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -326,7 +379,7 @@ Grid::SendReceiveCoordinatesInit1D_Z ()
 #endif
   );
 
-  sendStart[FRONT] = GridCoordinate (
+  sendStart[FRONT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -338,7 +391,7 @@ Grid::SendReceiveCoordinatesInit1D_Z ()
 #endif
   );
 
-  sendEnd[FRONT] = GridCoordinate (
+  sendEnd[FRONT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -350,7 +403,7 @@ Grid::SendReceiveCoordinatesInit1D_Z ()
 #endif
   );
 
-  recvStart[FRONT] = GridCoordinate (
+  recvStart[FRONT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -362,7 +415,7 @@ Grid::SendReceiveCoordinatesInit1D_Z ()
 #endif
   );
 
-  recvEnd[FRONT] = GridCoordinate (
+  recvEnd[FRONT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -380,9 +433,9 @@ Grid::SendReceiveCoordinatesInit1D_Z ()
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 void
-Grid::SendReceiveCoordinatesInit2D_XY ()
+ParallelGrid::SendReceiveCoordinatesInit2D_XY ()
 {
-  sendStart[LEFT_DOWN] = GridCoordinate (
+  sendStart[LEFT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , bufferSizeLeft.getY ()
@@ -392,7 +445,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  sendEnd[LEFT_DOWN] = GridCoordinate (
+  sendEnd[LEFT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     2 * bufferSizeLeft.getX ()
     , 2 * bufferSizeLeft.getY ()
@@ -402,7 +455,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  recvStart[LEFT_DOWN] = GridCoordinate (
+  recvStart[LEFT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -412,7 +465,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  recvEnd[LEFT_DOWN] = GridCoordinate (
+  recvEnd[LEFT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX ()
     , size.getY ()
@@ -422,7 +475,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  sendStart[LEFT_UP] = GridCoordinate (
+  sendStart[LEFT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY () - 2 * bufferSizeRight.getY ()
@@ -432,7 +485,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  sendEnd[LEFT_UP] = GridCoordinate (
+  sendEnd[LEFT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     2 * bufferSizeLeft.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -442,7 +495,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  recvStart[LEFT_UP] = GridCoordinate (
+  recvStart[LEFT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , 0
@@ -452,7 +505,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  recvEnd[LEFT_UP] = GridCoordinate (
+  recvEnd[LEFT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX ()
     , bufferSizeLeft.getY ()
@@ -462,7 +515,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  sendStart[RIGHT_DOWN] = GridCoordinate (
+  sendStart[RIGHT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - 2 * bufferSizeRight.getX ()
     , bufferSizeLeft.getY ()
@@ -472,7 +525,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  sendEnd[RIGHT_DOWN] = GridCoordinate (
+  sendEnd[RIGHT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , 2 * bufferSizeLeft.getY ()
@@ -482,7 +535,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  recvStart[RIGHT_DOWN] = GridCoordinate (
+  recvStart[RIGHT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     0
     , size.getY () - bufferSizeRight.getY ()
@@ -492,7 +545,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  recvEnd[RIGHT_DOWN] = GridCoordinate (
+  recvEnd[RIGHT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY ()
@@ -502,7 +555,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  sendStart[RIGHT_UP] = GridCoordinate (
+  sendStart[RIGHT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - 2 * bufferSizeRight.getX ()
     , size.getY () - 2 * bufferSizeRight.getY ()
@@ -512,7 +565,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  sendEnd[RIGHT_UP] = GridCoordinate (
+  sendEnd[RIGHT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -522,7 +575,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  recvStart[RIGHT_UP] = GridCoordinate (
+  recvStart[RIGHT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     0
     , 0
@@ -532,7 +585,7 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #endif
   );
 
-  recvEnd[RIGHT_UP] = GridCoordinate (
+  recvEnd[RIGHT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , bufferSizeLeft.getY ()
@@ -548,9 +601,9 @@ Grid::SendReceiveCoordinatesInit2D_XY ()
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 void
-Grid::SendReceiveCoordinatesInit2D_YZ ()
+ParallelGrid::SendReceiveCoordinatesInit2D_YZ ()
 {
-  sendStart[DOWN_BACK] = GridCoordinate (
+  sendStart[DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , bufferSizeLeft.getY ()
@@ -560,7 +613,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  sendEnd[DOWN_BACK] = GridCoordinate (
+  sendEnd[DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , 2 * bufferSizeLeft.getY ()
@@ -570,7 +623,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  recvStart[DOWN_BACK] = GridCoordinate (
+  recvStart[DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -580,7 +633,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  recvEnd[DOWN_BACK] = GridCoordinate (
+  recvEnd[DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY ()
@@ -590,7 +643,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  sendStart[DOWN_FRONT] = GridCoordinate (
+  sendStart[DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , bufferSizeRight.getY ()
@@ -600,7 +653,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  sendEnd[DOWN_FRONT] = GridCoordinate (
+  sendEnd[DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , 2 * bufferSizeRight.getY ()
@@ -610,7 +663,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  recvStart[DOWN_FRONT] = GridCoordinate (
+  recvStart[DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -620,7 +673,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  recvEnd[DOWN_FRONT] = GridCoordinate (
+  recvEnd[DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY ()
@@ -630,7 +683,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  sendStart[UP_BACK] = GridCoordinate (
+  sendStart[UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY () - 2 * bufferSizeRight.getY ()
@@ -640,7 +693,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  sendEnd[UP_BACK] = GridCoordinate (
+  sendEnd[UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -650,7 +703,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  recvStart[UP_BACK] = GridCoordinate (
+  recvStart[UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , 0
@@ -660,7 +713,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  recvEnd[UP_BACK] = GridCoordinate (
+  recvEnd[UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , bufferSizeLeft.getY ()
@@ -670,7 +723,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  sendStart[UP_FRONT] = GridCoordinate (
+  sendStart[UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY () - 2 * bufferSizeRight.getY ()
@@ -680,7 +733,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  sendEnd[UP_FRONT] = GridCoordinate (
+  sendEnd[UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -690,7 +743,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  recvStart[UP_FRONT] = GridCoordinate (
+  recvStart[UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , 0
@@ -700,7 +753,7 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #endif
   );
 
-  recvEnd[UP_FRONT] = GridCoordinate (
+  recvEnd[UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , bufferSizeLeft.getY ()
@@ -716,9 +769,9 @@ Grid::SendReceiveCoordinatesInit2D_YZ ()
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 void
-Grid::SendReceiveCoordinatesInit2D_XZ ()
+ParallelGrid::SendReceiveCoordinatesInit2D_XZ ()
 {
-  sendStart[LEFT_BACK] = GridCoordinate (
+  sendStart[LEFT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , bufferSizeLeft.getY ()
@@ -728,7 +781,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  sendEnd[LEFT_BACK] = GridCoordinate (
+  sendEnd[LEFT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     2 * bufferSizeLeft.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -738,7 +791,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  recvStart[LEFT_BACK] = GridCoordinate (
+  recvStart[LEFT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , bufferSizeLeft.getY ()
@@ -748,7 +801,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  recvEnd[LEFT_BACK] = GridCoordinate (
+  recvEnd[LEFT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -758,7 +811,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  sendStart[LEFT_FRONT] = GridCoordinate (
+  sendStart[LEFT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , bufferSizeRight.getY ()
@@ -768,7 +821,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  sendEnd[LEFT_FRONT] = GridCoordinate (
+  sendEnd[LEFT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     2 * bufferSizeLeft.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -778,7 +831,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  recvStart[LEFT_FRONT] = GridCoordinate (
+  recvStart[LEFT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , bufferSizeLeft.getY ()
@@ -788,7 +841,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  recvEnd[LEFT_FRONT] = GridCoordinate (
+  recvEnd[LEFT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -798,7 +851,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  sendStart[RIGHT_BACK] = GridCoordinate (
+  sendStart[RIGHT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - 2 * bufferSizeRight.getX ()
     , bufferSizeLeft.getY ()
@@ -808,7 +861,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  sendEnd[RIGHT_BACK] = GridCoordinate (
+  sendEnd[RIGHT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -818,7 +871,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  recvStart[RIGHT_BACK] = GridCoordinate (
+  recvStart[RIGHT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     0
     , bufferSizeLeft.getY ()
@@ -828,7 +881,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  recvEnd[RIGHT_BACK] = GridCoordinate (
+  recvEnd[RIGHT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -838,7 +891,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  sendStart[RIGHT_FRONT] = GridCoordinate (
+  sendStart[RIGHT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - 2 * bufferSizeRight.getX ()
     , bufferSizeLeft.getY ()
@@ -848,7 +901,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  sendEnd[RIGHT_FRONT] = GridCoordinate (
+  sendEnd[RIGHT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -858,7 +911,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  recvStart[RIGHT_FRONT] = GridCoordinate (
+  recvStart[RIGHT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     0
     , bufferSizeLeft.getY ()
@@ -868,7 +921,7 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 #endif
   );
 
-  recvEnd[RIGHT_FRONT] = GridCoordinate (
+  recvEnd[RIGHT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -883,9 +936,9 @@ Grid::SendReceiveCoordinatesInit2D_XZ ()
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 void
-Grid::SendReceiveCoordinatesInit3D_XYZ ()
+ParallelGrid::SendReceiveCoordinatesInit3D_XYZ ()
 {
-  sendStart[LEFT_DOWN_BACK] = GridCoordinate (
+  sendStart[LEFT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     bufferSizeLeft.getX ()
     , bufferSizeLeft.getY ()
@@ -893,7 +946,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendEnd[LEFT_DOWN_BACK] = GridCoordinate (
+  sendEnd[LEFT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     2 * bufferSizeLeft.getX ()
     , 2 * bufferSizeLeft.getY ()
@@ -901,7 +954,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvStart[LEFT_DOWN_BACK] = GridCoordinate (
+  recvStart[LEFT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -909,7 +962,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvEnd[LEFT_DOWN_BACK] = GridCoordinate (
+  recvEnd[LEFT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX ()
     , size.getY ()
@@ -917,7 +970,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendStart[LEFT_DOWN_FRONT] = GridCoordinate (
+  sendStart[LEFT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     bufferSizeLeft.getX ()
     , bufferSizeLeft.getY ()
@@ -925,7 +978,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendEnd[LEFT_DOWN_FRONT] = GridCoordinate (
+  sendEnd[LEFT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     2 * bufferSizeLeft.getX ()
     , 2 * bufferSizeLeft.getY ()
@@ -933,7 +986,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvStart[LEFT_DOWN_FRONT] = GridCoordinate (
+  recvStart[LEFT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -941,7 +994,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvEnd[LEFT_DOWN_FRONT] = GridCoordinate (
+  recvEnd[LEFT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX ()
     , size.getY ()
@@ -949,7 +1002,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendStart[LEFT_UP_BACK] = GridCoordinate (
+  sendStart[LEFT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY () - 2 * bufferSizeRight.getY ()
@@ -957,7 +1010,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendEnd[LEFT_UP_BACK] = GridCoordinate (
+  sendEnd[LEFT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     2 * bufferSizeLeft.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -965,7 +1018,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvStart[LEFT_UP_BACK] = GridCoordinate (
+  recvStart[LEFT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , 0
@@ -973,7 +1026,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvEnd[LEFT_UP_BACK] = GridCoordinate (
+  recvEnd[LEFT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX ()
     , bufferSizeLeft.getY ()
@@ -981,7 +1034,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendStart[LEFT_UP_FRONT] = GridCoordinate (
+  sendStart[LEFT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY () - 2 * bufferSizeRight.getY ()
@@ -989,7 +1042,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendEnd[LEFT_UP_FRONT] = GridCoordinate (
+  sendEnd[LEFT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     2 * bufferSizeLeft.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -997,7 +1050,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvStart[LEFT_UP_FRONT] = GridCoordinate (
+  recvStart[LEFT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , 0
@@ -1005,7 +1058,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvEnd[LEFT_UP_FRONT] = GridCoordinate (
+  recvEnd[LEFT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     size.getX ()
     , bufferSizeLeft.getY ()
@@ -1014,7 +1067,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
   );
 
 
-  sendStart[RIGHT_DOWN_BACK] = GridCoordinate (
+  sendStart[RIGHT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     size.getX () - 2 * bufferSizeRight.getX ()
     , bufferSizeLeft.getY ()
@@ -1022,7 +1075,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendEnd[RIGHT_DOWN_BACK] = GridCoordinate (
+  sendEnd[RIGHT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , 2 * bufferSizeLeft.getY ()
@@ -1030,7 +1083,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvStart[RIGHT_DOWN_BACK] = GridCoordinate (
+  recvStart[RIGHT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     0
     , size.getY () - bufferSizeRight.getY ()
@@ -1038,7 +1091,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvEnd[RIGHT_DOWN_BACK] = GridCoordinate (
+  recvEnd[RIGHT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY ()
@@ -1046,7 +1099,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendStart[RIGHT_DOWN_FRONT] = GridCoordinate (
+  sendStart[RIGHT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     size.getX () - 2 * bufferSizeRight.getX ()
     , bufferSizeLeft.getY ()
@@ -1054,7 +1107,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendEnd[RIGHT_DOWN_FRONT] = GridCoordinate (
+  sendEnd[RIGHT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , 2 * bufferSizeLeft.getY ()
@@ -1062,7 +1115,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvStart[RIGHT_DOWN_FRONT] = GridCoordinate (
+  recvStart[RIGHT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     0
     , size.getY () - bufferSizeRight.getY ()
@@ -1070,7 +1123,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvEnd[RIGHT_DOWN_FRONT] = GridCoordinate (
+  recvEnd[RIGHT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , size.getY ()
@@ -1078,7 +1131,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendStart[RIGHT_UP_BACK] = GridCoordinate (
+  sendStart[RIGHT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     size.getX () - 2 * bufferSizeRight.getX ()
     , size.getY () - 2 * bufferSizeRight.getY ()
@@ -1086,7 +1139,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendEnd[RIGHT_UP_BACK] = GridCoordinate (
+  sendEnd[RIGHT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -1094,7 +1147,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvStart[RIGHT_UP_BACK] = GridCoordinate (
+  recvStart[RIGHT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     0
     , 0
@@ -1102,7 +1155,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvEnd[RIGHT_UP_BACK] = GridCoordinate (
+  recvEnd[RIGHT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , bufferSizeLeft.getY ()
@@ -1110,7 +1163,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendStart[RIGHT_UP_FRONT] = GridCoordinate (
+  sendStart[RIGHT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     size.getX () - 2 * bufferSizeRight.getX ()
     , size.getY () - 2 * bufferSizeRight.getY ()
@@ -1118,7 +1171,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  sendEnd[RIGHT_UP_FRONT] = GridCoordinate (
+  sendEnd[RIGHT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     size.getX () - bufferSizeRight.getX ()
     , size.getY () - bufferSizeRight.getY ()
@@ -1126,7 +1179,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvStart[RIGHT_UP_FRONT] = GridCoordinate (
+  recvStart[RIGHT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     0
     , 0
@@ -1134,7 +1187,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 #endif
   );
 
-  recvEnd[RIGHT_UP_FRONT] = GridCoordinate (
+  recvEnd[RIGHT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     bufferSizeLeft.getX ()
     , bufferSizeLeft.getY ()
@@ -1147,7 +1200,7 @@ Grid::SendReceiveCoordinatesInit3D_XYZ ()
 
 
 void
-Grid::SendRawBuffer (BufferPosition buffer, int processTo)
+ParallelGrid::SendRawBuffer (BufferPosition buffer, int processTo)
 {
 #if PRINT_MESSAGE
   printf ("\t\tSend RAW. PID=#%d. Direction TO=%s, size=%lu.\n",
@@ -1174,7 +1227,7 @@ Grid::SendRawBuffer (BufferPosition buffer, int processTo)
 }
 
 void
-Grid::ReceiveRawBuffer (BufferPosition buffer, int processFrom)
+ParallelGrid::ReceiveRawBuffer (BufferPosition buffer, int processFrom)
 {
 #if PRINT_MESSAGE
   printf ("\t\tReceive RAW. PID=#%d. Direction FROM=%s, size=%lu.\n",
@@ -1201,7 +1254,7 @@ Grid::ReceiveRawBuffer (BufferPosition buffer, int processFrom)
 }
 
 void
-Grid::SendReceiveRawBuffer (BufferPosition bufferSend, int processTo,
+ParallelGrid::SendReceiveRawBuffer (BufferPosition bufferSend, int processTo,
                             BufferPosition bufferReceive, int processFrom)
 {
 #if PRINT_MESSAGE
@@ -1244,7 +1297,7 @@ Grid::SendReceiveRawBuffer (BufferPosition bufferSend, int processTo,
  * Send/receive method to be called for all grid types.
  */
 void
-Grid::SendReceive ()
+ParallelGrid::SendReceive ()
 {
 // #if PRINT_MESSAGE
 //   printf ("Send/Receive %d\n", processId);
@@ -1258,7 +1311,7 @@ Grid::SendReceive ()
 }
 
 void
-Grid::Share ()
+ParallelGrid::Share ()
 {
   SendReceive ();
 
@@ -1267,16 +1320,16 @@ Grid::Share ()
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
 void
-Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, grid_coord size1)
+ParallelGrid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, grid_coord size1)
 #endif
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 void
-Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, grid_coord size1,
+ParallelGrid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, grid_coord size1,
                                 grid_coord& c2, int nodeGridSize2, bool has2, grid_coord size2)
 #endif
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 void
-Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, grid_coord size1,
+ParallelGrid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, grid_coord size1,
                                 grid_coord& c2, int nodeGridSize2, bool has2, grid_coord size2,
                                 grid_coord& c3, int nodeGridSize3, bool has3, grid_coord size3)
 #endif
@@ -1307,7 +1360,7 @@ Grid::CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, gr
 }
 
 BufferPosition
-Grid::getOpposite (BufferPosition direction)
+ParallelGrid::getOpposite (BufferPosition direction)
 {
   switch (direction)
   {
@@ -1403,7 +1456,7 @@ Grid::getOpposite (BufferPosition direction)
 }
 
 void
-Grid::getShare (BufferPosition direction, std::pair<bool, bool>& pair)
+ParallelGrid::getShare (BufferPosition direction, std::pair<bool, bool>& pair)
 {
   bool doSend = true;
   bool doReceive = true;
@@ -1791,7 +1844,7 @@ Grid::getShare (BufferPosition direction, std::pair<bool, bool>& pair)
 }
 
 void
-Grid::InitDirections ()
+ParallelGrid::InitDirections ()
 {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
@@ -1876,7 +1929,7 @@ Grid::InitDirections ()
 }
 
 void
-Grid::InitBufferFlags ()
+ParallelGrid::InitBufferFlags ()
 {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -1970,7 +2023,7 @@ Grid::InitBufferFlags ()
 }
 
 void
-Grid::InitBuffers (grid_iter numTimeStepsInBuild)
+ParallelGrid::InitBuffers (grid_iter numTimeStepsInBuild)
 {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -2178,7 +2231,7 @@ Grid::InitBuffers (grid_iter numTimeStepsInBuild)
 }
 
 void
-Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
+ParallelGrid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 {
   NodeGridInit ();
 
@@ -2214,8 +2267,8 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   InitBufferFlags ();
   currentSize = GridInit ();
 
-  GridCoordinate bufferSizeLeftCurrent (bufferSizeLeft);
-  GridCoordinate bufferSizeRightCurrent (bufferSizeRight);
+  ParallelGridCoordinate bufferSizeLeftCurrent (bufferSizeLeft);
+  ParallelGridCoordinate bufferSizeRightCurrent (bufferSizeRight);
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -2272,7 +2325,7 @@ Grid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 }
 
 void
-Grid::SendReceiveBuffer (BufferPosition bufferDirection)
+ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection)
 {
   // Return if node not used.
 #ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
@@ -2325,13 +2378,13 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
         {
 #endif
 #if defined (GRID_1D)
-          GridCoordinate pos (i);
+          ParallelGridCoordinate pos (i);
 #endif
 #if defined (GRID_2D)
-          GridCoordinate pos (i, j);
+          ParallelGridCoordinate pos (i, j);
 #endif
 #if defined (GRID_3D)
-          GridCoordinate pos (i, j, k);
+          ParallelGridCoordinate pos (i, j, k);
 #endif
 
           FieldPointValue* val = getFieldPointValue (pos);
@@ -2414,15 +2467,15 @@ Grid::SendReceiveBuffer (BufferPosition bufferDirection)
 #endif /* !TWO_TIME_STEPS */
 
 #if defined (GRID_1D)
-          GridCoordinate pos (i);
+          ParallelGridCoordinate pos (i);
 #endif
 #if defined (GRID_2D)
-          GridCoordinate pos (i, j);
+          ParallelGridCoordinate pos (i, j);
 #endif
 #if defined (GRID_3D)
-          GridCoordinate pos (i, j, k);
+          ParallelGridCoordinate pos (i, j, k);
 #endif
-          setFieldPointValue (val, GridCoordinate (pos));
+          setFieldPointValue (val, ParallelGridCoordinate (pos));
 
 #if defined (GRID_3D)
         }

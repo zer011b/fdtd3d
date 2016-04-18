@@ -1,4 +1,4 @@
-#include "Grid.h"
+#include "ParallelGrid.h"
 
 #if defined (PARALLEL_GRID)
 

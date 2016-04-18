@@ -1,4 +1,4 @@
-#include "Grid.h"
+#include "ParallelGrid.h"
 
 #ifdef PRINT_MESSAGE
 extern const char* BufferPositionNames[];
@@ -9,7 +9,7 @@ extern const char* BufferPositionNames[];
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
 void
-Grid::NodeGridInit ()
+ParallelGrid::NodeGridInit ()
 {
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
   nodeGridSizeX = totalProcCount;
@@ -26,8 +26,8 @@ Grid::NodeGridInit ()
 #endif
 }
 
-GridCoordinate
-Grid::GridInit ()
+GridCoordinate2D
+ParallelGrid::GridInit ()
 {
   grid_coord c1;
   grid_coord c2;
@@ -41,13 +41,13 @@ Grid::GridInit ()
   CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY ());
 #endif
 
-  return GridCoordinate (c1, c2);
+  return GridCoordinate2D (c1, c2);
 }
 #endif
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
 void
-Grid::NodeGridInit ()
+ParallelGrid::NodeGridInit ()
 {
   if (totalProcCount < 4)
   {
@@ -68,8 +68,8 @@ Grid::NodeGridInit ()
 #endif
 }
 
-GridCoordinate
-Grid::GridInit ()
+GridCoordinate2D
+ParallelGrid::GridInit ()
 {
   grid_coord c1;
   grid_coord c2;
@@ -77,7 +77,7 @@ Grid::GridInit ()
   CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
                             c2, nodeGridSizeY, hasU, totalSize.getY ());
 
-  return GridCoordinate (c1, c2);
+  return GridCoordinate2D (c1, c2);
 }
 #endif
 

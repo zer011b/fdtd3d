@@ -1,4 +1,4 @@
-#include "Grid.h"
+#include "ParallelGrid.h"
 
 #ifdef PRINT_MESSAGE
 extern const char* BufferPositionNames[];
@@ -9,7 +9,7 @@ extern const char* BufferPositionNames[];
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
 void
-Grid::NodeGridInit ()
+ParallelGrid::NodeGridInit ()
 {
   nodeGridSizeX = totalProcCount;
 
@@ -19,14 +19,14 @@ Grid::NodeGridInit ()
 #endif
 }
 
-GridCoordinate
-Grid::GridInit ()
+GridCoordinate1D
+ParallelGrid::GridInit ()
 {
   grid_coord c1;
 
   CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX ());
 
-  return GridCoordinate (c1);
+  return GridCoordinate1D (c1);
 }
 #endif
 

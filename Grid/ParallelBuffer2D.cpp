@@ -1,4 +1,4 @@
-#include "Grid.h"
+#include "ParallelGrid.h"
 
 #include <cmath>
 
@@ -7,7 +7,7 @@
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
 void
-Grid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FieldValue alpha)
+ParallelGrid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FieldValue alpha)
 {
   int min_left = left;
   int min_size1 = nodeGridSize1;
@@ -50,7 +50,7 @@ Grid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& le
 }
 
 void
-Grid::NodeGridInitInner (FieldValue& overall1, FieldValue& overall2,
+ParallelGrid::NodeGridInitInner (FieldValue& overall1, FieldValue& overall2,
                          int& nodeGridSize1, int& nodeGridSize2, int& left)
 {
   FieldValue alpha = overall2 / overall1;

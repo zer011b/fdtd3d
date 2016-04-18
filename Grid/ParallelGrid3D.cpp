@@ -1,4 +1,4 @@
-#include "Grid.h"
+#include "ParallelGrid.h"
 
 #include <cmath>
 
@@ -11,7 +11,7 @@ extern const char* BufferPositionNames[];
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
 void
-Grid::NodeGridInit ()
+ParallelGrid::NodeGridInit ()
 {
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
   nodeGridSizeX = totalProcCount;
@@ -35,8 +35,8 @@ Grid::NodeGridInit ()
 #endif
 }
 
-GridCoordinate
-Grid::GridInit ()
+GridCoordinate3D
+ParallelGrid::GridInit ()
 {
   grid_coord c1;
   grid_coord c2;
@@ -58,13 +58,13 @@ Grid::GridInit ()
   CalculateGridSizeForNode (c3, nodeGridSizeZ, hasF, totalSize.getZ ());
 #endif
 
-  return GridCoordinate (c1, c2, c3);
+  return GridCoordinate3D (c1, c2, c3);
 }
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 void
-Grid::NodeGridInit ()
+ParallelGrid::NodeGridInit ()
 {
   if (totalProcCount < 4)
   {
@@ -117,8 +117,8 @@ Grid::NodeGridInit ()
 #endif
 }
 
-GridCoordinate
-Grid::GridInit ()
+GridCoordinate3D
+ParallelGrid::GridInit ()
 {
   grid_coord c1;
   grid_coord c2;
@@ -140,13 +140,13 @@ Grid::GridInit ()
                             c3, nodeGridSizeZ, hasF, totalSize.getZ ());
 #endif
 
-  return GridCoordinate (c1, c2, c3);
+  return GridCoordinate3D (c1, c2, c3);
 }
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 void
-Grid::NodeGridInit ()
+ParallelGrid::NodeGridInit ()
 {
   if (totalProcCount < 8)
   {
@@ -177,8 +177,8 @@ Grid::NodeGridInit ()
 #endif
 }
 
-GridCoordinate
-Grid::GridInit ()
+GridCoordinate3D
+ParallelGrid::GridInit ()
 {
   grid_coord c1;
   grid_coord c2;
@@ -188,7 +188,7 @@ Grid::GridInit ()
                             c2, nodeGridSizeY, hasU, totalSize.getY (),
                             c3, nodeGridSizeZ, hasF, totalSize.getZ ());
 
-  return GridCoordinate (c1, c2, c3);
+  return GridCoordinate3D (c1, c2, c3);
 }
 #endif
 
