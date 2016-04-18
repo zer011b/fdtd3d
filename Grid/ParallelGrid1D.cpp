@@ -1,9 +1,5 @@
 #include "ParallelGrid.h"
 
-#ifdef PRINT_MESSAGE
-extern const char* BufferPositionNames[];
-#endif
-
 #ifdef GRID_1D
 #ifdef PARALLEL_GRID
 
@@ -16,7 +12,7 @@ ParallelGrid::NodeGridInit ()
 #if PRINT_MESSAGE
   printf ("Nodes' grid process #%d: %d.\n", processId,
     nodeGridSizeX);
-#endif
+#endif /* PRINT_MESSAGE */
 }
 
 GridCoordinate1D
@@ -28,7 +24,7 @@ ParallelGrid::GridInit ()
 
   return GridCoordinate1D (c1);
 }
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 
 #endif /* PARALLEL_GRID */
 #endif /* GRID_1D */

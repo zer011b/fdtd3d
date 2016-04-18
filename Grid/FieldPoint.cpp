@@ -50,7 +50,7 @@ FieldPointValue::setPrevValue (const FieldValue& val)
 }
 
 
-#if defined (TWO_TIME_STEPS)
+#ifdef TWO_TIME_STEPS
 const FieldValue&
 FieldPointValue::getPrevPrevValue () const
 {
@@ -73,7 +73,7 @@ FieldPointValue::setZero ()
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
   previousValue = 0;
 
-#if defined (TWO_TIME_STEPS)
+#ifdef TWO_TIME_STEPS
   previousPreviousValue = 0;
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
@@ -83,7 +83,7 @@ FieldPointValue::setZero ()
 void
 FieldPointValue::shiftInTime ()
 {
-#if defined (TWO_TIME_STEPS)
+#ifdef TWO_TIME_STEPS
   previousPreviousValue = previousValue;
 #endif /* TWO_TIME_STEPS */
 

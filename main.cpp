@@ -154,14 +154,16 @@ int main (int argc, char** argv)
         FieldValue val = valEz->getPrevValue () + (dt / (valEps->getCurValue () * delta)) *
           (valHx1->getPrevValue () - valHx2->getPrevValue () + valHy1->getPrevValue () - valHy2->getPrevValue ());
 
-        Ez.setFieldPointValueCurrent (val, pos1);
+        FieldPointValue* tmp = Ez.getFieldPointValue (pos1);
+        tmp->setCurValue (val);
       }
     }
 
     if (rank == 0)
     {
       GridCoordinate pos (sizeTotal.getX () / 2, sizeTotal.getY () / 2);
-      Ez.setFieldPointValueCurrent (cos (t * 3.1415 / 12),  pos);
+      FieldPointValue* tmp = Ez.getFieldPointValue (pos);
+      tmp->setCurValue (cos (t * 3.1415 / 12));
     }
 
     Ez.nextTimeStep ();
@@ -183,7 +185,8 @@ int main (int argc, char** argv)
         FieldValue val = valHx->getPrevValue () + (dt / (valMu->getCurValue () * delta)) *
           (valEz1->getPrevValue () - valEz2->getPrevValue ());
 
-        Hx.setFieldPointValueCurrent (val, pos1);
+        FieldPointValue* tmp = Hx.getFieldPointValue (pos1);
+        tmp->setCurValue (val);
       }
     }
 
@@ -203,7 +206,8 @@ int main (int argc, char** argv)
         FieldValue val = valHy->getPrevValue () + (dt / (valMu->getCurValue () * delta)) *
           (valEz1->getPrevValue () - valEz2->getPrevValue ());
 
-        Hy.setFieldPointValueCurrent (val, pos1);
+        FieldPointValue* tmp = Hy.getFieldPointValue (pos1);
+        tmp->setCurValue (val);
       }
     }
 
@@ -228,7 +232,8 @@ int main (int argc, char** argv)
           printf("%f %d\n", val->getPrevValue (), t - 1);
           return 1;
         }
-        grid.setFieldPointValueCurrent (t, pos);
+        FieldPointValue* tmp = grid.getFieldPointValue (pos);
+        tmp->setCurValue (t);
       }
     }
   }*/

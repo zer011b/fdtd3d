@@ -4,14 +4,18 @@
 #include <vector>
 #include <cstdlib>
 
+#include "Assert.h"
 #include "FieldPoint.h"
 #include "GridCoordinate3D.h"
-#include "Assert.h"
 
-// Vector of points in grid.
+/**
+ * Vector of points in grid.
+ */
 typedef std::vector<FieldPointValue*> VectorFieldPointValues;
 
-// Grid interface.
+/**
+ * Non-parallel grid class.
+ */
 template <class TCoord>
 class Grid
 {
@@ -67,9 +71,6 @@ public:
   // Set field point at coordinate in grid.
   void setFieldPointValue (FieldPointValue* value, const TCoord& position);
 
-  void setFieldPointValueCurrent (const FieldValue& value,
-                                  const TCoord& position);
-
   // Get field point at coordinate in grid.
   FieldPointValue* getFieldPointValue (const TCoord& position);
   FieldPointValue* getFieldPointValue (grid_iter coord);
@@ -94,7 +95,7 @@ Grid<TCoord>::Grid (const TCoord& s, uint32_t step) :
 
 #if PRINT_MESSAGE
   printf ("New grid with raw size: %lu.\n", gridValues.size ());
-#endif
+#endif /* PRINT_MESSAGE */
 }
 
 template <class TCoord>
@@ -103,7 +104,7 @@ Grid<TCoord>::Grid (uint32_t step) :
 {
 #if PRINT_MESSAGE
   printf ("New grid without size.\n");
-#endif
+#endif /* PRINT_MESSAGE */
 }
 
 template <class TCoord>
@@ -174,18 +175,6 @@ Grid<TCoord>::setFieldPointValue (FieldPointValue* value,
   delete gridValues[coord];
 
   gridValues[coord] = value;
-}
-
-template <class TCoord>
-void
-Grid<TCoord>::setFieldPointValueCurrent (const FieldValue& value,
-                                          const TCoord& position)
-{
-  ASSERT (isLegitIndex (position));
-
-  grid_iter coord = calculateIndexFromPosition (position);
-
-  gridValues[coord]->setCurValue (value);
 }
 
 template <class TCoord>

@@ -2,14 +2,12 @@
 
 #include <cmath>
 
-#ifdef PRINT_MESSAGE
-extern const char* BufferPositionNames[];
-#endif
-
 #ifdef PARALLEL_GRID
 #ifdef GRID_3D
 
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || \
+    defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || \
+    defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
 void
 ParallelGrid::NodeGridInit ()
 {
@@ -17,22 +15,22 @@ ParallelGrid::NodeGridInit ()
   nodeGridSizeX = totalProcCount;
   nodeGridSizeY = 1;
   nodeGridSizeZ = 1;
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
   nodeGridSizeX = 1;
   nodeGridSizeY = totalProcCount;
   nodeGridSizeZ = 1;
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
   nodeGridSizeX = 1;
   nodeGridSizeY = 1;
   nodeGridSizeZ = totalProcCount;
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 
 #if PRINT_MESSAGE
   printf ("Nodes' grid process #%d: %dx%dx%d.\n", processId,
     nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ);
-#endif
+#endif /* PRINT_MESSAGE */
 }
 
 GridCoordinate3D
@@ -46,21 +44,22 @@ ParallelGrid::GridInit ()
   CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX ());
   c2 = totalSize.getY ();
   c3 = totalSize.getZ ();
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
   c1 = totalSize.getX ();
   CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY ());
   c3 = totalSize.getZ ();
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
   c1 = totalSize.getX ();
   c2 = totalSize.getY ();
   CalculateGridSizeForNode (c3, nodeGridSizeZ, hasF, totalSize.getZ ());
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 
   return GridCoordinate3D (c1, c2, c3);
 }
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y ||
+          PARALLEL_BUFFER_DIMENSION_1D_Z */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 void
@@ -74,15 +73,15 @@ ParallelGrid::NodeGridInit ()
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
   FieldValue overall1 = (FieldValue) totalSize.getX ();
   FieldValue overall2 = (FieldValue) totalSize.getY ();
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
   FieldValue overall1 = (FieldValue) totalSize.getY ();
   FieldValue overall2 = (FieldValue) totalSize.getZ ();
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
   FieldValue overall1 = (FieldValue) totalSize.getX ();
   FieldValue overall2 = (FieldValue) totalSize.getZ ();
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
   int left;
   int nodeGridSizeTmp1;
@@ -95,26 +94,26 @@ ParallelGrid::NodeGridInit ()
   nodeGridSizeZ = 1;
 
   nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
   nodeGridSizeX = 1;
   nodeGridSizeY = nodeGridSizeTmp1;
   nodeGridSizeZ = nodeGridSizeTmp2;
 
   nodeGridSizeYZ = nodeGridSizeY * nodeGridSizeZ;
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
   nodeGridSizeX = nodeGridSizeTmp1;
   nodeGridSizeY = 1;
   nodeGridSizeZ = nodeGridSizeTmp2;
 
   nodeGridSizeXZ = nodeGridSizeX * nodeGridSizeZ;
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
 #if PRINT_MESSAGE
   printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n", processId,
     nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ, left);
-#endif
+#endif /* PRINT_MESSAGE */
 }
 
 GridCoordinate3D
@@ -128,23 +127,24 @@ ParallelGrid::GridInit ()
   CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
                             c2, nodeGridSizeY, hasU, totalSize.getY ());
   c3 = totalSize.getZ ();
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
   c1 = totalSize.getX ();
   CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY (),
                             c3, nodeGridSizeZ, hasF, totalSize.getZ ());
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
   c2 = totalSize.getY ();
   CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
                             c3, nodeGridSizeZ, hasF, totalSize.getZ ());
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
   return GridCoordinate3D (c1, c2, c3);
 }
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
+          PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+#ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
 void
 ParallelGrid::NodeGridInit ()
 {
@@ -174,7 +174,7 @@ ParallelGrid::NodeGridInit ()
   printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n", processId,
     nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ, left);
   //printf ("Grid size for #%d process: %dx%dx%d.\n", processId, c1, c2, c3);
-#endif
+#endif /* PRINT_MESSAGE */
 }
 
 GridCoordinate3D
@@ -190,7 +190,7 @@ ParallelGrid::GridInit ()
 
   return GridCoordinate3D (c1, c2, c3);
 }
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #endif /* PARALLEL_GRID */
 #endif /* GRID_3D */

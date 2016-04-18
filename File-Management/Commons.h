@@ -1,14 +1,18 @@
 #ifndef COMMONS_H
 #define COMMONS_H
 
+#include <string>
+
 #include "Assert.h"
 #include "Grid.h"
 
-#include <string>
-
-// Type of save/load from file.
-// CURRENT: save/load only current layer.
-// ALL: save/load all layers.
+/**
+ * Type of save/load from file.
+ * CURRENT: current layer.
+ * PREVIOUS: previous layer.
+ * PREVIOUS2: previous to previous layer.
+ * ALL: all layers.
+ */
 enum GridFileType
 {
   CURRENT,
@@ -17,10 +21,13 @@ enum GridFileType
   ALL
 };
 
-// Basic class for all dumpers/loaders.
+/**
+ * Base class for all dumpers/loaders.
+ */
 class GridFileManager
 {
 protected:
+
   // Time step number (used in file naming).
   grid_iter step;
 
@@ -28,10 +35,13 @@ protected:
   GridFileType type;
 
   // File names.
+  // File name for current layer file.
   std::string cur;
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+  // File name for previous layer file.
   std::string prev;
 #if defined (TWO_TIME_STEPS)
+  // File name for previous to previous layer file.
   std::string prevPrev;
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
@@ -51,11 +61,12 @@ protected:
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
   }
 
-  GridFileManager () : step (0), type (ALL)
-  {
-  }
+  // Protected constructor to disallow instantiation.
+  GridFileManager () : step (0), type (ALL) {}
 
 public:
+
+  virtual ~GridFileManager () {}
 
   // Initialize dumper with time step number and save/load type.
   void init (const grid_iter& timeStep, GridFileType newType)

@@ -3,9 +3,11 @@
 
 #include <mpi.h>
 
-// Small values define all field values as float.
-// Full values define all field values as double.
-// Small values decrease memory usage, full values increase accuracy.
+/**
+ * Small values define all field values as float.
+ * Full values define all field values as double.
+ * Small values decrease memory usage, full values increase accuracy.
+ */
 #ifdef FLOAT_VALUES
 typedef float FieldValue;
 #endif /* FLOAT_VALUES */
@@ -17,7 +19,9 @@ typedef long double FieldValue;
 #endif /* LONG_DOUBLE_VALUES */
 
 
-// FieldPointValue defines all values in time at the grid point.
+/**
+ * Class defining all values in time at the specific grid point.
+ */
 class FieldPointValue
 {
   // Current value in time.
@@ -27,7 +31,7 @@ class FieldPointValue
   // Previous value in time.
   FieldValue previousValue;
 
-#if defined (TWO_TIME_STEPS)
+#ifdef TWO_TIME_STEPS
   // Previous for previous value in time.
   FieldValue previousPreviousValue;
 #endif /* TWO_TIME_STEPS */
@@ -40,7 +44,7 @@ public:
     const FieldValue& curVal = 0
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     , const FieldValue& prevVal = 0
-#if defined (TWO_TIME_STEPS)
+#ifdef TWO_TIME_STEPS
     , const FieldValue& prevPrevVal = 0
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
@@ -57,7 +61,7 @@ public:
   const FieldValue& getPrevValue () const;
   void setPrevValue (const FieldValue& val);
 
-#if defined (TWO_TIME_STEPS)
+#ifdef TWO_TIME_STEPS
   // Getter and setter for previous for previous value.
   const FieldValue& getPrevPrevValue () const;
   void setPrevPrevValue (const FieldValue& val);
@@ -70,6 +74,5 @@ public:
   // Replace previous value with current and so on.
   void shiftInTime ();
 };
-
 
 #endif /* FIELD_POINT_H */

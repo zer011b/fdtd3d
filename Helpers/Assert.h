@@ -13,12 +13,12 @@ void program_fail ();
   printf ("Unreachable executed at %s:%d.\n", __FILE__, __LINE__); \
   program_fail (); \
 }
-#else
+#else /* PRINT_MESSAGE */
 #define UNREACHABLE \
 { \
   program_fail (); \
 }
-#endif
+#endif /* !PRINT_MESSAGE */
 
 // Unconditional assert with message.
 #if PRINT_MESSAGE
@@ -27,12 +27,12 @@ void program_fail ();
   printf ("Assert '%s' at %s:%d.\n", x, __FILE__, __LINE__); \
   program_fail (); \
 }
-#else
+#else /* PRINT_MESSAGE */
 #define ASSERT_MESSAGE(x) \
 { \
   program_fail (); \
 }
-#endif
+#endif /* !PRINT_MESSAGE */
 
 // Conditional assert with default message.
 #if PRINT_MESSAGE
@@ -44,7 +44,7 @@ void program_fail ();
     program_fail (); \
   } \
 }
-#else
+#else /* PRINT_MESSAGE */
 #define ASSERT(x) \
 { \
   if (!(x)) \
@@ -52,6 +52,6 @@ void program_fail ();
     program_fail (); \
   } \
 }
-#endif
+#endif /* !PRINT_MESSAGE */
 
 #endif /* ASSERT_H */

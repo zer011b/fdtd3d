@@ -3,18 +3,24 @@
 
 #include "Commons.h"
 
-// Basic class for all dumpers.
+/**
+ * Base class for all dumpers.
+ * Template class with coordinate parameter.
+ */
 template <class TCoord>
 class Dumper: public GridFileManager
 {
 protected:
 
+  // Protected constructor to disallow instantiation.
   Dumper () {}
 
 public:
 
-  virtual void dumpGrid (Grid<TCoord> &grid) const = 0;
   virtual ~Dumper () {}
+
+  // Pure virtual method for grid saving.
+  virtual void dumpGrid (Grid<TCoord> &grid) const = 0;
 };
 
 #endif /* DUMPER_H */

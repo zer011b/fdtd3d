@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#if defined (PARALLEL_GRID)
+#ifdef PARALLEL_GRID
 
 #ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
 
@@ -98,5 +98,6 @@ ParallelGrid::NodeGridInitInner (FieldValue& overall1, FieldValue& overall2, Fie
   ASSERT (nodeGridSize1 > 1 && nodeGridSize2 > 1 && nodeGridSize3 > 1);
 }
 
-#endif
-#endif
+#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+#endif /* PARALLEL_GRID */

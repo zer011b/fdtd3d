@@ -6,22 +6,29 @@
 
 #include "Dumper.h"
 
-// Grid saver in binary files.
+/**
+ * Grid saver to binary files.
+ * Template class with coordinate parameter.
+ */
 template <class TCoord>
 class DATDumper: public Dumper<TCoord>
 {
+  // Save grid to file for specific layer.
   void writeToFile (Grid<TCoord> &grid, GridFileType type) const;
 
 public:
 
-  // Function to call for every grid type.
+  // Virtual method for grid saving.
   void dumpGrid (Grid<TCoord> &grid) const override;
 };
 
 /**
- * Template implementation
+ * ======== Template implementation ========
  */
 
+/**
+ * Save grid to file for specific layer.
+ */
 template <class TCoord>
 void
 DATDumper<TCoord>::writeToFile (Grid<TCoord> &grid, GridFileType type) const
@@ -98,6 +105,9 @@ DATDumper<TCoord>::writeToFile (Grid<TCoord> &grid, GridFileType type) const
   file.close();
 }
 
+/**
+ * Virtual method for grid saving.
+ */
 template <class TCoord>
 void
 DATDumper<TCoord>::dumpGrid (Grid<TCoord> &grid) const

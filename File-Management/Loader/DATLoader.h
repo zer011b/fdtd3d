@@ -6,22 +6,29 @@
 
 #include "Loader.h"
 
-// Grid loader from binary files.
+/**
+ * Grid loader from binary files.
+ * Template class with coordinate parameter.
+ */
 template <class TCoord>
 class DATLoader: public Loader<TCoord>
 {
+  // Load grid from file for specific layer.
   void loadFromFile (Grid<TCoord> &grid, GridFileType type) const;
 
 public:
 
-  // Function to call for every grid type.
-  void loadGrid (Grid<TCoord> &grid) const override;
+  // Virtual method for grid loading.
+  virtual void loadGrid (Grid<TCoord> &grid) const override;
 };
 
 /**
- * Template implementation
+ * ======== Template implementation ========
  */
 
+/**
+ * Load grid from file for specific layer.
+ */
 template <class TCoord>
 void
 DATLoader<TCoord>::loadFromFile (Grid<TCoord> &grid, GridFileType type) const
@@ -105,6 +112,9 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> &grid, GridFileType type) const
   file.close();
 }
 
+/**
+ * Virtual method for grid loading.
+ */
 template <class TCoord>
 void
 DATLoader<TCoord>::loadGrid (Grid<TCoord> &grid) const
