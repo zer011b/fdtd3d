@@ -4,9 +4,9 @@
 
 #if defined (PARALLEL_GRID)
 #include "ParallelGrid.h"
-#else
+#else /* PARALLEL_GRID */
 #include "Grid.h"
-#endif
+#endif /* !PARALLEL_GRID */
 
 #include "BMPDumper.h"
 #include "BMPLoader.h"
@@ -25,13 +25,20 @@ int main (int argc, char** argv)
 
 #if PRINT_MESSAGE
   printf ("Start process %d of %d\n", rank, numProcs);
-#endif
-#endif
+#endif /* PRINT_MESSAGE */
+#endif /* PARALLEL_GRID */
 
+#if defined (PARALLEL_GRID)
+  ParallelGridCoordinate overallSize (100);
+  //GridCoordinate size (100, 100);
+  ParallelGridCoordinate bufferLeft (10);
+  ParallelGridCoordinate bufferRight (10);
+#else
   GridCoordinate3D overallSize (100);
   //GridCoordinate size (100, 100);
   GridCoordinate3D bufferLeft (10);
   GridCoordinate3D bufferRight (10);
+#endif
 
 #if defined (PARALLEL_GRID)
   ParallelGrid Eps (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
@@ -40,6 +47,8 @@ int main (int argc, char** argv)
   ParallelGrid Ez (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
   ParallelGrid Hx (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
   ParallelGrid Hy (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
+
+  ParallelGridCoordinate sizeTotal = Eps.getSize ();
 #else
   Grid<GridCoordinate3D> Eps (overallSize, 0);
   Grid<GridCoordinate3D> Mu (overallSize, 0);
@@ -47,9 +56,9 @@ int main (int argc, char** argv)
   Grid<GridCoordinate3D> Ez (overallSize, 0);
   Grid<GridCoordinate3D> Hx (overallSize, 0);
   Grid<GridCoordinate3D> Hy (overallSize, 0);
-#endif
 
   GridCoordinate3D sizeTotal = Eps.getSize ();
+#endif
 
   FieldValue lambda = 0.000003;
   FieldValue stepLambda = 20;
@@ -59,18 +68,19 @@ int main (int argc, char** argv)
   FieldValue eps0 = 0.0000000000088541878176203892;
   FieldValue mu0 = 0.0000012566370614359173;
 
-//#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+#if (defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)) && defined (PARALLEL_GRID) || \
+    (! defined (PARALLEL_GRID))
   for (int i = 0; i < sizeTotal.getX (); ++i)
   {
-//#endif
-//#if defined (GRID_2D) || defined (GRID_3D)
+#endif
+#if (defined (GRID_2D) || defined (GRID_3D)) && defined (PARALLEL_GRID) || (! defined (PARALLEL_GRID))
     for (int j = 0; j < sizeTotal.getY (); ++j)
     {
-//#endif
-//#if defined (GRID_3D)
+#endif
+#if (defined (GRID_3D)) && defined (PARALLEL_GRID) || (! defined (PARALLEL_GRID))
       for (int k = 0; k < sizeTotal.getZ (); ++k)
       {
-//#endif
+#endif
 
 #if defined (TWO_TIME_STEPS)
         FieldPointValue* eps = new FieldPointValue (1*eps0, 1*eps0, 1*eps0);
@@ -95,13 +105,13 @@ int main (int argc, char** argv)
         FieldPointValue* valHy = new FieldPointValue (0);
 #endif
 
-#if defined (GRID_1D)
+#if defined (GRID_1D) && defined (PARALLEL_GRID)
         GridCoordinate1D pos (i);
 #endif
-#if defined (GRID_2D)
+#if defined (GRID_2D) && defined (PARALLEL_GRID)
         GridCoordinate2D pos (i, j);
 #endif
-#if defined (GRID_3D)
+#if defined (GRID_3D) && defined (PARALLEL_GRID) || (! defined (PARALLEL_GRID))
         GridCoordinate3D pos (i, j, k);
 #endif
 
@@ -111,15 +121,16 @@ int main (int argc, char** argv)
         Ez.setFieldPointValue(valE, pos);
         Hx.setFieldPointValue(valHx, pos);
         Hy.setFieldPointValue(valHy, pos);
-//#if defined (GRID_3D)
+#if (defined (GRID_3D)) && defined (PARALLEL_GRID) || (! defined (PARALLEL_GRID))
       }
-//#endif
-//#if defined (GRID_2D) || defined (GRID_3D)
+#endif
+#if (defined (GRID_2D) || defined (GRID_3D)) && defined (PARALLEL_GRID) || (! defined (PARALLEL_GRID))
     }
-//#endif
-//#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+#endif
+#if (defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)) && defined (PARALLEL_GRID) || \
+    (! defined (PARALLEL_GRID))
   }
-//#endif
+#endif
 
 #if defined (PARALLEL_GRID)
   MPI_Barrier (MPI_COMM_WORLD);
