@@ -229,6 +229,10 @@ include_directories ("${PROJECT_SOURCE_DIR}/Grid")
 add_subdirectory (Grid)
 set (LIBS ${LIBS} Grid)
 
+include_directories ("${PROJECT_SOURCE_DIR}/Physics")
+add_subdirectory (Physics)
+set (LIBS ${LIBS} Physics)
+
 
 # Add File management library
 # Include headers of Loader and Dumper

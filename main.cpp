@@ -13,6 +13,8 @@
 #include "DATDumper.h"
 #include "DATLoader.h"
 
+#include "SchemeTEz.h"
+
 int main (int argc, char** argv)
 {
 #if defined (PARALLEL_GRID)
@@ -33,14 +35,23 @@ int main (int argc, char** argv)
   //GridCoordinate size (100, 100);
   ParallelGridCoordinate bufferLeft (10);
   ParallelGridCoordinate bufferRight (10);
+
+  SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
 #else
   GridCoordinate3D overallSize (100);
   //GridCoordinate size (100, 100);
   GridCoordinate3D bufferLeft (10);
   GridCoordinate3D bufferRight (10);
+
+  SchemeTEz scheme (overallSize, 0);
 #endif
 
-#if defined (PARALLEL_GRID)
+  scheme.initScheme (0.000003, 20);
+  scheme.initGrids ();
+
+  scheme.performStep ();
+
+/*#if defined (PARALLEL_GRID)
   ParallelGrid Eps (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
   ParallelGrid Mu (overallSize, bufferLeft, bufferRight, rank, numProcs, 0);
 
@@ -139,7 +150,7 @@ int main (int argc, char** argv)
 #if defined (PARALLEL_GRID)
   Eps.Share ();
   Mu.Share ();
-#endif
+#endif*/
 
 /*  for (int t = 0; t < 100; ++t)
   {

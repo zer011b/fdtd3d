@@ -1,7 +1,7 @@
 #include "Solver.h"
 
-bool
+void
 Solver::performStep ()
 {
-  return scheme->performStep ();
+  scheme->performStep ();
 }

@@ -2,6 +2,7 @@
 #define SIMPLE_SCHEME_H
 
 #include "Scheme.h"
+#include "Grid.h"
 
 /**
  * Simple FDTD case: vacuum
@@ -15,9 +16,8 @@ class SimpleScheme: public Scheme
   Grid<GridCoordinate1D> *Mu;
 
 public:
-  bool performStep () override
+  void performStep () override
   {
-    return true;
   }
 
   bool performStep1D ()

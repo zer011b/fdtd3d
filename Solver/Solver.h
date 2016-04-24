@@ -2,6 +2,7 @@
 #define SOLVER_H
 
 #include "Scheme.h"
+#include "Assert.h"
 
 class Solver
 {
@@ -9,7 +10,7 @@ class Solver
 
 public:
 
-  bool performStep ();
+  void performStep ();
 
   Solver (Scheme* initScheme) :
     scheme (initScheme)
