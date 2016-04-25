@@ -33,41 +33,47 @@ class SchemeTEz: public Scheme
   // dt
   FieldValue gridTimeStep;
 
+  uint32_t totalStep;
+
+  int process;
+
 public:
   void performStep () override;
 
   void initScheme (FieldValue wLength, FieldValue step);
 
-  void initGrids ();
+  void initGrids (int);
 
 #if defined (PARALLEL_GRID)
   SchemeTEz (const GridCoordinate2D& totSize,
              const GridCoordinate2D& bufSizeL, const GridCoordinate2D& bufSizeR,
-             const int process, const int totalProc, uint32_t step) :
-    Ez (totSize, bufSizeL, bufSizeR, process, totalProc, step),
-    Hx (totSize, bufSizeL, bufSizeR, process, totalProc, step),
-    Hy (totSize, bufSizeL, bufSizeR, process, totalProc, step),
-    Eps (totSize, bufSizeL, bufSizeR, process, totalProc, step),
-    Mu (totSize, bufSizeL, bufSizeR, process, totalProc, step),
+             const int process, const int totalProc, uint32_t tStep) :
+    Ez (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
+    Hx (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
+    Hy (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
+    Eps (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
+    Mu (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
     waveLength (0),
     stepWaveLength (0),
     frequency (0),
     gridStep (0),
-    gridTimeStep (0)
+    gridTimeStep (0),
+    totalStep (tStep)
   {
   }
 #else
-  SchemeTEz (const GridCoordinate2D& totSize, uint32_t step) :
-    Ez (totSize, step),
-    Hx (totSize, step),
-    Hy (totSize, step),
-    Eps (totSize, step),
-    Mu (totSize, step),
+  SchemeTEz (const GridCoordinate2D& totSize, uint32_t totalStep) :
+    Ez (totSize, 0),
+    Hx (totSize, 0),
+    Hy (totSize, 0),
+    Eps (totSize, 0),
+    Mu (totSize, 0),
     waveLength (0),
     stepWaveLength (0),
     frequency (0),
     gridStep (0),
-    gridTimeStep (0)
+    gridTimeStep (0),
+    totalStep (tStep)
   {
   }
 #endif
