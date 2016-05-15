@@ -3,6 +3,7 @@
 
 #include "Scheme.h"
 #include "ParallelGrid.h"
+#include "Grid.h"
 
 class SchemeTEz: public Scheme
 {
@@ -40,9 +41,13 @@ class SchemeTEz: public Scheme
 public:
   void performStep () override;
 
-  void initScheme (FieldValue wLength, FieldValue step);
+  void initScheme (FieldValue, FieldValue);
 
-  void initGrids (int);
+  void initGrids ();
+
+#if defined (PARALLEL_GRID)
+  void initProcess (int);
+#endif
 
 #if defined (PARALLEL_GRID)
   SchemeTEz (const GridCoordinate2D& totSize,
@@ -62,7 +67,7 @@ public:
   {
   }
 #else
-  SchemeTEz (const GridCoordinate2D& totSize, uint32_t totalStep) :
+  SchemeTEz (const GridCoordinate2D& totSize, uint32_t tStep) :
     Ez (totSize, 0),
     Hx (totSize, 0),
     Hy (totSize, 0),

@@ -15,9 +15,9 @@ SchemeTEz::performStep ()
 {
   for (uint32_t t = 0; t < totalStep; ++t)
   {
-    for (int i = 1; i < Ez.getSize ().getX (); ++i)
+    for (int i = 1; i < Ez.getSize ().getX () - 1; ++i)
     {
-      for (int j = 1; j < Ez.getSize ().getY (); ++j)
+      for (int j = 1; j < Ez.getSize ().getY () - 1; ++j)
       {
         GridCoordinate2D pos1 (i, j);
         GridCoordinate2D pos2 (i - 1, j);
@@ -40,7 +40,9 @@ SchemeTEz::performStep ()
       }
     }
 
+#if defined (PARALLEL_GRID)
     if (process == 0)
+#endif
     {
       GridCoordinate2D pos (Ez.getSize ().getX () / 2, Ez.getSize ().getY () / 2);
       FieldPointValue* tmp = Ez.getFieldPointValue (pos);
@@ -48,11 +50,14 @@ SchemeTEz::performStep ()
     }
 
     Ez.nextTimeStep ();
-    Ez.Share ();
 
-    for (int i = 1; i < Ez.getSize ().getX (); ++i)
+#if defined (PARALLEL_GRID)
+    Ez.Share ();
+#endif
+
+    for (int i = 1; i < Ez.getSize ().getX () - 1; ++i)
     {
-      for (int j = 0; j < Ez.getSize ().getY () - 1; ++j)
+      for (int j = 1; j < Ez.getSize ().getY () - 1; ++j)
       {
         GridCoordinate2D pos1 (i, j);
         GridCoordinate2D pos2 (i, j + 1);
@@ -71,9 +76,9 @@ SchemeTEz::performStep ()
       }
     }
 
-    for (int i = 0; i < Ez.getSize ().getX () - 1; ++i)
+    for (int i = 1; i < Ez.getSize ().getX () - 1; ++i)
     {
-      for (int j = 1; j < Ez.getSize ().getY (); ++j)
+      for (int j = 1; j < Ez.getSize ().getY () - 1; ++j)
       {
         GridCoordinate2D pos1 (i, j);
         GridCoordinate2D pos2 (i + 1, j);
@@ -94,9 +99,16 @@ SchemeTEz::performStep ()
 
     Hx.nextTimeStep ();
     Hy.nextTimeStep ();
+
+#if defined (PARALLEL_GRID)
+    Hx.Share ();
+    Hy.Share ();
+#endif
   }
 
+#if defined (PARALLEL_GRID)
   if (process == 0)
+#endif
   {
     BMPDumper<GridCoordinate2D> dumper;
     dumper.init (1000, CURRENT);
@@ -115,11 +127,16 @@ SchemeTEz::initScheme (FieldValue wLength, FieldValue step)
   gridTimeStep = gridStep / (2 * PhConst.SpeedOfLight);
 }
 
+#if defined (PARALLEL_GRID)
 void
-SchemeTEz::initGrids (int rank)
+SchemeTEz::initProcess (int rank)
 {
   process = rank;
+#endif
 
+void
+SchemeTEz::initGrids ()
+{
   FieldValue eps0 = PhConst.Eps0;
   FieldValue mu0 = PhConst.Mu0;
 

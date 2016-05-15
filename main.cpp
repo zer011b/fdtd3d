@@ -39,15 +39,17 @@ int main (int argc, char** argv)
   SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, 100);
 #else
   GridCoordinate2D overallSize (100);
-  //GridCoordinate size (100, 100);
-  GridCoordinate2D bufferLeft (10);
-  GridCoordinate2D bufferRight (10);
 
-  SchemeTEz scheme (overallSize, 100);
+  SchemeTEz scheme (overallSize, 120);
 #endif
 
   scheme.initScheme (0.000003, 20);
-  scheme.initGrids (rank);
+
+#if defined (PARALLEL_GRID)
+  scheme.initProcess (rank);
+#endif
+
+  scheme.initGrids ();
 
   scheme.performStep ();
 
