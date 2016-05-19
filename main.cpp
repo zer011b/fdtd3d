@@ -1,9 +1,8 @@
 #include <iostream>
 
-#include <mpi.h>
-
 #if defined (PARALLEL_GRID)
 #include "ParallelGrid.h"
+#include <mpi.h>
 #else /* PARALLEL_GRID */
 #include "Grid.h"
 #endif /* !PARALLEL_GRID */
@@ -14,6 +13,8 @@
 #include "DATLoader.h"
 
 #include "SchemeTEz.h"
+
+#include "invoke.h"
 
 int main (int argc, char** argv)
 {
@@ -52,6 +53,8 @@ int main (int argc, char** argv)
   scheme.initGrids ();
 
   scheme.performStep ();
+
+  execute ();
 
 #if defined (PARALLEL_GRID)
 #if PRINT_MESSAGE
