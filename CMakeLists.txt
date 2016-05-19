@@ -1,5 +1,8 @@
 cmake_minimum_required (VERSION 3.0.2)
 
+project (fdtd3d)
+find_package(CUDA QUIET REQUIRED)
+
 option(PRINT_MESSAGE "Print all messages" OFF)
 option(PARALLEL_GRID "Use parallel grid" OFF)
 
@@ -8,17 +11,21 @@ set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
 set(PARALLEL_GRID_DIMENSION "2" CACHE STRING "Defines number dimension in grid")
 set(PARALLEL_BUFFER_DIMENSION "x" CACHE STRING "Defines dimension of parallel grid")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORCE_INLINES")
+
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set (CMAKE_BUILD_TYPE "Debug")
 endif ()
 
-if ("${CMAKE_CXX_COMPILER}" STREQUAL "")
-  set (CMAKE_CXX_COMPILER "mpicxx")
-endif ()
+if ("${PARALLEL_GRID}")
+  if ("${CMAKE_CXX_COMPILER}" STREQUAL "")
+    set (CMAKE_CXX_COMPILER "mpicxx")
+  endif ()
 
-if ("${CMAKE_C_COMPILER}" STREQUAL "")
-  set (CMAKE_C_COMPILER "mpicc")
-endif ()
+  if ("${CMAKE_C_COMPILER}" STREQUAL "")
+    set (CMAKE_C_COMPILER "mpicc")
+  endif ()
+endif()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   message ("Build type: ${CMAKE_BUILD_TYPE}.")
@@ -183,24 +190,24 @@ endif ()
 
 set (COMPILE_FLAGS "${COMPILE_FLAGS} ${BUILD_FLAGS}")
 
-
-find_package (MPI REQUIRED)
-message ("${MPI_INCLUDE_PATH}")
-
 ###### Project fdtd ######
-project (fdtd3d)
 message ("Project dir: ${PROJECT_SOURCE_DIR}")
 
 # Include MPI
-include_directories (${MPI_INCLUDE_PATH})
-set (LIBS ${LIBS} ${MPI_LIBRARIES})
-if (MPI_COMPILE_FLAGS)
-  set (COMPILE_FLAGS ${COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
-endif ()
+if ("${PARALLEL_GRID}")
+  find_package (MPI REQUIRED)
+  message ("${MPI_INCLUDE_PATH}")
 
-if (MPI_LINK_FLAGS)
-  set (LINK_FLAGS ${LINK_FLAGS} ${MPI_LINK_FLAGS})
-endif ()
+  include_directories (${MPI_INCLUDE_PATH})
+  set (LIBS ${LIBS} ${MPI_LIBRARIES})
+  if (MPI_COMPILE_FLAGS)
+    set (COMPILE_FLAGS ${COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
+  endif ()
+
+  if (MPI_LINK_FLAGS)
+    set (LINK_FLAGS ${LINK_FLAGS} ${MPI_LINK_FLAGS})
+  endif ()
+endif()
 
 message ("Compile flags: ${COMPILE_FLAGS}")
 message ("Link flags: ${LINK_FLAGS}")
@@ -254,8 +261,17 @@ include_directories ("${PROJECT_SOURCE_DIR}/Solver")
 add_subdirectory (Solver)
 set (LIBS ${LIBS} Solver)
 
+include_directories(
+    kernels
+    utility
+    )
 
-add_executable (fdtd3d main.cpp)
+cuda_add_executable(
+    fdtd3d main.cpp
+    invoke.cu
+    invoke.h
+    )
+
 target_link_libraries (fdtd3d ${LIBS})
 
 set_target_properties (fdtd3d PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")

@@ -5,7 +5,9 @@
 #include "DATDumper.h"
 #include "DATLoader.h"
 
+#if defined (PARALLEL_GRID)
 #include <mpi.h>
+#endif
 #include <cmath>
 
 extern PhysicsConst PhConst;

@@ -1,9 +1,11 @@
 #ifndef PARALLEL_GRID_H
 #define PARALLEL_GRID_H
 
+#include "Grid.h"
+
 #ifdef PARALLEL_GRID
 
-#include "Grid.h"
+#include <mpi.h>
 
 #ifdef GRID_1D
 #define ParallelGridBase Grid<GridCoordinate1D>
