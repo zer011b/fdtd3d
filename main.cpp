@@ -14,8 +14,6 @@
 
 #include "SchemeTEz.h"
 
-#include "invoke.h"
-
 int main (int argc, char** argv)
 {
 #if defined (PARALLEL_GRID)
@@ -53,8 +51,6 @@ int main (int argc, char** argv)
   scheme.initGrids ();
 
   scheme.performStep ();
-
-  execute ();
 
 #if defined (PARALLEL_GRID)
 #if PRINT_MESSAGE
