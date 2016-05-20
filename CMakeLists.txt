@@ -252,10 +252,10 @@ set (LIBS ${LIBS} Loader)
 set (LIBS ${LIBS} Dumper)
 
 
+include_directories("${PROJECT_SOURCE_DIR}")
 include_directories ("${PROJECT_SOURCE_DIR}/Scheme")
 add_subdirectory (Scheme)
 set (LIBS ${LIBS} Scheme)
-
 
 include_directories ("${PROJECT_SOURCE_DIR}/Solver")
 add_subdirectory (Solver)

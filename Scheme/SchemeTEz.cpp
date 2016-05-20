@@ -10,14 +10,40 @@
 #endif
 #include <cmath>
 
+#include "invoke.h"
+
 extern PhysicsConst PhConst;
 
 void
 SchemeTEz::performStep ()
 {
-  for (uint32_t t = 0; t < totalStep; ++t)
+  int size = Ez.getSize().calculateTotalCoord();
+
+  FieldValue *tmp_Ez = new FieldValue [size];
+  FieldValue *tmp_Hx = new FieldValue [size];
+  FieldValue *tmp_Hy = new FieldValue [size];
+
+  FieldValue *tmp_Ez_prev = new FieldValue [size];
+  FieldValue *tmp_Hx_prev = new FieldValue [size];
+  FieldValue *tmp_Hy_prev = new FieldValue [size];
+
+  for (int i = 0; i < size; ++i)
   {
-    for (int i = 1; i < Ez.getSize ().getX () - 1; ++i)
+    FieldPointValue* valEz = Ez.getFieldPointValue (i);
+    tmp_Ez[i] = valEz->getCurValue ();
+    tmp_Ez_prev[i] = valEz->getPrevValue ();
+
+    FieldPointValue* valHx = Hx.getFieldPointValue (i);
+    tmp_Hx[i] = valHx->getCurValue ();
+    tmp_Hx_prev[i] = valHx->getPrevValue ();
+
+    FieldPointValue* valHy = Hy.getFieldPointValue (i);
+    tmp_Hy[i] = valHy->getCurValue ();
+    tmp_Hy_prev[i] = valHy->getPrevValue ();
+  }
+
+  execute (tmp_Ez, tmp_Hx, tmp_Hy, tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,  Ez.getSize ().getX (),  Ez.getSize ().getY (), gridTimeStep, gridStep, totalStep);
+    /*for (int i = 1; i < Ez.getSize ().getX (); ++i)
     {
       for (int j = 1; j < Ez.getSize ().getY () - 1; ++j)
       {
@@ -96,8 +122,30 @@ SchemeTEz::performStep ()
     }
 
     Hx.nextTimeStep ();
-    Hy.nextTimeStep ();
-  }
+    Hy.nextTimeStep ();*/
+
+    for (int i = 0; i < size; ++i)
+    {
+      FieldPointValue* valEz = Ez.getFieldPointValue (i);
+      valEz->setCurValue (tmp_Ez[i]);
+      valEz->setPrevValue (tmp_Ez_prev[i]);
+
+      FieldPointValue* valHx = Hx.getFieldPointValue (i);
+      valHx->setCurValue (tmp_Hx[i]);
+      valHx->setPrevValue (tmp_Hx_prev[i]);
+
+      FieldPointValue* valHy = Hy.getFieldPointValue (i);
+      valHy->setCurValue (tmp_Hy[i]);
+      valHy->setPrevValue (tmp_Hy_prev[i]);
+    }
+
+    delete[] tmp_Ez;
+    delete[] tmp_Hx;
+    delete[] tmp_Hy;
+
+    delete[] tmp_Ez_prev;
+    delete[] tmp_Hx_prev;
+    delete[] tmp_Hy_prev;
 
 #if defined (PARALLEL_GRID)
   if (process == 0)
