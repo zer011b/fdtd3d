@@ -126,6 +126,12 @@ SchemeTEz::performStep ()
 
     for (int i = 0; i < size; ++i)
     {
+      /*if (tmp_Ez[i] != 0 || tmp_Ez_prev[i] != 0 ||
+          tmp_Hx[i] != 0 || tmp_Hx_prev[i] != 0 ||
+          tmp_Hy[i] != 0 || tmp_Hy_prev[i] != 0)
+      {
+        printf ("%d !!!!! %f %f %f %f %f %f\n", i, tmp_Ez[i], tmp_Ez_prev[i], tmp_Hx[i], tmp_Hx_prev[i], tmp_Hy[i], tmp_Hy_prev[i]);
+      }*/
       FieldPointValue* valEz = Ez.getFieldPointValue (i);
       valEz->setCurValue (tmp_Ez[i]);
       valEz->setPrevValue (tmp_Ez_prev[i]);
