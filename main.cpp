@@ -37,9 +37,10 @@ int main (int argc, char** argv)
 
   SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, 100);
 #else
-  GridCoordinate2D overallSize (100);
+  GridCoordinate2D overallSize (256);
+  //GridCoordinate size (100, 100);
 
-  SchemeTEz scheme (overallSize, 120);
+  SchemeTEz scheme (overallSize, 10000);
 #endif
 
   scheme.initScheme (0.000003, 20);

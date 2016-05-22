@@ -266,6 +266,10 @@ include_directories(
     utility
     )
 
+set(
+    CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3 -arch sm_50 -ccbin g++ -Xcompiler -m64"
+    )
+
 cuda_add_executable(
     fdtd3d main.cpp
     invoke.cu
