@@ -51,10 +51,6 @@ SchemeTEz::performStep ()
 
     Ez.nextTimeStep ();
 
-#if defined (PARALLEL_GRID)
-    Ez.Share ();
-#endif
-
     for (int i = 1; i < Ez.getSize ().getX () - 1; ++i)
     {
       for (int j = 1; j < Ez.getSize ().getY () - 1; ++j)
@@ -99,11 +95,6 @@ SchemeTEz::performStep ()
 
     Hx.nextTimeStep ();
     Hy.nextTimeStep ();
-
-#if defined (PARALLEL_GRID)
-    Hx.Share ();
-    Hy.Share ();
-#endif
   }
 
 #if defined (PARALLEL_GRID)
@@ -132,6 +123,7 @@ void
 SchemeTEz::initProcess (int rank)
 {
   process = rank;
+}
 #endif
 
 void
@@ -183,7 +175,7 @@ SchemeTEz::initGrids ()
 #endif
 
 #if defined (PARALLEL_GRID)
-  Eps.Share ();
-  Mu.Share ();
+  Eps.share ();
+  Mu.share ();
 #endif
 }

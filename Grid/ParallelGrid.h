@@ -211,7 +211,10 @@ public:
                 const ParallelGridCoordinate& bufSizeL, const ParallelGridCoordinate& bufSizeR,
                 const int process, const int totalProc, uint32_t step);
 
-  void Share ();
+  // Switch to next time step.
+  virtual void nextTimeStep ();
+
+  void share ();
 };
 
 #endif /* PARALLEL_GRID */

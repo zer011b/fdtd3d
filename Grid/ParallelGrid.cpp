@@ -1295,7 +1295,7 @@ ParallelGrid::SendReceive ()
 }
 
 void
-ParallelGrid::Share ()
+ParallelGrid::share ()
 {
   SendReceive ();
 
@@ -2476,6 +2476,14 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection)
     }
 #endif /* GRID_1D || GRID_2D || GRID_3D */
   }
+}
+
+void
+ParallelGrid::nextTimeStep ()
+{
+  ParallelGridBase::nextTimeStep ();
+
+  share ();
 }
 
 #endif /* PARALLEL_GRID */
