@@ -151,8 +151,10 @@ void execute (FieldValue *tmp_Ez, FieldValue *tmp_Hx, FieldValue *tmp_Hy, FieldV
   cudaMemcpy (Hy_cuda_prev, tmp_Hy_prev, size, cudaMemcpyHostToDevice);
   cudaCheckErrors ("12");
 
-  dim3 N (sx / 32, sy / 32);
-  dim3 N1 (32, 32);
+  int NN = 32;
+
+  dim3 N (sx / NN, sy / NN);
+  dim3 N1 (NN, NN);
 
   for (int t = 0; t < totalStep; ++t)
   {
