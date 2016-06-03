@@ -5,6 +5,7 @@ find_package(CUDA QUIET REQUIRED)
 
 option(PRINT_MESSAGE "Print all messages" OFF)
 option(PARALLEL_GRID "Use parallel grid" OFF)
+option(CUDA_ENABLED "Use parallel grid" OFF)
 
 set(VALUE_TYPE "d" CACHE STRING "Defines type of values")
 set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
@@ -24,6 +25,14 @@ if ("${PARALLEL_GRID}")
 
   if ("${CMAKE_C_COMPILER}" STREQUAL "")
     set (CMAKE_C_COMPILER "mpicc")
+  endif ()
+else ()
+  if ("${CMAKE_CXX_COMPILER}" STREQUAL "")
+    set (CMAKE_CXX_COMPILER "g++")
+  endif ()
+
+  if ("${CMAKE_C_COMPILER}" STREQUAL "")
+    set (CMAKE_C_COMPILER "gcc")
   endif ()
 endif()
 
@@ -168,9 +177,9 @@ add_definitions (-std=c++11)
 
 set (BUILD_FLAGS "")
 
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-  set (BUILD_FLAGS "${BUILD_FLAGS} -flto -fno-fat-lto-objects")
-endif ()
+#if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+#  set (BUILD_FLAGS "${BUILD_FLAGS} -flto -fno-fat-lto-objects")
+#endif ()
 
 #set (BUILD_FLAGS "${BUILD_FLAGS} -fno-stack-protector")
 #set (BUILD_FLAGS "${BUILD_FLAGS} -fno-exceptions -fno-rtti")
@@ -261,20 +270,13 @@ include_directories ("${PROJECT_SOURCE_DIR}/Solver")
 add_subdirectory (Solver)
 set (LIBS ${LIBS} Solver)
 
-include_directories(
-    kernels
-    utility
-    )
+if ("${CUDA_ENABLED}")
+  set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${BUILD_FLAGS} -arch sm_50 -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64")
 
-set(
-    CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3 -arch sm_50 -ccbin g++ -Xcompiler -m64"
-    )
-
-cuda_add_executable(
-    fdtd3d main.cpp
-    invoke.cu
-    invoke.h
-    )
+  cuda_add_executable(fdtd3d main.cpp invoke.cu invoke.h)
+else ()
+  add_executable (fdtd3d main.cpp)
+endif ()
 
 target_link_libraries (fdtd3d ${LIBS})
 
