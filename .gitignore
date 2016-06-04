@@ -1,0 +1,8 @@
+# Standard build dirs
+
+Release/
+Debug/
+
+# third-party
+
+third-party/
