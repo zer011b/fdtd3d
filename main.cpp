@@ -16,6 +16,10 @@
 
 int main (int argc, char** argv)
 {
+  int totalTimeSteps = 100;
+
+  int gridSize = 100;
+
 #if defined (PARALLEL_GRID)
   MPI_Init(&argc, &argv);
 
@@ -30,17 +34,15 @@ int main (int argc, char** argv)
 #endif /* PARALLEL_GRID */
 
 #if defined (PARALLEL_GRID)
-  ParallelGridCoordinate overallSize (100);
-  //GridCoordinate size (100, 100);
+  ParallelGridCoordinate overallSize (gridSize);
   ParallelGridCoordinate bufferLeft (10);
   ParallelGridCoordinate bufferRight (10);
 
-  SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, 100);
+  SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
 #else
-  GridCoordinate2D overallSize (256);
-  //GridCoordinate size (100, 100);
+  GridCoordinate2D overallSize (gridSize);
 
-  SchemeTEz scheme (overallSize, 100);
+  SchemeTEz scheme (overallSize, totalTimeSteps);
 #endif
 
   scheme.initScheme (0.000003, 20);
@@ -51,7 +53,7 @@ int main (int argc, char** argv)
 
   scheme.initGrids ();
 
-  scheme.performStep ();
+  scheme.performSteps ();
 
 #if defined (PARALLEL_GRID)
 #if PRINT_MESSAGE

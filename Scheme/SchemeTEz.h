@@ -39,7 +39,7 @@ class SchemeTEz: public Scheme
   int process;
 
 public:
-  void performStep () override;
+  void performSteps () override;
 
   void initScheme (FieldValue, FieldValue);
 

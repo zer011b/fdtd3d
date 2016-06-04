@@ -10,7 +10,7 @@ class Solver
 
 public:
 
-  void performStep ();
+  void performSteps ();
 
   Solver (Scheme* initScheme) :
     scheme (initScheme)
