@@ -16,11 +16,11 @@ class SimpleScheme: public Scheme
   Grid<GridCoordinate1D> *Mu;
 
 public:
-  void performStep () override
+  void performSteps () override
   {
   }
 
-  bool performStep1D ()
+  bool performSteps1D ()
   {
     // Calculate E
     // for (grid_coord i = 1; i < E->getSize ().getX (); ++i)

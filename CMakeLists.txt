@@ -172,6 +172,11 @@ else ()
   message ("Parallel grid: OFF.")
 endif ()
 
+if ("${CUDA_ENABLED}")
+  message ("Cuda: ON.")
+  add_definitions (-DCUDA_ENABLED="")
+endif ()
+
 add_definitions (-std=c++11)
 
 
@@ -238,6 +243,9 @@ add_subdirectory (${PROJECT_SOURCE_DIR}/third-party/EasyBMP)
 include_directories ("${PROJECT_SOURCE_DIR}/Helpers")
 add_subdirectory (Helpers)
 
+include_directories ("${PROJECT_SOURCE_DIR}/Kernels")
+add_subdirectory (Kernels)
+
 # Add Grid library
 # Include headers of Grid
 include_directories ("${PROJECT_SOURCE_DIR}/Grid")
@@ -273,7 +281,7 @@ set (LIBS ${LIBS} Solver)
 if ("${CUDA_ENABLED}")
   set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${BUILD_FLAGS} -arch sm_50 -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64")
 
-  cuda_add_executable(fdtd3d main.cpp invoke.cu invoke.h)
+  cuda_add_executable(fdtd3d main.cpp invoke.cu Kernels/Kernels.cpp)
 else ()
   add_executable (fdtd3d main.cpp)
 endif ()

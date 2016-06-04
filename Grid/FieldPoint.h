@@ -1,21 +1,7 @@
 #ifndef FIELD_POINT_H
 #define FIELD_POINT_H
 
-/**
- * Small values define all field values as float.
- * Full values define all field values as double.
- * Small values decrease memory usage, full values increase accuracy.
- */
-#ifdef FLOAT_VALUES
-typedef float FieldValue;
-#endif /* FLOAT_VALUES */
-#ifdef DOUBLE_VALUES
-typedef double FieldValue;
-#endif /* DOUBLE_VALUES */
-#ifdef LONG_DOUBLE_VALUES
-typedef long double FieldValue;
-#endif /* LONG_DOUBLE_VALUES */
-
+#include "FieldValue.h"
 
 /**
  * Class defining all values in time at the specific grid point.

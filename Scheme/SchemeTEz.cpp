@@ -1,22 +1,28 @@
-#include "SchemeTEz.h"
-#include "PhysicsConst.h"
 #include "BMPDumper.h"
 #include "BMPLoader.h"
 #include "DATDumper.h"
 #include "DATLoader.h"
+#include "Kernels.h"
+#include "PhysicsConst.h"
+#include "SchemeTEz.h"
 
 #if defined (PARALLEL_GRID)
 #include <mpi.h>
 #endif
+
 #include <cmath>
 
+#if defined (CUDA_ENABLED)
 #include "invoke.h"
+#endif
 
 extern PhysicsConst PhConst;
 
 void
-SchemeTEz::performStep ()
+SchemeTEz::performSteps ()
 {
+#if defined (CUDA_ENABLED)
+
   int size = Ez.getSize().calculateTotalCoord();
 
   FieldValue *tmp_Ez = new FieldValue [size];
@@ -43,7 +49,41 @@ SchemeTEz::performStep ()
   }
 
   execute (tmp_Ez, tmp_Hx, tmp_Hy, tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,  Ez.getSize ().getX (),  Ez.getSize ().getY (), gridTimeStep, gridStep, totalStep);
-    /*for (int i = 1; i < Ez.getSize ().getX (); ++i)
+
+  for (int i = 0; i < size; ++i)
+  {
+    /*if (tmp_Ez[i] != 0 || tmp_Ez_prev[i] != 0 ||
+        tmp_Hx[i] != 0 || tmp_Hx_prev[i] != 0 ||
+        tmp_Hy[i] != 0 || tmp_Hy_prev[i] != 0)
+    {
+      printf ("%d !!!!! %f %f %f %f %f %f\n", i, tmp_Ez[i], tmp_Ez_prev[i], tmp_Hx[i], tmp_Hx_prev[i], tmp_Hy[i], tmp_Hy_prev[i]);
+    }*/
+    FieldPointValue* valEz = Ez.getFieldPointValue (i);
+    valEz->setCurValue (tmp_Ez[i]);
+    valEz->setPrevValue (tmp_Ez_prev[i]);
+
+    FieldPointValue* valHx = Hx.getFieldPointValue (i);
+    valHx->setCurValue (tmp_Hx[i]);
+    valHx->setPrevValue (tmp_Hx_prev[i]);
+
+    FieldPointValue* valHy = Hy.getFieldPointValue (i);
+    valHy->setCurValue (tmp_Hy[i]);
+    valHy->setPrevValue (tmp_Hy_prev[i]);
+  }
+
+  delete[] tmp_Ez;
+  delete[] tmp_Hx;
+  delete[] tmp_Hy;
+
+  delete[] tmp_Ez_prev;
+  delete[] tmp_Hx_prev;
+  delete[] tmp_Hy_prev;
+
+#else /* CUDA_ENABLED */
+
+  for (int t = 0; t < totalStep; ++t)
+  {
+    for (int i = 1; i < Ez.getSize ().getX (); ++i)
     {
       for (int j = 1; j < Ez.getSize ().getY () - 1; ++j)
       {
@@ -60,8 +100,14 @@ SchemeTEz::performStep ()
         FieldPointValue* valHy1 = Hy.getFieldPointValue (pos1);
         FieldPointValue* valHy2 = Hy.getFieldPointValue (pos2);
 
-        FieldValue val = valEz->getPrevValue () + (gridTimeStep / (valEps->getCurValue () * gridStep)) *
-          (valHx1->getPrevValue () - valHx2->getPrevValue () + valHy1->getPrevValue () - valHy2->getPrevValue ());
+        FieldValue val = calculateEz_2D_TMz (valEz->getPrevValue (),
+                                             valHx1->getPrevValue (),
+                                             valHx2->getPrevValue (),
+                                             valHy1->getPrevValue (),
+                                             valHy2->getPrevValue (),
+                                             gridTimeStep,
+                                             gridStep,
+                                             valEps->getCurValue ());
 
         FieldPointValue* tmp = Ez.getFieldPointValue (pos1);
         tmp->setCurValue (val);
@@ -92,8 +138,12 @@ SchemeTEz::performStep ()
         FieldPointValue* valEz1 = Ez.getFieldPointValue (pos1);
         FieldPointValue* valEz2 = Ez.getFieldPointValue (pos2);
 
-        FieldValue val = valHx->getPrevValue () + (gridTimeStep / (valMu->getCurValue () * gridStep)) *
-          (valEz1->getPrevValue () - valEz2->getPrevValue ());
+        FieldValue val = calculateHx_2D_TMz (valHx->getPrevValue (),
+                                             valEz1->getPrevValue (),
+                                             valEz2->getPrevValue (),
+                                             gridTimeStep,
+                                             gridStep,
+                                             valMu->getCurValue ());
 
         FieldPointValue* tmp = Hx.getFieldPointValue (pos1);
         tmp->setCurValue (val);
@@ -113,8 +163,12 @@ SchemeTEz::performStep ()
         FieldPointValue* valEz1 = Ez.getFieldPointValue (pos2);
         FieldPointValue* valEz2 = Ez.getFieldPointValue (pos1);
 
-        FieldValue val = valHy->getPrevValue () + (gridTimeStep / (valMu->getCurValue () * gridStep)) *
-          (valEz1->getPrevValue () - valEz2->getPrevValue ());
+        FieldValue val = calculateHy_2D_TMz (valHy->getPrevValue (),
+                                             valEz1->getPrevValue (),
+                                             valEz2->getPrevValue (),
+                                             gridTimeStep,
+                                             gridStep,
+                                             valMu->getCurValue ());
 
         FieldPointValue* tmp = Hy.getFieldPointValue (pos1);
         tmp->setCurValue (val);
@@ -122,36 +176,9 @@ SchemeTEz::performStep ()
     }
 
     Hx.nextTimeStep ();
-    Hy.nextTimeStep ();*/
-
-    for (int i = 0; i < size; ++i)
-    {
-      /*if (tmp_Ez[i] != 0 || tmp_Ez_prev[i] != 0 ||
-          tmp_Hx[i] != 0 || tmp_Hx_prev[i] != 0 ||
-          tmp_Hy[i] != 0 || tmp_Hy_prev[i] != 0)
-      {
-        printf ("%d !!!!! %f %f %f %f %f %f\n", i, tmp_Ez[i], tmp_Ez_prev[i], tmp_Hx[i], tmp_Hx_prev[i], tmp_Hy[i], tmp_Hy_prev[i]);
-      }*/
-      FieldPointValue* valEz = Ez.getFieldPointValue (i);
-      valEz->setCurValue (tmp_Ez[i]);
-      valEz->setPrevValue (tmp_Ez_prev[i]);
-
-      FieldPointValue* valHx = Hx.getFieldPointValue (i);
-      valHx->setCurValue (tmp_Hx[i]);
-      valHx->setPrevValue (tmp_Hx_prev[i]);
-
-      FieldPointValue* valHy = Hy.getFieldPointValue (i);
-      valHy->setCurValue (tmp_Hy[i]);
-      valHy->setPrevValue (tmp_Hy_prev[i]);
-    }
-
-    delete[] tmp_Ez;
-    delete[] tmp_Hx;
-    delete[] tmp_Hy;
-
-    delete[] tmp_Ez_prev;
-    delete[] tmp_Hx_prev;
-    delete[] tmp_Hy_prev;
+    Hy.nextTimeStep ();
+  }
+#endif /* !CUDA_ENABLED */
 
 #if defined (PARALLEL_GRID)
   if (process == 0)

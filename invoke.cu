@@ -1,4 +1,5 @@
 #include "invoke.h"
+#include "Kernels.h"
 
 #include "cstdio"
 
@@ -39,8 +40,14 @@ __global__ void fdtd_step_Ez (FieldValue *Ez, FieldValue *Hx, FieldValue *Hy,
     return;
   }
 
-  Ez[index1] = Ez_prev[index1] + (gridTimeStep / (0.0000000000088541878176203892 * gridStep)) *
-    (Hx_prev[index3] - Hx_prev[index1] + Hy_prev[index1] - Hy_prev[index2]);
+  Ez[index1] = calculateEz_2D_TMz (Ez_prev[index1],
+                                   Hx_prev[index3],
+                                   Hx_prev[index1],
+                                   Hy_prev[index1],
+                                   Hy_prev[index2],
+                                   gridTimeStep,
+                                   gridStep,
+                                   1.0 * 0.0000000000088541878176203892);
 
   if (i == sx / 2 && j == sy / 2)
   {
@@ -74,8 +81,12 @@ __global__ void fdtd_step_Hx (FieldValue *Ez, FieldValue *Hx, FieldValue *Hy,
     return;
   }
 
-  Hx[index1] = Hx_prev[index1] + (gridTimeStep / (0.0000012566370614359173 * gridStep)) *
-    (Ez_prev[index1] - Ez_prev[index2]);
+  Hx[index1] = calculateHx_2D_TMz (Hx_prev[index1],
+                                   Ez_prev[index1],
+                                   Ez_prev[index2],
+                                   gridTimeStep,
+                                   gridStep,
+                                   1.0 * 0.0000012566370614359173);
 
   Hx_prev[index1] = Hx[index1];
 }
@@ -101,8 +112,12 @@ __global__ void fdtd_step_Hy (FieldValue *Ez, FieldValue *Hx, FieldValue *Hy,
     return;
   }
 
-  Hy[index1] = Hy_prev[index1] + (gridTimeStep / (0.0000012566370614359173 * gridStep)) *
-    (Ez_prev[index2] - Ez_prev[index1]);
+  Hy[index1] = calculateHx_2D_TMz (Hy_prev[index1],
+                                   Ez_prev[index2],
+                                   Ez_prev[index1],
+                                   gridTimeStep,
+                                   gridStep,
+                                   1.0 * 0.0000012566370614359173);
 
   Hy_prev[index1] = Hy[index1];
 }
