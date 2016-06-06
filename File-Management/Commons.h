@@ -6,6 +6,8 @@
 #include "Assert.h"
 #include "Grid.h"
 
+extern std::string int64_to_string(int64_t value);
+
 /**
  * Type of save/load from file.
  * CURRENT: current layer.
@@ -50,13 +52,13 @@ protected:
   void setFileNames ()
   {
     cur.clear ();
-    cur = std::string ("current[") + std::to_string (step) + std::string ("]");
+    cur = std::string ("current[") + int64_to_string (step) + std::string ("]");
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     prev.clear ();
-    prev = std::string ("previous[") + std::to_string (step) + std::string ("]");
+    prev = std::string ("previous[") + int64_to_string (step) + std::string ("]");
 #if defined (TWO_TIME_STEPS)
     prevPrev.clear ();
-    prevPrev = std::string ("previous2[") + std::to_string (step) + std::string ("]");
+    prevPrev = std::string ("previous2[") + int64_to_string (step) + std::string ("]");
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
   }

@@ -90,7 +90,11 @@ Grid<TCoord>::Grid (const TCoord& s, uint32_t step) :
 {
   for (int i = 0; i < gridValues.size (); ++i)
   {
+#ifdef CXX11_ENABLED
     gridValues[i] = nullptr;
+#else
+    gridValues[i] = NULL;
+#endif
   }
 
 #if PRINT_MESSAGE
@@ -110,10 +114,19 @@ Grid<TCoord>::Grid (uint32_t step) :
 template <class TCoord>
 Grid<TCoord>::~Grid ()
 {
+#ifdef CXX11_ENABLED
   for (FieldPointValue* i_p : gridValues)
   {
     delete i_p;
   }
+#else
+  for (VectorFieldPointValues::iterator iter = gridValues.begin ();
+       iter != gridValues.end (); ++iter)
+  {
+    delete (*iter);
+  }
+#endif
+
 }
 
 /**
@@ -131,10 +144,18 @@ template <class TCoord>
 void
 Grid<TCoord>::shiftInTime ()
 {
+#ifdef CXX11_ENABLED
   for (FieldPointValue* i_p : getValues ())
   {
     i_p->shiftInTime ();
   }
+#else
+  for (VectorFieldPointValues::iterator iter = gridValues.begin ();
+       iter != gridValues.end (); ++iter)
+  {
+    (*iter)->shiftInTime ();
+  }
+#endif
 }
 
 template <class TCoord>

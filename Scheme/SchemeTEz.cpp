@@ -180,6 +180,7 @@ SchemeTEz::performSteps ()
   }
 #endif /* !CUDA_ENABLED */
 
+
 #if defined (PARALLEL_GRID)
   if (process == 0)
 #endif

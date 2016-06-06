@@ -33,7 +33,11 @@ public:
   virtual ~BMPLoader () {}
 
   // Virtual method for grid loading.
+#ifdef CXX11_ENABLED
   virtual void loadGrid (Grid<TCoord> &grid) const override;
+#else
+  virtual void loadGrid (Grid<TCoord> &grid) const;
+#endif
 
   // Setter and getter for maximum positive value.
   void setMaxValuePos (FieldPointValue& value)
