@@ -47,12 +47,20 @@ BMPDumper<TCoord>::writeToFile (Grid<TCoord> &grid) const
 {
   writeToFile (grid, CURRENT);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+#ifdef CXX11_ENABLED
   if (GridFileManager::type == ALL)
+#else
+  if (this->GridFileManager::type == ALL)
+#endif
   {
     writeToFile (grid, PREVIOUS);
   }
 #if defined (TWO_TIME_STEPS)
+#ifdef CXX11_ENABLED
   if (GridFileManager::type == ALL)
+#else
+  if (this->GridFileManager::type == ALL)
+#endif
   {
     writeToFile (grid, PREVIOUS2);
   }

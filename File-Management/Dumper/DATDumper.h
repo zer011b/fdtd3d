@@ -42,21 +42,33 @@ DATDumper<TCoord>::writeToFile (Grid<TCoord> &grid, GridFileType type) const
   {
     case CURRENT:
     {
+#ifdef CXX11_ENABLED
       std::string cur_dat = GridFileManager::cur + std::string (".dat");
+#else
+      std::string cur_dat = this->GridFileManager::cur + std::string (".dat");
+#endif
       file.open (cur_dat.c_str (), std::ios::out | std::ios::binary);
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
+#ifdef CXX11_ENABLED
       std::string prev_dat = GridFileManager::prev + std::string (".dat");
+#else
+      std::string prev_dat = this->GridFileManager::prev + std::string (".dat");
+#endif
       file.open (prev_dat.c_str (), std::ios::out | std::ios::binary);
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
+#ifdef CXX11_ENABLED
       std::string prevPrev_dat = GridFileManager::prevPrev + std::string (".dat");
+#else
+      std::string prevPrev_dat = this->GridFileManager::prevPrev + std::string (".dat");
+#endif
       file.open (prevPrev_dat.c_str (), std::ios::out | std::ios::binary);
       break;
     }
@@ -121,12 +133,20 @@ DATDumper<TCoord>::dumpGrid (Grid<TCoord> &grid) const
 
   writeToFile (grid, CURRENT);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+#ifdef CXX11_ENABLED
   if (GridFileManager::type == ALL)
+#else
+  if (this->GridFileManager::type == ALL)
+#endif
   {
     writeToFile (grid, PREVIOUS);
   }
 #if defined (TWO_TIME_STEPS)
+#ifdef CXX11_ENABLED
   if (GridFileManager::type == ALL)
+#else
+  if (this->GridFileManager::type == ALL)
+#endif
   {
     writeToFile (grid, PREVIOUS2);
   }
