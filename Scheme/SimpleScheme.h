@@ -16,7 +16,12 @@ class SimpleScheme: public Scheme
   Grid<GridCoordinate1D> *Mu;
 
 public:
-  void performSteps () override
+
+#ifdef CXX11_ENABLED
+  virtual void performSteps () override
+#else
+  virtual void performSteps ()
+#endif
   {
   }
 

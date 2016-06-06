@@ -19,7 +19,11 @@ class DATDumper: public Dumper<TCoord>
 public:
 
   // Virtual method for grid saving.
+#ifdef CXX11_ENABLED
   void dumpGrid (Grid<TCoord> &grid) const override;
+#else
+  void dumpGrid (Grid<TCoord> &grid) const;
+#endif
 };
 
 /**

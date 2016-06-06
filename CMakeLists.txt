@@ -1,11 +1,11 @@
 cmake_minimum_required (VERSION 3.0.2)
 
 project (fdtd3d)
-find_package(CUDA QUIET REQUIRED)
 
 option(PRINT_MESSAGE "Print all messages" OFF)
 option(PARALLEL_GRID "Use parallel grid" OFF)
-option(CUDA_ENABLED "Use parallel grid" OFF)
+option(CUDA_ENABLED "Cuda support enabled" OFF)
+option(CXX11_ENABLED "C++11 support enabled" OFF)
 
 set(VALUE_TYPE "d" CACHE STRING "Defines type of values")
 set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
@@ -13,6 +13,10 @@ set(PARALLEL_GRID_DIMENSION "2" CACHE STRING "Defines number dimension in grid")
 set(PARALLEL_BUFFER_DIMENSION "x" CACHE STRING "Defines dimension of parallel grid")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORCE_INLINES")
+
+if ("${CUDA_ENABLED}")
+  find_package(CUDA QUIET REQUIRED)
+endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set (CMAKE_BUILD_TYPE "Debug")
@@ -177,8 +181,9 @@ if ("${CUDA_ENABLED}")
   add_definitions (-DCUDA_ENABLED="")
 endif ()
 
-add_definitions (-std=c++11)
-
+if ("${CXX11_ENABLED}")
+  add_definitions (-std=c++11 -DCXX11_ENABLED)
+endif ()
 
 set (BUILD_FLAGS "")
 

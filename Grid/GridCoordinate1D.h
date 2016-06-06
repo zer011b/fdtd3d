@@ -1,7 +1,11 @@
 #ifndef GRID_COORDINATE_1D_H
 #define GRID_COORDINATE_1D_H
 
+#ifdef CXX11_ENABLED
 #include <cstdint>
+#else
+#include <stdint.h>
+#endif
 
 // Type of one-dimensional coordinate.
 typedef uint32_t grid_coord;
