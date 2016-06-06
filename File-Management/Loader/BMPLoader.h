@@ -73,12 +73,20 @@ BMPLoader<TCoord>::loadFromFile (Grid<TCoord> &grid) const
 {
   loadFromFile (grid, CURRENT);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+#ifdef CXX11_ENABLED
   if (GridFileManager::type == ALL)
+#else
+  if (this->GridFileManager::type == ALL)
+#endif
   {
     loadFromFile (grid, PREVIOUS);
   }
 #if defined (TWO_TIME_STEPS)
+#ifdef CXX11_ENABLED
   if (GridFileManager::type == ALL)
+#else
+  if (this->GridFileManager::type == ALL)
+#endif
   {
     loadFromFile (grid, PREVIOUS2);
   }
