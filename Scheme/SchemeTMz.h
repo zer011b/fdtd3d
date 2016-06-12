@@ -5,7 +5,7 @@
 #include "ParallelGrid.h"
 #include "Grid.h"
 
-class SchemeTEz: public Scheme
+class SchemeTMz: public Scheme
 {
 #if defined (PARALLEL_GRID)
   ParallelGrid Ez;
@@ -55,7 +55,7 @@ public:
 #endif
 
 #if defined (PARALLEL_GRID)
-  SchemeTEz (const GridCoordinate2D& totSize,
+  SchemeTMz (const GridCoordinate2D& totSize,
              const GridCoordinate2D& bufSizeL, const GridCoordinate2D& bufSizeR,
              const int process, const int totalProc, uint32_t tStep) :
     Ez (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
@@ -72,7 +72,7 @@ public:
   {
   }
 #else
-  SchemeTEz (const GridCoordinate2D& totSize, uint32_t tStep) :
+  SchemeTMz (const GridCoordinate2D& totSize, uint32_t tStep) :
     Ez (totSize, 0),
     Hx (totSize, 0),
     Hy (totSize, 0),
@@ -88,7 +88,7 @@ public:
   }
 #endif
 
-  ~SchemeTEz ()
+  ~SchemeTMz ()
   {
   }
 };
