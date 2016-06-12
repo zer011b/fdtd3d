@@ -12,7 +12,7 @@
 #include "DATDumper.h"
 #include "DATLoader.h"
 
-#include "SchemeTEz.h"
+#include "SchemeTMz.h"
 
 int main (int argc, char** argv)
 {
@@ -38,11 +38,11 @@ int main (int argc, char** argv)
   ParallelGridCoordinate bufferLeft (10);
   ParallelGridCoordinate bufferRight (10);
 
-  SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
+  SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
 #else
   GridCoordinate2D overallSize (gridSize);
 
-  SchemeTEz scheme (overallSize, totalTimeSteps);
+  SchemeTMz scheme (overallSize, totalTimeSteps);
 #endif
 
   scheme.initScheme (0.000003, 20);

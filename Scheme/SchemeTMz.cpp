@@ -4,7 +4,7 @@
 #include "DATLoader.h"
 #include "Kernels.h"
 #include "PhysicsConst.h"
-#include "SchemeTEz.h"
+#include "SchemeTMz.h"
 
 #if defined (PARALLEL_GRID)
 #include <mpi.h>
@@ -19,7 +19,7 @@
 extern PhysicsConst PhConst;
 
 void
-SchemeTEz::performSteps ()
+SchemeTMz::performSteps ()
 {
 #if defined (CUDA_ENABLED)
 
@@ -192,7 +192,7 @@ SchemeTEz::performSteps ()
 }
 
 void
-SchemeTEz::initScheme (FieldValue wLength, FieldValue step)
+SchemeTMz::initScheme (FieldValue wLength, FieldValue step)
 {
   waveLength = wLength;
   stepWaveLength = step;
@@ -204,14 +204,14 @@ SchemeTEz::initScheme (FieldValue wLength, FieldValue step)
 
 #if defined (PARALLEL_GRID)
 void
-SchemeTEz::initProcess (int rank)
+SchemeTMz::initProcess (int rank)
 {
   process = rank;
 }
 #endif
 
 void
-SchemeTEz::initGrids ()
+SchemeTMz::initGrids ()
 {
   FieldValue eps0 = PhConst.Eps0;
   FieldValue mu0 = PhConst.Mu0;
