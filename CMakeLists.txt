@@ -193,11 +193,14 @@ set (BUILD_FLAGS "")
 
 #set (BUILD_FLAGS "${BUILD_FLAGS} -fno-stack-protector")
 #set (BUILD_FLAGS "${BUILD_FLAGS} -fno-exceptions -fno-rtti")
-set (BUILD_FLAGS "${BUILD_FLAGS} -Wfatal-errors")
-set (BUILD_FLAGS "${BUILD_FLAGS} -Wall -Wextra -pedantic -pedantic-errors")
-set (BUILD_FLAGS "${BUILD_FLAGS} -Wformat=2 -Wformat-security -Wuninitialized -Winit-self -Wno-stack-protector")
-set (BUILD_FLAGS "${BUILD_FLAGS} -Wconversion -Wsign-conversion")
-set (BUILD_FLAGS "${BUILD_FLAGS} -Wmissing-declarations")
+
+set (WARNING_FLAGS "")
+set (WARNING_FLAGS "${WARNING_FLAGS} -Wfatal-errors")
+set (WARNING_FLAGS "${WARNING_FLAGS} -Wall -Wextra -pedantic -pedantic-errors")
+set (WARNING_FLAGS "${WARNING_FLAGS} -Wformat=2 -Wformat-security -Wuninitialized")
+set (WARNING_FLAGS "${WARNING_FLAGS} -Winit-self -Wno-stack-protector")
+set (WARNING_FLAGS "${WARNING_FLAGS} -Wconversion -Wsign-conversion")
+set (WARNING_FLAGS "${WARNING_FLAGS} -Wmissing-declarations")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
   set (BUILD_FLAGS "${BUILD_FLAGS} -O2")
@@ -207,7 +210,7 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   set (BUILD_FLAGS "${BUILD_FLAGS} -O0")
 endif ()
 
-set (COMPILE_FLAGS "${COMPILE_FLAGS} ${BUILD_FLAGS}")
+set (COMPILE_FLAGS "${COMPILE_FLAGS} ${BUILD_FLAGS} ${WARNING_FLAGS}")
 
 ###### Project fdtd ######
 message ("Project dir: ${PROJECT_SOURCE_DIR}")
@@ -251,6 +254,9 @@ add_subdirectory (Helpers)
 include_directories ("${PROJECT_SOURCE_DIR}/Kernels")
 add_subdirectory (Kernels)
 
+include_directories ("${PROJECT_SOURCE_DIR}/Cuda")
+add_subdirectory (Cuda)
+
 # Add Grid library
 # Include headers of Grid
 include_directories ("${PROJECT_SOURCE_DIR}/Grid")
@@ -286,7 +292,7 @@ set (LIBS ${LIBS} Solver)
 if ("${CUDA_ENABLED}")
   set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${BUILD_FLAGS} -arch sm_50 -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64")
 
-  cuda_add_executable(fdtd3d main.cpp invoke.cu Kernels/Kernels.cpp)
+  cuda_add_executable(fdtd3d main.cpp ${PROJECT_SOURCE_DIR}/Cuda/CudaKernel.cu ${PROJECT_SOURCE_DIR}/Kernels/Kernels.cpp)
 else ()
   add_executable (fdtd3d main.cpp)
 endif ()
