@@ -3,6 +3,12 @@
 
 #include "FieldValue.h"
 
+enum CudaExitStatus
+{
+  CUDA_OK,
+  CUDA_ERROR
+};
+
 #define calculateEz_2D_TMz(oldEz, Hx1, Hx2, Hy1, Hy2, dt, dx, eps) \
   ((oldEz) + ((dt) / ((eps) * (dx))) * ((Hx1) - (Hx2) + (Hy1) - (Hy2)))
 

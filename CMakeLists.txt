@@ -181,11 +181,12 @@ if ("${CUDA_ENABLED}")
   add_definitions (-DCUDA_ENABLED="")
 endif ()
 
-if ("${CXX11_ENABLED}")
-  add_definitions (-std=c++11 -DCXX11_ENABLED)
-endif ()
-
 set (BUILD_FLAGS "")
+
+if ("${CXX11_ENABLED}")
+  add_definitions (-DCXX11_ENABLED)
+  set (BUILD_FLAGS "${BUILD_FLAGS} -std=c++11")
+endif ()
 
 #if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 #  set (BUILD_FLAGS "${BUILD_FLAGS} -flto -fno-fat-lto-objects")
@@ -210,7 +211,7 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   set (BUILD_FLAGS "${BUILD_FLAGS} -O0")
 endif ()
 
-set (COMPILE_FLAGS "${COMPILE_FLAGS} ${BUILD_FLAGS} ${WARNING_FLAGS}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BUILD_FLAGS} ${WARNING_FLAGS}")
 
 ###### Project fdtd ######
 message ("Project dir: ${PROJECT_SOURCE_DIR}")
@@ -223,15 +224,15 @@ if ("${PARALLEL_GRID}")
   include_directories (${MPI_INCLUDE_PATH})
   set (LIBS ${LIBS} ${MPI_LIBRARIES})
   if (MPI_COMPILE_FLAGS)
-    set (COMPILE_FLAGS ${COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
+    set (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${MPI_COMPILE_FLAGS})
   endif ()
 
-  if (MPI_LINK_FLAGS)
-    set (LINK_FLAGS ${LINK_FLAGS} ${MPI_LINK_FLAGS})
-  endif ()
+  #if (MPI_LINK_FLAGS)
+  #  set (LINK_FLAGS ${LINK_FLAGS} ${MPI_LINK_FLAGS})
+  #endif ()
 endif()
 
-message ("Compile flags: ${COMPILE_FLAGS}")
+message ("Compile flags: ${CMAKE_CXX_FLAGS}")
 message ("Link flags: ${LINK_FLAGS}")
 
 
@@ -290,7 +291,7 @@ add_subdirectory (Solver)
 set (LIBS ${LIBS} Solver)
 
 if ("${CUDA_ENABLED}")
-  set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${BUILD_FLAGS} -arch sm_50 -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64")
+  set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch sm_50 -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64")
 
   cuda_add_executable(fdtd3d main.cpp ${PROJECT_SOURCE_DIR}/Cuda/CudaKernel.cu ${PROJECT_SOURCE_DIR}/Kernels/Kernels.cpp)
 else ()
@@ -299,5 +300,5 @@ endif ()
 
 target_link_libraries (fdtd3d ${LIBS})
 
-set_target_properties (fdtd3d PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-set_target_properties (fdtd3d PROPERTIES LINK_FLAGS "${LINK_FLAGS}")
+#set_target_properties (fdtd3d PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS}")
+#set_target_properties (fdtd3d PROPERTIES LINK_FLAGS "${LINK_FLAGS}")
