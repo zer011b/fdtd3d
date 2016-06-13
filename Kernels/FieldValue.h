@@ -16,4 +16,19 @@ typedef double FieldValue;
 typedef long double FieldValue;
 #endif /* LONG_DOUBLE_VALUES */
 
+#ifdef CXX11_ENABLED
+#include <cstdint>
+#else
+#include <stdint.h>
+#endif
+
+// Type of one-dimensional coordinate.
+typedef uint32_t grid_coord;
+
+// Type of three-dimensional coordinate.
+typedef uint64_t grid_iter;
+
+// Type of timesteps.
+typedef uint32_t time_step;
+
 #endif /* FIELD_VALUES_H */

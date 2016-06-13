@@ -48,7 +48,14 @@ SchemeTMz::performSteps ()
     tmp_Hy_prev[i] = valHy->getPrevValue ();
   }
 
-  executeTMz (tmp_Ez, tmp_Hx, tmp_Hy, tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,  Ez.getSize ().getX (),  Ez.getSize ().getY (), gridTimeStep, gridStep, totalStep);
+  CudaExitStatus exitStatus;
+  exitStatus = cudaExecuteTMzSteps (tmp_Ez, tmp_Hx, tmp_Hy,
+                                    tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,
+                                    gridTimeStep, gridStep,
+                                    Ez.getSize ().getX (), Ez.getSize ().getY (),
+                                    0, totalStep, 16, 16, 16, 16);
+
+  ASSERT (exitStatus == CUDA_OK);
 
   for (int i = 0; i < size; ++i)
   {
