@@ -13,7 +13,7 @@
 #include <cmath>
 
 #if defined (CUDA_ENABLED)
-#include "invoke.h"
+#include "CudaKernelInterface.h"
 #endif
 
 extern PhysicsConst PhConst;
@@ -48,7 +48,7 @@ SchemeTMz::performSteps ()
     tmp_Hy_prev[i] = valHy->getPrevValue ();
   }
 
-  execute (tmp_Ez, tmp_Hx, tmp_Hy, tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,  Ez.getSize ().getX (),  Ez.getSize ().getY (), gridTimeStep, gridStep, totalStep);
+  executeTMz (tmp_Ez, tmp_Hx, tmp_Hy, tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,  Ez.getSize ().getX (),  Ez.getSize ().getY (), gridTimeStep, gridStep, totalStep);
 
   for (int i = 0; i < size; ++i)
   {
