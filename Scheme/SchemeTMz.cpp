@@ -49,11 +49,12 @@ SchemeTMz::performSteps ()
   }
 
   CudaExitStatus exitStatus;
-  exitStatus = cudaExecuteTMzSteps (tmp_Ez, tmp_Hx, tmp_Hy,
-                                    tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,
-                                    gridTimeStep, gridStep,
-                                    Ez.getSize ().getX (), Ez.getSize ().getY (),
-                                    0, totalStep, 16, 16, 16, 16);
+  cudaExecuteTMzSteps (&exitStatus,
+                       tmp_Ez, tmp_Hx, tmp_Hy,
+                       tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,
+                       gridTimeStep, gridStep,
+                       Ez.getSize ().getX (), Ez.getSize ().getY (),
+                       0, totalStep, 16, 16, 16, 16);
 
   ASSERT (exitStatus == CUDA_OK);
 
