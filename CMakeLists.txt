@@ -195,9 +195,11 @@ endif ()
 #set (BUILD_FLAGS "${BUILD_FLAGS} -fno-stack-protector")
 #set (BUILD_FLAGS "${BUILD_FLAGS} -fno-exceptions -fno-rtti")
 
+#-pedantic -pedantic-errors
+
 set (WARNING_FLAGS "")
 set (WARNING_FLAGS "${WARNING_FLAGS} -Wfatal-errors")
-set (WARNING_FLAGS "${WARNING_FLAGS} -Wall -Wextra -pedantic -pedantic-errors")
+set (WARNING_FLAGS "${WARNING_FLAGS} -Wall -Wextra")
 set (WARNING_FLAGS "${WARNING_FLAGS} -Wformat=2 -Wformat-security -Wuninitialized")
 set (WARNING_FLAGS "${WARNING_FLAGS} -Winit-self -Wno-stack-protector")
 set (WARNING_FLAGS "${WARNING_FLAGS} -Wconversion -Wsign-conversion")
