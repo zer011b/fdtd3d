@@ -54,7 +54,7 @@ SchemeTMz::performSteps ()
                        tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,
                        gridTimeStep, gridStep,
                        Ez.getSize ().getX (), Ez.getSize ().getY (),
-                       0, totalStep, 16, 16, 16, 16);
+                       0, totalStep, Ez.getSize ().getX () / 16, Ez.getSize ().getY () / 16, 16, 16);
 
   ASSERT (exitStatus == CUDA_OK);
 

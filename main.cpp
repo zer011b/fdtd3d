@@ -18,7 +18,7 @@ int main (int argc, char** argv)
 {
   int totalTimeSteps = 100;
 
-  int gridSize = 100;
+  int gridSize = 256;
 
 #if defined (PARALLEL_GRID)
   MPI_Init(&argc, &argv);

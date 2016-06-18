@@ -4,13 +4,13 @@
 
 # fdtd3d
 
-This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP) if required. The key idea is building of solver for your specific needs with different components, i.e. concurrency support, parallel buffer types, specific dimension and others.  
+This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP/Cuda) if required. The key idea is building of solver for your specific needs with different components, i.e. concurrency support with enabled MPI, OpenMP or GPU support, parallel buffer types, specific dimension and others.
 
 For additional info on current project development status and future plans check issues and milestones.
 
 # Build Process
 
-Build is done using cmake. Although, there are build and run scripts you could find useful.
+Build is done using cmake. Also there are build and run scripts you could find useful.
 
 ## Release Build
 
@@ -54,6 +54,8 @@ Example of build with scripts. This will build 2D parallel grid with x buffer, d
 -DPRINT_MESSAGE - print output (ON or OFF)
 -DPARALLEL_GRID - use parallel grid or not (ON or OFF)
 -DPARALLEL_BUFFER_DIMENSION - dimension of parallel buffers, i.e. actual coordinate systems (x, y, z, xy, yz, xz, xyz)
+-DCXX11_ENABLED - allow support of C++11 (ON or OFF)
+-DCUDA_ENABLED - enable support of GPU (ON or OFF)
 ```
 
 # Preprocessor variables
