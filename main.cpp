@@ -35,8 +35,8 @@ int main (int argc, char** argv)
 
 #if defined (PARALLEL_GRID)
   ParallelGridCoordinate overallSize (gridSize);
-  ParallelGridCoordinate bufferLeft (10);
-  ParallelGridCoordinate bufferRight (10);
+  ParallelGridCoordinate bufferLeft (30);
+  ParallelGridCoordinate bufferRight (30);
 
   SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
 #else

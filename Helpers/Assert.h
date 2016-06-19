@@ -14,10 +14,7 @@ void program_fail ();
   program_fail (); \
 }
 #else /* PRINT_MESSAGE */
-#define UNREACHABLE \
-{ \
-  program_fail (); \
-}
+#define UNREACHABLE
 #endif /* !PRINT_MESSAGE */
 
 // Unconditional assert with message.
@@ -28,10 +25,7 @@ void program_fail ();
   program_fail (); \
 }
 #else /* PRINT_MESSAGE */
-#define ASSERT_MESSAGE(x) \
-{ \
-  program_fail (); \
-}
+#define ASSERT_MESSAGE(x)
 #endif /* !PRINT_MESSAGE */
 
 // Conditional assert with default message.
@@ -45,13 +39,7 @@ void program_fail ();
   } \
 }
 #else /* PRINT_MESSAGE */
-#define ASSERT(x) \
-{ \
-  if (!(x)) \
-  { \
-    program_fail (); \
-  } \
-}
+#define ASSERT(x)
 #endif /* !PRINT_MESSAGE */
 
 #endif /* ASSERT_H */

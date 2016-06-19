@@ -36,57 +36,77 @@ SchemeTMz::performSteps ()
   FieldValue *tmp_eps = new FieldValue [size];
   FieldValue *tmp_mu = new FieldValue [size];
 
-  for (int i = 0; i < size; ++i)
+  time_step t = 0;
+
+#ifdef PARALLEL_GRID
+  ParallelGridCoordinate bufSize = Ez.getBufferSize ();
+  time_step tStep = bufSize.getX ();
+#else
+  time_step tStep = totalStep;
+#endif
+
+  while (t < totalStep)
   {
-    FieldPointValue* valEz = Ez.getFieldPointValue (i);
-    tmp_Ez[i] = valEz->getCurValue ();
-    tmp_Ez_prev[i] = valEz->getPrevValue ();
-
-    FieldPointValue* valHx = Hx.getFieldPointValue (i);
-    tmp_Hx[i] = valHx->getCurValue ();
-    tmp_Hx_prev[i] = valHx->getPrevValue ();
-
-    FieldPointValue* valHy = Hy.getFieldPointValue (i);
-    tmp_Hy[i] = valHy->getCurValue ();
-    tmp_Hy_prev[i] = valHy->getPrevValue ();
-
-    FieldPointValue *valEps = Eps.getFieldPointValue (i);
-    tmp_eps[i] = valEps->getCurValue ();
-
-    FieldPointValue *valMu = Mu.getFieldPointValue (i);
-    tmp_mu[i] = valMu->getCurValue ();
-  }
-
-  CudaExitStatus exitStatus;
-  cudaExecute2DTMzSteps (&exitStatus,
-                         tmp_Ez, tmp_Hx, tmp_Hy,
-                         tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,
-                         tmp_eps, tmp_mu,
-                         gridTimeStep, gridStep,
-                         Ez.getSize ().getX (), Ez.getSize ().getY (),
-                         0, totalStep, Ez.getSize ().getX () / 16, Ez.getSize ().getY () / 16, 16, 16);
-
-  ASSERT (exitStatus == CUDA_OK);
-
-  for (int i = 0; i < size; ++i)
-  {
-    /*if (tmp_Ez[i] != 0 || tmp_Ez_prev[i] != 0 ||
-        tmp_Hx[i] != 0 || tmp_Hx_prev[i] != 0 ||
-        tmp_Hy[i] != 0 || tmp_Hy_prev[i] != 0)
+    for (int i = 0; i < size; ++i)
     {
-      printf ("%d !!!!! %f %f %f %f %f %f\n", i, tmp_Ez[i], tmp_Ez_prev[i], tmp_Hx[i], tmp_Hx_prev[i], tmp_Hy[i], tmp_Hy_prev[i]);
-    }*/
-    FieldPointValue* valEz = Ez.getFieldPointValue (i);
-    valEz->setCurValue (tmp_Ez[i]);
-    valEz->setPrevValue (tmp_Ez_prev[i]);
+      FieldPointValue* valEz = Ez.getFieldPointValue (i);
+      tmp_Ez[i] = valEz->getCurValue ();
+      tmp_Ez_prev[i] = valEz->getPrevValue ();
 
-    FieldPointValue* valHx = Hx.getFieldPointValue (i);
-    valHx->setCurValue (tmp_Hx[i]);
-    valHx->setPrevValue (tmp_Hx_prev[i]);
+      FieldPointValue* valHx = Hx.getFieldPointValue (i);
+      tmp_Hx[i] = valHx->getCurValue ();
+      tmp_Hx_prev[i] = valHx->getPrevValue ();
 
-    FieldPointValue* valHy = Hy.getFieldPointValue (i);
-    valHy->setCurValue (tmp_Hy[i]);
-    valHy->setPrevValue (tmp_Hy_prev[i]);
+      FieldPointValue* valHy = Hy.getFieldPointValue (i);
+      tmp_Hy[i] = valHy->getCurValue ();
+      tmp_Hy_prev[i] = valHy->getPrevValue ();
+
+      FieldPointValue *valEps = Eps.getFieldPointValue (i);
+      tmp_eps[i] = valEps->getCurValue ();
+
+      FieldPointValue *valMu = Mu.getFieldPointValue (i);
+      tmp_mu[i] = valMu->getCurValue ();
+    }
+
+    CudaExitStatus exitStatus;
+    cudaExecute2DTMzSteps (&exitStatus,
+                           tmp_Ez, tmp_Hx, tmp_Hy,
+                           tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,
+                           tmp_eps, tmp_mu,
+                           gridTimeStep, gridStep,
+                           Ez.getSize ().getX (), Ez.getSize ().getY (),
+                           0, tStep, Ez.getSize ().getX () / 16, Ez.getSize ().getY () / 16, 16, 16);
+
+    ASSERT (exitStatus == CUDA_OK);
+
+    for (int i = 0; i < size; ++i)
+    {
+      /*if (tmp_Ez[i] != 0 || tmp_Ez_prev[i] != 0 ||
+          tmp_Hx[i] != 0 || tmp_Hx_prev[i] != 0 ||
+          tmp_Hy[i] != 0 || tmp_Hy_prev[i] != 0)
+      {
+        printf ("%d !!!!! %f %f %f %f %f %f\n", i, tmp_Ez[i], tmp_Ez_prev[i], tmp_Hx[i], tmp_Hx_prev[i], tmp_Hy[i], tmp_Hy_prev[i]);
+      }*/
+      FieldPointValue* valEz = Ez.getFieldPointValue (i);
+      valEz->setCurValue (tmp_Ez[i]);
+      valEz->setPrevValue (tmp_Ez_prev[i]);
+
+      FieldPointValue* valHx = Hx.getFieldPointValue (i);
+      valHx->setCurValue (tmp_Hx[i]);
+      valHx->setPrevValue (tmp_Hx_prev[i]);
+
+      FieldPointValue* valHy = Hy.getFieldPointValue (i);
+      valHy->setCurValue (tmp_Hy[i]);
+      valHy->setPrevValue (tmp_Hy_prev[i]);
+    }
+
+#if defined (PARALLEL_GRID)
+    Ez.share ();
+    Hx.share ();
+    Hy.share ();
+#endif /* PARALLEL_GRID */
+
+    t += tStep;
   }
 
   delete[] tmp_Ez;
@@ -207,7 +227,7 @@ SchemeTMz::performSteps ()
 #endif
   {
     BMPDumper<GridCoordinate2D> dumper;
-    dumper.init (1000, CURRENT);
+    dumper.init (totalStep, CURRENT);
     dumper.dumpGrid (Ez);
   }
 }
