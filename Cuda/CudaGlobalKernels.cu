@@ -3,6 +3,7 @@
 __global__ void cudaCalculateTMzEStep (CudaExitStatus *retval,
                                        FieldValue *Ez,
                                        FieldValue *Ez_prev, FieldValue *Hx_prev, FieldValue *Hy_prev,
+                                       FieldValue *eps,
                                        FieldValue gridTimeStep, FieldValue gridStep,
                                        grid_coord sx, grid_coord sy, time_step t)
 {
@@ -33,7 +34,7 @@ __global__ void cudaCalculateTMzEStep (CudaExitStatus *retval,
                                        Hy_prev[indexEz2],
                                        gridTimeStep,
                                        gridStep,
-                                       1.0 * 0.0000000000088541878176203892);
+                                       eps[indexEz1]);
   }
 
   Ez_prev[indexEz1] = Ez[indexEz1];
@@ -69,6 +70,7 @@ __global__ void cudaCalculateTMzESource (CudaExitStatus *retval,
 __global__ void cudaCalculateTMzHStep (CudaExitStatus *retval,
                                        FieldValue *Hx, FieldValue *Hy,
                                        FieldValue *Ez_prev, FieldValue *Hx_prev, FieldValue *Hy_prev,
+                                       FieldValue *mu,
                                        FieldValue gridTimeStep, FieldValue gridStep,
                                        grid_coord sx, grid_coord sy, time_step t)
 {
@@ -99,7 +101,7 @@ __global__ void cudaCalculateTMzHStep (CudaExitStatus *retval,
                                        Ez_prev[indexHx2],
                                        gridTimeStep,
                                        gridStep,
-                                       1.0 * 0.0000012566370614359173);
+                                       mu[indexHx1]);
   }
 
   // Shift border values of Hy
@@ -114,7 +116,7 @@ __global__ void cudaCalculateTMzHStep (CudaExitStatus *retval,
                                        Ez_prev[indexHy1],
                                        gridTimeStep,
                                        gridStep,
-                                       1.0 * 0.0000012566370614359173);
+                                       mu[indexHy1]);
   }
 
   Hx_prev[indexHx1] = Hx[indexHx1];

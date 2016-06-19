@@ -35,12 +35,14 @@
   }
 
 __global__ void cudaCalculateTMzEStep (CudaExitStatus *, FieldValue *, FieldValue *, FieldValue *, FieldValue *,
+                                       FieldValue *,
                                        FieldValue, FieldValue, grid_coord, grid_coord, time_step);
 
 __global__ void cudaCalculateTMzESource (CudaExitStatus *, FieldValue *, grid_coord, grid_coord, time_step);
 
 __global__ void cudaCalculateTMzHStep (CudaExitStatus *, FieldValue *, FieldValue *, FieldValue *, FieldValue *,
-                                       FieldValue *, FieldValue, FieldValue, grid_coord, grid_coord, time_step);
+                                       FieldValue *, FieldValue *,
+                                       FieldValue, FieldValue, grid_coord, grid_coord, time_step);
 
 __global__ void cudaCalculateTMzHSource (CudaExitStatus *, FieldValue *, FieldValue *,
                                          grid_coord, grid_coord, time_step);

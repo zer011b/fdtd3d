@@ -1,13 +1,14 @@
 #include "CudaInterface.h"
 #include "CudaGlobalKernels.h"
 
-void cudaExecuteTMzSteps (CudaExitStatus *retval,
-                          FieldValue *Ez, FieldValue *Hx, FieldValue *Hy,
-                          FieldValue *Ez_prev, FieldValue *Hx_prev, FieldValue *Hy_prev,
-                          FieldValue gridTimeStep, FieldValue gridStep,
-                          grid_coord sx, grid_coord sy,
-                          time_step stepStart, time_step stepEnd,
-                          uint32_t blocksX, uint32_t blocksY, uint32_t threadsX, uint32_t threadsY)
+void cudaExecute2DTMzSteps (CudaExitStatus *retval,
+                            FieldValue *Ez, FieldValue *Hx, FieldValue *Hy,
+                            FieldValue *Ez_prev, FieldValue *Hx_prev, FieldValue *Hy_prev,
+                            FieldValue *eps, FieldValue *mu,
+                            FieldValue gridTimeStep, FieldValue gridStep,
+                            grid_coord sx, grid_coord sy,
+                            time_step stepStart, time_step stepEnd,
+                            uint32_t blocksX, uint32_t blocksY, uint32_t threadsX, uint32_t threadsY)
 {
   FieldValue *Ez_cuda;
   FieldValue *Hx_cuda;
@@ -16,6 +17,9 @@ void cudaExecuteTMzSteps (CudaExitStatus *retval,
   FieldValue *Ez_cuda_prev;
   FieldValue *Hx_cuda_prev;
   FieldValue *Hy_cuda_prev;
+
+  FieldValue *eps_cuda;
+  FieldValue *mu_cuda;
 
   grid_iter size = (grid_iter) sx * sy * sizeof (FieldValue);
   //printf ("%llu=%ld*%ld*%lld", size, sx, sy, sizeof (FieldValue));
@@ -28,6 +32,9 @@ void cudaExecuteTMzSteps (CudaExitStatus *retval,
   cudaCheckErrorCmd (cudaMalloc ((void **) &Hx_cuda_prev, size));
   cudaCheckErrorCmd (cudaMalloc ((void **) &Hy_cuda_prev, size));
 
+  cudaCheckErrorCmd (cudaMalloc ((void **) &eps_cuda, size));
+  cudaCheckErrorCmd (cudaMalloc ((void **) &mu_cuda, size));
+
   cudaCheckErrorCmd (cudaMemcpy (Ez_cuda, Ez, size, cudaMemcpyHostToDevice));
   cudaCheckErrorCmd (cudaMemcpy (Hx_cuda, Hx, size, cudaMemcpyHostToDevice));
   cudaCheckErrorCmd (cudaMemcpy (Hy_cuda, Hy, size, cudaMemcpyHostToDevice));
@@ -35,6 +42,9 @@ void cudaExecuteTMzSteps (CudaExitStatus *retval,
   cudaCheckErrorCmd (cudaMemcpy (Ez_cuda_prev, Ez_prev, size, cudaMemcpyHostToDevice));
   cudaCheckErrorCmd (cudaMemcpy (Hx_cuda_prev, Hx_prev, size, cudaMemcpyHostToDevice));
   cudaCheckErrorCmd (cudaMemcpy (Hy_cuda_prev, Hy_prev, size, cudaMemcpyHostToDevice));
+
+  cudaCheckErrorCmd (cudaMemcpy (eps_cuda, eps, size, cudaMemcpyHostToDevice));
+  cudaCheckErrorCmd (cudaMemcpy (mu_cuda, mu, size, cudaMemcpyHostToDevice));
 
   dim3 blocks (blocksX, blocksY);
   dim3 threads (threadsX, threadsY);
@@ -50,6 +60,7 @@ void cudaExecuteTMzSteps (CudaExitStatus *retval,
                                                                         Ez_cuda_prev,
                                                                         Hx_cuda_prev,
                                                                         Hy_cuda_prev,
+                                                                        eps_cuda,
                                                                         gridTimeStep,
                                                                         gridStep,
                                                                         sx,
@@ -68,6 +79,7 @@ void cudaExecuteTMzSteps (CudaExitStatus *retval,
                                                                         Ez_cuda_prev,
                                                                         Hx_cuda_prev,
                                                                         Hy_cuda_prev,
+                                                                        mu_cuda,
                                                                         gridTimeStep,
                                                                         gridStep,
                                                                         sx,
@@ -90,6 +102,9 @@ void cudaExecuteTMzSteps (CudaExitStatus *retval,
   cudaCheckErrorCmd (cudaMemcpy (Hx_prev, Hx_cuda_prev, size, cudaMemcpyDeviceToHost));
   cudaCheckErrorCmd (cudaMemcpy (Hy_prev, Hy_cuda_prev, size, cudaMemcpyDeviceToHost));
 
+  cudaCheckErrorCmd (cudaMemcpy (eps, eps_cuda, size, cudaMemcpyDeviceToHost));
+  cudaCheckErrorCmd (cudaMemcpy (mu, mu_cuda, size, cudaMemcpyDeviceToHost));
+
   cudaCheckErrorCmd (cudaFree (Ez_cuda));
   cudaCheckErrorCmd (cudaFree (Hx_cuda));
   cudaCheckErrorCmd (cudaFree (Hy_cuda));
@@ -97,6 +112,9 @@ void cudaExecuteTMzSteps (CudaExitStatus *retval,
   cudaCheckErrorCmd (cudaFree (Ez_cuda_prev));
   cudaCheckErrorCmd (cudaFree (Hx_cuda_prev));
   cudaCheckErrorCmd (cudaFree (Hy_cuda_prev));
+
+  cudaCheckErrorCmd (cudaFree (eps_cuda));
+  cudaCheckErrorCmd (cudaFree (mu_cuda));
 
   *retval = CUDA_OK;
   return;
