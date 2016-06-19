@@ -120,6 +120,15 @@ SchemeTMz::performSteps ()
   delete[] tmp_eps;
   delete[] tmp_mu;
 
+#if defined (PARALLEL_GRID)
+  if (process == 0)
+#endif
+  {
+    BMPDumper<GridCoordinate2D> dumper;
+    dumper.init (totalStep, ALL);
+    dumper.dumpGrid (Ez);
+  }
+
 #else /* CUDA_ENABLED */
 
   for (int t = 0; t < totalStep; ++t)
@@ -219,8 +228,6 @@ SchemeTMz::performSteps ()
     Hx.nextTimeStep ();
     Hy.nextTimeStep ();
   }
-#endif /* !CUDA_ENABLED */
-
 
 #if defined (PARALLEL_GRID)
   if (process == 0)
@@ -230,6 +237,7 @@ SchemeTMz::performSteps ()
     dumper.init (totalStep, CURRENT);
     dumper.dumpGrid (Ez);
   }
+#endif /* !CUDA_ENABLED */
 }
 
 void
