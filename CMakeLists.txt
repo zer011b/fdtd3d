@@ -257,8 +257,11 @@ add_subdirectory (Helpers)
 include_directories ("${PROJECT_SOURCE_DIR}/Kernels")
 add_subdirectory (Kernels)
 
-include_directories ("${PROJECT_SOURCE_DIR}/Cuda")
-add_subdirectory (Cuda)
+if ("${CUDA_ENABLED}")
+  set (CUDA_SOURCES "")
+  include_directories ("${PROJECT_SOURCE_DIR}/Cuda")
+  add_subdirectory (Cuda)
+endif ()
 
 # Add Grid library
 # Include headers of Grid
@@ -295,7 +298,7 @@ set (LIBS ${LIBS} Solver)
 if ("${CUDA_ENABLED}")
   set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch sm_50 -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64")
 
-  cuda_add_executable(fdtd3d main.cpp ${PROJECT_SOURCE_DIR}/Cuda/CudaKernel.cu ${PROJECT_SOURCE_DIR}/Kernels/Kernels.cpp)
+  cuda_add_executable(fdtd3d main.cpp ${CUDA_SOURCES} ${PROJECT_SOURCE_DIR}/Kernels/Kernels.cpp)
 else ()
   add_executable (fdtd3d main.cpp)
 endif ()

@@ -13,7 +13,7 @@
 // #include <cmath>
 //
 // #if defined (CUDA_ENABLED)
-// #include "CudaKernelInterface.h"
+// #include "CudaInterface.h"
 // #endif
 //
 // extern PhysicsConst PhConst;
