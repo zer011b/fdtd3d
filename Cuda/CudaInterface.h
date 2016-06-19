@@ -1,5 +1,5 @@
-#ifndef EXECUTE_H
-#define EXECUTE_H
+#ifndef CUDA_KERNEL_INTERFACE_H
+#define CUDA_KERNEL_INTERFACE_H
 
 #include "Kernels.h"
 
@@ -9,4 +9,4 @@ void cudaExecuteTMzSteps (CudaExitStatus *,
                           FieldValue, FieldValue, grid_coord, grid_coord,
                           time_step, time_step, uint32_t, uint32_t, uint32_t, uint32_t);
 
-#endif
+#endif /* !CUDA_KERNEL_INTERFACE_H */
