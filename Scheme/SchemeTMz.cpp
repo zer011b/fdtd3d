@@ -33,6 +33,9 @@ SchemeTMz::performSteps ()
   FieldValue *tmp_Hx_prev = new FieldValue [size];
   FieldValue *tmp_Hy_prev = new FieldValue [size];
 
+  FieldValue *tmp_eps = new FieldValue [size];
+  FieldValue *tmp_mu = new FieldValue [size];
+
   for (int i = 0; i < size; ++i)
   {
     FieldPointValue* valEz = Ez.getFieldPointValue (i);
@@ -46,15 +49,22 @@ SchemeTMz::performSteps ()
     FieldPointValue* valHy = Hy.getFieldPointValue (i);
     tmp_Hy[i] = valHy->getCurValue ();
     tmp_Hy_prev[i] = valHy->getPrevValue ();
+
+    FieldPointValue *valEps = Eps.getFieldPointValue (i);
+    tmp_eps[i] = valEps->getCurValue ();
+
+    FieldPointValue *valMu = Mu.getFieldPointValue (i);
+    tmp_mu[i] = valMu->getCurValue ();
   }
 
   CudaExitStatus exitStatus;
-  cudaExecuteTMzSteps (&exitStatus,
-                       tmp_Ez, tmp_Hx, tmp_Hy,
-                       tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,
-                       gridTimeStep, gridStep,
-                       Ez.getSize ().getX (), Ez.getSize ().getY (),
-                       0, totalStep, Ez.getSize ().getX () / 16, Ez.getSize ().getY () / 16, 16, 16);
+  cudaExecute2DTMzSteps (&exitStatus,
+                         tmp_Ez, tmp_Hx, tmp_Hy,
+                         tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,
+                         tmp_eps, tmp_mu,
+                         gridTimeStep, gridStep,
+                         Ez.getSize ().getX (), Ez.getSize ().getY (),
+                         0, totalStep, Ez.getSize ().getX () / 16, Ez.getSize ().getY () / 16, 16, 16);
 
   ASSERT (exitStatus == CUDA_OK);
 
@@ -86,6 +96,9 @@ SchemeTMz::performSteps ()
   delete[] tmp_Ez_prev;
   delete[] tmp_Hx_prev;
   delete[] tmp_Hy_prev;
+
+  delete[] tmp_eps;
+  delete[] tmp_mu;
 
 #else /* CUDA_ENABLED */
 
