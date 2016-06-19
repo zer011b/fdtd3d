@@ -122,6 +122,8 @@ class ParallelGrid: public ParallelGridBase
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
+  time_step shareStep;
+
 private:
 
   // Raw send
@@ -217,6 +219,8 @@ public:
   virtual void nextTimeStep ();
 
   void share ();
+
+  ParallelGridCoordinate getBufferSize () const;
 };
 
 #endif /* PARALLEL_GRID */

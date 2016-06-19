@@ -39,8 +39,16 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate& totSize,
   hasF (false)
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+  , shareStep (0)
 {
   ASSERT (bufferSizeLeft == bufferSizeRight);
+
+#if defined (GRID_2D) || defined (GRID_3D)
+  ASSERT (bufferSizeLeft.getX () == bufferSizeLeft.getY ());
+#endif /* GRID_2D || GRID_3D */
+#ifdef GRID_3D
+  ASSERT (bufferSizeLeft.getX () == bufferSizeLeft.getZ ());
+#endif /* GRID_3D */
 
 #if defined (ONE_TIME_STEP)
   grid_iter numTimeStepsInBuild = 2;
@@ -2501,7 +2509,24 @@ ParallelGrid::nextTimeStep ()
 {
   ParallelGridBase::nextTimeStep ();
 
-  share ();
+  ASSERT (shareStep <= bufferSizeLeft.getX ());
+
+  if (shareStep == bufferSizeLeft.getX ())
+  {
+    share ();
+
+    shareStep = 0;
+  }
+  else
+  {
+    ++shareStep;
+  }
+}
+
+ParallelGridCoordinate
+ParallelGrid::getBufferSize () const
+{
+  return bufferSizeLeft;
 }
 
 #endif /* PARALLEL_GRID */
