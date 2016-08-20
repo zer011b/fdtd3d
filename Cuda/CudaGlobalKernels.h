@@ -5,6 +5,12 @@
 
 #include "Kernels.h"
 
+enum CudaExitStatus
+{
+  CUDA_OK,
+  CUDA_ERROR
+};
+
 #define cudaCheckError() \
   { \
     cudaError_t __err = cudaGetLastError(); \
