@@ -2,6 +2,7 @@
 #define CUDA_KERNEL_INTERFACE_H
 
 #include "Kernels.h"
+#include "CudaGlobalKernels.h"
 
 void cudaExecute2DTMzSteps (CudaExitStatus *,
                             FieldValue *, FieldValue *, FieldValue *,

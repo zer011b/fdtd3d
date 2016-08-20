@@ -1,5 +1,4 @@
 #include "CudaInterface.h"
-#include "CudaGlobalKernels.h"
 
 void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             FieldValue *Ez, FieldValue *Hx, FieldValue *Hy,
