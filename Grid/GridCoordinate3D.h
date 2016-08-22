@@ -149,4 +149,7 @@ public:
 typedef GridCoordinate3DTemplate<grid_iter> GridCoordinate3D;
 typedef GridCoordinate3DTemplate<FieldValue> GridCoordinateFP3D;
 
+GridCoordinate3D convertCoord (GridCoordinateFP3D coord);
+GridCoordinateFP3D convertCoord (GridCoordinate3D coord);
+
 #endif /* GRID_COORDINATE_3D_H */
