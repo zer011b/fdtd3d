@@ -2,6 +2,7 @@
 #define GRID_LAYOUT_H
 
 #include "GridCoordinate3D.h"
+#include "Assert.h"
 
 enum class LayoutDirection
 {
@@ -15,18 +16,12 @@ enum class LayoutDirection
 
 class GridLayout
 {
+public:
+
   GridLayout () {}
   virtual ~GridLayout () {}
 
-public:
-
-  virtual GridCoordinate3D getExCircuitElement (GridCoordinate3D, GridCoordinate3D) = 0;
-  virtual GridCoordinate3D getEyCircuitElement (GridCoordinate3D, GridCoordinate3D) = 0;
-  virtual GridCoordinate3D getEzCircuitElement (GridCoordinate3D, GridCoordinate3D) = 0;
-
-  virtual GridCoordinate3D getHxCircuitElement (GridCoordinate3D, GridCoordinate3D) = 0;
-  virtual GridCoordinate3D getHyCircuitElement (GridCoordinate3D, GridCoordinate3D) = 0;
-  virtual GridCoordinate3D getHzCircuitElement (GridCoordinate3D, GridCoordinate3D) = 0;
+  virtual GridCoordinate3D getCircuitElement (GridCoordinate3D, LayoutDirection dir) = 0;
 };
 
 class YeeGridLayout: public GridLayout
@@ -54,39 +49,59 @@ class YeeGridLayout: public GridLayout
 
 public:
 
-  virtual GridCoordinate3D getExCircuitElement (GridCoordinate3D coord, LayoutDirection dir) override
+  virtual GridCoordinate3D getCircuitElement (GridCoordinate3D coord, LayoutDirection dir) override
   {
-    return GridCoordinate3D (0, 0, 0);
-  }
-  virtual GridCoordinate3D getEyCircuitElement (GridCoordinate3D coord, LayoutDirection dir) override
-  {
-    return GridCoordinate3D (0, 0, 0);
-  }
-  virtual GridCoordinate3D getEzCircuitElement (GridCoordinate3D coord, LayoutDirection dir) override
-  {
-    return GridCoordinate3D (0, 0, 0);
-  }
-  virtual GridCoordinate3D getHxCircuitElement (GridCoordinate3D coord, LayoutDirection dir) override
-  {
-    return GridCoordinate3D (0, 0, 0);
-  }
-  virtual GridCoordinate3D getHyCircuitElement (GridCoordinate3D coord, LayoutDirection dir) override
-  {
-    return GridCoordinate3D (0, 0, 0);
-  }
-  virtual GridCoordinate3D getHzCircuitElement (GridCoordinate3D coord, LayoutDirection dir) override
-  {
-    return GridCoordinate3D (0, 0, 0);
+    GridCoordinateFP3D realCoord = convertCoord (coord - minExCoord) + minExCoordFP;
+
+    switch (dir)
+    {
+      case LayoutDirection::LEFT:
+      {
+        realCoord = realCoord - GridCoordinateFP3D (0.5, 0, 0);
+        break;
+      }
+      case LayoutDirection::RIGHT:
+      {
+        realCoord = realCoord + GridCoordinateFP3D (0.5, 0, 0);
+        break;
+      }
+      case LayoutDirection::DOWN:
+      {
+        realCoord = realCoord - GridCoordinateFP3D (0, 0.5, 0);
+        break;
+      }
+      case LayoutDirection::UP:
+      {
+        realCoord = realCoord + GridCoordinateFP3D (0, 0.5, 0);
+        break;
+      }
+      case LayoutDirection::BACK:
+      {
+        realCoord = realCoord - GridCoordinateFP3D (0, 0, 0.5);
+        break;
+      }
+      case LayoutDirection::FRONT:
+      {
+        realCoord = realCoord + GridCoordinateFP3D (0, 0, 0.5);
+        break;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+
+    return convertCoord (realCoord);
   }
 
   YeeGridLayout () :
     zeroCoordFP (0.0, 0.0, 0.0), zeroCoord (0, 0, 0),
-    minExCoordFP (1.0, 0.5, 1.0), minExCoord (0, 0, 0),
+    minExCoordFP (1.0, 0.5, 0.5), minExCoord (0, 0, 0),
     minEyCoordFP (0.5, 1.0, 0.5), minEyCoord (0, 0, 0),
     minEzCoordFP (0.5, 0.5, 1.0), minEzCoord (0, 0, 0),
     minHxCoordFP (0.5, 1.0, 1.0), minHxCoord (0, 0, 0),
     minHyCoordFP (1.0, 0.5, 1.0), minHyCoord (0, 0, 0),
-    minHzCoordFP (1.0, 1.0, 0.5), minHzCoord (0, 0, 0),
+    minHzCoordFP (1.0, 1.0, 0.5), minHzCoord (0, 0, 0)
   {
   }
 
