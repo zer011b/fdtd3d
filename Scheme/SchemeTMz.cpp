@@ -16,6 +16,8 @@
 #include "CudaInterface.h"
 #endif
 
+#ifdef GRID_2D
+
 extern PhysicsConst PhConst;
 
 void
@@ -312,3 +314,5 @@ SchemeTMz::initGrids ()
   Mu.share ();
 #endif
 }
+
+#endif /* GRID_2D */

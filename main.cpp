@@ -13,12 +13,13 @@
 #include "DATLoader.h"
 
 #include "SchemeTMz.h"
+#include "Scheme3D.h"
 
 int main (int argc, char** argv)
 {
   int totalTimeSteps = 100;
 
-  int gridSize = 256;
+  int gridSize = 50;
 
 #if defined (PARALLEL_GRID)
   MPI_Init(&argc, &argv);
@@ -38,11 +39,15 @@ int main (int argc, char** argv)
   ParallelGridCoordinate bufferLeft (30);
   ParallelGridCoordinate bufferRight (30);
 
-  SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
+  //SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
+  Scheme3D scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
 #else
-  GridCoordinate2D overallSize (gridSize);
+  // GridCoordinate2D overallSize (gridSize);
+  //
+  // SchemeTMz scheme (overallSize, totalTimeSteps);
+  GridCoordinate3D overallSize (gridSize);
 
-  SchemeTMz scheme (overallSize, totalTimeSteps);
+  Scheme3D scheme (overallSize, totalTimeSteps);
 #endif
 
   scheme.initScheme (0.000003, 20);
