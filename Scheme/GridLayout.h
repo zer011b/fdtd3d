@@ -21,7 +21,13 @@ public:
   GridLayout () {}
   virtual ~GridLayout () {}
 
-  virtual GridCoordinate3D getCircuitElement (GridCoordinate3D, LayoutDirection dir) = 0;
+  virtual GridCoordinate3D getExCircuitElement (GridCoordinate3D, LayoutDirection) = 0;
+  virtual GridCoordinate3D getEyCircuitElement (GridCoordinate3D, LayoutDirection) = 0;
+  virtual GridCoordinate3D getEzCircuitElement (GridCoordinate3D, LayoutDirection) = 0;
+
+  virtual GridCoordinate3D getHxCircuitElement (GridCoordinate3D, LayoutDirection) = 0;
+  virtual GridCoordinate3D getHyCircuitElement (GridCoordinate3D, LayoutDirection) = 0;
+  virtual GridCoordinate3D getHzCircuitElement (GridCoordinate3D, LayoutDirection) = 0;
 };
 
 class YeeGridLayout: public GridLayout
@@ -49,50 +55,18 @@ class YeeGridLayout: public GridLayout
 
 public:
 
-  virtual GridCoordinate3D getCircuitElement (GridCoordinate3D coord, LayoutDirection dir) override
-  {
-    GridCoordinateFP3D realCoord = convertCoord (coord - minExCoord) + minExCoordFP;
+  GridCoordinate3D getCircuitElement (GridCoordinate3D minCoord,
+                                      GridCoordinateFP3D minCoordFP,
+                                      GridCoordinate3D coord,
+                                      LayoutDirection dir);
 
-    switch (dir)
-    {
-      case LayoutDirection::LEFT:
-      {
-        realCoord = realCoord - GridCoordinateFP3D (0.5, 0, 0);
-        break;
-      }
-      case LayoutDirection::RIGHT:
-      {
-        realCoord = realCoord + GridCoordinateFP3D (0.5, 0, 0);
-        break;
-      }
-      case LayoutDirection::DOWN:
-      {
-        realCoord = realCoord - GridCoordinateFP3D (0, 0.5, 0);
-        break;
-      }
-      case LayoutDirection::UP:
-      {
-        realCoord = realCoord + GridCoordinateFP3D (0, 0.5, 0);
-        break;
-      }
-      case LayoutDirection::BACK:
-      {
-        realCoord = realCoord - GridCoordinateFP3D (0, 0, 0.5);
-        break;
-      }
-      case LayoutDirection::FRONT:
-      {
-        realCoord = realCoord + GridCoordinateFP3D (0, 0, 0.5);
-        break;
-      }
-      default:
-      {
-        UNREACHABLE;
-      }
-    }
+  virtual GridCoordinate3D getExCircuitElement (GridCoordinate3D, LayoutDirection) override;
+  virtual GridCoordinate3D getEyCircuitElement (GridCoordinate3D, LayoutDirection) override;
+  virtual GridCoordinate3D getEzCircuitElement (GridCoordinate3D, LayoutDirection) override;
 
-    return convertCoord (realCoord);
-  }
+  virtual GridCoordinate3D getHxCircuitElement (GridCoordinate3D, LayoutDirection) override;
+  virtual GridCoordinate3D getHyCircuitElement (GridCoordinate3D, LayoutDirection) override;
+  virtual GridCoordinate3D getHzCircuitElement (GridCoordinate3D, LayoutDirection) override;
 
   YeeGridLayout () :
     zeroCoordFP (0.0, 0.0, 0.0), zeroCoord (0, 0, 0),
