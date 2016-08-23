@@ -5,6 +5,8 @@
 #include "ParallelGrid.h"
 #include "Grid.h"
 
+#ifdef GRID_2D
+
 class SchemeTMz: public Scheme
 {
 #if defined (PARALLEL_GRID)
@@ -92,5 +94,7 @@ public:
   {
   }
 };
+
+#endif /* GRID_2D */
 
 #endif /* SCHEME_TEZ_H */
