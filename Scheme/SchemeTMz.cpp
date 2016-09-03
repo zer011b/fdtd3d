@@ -133,11 +133,22 @@ SchemeTMz::performSteps ()
 
 #else /* CUDA_ENABLED */
 
+  GridCoordinate2D EzSize = Ez.getSize ();
+
   for (int t = 0; t < totalStep; ++t)
   {
-    for (int i = 1; i < Ez.getSize ().getX (); ++i)
+    GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getStart ());
+    GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getSize ());
+
+    GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getStart ());
+    GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getSize ());
+
+    GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getStart ());
+    GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getSize ());
+
+    for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
     {
-      for (int j = 1; j < Ez.getSize ().getY () - 1; ++j)
+      for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
       {
         GridCoordinate2D pos1 (i, j);
         GridCoordinate2D pos2 (i - 1, j);
@@ -170,16 +181,16 @@ SchemeTMz::performSteps ()
     if (process == 0)
 #endif
     {
-      GridCoordinate2D pos (Ez.getSize ().getX () / 2, Ez.getSize ().getY () / 2);
+      GridCoordinate2D pos (EzSize.getX () / 2, EzSize.getY () / 2);
       FieldPointValue* tmp = Ez.getFieldPointValue (pos);
       tmp->setCurValue (cos (t * 3.1415 / 12));
     }
 
     Ez.nextTimeStep ();
 
-    for (int i = 1; i < Ez.getSize ().getX () - 1; ++i)
+    for (int i = HxStart.getX (); i < HxEnd.getX (); ++i)
     {
-      for (int j = 1; j < Ez.getSize ().getY () - 1; ++j)
+      for (int j = HxStart.getY (); j < HxEnd.getY (); ++j)
       {
         GridCoordinate2D pos1 (i, j);
         GridCoordinate2D pos2 (i, j + 1);
@@ -202,9 +213,9 @@ SchemeTMz::performSteps ()
       }
     }
 
-    for (int i = 1; i < Ez.getSize ().getX () - 1; ++i)
+    for (int i = HyStart.getX (); i < HyEnd.getX (); ++i)
     {
-      for (int j = 1; j < Ez.getSize ().getY () - 1; ++j)
+      for (int j = HyStart.getY (); j < HyEnd.getY (); ++j)
       {
         GridCoordinate2D pos1 (i, j);
         GridCoordinate2D pos2 (i + 1, j);
