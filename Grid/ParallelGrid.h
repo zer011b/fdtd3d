@@ -152,18 +152,21 @@ private:
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   void SendReceiveCoordinatesInit1D_X ();
+  int getNodeGridX ();
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   void SendReceiveCoordinatesInit1D_Y ();
+  int getNodeGridY ();
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   void SendReceiveCoordinatesInit1D_Z ();
+  int getNodeGridZ ();
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
@@ -221,6 +224,32 @@ public:
   void share ();
 
   ParallelGridCoordinate getBufferSize () const;
+
+  // Get field point at coordinate in grid.
+  FieldPointValue* getFieldPointValueAbsoluteIndex (const ParallelGridCoordinate& position);
+
+  ParallelGridCoordinate getSize () const
+  {
+#ifdef GRID_1D
+    return ParallelGridCoordinate (ParallelGridBase::getSize ().getX () - shareStep);
+#endif /* GRID_1D */
+
+#ifdef GRID_2D
+    return ParallelGridCoordinate (ParallelGridBase::getSize ().getX () - shareStep,
+                                   ParallelGridBase::getSize ().getY () - shareStep);
+#endif /* GRID_2D */
+
+#ifdef GRID_3D
+    return ParallelGridCoordinate (ParallelGridBase::getSize ().getX () - shareStep,
+                                   ParallelGridBase::getSize ().getY () - shareStep,
+                                   ParallelGridBase::getSize ().getZ () - shareStep);
+#endif /* GRID_3D */
+  }
+
+  ParallelGridCoordinate getStart () const
+  {
+    return ParallelGridCoordinate (shareStep);
+  }
 };
 
 #endif /* PARALLEL_GRID */

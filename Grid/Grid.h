@@ -32,7 +32,7 @@ protected:
   // Current time step.
   uint32_t timeStep;
 
-private:
+protected:
 
   // Check whether position is appropriate to get/set value from.
   static bool isLegitIndex (const TCoord& position,
@@ -65,6 +65,9 @@ public:
   // Get size of the grid.
   const TCoord& getSize () const;
 
+  // Get start coord of the grid.
+  const TCoord getStart () const;
+
   // Calculate position from three-dimensional coordinate.
   TCoord calculatePositionFromIndex (grid_iter index) const;
 
@@ -72,8 +75,8 @@ public:
   void setFieldPointValue (FieldPointValue* value, const TCoord& position);
 
   // Get field point at coordinate in grid.
-  FieldPointValue* getFieldPointValue (const TCoord& position);
-  FieldPointValue* getFieldPointValue (grid_iter coord);
+  virtual FieldPointValue* getFieldPointValue (const TCoord& position);
+  virtual FieldPointValue* getFieldPointValue (grid_iter coord);
 
   // Switch to next time step.
   virtual void nextTimeStep ();
@@ -181,6 +184,13 @@ const TCoord&
 Grid<TCoord>::getSize () const
 {
   return size;
+}
+
+template <class TCoord>
+const TCoord
+Grid<TCoord>::getStart () const
+{
+  return TCoord (0);
 }
 
 template <class TCoord>

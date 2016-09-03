@@ -44,42 +44,42 @@ public:
     return x;
   }
 
-  GridCoordinate1DTemplate operator+ (const GridCoordinate1DTemplate& rhs)
+  GridCoordinate1DTemplate operator+ (const GridCoordinate1DTemplate& rhs) const
   {
     return GridCoordinate1DTemplate (getX () + rhs.getX ());
   }
 
-  GridCoordinate1DTemplate operator- (const GridCoordinate1DTemplate& rhs)
+  GridCoordinate1DTemplate operator- (const GridCoordinate1DTemplate& rhs) const
   {
     return GridCoordinate1DTemplate (getX () - rhs.getX ());
   }
 
-  bool operator== (const GridCoordinate1DTemplate& rhs)
+  bool operator== (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () == rhs.getX ();
   }
 
-  bool operator!= (const GridCoordinate1DTemplate& rhs)
+  bool operator!= (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () != rhs.getX ();
   }
 
-  bool operator> (const GridCoordinate1DTemplate& rhs)
+  bool operator> (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () > rhs.getX ();
   }
 
-  bool operator< (const GridCoordinate1DTemplate& rhs)
+  bool operator< (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () < rhs.getX ();
   }
 
-  bool operator>= (const GridCoordinate1DTemplate& rhs)
+  bool operator>= (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () >= rhs.getX ();
   }
 
-  bool operator<= (const GridCoordinate1DTemplate& rhs)
+  bool operator<= (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () <= rhs.getX ();
   }

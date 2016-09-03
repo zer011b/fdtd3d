@@ -4,11 +4,14 @@
 #include "Scheme.h"
 #include "ParallelGrid.h"
 #include "Grid.h"
+#include "GridLayout.h"
 
 #ifdef GRID_3D
 
 class Scheme3D: public Scheme
 {
+  YeeGridLayout yeeLayout;
+
 #if defined (PARALLEL_GRID)
   ParallelGrid Ex;
   ParallelGrid Ey;
@@ -66,12 +69,13 @@ public:
   Scheme3D (const GridCoordinate3D& totSize,
             const GridCoordinate3D& bufSizeL, const GridCoordinate3D& bufSizeR,
             const int process, const int totalProc, uint32_t tStep) :
-    Ex (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
-    Ey (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
-    Ez (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
-    Hx (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
-    Hy (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
-    Hz (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
+    yeeLayout (totSize),
+    Ex (yeeLayout.getExSize (), bufSizeL, bufSizeR, process, totalProc, 0),
+    Ey (yeeLayout.getEySize (), bufSizeL, bufSizeR, process, totalProc, 0),
+    Ez (yeeLayout.getEzSize (), bufSizeL, bufSizeR, process, totalProc, 0),
+    Hx (yeeLayout.getHxSize (), bufSizeL, bufSizeR, process, totalProc, 0),
+    Hy (yeeLayout.getHySize (), bufSizeL, bufSizeR, process, totalProc, 0),
+    Hz (yeeLayout.getHzSize (), bufSizeL, bufSizeR, process, totalProc, 0),
     Eps (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
     Mu (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
     waveLength (0),
@@ -79,17 +83,19 @@ public:
     frequency (0),
     gridStep (0),
     gridTimeStep (0),
-    totalStep (tStep)
+    totalStep (tStep),
+    process (process)
   {
   }
 #else
   Scheme3D (const GridCoordinate3D& totSize, uint32_t tStep) :
-    Ex (totSize, 0),
-    Ey (totSize, 0),
-    Ez (totSize, 0),
-    Hx (totSize, 0),
-    Hy (totSize, 0),
-    Hz (totSize, 0),
+    yeeLayout (totSize),
+    Ex (yeeLayout.getExSize (), 0),
+    Ey (yeeLayout.getEySize (), 0),
+    Ez (yeeLayout.getEzSize (), 0),
+    Hx (yeeLayout.getHxSize (), 0),
+    Hy (yeeLayout.getHySize (), 0),
+    Hz (yeeLayout.getHzSize (), 0),
     Eps (totSize, 0),
     Mu (totSize, 0),
     waveLength (0),
@@ -97,7 +103,8 @@ public:
     frequency (0),
     gridStep (0),
     gridTimeStep (0),
-    totalStep (tStep)
+    totalStep (tStep),
+    process (0)
   {
   }
 #endif

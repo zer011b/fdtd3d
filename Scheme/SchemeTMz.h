@@ -4,11 +4,14 @@
 #include "Scheme.h"
 #include "ParallelGrid.h"
 #include "Grid.h"
+#include "GridLayout.h"
 
 #ifdef GRID_2D
 
 class SchemeTMz: public Scheme
 {
+  YeeGridLayout yeeLayout;
+
 #if defined (PARALLEL_GRID)
   ParallelGrid Ez;
   ParallelGrid Hx;
@@ -60,9 +63,10 @@ public:
   SchemeTMz (const GridCoordinate2D& totSize,
              const GridCoordinate2D& bufSizeL, const GridCoordinate2D& bufSizeR,
              const int process, const int totalProc, uint32_t tStep) :
-    Ez (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
-    Hx (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
-    Hy (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
+    yeeLayout (totSize),
+    Ez (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, process, totalProc, 0),
+    Hx (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, process, totalProc, 0),
+    Hy (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, process, totalProc, 0),
     Eps (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
     Mu (totSize, bufSizeL, bufSizeR, process, totalProc, 0),
     waveLength (0),
@@ -75,9 +79,10 @@ public:
   }
 #else
   SchemeTMz (const GridCoordinate2D& totSize, uint32_t tStep) :
-    Ez (totSize, 0),
-    Hx (totSize, 0),
-    Hy (totSize, 0),
+    yeeLayout (totSize),
+    Ez (shrinkCoord (yeeLayout.getEzSize ()), 0),
+    Hx (shrinkCoord (yeeLayout.getHxSize ()), 0),
+    Hy (shrinkCoord (yeeLayout.getHySize ()), 0),
     Eps (totSize, 0),
     Mu (totSize, 0),
     waveLength (0),

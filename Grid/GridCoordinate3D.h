@@ -24,6 +24,12 @@ public:
   GridCoordinate3DTemplate (const GridCoordinate3DTemplate& pos)
     : GridCoordinate2DTemplate<TcoordType> (pos.getX (), pos.getY ()), z (pos.getZ ()) {}
 
+  GridCoordinate3DTemplate (const GridCoordinate1DTemplate<TcoordType>& pos)
+    : GridCoordinate2DTemplate<TcoordType> (pos), z (0) {}
+
+  GridCoordinate3DTemplate (const GridCoordinate2DTemplate<TcoordType>& pos)
+    : GridCoordinate2DTemplate<TcoordType> (pos), z (0) {}
+
   ~GridCoordinate3DTemplate () {}
 
   // Calculate three-dimensional coordinate.
@@ -65,7 +71,7 @@ public:
     }
   }
 
-  GridCoordinate3DTemplate operator+ (const GridCoordinate3DTemplate& rhs)
+  GridCoordinate3DTemplate operator+ (const GridCoordinate3DTemplate& rhs) const
   {
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
     TcoordType rhs_x = rhs.GridCoordinate1DTemplate<TcoordType>::getX ();
@@ -75,7 +81,7 @@ public:
     return GridCoordinate3DTemplate (x + rhs_x, y + rhs_y, getZ () + rhs.getZ ());
   }
 
-  GridCoordinate3DTemplate operator- (const GridCoordinate3DTemplate& rhs)
+  GridCoordinate3DTemplate operator- (const GridCoordinate3DTemplate& rhs) const
   {
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
     TcoordType rhs_x = rhs.GridCoordinate1DTemplate<TcoordType>::getX ();
@@ -85,7 +91,7 @@ public:
     return GridCoordinate3DTemplate (x - rhs_x, y - rhs_y, getZ () - rhs.getZ ());
   }
 
-  bool operator== (const GridCoordinate3DTemplate& rhs)
+  bool operator== (const GridCoordinate3DTemplate& rhs) const
   {
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
     TcoordType rhs_x = rhs.GridCoordinate1DTemplate<TcoordType>::getX ();
@@ -95,7 +101,7 @@ public:
     return x == rhs_x && y == rhs_y && getZ () == rhs.getZ ();
   }
 
-  bool operator!= (const GridCoordinate3DTemplate& rhs)
+  bool operator!= (const GridCoordinate3DTemplate& rhs) const
   {
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
     TcoordType rhs_x = rhs.GridCoordinate1DTemplate<TcoordType>::getX ();
@@ -105,7 +111,7 @@ public:
     return x != rhs_x || y != rhs_y || getZ () == rhs.getZ ();
   }
 
-  bool operator> (const GridCoordinate3DTemplate& rhs)
+  bool operator> (const GridCoordinate3DTemplate& rhs) const
   {
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
     TcoordType rhs_x = rhs.GridCoordinate1DTemplate<TcoordType>::getX ();
@@ -115,7 +121,7 @@ public:
     return x > rhs_x && y > rhs_y && getZ () > rhs.getZ ();
   }
 
-  bool operator< (const GridCoordinate3DTemplate& rhs)
+  bool operator< (const GridCoordinate3DTemplate& rhs) const
   {
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
     TcoordType rhs_x = rhs.GridCoordinate1DTemplate<TcoordType>::getX ();
@@ -125,7 +131,7 @@ public:
     return x < rhs_x && y < rhs_y && getZ () < rhs.getZ ();
   }
 
-  bool operator>= (const GridCoordinate3DTemplate& rhs)
+  bool operator>= (const GridCoordinate3DTemplate& rhs) const
   {
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
     TcoordType rhs_x = rhs.GridCoordinate1DTemplate<TcoordType>::getX ();
@@ -135,7 +141,7 @@ public:
     return x >= rhs_x && y >= rhs_y && getZ () >= rhs.getZ ();
   }
 
-  bool operator<= (const GridCoordinate3DTemplate& rhs)
+  bool operator<= (const GridCoordinate3DTemplate& rhs) const
   {
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
     TcoordType rhs_x = rhs.GridCoordinate1DTemplate<TcoordType>::getX ();
@@ -151,5 +157,7 @@ typedef GridCoordinate3DTemplate<FieldValue> GridCoordinateFP3D;
 
 GridCoordinate3D convertCoord (GridCoordinateFP3D coord);
 GridCoordinateFP3D convertCoord (GridCoordinate3D coord);
+
+GridCoordinate2D shrinkCoord (GridCoordinate3D coord);
 
 #endif /* GRID_COORDINATE_3D_H */
