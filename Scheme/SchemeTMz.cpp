@@ -138,13 +138,13 @@ SchemeTMz::performSteps ()
   for (int t = 0; t < totalStep; ++t)
   {
     GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getStart ());
-    GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getSize ());
+    GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getEnd ());
 
     GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getStart ());
-    GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getSize ());
+    GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getEnd ());
 
     GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getStart ());
-    GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getSize ());
+    GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getEnd ());
 
     for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
     {

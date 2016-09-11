@@ -89,13 +89,13 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate& totSize,
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
   , shareStep (0)
 {
-  ASSERT (bufferSizeLeft == bufferSizeRight);
+  ASSERT (bufSizeL == bufSizeR);
 
 #if defined (GRID_2D) || defined (GRID_3D)
-  ASSERT (bufferSizeLeft.getX () == bufferSizeLeft.getY ());
+  ASSERT (bufSizeL.getX () == bufSizeR.getY ());
 #endif /* GRID_2D || GRID_3D */
 #ifdef GRID_3D
-  ASSERT (bufferSizeLeft.getX () == bufferSizeLeft.getZ ());
+  ASSERT (bufSizeL.getX () == bufSizeR.getZ ());
 #endif /* GRID_3D */
 
 #if defined (ONE_TIME_STEP)
@@ -2557,17 +2557,35 @@ ParallelGrid::nextTimeStep ()
 {
   ParallelGridBase::nextTimeStep ();
 
+  ++shareStep;
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   ASSERT (shareStep <= bufferSizeLeft.getX ());
 
-  if (shareStep == bufferSizeLeft.getX ())
+  bool is_share_time = shareStep == bufferSizeLeft.getX ();
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  ASSERT (shareStep <= bufferSizeLeft.getY ());
+
+  bool is_share_time = shareStep == bufferSizeLeft.getY ();
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+  ASSERT (shareStep <= bufferSizeLeft.getZ ());
+
+  bool is_share_time = shareStep == bufferSizeLeft.getZ ();
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+  if (is_share_time)
   {
     share ();
 
     shareStep = 0;
-  }
-  else
-  {
-    ++shareStep;
   }
 }
 
