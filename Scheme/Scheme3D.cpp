@@ -272,7 +272,7 @@ Scheme3D::performSteps ()
     {
       for (grid_iter k = 0; k < EzSize.getZ (); ++k)
       {
-        GridCoordinate3D pos (EzSize.getX () / 2 + 20, EzSize.getY () / 2, k);
+        GridCoordinate3D pos (EzSize.getX () / 2, EzSize.getY () / 2, k);
         FieldPointValue* tmp = Ez.getFieldPointValue (pos);
         tmp->setCurValue (cos (t * 3.1415 / 12));
       }

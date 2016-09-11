@@ -17,7 +17,7 @@
 
 int main (int argc, char** argv)
 {
-  int totalTimeSteps = 10;
+  int totalTimeSteps = 100;
 
   int gridSize = 100;
 
@@ -39,15 +39,23 @@ int main (int argc, char** argv)
   ParallelGridCoordinate bufferLeft (10);
   ParallelGridCoordinate bufferRight (10);
 
+#ifdef GRID_2D
   SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
-  //Scheme3D scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
+#endif
+#ifdef GRID_3D
+  Scheme3D scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
+#endif
 #else
+#ifdef GRID_2D
   GridCoordinate2D overallSize (gridSize);
 
   SchemeTMz scheme (overallSize, totalTimeSteps);
-  // GridCoordinate3D overallSize (gridSize);
-  //
-  // Scheme3D scheme (overallSize, totalTimeSteps);
+#endif
+#ifdef GRID_3D
+  GridCoordinate3D overallSize (gridSize);
+
+  Scheme3D scheme (overallSize, totalTimeSteps);
+#endif
 #endif
 
   scheme.initScheme (0.000003, 20);
