@@ -18,8 +18,19 @@
 int main (int argc, char** argv)
 {
   int totalTimeSteps = 100;
-
   int gridSize = 100;
+  int bufSize = 10;
+
+  if (argc != 4)
+  {
+    return 1;
+  }
+  else
+  {
+    totalTimeSteps = std::stoi (argv[1]);
+    gridSize = std::stoi (argv[2]);
+    bufSize = std::stoi (argv[3]);
+  }
 
 #if defined (PARALLEL_GRID)
   MPI_Init(&argc, &argv);
@@ -36,8 +47,8 @@ int main (int argc, char** argv)
 
 #if defined (PARALLEL_GRID)
   ParallelGridCoordinate overallSize (gridSize);
-  ParallelGridCoordinate bufferLeft (10);
-  ParallelGridCoordinate bufferRight (10);
+  ParallelGridCoordinate bufferLeft (bufSize);
+  ParallelGridCoordinate bufferRight (bufSize);
 
 #ifdef GRID_2D
   SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
