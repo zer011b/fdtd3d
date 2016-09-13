@@ -399,9 +399,9 @@ Scheme3D::performSteps ()
   if (process == 0)
 #endif
   {
-    BMPDumper<GridCoordinate3D> dumper;
-    dumper.init (totalStep, CURRENT);
-    dumper.dumpGrid (Ez);
+    // BMPDumper<GridCoordinate3D> dumper;
+    // dumper.init (totalStep, CURRENT);
+    // dumper.dumpGrid (Ez);
   }
 //#endif /* !CUDA_ENABLED */
 }
