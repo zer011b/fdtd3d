@@ -116,6 +116,7 @@ class YeeGridLayout: public GridLayout
 
 public:
 
+#ifdef CXX11_ENABLED
   virtual GridCoordinate3D getExCircuitElement (GridCoordinate3D, LayoutDirection) const override;
   virtual GridCoordinate3D getEyCircuitElement (GridCoordinate3D, LayoutDirection) const override;
   virtual GridCoordinate3D getEzCircuitElement (GridCoordinate3D, LayoutDirection) const override;
@@ -145,6 +146,37 @@ public:
   virtual GridCoordinate3D getHyEnd (GridCoordinate3D) const override;
   virtual GridCoordinate3D getHzStart (GridCoordinate3D) const override;
   virtual GridCoordinate3D getHzEnd (GridCoordinate3D) const override;
+#else
+  virtual GridCoordinate3D getExCircuitElement (GridCoordinate3D, LayoutDirection) const;
+  virtual GridCoordinate3D getEyCircuitElement (GridCoordinate3D, LayoutDirection) const;
+  virtual GridCoordinate3D getEzCircuitElement (GridCoordinate3D, LayoutDirection) const;
+
+  virtual GridCoordinate3D getHxCircuitElement (GridCoordinate3D, LayoutDirection) const;
+  virtual GridCoordinate3D getHyCircuitElement (GridCoordinate3D, LayoutDirection) const;
+  virtual GridCoordinate3D getHzCircuitElement (GridCoordinate3D, LayoutDirection) const;
+
+  virtual GridCoordinate3D getExSize () const;
+  virtual GridCoordinate3D getEySize () const;
+  virtual GridCoordinate3D getEzSize () const;
+
+  virtual GridCoordinate3D getHxSize () const;
+  virtual GridCoordinate3D getHySize () const;
+  virtual GridCoordinate3D getHzSize () const;
+
+  virtual GridCoordinate3D getExStart (GridCoordinate3D) const;
+  virtual GridCoordinate3D getExEnd (GridCoordinate3D) const;
+  virtual GridCoordinate3D getEyStart (GridCoordinate3D) const;
+  virtual GridCoordinate3D getEyEnd (GridCoordinate3D) const;
+  virtual GridCoordinate3D getEzStart (GridCoordinate3D) const;
+  virtual GridCoordinate3D getEzEnd (GridCoordinate3D) const;
+
+  virtual GridCoordinate3D getHxStart (GridCoordinate3D) const;
+  virtual GridCoordinate3D getHxEnd (GridCoordinate3D) const;
+  virtual GridCoordinate3D getHyStart (GridCoordinate3D) const;
+  virtual GridCoordinate3D getHyEnd (GridCoordinate3D) const;
+  virtual GridCoordinate3D getHzStart (GridCoordinate3D) const;
+  virtual GridCoordinate3D getHzEnd (GridCoordinate3D) const;
+#endif
 
   YeeGridLayout (GridCoordinate3D coordSize) :
     zeroCoordFP (0.0, 0.0, 0.0), zeroCoord (0, 0, 0),
