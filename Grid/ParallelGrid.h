@@ -30,8 +30,6 @@ enum BufferPosition
 {
 #define FUNCTION(X) X,
 #include "BufferPosition.inc.h"
-  PARALLEL_BUFFERS
-#undef FUNCTION
 };
 #endif /* PARALLEL_GRID */
 

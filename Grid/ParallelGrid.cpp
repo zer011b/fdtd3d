@@ -2,13 +2,12 @@
 
 #if defined (PARALLEL_GRID)
 
-#ifdef PRINT_MESSAGE
+#if PRINT_MESSAGE
 // Names of buffers of parallel grid for debug purposes.
 const char* BufferPositionNames[] =
 {
 #define FUNCTION(X) "#X",
 #include "BufferPosition.inc.h"
-#undef FUNCTION
 };
 #endif /* PRINT_MESSAGE */
 
@@ -1508,6 +1507,9 @@ ParallelGrid::getOpposite (BufferPosition direction)
       UNREACHABLE;
     }
   }
+
+  UNREACHABLE;
+  return BUFFER_COUNT;
 }
 
 void
