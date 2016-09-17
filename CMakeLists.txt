@@ -198,12 +198,12 @@ endif ()
 #-pedantic -pedantic-errors
 
 set (WARNING_FLAGS "")
-set (WARNING_FLAGS "${WARNING_FLAGS} -Wfatal-errors")
-set (WARNING_FLAGS "${WARNING_FLAGS} -Wall -Wextra")
-set (WARNING_FLAGS "${WARNING_FLAGS} -Wformat=2 -Wformat-security -Wuninitialized")
-set (WARNING_FLAGS "${WARNING_FLAGS} -Winit-self -Wno-stack-protector")
-set (WARNING_FLAGS "${WARNING_FLAGS} -Wconversion -Wsign-conversion")
-set (WARNING_FLAGS "${WARNING_FLAGS} -Wmissing-declarations")
+#set (WARNING_FLAGS "${WARNING_FLAGS} -Wfatal-errors")
+#set (WARNING_FLAGS "${WARNING_FLAGS} -Wall -Wextra")
+#set (WARNING_FLAGS "${WARNING_FLAGS} -Wformat=2 -Wformat-security -Wuninitialized")
+#set (WARNING_FLAGS "${WARNING_FLAGS} -Winit-self -Wno-stack-protector")
+#set (WARNING_FLAGS "${WARNING_FLAGS} -Wconversion -Wsign-conversion")
+#set (WARNING_FLAGS "${WARNING_FLAGS} -Wmissing-declarations")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
   set (BUILD_FLAGS "${BUILD_FLAGS} -O2")
