@@ -381,6 +381,25 @@ public:
     return ParallelGridCoordinate (px, py, pz);
 #endif
   }
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  int getNodeGridSizeX () const
+  {
+    return nodeGridSizeX;
+  }
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+  int getNodeGridSizeY () const
+  {
+    return nodeGridSizeY;
+  }
+#endif /* GRID_2D || GRID_3D */
+#ifdef GRID_3D
+  int getNodeGridSizeZ () const
+  {
+    return nodeGridSizeZ;
+  }
+#endif /* GRID_3D */
 };
 
 #endif /* PARALLEL_GRID */
