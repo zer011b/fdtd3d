@@ -582,21 +582,21 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
     {
       case CURRENT:
       {
-        std::string cur_bmp = cur + std::to_string (k) + std::string (".bmp");
+        std::string cur_bmp = cur + int64_to_string (k) + std::string (".bmp");
         image.WriteToFile(cur_bmp.c_str());
         break;
       }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
-        std::string prev_bmp = prev + std::to_string (k) + std::string (".bmp");
+        std::string prev_bmp = prev + int64_to_string (k) + std::string (".bmp");
         image.WriteToFile(prev_bmp.c_str());
         break;
       }
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
-        std::string prevPrev_bmp = prevPrev + std::to_string (k) + std::string (".bmp");
+        std::string prevPrev_bmp = prevPrev + int64_to_string (k) + std::string (".bmp");
         image.WriteToFile(prevPrev_bmp.c_str());
         break;
       }

@@ -7,6 +7,11 @@
 #include "Grid.h"
 #endif /* !PARALLEL_GRID */
 
+#ifdef CXX11_ENABLED
+#else
+#include "cstdlib"
+#endif
+
 #include "BMPDumper.h"
 #include "BMPLoader.h"
 #include "DATDumper.h"
@@ -27,9 +32,15 @@ int main (int argc, char** argv)
   }
   else
   {
+#ifdef CXX11_ENABLED
     totalTimeSteps = std::stoi (argv[1]);
     gridSize = std::stoi (argv[2]);
     bufSize = std::stoi (argv[3]);
+#else
+    totalTimeSteps = atoi (argv[1]);
+    gridSize = atoi (argv[2]);
+    bufSize = atoi (argv[3]);
+#endif
   }
 
 #if defined (PARALLEL_GRID)

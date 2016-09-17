@@ -4,6 +4,7 @@
 #include "GridCoordinate3D.h"
 #include "Assert.h"
 
+#ifdef CXX11_ENABLED
 enum class LayoutDirection
 {
   LEFT,
@@ -13,6 +14,36 @@ enum class LayoutDirection
   BACK,
   FRONT
 };
+#else
+class LayoutDirection
+{
+public:
+
+  enum LayoutDir
+  {
+    LEFT,
+    RIGHT,
+    DOWN,
+    UP,
+    BACK,
+    FRONT
+  };
+
+  LayoutDirection (LayoutDir new_dir)
+  : dir (new_dir)
+  {
+  }
+
+  operator int ()
+  {
+    return dir;
+  }
+
+private:
+
+  LayoutDir dir;
+};
+#endif
 
 class GridLayout
 {
