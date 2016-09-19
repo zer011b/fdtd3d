@@ -116,70 +116,76 @@ int main (int argc, char** argv)
   MPI_Finalize();
 #endif
 
-if (rank == 0)
-{
-  const clock_t end_time = clock();
+#if defined (PARALLEL_GRID)
+  if (rank == 0)
+  {
+#endif /* PARALLEL_GRID */
 
-  printf ("Dimension: %d\n", dimension);
-  printf ("Grid size: %d\n", gridSize);
-  printf ("Number of time steps: %d\n", totalTimeSteps);
+    const clock_t end_time = clock();
 
-  printf ("\n");
+    printf ("Dimension: %d\n", dimension);
+    printf ("Grid size: %d\n", gridSize);
+    printf ("Number of time steps: %d\n", totalTimeSteps);
+
+    printf ("\n");
 
 #ifdef FLOAT_VALUES
-  printf ("Value type: float\n");
+    printf ("Value type: float\n");
 #endif
 #ifdef DOUBLE_VALUES
-  printf ("Value type: double\n");
+    printf ("Value type: double\n");
 #endif
 #ifdef LONG_DOUBLE_VALUES
-  printf ("Value type: long double\n");
+    printf ("Value type: long double\n");
 #endif
 
 #ifdef TWO_TIME_STEPS
-  printf ("Number of time steps: 2\n");
+    printf ("Number of time steps: 2\n");
 #endif
 #ifdef ONE_TIME_STEP
-  printf ("Number of time steps: 1\n");
+    printf ("Number of time steps: 1\n");
 #endif
 
-  printf ("\n-------- Details --------\n");
-  printf ("Parallel grid: %d\n", is_parallel_grid);
+    printf ("\n-------- Details --------\n");
+    printf ("Parallel grid: %d\n", is_parallel_grid);
 
 #if defined (PARALLEL_GRID)
-  printf ("Number of processes: %d\n", numProcs);
+    printf ("Number of processes: %d\n", numProcs);
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  printf ("Parallel grid scheme: X\n");
+    printf ("Parallel grid scheme: X\n");
 #endif
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  printf ("Parallel grid scheme: Y\n");
+    printf ("Parallel grid scheme: Y\n");
 #endif
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
-  printf ("Parallel grid scheme: Z\n");
+    printf ("Parallel grid scheme: Z\n");
 #endif
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  printf ("Parallel grid scheme: XY\n");
+    printf ("Parallel grid scheme: XY\n");
 #endif
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  printf ("Parallel grid scheme: YZ\n");
+    printf ("Parallel grid scheme: YZ\n");
 #endif
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  printf ("Parallel grid scheme: XZ\n");
+    printf ("Parallel grid scheme: XZ\n");
 #endif
 #ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
-  printf ("Parallel grid scheme: XYZ\n");
+    printf ("Parallel grid scheme: XYZ\n");
 #endif
 
-  printf ("Buffer size: %d\n", bufSize);
+    printf ("Buffer size: %d\n", bufSize);
 #endif
 
-  printf ("\n-------- Execution Time --------\n");
+    printf ("\n-------- Execution Time --------\n");
 
-  FieldValue execution_time = (FieldValue) (((FieldValue) (end_time - begin_time)) /  CLOCKS_PER_SEC);
+    FieldValue execution_time = (FieldValue) (((FieldValue) (end_time - begin_time)) /  CLOCKS_PER_SEC);
 
-  printf ("Execution time (by clock()): %f seconds.\n", execution_time);
-}
+    printf ("Execution time (by clock()): %f seconds.\n", execution_time);
+
+#if defined (PARALLEL_GRID)
+  }
+#endif /* PARALLEL_GRID */
 
   return 0;
 }

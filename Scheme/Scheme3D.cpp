@@ -13,9 +13,9 @@
 
 #include <cmath>
 
-#if defined (CUDA_ENABLED)
-#include "CudaInterface.h"
-#endif
+// #if defined (CUDA_ENABLED)
+// #include "CudaInterface.h"
+// #endif
 
 #ifdef GRID_3D
 
@@ -403,7 +403,7 @@ Scheme3D::performSteps ()
     // dumper.init (totalStep, CURRENT);
     // dumper.dumpGrid (Ez);
   }
-//#endif /* !CUDA_ENABLED */
+// #endif /* !CUDA_ENABLED */
 }
 
 void
