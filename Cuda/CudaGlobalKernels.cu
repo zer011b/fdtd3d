@@ -5,20 +5,21 @@ __global__ void cudaCalculateTMzEStep (CudaExitStatus *retval,
                                        FieldValue *Ez_prev, FieldValue *Hx_prev, FieldValue *Hy_prev,
                                        FieldValue *eps,
                                        FieldValue gridTimeStep, FieldValue gridStep,
-                                       grid_coord sx, grid_coord sy, time_step t)
+                                       grid_coord sx_Ez, grid_coord sy_Ez,
+                                       time_step t)
 {
   grid_coord i = (blockIdx.x * blockDim.x) + threadIdx.x;
   grid_coord j = (blockIdx.y * blockDim.y) + threadIdx.y;
 
-  if (i >= sx || j >= sy)
+  if (i >= sx_Ez || j >= sy_Ez)
   {
     *retval = CUDA_ERROR;
     return;
   }
 
-  grid_coord indexEz1 = i * sy + j;
-  grid_coord indexEz2 = (i - 1) * sy + j;
-  grid_coord indexEz3 = i * sy + j - 1;
+  grid_coord indexEz1 = i * sy_Ez + j;
+  grid_coord indexEz2 = (i - 1) * sy_Ez + j;
+  grid_coord indexEz3 = i * sy_Ez + j - 1;
 
   // Shift border values of Ez
   if (i == 0 || j == 0)
@@ -45,20 +46,20 @@ __global__ void cudaCalculateTMzEStep (CudaExitStatus *retval,
 
 __global__ void cudaCalculateTMzESource (CudaExitStatus *retval,
                                          FieldValue *Ez_prev,
-                                         grid_coord sx, grid_coord sy, time_step t)
+                                         grid_coord sx_Ez, grid_coord sy_Ez, time_step t)
 {
   grid_coord i = (blockIdx.x * blockDim.x) + threadIdx.x;
   grid_coord j = (blockIdx.y * blockDim.y) + threadIdx.y;
 
-  if (i >= sx || j >= sy)
+  if (i >= sx_Ez || j >= sy_Ez)
   {
     *retval = CUDA_ERROR;
     return;
   }
 
-  grid_coord indexEz1 = i * sy + j;
+  grid_coord indexEz1 = i * sy_Ez + j;
 
-  if (i == sx / 2 && j == sy / 2)
+  if (i == sx_Ez / 2 && j == sy_Ez / 2)
   {
     Ez_prev[indexEz1] = cos (t * 3.1415 / 12);
   }
@@ -72,25 +73,26 @@ __global__ void cudaCalculateTMzHStep (CudaExitStatus *retval,
                                        FieldValue *Ez_prev, FieldValue *Hx_prev, FieldValue *Hy_prev,
                                        FieldValue *mu,
                                        FieldValue gridTimeStep, FieldValue gridStep,
-                                       grid_coord sx, grid_coord sy, time_step t)
+                                       grid_coord sx_Hx, grid_coord sy_Hx,
+                                       grid_coord sx_Hy, grid_coord sy_Hy, time_step t)
 {
   grid_coord i = (blockIdx.x * blockDim.x) + threadIdx.x;
   grid_coord j = (blockIdx.y * blockDim.y) + threadIdx.y;
 
-  if (i >= sx || j >= sy)
+  if (i >= sx_Hx || j >= sy_Hy)
   {
     *retval = CUDA_ERROR;
     return;
   }
 
-  grid_coord indexHx1 = i * sy + j;
-  grid_coord indexHx2 = i * sy + j + 1;
+  grid_coord indexHx1 = i * sy_Hx + j;
+  grid_coord indexHx2 = i * sy_Hx + j + 1;
 
-  grid_coord indexHy1 = i * sy + j;
-  grid_coord indexHy2 = (i + 1) * sy + j;
+  grid_coord indexHy1 = i * sy_Hy + j;
+  grid_coord indexHy2 = (i + 1) * sy_Hy + j;
 
   // Shift border values of Hx
-  if (i == 0 || j == sy - 1)
+  if (i == 0 || j == sy_Hx - 1)
   {
     Hx[indexHx1] = Hx_prev[indexHx1];
   }
@@ -105,7 +107,7 @@ __global__ void cudaCalculateTMzHStep (CudaExitStatus *retval,
   }
 
   // Shift border values of Hy
-  if (i == sx - 1 || j == 0)
+  if (i == sx_Hy - 1 || j == 0)
   {
     Hy[indexHy1] = Hy_prev[indexHy1];
   }
@@ -128,12 +130,13 @@ __global__ void cudaCalculateTMzHStep (CudaExitStatus *retval,
 
 __global__ void cudaCalculateTMzHSource (CudaExitStatus *retval,
                                          FieldValue *Hx_prev, FieldValue *Hy_prev,
-                                         grid_coord sx, grid_coord sy, time_step t)
+                                         grid_coord sx_Hx, grid_coord sy_Hx,
+                                         grid_coord sx_Hy, grid_coord sy_Hy, time_step t)
 {
   grid_coord i = (blockIdx.x * blockDim.x) + threadIdx.x;
   grid_coord j = (blockIdx.y * blockDim.y) + threadIdx.y;
 
-  if (i >= sx || j >= sy)
+  if (i >= sx_Hy || j >= sy_Hy)
   {
     *retval = CUDA_ERROR;
     return;

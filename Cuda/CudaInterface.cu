@@ -1,11 +1,15 @@
 #include "CudaInterface.h"
+#include "CudaGlobalKernels.h"
 
 void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             FieldValue *Ez, FieldValue *Hx, FieldValue *Hy,
                             FieldValue *Ez_prev, FieldValue *Hx_prev, FieldValue *Hy_prev,
                             FieldValue *eps, FieldValue *mu,
                             FieldValue gridTimeStep, FieldValue gridStep,
-                            grid_coord sx, grid_coord sy,
+                            grid_coord sx_Ez, grid_coord sy_Ez,
+                            grid_coord sx_Hx, grid_coord sy_Hx,
+                            grid_coord sx_Hy, grid_coord sy_Hy,
+                            grid_iter sizeEps, grid_iter sizeMu,
                             time_step stepStart, time_step stepEnd,
                             uint32_t blocksX, uint32_t blocksY, uint32_t threadsX, uint32_t threadsY)
 {
@@ -20,30 +24,32 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
   FieldValue *eps_cuda;
   FieldValue *mu_cuda;
 
-  grid_iter size = (grid_iter) sx * sy * sizeof (FieldValue);
+  grid_iter sizeEz = (grid_iter) sx_Ez * sy_Ez * sizeof (FieldValue);
+  grid_iter sizeHx = (grid_iter) sx_Hx * sy_Hx * sizeof (FieldValue);
+  grid_iter sizeHy = (grid_iter) sx_Hy * sy_Hy * sizeof (FieldValue);
   //printf ("%llu=%ld*%ld*%lld", size, sx, sy, sizeof (FieldValue));
 
-  cudaCheckErrorCmd (cudaMalloc ((void **) &Ez_cuda, size));
-  cudaCheckErrorCmd (cudaMalloc ((void **) &Hx_cuda, size));
-  cudaCheckErrorCmd (cudaMalloc ((void **) &Hy_cuda, size));
+  cudaCheckErrorCmd (cudaMalloc ((void **) &Ez_cuda, sizeEz));
+  cudaCheckErrorCmd (cudaMalloc ((void **) &Hx_cuda, sizeHx));
+  cudaCheckErrorCmd (cudaMalloc ((void **) &Hy_cuda, sizeHy));
 
-  cudaCheckErrorCmd (cudaMalloc ((void **) &Ez_cuda_prev, size));
-  cudaCheckErrorCmd (cudaMalloc ((void **) &Hx_cuda_prev, size));
-  cudaCheckErrorCmd (cudaMalloc ((void **) &Hy_cuda_prev, size));
+  cudaCheckErrorCmd (cudaMalloc ((void **) &Ez_cuda_prev, sizeEz));
+  cudaCheckErrorCmd (cudaMalloc ((void **) &Hx_cuda_prev, sizeHx));
+  cudaCheckErrorCmd (cudaMalloc ((void **) &Hy_cuda_prev, sizeHy));
 
-  cudaCheckErrorCmd (cudaMalloc ((void **) &eps_cuda, size));
-  cudaCheckErrorCmd (cudaMalloc ((void **) &mu_cuda, size));
+  cudaCheckErrorCmd (cudaMalloc ((void **) &eps_cuda, sizeEps));
+  cudaCheckErrorCmd (cudaMalloc ((void **) &mu_cuda, sizeMu));
 
-  cudaCheckErrorCmd (cudaMemcpy (Ez_cuda, Ez, size, cudaMemcpyHostToDevice));
-  cudaCheckErrorCmd (cudaMemcpy (Hx_cuda, Hx, size, cudaMemcpyHostToDevice));
-  cudaCheckErrorCmd (cudaMemcpy (Hy_cuda, Hy, size, cudaMemcpyHostToDevice));
+  cudaCheckErrorCmd (cudaMemcpy (Ez_cuda, Ez, sizeEz, cudaMemcpyHostToDevice));
+  cudaCheckErrorCmd (cudaMemcpy (Hx_cuda, Hx, sizeHx, cudaMemcpyHostToDevice));
+  cudaCheckErrorCmd (cudaMemcpy (Hy_cuda, Hy, sizeHy, cudaMemcpyHostToDevice));
 
-  cudaCheckErrorCmd (cudaMemcpy (Ez_cuda_prev, Ez_prev, size, cudaMemcpyHostToDevice));
-  cudaCheckErrorCmd (cudaMemcpy (Hx_cuda_prev, Hx_prev, size, cudaMemcpyHostToDevice));
-  cudaCheckErrorCmd (cudaMemcpy (Hy_cuda_prev, Hy_prev, size, cudaMemcpyHostToDevice));
+  cudaCheckErrorCmd (cudaMemcpy (Ez_cuda_prev, Ez_prev, sizeEz, cudaMemcpyHostToDevice));
+  cudaCheckErrorCmd (cudaMemcpy (Hx_cuda_prev, Hx_prev, sizeHx, cudaMemcpyHostToDevice));
+  cudaCheckErrorCmd (cudaMemcpy (Hy_cuda_prev, Hy_prev, sizeHy, cudaMemcpyHostToDevice));
 
-  cudaCheckErrorCmd (cudaMemcpy (eps_cuda, eps, size, cudaMemcpyHostToDevice));
-  cudaCheckErrorCmd (cudaMemcpy (mu_cuda, mu, size, cudaMemcpyHostToDevice));
+  cudaCheckErrorCmd (cudaMemcpy (eps_cuda, eps, sizeEps, cudaMemcpyHostToDevice));
+  cudaCheckErrorCmd (cudaMemcpy (mu_cuda, mu, sizeMu, cudaMemcpyHostToDevice));
 
   dim3 blocks (blocksX, blocksY);
   dim3 threads (threadsX, threadsY);
@@ -62,14 +68,14 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                                                                         eps_cuda,
                                                                         gridTimeStep,
                                                                         gridStep,
-                                                                        sx,
-                                                                        sy,
+                                                                        sx_Ez,
+                                                                        sy_Ez,
                                                                         t));
 
     cudaCheckExitStatus (cudaCalculateTMzESource <<< blocks, threads >>> (exitStatusCuda,
                                                                           Ez_cuda_prev,
-                                                                          sx,
-                                                                          sy,
+                                                                          sx_Ez,
+                                                                          sy_Ez,
                                                                           t));
 
     cudaCheckExitStatus (cudaCalculateTMzHStep <<< blocks, threads >>> (exitStatusCuda,
@@ -81,28 +87,32 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                                                                         mu_cuda,
                                                                         gridTimeStep,
                                                                         gridStep,
-                                                                        sx,
-                                                                        sy,
+                                                                        sx_Hx,
+                                                                        sy_Hx,
+                                                                        sx_Hy,
+                                                                        sy_Hy,
                                                                         t));
 
     cudaCheckExitStatus (cudaCalculateTMzHSource <<< blocks, threads >>> (exitStatusCuda,
                                                                           Hx_cuda_prev,
                                                                           Hy_cuda_prev,
-                                                                          sx,
-                                                                          sy,
+                                                                          sx_Hx,
+                                                                          sy_Hx,
+                                                                          sx_Hy,
+                                                                          sy_Hy,
                                                                           t));
   }
 
-  cudaCheckErrorCmd (cudaMemcpy (Ez, Ez_cuda, size, cudaMemcpyDeviceToHost));
-  cudaCheckErrorCmd (cudaMemcpy (Hx, Hx_cuda, size, cudaMemcpyDeviceToHost));
-  cudaCheckErrorCmd (cudaMemcpy (Hy, Hy_cuda, size, cudaMemcpyDeviceToHost));
+  cudaCheckErrorCmd (cudaMemcpy (Ez, Ez_cuda, sizeEz, cudaMemcpyDeviceToHost));
+  cudaCheckErrorCmd (cudaMemcpy (Hx, Hx_cuda, sizeHx, cudaMemcpyDeviceToHost));
+  cudaCheckErrorCmd (cudaMemcpy (Hy, Hy_cuda, sizeHy, cudaMemcpyDeviceToHost));
 
-  cudaCheckErrorCmd (cudaMemcpy (Ez_prev, Ez_cuda_prev, size, cudaMemcpyDeviceToHost));
-  cudaCheckErrorCmd (cudaMemcpy (Hx_prev, Hx_cuda_prev, size, cudaMemcpyDeviceToHost));
-  cudaCheckErrorCmd (cudaMemcpy (Hy_prev, Hy_cuda_prev, size, cudaMemcpyDeviceToHost));
+  cudaCheckErrorCmd (cudaMemcpy (Ez_prev, Ez_cuda_prev, sizeEz, cudaMemcpyDeviceToHost));
+  cudaCheckErrorCmd (cudaMemcpy (Hx_prev, Hx_cuda_prev, sizeHx, cudaMemcpyDeviceToHost));
+  cudaCheckErrorCmd (cudaMemcpy (Hy_prev, Hy_cuda_prev, sizeHy, cudaMemcpyDeviceToHost));
 
-  cudaCheckErrorCmd (cudaMemcpy (eps, eps_cuda, size, cudaMemcpyDeviceToHost));
-  cudaCheckErrorCmd (cudaMemcpy (mu, mu_cuda, size, cudaMemcpyDeviceToHost));
+  cudaCheckErrorCmd (cudaMemcpy (eps, eps_cuda, sizeEps, cudaMemcpyDeviceToHost));
+  cudaCheckErrorCmd (cudaMemcpy (mu, mu_cuda, sizeMu, cudaMemcpyDeviceToHost));
 
   cudaCheckErrorCmd (cudaFree (Ez_cuda));
   cudaCheckErrorCmd (cudaFree (Hx_cuda));
