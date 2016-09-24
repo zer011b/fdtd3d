@@ -3,16 +3,34 @@
 
 #include "Kernels.h"
 #include "CudaDefines.h"
+#include "GridLayout.h"
 
+#ifdef PARALLEL_GRID
+#include "ParallelGrid.h"
+#else
+#include "Grid.h"
+#endif
+
+#if defined (PARALLEL_GRID)
 void cudaExecute2DTMzSteps (CudaExitStatus *,
-                            FieldValue *, FieldValue *, FieldValue *,
-                            FieldValue *, FieldValue *, FieldValue *,
-                            FieldValue *, FieldValue *,
+                            YeeGridLayout &,
                             FieldValue, FieldValue,
-                            grid_coord, grid_coord,
-                            grid_coord, grid_coord,
-                            grid_coord, grid_coord,
-                            grid_iter, grid_iter,
-                            time_step, time_step, uint32_t, uint32_t, uint32_t, uint32_t);
+                            ParallelGrid &,
+                            ParallelGrid &,
+                            ParallelGrid &,
+                            ParallelGrid &,
+                            ParallelGrid &,
+                            time_step, time_step);
+#else
+void cudaExecute2DTMzSteps (CudaExitStatus *,
+                            YeeGridLayout &,
+                            FieldValue, FieldValue,
+                            Grid<GridCoordinate2D> &,
+                            Grid<GridCoordinate2D> &,
+                            Grid<GridCoordinate2D> &,
+                            Grid<GridCoordinate2D> &,
+                            Grid<GridCoordinate2D> &,
+                            time_step, time_step);
+#endif
 
 #endif /* !CUDA_KERNEL_INTERFACE_H */
