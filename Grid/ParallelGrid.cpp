@@ -2559,7 +2559,7 @@ ParallelGrid::nextTimeStep ()
 {
   ParallelGridBase::nextTimeStep ();
 
-  ++shareStep;
+  nextShareStep ();
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -2589,6 +2589,12 @@ ParallelGrid::nextTimeStep ()
 
     shareStep = 0;
   }
+}
+
+void
+ParallelGrid::nextShareStep ()
+{
+  ++shareStep;
 }
 
 ParallelGridCoordinate

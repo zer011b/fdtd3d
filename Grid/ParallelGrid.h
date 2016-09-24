@@ -217,7 +217,13 @@ public:
                 const int process, const int totalProc, uint32_t step);
 
   // Switch to next time step.
+#ifdef CXX11_ENABLED
+  virtual void nextTimeStep () override;
+#else
   virtual void nextTimeStep ();
+#endif
+
+  void nextShareStep ();
 
   void share ();
 
@@ -226,7 +232,11 @@ public:
   // Get field point at coordinate in grid.
   FieldPointValue* getFieldPointValueAbsoluteIndex (const ParallelGridCoordinate& position);
 
-  ParallelGridCoordinate getEnd () const
+#ifdef CXX11_ENABLED
+  virtual ParallelGridCoordinate getEnd () const override
+#else
+  virtual ParallelGridCoordinate getEnd () const
+#endif
   {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -307,7 +317,11 @@ public:
 #endif
   }
 
-  ParallelGridCoordinate getStart () const
+#ifdef CXX11_ENABLED
+  virtual ParallelGridCoordinate getStart () const override
+#else
+  virtual ParallelGridCoordinate getStart () const
+#endif
   {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)

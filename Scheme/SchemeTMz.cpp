@@ -25,24 +25,6 @@ SchemeTMz::performSteps ()
 {
 #if defined (CUDA_ENABLED)
 
-  int sizeEz = Ez.getSize().calculateTotalCoord();
-  int sizeHx = Hx.getSize().calculateTotalCoord();
-  int sizeHy = Hy.getSize().calculateTotalCoord();
-
-  int sizeEps = Eps.getSize ().calculateTotalCoord ();
-  int sizeMu = Mu.getSize ().calculateTotalCoord ();
-
-  FieldValue *tmp_Ez = new FieldValue [sizeEz];
-  FieldValue *tmp_Hx = new FieldValue [sizeHx];
-  FieldValue *tmp_Hy = new FieldValue [sizeHy];
-
-  FieldValue *tmp_Ez_prev = new FieldValue [sizeEz];
-  FieldValue *tmp_Hx_prev = new FieldValue [sizeHx];
-  FieldValue *tmp_Hy_prev = new FieldValue [sizeHy];
-
-  FieldValue *tmp_eps = new FieldValue [sizeEps];
-  FieldValue *tmp_mu = new FieldValue [sizeMu];
-
   time_step t = 0;
 
 #ifdef PARALLEL_GRID
@@ -54,73 +36,11 @@ SchemeTMz::performSteps ()
 
   while (t < totalStep)
   {
-    for (int i = 0; i < sizeEz; ++i)
-    {
-      FieldPointValue* valEz = Ez.getFieldPointValue (i);
-      tmp_Ez[i] = valEz->getCurValue ();
-      tmp_Ez_prev[i] = valEz->getPrevValue ();
-    }
-
-    for (int i = 0; i < sizeHx; ++i)
-    {
-      FieldPointValue* valHx = Hx.getFieldPointValue (i);
-      tmp_Hx[i] = valHx->getCurValue ();
-      tmp_Hx_prev[i] = valHx->getPrevValue ();
-    }
-
-    for (int i = 0; i < sizeHy; ++i)
-    {
-      FieldPointValue* valHy = Hy.getFieldPointValue (i);
-      tmp_Hy[i] = valHy->getCurValue ();
-      tmp_Hy_prev[i] = valHy->getPrevValue ();
-    }
-
-    for (int i = 0; i < sizeEps; ++i)
-    {
-      FieldPointValue *valEps = Eps.getFieldPointValue (i);
-      tmp_eps[i] = valEps->getCurValue ();
-    }
-
-    for (int i = 0; i < sizeMu; ++i)
-    {
-      FieldPointValue *valMu = Mu.getFieldPointValue (i);
-      tmp_mu[i] = valMu->getCurValue ();
-    }
-
     CudaExitStatus exitStatus;
-    cudaExecute2DTMzSteps (&exitStatus,
-                           tmp_Ez, tmp_Hx, tmp_Hy,
-                           tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,
-                           tmp_eps, tmp_mu,
-                           gridTimeStep, gridStep,
-                           Ez.getSize ().getX (), Ez.getSize ().getY (),
-                           Hx.getSize ().getX (), Hx.getSize ().getY (),
-                           Hy.getSize ().getX (), Hy.getSize ().getY (),
-                           sizeEps, sizeMu,
-                           0, tStep, Ez.getSize ().getX () / 16, Ez.getSize ().getY () / 16, 16, 16);
+
+    cudaExecute2DTMzSteps (&exitStatus, yeeLayout, gridTimeStep, gridStep, Ez, Hx, Hy, Eps, Mu, 0, tStep);
 
     ASSERT (exitStatus == CUDA_OK);
-
-    for (int i = 0; i < sizeEz; ++i)
-    {
-      FieldPointValue* valEz = Ez.getFieldPointValue (i);
-      valEz->setCurValue (tmp_Ez[i]);
-      valEz->setPrevValue (tmp_Ez_prev[i]);
-    }
-
-    for (int i = 0; i < sizeHx; ++i)
-    {
-      FieldPointValue* valHx = Hx.getFieldPointValue (i);
-      valHx->setCurValue (tmp_Hx[i]);
-      valHx->setPrevValue (tmp_Hx_prev[i]);
-    }
-
-    for (int i = 0; i < sizeHy; ++i)
-    {
-      FieldPointValue* valHy = Hy.getFieldPointValue (i);
-      valHy->setCurValue (tmp_Hy[i]);
-      valHy->setPrevValue (tmp_Hy_prev[i]);
-    }
 
 #if defined (PARALLEL_GRID)
     Ez.share ();
@@ -130,17 +50,6 @@ SchemeTMz::performSteps ()
 
     t += tStep;
   }
-
-  delete[] tmp_Ez;
-  delete[] tmp_Hx;
-  delete[] tmp_Hy;
-
-  delete[] tmp_Ez_prev;
-  delete[] tmp_Hx_prev;
-  delete[] tmp_Hy_prev;
-
-  delete[] tmp_eps;
-  delete[] tmp_mu;
 
 #if defined (PARALLEL_GRID)
   if (process == 0)

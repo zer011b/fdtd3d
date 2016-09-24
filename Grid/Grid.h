@@ -66,7 +66,10 @@ public:
   const TCoord& getSize () const;
 
   // Get start coord of the grid.
-  const TCoord getStart () const;
+  virtual TCoord getStart () const;
+
+  // Get end coord of the grid.
+  virtual TCoord getEnd () const;
 
   // Calculate position from three-dimensional coordinate.
   TCoord calculatePositionFromIndex (grid_iter index) const;
@@ -187,10 +190,17 @@ Grid<TCoord>::getSize () const
 }
 
 template <class TCoord>
-const TCoord
+TCoord
 Grid<TCoord>::getStart () const
 {
   return TCoord (0);
+}
+
+template <class TCoord>
+TCoord
+Grid<TCoord>::getEnd () const
+{
+  return getSize ();
 }
 
 template <class TCoord>
