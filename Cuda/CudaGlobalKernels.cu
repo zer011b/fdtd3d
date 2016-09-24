@@ -43,7 +43,8 @@ __global__ void cudaCalculateTMzEzSource (CudaExitStatus *retval,
                                           grid_coord Ez_startX, grid_coord Ez_startY,
                                           grid_coord Ez_endX, grid_coord Ez_endY,
                                           grid_coord sx_Ez, grid_coord sy_Ez,
-                                          time_step t)
+                                          time_step t,
+                                          int processId)
 {
   grid_coord i = (blockIdx.x * blockDim.x) + threadIdx.x;
   grid_coord j = (blockIdx.y * blockDim.y) + threadIdx.y;
@@ -56,9 +57,12 @@ __global__ void cudaCalculateTMzEzSource (CudaExitStatus *retval,
 
   grid_coord indexEz1 = i * sy_Ez + j;
 
-  if (i == sx_Ez / 2 && j == sy_Ez / 2)
+  if (processId == 0)
   {
-    Ez_prev[indexEz1] = cos (t * 3.1415 / 12);
+    if (i == sx_Ez / 2 && j == sy_Ez / 2)
+    {
+      Ez_prev[indexEz1] = cos (t * 3.1415 / 12);
+    }
   }
 
   *retval = CUDA_OK;

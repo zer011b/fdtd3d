@@ -10,7 +10,8 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             ParallelGrid &Hy,
                             ParallelGrid &Eps,
                             ParallelGrid &Mu,
-                            time_step stepStart, time_step stepEnd)
+                            time_step stepStart, time_step stepEnd,
+                            int processId)
 {
   ParallelGridCoordinate EzSizeCoord = Ez.getSize ();
   ParallelGridCoordinate HxSizeCoord = Hx.getSize ();
@@ -155,7 +156,8 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                                                                                EzEnd.getY (),
                                                                                EzSizeCoord.getX (),
                                                                                EzSizeCoord.getY (),
-                                                                               t));
+                                                                               t,
+                                                                               processId));
 
     Ez.nextShareStep ();
 
@@ -281,7 +283,8 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             Grid<GridCoordinate2D> &Hy,
                             Grid<GridCoordinate2D> &Eps,
                             Grid<GridCoordinate2D> &Mu,
-                            time_step stepStart, time_step stepEnd)
+                            time_step stepStart, time_step stepEnd,
+                            int processId)
 {
   GridCoordinate2D EzSizeCoord = Ez.getSize ();
   GridCoordinate2D HxSizeCoord = Hx.getSize ();
@@ -426,7 +429,8 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                                                                                EzEnd.getY (),
                                                                                EzSizeCoord.getX (),
                                                                                EzSizeCoord.getY (),
-                                                                               t));
+                                                                               t,
+                                                                               processId));
 
     cudaCheckExitStatus (cudaCalculateTMzHxStep <<< blocksHx, threadsHx >>> (exitStatusCuda,
                                                                              Hx_cuda,
