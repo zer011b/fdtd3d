@@ -15,7 +15,7 @@ __global__ void cudaCalculateTMzEzStep (CudaExitStatus *retval,
 
   if (i < Ez_startX || j < Ez_startY || i >= Ez_endX || j >= Ez_endY)
   {
-    *retval = CUDA_ERROR;
+    *retval = CUDA_OK;
     return;
   }
 
@@ -50,7 +50,7 @@ __global__ void cudaCalculateTMzEzSource (CudaExitStatus *retval,
 
   if (i < Ez_startX || j < Ez_startY || i >= Ez_endX || j >= Ez_endY)
   {
-    *retval = CUDA_ERROR;
+    *retval = CUDA_OK;
     return;
   }
 
@@ -80,7 +80,7 @@ __global__ void cudaCalculateTMzHxStep (CudaExitStatus *retval,
 
   if (i < Hx_startX || j < Hx_startY || i >= Hx_endX || j >= Hx_endY)
   {
-    *retval = CUDA_ERROR;
+    *retval = CUDA_OK;
     return;
   }
 
@@ -115,7 +115,7 @@ __global__ void cudaCalculateTMzHyStep (CudaExitStatus *retval,
 
   if (i < Hy_startX || j < Hy_startY || i >= Hy_endX || j >= Hy_endY)
   {
-    *retval = CUDA_ERROR;
+    *retval = CUDA_OK;
     return;
   }
 
@@ -147,7 +147,7 @@ __global__ void cudaCalculateTMzHxSource (CudaExitStatus *retval,
 
   if (i < Hx_startX || j < Hx_startY || i >= Hx_endX || j >= Hx_endY)
   {
-    *retval = CUDA_ERROR;
+    *retval = CUDA_OK;
     return;
   }
 
@@ -167,7 +167,7 @@ __global__ void cudaCalculateTMzHySource (CudaExitStatus *retval,
 
   if (i < Hy_startX || j < Hy_startY || i >= Hy_endX || j >= Hy_endY)
   {
-    *retval = CUDA_ERROR;
+    *retval = CUDA_OK;
     return;
   }
 

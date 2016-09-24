@@ -111,13 +111,13 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
   CudaExitStatus *exitStatusCuda;
   cudaCheckErrorCmd (cudaMalloc ((void **) &exitStatusCuda, sizeof (CudaExitStatus)));
 
-  dim3 blocksEz (EzSizeCoord.getX (), EzSizeCoord.getY ());
+  dim3 blocksEz (EzSizeCoord.getX () / 16, EzSizeCoord.getY () / 16);
   dim3 threadsEz (16, 16);
 
-  dim3 blocksHx (HxSizeCoord.getX (), HxSizeCoord.getY ());
+  dim3 blocksHx (HxSizeCoord.getX () / 16, HxSizeCoord.getY () / 16);
   dim3 threadsHx (16, 16);
 
-  dim3 blocksHy (HySizeCoord.getX (), HySizeCoord.getY ());
+  dim3 blocksHy (HySizeCoord.getX () / 16, HySizeCoord.getY () / 16);
   dim3 threadsHy (16, 16);
 
   for (time_step t = stepStart; t < stepEnd; ++t)
@@ -391,13 +391,13 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
   GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getStart ());
   GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getEnd ());
 
-  dim3 blocksEz (EzSizeCoord.getX (), EzSizeCoord.getY ());
+  dim3 blocksEz (EzSizeCoord.getX () / 16, EzSizeCoord.getY () / 16);
   dim3 threadsEz (16, 16);
 
-  dim3 blocksHx (HxSizeCoord.getX (), HxSizeCoord.getY ());
+  dim3 blocksHx (HxSizeCoord.getX () / 16, HxSizeCoord.getY () / 16);
   dim3 threadsHx (16, 16);
 
-  dim3 blocksHy (HySizeCoord.getX (), HySizeCoord.getY ());
+  dim3 blocksHy (HySizeCoord.getX () / 16, HySizeCoord.getY () / 16);
   dim3 threadsHy (16, 16);
 
   for (time_step t = stepStart; t < stepEnd; ++t)
