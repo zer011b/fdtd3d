@@ -38,7 +38,7 @@ SchemeTMz::performSteps ()
   {
     CudaExitStatus exitStatus;
 
-    cudaExecute2DTMzSteps (&exitStatus, yeeLayout, gridTimeStep, gridStep, Ez, Hx, Hy, Eps, Mu, 0, tStep);
+    cudaExecute2DTMzSteps (&exitStatus, yeeLayout, gridTimeStep, gridStep, Ez, Hx, Hy, Eps, Mu, 0, tStep, process);
 
     ASSERT (exitStatus == CUDA_OK);
 
