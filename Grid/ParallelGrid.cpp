@@ -2329,44 +2329,44 @@ ParallelGrid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
   ParallelGridCoordinate bufferSizeLeftCurrent (bufferSizeLeft);
   ParallelGridCoordinate bufferSizeRightCurrent (bufferSizeRight);
 
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (!hasL)
-  {
-    bufferSizeLeftCurrent.setX (0);
-  }
-  if (!hasR)
-  {
-    bufferSizeRightCurrent.setX (0);
-  }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (!hasD)
-  {
-    bufferSizeLeftCurrent.setY (0);
-  }
-  if (!hasU)
-  {
-    bufferSizeRightCurrent.setY (0);
-  }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (!hasB)
-  {
-    bufferSizeLeftCurrent.setZ (0);
-  }
-  if (!hasF)
-  {
-    bufferSizeRightCurrent.setZ (0);
-  }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+// #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+//     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+//   if (!hasL)
+//   {
+//     bufferSizeLeftCurrent.setX (0);
+//   }
+//   if (!hasR)
+//   {
+//     bufferSizeRightCurrent.setX (0);
+//   }
+// #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+//           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+//
+// #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+//     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+//   if (!hasD)
+//   {
+//     bufferSizeLeftCurrent.setY (0);
+//   }
+//   if (!hasU)
+//   {
+//     bufferSizeRightCurrent.setY (0);
+//   }
+// #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+//           PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+//
+// #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+//     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+//   if (!hasB)
+//   {
+//     bufferSizeLeftCurrent.setZ (0);
+//   }
+//   if (!hasF)
+//   {
+//     bufferSizeRightCurrent.setZ (0);
+//   }
+// #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
+//           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
   size = currentSize + bufferSizeLeftCurrent + bufferSizeRightCurrent;
 

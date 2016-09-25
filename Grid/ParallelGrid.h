@@ -246,6 +246,10 @@ public:
     {
       diffX = shareStep;
     }
+    else
+    {
+      diffX += bufferSizeRight.getX ();
+    }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
@@ -256,6 +260,10 @@ public:
     {
       diffY = shareStep;
     }
+    else
+    {
+      diffY += bufferSizeRight.getY ();
+    }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
@@ -265,6 +273,10 @@ public:
     if (hasF)
     {
       diffZ = shareStep;
+    }
+    else
+    {
+      diffZ += bufferSizeRight.getZ ();
     }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -329,7 +341,11 @@ public:
 
     if (hasL)
     {
-      diffX = shareStep;
+      diffX += shareStep;
+    }
+    else
+    {
+      diffX += bufferSizeLeft.getX ();
     }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -339,7 +355,11 @@ public:
 
     if (hasD)
     {
-      diffY = shareStep;
+      diffY += shareStep;
+    }
+    else
+    {
+      diffY += bufferSizeLeft.getY ();
     }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -349,7 +369,11 @@ public:
 
     if (hasB)
     {
-      diffZ = shareStep;
+      diffZ += shareStep;
+    }
+    else
+    {
+      diffZ += bufferSizeLeft.getZ ();
     }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
