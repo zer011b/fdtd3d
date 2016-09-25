@@ -36,6 +36,8 @@ protected:
   // Save/load type.
   GridFileType type;
 
+  int processId;
+
   // File names.
   // File name for current layer file.
   std::string cur;
@@ -52,13 +54,13 @@ protected:
   void setFileNames ()
   {
     cur.clear ();
-    cur = std::string ("current[") + int64_to_string (step) + std::string ("]");
+    cur = std::string ("current[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     prev.clear ();
-    prev = std::string ("previous[") + int64_to_string (step) + std::string ("]");
+    prev = std::string ("previous[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId);
 #if defined (TWO_TIME_STEPS)
     prevPrev.clear ();
-    prevPrev = std::string ("previous2[") + int64_to_string (step) + std::string ("]");
+    prevPrev = std::string ("previous2[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId);
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
   }
@@ -71,10 +73,11 @@ public:
   virtual ~GridFileManager () {}
 
   // Initialize dumper with time step number and save/load type.
-  void init (const grid_iter& timeStep, GridFileType newType)
+  void init (const grid_iter& timeStep, GridFileType newType, int process)
   {
     step = timeStep;
     type = newType;
+    processId = process;
 
     setFileNames ();
   }
