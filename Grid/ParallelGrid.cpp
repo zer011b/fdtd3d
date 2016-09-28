@@ -6,7 +6,7 @@
 // Names of buffers of parallel grid for debug purposes.
 const char* BufferPositionNames[] =
 {
-#define FUNCTION(X) "#X",
+#define FUNCTION(X) #X,
 #include "BufferPosition.inc.h"
 };
 #endif /* PRINT_MESSAGE */

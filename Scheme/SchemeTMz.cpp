@@ -29,7 +29,17 @@ SchemeTMz::performSteps ()
 
 #ifdef PARALLEL_GRID
   ParallelGridCoordinate bufSize = Ez.getBufferSize ();
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   time_step tStep = bufSize.getX ();
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  time_step tStep = bufSize.getY ();
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+  time_step tStep = bufSize.getZ ();
+#endif
 #else
   time_step tStep = totalStep;
 #endif
