@@ -35,4 +35,6 @@ void cudaExecute2DTMzSteps (CudaExitStatus *,
                             int);
 #endif
 
+void cudaInit (int);
+
 #endif /* !CUDA_KERNEL_INTERFACE_H */

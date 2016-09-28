@@ -48,13 +48,18 @@ SchemeTMz::performSteps ()
   {
     CudaExitStatus exitStatus;
 
-    cudaExecute2DTMzSteps (&exitStatus, yeeLayout, gridTimeStep, gridStep, Ez, Hx, Hy, Eps, Mu, 0, tStep, process);
+    cudaExecute2DTMzSteps (&exitStatus, yeeLayout, gridTimeStep, gridStep, Ez, Hx, Hy, Eps, Mu, t, t + tStep, process);
 
     ASSERT (exitStatus == CUDA_OK);
 
 #if defined (PARALLEL_GRID)
+    Ez.zeroShareStep ();
     Ez.share ();
+
+    Hx.zeroShareStep ();
     Hx.share ();
+
+    Hy.zeroShareStep ();
     Hy.share ();
 #endif /* PARALLEL_GRID */
 

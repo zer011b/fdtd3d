@@ -225,6 +225,8 @@ public:
 
   void nextShareStep ();
 
+  void zeroShareStep ();
+
   void share ();
 
   ParallelGridCoordinate getBufferSize () const;
@@ -438,6 +440,11 @@ public:
     return nodeGridSizeZ;
   }
 #endif /* GRID_3D */
+
+  int getProcessId ()
+  {
+    return processId;
+  }
 };
 
 #endif /* PARALLEL_GRID */

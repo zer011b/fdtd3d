@@ -9,6 +9,10 @@
 #include "Grid.h"
 #endif /* !PARALLEL_GRID */
 
+#ifdef CUDA_ENABLED
+#include "CudaInterface.h"
+#endif
+
 #ifdef CXX11_ENABLED
 #else
 #include "cstdlib"
@@ -67,6 +71,10 @@ int main (int argc, char** argv)
   is_parallel_grid = false;
 #endif /* !PARALLEL_GRID */
 
+#ifdef CUDA_ENABLED
+  cudaInit (0);
+#endif
+
 #ifdef GRID_2D
   dimension = 2;
 #endif
@@ -98,7 +106,7 @@ int main (int argc, char** argv)
 #endif
 #endif
 
-  scheme.initScheme (0.000003, 20);
+  scheme.initScheme (0.0000003, 20);
 
 #if defined (PARALLEL_GRID)
   scheme.initProcess (rank);
