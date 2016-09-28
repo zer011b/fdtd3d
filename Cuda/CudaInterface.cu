@@ -542,3 +542,8 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
 }
 
 #endif
+
+void cudaInit (int rank)
+{
+  cudaCheckErrorCmd (cudaSetDevice(rank));
+}

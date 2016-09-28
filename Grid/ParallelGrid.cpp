@@ -2597,6 +2597,12 @@ ParallelGrid::nextShareStep ()
   ++shareStep;
 }
 
+void
+ParallelGrid::zeroShareStep ()
+{
+  shareStep = 0;
+}
+
 ParallelGridCoordinate
 ParallelGrid::getBufferSize () const
 {
