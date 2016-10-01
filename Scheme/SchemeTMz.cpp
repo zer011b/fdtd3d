@@ -24,47 +24,11 @@ void
 SchemeTMz::performSteps (int dumpRes)
 {
 #if defined (CUDA_ENABLED)
+  CudaExitStatus status;
 
-  time_step t = 0;
+  cudaExecute2DTMzSteps (&status, yeeLayout, gridTimeStep, gridStep, Ez, Hx, Hy, Eps, Mu, totalStep, process);
 
-#ifdef PARALLEL_GRID
-  ParallelGridCoordinate bufSize = Ez.getBufferSize ();
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  time_step tStep = bufSize.getX ();
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  time_step tStep = bufSize.getY ();
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  time_step tStep = bufSize.getZ ();
-#endif
-#else
-  time_step tStep = totalStep;
-#endif
-
-  while (t < totalStep)
-  {
-    CudaExitStatus exitStatus;
-
-    cudaExecute2DTMzSteps (&exitStatus, yeeLayout, gridTimeStep, gridStep, Ez, Hx, Hy, Eps, Mu, t, t + tStep, process);
-
-    ASSERT (exitStatus == CUDA_OK);
-
-#if defined (PARALLEL_GRID)
-    Ez.zeroShareStep ();
-    Ez.share ();
-
-    Hx.zeroShareStep ();
-    Hx.share ();
-
-    Hy.zeroShareStep ();
-    Hy.share ();
-#endif /* PARALLEL_GRID */
-
-    t += tStep;
-  }
+  ASSERT (status == CUDA_OK);
 
   if (dumpRes)
   {
@@ -72,7 +36,6 @@ SchemeTMz::performSteps (int dumpRes)
     dumper.init (totalStep, ALL, process);
     dumper.dumpGrid (Ez);
   }
-
 #else /* CUDA_ENABLED */
 
   GridCoordinate2D EzSize = Ez.getSize ();

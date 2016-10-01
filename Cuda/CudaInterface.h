@@ -11,8 +11,8 @@
 #include "Grid.h"
 #endif
 
-#if defined (PARALLEL_GRID)
-void cudaExecute2DTMzSteps (CudaExitStatus *,
+#ifdef PARALLEL_GRID
+void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             YeeGridLayout &,
                             FieldValue, FieldValue,
                             ParallelGrid &,
@@ -20,10 +20,10 @@ void cudaExecute2DTMzSteps (CudaExitStatus *,
                             ParallelGrid &,
                             ParallelGrid &,
                             ParallelGrid &,
-                            time_step, time_step,
+                            time_step,
                             int);
 #else
-void cudaExecute2DTMzSteps (CudaExitStatus *,
+void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             YeeGridLayout &,
                             FieldValue, FieldValue,
                             Grid<GridCoordinate2D> &,
@@ -31,7 +31,7 @@ void cudaExecute2DTMzSteps (CudaExitStatus *,
                             Grid<GridCoordinate2D> &,
                             Grid<GridCoordinate2D> &,
                             Grid<GridCoordinate2D> &,
-                            time_step, time_step,
+                            time_step,
                             int);
 #endif
 
