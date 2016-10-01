@@ -52,9 +52,9 @@ class Scheme3D: public Scheme
 public:
 
 #ifdef CXX11_ENABLED
-  virtual void performSteps () override;
+  virtual void performSteps (int) override;
 #else
-  virtual void performSteps ();
+  virtual void performSteps (int);
 #endif
 
   void initScheme (FieldValue, FieldValue);

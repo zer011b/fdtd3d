@@ -21,7 +21,7 @@
 extern PhysicsConst PhConst;
 
 void
-SchemeTMz::performSteps ()
+SchemeTMz::performSteps (int dumpRes)
 {
 #if defined (CUDA_ENABLED)
 
@@ -66,9 +66,12 @@ SchemeTMz::performSteps ()
     t += tStep;
   }
 
-  BMPDumper<GridCoordinate2D> dumper;
-  dumper.init (totalStep, ALL, process);
-  dumper.dumpGrid (Ez);
+  if (dumpRes)
+  {
+    BMPDumper<GridCoordinate2D> dumper;
+    dumper.init (totalStep, ALL, process);
+    dumper.dumpGrid (Ez);
+  }
 
 #else /* CUDA_ENABLED */
 
@@ -181,9 +184,12 @@ SchemeTMz::performSteps ()
     Hy.nextTimeStep ();
   }
 
-  BMPDumper<GridCoordinate2D> dumper;
-  dumper.init (totalStep, CURRENT, process);
-  dumper.dumpGrid (Ez);
+  if (dumpRes)
+  {
+    BMPDumper<GridCoordinate2D> dumper;
+    dumper.init (totalStep, CURRENT, process);
+    dumper.dumpGrid (Ez);
+  }
 #endif /* !CUDA_ENABLED */
 }
 

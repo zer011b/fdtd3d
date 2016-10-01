@@ -31,11 +31,12 @@ int main (int argc, char** argv)
   int totalTimeSteps = 100;
   int gridSize = 100;
   int bufSize = 10;
+  int dumpRes = 0;
 
   int dimension;
   bool is_parallel_grid;
 
-  if (argc != 4)
+  if (argc != 5)
   {
     return 1;
   }
@@ -45,10 +46,12 @@ int main (int argc, char** argv)
     totalTimeSteps = std::stoi (argv[1]);
     gridSize = std::stoi (argv[2]);
     bufSize = std::stoi (argv[3]);
+    dumpRes = std::stoi (argv[4]);
 #else
     totalTimeSteps = atoi (argv[1]);
     gridSize = atoi (argv[2]);
     bufSize = atoi (argv[3]);
+    dumpRes = atoi (argv[4]);
 #endif
   }
 
@@ -114,7 +117,7 @@ int main (int argc, char** argv)
 
   scheme.initGrids ();
 
-  scheme.performSteps ();
+  scheme.performSteps (dumpRes);
 
 #if defined (PARALLEL_GRID)
 #if PRINT_MESSAGE
