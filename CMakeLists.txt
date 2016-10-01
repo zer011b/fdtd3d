@@ -291,10 +291,6 @@ include_directories ("${PROJECT_SOURCE_DIR}/Scheme")
 add_subdirectory (Scheme)
 set (LIBS ${LIBS} Scheme)
 
-include_directories ("${PROJECT_SOURCE_DIR}/Solver")
-add_subdirectory (Solver)
-set (LIBS ${LIBS} Solver)
-
 if ("${CUDA_ENABLED}")
   set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch sm_50 -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64")
 

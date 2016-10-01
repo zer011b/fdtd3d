@@ -22,7 +22,7 @@
 extern PhysicsConst PhConst;
 
 void
-Scheme3D::performSteps ()
+Scheme3D::performSteps (int dumpRes)
 {
 // #if defined (CUDA_ENABLED)
 //
