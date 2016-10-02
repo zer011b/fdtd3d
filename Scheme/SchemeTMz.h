@@ -62,7 +62,7 @@ public:
 #if defined (PARALLEL_GRID)
   SchemeTMz (const GridCoordinate2D& totSize,
              const GridCoordinate2D& bufSizeL, const GridCoordinate2D& bufSizeR,
-             const int process, const int totalProc, uint32_t tStep) :
+             const int curProcess, const int totalProc, uint32_t tStep) :
     yeeLayout (totSize),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, process, totalProc, 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, process, totalProc, 0),
@@ -74,7 +74,8 @@ public:
     frequency (0),
     gridStep (0),
     gridTimeStep (0),
-    totalStep (tStep)
+    totalStep (tStep),
+    process (curProcess)
   {
   }
 #else
@@ -90,7 +91,8 @@ public:
     frequency (0),
     gridStep (0),
     gridTimeStep (0),
-    totalStep (tStep)
+    totalStep (tStep),
+    process (0)
   {
   }
 #endif

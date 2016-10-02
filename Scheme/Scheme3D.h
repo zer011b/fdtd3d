@@ -68,7 +68,7 @@ public:
 #if defined (PARALLEL_GRID)
   Scheme3D (const GridCoordinate3D& totSize,
             const GridCoordinate3D& bufSizeL, const GridCoordinate3D& bufSizeR,
-            const int process, const int totalProc, uint32_t tStep) :
+            const int curProcess, const int totalProc, uint32_t tStep) :
     yeeLayout (totSize),
     Ex (yeeLayout.getExSize (), bufSizeL, bufSizeR, process, totalProc, 0),
     Ey (yeeLayout.getEySize (), bufSizeL, bufSizeR, process, totalProc, 0),
@@ -84,7 +84,7 @@ public:
     gridStep (0),
     gridTimeStep (0),
     totalStep (tStep),
-    process (process)
+    process (curProcess)
   {
   }
 #else

@@ -13,9 +13,9 @@
 
 #include <cmath>
 
-// #if defined (CUDA_ENABLED)
-// #include "CudaInterface.h"
-// #endif
+#if defined (CUDA_ENABLED)
+#include "CudaInterface.h"
+#endif
 
 #ifdef GRID_3D
 
@@ -24,115 +24,20 @@ extern PhysicsConst PhConst;
 void
 Scheme3D::performSteps (int dumpRes)
 {
-// #if defined (CUDA_ENABLED)
-//
-//   int size = Ez.getSize().calculateTotalCoord();
-//
-//   FieldValue *tmp_Ez = new FieldValue [size];
-//   FieldValue *tmp_Hx = new FieldValue [size];
-//   FieldValue *tmp_Hy = new FieldValue [size];
-//
-//   FieldValue *tmp_Ez_prev = new FieldValue [size];
-//   FieldValue *tmp_Hx_prev = new FieldValue [size];
-//   FieldValue *tmp_Hy_prev = new FieldValue [size];
-//
-//   FieldValue *tmp_eps = new FieldValue [size];
-//   FieldValue *tmp_mu = new FieldValue [size];
-//
-//   time_step t = 0;
-//
-// #ifdef PARALLEL_GRID
-//   ParallelGridCoordinate bufSize = Ez.getBufferSize ();
-//   time_step tStep = bufSize.getX ();
-// #else
-//   time_step tStep = totalStep;
-// #endif
-//
-//   while (t < totalStep)
-//   {
-//     for (int i = 0; i < size; ++i)
-//     {
-//       FieldPointValue* valEz = Ez.getFieldPointValue (i);
-//       tmp_Ez[i] = valEz->getCurValue ();
-//       tmp_Ez_prev[i] = valEz->getPrevValue ();
-//
-//       FieldPointValue* valHx = Hx.getFieldPointValue (i);
-//       tmp_Hx[i] = valHx->getCurValue ();
-//       tmp_Hx_prev[i] = valHx->getPrevValue ();
-//
-//       FieldPointValue* valHy = Hy.getFieldPointValue (i);
-//       tmp_Hy[i] = valHy->getCurValue ();
-//       tmp_Hy_prev[i] = valHy->getPrevValue ();
-//
-//       FieldPointValue *valEps = Eps.getFieldPointValue (i);
-//       tmp_eps[i] = valEps->getCurValue ();
-//
-//       FieldPointValue *valMu = Mu.getFieldPointValue (i);
-//       tmp_mu[i] = valMu->getCurValue ();
-//     }
-//
-//     CudaExitStatus exitStatus;
-//     cudaExecute2DTMzSteps (&exitStatus,
-//                            tmp_Ez, tmp_Hx, tmp_Hy,
-//                            tmp_Ez_prev, tmp_Hx_prev, tmp_Hy_prev,
-//                            tmp_eps, tmp_mu,
-//                            gridTimeStep, gridStep,
-//                            Ez.getSize ().getX (), Ez.getSize ().getY (),
-//                            0, tStep, Ez.getSize ().getX () / 16, Ez.getSize ().getY () / 16, 16, 16);
-//
-//     ASSERT (exitStatus == CUDA_OK);
-//
-//     for (int i = 0; i < size; ++i)
-//     {
-//       /*if (tmp_Ez[i] != 0 || tmp_Ez_prev[i] != 0 ||
-//           tmp_Hx[i] != 0 || tmp_Hx_prev[i] != 0 ||
-//           tmp_Hy[i] != 0 || tmp_Hy_prev[i] != 0)
-//       {
-//         printf ("%d !!!!! %f %f %f %f %f %f\n", i, tmp_Ez[i], tmp_Ez_prev[i], tmp_Hx[i], tmp_Hx_prev[i], tmp_Hy[i], tmp_Hy_prev[i]);
-//       }*/
-//       FieldPointValue* valEz = Ez.getFieldPointValue (i);
-//       valEz->setCurValue (tmp_Ez[i]);
-//       valEz->setPrevValue (tmp_Ez_prev[i]);
-//
-//       FieldPointValue* valHx = Hx.getFieldPointValue (i);
-//       valHx->setCurValue (tmp_Hx[i]);
-//       valHx->setPrevValue (tmp_Hx_prev[i]);
-//
-//       FieldPointValue* valHy = Hy.getFieldPointValue (i);
-//       valHy->setCurValue (tmp_Hy[i]);
-//       valHy->setPrevValue (tmp_Hy_prev[i]);
-//     }
-//
-// #if defined (PARALLEL_GRID)
-//     Ez.share ();
-//     Hx.share ();
-//     Hy.share ();
-// #endif /* PARALLEL_GRID */
-//
-//     t += tStep;
-//   }
-//
-//   delete[] tmp_Ez;
-//   delete[] tmp_Hx;
-//   delete[] tmp_Hy;
-//
-//   delete[] tmp_Ez_prev;
-//   delete[] tmp_Hx_prev;
-//   delete[] tmp_Hy_prev;
-//
-//   delete[] tmp_eps;
-//   delete[] tmp_mu;
-//
-// #if defined (PARALLEL_GRID)
-//   if (process == 0)
-// #endif
-//   {
-//     BMPDumper<GridCoordinate2D> dumper;
-//     dumper.init (totalStep, ALL);
-//     dumper.dumpGrid (Ez);
-//   }
-//
-// #else /* CUDA_ENABLED */
+#if defined (CUDA_ENABLED)
+  CudaExitStatus status;
+
+  cudaExecute3DSteps (&status, yeeLayout, gridTimeStep, gridStep, Ex, Ey, Ez, Hx, Hy, Hz, Eps, Mu, totalStep, process);
+
+  ASSERT (status == CUDA_OK);
+
+  if (dumpRes)
+  {
+    BMPDumper<GridCoordinate3D> dumper;
+    dumper.init (totalStep, ALL, process);
+    dumper.dumpGrid (Ez);
+  }
+#else /* CUDA_ENABLED */
 
   GridCoordinate3D EzSize = Ez.getSize ();
 
@@ -395,15 +300,13 @@ Scheme3D::performSteps (int dumpRes)
     Hz.nextTimeStep ();
   }
 
-#if defined (PARALLEL_GRID)
-  if (process == 0)
-#endif
+  if (dumpRes)
   {
-    // BMPDumper<GridCoordinate3D> dumper;
-    // dumper.init (totalStep, CURRENT);
-    // dumper.dumpGrid (Ez);
+    BMPDumper<GridCoordinate3D> dumper;
+    dumper.init (totalStep, ALL, process);
+    dumper.dumpGrid (Ez);
   }
-// #endif /* !CUDA_ENABLED */
+#endif /* !CUDA_ENABLED */
 }
 
 void
