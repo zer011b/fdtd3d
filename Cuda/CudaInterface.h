@@ -22,6 +22,20 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             ParallelGrid &,
                             time_step,
                             int);
+
+void cudaExecute3DSteps (CudaExitStatus *retval,
+                         YeeGridLayout &,
+                         FieldValue, FieldValue,
+                         ParallelGrid &,
+                         ParallelGrid &,
+                         ParallelGrid &,
+                         ParallelGrid &,
+                         ParallelGrid &,
+                         ParallelGrid &,
+                         ParallelGrid &,
+                         ParallelGrid &,
+                         time_step,
+                         int);
 #else
 void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             YeeGridLayout &,
@@ -33,6 +47,20 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             Grid<GridCoordinate2D> &,
                             time_step,
                             int);
+
+void cudaExecute3DSteps (CudaExitStatus *retval,
+                         YeeGridLayout &,
+                         FieldValue, FieldValue,
+                         Grid<GridCoordinate3D> &,
+                         Grid<GridCoordinate3D> &,
+                         Grid<GridCoordinate3D> &,
+                         Grid<GridCoordinate3D> &,
+                         Grid<GridCoordinate3D> &,
+                         Grid<GridCoordinate3D> &,
+                         Grid<GridCoordinate3D> &,
+                         Grid<GridCoordinate3D> &,
+                         time_step,
+                         int);
 #endif
 
 void cudaInit (int);
