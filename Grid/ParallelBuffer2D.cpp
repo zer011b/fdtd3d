@@ -15,7 +15,7 @@ ParallelGrid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2,
   FieldValue min_alpha = ((FieldValue) min_size2) / ((FieldValue) min_size1);
 
   // Bad case, too many nodes left unused. Let's change proportion.
-  for (int size1 = 2; size1 < totalProcCount / 2; ++size1)
+  for (int size1 = 2; size1 <= totalProcCount / 2; ++size1)
   {
     int size2 = totalProcCount / size1;
     int left_new = totalProcCount - (size1 * size2);
@@ -57,12 +57,16 @@ ParallelGrid::NodeGridInitInner (FieldValue& overall1, FieldValue& overall2,
   FieldValue sqrtVal = ((FieldValue) (totalProcCount)) / alpha;
   sqrtVal = sqrt (sqrtVal);
 
-  if (sqrtVal <= 1.0 || alpha*sqrtVal <= 1.0)
+  if (sqrtVal <= 1.0 || alpha * sqrtVal <= 1.0)
   {
-    ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
-  }
+    // Unproportional calculational/node grids
 
-  sqrtVal = round (sqrtVal);
+    sqrtVal = 2;
+  }
+  else
+  {
+    sqrtVal = round (sqrtVal);
+  }
 
   nodeGridSize1 = (int) sqrtVal;
   nodeGridSize2 = totalProcCount / nodeGridSize1;

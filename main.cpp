@@ -29,29 +29,66 @@
 int main (int argc, char** argv)
 {
   int totalTimeSteps = 100;
-  int gridSize = 100;
+
+#ifdef GRID_2D
+  int gridSizeX = 100;
+  int gridSizeY = 100;
+#endif
+#ifdef GRID_3D
+  int gridSizeX = 100;
+  int gridSizeY = 100;
+  int gridSizeZ = 100;
+#endif
+
   int bufSize = 10;
   int dumpRes = 0;
 
   int dimension;
   bool is_parallel_grid;
 
-  if (argc != 5)
+#ifdef GRID_2D
+  if (argc != 6)
+#endif
+#ifdef GRID_3D
+  if (argc != 7)
+#endif
   {
     return 1;
   }
   else
   {
 #ifdef CXX11_ENABLED
+#ifdef GRID_2D
     totalTimeSteps = std::stoi (argv[1]);
-    gridSize = std::stoi (argv[2]);
-    bufSize = std::stoi (argv[3]);
-    dumpRes = std::stoi (argv[4]);
+    gridSizeX = std::stoi (argv[2]);
+    gridSizeY = std::stoi (argv[3]);
+    bufSize = std::stoi (argv[4]);
+    dumpRes = std::stoi (argv[5]);
+#endif
+#ifdef GRID_3D
+    totalTimeSteps = std::stoi (argv[1]);
+    gridSizeX = std::stoi (argv[2]);
+    gridSizeY = std::stoi (argv[3]);
+    gridSizeZ = std::stoi (argv[4]);
+    bufSize = std::stoi (argv[5]);
+    dumpRes = std::stoi (argv[6]);
+#endif
 #else
+#ifdef GRID_2D
     totalTimeSteps = atoi (argv[1]);
-    gridSize = atoi (argv[2]);
-    bufSize = atoi (argv[3]);
-    dumpRes = atoi (argv[4]);
+    gridSizeX = atoi (argv[2]);
+    gridSizeY = atoi (argv[3]);
+    bufSize = atoi (argv[4]);
+    dumpRes = atoi (argv[5]);
+#endif
+#ifdef GRID_3D
+    totalTimeSteps = atoi (argv[1]);
+    gridSizeX = atoi (argv[2]);
+    gridSizeY = atoi (argv[3]);
+    gridSizeZ = atoi (argv[4]);
+    bufSize = atoi (argv[5]);
+    dumpRes = atoi (argv[6]);
+#endif
 #endif
   }
 
@@ -86,24 +123,28 @@ int main (int argc, char** argv)
 #endif
 
 #if defined (PARALLEL_GRID)
-  ParallelGridCoordinate overallSize (gridSize);
+#ifdef GRID_2D
+  ParallelGridCoordinate overallSize (gridSizeX, gridSizeY);
   ParallelGridCoordinate bufferLeft (bufSize);
   ParallelGridCoordinate bufferRight (bufSize);
 
-#ifdef GRID_2D
   SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
 #endif
 #ifdef GRID_3D
+  ParallelGridCoordinate overallSize (gridSizeX, gridSizeY, gridSizeZ);
+  ParallelGridCoordinate bufferLeft (bufSize);
+  ParallelGridCoordinate bufferRight (bufSize);
+
   Scheme3D scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
 #endif
 #else
 #ifdef GRID_2D
-  GridCoordinate2D overallSize (gridSize);
+  GridCoordinate2D overallSize (gridSizeX, gridSizeY);
 
   SchemeTMz scheme (overallSize, totalTimeSteps);
 #endif
 #ifdef GRID_3D
-  GridCoordinate3D overallSize (gridSize);
+  GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
 
   Scheme3D scheme (overallSize, totalTimeSteps);
 #endif
@@ -135,7 +176,12 @@ int main (int argc, char** argv)
     const clock_t end_time = clock();
 
     printf ("Dimension: %d\n", dimension);
-    printf ("Grid size: %d\n", gridSize);
+#ifdef GRID_2D
+    printf ("Grid size: %dx%d\n", gridSizeX, gridSizeY);
+#endif
+#ifdef GRID_3D
+    printf ("Grid size: %dx%dx%d\n", gridSizeX, gridSizeY, gridSizeZ);
+#endif
     printf ("Number of time steps: %d\n", totalTimeSteps);
 
     printf ("\n");
