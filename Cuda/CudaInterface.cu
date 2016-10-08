@@ -1,6 +1,10 @@
 #include "CudaInterface.h"
 #include "CudaGlobalKernels.h"
 
+extern int cudaThreadsX;
+extern int cudaThreadsY;
+extern int cudaThreadsZ;
+
 #ifdef PARALLEL_GRID
 void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             YeeGridLayout &yeeLayout,
@@ -99,14 +103,14 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
   CudaExitStatus *exitStatusCuda;
   cudaCheckErrorCmd (cudaMalloc ((void **) &exitStatusCuda, sizeof (CudaExitStatus)));
 
-  dim3 blocksEz (EzSizeCoord.getX () / 16, EzSizeCoord.getY () / 16);
-  dim3 threadsEz (16, 16);
+  dim3 blocksEz (EzSizeCoord.getX () / cudaThreadsX, EzSizeCoord.getY () / cudaThreadsY);
+  dim3 threadsEz (cudaThreadsX, cudaThreadsY);
 
-  dim3 blocksHx (HxSizeCoord.getX () / 16, HxSizeCoord.getY () / 16);
-  dim3 threadsHx (16, 16);
+  dim3 blocksHx (HxSizeCoord.getX () / cudaThreadsX, HxSizeCoord.getY () / cudaThreadsY);
+  dim3 threadsHx (cudaThreadsX, cudaThreadsY);
 
-  dim3 blocksHy (HySizeCoord.getX () / 16, HySizeCoord.getY () / 16);
-  dim3 threadsHy (16, 16);
+  dim3 blocksHy (HySizeCoord.getX () / cudaThreadsX, HySizeCoord.getY () / cudaThreadsY);
+  dim3 threadsHy (cudaThreadsX, cudaThreadsY);
 
   while (t < totalStep)
   {
@@ -466,23 +470,23 @@ void cudaExecute3DSteps (CudaExitStatus *retval,
   CudaExitStatus *exitStatusCuda;
   cudaCheckErrorCmd (cudaMalloc ((void **) &exitStatusCuda, sizeof (CudaExitStatus)));
 
-  dim3 blocksEx (ExSizeCoord.getX () / 8, ExSizeCoord.getY () / 8, ExSizeCoord.getZ () / 8);
-  dim3 threadsEx (8, 8, 8);
+  dim3 blocksEx (ExSizeCoord.getX () / cudaThreadsX, ExSizeCoord.getY () / cudaThreadsY, ExSizeCoord.getZ () / cudaThreadsZ);
+  dim3 threadsEx (cudaThreadsX, cudaThreadsY, cudaThreadsZ);
 
-  dim3 blocksEy (EySizeCoord.getX () / 8, EySizeCoord.getY () / 8, EySizeCoord.getZ () / 8);
-  dim3 threadsEy (8, 8, 8);
+  dim3 blocksEy (EySizeCoord.getX () / cudaThreadsX, EySizeCoord.getY () / cudaThreadsY, EySizeCoord.getZ () / cudaThreadsZ);
+  dim3 threadsEy (cudaThreadsX, cudaThreadsY, cudaThreadsZ);
 
-  dim3 blocksEz (EzSizeCoord.getX () / 8, EzSizeCoord.getY () / 8, EzSizeCoord.getZ () / 8);
-  dim3 threadsEz (8, 8, 8);
+  dim3 blocksEz (EzSizeCoord.getX () / cudaThreadsX, EzSizeCoord.getY () / cudaThreadsY, EzSizeCoord.getZ () / cudaThreadsZ);
+  dim3 threadsEz (cudaThreadsX, cudaThreadsY, cudaThreadsZ);
 
-  dim3 blocksHx (HxSizeCoord.getX () / 8, HxSizeCoord.getY () / 8, HxSizeCoord.getZ () / 8);
-  dim3 threadsHx (8, 8, 8);
+  dim3 blocksHx (HxSizeCoord.getX () / cudaThreadsX, HxSizeCoord.getY () / cudaThreadsY, HxSizeCoord.getZ () / cudaThreadsZ);
+  dim3 threadsHx (cudaThreadsX, cudaThreadsY, cudaThreadsZ);
 
-  dim3 blocksHy (HySizeCoord.getX () / 8, HySizeCoord.getY () / 8, HySizeCoord.getZ () / 8);
-  dim3 threadsHy (8, 8, 8);
+  dim3 blocksHy (HySizeCoord.getX () / cudaThreadsX, HySizeCoord.getY () / cudaThreadsY, HySizeCoord.getZ () / cudaThreadsZ);
+  dim3 threadsHy (cudaThreadsX, cudaThreadsY, cudaThreadsZ);
 
-  dim3 blocksHz (HzSizeCoord.getX () / 8, HzSizeCoord.getY () / 8, HzSizeCoord.getZ () / 8);
-  dim3 threadsHz (8, 8, 8);
+  dim3 blocksHz (HzSizeCoord.getX () / cudaThreadsX, HzSizeCoord.getY () / cudaThreadsY, HzSizeCoord.getZ () / cudaThreadsZ);
+  dim3 threadsHz (cudaThreadsX, cudaThreadsY, cudaThreadsZ);
 
   while (t < totalStep)
   {
