@@ -27,6 +27,10 @@
 #include "SchemeTMz.h"
 #include "Scheme3D.h"
 
+int cudaThreadsX = 8;
+int cudaThreadsY = 8;
+int cudaThreadsZ = 8;
+
 int main (int argc, char** argv)
 {
   int totalTimeSteps = 100;
@@ -44,14 +48,24 @@ int main (int argc, char** argv)
   int bufSize = 10;
   int dumpRes = 0;
 
+  int numCudaGPUs = 1;
+
   int dimension;
   bool is_parallel_grid;
 
 #ifdef GRID_2D
+#ifdef CUDA_ENABLED
+  if (argc != 9)
+#else
   if (argc != 6)
 #endif
+#endif
 #ifdef GRID_3D
+#ifdef CUDA_ENABLED
+  if (argc != 11)
+#else
   if (argc != 7)
+#endif
 #endif
   {
     return 1;
@@ -65,6 +79,11 @@ int main (int argc, char** argv)
     gridSizeY = std::stoi (argv[3]);
     bufSize = std::stoi (argv[4]);
     dumpRes = std::stoi (argv[5]);
+#ifdef CUDA_ENABLED
+    numCudaGPUs = std::stoi (argv[6]);
+    cudaThreadsX = std::stoi (argv[7]);
+    cudaThreadsY = std::stoi (argv[8]);
+#endif
 #endif
 #ifdef GRID_3D
     totalTimeSteps = std::stoi (argv[1]);
@@ -73,6 +92,12 @@ int main (int argc, char** argv)
     gridSizeZ = std::stoi (argv[4]);
     bufSize = std::stoi (argv[5]);
     dumpRes = std::stoi (argv[6]);
+#ifdef CUDA_ENABLED
+    numCudaGPUs = std::stoi (argv[7]);
+    cudaThreadsX = std::stoi (argv[8]);
+    cudaThreadsY = std::stoi (argv[9]);
+    cudaThreadsZ = std::stoi (argv[10]);
+#endif
 #endif
 #else
 #ifdef GRID_2D
@@ -81,6 +106,11 @@ int main (int argc, char** argv)
     gridSizeY = atoi (argv[3]);
     bufSize = atoi (argv[4]);
     dumpRes = atoi (argv[5]);
+#ifdef CUDA_ENABLED
+    numCudaGPUs = atoi (argv[6]);
+    cudaThreadsX = atoi (argv[7]);
+    cudaThreadsY = atoi (argv[8]);
+#endif
 #endif
 #ifdef GRID_3D
     totalTimeSteps = atoi (argv[1]);
@@ -89,6 +119,12 @@ int main (int argc, char** argv)
     gridSizeZ = atoi (argv[4]);
     bufSize = atoi (argv[5]);
     dumpRes = atoi (argv[6]);
+#ifdef CUDA_ENABLED
+    numCudaGPUs = atoi (argv[7]);
+    cudaThreadsX = atoi (argv[8]);
+    cudaThreadsY = atoi (argv[9]);
+    cudaThreadsZ = atoi (argv[10]);
+#endif
 #endif
 #endif
   }
@@ -115,7 +151,11 @@ int main (int argc, char** argv)
 #endif /* !PARALLEL_GRID */
 
 #ifdef CUDA_ENABLED
-  cudaInit (0);
+#if defined (PARALLEL_GRID)
+  cudaInit (rank % numCudaGPUs);
+#else
+  cudaInit (numCudaGPUs);
+#endif
 #endif
 
 #ifdef GRID_2D
