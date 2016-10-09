@@ -64,5 +64,6 @@ void cudaExecute3DSteps (CudaExitStatus *retval,
 #endif
 
 void cudaInit (int);
+void cudaInfo ();
 
 #endif /* !CUDA_KERNEL_INTERFACE_H */
