@@ -151,6 +151,8 @@ int main (int argc, char** argv)
 #endif /* !PARALLEL_GRID */
 
 #ifdef CUDA_ENABLED
+  cudaInfo ();
+
 #if defined (PARALLEL_GRID)
   cudaInit (rank % numCudaGPUs);
 #else
