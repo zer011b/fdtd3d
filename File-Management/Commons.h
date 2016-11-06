@@ -50,17 +50,19 @@ protected:
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 
+  std::string customName;
+
   // Set file names according to time step.
   void setFileNames ()
   {
     cur.clear ();
-    cur = std::string ("current[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId);
+    cur = std::string ("current[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId) + std::string ("_") + customName;
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     prev.clear ();
-    prev = std::string ("previous[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId);
+    prev = std::string ("previous[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId) + std::string ("_") + customName;
 #if defined (TWO_TIME_STEPS)
     prevPrev.clear ();
-    prevPrev = std::string ("previous2[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId);
+    prevPrev = std::string ("previous2[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId) + std::string ("_") + customName;
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
   }
@@ -73,11 +75,12 @@ public:
   virtual ~GridFileManager () {}
 
   // Initialize dumper with time step number and save/load type.
-  void init (const grid_iter& timeStep, GridFileType newType, int process)
+  void init (const grid_iter& timeStep, GridFileType newType, int process, const char *name)
   {
     step = timeStep;
     type = newType;
     processId = process;
+    customName = std::string (name);
 
     setFileNames ();
   }

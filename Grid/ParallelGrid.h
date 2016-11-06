@@ -445,6 +445,11 @@ public:
   {
     return processId;
   }
+
+  int getTotalProcCount () const
+  {
+    return totalProcCount;
+  }
 };
 
 #endif /* PARALLEL_GRID */

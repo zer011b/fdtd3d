@@ -173,7 +173,7 @@ int main (int argc, char** argv)
   ParallelGridCoordinate bufferLeft (bufSize);
   ParallelGridCoordinate bufferRight (bufSize);
 
-  SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps);
+  SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false);
 #endif
 #ifdef GRID_3D
   ParallelGridCoordinate overallSize (gridSizeX, gridSizeY, gridSizeZ);
@@ -186,7 +186,7 @@ int main (int argc, char** argv)
 #ifdef GRID_2D
   GridCoordinate2D overallSize (gridSizeX, gridSizeY);
 
-  SchemeTMz scheme (overallSize, totalTimeSteps);
+  SchemeTMz scheme (overallSize, totalTimeSteps, true, totalTimeSteps * 1000);
 #endif
 #ifdef GRID_3D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);

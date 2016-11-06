@@ -17,12 +17,20 @@ class SchemeTMz: public Scheme
   ParallelGrid Hx;
   ParallelGrid Hy;
 
+  ParallelGrid EzAmplitude;
+  ParallelGrid HxAmplitude;
+  ParallelGrid HyAmplitude;
+
   ParallelGrid Eps;
   ParallelGrid Mu;
 #else
   Grid<GridCoordinate2D> Ez;
   Grid<GridCoordinate2D> Hx;
   Grid<GridCoordinate2D> Hy;
+
+  Grid<GridCoordinate2D> EzAmplitude;
+  Grid<GridCoordinate2D> HxAmplitude;
+  Grid<GridCoordinate2D> HyAmplitude;
 
   Grid<GridCoordinate2D> Eps;
   Grid<GridCoordinate2D> Mu;
@@ -39,9 +47,23 @@ class SchemeTMz: public Scheme
   // dt
   FieldValue gridTimeStep;
 
-  uint32_t totalStep;
+  time_step totalStep;
 
   int process;
+
+  bool calculateAmplitude;
+
+  time_step amplitudeStepLimit;
+
+private:
+
+  void performEzSteps (time_step, GridCoordinate3D, GridCoordinate3D);
+  void performHxSteps (time_step, GridCoordinate3D, GridCoordinate3D);
+  void performHySteps (time_step, GridCoordinate3D, GridCoordinate3D);
+  void performNSteps (time_step, time_step, int);
+  void performAmplitudeSteps (time_step, int);
+
+  int updateAmplitude (FieldPointValue *, FieldPointValue *, FieldValue *);
 
 public:
 
@@ -62,11 +84,15 @@ public:
 #if defined (PARALLEL_GRID)
   SchemeTMz (const GridCoordinate2D& totSize,
              const GridCoordinate2D& bufSizeL, const GridCoordinate2D& bufSizeR,
-             const int curProcess, const int totalProc, uint32_t tStep) :
+             const int curProcess, const int totalProc, time_step tStep, bool calcAmp,
+             time_step ampStep = 0) :
     yeeLayout (totSize),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Hy (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Eps (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Mu (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
     waveLength (0),
@@ -75,15 +101,21 @@ public:
     gridStep (0),
     gridTimeStep (0),
     totalStep (tStep),
-    process (curProcess)
+    process (curProcess),
+    calculateAmplitude (calcAmp),
+    amplitudeStepLimit (ampStep)
   {
+    ASSERT (!calcAmp || calcAmp && ampStep != 0);
   }
 #else
-  SchemeTMz (const GridCoordinate2D& totSize, uint32_t tStep) :
+  SchemeTMz (const GridCoordinate2D& totSize, time_step tStep, bool calcAmp, time_step ampStep = 0) :
     yeeLayout (totSize),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), 0),
     Hy (shrinkCoord (yeeLayout.getHySize ()), 0),
+    EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), 0),
+    HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), 0),
+    HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), 0),
     Eps (totSize, 0),
     Mu (totSize, 0),
     waveLength (0),
@@ -92,8 +124,11 @@ public:
     gridStep (0),
     gridTimeStep (0),
     totalStep (tStep),
-    process (0)
+    process (0),
+    calculateAmplitude (calcAmp),
+    amplitudeStepLimit (ampStep)
   {
+    ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
   }
 #endif
 

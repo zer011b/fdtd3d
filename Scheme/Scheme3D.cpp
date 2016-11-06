@@ -34,7 +34,7 @@ Scheme3D::performSteps (int dumpRes)
   if (dumpRes)
   {
     BMPDumper<GridCoordinate3D> dumper;
-    dumper.init (totalStep, ALL, process);
+    dumper.init (totalStep, ALL, process, "3D-TMz-in-time");
     dumper.dumpGrid (Ez);
   }
 #else /* CUDA_ENABLED */
@@ -303,7 +303,7 @@ Scheme3D::performSteps (int dumpRes)
   if (dumpRes)
   {
     BMPDumper<GridCoordinate3D> dumper;
-    dumper.init (totalStep, ALL, process);
+    dumper.init (totalStep, ALL, process, "3D-TMz-in-time");
     dumper.dumpGrid (Ez);
   }
 #endif /* !CUDA_ENABLED */
