@@ -6,3 +6,7 @@ Debug*/
 # third-party
 
 third-party/
+
+# patches
+
+*.patch
