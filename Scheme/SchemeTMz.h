@@ -28,12 +28,20 @@ class SchemeTMz: public Scheme
   Grid<GridCoordinate2D> Hx;
   Grid<GridCoordinate2D> Hy;
 
+  Grid<GridCoordinate2D> Dz;
+  Grid<GridCoordinate2D> Bx;
+  Grid<GridCoordinate2D> By;
+
   Grid<GridCoordinate2D> EzAmplitude;
   Grid<GridCoordinate2D> HxAmplitude;
   Grid<GridCoordinate2D> HyAmplitude;
 
   Grid<GridCoordinate2D> Eps;
   Grid<GridCoordinate2D> Mu;
+
+  Grid<GridCoordinate2D> SigmaX;
+  Grid<GridCoordinate2D> SigmaY;
+  Grid<GridCoordinate2D> SigmaZ;
 #endif
 
   // Wave parameters
@@ -55,7 +63,17 @@ class SchemeTMz: public Scheme
 
   time_step amplitudeStepLimit;
 
+  bool usePML;
+
 private:
+
+  void calculateEzStep (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateHxStep (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateHyStep (time_step, GridCoordinate3D, GridCoordinate3D);
+
+  void calculateEzStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateHxStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateHyStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
 
   void performEzSteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performHxSteps (time_step, GridCoordinate3D, GridCoordinate3D);
@@ -108,16 +126,22 @@ public:
     ASSERT (!calcAmp || calcAmp && ampStep != 0);
   }
 #else
-  SchemeTMz (const GridCoordinate2D& totSize, time_step tStep, bool calcAmp, time_step ampStep = 0) :
+  SchemeTMz (const GridCoordinate2D& totSize, time_step tStep, bool calcAmp = false, time_step ampStep = 0, bool doUsePML = false) :
     yeeLayout (totSize),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), 0),
     Hy (shrinkCoord (yeeLayout.getHySize ()), 0),
+    Dz (shrinkCoord (yeeLayout.getEzSize ()), 0),
+    Bx (shrinkCoord (yeeLayout.getHxSize ()), 0),
+    By (shrinkCoord (yeeLayout.getHySize ()), 0),
     EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), 0),
     HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), 0),
     HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), 0),
     Eps (totSize, 0),
     Mu (totSize, 0),
+    SigmaX (totSize, 0),
+    SigmaY (totSize, 0),
+    SigmaZ (totSize, 0),
     waveLength (0),
     stepWaveLength (0),
     frequency (0),
@@ -126,7 +150,8 @@ public:
     totalStep (tStep),
     process (0),
     calculateAmplitude (calcAmp),
-    amplitudeStepLimit (ampStep)
+    amplitudeStepLimit (ampStep),
+    usePML (doUsePML)
   {
     ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
   }

@@ -186,7 +186,7 @@ int main (int argc, char** argv)
 #ifdef GRID_2D
   GridCoordinate2D overallSize (gridSizeX, gridSizeY);
 
-  SchemeTMz scheme (overallSize, totalTimeSteps, true, totalTimeSteps * 1000);
+  SchemeTMz scheme (overallSize, totalTimeSteps, true, totalTimeSteps * 1000, true);
 #endif
 #ifdef GRID_3D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);

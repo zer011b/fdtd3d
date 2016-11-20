@@ -153,8 +153,8 @@ Scheme3D::performSteps (int dumpRes)
           FieldPointValue* valHy1 = Hy.getFieldPointValue (posRight);
           FieldPointValue* valHy2 = Hy.getFieldPointValue (posLeft);
 
-          FieldPointValue* valHx1 = Hx.getFieldPointValue (posDown);
-          FieldPointValue* valHx2 = Hx.getFieldPointValue (posUp);
+          FieldPointValue* valHx1 = Hx.getFieldPointValue (posUp);
+          FieldPointValue* valHx2 = Hx.getFieldPointValue (posDown);
 
           FieldValue val = calculateEz_3D (valEz->getPrevValue (),
                                            valHy1->getPrevValue (),

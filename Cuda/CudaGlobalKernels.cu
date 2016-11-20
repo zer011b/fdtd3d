@@ -26,8 +26,8 @@ __global__ void cudaCalculateTMzEzStep (CudaExitStatus *retval,
   Ez[indexEz1] = calculateEz_2D_TMz (Ez_prev[indexEz1],
                                      Hx_prev[indexEz3],
                                      Hx_prev[indexEz1],
-                                     Hy_prev[indexEz1],
                                      Hy_prev[indexEz2],
+                                     Hy_prev[indexEz1],
                                      gridTimeStep,
                                      gridStep,
                                      eps[indexEz1]);
@@ -92,8 +92,8 @@ __global__ void cudaCalculateTMzHxStep (CudaExitStatus *retval,
   grid_coord indexHx2 = i * sy_Hx + j + 1;
 
   Hx[indexHx1] = calculateHx_2D_TMz (Hx_prev[indexHx1],
-                                     Ez_prev[indexHx1],
                                      Ez_prev[indexHx2],
+                                     Ez_prev[indexHx1],
                                      gridTimeStep,
                                      gridStep,
                                      mu[indexHx1]);
@@ -126,9 +126,9 @@ __global__ void cudaCalculateTMzHyStep (CudaExitStatus *retval,
   grid_coord indexHy1 = i * sy_Hy + j;
   grid_coord indexHy2 = (i + 1) * sy_Hy + j;
 
-  Hy[indexHy1] = calculateHx_2D_TMz (Hy_prev[indexHy1],
-                                     Ez_prev[indexHy2],
+  Hy[indexHy1] = calculateHy_2D_TMz (Hy_prev[indexHy1],
                                      Ez_prev[indexHy1],
+                                     Ez_prev[indexHy2],
                                      gridTimeStep,
                                      gridStep,
                                      mu[indexHy1]);

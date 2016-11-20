@@ -14,13 +14,13 @@
 
 //===Physics=========================
 #define PI 3.1415926535897932384626433832795
-#define CC 2.99792458e+8 //скорость света в вакууме
-#define CCC 2.99792458e+10 //скорость света в вакууме
-#define MU_Z 0.0000012566370614359173//постоянная магнитной пр-ти в вакууме  4.0*M_PI*1.0e-7 
-#define EPS_Z 0.0000000000088541878176203892 //диэлектрическая проницаемость 1.0/(CC*CC*MU_Z)
-#define FREQ (CC/LAMBDA) // частота источника
-#define LAMBDA (0.000003) // чтоб лишние разы не делить при фикс частоте можно забить вручную
-#define OMEGA (2.0*M_PI*FREQ) // та же история
+#define CC 2.99792458e+8 //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+#define CCC 2.99792458e+10 //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+#define MU_Z 0.0000012566370614359173//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ-пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ  4.0*M_PI*1.0e-7
+#define EPS_Z 0.0000000000088541878176203892 //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1.0/(CC*CC*MU_Z)
+#define FREQ (CC/LAMBDA) // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+#define LAMBDA (0.000003) // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+#define OMEGA (2.0*M_PI*FREQ) // пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 #define IMP_Z sqrt(MU_Z/EPS_Z)
 #define PERIOD (1/FREQ)
 
@@ -357,7 +357,7 @@ double p0;
 //===File Saving==========================================================
 void saveToBMP(double* data, int sizeX, char* dest, const char* filename)
 {
-	
+
 
 	std::cout << "Saving to BMP image. " << std::endl;
 
@@ -403,7 +403,7 @@ void saveToBMP(double* data, int sizeX, char* dest, const char* filename)
 				a.Green = 255;
 				a.Blue = 255.0;
 			}
-			else 
+			else
 			{
 				a.Red = 255;
 				a.Green = 0.0;
@@ -551,7 +551,7 @@ void saveToBMP(double*** data, int sizeX, int sizeY, int sizeZ, char* dest, cons
 			//	max << " " << maxP - maxM << std::endl;
 		}
 		else
-		{	
+		{
 			double tmp;
 			if (max == 0)
 				tmp = 0.0;
@@ -599,7 +599,7 @@ void writeToFile(double *data, int size, char* dest, const char* filename)
 			tmp = data[i];
 			//if (abs(tmp) < acc0)
 			//	tmp = 0.0;
-			//if (tmp != 0)	
+			//if (tmp != 0)
 			file << tmp;
 		file << std::endl;
 		++lll;
@@ -636,7 +636,7 @@ void writeToFile(double **data, int sizeX, int sizeY, char* dest, const char* fi
 			tmp = data[i][j];
 			//if (abs(tmp) < acc0)
 			//	tmp = 0.0;
-			//if (tmp != 0)	
+			//if (tmp != 0)
 			file << tmp;
 			file << " ";
 		}
@@ -678,7 +678,7 @@ void writeToFile(double ***data, int sizeX, int sizeY, int sizeZ, char* dest, co
 				tmp = data[i][j][K];
 				if (abs(tmp) < acc0)
 					tmp = 0.0;
-				//if (tmp != 0)	
+				//if (tmp != 0)
 				file << tmp;
 				file << " ";
 				//std::cout << j << " " << k << std::endl;
@@ -787,7 +787,7 @@ void Copy2darray(double** to, double** from, int x, int y)
 			for (int i = 0; i <= gridX - 1; i++)
 			for (int j = 0; j <= gridY - 2; j++)
 				buf3D[k*(gridY - 1)*gridX + i*(gridY - 1) + j] = Ex[i][j][k];
-				
+
 			MPI_Send(buf3D, gridX*(gridY - 1)*(sliceSize - 1), MPI_DOUBLE, 0, rank, MPI_COMM_WORLD);
 		}
 		else if (rank == 0)
@@ -798,10 +798,10 @@ void Copy2darray(double** to, double** from, int x, int y)
 			for (int i = 0; i <= gridX - 1; i++)
 			for (int j = 0; j <= gridY - 2; j++)
 				All_Ex[i][j][k + r * sliceSize] = rbuf3D[k*(gridY - 1)*gridX + i*(gridY - 1) + j];
-			
+
 		}
 		MPI_Barrier(MPI_COMM_WORLD);
-		
+
 		//Ex join gather
 		if (r == rank && r != numProcs - 1)
 		{
@@ -1056,8 +1056,8 @@ void UpdateE()
 		//	std::cout << "Ex[i][j][k] == " << Ex[i][j][k] << " = " << CaEx[i][j][k] << " * " << Ex[i][j][k] << " + " <<
 		//	CbEx[i][j][k] << " * " << Dx1[i][j][k] << " - " << CcEx[i][j][k] << " * " << Dx1_prev[i][j][k] << std::endl;
 
-		double tmpD1 = (Dx1[i][j - 1][k - 1] + Dx1[i + 1][j - 1][k - 1] + 
-			Dx1[i][j][k - 1] + Dx1[i + 1][j][k - 1] + 
+		double tmpD1 = (Dx1[i][j - 1][k - 1] + Dx1[i + 1][j - 1][k - 1] +
+			Dx1[i][j][k - 1] + Dx1[i + 1][j][k - 1] +
 			Dx1[i][j - 1][k] + Dx1[i + 1][j - 1][k] +
 			Dx1[i][j][k] + Dx1[i + 1][j][k]) / 8;
 		double tmpD1_prev = (Dx1_prev[i][j - 1][k - 1] + Dx1_prev[i + 1][j - 1][k - 1] +
@@ -1066,7 +1066,7 @@ void UpdateE()
 			Dx1_prev[i][j][k] + Dx1_prev[i + 1][j][k]) / 8;
 
 		Ex[i][j][k] = CaEx[i][j][k] * Ex[i][j][k] +
-					  CbEx[i][j][k] * tmpD1 - 
+					  CbEx[i][j][k] * tmpD1 -
 					  CcEx[i][j][k] * tmpD1_prev;
 	}
 
@@ -1076,7 +1076,7 @@ void UpdateE()
 	for (int k = 1; k <= sliceSize - 2; k++)
 	{
 		double tmpD1 = (Dy1[i - 1][j][k - 1] + Dy1[i - 1][j + 1][k - 1] +
-			Dy1[i][j][k - 1] + Dy1[i][j + 1][k - 1] + 
+			Dy1[i][j][k - 1] + Dy1[i][j + 1][k - 1] +
 			Dy1[i - 1][j][k] + Dy1[i - 1][j + 1][k] +
 			Dy1[i][j][k] + Dy1[i][j + 1][k]) / 8;
 		double tmpD1_prev = (Dy1_prev[i - 1][j][k - 1] + Dy1_prev[i - 1][j + 1][k - 1] +
@@ -1097,10 +1097,10 @@ void UpdateE()
 		//if(i == gridX / 2 && j == gridY / 2 && k == gridZ*1.0 / 4 - 1 && rank == 0)
 		//	std::cout << "Ez[i][j][k] == " << Ez[i][j][k] << " = " << CaEz[i][j][k] << " * " << Ez[i][j][k] << " + " <<
 		//	CbEz[i][j][k] << " * " << Dz1[i][j][k] << " - " << CcEz[i][j][k] << " * " << Dz1_prev[i][j][k] << std::endl;
-		
+
 		double tmpD1 = (Dz1[i - 1][j - 1][k] + Dz1[i - 1][j - 1][k + 1] +
-			Dz1[i][j - 1][k] + Dz1[i][j - 1][k + 1] + 
-			Dz1[i - 1][j][k] + Dz1[i - 1][j][k + 1] + 
+			Dz1[i][j - 1][k] + Dz1[i][j - 1][k + 1] +
+			Dz1[i - 1][j][k] + Dz1[i - 1][j][k + 1] +
 			Dz1[i][j][k] + Dz1[i][j][k + 1]) / 8;
 		double tmpD1_prev = (Dz1_prev[i - 1][j - 1][k] + Dz1_prev[i - 1][j - 1][k + 1] +
 			Dz1_prev[i][j - 1][k] + Dz1_prev[i][j - 1][k + 1] +
@@ -1322,7 +1322,7 @@ void UpdateD1()
 		//	bm1_x[i][j][k] << " * " << Dx_prev[i][j][k] << " + " << bm2_x[i][j][k] << " * " <<
 		//	Dx_prev2[i][j][k] << " - " << am1_x[i][j][k] << " * " << Dx1_prev[i][j][k] << " - " <<
 		//	am2_x[i][j][k] << " * " << Dx1_prev2[i][j][k] << ") / " << A_x[i][j][k] << std::endl;
-		
+
 		Dx1[i][j][k] = (bm0_x[i][j][k] * Dx[i][j][k] + bm1_x[i][j][k] * Dx_prev[i][j][k] +
 			bm2_x[i][j][k] * Dx_prev2[i][j][k] - am1_x[i][j][k] * Dx1_prev[i][j][k] -
 			am2_x[i][j][k] * Dx1_prev2[i][j][k]) / A_x[i][j][k];
@@ -2039,7 +2039,7 @@ double SigmaX(double x, double y)
 			double dist = pmlL - x;
 			double x1 = (dist + 1) * delta;       // upper bounds for point i
 			double x2 = dist * delta;       // lower bounds for point i
-			
+
 			return boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1)));   //   polynomial grading
 		}
 		if (x > (gridX - pmlR + 1))
@@ -2185,24 +2185,24 @@ void allocateAll()
 	Bx = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
 	By = Malloc3darray(gridX - 1, gridY, sliceSize - 1);
 	Bz = Malloc3darray(gridX - 1, gridY - 1, sliceSize);
-	
+
 	Bx_prev = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
 	By_prev = Malloc3darray(gridX - 1, gridY, sliceSize - 1);
 	Bz_prev = Malloc3darray(gridX - 1, gridY - 1, sliceSize);
-	
+
 	Bx_prev2 = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
 	By_prev2 = Malloc3darray(gridX - 1, gridY, sliceSize - 1);
 	Bz_prev2 = Malloc3darray(gridX - 1, gridY - 1, sliceSize);
-	
+
 	//allocate B1========================================
 	Bx1 = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
 	By1 = Malloc3darray(gridX - 1, gridY, sliceSize - 1);
 	Bz1 = Malloc3darray(gridX - 1, gridY - 1, sliceSize);
-	
+
 	Bx1_prev = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
 	By1_prev = Malloc3darray(gridX - 1, gridY, sliceSize - 1);
 	Bz1_prev = Malloc3darray(gridX - 1, gridY - 1, sliceSize);
-	
+
 	Bx1_prev2 = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
 	By1_prev2 = Malloc3darray(gridX - 1, gridY, sliceSize - 1);
 	Bz1_prev2 = Malloc3darray(gridX - 1, gridY - 1, sliceSize);
@@ -2235,7 +2235,7 @@ void allocateAll()
 		Dy1_join_right = Malloc2darray(gridX - 1, gridY);
 		Bx1_join_right = Malloc2darray(gridX, gridY - 1);
 		By1_join_right = Malloc2darray(gridX - 1, gridY);
-		
+
 		Dx1_join_right_prev = Malloc2darray(gridX, gridY - 1);
 		Dy1_join_right_prev = Malloc2darray(gridX - 1, gridY);
 		Bx1_join_right_prev = Malloc2darray(gridX, gridY - 1);
@@ -2253,7 +2253,7 @@ void allocateAll()
 		DaHz_join = Malloc2darray(gridX, gridY);
 		DbHz_join = Malloc2darray(gridX, gridY);
 		DcHz_join = Malloc2darray(gridX, gridY);
-		
+
 		//allocate Ca, Cb, Da, Db for D and B==========
 		CaDx_join = Malloc2darray(gridX, gridY - 1);
 		CbDx_join = Malloc2darray(gridX, gridY - 1);
@@ -2305,7 +2305,7 @@ void allocateAll()
 		omegaEP = Malloc3darray(gridX + 1, gridY + 1, sliceSize + 1);
 		omegaMP = Malloc3darray(gridX + 1, gridY + 1, sliceSize + 1);
 		gammaE = Malloc3darray(gridX + 1, gridY + 1, sliceSize + 1);
-		gammaM = Malloc3darray(gridX + 1, gridY + 1, sliceSize + 1);	
+		gammaM = Malloc3darray(gridX + 1, gridY + 1, sliceSize + 1);
 	}
 	else
 	{
@@ -2362,7 +2362,7 @@ void allocateAll()
 	DaBz = Malloc3darray(gridX - 1, gridY - 1, sliceSize);
 	DbBz = Malloc3darray(gridX - 1, gridY - 1, sliceSize);
 
-	//allocate metamaterial constants for E=========== 
+	//allocate metamaterial constants for E===========
 	am1_x = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
 	am2_x = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
 	A_x = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
@@ -2383,7 +2383,7 @@ void allocateAll()
 	bm1_z = Malloc3darray(gridX - 1, gridY - 1, sliceSize);
 	bm2_z = Malloc3darray(gridX - 1, gridY - 1, sliceSize);
 
-	//allocate metamaterial constants for H=========== 
+	//allocate metamaterial constants for H===========
 	cm1_x = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
 	cm2_x = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
 	C_x = Malloc3darray(gridX, gridY - 1, sliceSize - 1);
@@ -2683,7 +2683,7 @@ void freeAllExceptFields()
 	Dealloc3darray(DaBz, gridX - 1, gridY - 1, sliceSize);
 	Dealloc3darray(DbBz, gridX - 1, gridY - 1, sliceSize);
 
-	//deallocate metamaterial constants for E=========== 
+	//deallocate metamaterial constants for E===========
 	Dealloc3darray(am1_x, gridX, gridY - 1, sliceSize - 1);
 	Dealloc3darray(am2_x, gridX, gridY - 1, sliceSize - 1);
 	Dealloc3darray(A_x, gridX, gridY - 1, sliceSize - 1);
@@ -2704,7 +2704,7 @@ void freeAllExceptFields()
 	Dealloc3darray(bm1_z, gridX - 1, gridY - 1, sliceSize);
 	Dealloc3darray(bm2_z, gridX - 1, gridY - 1, sliceSize);
 
-	//deallocate metamaterial constants for H=========== 
+	//deallocate metamaterial constants for H===========
 	Dealloc3darray(cm1_x, gridX, gridY - 1, sliceSize - 1);
 	Dealloc3darray(cm2_x, gridX, gridY - 1, sliceSize - 1);
 	Dealloc3darray(C_x, gridX, gridY - 1, sliceSize - 1);
@@ -2790,7 +2790,7 @@ void getGammaOmega(int num, double &omega, double &gamma, double om1, double om2
 		om3*om3*(OMEGA*OMEGA + g1*g1)*(OMEGA*OMEGA + g2*g2)*(OMEGA*OMEGA + g4*g4) +
 		om4*om4*(OMEGA*OMEGA + g1*g1)*(OMEGA*OMEGA + g2*g2)*(OMEGA*OMEGA + g3*g3);
 	double B1 = (OMEGA*OMEGA + g1*g1)*(OMEGA*OMEGA + g2*g2)*(OMEGA*OMEGA + g3*g3)*(OMEGA*OMEGA + g4*g4);
-	
+
 	double A2 = om1*om1*g1*(OMEGA*OMEGA + g2*g2)*(OMEGA*OMEGA + g3*g3)*(OMEGA*OMEGA + g4*g4) +
 		om2*om2*g2*(OMEGA*OMEGA + g1*g1)*(OMEGA*OMEGA + g3*g3)*(OMEGA*OMEGA + g4*g4) +
 		om3*om3*g3*(OMEGA*OMEGA + g1*g1)*(OMEGA*OMEGA + g2*g2)*(OMEGA*OMEGA + g4*g4) +
@@ -2810,7 +2810,7 @@ void getGammaOmega(int num, double &omega, double &gamma, double om1, double om2
 		gamma = OMEGA * tmpC2 / tmpC1;
 		omega = OMEGA * sqrtf((tmpC1*tmpC1 + tmpC2*tmpC2) / (num * tmpC1));
 	}
-	
+
 	//gamma = (g1 + g2 + g3 + g4) / num;
 	//omega = (om1 + om2 + om3 + om4) / num;
 
@@ -2910,14 +2910,14 @@ void initializeAll()
 
 		CaDx[i][j][k] = (2 * EPS_Z * Ky(posY) - SigmaY(posX, posY) * dt) /
 						(2 * EPS_Z * Ky(posY) + SigmaY(posX, posY) * dt);
-		CbDx[i][j][k] = (2 * EPS_Z * dt) / 
+		CbDx[i][j][k] = (2 * EPS_Z * dt) /
 						((2 * EPS_Z * Ky(posY) + SigmaY(posX, posY) * dt));
 
 		double tmpGammaE;
 		double tmpOmegaEP;
 		getGammaOmega(2, tmpOmegaEP, tmpGammaE, omegaEP[i + 1][j + 1][k + 1], omegaEP[i][j + 1][k + 1],
 			gammaE[i + 1][j + 1][k + 1], gammaE[i][j + 1][k + 1]);
-	
+
 		A_x[i][j][k] = 1 + dt*tmpGammaE / 2 + dt*dt*tmpOmegaEP*tmpOmegaEP / 4;
 		am1_x[i][j][k] = (dt*dt*tmpOmegaEP*tmpOmegaEP / 2 - 2);
 		am2_x[i][j][k] = (1 - dt*tmpGammaE / 2 + dt*dt*tmpOmegaEP*tmpOmegaEP / 4);
@@ -2925,7 +2925,7 @@ void initializeAll()
 		bm1_x[i][j][k] = (-2);
 		bm2_x[i][j][k] = (1 - dt*tmpGammaE/2);
 	}
-	
+
 	std::cout << "Init Ex and Dx: rank " << rank << std::endl;
 
 	//Ey
@@ -2961,7 +2961,7 @@ void initializeAll()
 						(2 * EPS_Z * Kz(posZ) + SigmaZ(posZ) * dt);
 		CbDy[i][j][k] = (2 * EPS_Z * dt) /
 						((2 * EPS_Z * Kz(posZ) + SigmaZ(posZ) * dt));
-		
+
 		double tmpGammaE;
 		double tmpOmegaEP;
 		getGammaOmega(2, tmpOmegaEP, tmpGammaE, omegaEP[i + 1][j + 1][k + 1], omegaEP[i + 1][j][k + 1],
@@ -3014,7 +3014,7 @@ void initializeAll()
 		double tmpOmegaEP;
 		getGammaOmega(2, tmpOmegaEP, tmpGammaE, omegaEP[i + 1][j + 1][k + 1], omegaEP[i + 1][j + 1][k],
 			gammaE[i + 1][j + 1][k + 1], gammaE[i + 1][j + 1][k]);
-		
+
 		A_z[i][j][k] = 1 + dt*tmpGammaE + dt*dt*tmpOmegaEP*tmpOmegaEP / 2;
 		am1_z[i][j][k] = (dt*dt*tmpOmegaEP*tmpOmegaEP / 2 - 2);
 		am2_z[i][j][k] = (1 - dt*tmpGammaE + dt*dt*tmpOmegaEP*tmpOmegaEP / 4);
@@ -3110,7 +3110,7 @@ void initializeAll()
 		double tmpOmegaMP;
 		getGammaOmega(4, tmpOmegaMP, tmpGammaM, omegaMP[i + 1][j + 1][k + 1], omegaMP[i + 1][j][k + 1],
 			gammaM[i + 1][j + 1][k + 1], gammaM[i + 1][j][k + 1]);
-		
+
 		C_y[i][j][k] = 1 + dt*tmpGammaM / 2 + dt*dt*tmpOmegaMP*tmpOmegaMP / 4;
 		cm1_y[i][j][k] = (dt*dt*tmpOmegaMP*tmpOmegaMP / 2 - 2);
 		cm2_y[i][j][k] = (1 - dt*tmpGammaM / 2 + dt*dt*tmpOmegaMP*tmpOmegaMP / 4);
@@ -3185,7 +3185,7 @@ void initializeAll()
 
 			double tmpGammaE;
 			double tmpOmegaEP;
-			
+
 			getGammaOmega(2, tmpOmegaEP, tmpGammaE, omegaEP[i + 1][j + 1][sliceSize], omegaEP[i][j + 1][sliceSize],
 				gammaE[i + 1][j + 1][sliceSize], gammaE[i][j + 1][sliceSize]);
 
@@ -3306,16 +3306,16 @@ void initializeAll()
 			double posX = i + 1;
 			double posY = j + 1;
 			double posZ = addition + sliceSize + 0.5;
-			
+
 			double tmpMu = (Mu[i + 1][j + 1][sliceSize] + Mu[i][j + 1][sliceSize] +
 				Mu[i + 1][j][sliceSize] + Mu[i][j][sliceSize]) / 4;
-			
+
 			DaHz_join[i][j] = (2 * EPS_Z * Ky(posY) - SigmaY(posX, posY) * dt) /
 							  (2 * EPS_Z * Ky(posY) + SigmaY(posX, posY) * dt);
 			DbHz_join[i][j] = (2 * EPS_Z * Kz(posZ) + SigmaZ(posZ) * dt) /
 							  ((2 * EPS_Z * Ky(posY) + SigmaY(posX, posY) * dt) * tmpMu * MU_Z);
 			DcHz_join[i][j] = (2 * EPS_Z * Kz(posZ) - SigmaZ(posZ) * dt) /
-							  ((2 * EPS_Z * Ky(posY) + SigmaY(posX, posY) * dt) * tmpMu * MU_Z);		
+							  ((2 * EPS_Z * Ky(posY) + SigmaY(posX, posY) * dt) * tmpMu * MU_Z);
 		}
 		std::cout << "Init Hz join: rank " << rank << std::endl;
 	}
@@ -3325,7 +3325,7 @@ void initializeAll()
 void preSetup()
 {
 	allocateAll();
-	
+
 	if (rank == 0)
 		std::cout << "Allocated" << std::endl;
 	if (allocatedCount < 1024/4)
@@ -3347,20 +3347,20 @@ void preSetup()
 void afterSetup()
 {
 	freeAll();
-	
+
 	allocatedCount *= 4;
 	deallocatedCount *= 4;
 	if (allocatedCount < 1024)
-		std::cout << "Rank: " << rank << ". Allocated: " << allocatedCount << 
+		std::cout << "Rank: " << rank << ". Allocated: " << allocatedCount <<
 			" bytes. Freed: " << deallocatedCount << " bytes." << std::endl;
 	else if (allocatedCount < 1024 * 1024)
-		std::cout << "Rank: " << rank << ". Allocated: " << allocatedCount/1024 << 
+		std::cout << "Rank: " << rank << ". Allocated: " << allocatedCount/1024 <<
 			" Kb. Freed: " << deallocatedCount << " Kb." << std::endl;
 	else if (allocatedCount < 1024 * 1024 * 1024)
-		std::cout << "Rank: " << rank << ". Allocated: " << allocatedCount/(1024*1024) << 
+		std::cout << "Rank: " << rank << ". Allocated: " << allocatedCount/(1024*1024) <<
 			" Mb. Freed: " << deallocatedCount/(1024*1024) << " Mb." << std::endl;
 	else if (allocatedCount < 1024 * 1024 * 1024 * 1024)
-		std::cout << "Rank: " << rank << ". Allocated: " << allocatedCount/(1024*1024*1024) << 
+		std::cout << "Rank: " << rank << ". Allocated: " << allocatedCount/(1024*1024*1024) <<
 			" Gb. Freed: " << deallocatedCount/(1024*1024*1024) << " Gb." << std::endl;
 }
 
@@ -3389,7 +3389,7 @@ void Epart()
 	UpdateD_shared();
 	UpdateD1();
 	UpdateD1_shared();
-	
+
 	//===========Second=============================
 	if (rank != numProcs - 1)
 		RecvDz();
@@ -3400,12 +3400,12 @@ void Epart()
 
 	if (rank != numProcs - 1)
 	{
-		MPI_Wait(&requestDz1, &status);	
+		MPI_Wait(&requestDz1, &status);
 		MPI_Wait(&requestDz1_prev, &status);
 	}
 	if (rank != numProcs - 1)
 		CopyDz();
-	
+
 	//===========Third==============================
 	if (rank != 0)
 		RecvDxDy();
@@ -3572,7 +3572,7 @@ int main(int argc, char** argv)
 		sliceSize += addSize;
 
 	printf("node:%d - %d \n.", rank, sliceSize);
-	std::cout << "node: " << rank << "; size: " << gridX << " * " << 
+	std::cout << "node: " << rank << "; size: " << gridX << " * " <<
 		gridY << " * " << sliceSize << std::endl;
 
 	preSetup();
@@ -3582,7 +3582,7 @@ int main(int argc, char** argv)
 
 	if (rank == 0) startTime = MPI_Wtime();
 
-	
+
 	while (step < numTimeSteps + amplitudeSteps)
 	{
 		if (rank == 0)
@@ -3594,12 +3594,12 @@ int main(int argc, char** argv)
 		}
 
 		Epart();
-		
+
 		if (calculateAmplitude && step >= numTimeSteps)
 		{
 			/*updateAmplitude();
 
-			if (rank == 0 && step < numTimeSteps + PERIOD/dt) 
+			if (rank == 0 && step < numTimeSteps + PERIOD/dt)
 			{
 				for (int i = 0; i <= gridX - 2; ++i)
 				for (int j = 0; j <= gridY - 2; ++j)
