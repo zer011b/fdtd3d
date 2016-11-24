@@ -115,6 +115,15 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
                                                valHx1->getPrevValue (),
                                                valHx2->getPrevValue ());
 
+      // GridCoordinateFP2D realCoord = shrinkCoord (getEzRealCoord (pos));
+      //
+      // GridCoordinateFP2D leftBorder = yeeLayout.getZeroCoord () + totalFieldLeftBorder;
+      //
+      // if ( == leftBorder.getX ())
+      // {
+      //
+      // }
+
       valDz->setCurValue (val);
     }
   }
@@ -453,7 +462,7 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
 
   time_step t = startStep;
 
-  GridCoordinate2D PMLSize (10, 10);
+  GridCoordinate2D PMLSize = shrinkCoord (yeeLayout.getLeftBorderPML ());
 
   while (is_stable_state == 0 && t < amplitudeStepLimit)
   {
@@ -476,11 +485,10 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
     {
       for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
       {
-        if (i >= PMLSize.getX () && i < Ez.getSize ().getX ()
-            && j >= PMLSize.getY () && j < Ez.getSize ().getY ())
-        {
-          GridCoordinate2D pos (i, j);
+        GridCoordinate2D pos (i, j);
 
+        if (!yeeLayout.isEzInPML (pos))
+        {
           FieldPointValue* tmp = Ez.getFieldPointValue (pos);
           FieldPointValue* tmpAmp = EzAmplitude.getFieldPointValue (pos);
 
@@ -515,11 +523,10 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
     {
       for (int j = HxStart.getY (); j < HxEnd.getY (); ++j)
       {
-        if (i >= PMLSize.getX () && i < Ez.getSize ().getX ()
-            && j >= PMLSize.getY () && j < Ez.getSize ().getY ())
-        {
-          GridCoordinate2D pos (i, j);
+        GridCoordinate2D pos (i, j);
 
+        if (!yeeLayout.isHxInPML (pos))
+        {
           FieldPointValue* tmp = Hx.getFieldPointValue (pos);
           FieldPointValue* tmpAmp = HxAmplitude.getFieldPointValue (pos);
 
@@ -535,10 +542,10 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
     {
       for (int j = HyStart.getY (); j < HyEnd.getY (); ++j)
       {
-        if (i >= PMLSize.getX () && i < Ez.getSize ().getX ()
-            && j >= PMLSize.getY () && j < Ez.getSize ().getY ())
+        GridCoordinate2D pos (i, j);
+
+        if (!yeeLayout.isHyInPML (pos))
         {
-          GridCoordinate2D pos (i, j);
 
           FieldPointValue* tmp = Hy.getFieldPointValue (pos);
           FieldPointValue* tmpAmp = HyAmplitude.getFieldPointValue (pos);
@@ -751,7 +758,7 @@ SchemeTMz::initGrids ()
   FieldValue eps0 = PhConst.Eps0;
   FieldValue mu0 = PhConst.Mu0;
 
-  GridCoordinate2D PMLSize (10, 10);
+  GridCoordinate2D PMLSize = shrinkCoord (yeeLayout.getLeftBorderPML ());
 
   FieldValue boundary = PMLSize.getX () * gridStep;
   uint32_t exponent = 6;

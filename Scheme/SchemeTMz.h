@@ -65,6 +65,9 @@ class SchemeTMz: public Scheme
 
   bool usePML;
 
+  Grid<GridCoordinate1D> EInc;
+  Grid<GridCoordinate1D> HInc;
+
 private:
 
   void calculateEzStep (time_step, GridCoordinate3D, GridCoordinate3D);
@@ -126,8 +129,15 @@ public:
     ASSERT (!calcAmp || calcAmp && ampStep != 0);
   }
 #else
-  SchemeTMz (const GridCoordinate2D& totSize, time_step tStep, bool calcAmp = false, time_step ampStep = 0, bool doUsePML = false) :
-    yeeLayout (totSize),
+  SchemeTMz (const GridCoordinate2D& totSize,
+             time_step tStep,
+             bool calcAmp = false,
+             time_step ampStep = 0,
+             bool doUsePML = false,
+             GridCoordinate2D sizePML = GridCoordinate2D (0, 0),
+             bool doUseTFSF = false,
+             GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0)) :
+    yeeLayout (totSize, sizePML, sizeScatteredZone),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), 0),
     Hy (shrinkCoord (yeeLayout.getHySize ()), 0),
@@ -151,7 +161,9 @@ public:
     process (0),
     calculateAmplitude (calcAmp),
     amplitudeStepLimit (ampStep),
-    usePML (doUsePML)
+    usePML (doUsePML),
+    EInc (totSize.getX () + totSize.getY ()),
+    HInc (totSize.getX () + totSize.getY ())
   {
     ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
   }

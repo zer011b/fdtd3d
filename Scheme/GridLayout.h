@@ -114,6 +114,12 @@ class YeeGridLayout: public GridLayout
 
   GridCoordinate3D size;
 
+  GridCoordinate3D leftBorderTotalField;
+  GridCoordinate3D rightBorderTotalField;
+
+  GridCoordinate3D leftBorderPML;
+  GridCoordinate3D rightBorderPML;
+
 public:
 
 #ifdef CXX11_ENABLED
@@ -178,7 +184,87 @@ public:
   virtual GridCoordinate3D getHzEnd (GridCoordinate3D) const;
 #endif
 
-  YeeGridLayout (GridCoordinate3D coordSize) :
+  GridCoordinateFP3D getEzRealCoord (GridCoordinate3D coord) const
+  {
+    return convertCoord (coord - minEzCoord) + minEzCoordFP;
+  }
+
+  GridCoordinateFP3D getHxRealCoord (GridCoordinate3D coord) const
+  {
+    return convertCoord (coord - minHxCoord) + minHxCoordFP;
+  }
+
+  GridCoordinateFP3D getHyRealCoord (GridCoordinate3D coord) const
+  {
+    return convertCoord (coord - minHyCoord) + minHyCoordFP;
+  }
+
+  // GridCoordinateFP3D getZeroCoord () const
+  // {
+  //   return zeroCoordFP;
+  // }
+
+  bool isInPML (GridCoordinateFP3D realCoordFP) const
+  {
+    GridCoordinateFP3D realCoordLeftBorderPML = convertCoord (leftBorderPML) + zeroCoordFP;
+    GridCoordinateFP3D realCoordRightBorderPML = convertCoord (rightBorderPML) + zeroCoordFP;
+
+    bool isInXPML = realCoordLeftBorderPML.getX () != realCoordRightBorderPML.getX ()
+                    && (realCoordFP.getX () < realCoordLeftBorderPML.getX ()
+                        || realCoordFP.getX () >= realCoordRightBorderPML.getX ());
+
+    bool isInYPML = realCoordLeftBorderPML.getY () != realCoordRightBorderPML.getY ()
+                    && (realCoordFP.getY () < realCoordLeftBorderPML.getY ()
+                        || realCoordFP.getY () >= realCoordRightBorderPML.getY ());
+
+    bool isInZPML = realCoordLeftBorderPML.getZ () != realCoordRightBorderPML.getZ ()
+                    && (realCoordFP.getZ () < realCoordLeftBorderPML.getZ ()
+                        || realCoordFP.getZ () >= realCoordRightBorderPML.getZ ());
+
+    return isInXPML || isInYPML || isInZPML;
+  }
+
+  bool isEzInPML (GridCoordinate3D coord) const
+  {
+    GridCoordinateFP3D realCoordFP = getEzRealCoord (coord);
+
+    return isInPML (realCoordFP);
+  }
+
+  bool isHxInPML (GridCoordinate3D coord) const
+  {
+    GridCoordinateFP3D realCoordFP = getHxRealCoord (coord);
+
+    return isInPML (realCoordFP);
+  }
+
+  bool isHyInPML (GridCoordinate3D coord) const
+  {
+    GridCoordinateFP3D realCoordFP = getHyRealCoord (coord);
+
+    return isInPML (realCoordFP);
+  }
+
+  GridCoordinate3D getLeftBorderPML () const
+  {
+    return leftBorderPML;
+  }
+
+  GridCoordinate3D getRightBorderPML () const
+  {
+    return rightBorderPML;
+  }
+  //
+  // bool doNeedTFSFUpdateEzLeftBorder (GridCoordinate3D coord) const
+  // {
+  //   GridCoordinateFP3D realCoord = getEzRealCoord (coord);
+  //
+  //   GridCoordinateFP3D leftBorder = zeroCoordFP + convertCoord (totalFieldLeftBorder);
+  //
+  //
+  // }
+
+  YeeGridLayout (GridCoordinate3D coordSize, GridCoordinate3D sizePML, GridCoordinate3D sizeScatteredZone) :
     zeroCoordFP (0.0, 0.0, 0.0), zeroCoord (0, 0, 0),
     minExCoordFP (1.0, 0.5, 0.5), minExCoord (0, 0, 0),
     minEyCoordFP (0.5, 1.0, 0.5), minEyCoord (0, 0, 0),
@@ -186,7 +272,11 @@ public:
     minHxCoordFP (0.5, 1.0, 1.0), minHxCoord (0, 0, 0),
     minHyCoordFP (1.0, 0.5, 1.0), minHyCoord (0, 0, 0),
     minHzCoordFP (1.0, 1.0, 0.5), minHzCoord (0, 0, 0),
-    size (coordSize)
+    size (coordSize),
+    leftBorderTotalField (sizeScatteredZone),
+    rightBorderTotalField (coordSize - sizeScatteredZone),
+    leftBorderPML (sizePML),
+    rightBorderPML (coordSize - sizePML)
   {
     /* Ex is:
      *       1 <= x < 1 + size.getx()
