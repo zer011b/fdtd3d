@@ -159,5 +159,6 @@ GridCoordinate3D convertCoord (GridCoordinateFP3D coord);
 GridCoordinateFP3D convertCoord (GridCoordinate3D coord);
 
 GridCoordinate2D shrinkCoord (GridCoordinate3D coord);
+GridCoordinateFP2D shrinkCoord (GridCoordinateFP3D coord);
 
 #endif /* GRID_COORDINATE_3D_H */

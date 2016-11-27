@@ -65,8 +65,12 @@ class SchemeTMz: public Scheme
 
   bool usePML;
 
+  bool useTFSF;
+
   Grid<GridCoordinate1D> EInc;
   Grid<GridCoordinate1D> HInc;
+
+  FieldValue incidentWaveAngle;
 
 private:
 
@@ -85,6 +89,9 @@ private:
   void performAmplitudeSteps (time_step, int);
 
   int updateAmplitude (FieldPointValue *, FieldPointValue *, FieldValue *);
+
+  void performPlaneWaveESteps (time_step);
+  void performPlaneWaveHSteps (time_step);
 
 public:
 
@@ -136,7 +143,8 @@ public:
              bool doUsePML = false,
              GridCoordinate2D sizePML = GridCoordinate2D (0, 0),
              bool doUseTFSF = false,
-             GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0)) :
+             GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
+             FieldValue angleIncWave = 0.0) :
     yeeLayout (totSize, sizePML, sizeScatteredZone),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), 0),
@@ -162,9 +170,12 @@ public:
     calculateAmplitude (calcAmp),
     amplitudeStepLimit (ampStep),
     usePML (doUsePML),
-    EInc (totSize.getX () + totSize.getY ()),
-    HInc (totSize.getX () + totSize.getY ())
+    useTFSF (doUseTFSF),
+    EInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
+    HInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
+    incidentWaveAngle (angleIncWave)
   {
+    ASSERT (incidentWaveAngle == 0.0);
     ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
   }
 #endif

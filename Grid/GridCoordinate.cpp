@@ -21,3 +21,8 @@ GridCoordinate2D shrinkCoord (GridCoordinate3D coord)
 {
   return GridCoordinate2D (coord.getX (), coord.getY ());
 }
+
+GridCoordinateFP2D shrinkCoord (GridCoordinateFP3D coord)
+{
+  return GridCoordinateFP2D (coord.getX (), coord.getY ());
+}
