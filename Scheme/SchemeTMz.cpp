@@ -42,7 +42,7 @@ SchemeTMz::performPlaneWaveESteps (time_step t)
 
   GridCoordinate1D pos (0);
   FieldPointValue *valE = EInc.getFieldPointValue (pos);
-  valE->setCurValue (cos (t * 3.1415 / 12));
+  valE->setCurValue (cos (gridTimeStep * t * 2 * 3.141592653589793238462643 * 10000000000));
 
   EInc.nextTimeStep ();
 }
@@ -1107,7 +1107,7 @@ SchemeTMz::initGrids ()
       GridCoordinate2D pos (i, j);
 
       if ((i-Eps.getSize ().getX ()/2) * (i-Eps.getSize ().getX ()/2) + (j-Eps.getSize ().getY ()/2) * (j-Eps.getSize ().getY ()/2) <
-          Eps.getSize ().getX ()*Eps.getSize ().getX ()/9)
+          Eps.getSize ().getX ()*Eps.getSize ().getX ()/36)
       {
         valEps->setCurValue (4.0);
       }
