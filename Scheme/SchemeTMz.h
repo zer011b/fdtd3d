@@ -5,6 +5,7 @@
 #include "ParallelGrid.h"
 #include "Grid.h"
 #include "GridLayout.h"
+#include "PhysicsConst.h"
 
 #ifdef GRID_2D
 
@@ -88,7 +89,7 @@ private:
   void performNSteps (time_step, time_step, int);
   void performAmplitudeSteps (time_step, int);
 
-  int updateAmplitude (FieldPointValue *, FieldPointValue *, FieldValue *);
+  int updateAmplitude (FieldValue, FieldPointValue *, FieldValue *);
 
   void performPlaneWaveESteps (time_step);
   void performPlaneWaveHSteps (time_step);
@@ -145,7 +146,7 @@ public:
              bool doUseTFSF = false,
              GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
              FieldValue angleIncWave = 0.0) :
-    yeeLayout (totSize, sizePML, sizeScatteredZone),
+    yeeLayout (totSize, sizePML, sizeScatteredZone, angleIncWave),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), 0),
     Hy (shrinkCoord (yeeLayout.getHySize ()), 0),
@@ -175,7 +176,8 @@ public:
     HInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
     incidentWaveAngle (angleIncWave)
   {
-    ASSERT (incidentWaveAngle == 0.0);
+    ASSERT (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0);
+
     ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
   }
 #endif

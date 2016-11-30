@@ -4,6 +4,8 @@
 #include "GridCoordinate3D.h"
 #include "Assert.h"
 
+#include <cmath>
+
 #ifdef CXX11_ENABLED
 enum class LayoutDirection
 {
@@ -85,7 +87,6 @@ public:
 
 class YeeGridLayout: public GridLayout
 {
-  const GridCoordinateFP3D zeroCoordFP;
   const GridCoordinate3D zeroCoord;
 
   const GridCoordinateFP3D minExCoordFP;
@@ -114,13 +115,17 @@ class YeeGridLayout: public GridLayout
 
   GridCoordinate3D size;
 
-  GridCoordinate3D leftBorderTotalField;
-  GridCoordinate3D rightBorderTotalField;
+  const GridCoordinateFP3D zeroCoordFP;
 
   GridCoordinate3D leftBorderPML;
   GridCoordinate3D rightBorderPML;
 
 public:
+
+  GridCoordinate3D leftBorderTotalField;
+  GridCoordinate3D rightBorderTotalField;
+
+  GridCoordinateFP3D zeroIncCoordFP;
 
 #ifdef CXX11_ENABLED
   virtual GridCoordinate3D getExCircuitElement (GridCoordinate3D, LayoutDirection) const override;
@@ -454,7 +459,7 @@ public:
     return false;
   }
 
-  YeeGridLayout (GridCoordinate3D coordSize, GridCoordinate3D sizePML, GridCoordinate3D sizeScatteredZone) :
+  YeeGridLayout (GridCoordinate3D coordSize, GridCoordinate3D sizePML, GridCoordinate3D sizeScatteredZone, FieldValue incidentWaveAngle) :
     zeroCoordFP (0.0, 0.0, 0.0), zeroCoord (0, 0, 0),
     minExCoordFP (1.0, 0.5, 0.5), minExCoord (0, 0, 0),
     minEyCoordFP (0.5, 1.0, 0.5), minEyCoord (0, 0, 0),
@@ -468,6 +473,10 @@ public:
     leftBorderPML (sizePML),
     rightBorderPML (coordSize - sizePML)
   {
+    zeroIncCoordFP = GridCoordinateFP3D (leftBorderTotalField.getX () - 0.5 - 2 * cos (incidentWaveAngle),
+                                         leftBorderTotalField.getY () - 0.5 - 2 * sin (incidentWaveAngle),
+                                         0);
+
     /* Ex is:
      *       1 <= x < 1 + size.getx()
      *       0.5 <= y < 0.5 + size.getY()

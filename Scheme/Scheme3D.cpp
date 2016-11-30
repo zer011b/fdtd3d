@@ -19,8 +19,6 @@
 
 #ifdef GRID_3D
 
-extern PhysicsConst PhConst;
-
 void
 Scheme3D::performSteps (int dumpRes)
 {
@@ -179,7 +177,7 @@ Scheme3D::performSteps (int dumpRes)
       {
         GridCoordinate3D pos (EzSize.getX () / 2, EzSize.getY () / 2, k);
         FieldPointValue* tmp = Ez.getFieldPointValue (pos);
-        tmp->setCurValue (cos (t * 3.1415 / 12));
+        tmp->setCurValue (cos (t * PhysicsConst::Pi / 12));
       }
     }
 
@@ -314,10 +312,10 @@ Scheme3D::initScheme (FieldValue wLength, FieldValue step)
 {
   waveLength = wLength;
   stepWaveLength = step;
-  frequency = PhConst.SpeedOfLight / waveLength;
+  frequency = PhysicsConst::SpeedOfLight / waveLength;
 
   gridStep = waveLength / stepWaveLength;
-  gridTimeStep = gridStep / (2 * PhConst.SpeedOfLight);
+  gridTimeStep = gridStep / (2 * PhysicsConst::SpeedOfLight);
 }
 
 #if defined (PARALLEL_GRID)
@@ -331,8 +329,8 @@ Scheme3D::initProcess (int rank)
 void
 Scheme3D::initGrids ()
 {
-  FieldValue eps0 = PhConst.Eps0;
-  FieldValue mu0 = PhConst.Mu0;
+  FieldValue eps0 = PhysicsConst::Eps0;
+  FieldValue mu0 = PhysicsConst::Mu0;
 
   for (int i = 0; i < Eps.getSize ().getX (); ++i)
   {

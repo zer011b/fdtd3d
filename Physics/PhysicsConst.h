@@ -10,6 +10,7 @@ public:
   const static FieldValue Eps0;
   const static FieldValue Mu0;
   const static FieldValue accuracy;
+  const static FieldValue Pi;
 };
 
 #endif /* PHYSICS_CONSTANTS_H */

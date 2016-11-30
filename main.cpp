@@ -27,6 +27,8 @@
 #include "SchemeTMz.h"
 #include "Scheme3D.h"
 
+#include "PhysicsConst.h"
+
 int cudaThreadsX = 8;
 int cudaThreadsY = 8;
 int cudaThreadsZ = 8;
@@ -186,7 +188,7 @@ int main (int argc, char** argv)
 #ifdef GRID_2D
   GridCoordinate2D overallSize (gridSizeX, gridSizeY);
 
-  SchemeTMz scheme (overallSize, totalTimeSteps, true, 2*totalTimeSteps, true, GridCoordinate2D (10, 10), true, GridCoordinate2D (20, 20));
+  SchemeTMz scheme (overallSize, totalTimeSteps, true, 2 * totalTimeSteps, true, GridCoordinate2D (10, 10), true, GridCoordinate2D (20, 20), PhysicsConst::Pi / 4);
 #endif
 #ifdef GRID_3D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
@@ -195,7 +197,7 @@ int main (int argc, char** argv)
 #endif
 #endif
 
-  scheme.initScheme (0.06, gridSizeX);
+  scheme.initScheme (0.003, gridSizeX/8);
 
 #if defined (PARALLEL_GRID)
   scheme.initProcess (rank);
