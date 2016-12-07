@@ -113,14 +113,17 @@ class YeeGridLayout: public GridLayout
   const GridCoordinate3D minHzCoord;
   GridCoordinate3D sizeHz;
 
-  GridCoordinate3D size;
-
   const GridCoordinateFP3D zeroCoordFP;
 
   GridCoordinate3D leftBorderPML;
   GridCoordinate3D rightBorderPML;
 
+  const GridCoordinateFP3D minEpsCoordFP;
+  const GridCoordinate3D minEpsCoord;
+
 public:
+
+  GridCoordinate3D size;
 
   GridCoordinate3D leftBorderTotalField;
   GridCoordinate3D rightBorderTotalField;
@@ -217,6 +220,11 @@ public:
   GridCoordinateFP3D getHyRealCoord (GridCoordinate3D coord) const
   {
     return convertCoord (coord - minHyCoord) + minHyCoordFP;
+  }
+
+  GridCoordinateFP3D getEpsRealCoord (GridCoordinate3D coord) const
+  {
+    return convertCoord (coord - minEpsCoord) + minEpsCoordFP;
   }
 
   bool isInPML (GridCoordinateFP3D realCoordFP) const
@@ -467,6 +475,7 @@ public:
     minHxCoordFP (0.5, 1.0, 1.0), minHxCoord (0, 0, 0),
     minHyCoordFP (1.0, 0.5, 1.0), minHyCoord (0, 0, 0),
     minHzCoordFP (1.0, 1.0, 0.5), minHzCoord (0, 0, 0),
+    minEpsCoordFP (0.5, 0.5, 0.5), minEpsCoord (0, 0, 0),
     size (coordSize),
     leftBorderTotalField (sizeScatteredZone),
     rightBorderTotalField (coordSize - sizeScatteredZone),

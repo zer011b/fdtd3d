@@ -2375,15 +2375,15 @@ ParallelGrid::ParallelGridConstructor (grid_iter numTimeStepsInBuild)
 
 #if PRINT_MESSAGE
 #ifdef GRID_1D
-  printf ("Grid size for #%d process: %d.\n", processId,
+  printf ("Grid size for #%d process: %lu.\n", processId,
     currentSize.getX ());
 #endif /* GRID_1D */
 #ifdef GRID_2D
-  printf ("Grid size for #%d process: %dx%d.\n", processId,
+  printf ("Grid size for #%d process: %lux%lu.\n", processId,
     currentSize.getX (), currentSize.getY ());
 #endif /* GRID_2D */
 #ifdef GRID_3D
-  printf ("Grid size for #%d process: %dx%dx%d.\n", processId,
+  printf ("Grid size for #%d process: %lux%lux%lu.\n", processId,
     currentSize.getX (), currentSize.getY (), currentSize.getZ ());
 #endif /* GRID_3D */
 #endif /* PRINT_MESSAGE */
@@ -2801,5 +2801,94 @@ ParallelGrid::getNodeGridZ ()
 
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+ParallelGridCoordinate
+ParallelGrid::getTotalPosition (ParallelGridCoordinate pos)
+{
+  ParallelGridCoordinate posStart;
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  grid_iter posX;
+  if (getNodeGridX () == 0)
+  {
+    posX = getNodeGridX () * currentSize.getX ();
+  }
+  else
+  {
+    posX = getNodeGridX () * (currentSize.getX () - bufferSizeLeft.getX ());
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  grid_iter posY;
+  if (getNodeGridY () == 0)
+  {
+    posY = getNodeGridY () * currentSize.getY ();
+  }
+  else
+  {
+    posY = getNodeGridY () * (currentSize.getY () - bufferSizeLeft.getY ());
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  grid_iter posZ;
+  if (getNodeGridZ () == 0)
+  {
+    posZ = getNodeGridZ () * currentSize.getZ ();
+  }
+  else
+  {
+    posZ = getNodeGridZ () * (currentSize.getZ () - bufferSizeLeft.getZ ());
+  }
+#endif
+
+#ifdef GRID_1D
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
+  posStart = ParallelGridCoordinate (posX);
+#endif
+#endif
+
+#ifdef GRID_2D
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
+  posStart = ParallelGridCoordinate (posX, 0);
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
+  posStart = ParallelGridCoordinate (0, posY);
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
+  posStart = ParallelGridCoordinate (posX, posY);
+#endif
+#endif
+
+#ifdef GRID_3D
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
+  posStart = ParallelGridCoordinate (posX, 0, 0);
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
+  posStart = ParallelGridCoordinate (0, posY, 0);
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
+  posStart = ParallelGridCoordinate (0, 0, posZ);
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
+  posStart = ParallelGridCoordinate (posX, posY, 0);
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
+  posStart = ParallelGridCoordinate (0, posY, posZ);
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
+  posStart = ParallelGridCoordinate (posX, 0, posZ);
+#endif
+#ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
+  posStart = ParallelGridCoordinate (posX, posY, posZ);
+#endif
+#endif
+
+  return posStart + pos;
+}
 
 #endif /* PARALLEL_GRID */

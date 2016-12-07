@@ -18,12 +18,20 @@ class SchemeTMz: public Scheme
   ParallelGrid Hx;
   ParallelGrid Hy;
 
+  ParallelGrid Dz;
+  ParallelGrid Bx;
+  ParallelGrid By;
+
   ParallelGrid EzAmplitude;
   ParallelGrid HxAmplitude;
   ParallelGrid HyAmplitude;
 
   ParallelGrid Eps;
   ParallelGrid Mu;
+
+  ParallelGrid SigmaX;
+  ParallelGrid SigmaY;
+  ParallelGrid SigmaZ;
 #else
   Grid<GridCoordinate2D> Ez;
   Grid<GridCoordinate2D> Hx;
@@ -112,18 +120,33 @@ public:
 
 #if defined (PARALLEL_GRID)
   SchemeTMz (const GridCoordinate2D& totSize,
-             const GridCoordinate2D& bufSizeL, const GridCoordinate2D& bufSizeR,
-             const int curProcess, const int totalProc, time_step tStep, bool calcAmp,
-             time_step ampStep = 0) :
-    yeeLayout (totSize),
+             const GridCoordinate2D& bufSizeL,
+             const GridCoordinate2D& bufSizeR,
+             const int curProcess,
+             const int totalProc,
+             time_step tStep,
+             bool calcAmp = false,
+             time_step ampStep = 0,
+             bool doUsePML = false,
+             GridCoordinate2D sizePML = GridCoordinate2D (0, 0),
+             bool doUseTFSF = false,
+             GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
+             FieldValue angleIncWave = 0.0) :
+    yeeLayout (totSize, sizePML, sizeScatteredZone, angleIncWave),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Hy (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    Dz (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    Bx (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    By (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Eps (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Mu (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    SigmaX (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    SigmaY (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    SigmaZ (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
     waveLength (0),
     stepWaveLength (0),
     frequency (0),
@@ -132,9 +155,16 @@ public:
     totalStep (tStep),
     process (curProcess),
     calculateAmplitude (calcAmp),
-    amplitudeStepLimit (ampStep)
+    amplitudeStepLimit (ampStep),
+    usePML (doUsePML),
+    useTFSF (doUseTFSF),
+    EInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
+    HInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
+    incidentWaveAngle (angleIncWave)
   {
-    ASSERT (!calcAmp || calcAmp && ampStep != 0);
+    ASSERT (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0);
+
+    ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
   }
 #else
   SchemeTMz (const GridCoordinate2D& totSize,

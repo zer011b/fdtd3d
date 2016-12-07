@@ -450,6 +450,13 @@ public:
   {
     return totalProcCount;
   }
+
+  ParallelGridCoordinate getTotalPosition (ParallelGridCoordinate);
+
+  GridCoordinate2D getTotalSize ()
+  {
+    return totalSize;
+  }
 };
 
 #endif /* PARALLEL_GRID */
