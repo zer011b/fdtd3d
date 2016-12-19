@@ -4,6 +4,12 @@
 #include "FieldValue.h"
 
 /* 2D TMz */
+#define calculateEx_2D_TEz(oldEz, Hz1, Hz2, dt, dx, eps) \
+  ((oldEz) + ((dt) / ((eps) * (dx))) * ((Hz1) - (Hz2)))
+
+#define calculateEy_2D_TEz(oldEz, Hz1, Hz2, dt, dx, eps) \
+  ((oldEz) + ((dt) / ((eps) * (dx))) * (- (Hz1) + (Hz2)))
+
 #define calculateEz_2D_TMz(oldEz, Hx1, Hx2, Hy1, Hy2, dt, dx, eps) \
   ((oldEz) + ((dt) / ((eps) * (dx))) * ((Hx1) - (Hx2) + (Hy1) - (Hy2)))
 
@@ -13,6 +19,8 @@
 #define calculateHy_2D_TMz(oldHy, Ez1, Ez2, dt, dx, mu) \
   ((oldHy) + ((dt) / ((mu) * (dx))) * ((Ez1) - (Ez2)))
 
+#define calculateHz_2D_TEz(oldEz, Ex1, Ex2, Ey1, Ey2, dt, dx, eps) \
+  ((oldEz) + ((dt) / ((eps) * (dx))) * ((Ex1) - (Ex2) + (Ey1) - (Ey2)))
 
 /* 3D */
 /*
@@ -39,6 +47,18 @@
 
 
 
+#define calculateDx_2D_Precalc(Ca, Cb, oldDx, Hz1, Hz2) \
+  ((Ca) * (oldDx) + (Cb) * ((Hz1) - (Hz2)))
+
+#define calculateEx_2D_Precalc(Ca, Cb, Cc, oldEx, Dx1, Dx2) \
+  ((Ca) * (oldEx) + (Cb) * (Dx1) - (Cc) * (Dx2))
+
+#define calculateDy_2D_Precalc(Ca, Cb, oldDy, Hz1, Hz2) \
+  ((Ca) * (oldDy) + (Cb) * (- (Hz1) + (Hz2)))
+
+#define calculateEy_2D_Precalc(Ca, Cb, Cc, oldEy, Dy1, Dy2) \
+  ((Ca) * (oldEy) + (Cb) * (Dy1) - (Cc) * (Dy2))
+
 #define calculateDz_3D_Precalc(Ca, Cb, oldDz, Hy1, Hy2, Hx1, Hx2) \
   ((Ca) * (oldDz) + (Cb) * ((Hy1) - (Hy2) - (Hx1) + (Hx2)))
 
@@ -56,5 +76,11 @@
 
 #define calculateHy_2D_Precalc(Ca, Cb, Cc, oldHy, By1, By2) \
   calculateHx_2D_Precalc (Ca, Cb, Cc, oldHy, By1, By2)
+
+#define calculateBz_2D_Precalc(Ca, Cb, oldHz, Ex1, Ex2, Ey1, Ey2) \
+  ((Ca) * (oldHz) + (Cb) * ((Ex1) - (Ex2) - (Ey1) + (Ey2)))
+
+#define calculateHz_2D_Precalc(Ca, Cb, Cc, oldHz, Bz1, Bz2) \
+  ((Ca) * (oldHz) + (Cb) * (Bz1) - (Cc) * (Bz2))
 
 #endif /* KERNELS_H */

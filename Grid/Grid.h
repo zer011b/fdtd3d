@@ -83,6 +83,16 @@ public:
 
   // Switch to next time step.
   virtual void nextTimeStep ();
+
+  TCoord getTotalPosition (TCoord pos)
+  {
+    return TCoord (0) + pos;
+  }
+
+  TCoord getTotalSize ()
+  {
+    return getSize ();
+  }
 };
 
 /**

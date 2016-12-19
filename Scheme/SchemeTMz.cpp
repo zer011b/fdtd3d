@@ -1041,29 +1041,29 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
 
           FieldValue val = tmp->getCurValue ();
 
-          if (realCoord.getX () > leftBorder.getX () - 1 && realCoord.getX () < rightBorder.getX () + 1
-              && realCoord.getY () > leftBorder.getY () - 1 && realCoord.getY () < rightBorder.getY () + 1)
-          {
-            GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
-
-            FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-            FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-            FieldValue coordD2 = coordD1 + 1;
-            FieldValue proportionD2 = d - coordD1;
-            FieldValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            FieldValue diff = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-
-            val -= diff;
-          }
+          // if (realCoord.getX () > leftBorder.getX () - 1 && realCoord.getX () < rightBorder.getX () + 1
+          //     && realCoord.getY () > leftBorder.getY () - 1 && realCoord.getY () < rightBorder.getY () + 1)
+          // {
+          //   GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          //
+          //   FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
+          //   FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
+          //   FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
+          //   FieldValue coordD1 = (FieldValue) ((grid_iter) d);
+          //   FieldValue coordD2 = coordD1 + 1;
+          //   FieldValue proportionD2 = d - coordD1;
+          //   FieldValue proportionD1 = 1 - proportionD2;
+          //
+          //   GridCoordinate1D pos1 (coordD1);
+          //   GridCoordinate1D pos2 (coordD2);
+          //
+          //   FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
+          //   FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
+          //
+          //   FieldValue diff = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
+          //
+          //   val -= diff;
+          // }
 
           if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
           {
@@ -1316,11 +1316,15 @@ SchemeTMz::initGrids ()
 
       GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsRealCoord (Eps.getTotalSize ()));
 
-      if (posAbs.getX () > size.getX () / 4 && posAbs.getX () < yeeLayout.rightBorderTotalField.getX () - 10
-          && posAbs.getY () > yeeLayout.leftBorderTotalField.getY () + 10 && posAbs.getY () < yeeLayout.rightBorderTotalField.getY () - 10)
-      {
-        valEps->setCurValue (4.0);
-      }
+      // if (posAbs.getX () > size.getX () / 2 && posAbs.getX () < yeeLayout.rightBorderTotalField.getX () - 10
+      //     && posAbs.getY () > yeeLayout.leftBorderTotalField.getY () + 10 && posAbs.getY () < yeeLayout.rightBorderTotalField.getY () - 10)
+      // {
+      //   valEps->setCurValue (4.0);
+      // }
+      // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2) + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7) * (size.getX ()*1.5/7))
+      // {
+      //   valEps->setCurValue (4.0);
+      // }
 
       Eps.setFieldPointValue (valEps, pos);
     }

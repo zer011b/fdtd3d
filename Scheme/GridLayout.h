@@ -118,10 +118,16 @@ class YeeGridLayout: public GridLayout
   GridCoordinate3D leftBorderPML;
   GridCoordinate3D rightBorderPML;
 
+public:
+
+  GridCoordinate3D sizeEps;
+  GridCoordinate3D sizeMu;
+
   const GridCoordinateFP3D minEpsCoordFP;
   const GridCoordinate3D minEpsCoord;
 
-public:
+  const GridCoordinateFP3D minMuCoordFP;
+  const GridCoordinate3D minMuCoord;
 
   GridCoordinate3D size;
 
@@ -207,6 +213,16 @@ public:
     return minHyCoordFP;
   }
 
+  GridCoordinateFP3D getExRealCoord (GridCoordinate3D coord) const
+  {
+    return convertCoord (coord - minExCoord) + minExCoordFP;
+  }
+
+  GridCoordinateFP3D getEyRealCoord (GridCoordinate3D coord) const
+  {
+    return convertCoord (coord - minEyCoord) + minEyCoordFP;
+  }
+
   GridCoordinateFP3D getEzRealCoord (GridCoordinate3D coord) const
   {
     return convertCoord (coord - minEzCoord) + minEzCoordFP;
@@ -222,9 +238,29 @@ public:
     return convertCoord (coord - minHyCoord) + minHyCoordFP;
   }
 
+  GridCoordinateFP3D getHzRealCoord (GridCoordinate3D coord) const
+  {
+    return convertCoord (coord - minHzCoord) + minHzCoordFP;
+  }
+
   GridCoordinateFP3D getEpsRealCoord (GridCoordinate3D coord) const
   {
     return convertCoord (coord - minEpsCoord) + minEpsCoordFP;
+  }
+
+  GridCoordinateFP3D getMuRealCoord (GridCoordinate3D coord) const
+  {
+    return convertCoord (coord - minMuCoord) + minMuCoordFP;
+  }
+
+  GridCoordinate3D getEpsCoord (GridCoordinateFP3D realCoord) const
+  {
+    return convertCoord (realCoord - minEpsCoordFP) + minEpsCoord;
+  }
+
+  GridCoordinate3D getMuCoord (GridCoordinateFP3D realCoord) const
+  {
+    return convertCoord (realCoord - minMuCoordFP) + minMuCoord;
   }
 
   bool isInPML (GridCoordinateFP3D realCoordFP) const
@@ -245,6 +281,20 @@ public:
                         || realCoordFP.getZ () >= realCoordRightBorderPML.getZ ());
 
     return isInXPML || isInYPML || isInZPML;
+  }
+
+  bool isExInPML (GridCoordinate3D coord) const
+  {
+    GridCoordinateFP3D realCoordFP = getExRealCoord (coord);
+
+    return isInPML (realCoordFP);
+  }
+
+  bool isEyInPML (GridCoordinate3D coord) const
+  {
+    GridCoordinateFP3D realCoordFP = getEyRealCoord (coord);
+
+    return isInPML (realCoordFP);
   }
 
   bool isEzInPML (GridCoordinate3D coord) const
@@ -268,6 +318,13 @@ public:
     return isInPML (realCoordFP);
   }
 
+  bool isHzInPML (GridCoordinate3D coord) const
+  {
+    GridCoordinateFP3D realCoordFP = getHzRealCoord (coord);
+
+    return isInPML (realCoordFP);
+  }
+
   GridCoordinate3D getLeftBorderPML () const
   {
     return leftBorderPML;
@@ -276,6 +333,132 @@ public:
   GridCoordinate3D getRightBorderPML () const
   {
     return rightBorderPML;
+  }
+
+  bool doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection dir) const
+  {
+    /*
+     * FIXME: 3d not implemented
+     */
+    GridCoordinateFP3D realCoord = getExRealCoord (coord);
+
+    GridCoordinateFP3D leftBorder = zeroCoordFP + convertCoord (leftBorderTotalField);
+    GridCoordinateFP3D rightBorder = zeroCoordFP + convertCoord (rightBorderTotalField);
+
+    switch (dir)
+    {
+      case LayoutDirection::LEFT:
+      {
+        ASSERT_MESSAGE ("Unimplemented");
+
+        break;
+      }
+      case LayoutDirection::RIGHT:
+      {
+        ASSERT_MESSAGE ("Unimplemented");
+
+        break;
+      }
+      case LayoutDirection::DOWN:
+      {
+        if (realCoord.getX () > leftBorder.getX () - 0.5 && realCoord.getX () < rightBorder.getX () + 0.5
+            && realCoord.getY () > leftBorder.getY () - 1 && realCoord.getY () < leftBorder.getY ())
+        {
+          return true;
+        }
+
+        break;
+      }
+      case LayoutDirection::UP:
+      {
+        if (realCoord.getX () > leftBorder.getX () - 0.5 && realCoord.getX () < rightBorder.getX () + 0.5
+            && realCoord.getY () > rightBorder.getY () && realCoord.getY () < rightBorder.getY () + 1)
+        {
+          return true;
+        }
+
+        break;
+      }
+      case LayoutDirection::BACK:
+      {
+        ASSERT_MESSAGE ("Unimplemented");
+        break;
+      }
+      case LayoutDirection::FRONT:
+      {
+        ASSERT_MESSAGE ("Unimplemented");
+        break;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+
+    return false;
+  }
+
+  bool doNeedTFSFUpdateEyBorder (GridCoordinate3D coord, LayoutDirection dir) const
+  {
+    /*
+     * FIXME: 3d not implemented
+     */
+    GridCoordinateFP3D realCoord = getEyRealCoord (coord);
+
+    GridCoordinateFP3D leftBorder = zeroCoordFP + convertCoord (leftBorderTotalField);
+    GridCoordinateFP3D rightBorder = zeroCoordFP + convertCoord (rightBorderTotalField);
+
+    switch (dir)
+    {
+      case LayoutDirection::LEFT:
+      {
+        if (realCoord.getX () > leftBorder.getX () - 1 && realCoord.getX () < leftBorder.getX ()
+            && realCoord.getY () > leftBorder.getY () - 0.5 && realCoord.getY () < rightBorder.getY () + 0.5)
+        {
+          return true;
+        }
+
+        break;
+      }
+      case LayoutDirection::RIGHT:
+      {
+        if (realCoord.getX () > rightBorder.getX () && realCoord.getX () < rightBorder.getX () + 1
+            && realCoord.getY () > leftBorder.getY () - 0.5 && realCoord.getY () < rightBorder.getY () + 0.5)
+        {
+          return true;
+        }
+
+        break;
+      }
+      case LayoutDirection::DOWN:
+      {
+        ASSERT_MESSAGE ("Unimplemented");
+
+        break;
+      }
+      case LayoutDirection::UP:
+      {
+        ASSERT_MESSAGE ("Unimplemented");
+
+        break;
+      }
+      case LayoutDirection::BACK:
+      {
+        ASSERT_MESSAGE ("Unimplemented");
+        break;
+      }
+      case LayoutDirection::FRONT:
+      {
+        ASSERT_MESSAGE ("Unimplemented");
+        break;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+
+    return false;
   }
 
   bool doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection dir) const
@@ -467,6 +650,77 @@ public:
     return false;
   }
 
+  bool doNeedTFSFUpdateHzBorder (GridCoordinate3D coord, LayoutDirection dir) const
+  {
+    /*
+     * FIXME: 3d not implemented
+     */
+    GridCoordinateFP3D realCoord = getHzRealCoord (coord);
+
+    GridCoordinateFP3D leftBorder = zeroCoordFP + convertCoord (leftBorderTotalField);
+    GridCoordinateFP3D rightBorder = zeroCoordFP + convertCoord (rightBorderTotalField);
+
+    switch (dir)
+    {
+      case LayoutDirection::LEFT:
+      {
+        if (realCoord.getX () > leftBorder.getX () - 0.5 && realCoord.getX () < leftBorder.getX () + 0.5
+            && realCoord.getY () > leftBorder.getY () - 0.5 && realCoord.getY () < rightBorder.getY () + 0.5)
+        {
+          return true;
+        }
+
+        break;
+      }
+      case LayoutDirection::RIGHT:
+      {
+        if (realCoord.getX () > rightBorder.getX () - 0.5 && realCoord.getX () < rightBorder.getX () + 0.5
+            && realCoord.getY () > leftBorder.getY () - 0.5 && realCoord.getY () < rightBorder.getY () + 0.5)
+        {
+          return true;
+        }
+
+        break;
+      }
+      case LayoutDirection::DOWN:
+      {
+        if (realCoord.getX () > leftBorder.getX () - 0.5 && realCoord.getX () < rightBorder.getX () + 0.5
+            && realCoord.getY () > leftBorder.getY () - 0.5 && realCoord.getY () < leftBorder.getY () + 0.5)
+        {
+          return true;
+        }
+
+        break;
+      }
+      case LayoutDirection::UP:
+      {
+        if (realCoord.getX () > leftBorder.getX () - 0.5 && realCoord.getX () < rightBorder.getX () + 0.5
+            && realCoord.getY () > rightBorder.getY () - 0.5 && realCoord.getY () < rightBorder.getY () + 0.5)
+        {
+          return true;
+        }
+
+        break;
+      }
+      case LayoutDirection::BACK:
+      {
+        ASSERT_MESSAGE ("Unimplemented");
+        break;
+      }
+      case LayoutDirection::FRONT:
+      {
+        ASSERT_MESSAGE ("Unimplemented");
+        break;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+
+    return false;
+  }
+
   YeeGridLayout (GridCoordinate3D coordSize, GridCoordinate3D sizePML, GridCoordinate3D sizeScatteredZone, FieldValue incidentWaveAngle) :
     zeroCoordFP (0.0, 0.0, 0.0), zeroCoord (0, 0, 0),
     minExCoordFP (1.0, 0.5, 0.5), minExCoord (0, 0, 0),
@@ -476,6 +730,7 @@ public:
     minHyCoordFP (1.0, 0.5, 1.0), minHyCoord (0, 0, 0),
     minHzCoordFP (1.0, 1.0, 0.5), minHzCoord (0, 0, 0),
     minEpsCoordFP (0.5, 0.5, 0.5), minEpsCoord (0, 0, 0),
+    minMuCoordFP (0.5, 0.5, 0.5), minMuCoord (0, 0, 0),
     size (coordSize),
     leftBorderTotalField (sizeScatteredZone),
     rightBorderTotalField (coordSize - sizeScatteredZone),
@@ -521,6 +776,9 @@ public:
      *       1 <= y < 1 + size.getY()
      *       0.5 <= z < 0.5 + size.getZ() */
     sizeHz = size - GridCoordinate3D (0, 0, 0);
+
+    sizeEps = size + GridCoordinate3D (1, 1, 1);
+    sizeMu = size + GridCoordinate3D (1, 1, 1);
   }
 
   virtual ~YeeGridLayout ()
