@@ -32,9 +32,8 @@ SchemeTMz::performPlaneWaveESteps (time_step t)
     FieldPointValue *valH1 = HInc.getFieldPointValue (posLeft);
     FieldPointValue *valH2 = HInc.getFieldPointValue (posRight);
 
-    FieldValue N_lambda = waveLength / gridStep;
     FieldValue S = gridTimeStep * PhysicsConst::SpeedOfLight / gridStep;
-    FieldValue arg = PhysicsConst::Pi * S / N_lambda;
+    FieldValue arg = PhysicsConst::Pi * S / stepWaveLength;
 
     FieldValue relPhi;
     if (incidentWaveAngle == PhysicsConst::Pi / 4)
@@ -58,6 +57,15 @@ SchemeTMz::performPlaneWaveESteps (time_step t)
   GridCoordinate1D pos (0);
   FieldPointValue *valE = EInc.getFieldPointValue (pos);
   valE->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
+
+  // grid_coord last_pos = EInc.getSize ().getX () - 2;
+  //
+  // if (t * gridTimeStep * freq >= last_pos / stepWaveLength)
+  // {
+  //   GridCoordinate1D pos (last_pos);
+  //   FieldPointValue *valE = EInc.getFieldPointValue (pos);
+  //   valE->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq - 2 * PhysicsConst::Pi * last_pos / stepWaveLength));
+  // }
 
   EInc.nextTimeStep ();
 }
@@ -156,8 +164,8 @@ SchemeTMz::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinat
           /*
            * HInc: 0, 1, etc.
            */
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHyRealCoord (Hy.getTotalPosition (posRight)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHyCoordFP (Hy.getTotalPosition (posRight)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
           FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
@@ -179,8 +187,8 @@ SchemeTMz::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinat
 
         if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::RIGHT))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHyRealCoord (Hy.getTotalPosition (posLeft)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHyCoordFP (Hy.getTotalPosition (posLeft)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -203,8 +211,8 @@ SchemeTMz::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinat
 
         if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHxRealCoord (Hx.getTotalPosition (posUp)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHxCoordFP (Hx.getTotalPosition (posUp)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -227,8 +235,8 @@ SchemeTMz::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinat
 
         if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHxRealCoord (Hx.getTotalPosition (posDown)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHxCoordFP (Hx.getTotalPosition (posDown)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -304,8 +312,8 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
           /*
            * HInc: 0, 1, etc.
            */
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHyRealCoord (Hy.getTotalPosition (posRight)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHyCoordFP (Hy.getTotalPosition (posRight)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
           FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
@@ -327,8 +335,8 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
 
         if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::RIGHT))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHyRealCoord (Hy.getTotalPosition (posLeft)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHyCoordFP (Hy.getTotalPosition (posLeft)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -351,8 +359,8 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
 
         if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHxRealCoord (Hx.getTotalPosition (posUp)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHxCoordFP (Hx.getTotalPosition (posUp)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -375,8 +383,8 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
 
         if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHxRealCoord (Hx.getTotalPosition (posDown)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHxCoordFP (Hx.getTotalPosition (posDown)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -496,8 +504,8 @@ SchemeTMz::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinat
       {
         if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzRealCoord (Ez.getTotalPosition (posDown)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (Ez.getTotalPosition (posDown)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -519,8 +527,8 @@ SchemeTMz::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinat
         }
         else if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzRealCoord (Ez.getTotalPosition (posUp)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (Ez.getTotalPosition (posUp)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -585,8 +593,8 @@ SchemeTMz::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordi
       {
         if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzRealCoord (Ez.getTotalPosition (posDown)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (Ez.getTotalPosition (posDown)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -608,8 +616,8 @@ SchemeTMz::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordi
         }
         else if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzRealCoord (Ez.getTotalPosition (posUp)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (Ez.getTotalPosition (posUp)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -725,8 +733,8 @@ SchemeTMz::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinat
       {
         if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::LEFT))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzRealCoord (Ez.getTotalPosition (posLeft)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (Ez.getTotalPosition (posLeft)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -748,8 +756,8 @@ SchemeTMz::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinat
         }
         else if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::RIGHT))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzRealCoord (Ez.getTotalPosition (posRight)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (Ez.getTotalPosition (posRight)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -815,8 +823,8 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
       {
         if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::LEFT))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzRealCoord (Ez.getTotalPosition (posLeft)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (Ez.getTotalPosition (posLeft)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -838,8 +846,8 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
         }
         else if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::RIGHT))
         {
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzRealCoord (Ez.getTotalPosition (posRight)));
-          GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (Ez.getTotalPosition (posRight)));
+          GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
           FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -943,9 +951,44 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
       {
         FieldValue freq = PhysicsConst::SpeedOfLight / waveLength;
 
-        GridCoordinate2D pos (EzSize.getX () / 2, EzSize.getY () / 2);
+        GridCoordinate2D pos (30, EzSize.getY () / 2);
         FieldPointValue* tmp = Ez.getFieldPointValue (pos);
         tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
+
+        // for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
+        // {
+        //   for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
+        //   {
+        //     GridCoordinate2D pos (i, j);
+        //
+        //     GridCoordinate2D posAbs = Ez.getTotalPosition (pos);
+        //
+        //     GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (posAbs));
+        //
+        //     if (realCoord.getX () == EzSize.getX () / 2 - 20 + 0.5
+        //         || realCoord.getX () == EzSize.getX () / 2 + 20 + 0.5
+        //         || realCoord.getY () == EzSize.getY () / 2 - 20 + 0.5
+        //         || realCoord.getY () == EzSize.getY () / 2 + 20 + 0.5)
+        //     {
+        //       FieldPointValue* tmp = Ez.getFieldPointValue (pos);
+        //
+        //       FieldValue diff_x = (i - ((FieldValue) EzSize.getX ()) / 2);
+        //       FieldValue diff_y = (j - ((FieldValue) EzSize.getY ()) / 2);
+        //
+        //       FieldValue sqr = diff_x * diff_x + diff_y * diff_y;
+        //
+        //     // if (sqr >= 100 && sqr < 400)
+        //     // {
+        //       FieldValue inTime = gridTimeStep * t * 2 * PhysicsConst::Pi * freq;
+        //       FieldValue inSpace = 2 * PhysicsConst::Pi * sqrt (sqr) / stepWaveLength;
+        //
+        //       if (gridTimeStep * t * PhysicsConst::SpeedOfLight - gridStep * sqrt (sqr) >= 0)
+        //       {
+        //         tmp->setCurValue (sin (inTime - inSpace));
+        //       }
+        //     }
+        //   }
+        // }
       }
     }
 
@@ -972,6 +1015,24 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
       Bx.nextTimeStep ();
       By.nextTimeStep ();
     }
+
+    if (t % 100 == 0)
+    {
+      if (dumpRes)
+      {
+        BMPDumper<GridCoordinate2D> dumperEz;
+        dumperEz.init (t, CURRENT, process, "2D-TMz-in-time-Ez");
+        dumperEz.dumpGrid (Ez);
+
+        BMPDumper<GridCoordinate2D> dumperHx;
+        dumperHx.init (t, CURRENT, process, "2D-TMz-in-time-Hx");
+        dumperHx.dumpGrid (Hx);
+
+        BMPDumper<GridCoordinate2D> dumperHy;
+        dumperHy.init (t, CURRENT, process, "2D-TMz-in-time-Hy");
+        dumperHy.dumpGrid (Hy);
+      }
+    }
   }
 
   if (dumpRes)
@@ -987,6 +1048,25 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
     BMPDumper<GridCoordinate2D> dumperHy;
     dumperHy.init (stepLimit, CURRENT, process, "2D-TMz-in-time-Hy");
     dumperHy.dumpGrid (Hy);
+
+    for (int i = 0; i < EzSize.getX (); ++i)
+    {
+      for (int j = 0; j < EzSize.getY (); ++j)
+      {
+        GridCoordinate2D pos (i, j);
+
+        if (j == Ez.getSize ().getY () / 2)
+        {
+          FieldPointValue* tmp = Ez.getFieldPointValue (pos);
+
+          FieldValue freq = PhysicsConst::SpeedOfLight / waveLength;
+          FieldValue inTime = gridTimeStep * (stepLimit - 1) * 2 * PhysicsConst::Pi * freq;
+          FieldValue inSpace = 2 * PhysicsConst::Pi * (i >= EzSize.getX ()/2 ? i - EzSize.getX ()/2 : EzSize.getX ()/2 - i) / stepWaveLength;
+
+          printf ("%u: %f vs %f\n", i, tmp->getCurValue (), sin (inTime - inSpace));
+        }
+      }
+    }
   }
 }
 
@@ -1023,6 +1103,62 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
 
     performEzSteps (t, EzStart, EzEnd);
 
+    if (!useTFSF)
+    {
+#if defined (PARALLEL_GRID)
+      if (process == 0)
+#endif
+      {
+        FieldValue freq = PhysicsConst::SpeedOfLight / waveLength;
+
+        GridCoordinate2D pos (30, EzSize.getY () / 2);
+        FieldPointValue* tmp = Ez.getFieldPointValue (pos);
+        tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
+
+        // for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
+        // {
+        //   for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
+        //   {
+        //     GridCoordinate2D pos (i, j);
+        //
+        //     GridCoordinate2D posAbs = Ez.getTotalPosition (pos);
+        //
+        //     GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (posAbs));
+        //
+        //     if (realCoord.getX () == EzSize.getX () / 2 - 20 + 0.5
+        //         || realCoord.getX () == EzSize.getX () / 2 + 20 + 0.5
+        //         || realCoord.getY () == EzSize.getY () / 2 - 20 + 0.5
+        //         || realCoord.getY () == EzSize.getY () / 2 + 20 + 0.5)
+        //     {
+        //       FieldPointValue* tmp = Ez.getFieldPointValue (pos);
+        //
+        //       FieldValue diff_x = (i - ((FieldValue) EzSize.getX ()) / 2);
+        //       FieldValue diff_y = (j - ((FieldValue) EzSize.getY ()) / 2);
+        //
+        //       FieldValue sqr = diff_x * diff_x + diff_y * diff_y;
+        //
+        //       FieldValue inTime = gridTimeStep * t * 2 * PhysicsConst::Pi * freq;
+        //       FieldValue inSpace = 2 * PhysicsConst::Pi * sqrt (sqr) / stepWaveLength;
+        //
+        //     // if (sqr == 0 && )
+        //     // {
+        //     //   tmp->setCurValue (sin (inTime - inSpace));
+        //     // }
+        //
+        //     // if (sqr >= 100 && sqr < 400)
+        //     // {
+        //
+        //
+        //       if (gridTimeStep * t * PhysicsConst::SpeedOfLight - gridStep * sqrt (sqr) >= 0)
+        //       {
+        //         tmp->setCurValue (sin (inTime - inSpace));
+        //       }
+        //     }
+        //   }
+        // }
+      }
+    }
+
     for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
     {
       for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
@@ -1034,17 +1170,17 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
           FieldPointValue* tmp = Ez.getFieldPointValue (pos);
           FieldPointValue* tmpAmp = EzAmplitude.getFieldPointValue (pos);
 
-          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzRealCoord (Ez.getTotalPosition (pos)));
+          GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (Ez.getTotalPosition (pos)));
 
-          GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.leftBorderTotalField);
-          GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.rightBorderTotalField);
+          GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
+          GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
 
           FieldValue val = tmp->getCurValue ();
 
           // if (realCoord.getX () > leftBorder.getX () - 1 && realCoord.getX () < rightBorder.getX () + 1
           //     && realCoord.getY () > leftBorder.getY () - 1 && realCoord.getY () < rightBorder.getY () + 1)
           // {
-          //   GridCoordinateFP2D zeroCoordFP = yeeLayout.zeroIncCoordFP;
+          //   GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
           //
           //   FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           //   FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1070,20 +1206,6 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
             is_stable_state = 0;
           }
         }
-      }
-    }
-
-    if (!useTFSF)
-    {
-#if defined (PARALLEL_GRID)
-      if (process == 0)
-#endif
-      {
-        FieldValue freq = PhysicsConst::SpeedOfLight / waveLength;
-
-        GridCoordinate2D pos (EzSize.getX () / 2, EzSize.getY () / 2);
-        FieldPointValue* tmp = Ez.getFieldPointValue (pos);
-        tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
       }
     }
 
@@ -1200,8 +1322,53 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
   if (dumpRes)
   {
     BMPDumper<GridCoordinate2D> dumper;
-    dumper.init (t, CURRENT, process, "2D-TMz-amplitude");
+    dumper.init (t, CURRENT, process, "2D-TMz-amplitude-Ez");
     dumper.dumpGrid (EzAmplitude);
+
+    FieldValue norm = 0;
+
+    for (int i = 0; i < EzSize.getX (); ++i)
+    {
+      for (int j = 0; j < EzSize.getY (); ++j)
+      {
+        GridCoordinate2D pos (i, j);
+
+        if (j == EzAmplitude.getSize ().getY () / 2)
+        {
+          FieldPointValue* tmp = EzAmplitude.getFieldPointValue (pos);
+
+          FieldValue val1 = j0 (2 * PhysicsConst::Pi * (i >= EzSize.getX ()/2 ? i - EzSize.getX ()/2 : EzSize.getX ()/2 - i) / stepWaveLength);
+          FieldValue val2 = y0 (2 * PhysicsConst::Pi * (i >= EzSize.getX ()/2 ? i - EzSize.getX ()/2 : EzSize.getX ()/2 - i) / stepWaveLength);
+          FieldValue hankel =  sqrt (val1 * val1 + val2 * val2) / 4;
+
+          if (i > EzSize.getX ()/2 && i < yeeLayout.getRightBorderPML ().getX () - 5)
+          {
+            norm += tmp->getCurValue () * tmp->getCurValue ();
+          }
+
+          printf ("%u: %f, %f, %f\n", i, tmp->getCurValue (), hankel, tmp->getCurValue () - hankel);
+        }
+      }
+    }
+
+    norm = sqrt (norm);
+
+    printf ("Norm (C): %f\n", norm);
+
+    for (int i = 0; i < EzSize.getX (); ++i)
+    {
+      for (int j = 0; j < EzSize.getY (); ++j)
+      {
+        GridCoordinate2D pos (i, j);
+
+        if (j == EzAmplitude.getSize ().getY () / 2)
+        {
+          FieldPointValue* tmp = EzAmplitude.getFieldPointValue (pos);
+
+          printf ("%u: %f\n", i, tmp->getCurValue () / norm);
+        }
+      }
+    }
   }
 
   if (is_stable_state == 0)
@@ -1312,9 +1479,9 @@ SchemeTMz::initGrids ()
 #endif
 
       GridCoordinate2D pos (i, j);
-      GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsRealCoord (Eps.getTotalPosition (pos)));
+      GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalPosition (pos)));
 
-      GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsRealCoord (Eps.getTotalSize ()));
+      GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalSize ()));
 
       // if (posAbs.getX () > size.getX () / 2 && posAbs.getX () < yeeLayout.rightBorderTotalField.getX () - 10
       //     && posAbs.getY () > yeeLayout.leftBorderTotalField.getY () + 10 && posAbs.getY () < yeeLayout.rightBorderTotalField.getY () - 10)
@@ -1380,9 +1547,9 @@ SchemeTMz::initGrids ()
 #endif
 
       GridCoordinate2D pos (i, j);
-      GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsRealCoord (SigmaX.getTotalPosition (pos)));
+      GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (SigmaX.getTotalPosition (pos)));
 
-      GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsRealCoord (SigmaX.getTotalSize ()));
+      GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (SigmaX.getTotalSize ()));
 
       /*
        * FIXME: add layout coordinates for material: sigma, eps, etc.
@@ -1424,9 +1591,9 @@ SchemeTMz::initGrids ()
 #endif
 
       GridCoordinate2D pos (i, j);
-      GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsRealCoord (SigmaY.getTotalPosition (pos)));
+      GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (SigmaY.getTotalPosition (pos)));
 
-      GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsRealCoord (SigmaX.getTotalSize ()));
+      GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (SigmaX.getTotalSize ()));
 
       /*
        * FIXME: add layout coordinates for material: sigma, eps, etc.

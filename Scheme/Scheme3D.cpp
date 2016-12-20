@@ -5,7 +5,7 @@
 #include "Kernels.h"
 #include "PhysicsConst.h"
 #include "Scheme3D.h"
-#include "GridLayout.h"
+#include "YeeGridLayout.h"
 
 #if defined (PARALLEL_GRID)
 #include <mpi.h>

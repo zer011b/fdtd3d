@@ -4,7 +4,7 @@
 #include "Scheme.h"
 #include "ParallelGrid.h"
 #include "Grid.h"
-#include "GridLayout.h"
+#include "YeeGridLayout.h"
 #include "PhysicsConst.h"
 
 #ifdef GRID_2D
@@ -142,8 +142,8 @@ public:
     ExAmplitude (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     EyAmplitude (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     HzAmplitude (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    Eps (shrinkCoord (yeeLayout.sizeEps), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    Mu (shrinkCoord (yeeLayout.sizeMu), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    Eps (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    Mu (shrinkCoord (yeeLayout.getMuSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     SigmaX (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
     SigmaY (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
     SigmaZ (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
@@ -186,8 +186,8 @@ public:
     ExAmplitude (shrinkCoord (yeeLayout.getEzSize ()), 0),
     EyAmplitude (shrinkCoord (yeeLayout.getHxSize ()), 0),
     HzAmplitude (shrinkCoord (yeeLayout.getHySize ()), 0),
-    Eps (shrinkCoord (yeeLayout.sizeEps), 0),
-    Mu (shrinkCoord (yeeLayout.sizeMu), 0),
+    Eps (shrinkCoord (yeeLayout.getEpsSize ()), 0),
+    Mu (shrinkCoord (yeeLayout.getMuSize ()), 0),
     SigmaX (totSize, 0),
     SigmaY (totSize, 0),
     SigmaZ (totSize, 0),
@@ -202,8 +202,8 @@ public:
     amplitudeStepLimit (ampStep),
     usePML (doUsePML),
     useTFSF (doUseTFSF),
-    EInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
-    HInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
+    EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
+    HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     incidentWaveAngle (angleIncWave)
   {
     ASSERT (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0);

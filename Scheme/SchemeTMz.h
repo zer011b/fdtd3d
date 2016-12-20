@@ -4,7 +4,7 @@
 #include "Scheme.h"
 #include "ParallelGrid.h"
 #include "Grid.h"
-#include "GridLayout.h"
+#include "YeeGridLayout.h"
 #include "PhysicsConst.h"
 
 #ifdef GRID_2D
@@ -202,8 +202,8 @@ public:
     amplitudeStepLimit (ampStep),
     usePML (doUsePML),
     useTFSF (doUseTFSF),
-    EInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
-    HInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
+    EInc (GridCoordinate1D ((grid_coord) 10*(totSize.getX () + totSize.getY ())), 0),
+    HInc (GridCoordinate1D ((grid_coord) 10*(totSize.getX () + totSize.getY ())), 0),
     incidentWaveAngle (angleIncWave)
   {
     ASSERT (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0);

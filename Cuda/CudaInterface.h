@@ -3,7 +3,7 @@
 
 #include "Kernels.h"
 #include "CudaDefines.h"
-#include "GridLayout.h"
+#include "YeeGridLayout.h"
 
 #ifdef PARALLEL_GRID
 #include "ParallelGrid.h"

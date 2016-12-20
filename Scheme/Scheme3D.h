@@ -4,7 +4,7 @@
 #include "Scheme.h"
 #include "ParallelGrid.h"
 #include "Grid.h"
-#include "GridLayout.h"
+#include "YeeGridLayout.h"
 
 #ifdef GRID_3D
 
