@@ -3,84 +3,93 @@
 
 #include "FieldValue.h"
 
-/* 2D TMz */
-#define calculateEx_2D_TEz(oldEz, Hz1, Hz2, dt, dx, eps) \
-  ((oldEz) + ((dt) / ((eps) * (dx))) * ((Hz1) - (Hz2)))
-
-#define calculateEy_2D_TEz(oldEz, Hz1, Hz2, dt, dx, eps) \
-  ((oldEz) + ((dt) / ((eps) * (dx))) * (- (Hz1) + (Hz2)))
-
-#define calculateEz_2D_TMz(oldEz, Hx1, Hx2, Hy1, Hy2, dt, dx, eps) \
-  ((oldEz) + ((dt) / ((eps) * (dx))) * ((Hx1) - (Hx2) + (Hy1) - (Hy2)))
-
-#define calculateHx_2D_TMz(oldHx, Ez1, Ez2, dt, dx, mu) \
-  ((oldHx) + ((dt) / ((mu) * (dx))) * (- (Ez1) + (Ez2)))
-
-#define calculateHy_2D_TMz(oldHy, Ez1, Ez2, dt, dx, mu) \
-  ((oldHy) + ((dt) / ((mu) * (dx))) * ((Ez1) - (Ez2)))
-
-#define calculateHz_2D_TEz(oldEz, Ex1, Ex2, Ey1, Ey2, dt, dx, eps) \
-  ((oldEz) + ((dt) / ((eps) * (dx))) * ((Ex1) - (Ex2) + (Ey1) - (Ey2)))
-
-/* 3D */
 /*
- * FIXME: incorrect
+ * For all kernels index 1 represents field value with higher coordinate than index 2.
+ *
+ * FIXME: add docs link to formulas description
  */
+
+/* 3D Kernels with precalculated coefficients */
+#define calculateEx_3D_Precalc(oldEx, Hz1, Hz2, Hy1, Hy2, Ca, Cb) \
+  ((Ca) * (oldEx) + (Cb) * ((Hz1) - (Hz2) - (Hy1) + (Hy2)))
+
+#define calculateEy_3D_Precalc(oldEy, Hx1, Hx2, Hz1, Hz2, Ca, Cb) \
+  ((Ca) * (oldEy) + (Cb) * ((Hx1) - (Hx2) - (Hz1) + (Hz2)))
+
+#define calculateEz_3D_Precalc(oldEz, Hy1, Hy2, Hx1, Hx2, Ca, Cb) \
+  ((Ca) * (oldEz) + (Cb) * ((Hy1) - (Hy2) - (Hx1) + (Hx2)))
+
+#define calculateHx_3D_Precalc(oldHx, Ey1, Ey2, Ez1, Ez2, Da, Db) \
+  ((Da) * (oldHx) + (Db) * ((Ey1) - (Ey2) - (Ez1) + (Ez2)))
+
+#define calculateHy_3D_Precalc(oldHy, Ez1, Ez2, Ex1, Ex2, Da, Db) \
+  ((Da) * (oldHy) + (Db) * ((Ez1) - (Ez2) - (Ex1) + (Ex2)))
+
+#define calculateHz_3D_Precalc(oldHz, Ex1, Ex2, Ey1, Ey2, Da, Db) \
+  ((Da) * (oldHz) + (Db) * ((Ex1) - (Ex2) - (Ey1) + (Ey2)))
+
+/* 2D Kernels with precalculated coefficients */
+#define calculateEx_2D_TEz_Precalc(oldEx, Hz1, Hz2, Ca, Cb) \
+  calculateEx_3D_Precalc(oldEx, Hz1, Hz2, 0, 0, Ca, Cb)
+
+#define calculateEy_2D_TEz_Precalc(oldEy, Hz1, Hz2, Ca, Cb) \
+  calculateEy_3D_Precalc(oldEy, 0, 0, Hz1, Hz2, Ca, Cb)
+
+#define calculateHx_2D_TMz_Precalc(oldHx, Ez1, Ez2, Da, Db) \
+  calculateHx_3D_Precalc(oldHx, 0, 0, Ez1, Ez2, Da, Db)
+
+#define calculateHy_2D_TMz_Precalc(oldHy, Ez1, Ez2, Da, Db) \
+  calculateHy_3D_Precalc(oldHy, Ez1, Ez2, 0, 0, Da, Db)
+
+/* 3D Kernels */
 #define calculateEx_3D(oldEx, Hz1, Hz2, Hy1, Hy2, dt, dx, eps) \
-  ((oldEx) + ((dt) / ((eps) * (dx))) * ((Hz1) - (Hz2) - (Hy1) + (Hy2)))
+  calculateEx_3D_Precalc(oldEx, Hz1, Hz2, Hy1, Hy2, 1, (dt) / ((eps) * (dx)))
 
 #define calculateEy_3D(oldEy, Hx1, Hx2, Hz1, Hz2, dt, dx, eps) \
-  ((oldEy) + ((dt) / ((eps) * (dx))) * ((Hx1) - (Hx2) - (Hz1) + (Hz2)))
+  calculateEy_3D_Precalc(oldEy, Hx1, Hx2, Hz1, Hz2, 1, (dt) / ((eps) * (dx)))
 
 #define calculateEz_3D(oldEz, Hy1, Hy2, Hx1, Hx2, dt, dx, eps) \
-  ((oldEz) + ((dt) / ((eps) * (dx))) * ((Hy1) - (Hy2) - (Hx1) + (Hx2)))
+  calculateEz_3D_Precalc(oldEz, Hy1, Hy2, Hx1, Hx2, 1, (dt) / ((eps) * (dx)))
 
 #define calculateHx_3D(oldHx, Ey1, Ey2, Ez1, Ez2, dt, dx, mu) \
-  ((oldHx) + ((dt) / ((mu) * (dx))) * ((Ey1) - (Ey2) - (Ez1) + (Ez2)))
+  calculateHx_3D_Precalc(oldHx, Ey1, Ey2, Ez1, Ez2, 1, (dt) / ((mu) * (dx)))
 
 #define calculateHy_3D(oldHy, Ez1, Ez2, Ex1, Ex2, dt, dx, mu) \
-  ((oldHy) + ((dt) / ((mu) * (dx))) * ((Ez1) - (Ez2) - (Ex1) + (Ex2)))
+  calculateHy_3D_Precalc(oldHy, Ez1, Ez2, Ex1, Ex2, 1, (dt) / ((mu) * (dx)))
 
 #define calculateHz_3D(oldHz, Ex1, Ex2, Ey1, Ey2, dt, dx, mu) \
-  ((oldHz) + ((dt) / ((mu) * (dx))) * ((Ex1) - (Ex2) - (Ey1) + (Ey2)))
+  calculateHz_3D_Precalc(oldHz, Ex1, Ex2, Ey1, Ey2, 1, (dt) / ((mu) * (dx)))
 
+/* 2D Kernels */
+#define calculateEx_2D_TEz(oldEx, Hz1, Hz2, dt, dx, eps) \
+  calculateEx_3D(oldEx, Hz1, Hz2, 0, 0, dt, dx, eps)
 
+#define calculateEy_2D_TEz(oldEy, Hz1, Hz2, dt, dx, eps) \
+  calculateEy_3D(oldEy, 0, 0, Hz1, Hz2, dt, dx, eps)
 
+#define calculateHx_2D_TMz(oldHx, Ez1, Ez2, dt, dx, mu) \
+  calculateHx_3D(oldHx, 0, 0, Ez1, Ez2, dt, dx, mu)
 
-#define calculateDx_2D_Precalc(Ca, Cb, oldDx, Hz1, Hz2) \
-  ((Ca) * (oldDx) + (Cb) * ((Hz1) - (Hz2)))
+#define calculateHy_2D_TMz(oldHy, Ez1, Ez2, dt, dx, mu) \
+  calculateHy_3D(oldHy, Ez1, Ez2, 0, 0, dt, dx, mu)
 
-#define calculateEx_2D_Precalc(Ca, Cb, Cc, oldEx, Dx1, Dx2) \
+/* Kernels to calculate E from D and H from B */
+#define calculateEx_from_Dx_Precalc(oldEx, Dx1, Dx2, Ca, Cb, Cc) \
   ((Ca) * (oldEx) + (Cb) * (Dx1) - (Cc) * (Dx2))
 
-#define calculateDy_2D_Precalc(Ca, Cb, oldDy, Hz1, Hz2) \
-  ((Ca) * (oldDy) + (Cb) * (- (Hz1) + (Hz2)))
-
-#define calculateEy_2D_Precalc(Ca, Cb, Cc, oldEy, Dy1, Dy2) \
+#define calculateEy_from_Dy_Precalc(oldEy, Dy1, Dy2, Ca, Cb, Cc) \
   ((Ca) * (oldEy) + (Cb) * (Dy1) - (Cc) * (Dy2))
 
-#define calculateDz_3D_Precalc(Ca, Cb, oldDz, Hy1, Hy2, Hx1, Hx2) \
-  ((Ca) * (oldDz) + (Cb) * ((Hy1) - (Hy2) - (Hx1) + (Hx2)))
-
-#define calculateEz_3D_Precalc(Ca, Cb, Cc, oldEz, Dz1, Dz2) \
+#define calculateEz_from_Dz_Precalc(oldEz, Dz1, Dz2, Ca, Cb, Cc) \
   ((Ca) * (oldEz) + (Cb) * (Dz1) - (Cc) * (Dz2))
 
-#define calculateBx_2D_Precalc(Da, Db, oldBx, Ez1, Ez2) \
-  ((Da) * (oldBx) + (Db) * (- (Ez1) + (Ez2)))
+#define calculateHx_from_Bx_Precalc(oldHx, Bx1, Bx2, Da, Db, Dc) \
+  ((Da) * (oldHx) + (Db) * (Bx1) - (Dc) * (Bx2))
 
-#define calculateHx_2D_Precalc(Ca, Cb, Cc, oldHx, Bx1, Bx2) \
-  ((Ca) * (oldHx) + (Cb) * (Bx1) - (Cc) * (Bx2))
+#define calculateHy_from_By_Precalc(oldHy, By1, By2, Da, Db, Dc) \
+  ((Da) * (oldHy) + (Db) * (By1) - (Dc) * (By2))
 
-#define calculateBy_2D_Precalc(Da, Db, oldBy, Ez1, Ez2) \
-  ((Da) * (oldBy) + (Db) * ((Ez1) - (Ez2)))
-
-#define calculateHy_2D_Precalc(Ca, Cb, Cc, oldHy, By1, By2) \
-  calculateHx_2D_Precalc (Ca, Cb, Cc, oldHy, By1, By2)
-
-#define calculateBz_2D_Precalc(Ca, Cb, oldHz, Ex1, Ex2, Ey1, Ey2) \
-  ((Ca) * (oldHz) + (Cb) * ((Ex1) - (Ex2) - (Ey1) + (Ey2)))
-
-#define calculateHz_2D_Precalc(Ca, Cb, Cc, oldHz, Bz1, Bz2) \
-  ((Ca) * (oldHz) + (Cb) * (Bz1) - (Cc) * (Bz2))
+#define calculateHz_from_Bz_Precalc(oldHz, Bz1, Bz2, Da, Db, Dc) \
+  ((Da) * (oldHz) + (Db) * (Bz1) - (Dc) * (Bz2))
 
 #endif /* KERNELS_H */

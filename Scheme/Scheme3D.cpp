@@ -79,8 +79,8 @@ Scheme3D::performSteps (int dumpRes)
           FieldPointValue* valHz1 = Hz.getFieldPointValue (posUp);
           FieldPointValue* valHz2 = Hz.getFieldPointValue (posDown);
 
-          FieldPointValue* valHy1 = Hy.getFieldPointValue (posBack);
-          FieldPointValue* valHy2 = Hy.getFieldPointValue (posFront);
+          FieldPointValue* valHy1 = Hy.getFieldPointValue (posFront);
+          FieldPointValue* valHy2 = Hy.getFieldPointValue (posBack);
 
           FieldValue val = calculateEx_3D (valEx->getPrevValue (),
                                            valHz1->getPrevValue (),
@@ -115,8 +115,8 @@ Scheme3D::performSteps (int dumpRes)
           FieldPointValue* valHx1 = Hx.getFieldPointValue (posFront);
           FieldPointValue* valHx2 = Hx.getFieldPointValue (posBack);
 
-          FieldPointValue* valHz1 = Hz.getFieldPointValue (posLeft);
-          FieldPointValue* valHz2 = Hz.getFieldPointValue (posRight);
+          FieldPointValue* valHz1 = Hz.getFieldPointValue (posRight);
+          FieldPointValue* valHz2 = Hz.getFieldPointValue (posLeft);
 
           FieldValue val = calculateEy_3D (valEy->getPrevValue (),
                                            valHx1->getPrevValue (),
@@ -203,8 +203,8 @@ Scheme3D::performSteps (int dumpRes)
           FieldPointValue* valEy1 = Ey.getFieldPointValue (posFront);
           FieldPointValue* valEy2 = Ey.getFieldPointValue (posBack);
 
-          FieldPointValue* valEz1 = Ez.getFieldPointValue (posDown);
-          FieldPointValue* valEz2 = Ez.getFieldPointValue (posUp);
+          FieldPointValue* valEz1 = Ez.getFieldPointValue (posUp);
+          FieldPointValue* valEz2 = Ez.getFieldPointValue (posDown);
 
           FieldValue val = calculateHx_3D (valHx->getPrevValue (),
                                            valEy1->getPrevValue (),
@@ -239,8 +239,8 @@ Scheme3D::performSteps (int dumpRes)
           FieldPointValue* valEz1 = Ez.getFieldPointValue (posRight);
           FieldPointValue* valEz2 = Ez.getFieldPointValue (posLeft);
 
-          FieldPointValue* valEx1 = Ex.getFieldPointValue (posBack);
-          FieldPointValue* valEx2 = Ex.getFieldPointValue (posFront);
+          FieldPointValue* valEx1 = Ex.getFieldPointValue (posFront);
+          FieldPointValue* valEx2 = Ex.getFieldPointValue (posBack);
 
           FieldValue val = calculateHy_3D (valHy->getPrevValue (),
                                            valEz1->getPrevValue (),
@@ -275,8 +275,8 @@ Scheme3D::performSteps (int dumpRes)
           FieldPointValue* valEx1 = Ex.getFieldPointValue (posUp);
           FieldPointValue* valEx2 = Ex.getFieldPointValue (posDown);
 
-          FieldPointValue* valEy1 = Ey.getFieldPointValue (posLeft);
-          FieldPointValue* valEy2 = Ey.getFieldPointValue (posRight);
+          FieldPointValue* valEy1 = Ey.getFieldPointValue (posRight);
+          FieldPointValue* valEy2 = Ey.getFieldPointValue (posLeft);
 
           FieldValue val = calculateHz_3D (valHz->getPrevValue (),
                                            valEx1->getPrevValue (),

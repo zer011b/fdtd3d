@@ -23,14 +23,14 @@ __global__ void cudaCalculateTMzEzStep (CudaExitStatus *retval,
   grid_coord indexEz2 = (i - 1) * sy_Ez + j;
   grid_coord indexEz3 = i * sy_Ez + j - 1;
 
-  Ez[indexEz1] = calculateEz_2D_TMz (Ez_prev[indexEz1],
-                                     Hx_prev[indexEz3],
-                                     Hx_prev[indexEz1],
-                                     Hy_prev[indexEz2],
-                                     Hy_prev[indexEz1],
-                                     gridTimeStep,
-                                     gridStep,
-                                     eps[indexEz1]);
+  Ez[indexEz1] = calculateEz_3D (Ez_prev[indexEz1],
+                                 Hy_prev[indexEz1],
+                                 Hy_prev[indexEz2],
+                                 Hx_prev[indexEz1],
+                                 Hx_prev[indexEz3],
+                                 gridTimeStep,
+                                 gridStep,
+                                 eps[indexEz1]);
 
   Ez_prev[indexEz1] = Ez[indexEz1];
 
@@ -89,6 +89,10 @@ __global__ void cudaCalculateTMzHxStep (CudaExitStatus *retval,
   }
 
   grid_coord indexHx1 = i * sy_Hx + j;
+
+  /*
+   * FIXME: is this correct ?
+   */
   grid_coord indexHx2 = i * sy_Hx + j + 1;
 
   Hx[indexHx1] = calculateHx_2D_TMz (Hx_prev[indexHx1],
@@ -127,8 +131,8 @@ __global__ void cudaCalculateTMzHyStep (CudaExitStatus *retval,
   grid_coord indexHy2 = (i + 1) * sy_Hy + j;
 
   Hy[indexHy1] = calculateHy_2D_TMz (Hy_prev[indexHy1],
-                                     Ez_prev[indexHy1],
                                      Ez_prev[indexHy2],
+                                     Ez_prev[indexHy1],
                                      gridTimeStep,
                                      gridStep,
                                      mu[indexHy1]);
@@ -410,7 +414,7 @@ __global__ void cudaCalculate3DHzStep (CudaExitStatus *retval,
   grid_coord indexHz2 = (i + 1) * sy_Hz * sz_Hz + j * sz_Hz + k;
   grid_coord indexHz3 = i * sy_Hz * sz_Hz + (j + 1) * sz_Hz + k;
 
-  Hz[indexHz1] = calculateHx_3D (Hz_prev[indexHz1],
+  Hz[indexHz1] = calculateHz_3D (Hz_prev[indexHz1],
                                  Ex_prev[indexHz3],
                                  Ex_prev[indexHz1],
                                  Ey_prev[indexHz2],

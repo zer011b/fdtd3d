@@ -414,13 +414,13 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
       FieldValue Ca = (2 * eps0 * k_x - valSigmaX->getCurValue () * gridTimeStep) / (2 * eps0 * k_x + valSigmaX->getCurValue () * gridTimeStep);
       FieldValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_x + valSigmaX->getCurValue () * gridTimeStep);
 
-      FieldValue val = calculateDz_3D_Precalc (Ca,
-                                               Cb,
-                                               valDz->getPrevValue (),
+      FieldValue val = calculateEz_3D_Precalc (valDz->getPrevValue (),
                                                prevHy1,
                                                prevHy2,
                                                prevHx1,
-                                               prevHx2);
+                                               prevHx2,
+                                               Ca,
+                                               Cb);
 
       valDz->setCurValue (val);
     }
@@ -447,12 +447,12 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
       FieldValue Cb = ((2 * eps0 * k_z + valSigmaZ->getCurValue () * gridTimeStep) / (valEps->getCurValue () * eps0)) / (2 * eps0 * k_y + valSigmaY->getCurValue () * gridTimeStep);
       FieldValue Cc = ((2 * eps0 * k_z - valSigmaZ->getCurValue () * gridTimeStep) / (valEps->getCurValue () * eps0)) / (2 * eps0 * k_y + valSigmaY->getCurValue () * gridTimeStep);
 
-      FieldValue val = calculateEz_3D_Precalc (Ca,
-                                               Cb,
-                                               Cc,
-                                               valEz->getPrevValue (),
-                                               valDz->getCurValue (),
-                                               valDz->getPrevValue ());
+      FieldValue val = calculateEz_from_Dz_Precalc (valEz->getPrevValue (),
+                                                    valDz->getCurValue (),
+                                                    valDz->getPrevValue (),
+                                                    Ca,
+                                                    Cb,
+                                                    Cc);
 
       valEz->setCurValue (val);
     }
@@ -644,11 +644,11 @@ SchemeTMz::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordi
       FieldValue Ca = (2 * eps0 * k_y - valSigmaY->getCurValue () * gridTimeStep) / (2 * eps0 * k_y + valSigmaY->getCurValue () * gridTimeStep);
       FieldValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_y + valSigmaY->getCurValue () * gridTimeStep);
 
-      FieldValue val = calculateBx_2D_Precalc (Ca,
-                                               Cb,
-                                               valBx->getPrevValue (),
-                                               prevEz1,
-                                               prevEz2);
+      FieldValue val = calculateHx_2D_TMz_Precalc (valBx->getPrevValue (),
+                                                   prevEz1,
+                                                   prevEz2,
+                                                   Ca,
+                                                   Cb);
 
       valBx->setCurValue (val);
     }
@@ -676,12 +676,12 @@ SchemeTMz::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordi
       FieldValue Cb = ((2 * eps0 * k_x + valSigmaX->getCurValue () * gridTimeStep) / (valMu->getCurValue () * mu0)) / (2 * eps0 * k_z + valSigmaZ->getCurValue () * gridTimeStep);
       FieldValue Cc = ((2 * eps0 * k_x - valSigmaX->getCurValue () * gridTimeStep) / (valMu->getCurValue () * mu0)) / (2 * eps0 * k_z + valSigmaZ->getCurValue () * gridTimeStep);
 
-      FieldValue val = calculateHx_2D_Precalc (Ca,
-                                               Cb,
-                                               Cc,
-                                               valHx->getPrevValue (),
-                                               valBx->getCurValue (),
-                                               valBx->getPrevValue ());
+      FieldValue val = calculateHx_from_Bx_Precalc (valHx->getPrevValue (),
+                                                    valBx->getCurValue (),
+                                                    valBx->getPrevValue (),
+                                                    Ca,
+                                                    Cb,
+                                                    Cc);
 
       valHx->setCurValue (val);
     }
@@ -874,11 +874,11 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
       FieldValue Ca = (2 * eps0 * k_z - valSigmaZ->getCurValue () * gridTimeStep) / (2 * eps0 * k_z + valSigmaZ->getCurValue () * gridTimeStep);
       FieldValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_z + valSigmaZ->getCurValue () * gridTimeStep);
 
-      FieldValue val = calculateBy_2D_Precalc (Ca,
-                                               Cb,
-                                               valBy->getPrevValue (),
-                                               prevEz1,
-                                               prevEz2);
+      FieldValue val = calculateHy_2D_TMz_Precalc (valBy->getPrevValue (),
+                                                   prevEz1,
+                                                   prevEz2,
+                                                   Ca,
+                                                   Cb);
 
       valBy->setCurValue (val);
     }
@@ -906,12 +906,12 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
       FieldValue Cb = ((2 * eps0 * k_y + valSigmaY->getCurValue () * gridTimeStep) / (valMu->getCurValue () * mu0)) / (2 * eps0 * k_x + valSigmaX->getCurValue () * gridTimeStep);
       FieldValue Cc = ((2 * eps0 * k_y - valSigmaY->getCurValue () * gridTimeStep) / (valMu->getCurValue () * mu0)) / (2 * eps0 * k_x + valSigmaX->getCurValue () * gridTimeStep);
 
-      FieldValue val = calculateHy_2D_Precalc (Ca,
-                                               Cb,
-                                               Cc,
-                                               valHy->getPrevValue (),
-                                               valBy->getCurValue (),
-                                               valBy->getPrevValue ());
+      FieldValue val = calculateHy_from_By_Precalc (valHy->getPrevValue (),
+                                                    valBy->getCurValue (),
+                                                    valBy->getPrevValue (),
+                                                    Ca,
+                                                    Cb,
+                                                    Cc);
 
       valHy->setCurValue (val);
     }
