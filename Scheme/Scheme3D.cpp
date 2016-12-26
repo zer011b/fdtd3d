@@ -23,6 +23,12 @@ void
 Scheme3D::performSteps (int dumpRes)
 {
 #if defined (CUDA_ENABLED)
+
+  if (usePML || useTFSF || calculateAmplitude)
+  {
+    ASSERT_MESSAGE ("Cuda GPU calculations with these parameters are not implemented");
+  }
+
   CudaExitStatus status;
 
   cudaExecute3DSteps (&status, yeeLayout, gridTimeStep, gridStep, Ex, Ey, Ez, Hx, Hy, Hz, Eps, Mu, totalStep, process);
@@ -36,6 +42,11 @@ Scheme3D::performSteps (int dumpRes)
     dumper.dumpGrid (Ez);
   }
 #else /* CUDA_ENABLED */
+
+  if (usePML || useTFSF || calculateAmplitude)
+  {
+    ASSERT_MESSAGE ("3D calculations with these parameters are not implemented");
+  }
 
   GridCoordinate3D EzSize = Ez.getSize ();
 

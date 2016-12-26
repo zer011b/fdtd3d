@@ -1418,6 +1418,12 @@ void
 SchemeTMz::performSteps (int dumpRes)
 {
 #if defined (CUDA_ENABLED)
+
+  if (usePML || useTFSF || calculateAmplitude)
+  {
+    ASSERT_MESSAGE ("Cuda GPU calculations with these parameters are not implemented");
+  }
+
   CudaExitStatus status;
 
   cudaExecute2DTMzSteps (&status, yeeLayout, gridTimeStep, gridStep, Ez, Hx, Hy, Eps, Mu, totalStep, process);

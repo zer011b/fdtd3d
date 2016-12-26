@@ -1289,18 +1289,9 @@ void
 SchemeTEz::performSteps (int dumpRes)
 {
 #if defined (CUDA_ENABLED)
-  // CudaExitStatus status;
-  //
-  // cudaExecute2DTMzSteps (&status, yeeLayout, gridTimeStep, gridStep, Ez, Hx, Hy, Eps, Mu, totalStep, process);
-  //
-  // ASSERT (status == CUDA_OK);
-  //
-  // if (dumpRes)
-  // {
-  //   BMPDumper<GridCoordinate2D> dumper;
-  //   dumper.init (totalStep, ALL, process, "2D-TMz-in-time");
-  //   dumper.dumpGrid (Ez);
-  // }
+
+  ASSERT_MESSAGE ("Cuda GPU calculations with these parameters are not implemented");
+
 #else /* CUDA_ENABLED */
 
   performNSteps (0, totalStep, dumpRes);
