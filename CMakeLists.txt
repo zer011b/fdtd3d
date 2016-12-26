@@ -11,6 +11,7 @@ set(VALUE_TYPE "d" CACHE STRING "Defines type of values")
 set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
 set(PARALLEL_GRID_DIMENSION "2" CACHE STRING "Defines number dimension in grid")
 set(PARALLEL_BUFFER_DIMENSION "x" CACHE STRING "Defines dimension of parallel grid")
+set(CUDA_ARCH_SM_TYPE "sm_20" CACHE STRING "Defines cuda gpu arch")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORCE_INLINES")
 
@@ -292,7 +293,7 @@ add_subdirectory (Scheme)
 set (LIBS ${LIBS} Scheme)
 
 if ("${CUDA_ENABLED}")
-  set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch sm_50 -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64")
+  set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch ${CUDA_ARCH_SM_TYPE} -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64")
 
   cuda_add_executable(fdtd3d main.cpp ${CUDA_SOURCES} ${PROJECT_SOURCE_DIR}/Kernels/Kernels.cpp)
 else ()
