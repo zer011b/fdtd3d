@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.0.2)
 
 project (fdtd3d)
 
+find_package(CUDA REQUIRED)
+
 option(PRINT_MESSAGE "Print all messages" OFF)
 option(PARALLEL_GRID "Use parallel grid" OFF)
 option(CUDA_ENABLED "Cuda support enabled" OFF)
@@ -40,6 +42,10 @@ else ()
     set (CMAKE_C_COMPILER "gcc")
   endif ()
 endif()
+
+if ("${CUDA_ENABLED}")
+  set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3 -arch ${CUDA_ARCH_SM_TYPE} -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64")
+endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   message ("Build type: ${CMAKE_BUILD_TYPE}.")
@@ -246,56 +252,67 @@ if (NOT EXISTS "${PROJECT_SOURCE_DIR}/third-party/EasyBMP/source")
   execute_process (COMMAND rm EasyBMP_1.06.zip)
 endif ()
 
-# Add EasyBMP library
-# Include headers of EasyBMP
+
 include_directories ("${PROJECT_SOURCE_DIR}/third-party/EasyBMP/source")
-# Include CMakeLists.txt from the subfolder
 add_subdirectory (${PROJECT_SOURCE_DIR}/third-party/EasyBMP)
 
 include_directories ("${PROJECT_SOURCE_DIR}/Helpers")
 add_subdirectory (Helpers)
 
-include_directories ("${PROJECT_SOURCE_DIR}/Kernels")
-add_subdirectory (Kernels)
+if ("${CUDA_ENABLED}")
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Physics")
+endif ()
+include_directories ("${PROJECT_SOURCE_DIR}/Physics")
+add_subdirectory (Physics)
 
 if ("${CUDA_ENABLED}")
-  set (CUDA_SOURCES "")
-  include_directories ("${PROJECT_SOURCE_DIR}/Cuda")
-  add_subdirectory (Cuda)
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Kernels")
 endif ()
+include_directories ("${PROJECT_SOURCE_DIR}/Kernels")
+add_subdirectory (Kernels)
+set (LIBS ${LIBS} Kernels)
 
-# Add Grid library
-# Include headers of Grid
+if ("${CUDA_ENABLED}")
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Coordinate")
+endif ()
+include_directories ("${PROJECT_SOURCE_DIR}/Coordinate")
+add_subdirectory (Coordinate)
+set (LIBS ${LIBS} Coordinate)
+
 include_directories ("${PROJECT_SOURCE_DIR}/Grid")
-# Include CMakeLists.txt from the subfolder
 add_subdirectory (Grid)
 set (LIBS ${LIBS} Grid)
 
-include_directories ("${PROJECT_SOURCE_DIR}/Physics")
-add_subdirectory (Physics)
-set (LIBS ${LIBS} Physics)
+if ("${CUDA_ENABLED}")
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Layout")
+endif ()
+include_directories ("${PROJECT_SOURCE_DIR}/Layout")
+add_subdirectory (Layout)
+set (LIBS ${LIBS} Layout)
 
+if ("${CUDA_ENABLED}")
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Cuda")
+  include_directories ("${PROJECT_SOURCE_DIR}/Cuda")
+  add_subdirectory (Cuda)
+  set (LIBS ${LIBS} CudaScheme)
+endif ()
 
-# Add File management library
-# Include headers of Loader and Dumper
 include_directories ("${PROJECT_SOURCE_DIR}/File-Management/")
 include_directories ("${PROJECT_SOURCE_DIR}/File-Management/Loader")
 include_directories ("${PROJECT_SOURCE_DIR}/File-Management/Dumper")
-# Include CMakeLists.txt from the subfolder
 add_subdirectory (File-Management)
 set (LIBS ${LIBS} Loader)
 set (LIBS ${LIBS} Dumper)
 
-
-include_directories("${PROJECT_SOURCE_DIR}")
+if ("${CUDA_ENABLED}")
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Scheme")
+endif ()
 include_directories ("${PROJECT_SOURCE_DIR}/Scheme")
 add_subdirectory (Scheme)
 set (LIBS ${LIBS} Scheme)
 
 if ("${CUDA_ENABLED}")
-  set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch ${CUDA_ARCH_SM_TYPE} -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64")
-
-  cuda_add_executable(fdtd3d main.cpp ${CUDA_SOURCES} ${PROJECT_SOURCE_DIR}/Kernels/Kernels.cpp)
+  cuda_add_executable(fdtd3d main.cpp)
 else ()
   add_executable (fdtd3d main.cpp)
 endif ()

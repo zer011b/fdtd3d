@@ -1,5 +1,7 @@
 #include "CudaGlobalKernels.h"
 
+#include "PhysicsConst.h"
+
 __global__ void cudaCalculateTMzEzStep (CudaExitStatus *retval,
                                         FieldValue *Ez,
                                         FieldValue *Ez_prev, FieldValue *Hx_prev, FieldValue *Hy_prev,
@@ -30,7 +32,7 @@ __global__ void cudaCalculateTMzEzStep (CudaExitStatus *retval,
                                  Hx_prev[indexEz3],
                                  gridTimeStep,
                                  gridStep,
-                                 eps[indexEz1]);
+                                 eps[indexEz1] * PhysicsConst::Eps0);
 
   Ez_prev[indexEz1] = Ez[indexEz1];
 
@@ -100,7 +102,7 @@ __global__ void cudaCalculateTMzHxStep (CudaExitStatus *retval,
                                      Ez_prev[indexHx1],
                                      gridTimeStep,
                                      gridStep,
-                                     mu[indexHx1]);
+                                     mu[indexHx1] * PhysicsConst::Mu0);
 
   Hx_prev[indexHx1] = Hx[indexHx1];
 
@@ -135,7 +137,7 @@ __global__ void cudaCalculateTMzHyStep (CudaExitStatus *retval,
                                      Ez_prev[indexHy1],
                                      gridTimeStep,
                                      gridStep,
-                                     mu[indexHy1]);
+                                     mu[indexHy1] * PhysicsConst::Mu0);
 
   Hy_prev[indexHy1] = Hy[indexHy1];
 
@@ -216,7 +218,7 @@ __global__ void cudaCalculate3DExStep (CudaExitStatus *retval,
                                  Hy_prev[indexEx3],
                                  gridTimeStep,
                                  gridStep,
-                                 eps[indexEx1]);
+                                 eps[indexEx1] * PhysicsConst::Eps0);
 
   Ex_prev[indexEx1] = Ex[indexEx1];
 
@@ -257,7 +259,7 @@ __global__ void cudaCalculate3DEyStep (CudaExitStatus *retval,
                                  Hz_prev[indexEy3],
                                  gridTimeStep,
                                  gridStep,
-                                 eps[indexEy1]);
+                                 eps[indexEy1] * PhysicsConst::Eps0);
 
   Ey_prev[indexEy1] = Ey[indexEy1];
 
@@ -298,7 +300,7 @@ __global__ void cudaCalculate3DEzStep (CudaExitStatus *retval,
                                  Hx_prev[indexEz3],
                                  gridTimeStep,
                                  gridStep,
-                                 eps[indexEz1]);
+                                 eps[indexEz1] * PhysicsConst::Eps0);
 
   Ez_prev[indexEz1] = Ez[indexEz1];
 
@@ -339,7 +341,7 @@ __global__ void cudaCalculate3DHxStep (CudaExitStatus *retval,
                                  Ez_prev[indexHx1],
                                  gridTimeStep,
                                  gridStep,
-                                 mu[indexHx1]);
+                                 mu[indexHx1] * PhysicsConst::Mu0);
 
   Hx_prev[indexHx1] = Hx[indexHx1];
 
@@ -380,7 +382,7 @@ __global__ void cudaCalculate3DHyStep (CudaExitStatus *retval,
                                  Ex_prev[indexHy1],
                                  gridTimeStep,
                                  gridStep,
-                                 mu[indexHy1]);
+                                 mu[indexHy1] * PhysicsConst::Mu0);
 
   Hy_prev[indexHy1] = Hy[indexHy1];
 
@@ -421,7 +423,7 @@ __global__ void cudaCalculate3DHzStep (CudaExitStatus *retval,
                                  Ey_prev[indexHz1],
                                  gridTimeStep,
                                  gridStep,
-                                 mu[indexHz1]);
+                                 mu[indexHz1] * PhysicsConst::Mu0);
 
   Hz_prev[indexHz1] = Hz[indexHz1];
 
