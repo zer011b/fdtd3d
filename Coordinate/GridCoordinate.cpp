@@ -1,7 +1,7 @@
 #include "GridCoordinate3D.h"
 #include "Assert.h"
 
-GridCoordinate3D convertCoord (GridCoordinateFP3D coord)
+GridCoordinate3D CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinateFP3D coord)
 {
   ASSERT (((grid_iter) coord.getX ()) == coord.getX ());
   ASSERT (((grid_iter) coord.getY ()) == coord.getY ());
@@ -12,17 +12,17 @@ GridCoordinate3D convertCoord (GridCoordinateFP3D coord)
                            (grid_iter) coord.getZ ());
 }
 
-GridCoordinateFP3D convertCoord (GridCoordinate3D coord)
+GridCoordinateFP3D CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinate3D coord)
 {
   return GridCoordinateFP3D (coord.getX (), coord.getY (), coord.getZ ());
 }
 
-GridCoordinate2D shrinkCoord (GridCoordinate3D coord)
+GridCoordinate2D CUDA_DEVICE CUDA_HOST shrinkCoord (GridCoordinate3D coord)
 {
   return GridCoordinate2D (coord.getX (), coord.getY ());
 }
 
-GridCoordinateFP2D shrinkCoord (GridCoordinateFP3D coord)
+GridCoordinateFP2D CUDA_DEVICE CUDA_HOST shrinkCoord (GridCoordinateFP3D coord)
 {
   return GridCoordinateFP2D (coord.getX (), coord.getY ());
 }

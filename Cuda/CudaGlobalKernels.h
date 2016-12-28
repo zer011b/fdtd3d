@@ -6,10 +6,12 @@
 #include "Kernels.h"
 #include "CudaDefines.h"
 
+#include "GridCoordinate3D.h"
+
 __global__ void cudaCalculateTMzEzStep (CudaExitStatus *, FieldValue *, FieldValue *, FieldValue *, FieldValue *,
                                         FieldValue *,
                                         FieldValue, FieldValue,
-                                        grid_coord, grid_coord,
+                                        GridCoordinate3D,
                                         grid_coord, grid_coord,
                                         grid_coord, grid_coord,
                                         time_step);

@@ -14,72 +14,73 @@ protected:
 public:
 
   // Constructor for all cases.
-  explicit GridCoordinate1DTemplate (const TcoordType& cx = 0)
+  explicit CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate (const TcoordType& cx = 0)
     : x (cx) {}
-  GridCoordinate1DTemplate (const GridCoordinate1DTemplate& coord)
+
+  CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate (const GridCoordinate1DTemplate& coord)
     : x (coord.getX ()) {}
 
-  ~GridCoordinate1DTemplate () {};
+  CUDA_DEVICE CUDA_HOST ~GridCoordinate1DTemplate () {};
 
   // Calculate total-dimensional coordinate.
-  grid_iter calculateTotalCoord () const
+  grid_iter CUDA_DEVICE CUDA_HOST calculateTotalCoord () const
   {
     return x;
   }
 
   // Get one-dimensional coordinates.
-  const TcoordType& getX () const
+  const TcoordType& CUDA_DEVICE CUDA_HOST getX () const
   {
     return x;
   }
 
   // Set one-dimensional coordinates.
-  void setX (const TcoordType& new_x)
+  void CUDA_DEVICE CUDA_HOST setX (const TcoordType& new_x)
   {
     x = new_x;
   }
 
-  TcoordType getMax () const
+  TcoordType CUDA_DEVICE CUDA_HOST getMax () const
   {
     return x;
   }
 
-  GridCoordinate1DTemplate operator+ (const GridCoordinate1DTemplate& rhs) const
+  GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator+ (const GridCoordinate1DTemplate& rhs) const
   {
     return GridCoordinate1DTemplate (getX () + rhs.getX ());
   }
 
-  GridCoordinate1DTemplate operator- (const GridCoordinate1DTemplate& rhs) const
+  GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator- (const GridCoordinate1DTemplate& rhs) const
   {
     return GridCoordinate1DTemplate (getX () - rhs.getX ());
   }
 
-  bool operator== (const GridCoordinate1DTemplate& rhs) const
+  bool CUDA_DEVICE CUDA_HOST operator== (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () == rhs.getX ();
   }
 
-  bool operator!= (const GridCoordinate1DTemplate& rhs) const
+  bool CUDA_DEVICE CUDA_HOST operator!= (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () != rhs.getX ();
   }
 
-  bool operator> (const GridCoordinate1DTemplate& rhs) const
+  bool CUDA_DEVICE CUDA_HOST operator> (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () > rhs.getX ();
   }
 
-  bool operator< (const GridCoordinate1DTemplate& rhs) const
+  bool CUDA_DEVICE CUDA_HOST operator< (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () < rhs.getX ();
   }
 
-  bool operator>= (const GridCoordinate1DTemplate& rhs) const
+  bool CUDA_DEVICE CUDA_HOST operator>= (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () >= rhs.getX ();
   }
 
-  bool operator<= (const GridCoordinate1DTemplate& rhs) const
+  bool CUDA_DEVICE CUDA_HOST operator<= (const GridCoordinate1DTemplate& rhs) const
   {
     return getX () <= rhs.getX ();
   }

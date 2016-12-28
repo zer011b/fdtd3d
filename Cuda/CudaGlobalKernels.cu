@@ -7,7 +7,7 @@ __global__ void cudaCalculateTMzEzStep (CudaExitStatus *retval,
                                         FieldValue *Ez_prev, FieldValue *Hx_prev, FieldValue *Hy_prev,
                                         FieldValue *eps,
                                         FieldValue gridTimeStep, FieldValue gridStep,
-                                        grid_coord Ez_startX, grid_coord Ez_startY,
+                                        GridCoordinate3D Ez_start,
                                         grid_coord Ez_endX, grid_coord Ez_endY,
                                         grid_coord sx_Ez, grid_coord sy_Ez,
                                         time_step t)
@@ -15,7 +15,7 @@ __global__ void cudaCalculateTMzEzStep (CudaExitStatus *retval,
   grid_coord i = (blockIdx.x * blockDim.x) + threadIdx.x;
   grid_coord j = (blockIdx.y * blockDim.y) + threadIdx.y;
 
-  if (i < Ez_startX || j < Ez_startY || i >= Ez_endX || j >= Ez_endY)
+  if (i < Ez_start.getX () || j < Ez_start.getY () || i >= Ez_endX || j >= Ez_endY)
   {
     *retval = CUDA_OK;
     return;

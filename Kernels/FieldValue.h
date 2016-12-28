@@ -22,6 +22,14 @@ typedef long double FieldValue;
 #include <stdint.h>
 #endif
 
+#ifdef __CUDACC__
+#define CUDA_DEVICE __device__
+#define CUDA_HOST __host__
+#else
+#define CUDA_DEVICE
+#define CUDA_HOST
+#endif
+
 // Type of one-dimensional coordinate.
 typedef uint32_t grid_coord;
 
