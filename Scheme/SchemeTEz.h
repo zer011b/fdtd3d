@@ -132,7 +132,7 @@ public:
              bool doUseTFSF = false,
              GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
              FieldValue angleIncWave = 0.0) :
-    yeeLayout (totSize, sizePML, sizeScatteredZone, angleIncWave),
+    yeeLayout (totSize, sizePML, sizeScatteredZone, PhysicsConst::Pi / 2, angleIncWave, 0),
     Ex (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Ey (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Hz (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
@@ -161,11 +161,6 @@ public:
     EInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
     HInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
     incidentWaveAngle (angleIncWave)
-  {
-    ASSERT (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0);
-
-    ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
-  }
 #else
   SchemeTEz (const GridCoordinate2D& totSize,
              time_step tStep,
@@ -176,7 +171,7 @@ public:
              bool doUseTFSF = false,
              GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
              FieldValue angleIncWave = 0.0) :
-    yeeLayout (totSize, sizePML, sizeScatteredZone, angleIncWave),
+    yeeLayout (totSize, sizePML, sizeScatteredZone, PhysicsConst::Pi / 2, angleIncWave, 0),
     Ex (shrinkCoord (yeeLayout.getEzSize ()), 0),
     Ey (shrinkCoord (yeeLayout.getHxSize ()), 0),
     Hz (shrinkCoord (yeeLayout.getHySize ()), 0),
@@ -205,12 +200,17 @@ public:
     EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     incidentWaveAngle (angleIncWave)
+#endif
   {
-    ASSERT (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0);
+    ASSERT (!doUseTFSF
+            || (doUseTFSF
+                && (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0)
+                && sizeScatteredZone != GridCoordinate2D (0, 0)));
+
+    ASSERT (!doUsePML || (doUsePML && (sizePML != GridCoordinate2D (0, 0))));
 
     ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
   }
-#endif
 
   ~SchemeTEz ()
   {

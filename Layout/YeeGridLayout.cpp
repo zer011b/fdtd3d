@@ -680,7 +680,7 @@ YeeGridLayout::isHzInPML (GridCoordinate3D coord) const
 }
 
 bool
-YeeGridLayout::doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout::doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection dir, bool is3Dim) const
 {
   GridCoordinateFP3D coordFP = getExCoordFP (coord);
 
@@ -690,14 +690,9 @@ YeeGridLayout::doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection
   switch (dir)
   {
     case LayoutDirection::LEFT:
-    {
-      ASSERT_MESSAGE ("Unimplemented");
-
-      break;
-    }
     case LayoutDirection::RIGHT:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      UNREACHABLE;
 
       break;
     }
@@ -706,7 +701,11 @@ YeeGridLayout::doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection
       if (coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5
           && coordFP.getY () > leftBorderFP.getY () - 1 && coordFP.getY () < leftBorderFP.getY ())
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ())))
+        {
+          return true;
+        }
       }
 
       break;
@@ -716,20 +715,38 @@ YeeGridLayout::doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection
       if (coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5
           && coordFP.getY () > rightBorderFP.getY () && coordFP.getY () < rightBorderFP.getY () + 1)
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ())))
+        {
+          return true;
+        }
       }
 
       break;
     }
     case LayoutDirection::BACK:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      ASSERT (is3Dim);
+
+      if (coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5
+          && coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ()
+          && coordFP.getZ () > leftBorderFP.getZ () - 1 && coordFP.getZ () < leftBorderFP.getZ ())
+      {
+        return true;
+      }
 
       break;
     }
     case LayoutDirection::FRONT:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      ASSERT (is3Dim);
+
+      if (coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5
+          && coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ()
+          && coordFP.getZ () > rightBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ () + 1)
+      {
+        return true;
+      }
 
       break;
     }
@@ -743,7 +760,7 @@ YeeGridLayout::doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection
 }
 
 bool
-YeeGridLayout::doNeedTFSFUpdateEyBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout::doNeedTFSFUpdateEyBorder (GridCoordinate3D coord, LayoutDirection dir, bool is3Dim) const
 {
   GridCoordinateFP3D coordFP = getEyCoordFP (coord);
 
@@ -757,7 +774,11 @@ YeeGridLayout::doNeedTFSFUpdateEyBorder (GridCoordinate3D coord, LayoutDirection
       if (coordFP.getX () > leftBorderFP.getX () - 1 && coordFP.getX () < leftBorderFP.getX ()
           && coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5)
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ())))
+        {
+          return true;
+        }
       }
 
       break;
@@ -767,32 +788,45 @@ YeeGridLayout::doNeedTFSFUpdateEyBorder (GridCoordinate3D coord, LayoutDirection
       if (coordFP.getX () > rightBorderFP.getX () && coordFP.getX () < rightBorderFP.getX () + 1
           && coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5)
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ())))
+        {
+          return true;
+        }
       }
 
       break;
     }
     case LayoutDirection::DOWN:
-    {
-      ASSERT_MESSAGE ("Unimplemented");
-
-      break;
-    }
     case LayoutDirection::UP:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      UNREACHABLE;
 
       break;
     }
     case LayoutDirection::BACK:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      ASSERT (is3Dim);
+
+      if (coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ()
+          && coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5
+          && coordFP.getZ () > leftBorderFP.getZ () - 1 && coordFP.getZ () < leftBorderFP.getZ ())
+      {
+        return true;
+      }
 
       break;
     }
     case LayoutDirection::FRONT:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      ASSERT (is3Dim);
+
+      if (coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ()
+          && coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5
+          && coordFP.getZ () > rightBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ () + 1)
+      {
+        return true;
+      }
 
       break;
     }
@@ -806,7 +840,7 @@ YeeGridLayout::doNeedTFSFUpdateEyBorder (GridCoordinate3D coord, LayoutDirection
 }
 
 bool
-YeeGridLayout::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection dir, bool is3Dim) const
 {
   GridCoordinateFP3D coordFP = getEzCoordFP (coord);
 
@@ -820,7 +854,11 @@ YeeGridLayout::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection
       if (coordFP.getX () > leftBorderFP.getX () - 1 && coordFP.getX () < leftBorderFP.getX ()
           && coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ())
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5)))
+        {
+          return true;
+        }
       }
 
       break;
@@ -830,7 +868,11 @@ YeeGridLayout::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection
       if (coordFP.getX () > rightBorderFP.getX () && coordFP.getX () < rightBorderFP.getX () + 1
           && coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ())
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5)))
+        {
+          return true;
+        }
       }
 
       break;
@@ -840,7 +882,11 @@ YeeGridLayout::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection
       if (coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ()
           && coordFP.getY () > leftBorderFP.getY () - 1 && coordFP.getY () < leftBorderFP.getY ())
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5)))
+        {
+          return true;
+        }
       }
 
       break;
@@ -850,20 +896,19 @@ YeeGridLayout::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection
       if (coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ()
           && coordFP.getY () > rightBorderFP.getY () && coordFP.getY () < rightBorderFP.getY () + 1)
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5)))
+        {
+          return true;
+        }
       }
 
       break;
     }
     case LayoutDirection::BACK:
-    {
-      ASSERT_MESSAGE ("Unimplemented");
-
-      break;
-    }
     case LayoutDirection::FRONT:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      UNREACHABLE;
 
       break;
     }
@@ -877,7 +922,7 @@ YeeGridLayout::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection
 }
 
 bool
-YeeGridLayout::doNeedTFSFUpdateHxBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout::doNeedTFSFUpdateHxBorder (GridCoordinate3D coord, LayoutDirection dir, bool is3Dim) const
 {
   GridCoordinateFP3D coordFP = getHxCoordFP (coord);
 
@@ -887,14 +932,9 @@ YeeGridLayout::doNeedTFSFUpdateHxBorder (GridCoordinate3D coord, LayoutDirection
   switch (dir)
   {
     case LayoutDirection::LEFT:
-    {
-      ASSERT_MESSAGE ("Unimplemented");
-
-      break;
-    }
     case LayoutDirection::RIGHT:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      UNREACHABLE;
 
       break;
     }
@@ -903,7 +943,11 @@ YeeGridLayout::doNeedTFSFUpdateHxBorder (GridCoordinate3D coord, LayoutDirection
       if (coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ()
           && coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < leftBorderFP.getY () + 0.5)
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5)))
+        {
+          return true;
+        }
       }
 
       break;
@@ -913,20 +957,38 @@ YeeGridLayout::doNeedTFSFUpdateHxBorder (GridCoordinate3D coord, LayoutDirection
       if (coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ()
           && coordFP.getY () > rightBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5)
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5)))
+        {
+          return true;
+        }
       }
 
       break;
     }
     case LayoutDirection::BACK:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      ASSERT (is3Dim);
+
+      if (coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ()
+          && coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5
+          && coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < leftBorderFP.getZ () + 0.5)
+      {
+        return true;
+      }
 
       break;
     }
     case LayoutDirection::FRONT:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      ASSERT (is3Dim);
+
+      if (coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ()
+          && coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5
+          && coordFP.getZ () > rightBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5)
+      {
+        return true;
+      }
 
       break;
     }
@@ -940,9 +1002,9 @@ YeeGridLayout::doNeedTFSFUpdateHxBorder (GridCoordinate3D coord, LayoutDirection
 }
 
 bool
-YeeGridLayout::doNeedTFSFUpdateHyBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout::doNeedTFSFUpdateHyBorder (GridCoordinate3D coord, LayoutDirection dir, bool is3Dim) const
 {
-  GridCoordinateFP3D realCoordFP = getHyCoordFP (coord);
+  GridCoordinateFP3D coordFP = getHyCoordFP (coord);
 
   GridCoordinateFP3D leftBorderFP = zeroCoordFP + convertCoord (leftBorderTotalField);
   GridCoordinateFP3D rightBorderFP = zeroCoordFP + convertCoord (rightBorderTotalField);
@@ -951,45 +1013,62 @@ YeeGridLayout::doNeedTFSFUpdateHyBorder (GridCoordinate3D coord, LayoutDirection
   {
     case LayoutDirection::LEFT:
     {
-      if (realCoordFP.getX () > leftBorderFP.getX () - 0.5 && realCoordFP.getX () < leftBorderFP.getX () + 0.5
-          && realCoordFP.getY () > leftBorderFP.getY () && realCoordFP.getY () < rightBorderFP.getY ())
+      if (coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < leftBorderFP.getX () + 0.5
+          && coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ())
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5)))
+        {
+          return true;
+        }
       }
 
       break;
     }
     case LayoutDirection::RIGHT:
     {
-      if (realCoordFP.getX () > rightBorderFP.getX () - 0.5 && realCoordFP.getX () < rightBorderFP.getX () + 0.5
-          && realCoordFP.getY () > leftBorderFP.getY () && realCoordFP.getY () < rightBorderFP.getY ())
+      if (coordFP.getX () > rightBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5
+          && coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ())
+      {
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5)))
+        {
+          return true;
+        }
+      }
+
+      break;
+    }
+    case LayoutDirection::DOWN:
+    case LayoutDirection::UP:
+    {
+      UNREACHABLE;
+
+      break;
+    }
+    case LayoutDirection::BACK:
+    {
+      ASSERT (is3Dim);
+
+      if (coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5
+          && coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ()
+          && coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < leftBorderFP.getZ () + 0.5)
       {
         return true;
       }
 
       break;
     }
-    case LayoutDirection::DOWN:
-    {
-      ASSERT_MESSAGE ("Unimplemented");
-
-      break;
-    }
-    case LayoutDirection::UP:
-    {
-      ASSERT_MESSAGE ("Unimplemented");
-
-      break;
-    }
-    case LayoutDirection::BACK:
-    {
-      ASSERT_MESSAGE ("Unimplemented");
-
-      break;
-    }
     case LayoutDirection::FRONT:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      ASSERT (is3Dim);
+
+      if (coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5
+          && coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ()
+          && coordFP.getZ () > rightBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5)
+      {
+        return true;
+      }
 
       break;
     }
@@ -1003,9 +1082,9 @@ YeeGridLayout::doNeedTFSFUpdateHyBorder (GridCoordinate3D coord, LayoutDirection
 }
 
 bool
-YeeGridLayout::doNeedTFSFUpdateHzBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout::doNeedTFSFUpdateHzBorder (GridCoordinate3D coord, LayoutDirection dir, bool is3Dim) const
 {
-  GridCoordinateFP3D realCoordFP = getHzCoordFP (coord);
+  GridCoordinateFP3D coordFP = getHzCoordFP (coord);
 
   GridCoordinateFP3D leftBorderFP = zeroCoordFP + convertCoord (leftBorderTotalField);
   GridCoordinateFP3D rightBorderFP = zeroCoordFP + convertCoord (rightBorderTotalField);
@@ -1014,53 +1093,64 @@ YeeGridLayout::doNeedTFSFUpdateHzBorder (GridCoordinate3D coord, LayoutDirection
   {
     case LayoutDirection::LEFT:
     {
-      if (realCoordFP.getX () > leftBorderFP.getX () - 0.5 && realCoordFP.getX () < leftBorderFP.getX () + 0.5
-          && realCoordFP.getY () > leftBorderFP.getY () - 0.5 && realCoordFP.getY () < rightBorderFP.getY () + 0.5)
+      if (coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < leftBorderFP.getX () + 0.5
+          && coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5)
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ())))
+        {
+          return true;
+        }
       }
 
       break;
     }
     case LayoutDirection::RIGHT:
     {
-      if (realCoordFP.getX () > rightBorderFP.getX () - 0.5 && realCoordFP.getX () < rightBorderFP.getX () + 0.5
-          && realCoordFP.getY () > leftBorderFP.getY () - 0.5 && realCoordFP.getY () < rightBorderFP.getY () + 0.5)
+      if (coordFP.getX () > rightBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5
+          && coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5)
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ())))
+        {
+          return true;
+        }
       }
 
       break;
     }
     case LayoutDirection::DOWN:
     {
-      if (realCoordFP.getX () > leftBorderFP.getX () - 0.5 && realCoordFP.getX () < rightBorderFP.getX () + 0.5
-          && realCoordFP.getY () > leftBorderFP.getY () - 0.5 && realCoordFP.getY () < leftBorderFP.getY () + 0.5)
+      if (coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5
+          && coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < leftBorderFP.getY () + 0.5)
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ())))
+        {
+          return true;
+        }
       }
 
       break;
     }
     case LayoutDirection::UP:
     {
-      if (realCoordFP.getX () > leftBorderFP.getX () - 0.5 && realCoordFP.getX () < rightBorderFP.getX () + 0.5
-          && realCoordFP.getY () > rightBorderFP.getY () - 0.5 && realCoordFP.getY () < rightBorderFP.getY () + 0.5)
+      if (coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5
+          && coordFP.getY () > rightBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5)
       {
-        return true;
+        if (!is3Dim
+            || (is3Dim && (coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ())))
+        {
+          return true;
+        }
       }
 
       break;
     }
     case LayoutDirection::BACK:
-    {
-      ASSERT_MESSAGE ("Unimplemented");
-
-      break;
-    }
     case LayoutDirection::FRONT:
     {
-      ASSERT_MESSAGE ("Unimplemented");
+      UNREACHABLE;
 
       break;
     }

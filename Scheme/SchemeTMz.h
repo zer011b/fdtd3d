@@ -132,7 +132,7 @@ public:
              bool doUseTFSF = false,
              GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
              FieldValue angleIncWave = 0.0) :
-    yeeLayout (totSize, sizePML, sizeScatteredZone, angleIncWave),
+    yeeLayout (totSize, sizePML, sizeScatteredZone, PhysicsConst::Pi / 2, angleIncWave, 0),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Hy (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
@@ -142,8 +142,8 @@ public:
     EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    Eps (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    Mu (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    Eps (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    Mu (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     SigmaX (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
     SigmaY (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
     SigmaZ (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
@@ -161,11 +161,6 @@ public:
     EInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
     HInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
     incidentWaveAngle (angleIncWave)
-  {
-    ASSERT (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0);
-
-    ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
-  }
 #else
   SchemeTMz (const GridCoordinate2D& totSize,
              time_step tStep,
@@ -176,7 +171,7 @@ public:
              bool doUseTFSF = false,
              GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
              FieldValue angleIncWave = 0.0) :
-    yeeLayout (totSize, sizePML, sizeScatteredZone, angleIncWave),
+    yeeLayout (totSize, sizePML, sizeScatteredZone, PhysicsConst::Pi / 2, angleIncWave, 0),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), 0),
     Hy (shrinkCoord (yeeLayout.getHySize ()), 0),
@@ -186,8 +181,8 @@ public:
     EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), 0),
     HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), 0),
     HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), 0),
-    Eps (totSize, 0),
-    Mu (totSize, 0),
+    Eps (shrinkCoord (yeeLayout.getEpsSize ()), 0),
+    Mu (shrinkCoord (yeeLayout.getEpsSize ()), 0),
     SigmaX (totSize, 0),
     SigmaY (totSize, 0),
     SigmaZ (totSize, 0),
@@ -205,12 +200,17 @@ public:
     EInc (GridCoordinate1D ((grid_coord) 10*(totSize.getX () + totSize.getY ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 10*(totSize.getX () + totSize.getY ())), 0),
     incidentWaveAngle (angleIncWave)
+#endif
   {
-    ASSERT (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0);
+    ASSERT (!doUseTFSF
+            || (doUseTFSF
+                && (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0)
+                && sizeScatteredZone != GridCoordinate2D (0, 0)));
+
+    ASSERT (!doUsePML || (doUsePML && (sizePML != GridCoordinate2D (0, 0))));
 
     ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
   }
-#endif
 
   ~SchemeTMz ()
   {

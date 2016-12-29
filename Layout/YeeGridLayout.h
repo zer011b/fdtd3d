@@ -3,6 +3,7 @@
 
 #include "Assert.h"
 #include "GridLayout.h"
+#include "PhysicsConst.h"
 
 #include <cmath>
 
@@ -172,12 +173,12 @@ public:
   virtual GridCoordinate3D getLeftBorderTFSF () const OVERRIDE_FINAL_MODIFIER;
   virtual GridCoordinate3D getRightBorderTFSF () const OVERRIDE_FINAL_MODIFIER;
   virtual GridCoordinateFP3D getZeroIncCoordFP () const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateExBorder (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateEyBorder (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateEzBorder (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateHxBorder (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateHyBorder (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateHzBorder (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
+  virtual bool doNeedTFSFUpdateExBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
+  virtual bool doNeedTFSFUpdateEyBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
+  virtual bool doNeedTFSFUpdateEzBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
+  virtual bool doNeedTFSFUpdateHxBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
+  virtual bool doNeedTFSFUpdateHyBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
+  virtual bool doNeedTFSFUpdateHzBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
 
   /**
    * Constructor of Yee grid
@@ -185,7 +186,9 @@ public:
   YeeGridLayout (GridCoordinate3D coordSize,
                  GridCoordinate3D sizePML,
                  GridCoordinate3D sizeScatteredZone,
-                 FieldValue incidentWaveAngle)
+                 FieldValue incidentWaveAngle1, /**< teta */
+                 FieldValue incidentWaveAngle2, /**< phi */
+                 FieldValue incidentWaveAngle3) /**< psi */
     : zeroCoord (0, 0, 0)
   , minEpsCoord (0, 0, 0)
   , minMuCoord (0, 0, 0)
@@ -217,10 +220,14 @@ public:
   , rightBorderPML (coordSize - sizePML)
   , leftBorderTotalField (sizeScatteredZone)
   , rightBorderTotalField (coordSize - sizeScatteredZone)
-  , zeroIncCoordFP (GridCoordinateFP3D (leftBorderTotalField.getX () - 0.5 - 2 * cos (incidentWaveAngle),
-                                        leftBorderTotalField.getY () - 0.5 - 2 * sin (incidentWaveAngle),
-                                        0))
+  , zeroIncCoordFP (GridCoordinateFP3D (leftBorderTotalField.getX () - 0.5 - 2 * sin (incidentWaveAngle1) * cos (incidentWaveAngle2),
+                                        leftBorderTotalField.getY () - 0.5 - 2 * sin (incidentWaveAngle1) * sin (incidentWaveAngle2),
+                                        leftBorderTotalField.getZ () - 0.5 - 2 * cos (incidentWaveAngle1)))
   {
+    ASSERT (incidentWaveAngle1 == PhysicsConst::Pi / 2);
+    ASSERT (incidentWaveAngle2 == 0);
+    ASSERT (incidentWaveAngle3 == 0);
+
     /* Ex is:
      *       1 <= x < 1 + size.getx()
      *       0.5 <= y < 0.5 + size.getY()

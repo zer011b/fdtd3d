@@ -7,3 +7,5 @@ if ("${CUDA_ENABLED}")
 else ()
   add_library (Layout ${LAYOUT_SOURCES})
 endif ()
+
+target_link_libraries (Layout Coordinate)

@@ -191,12 +191,12 @@ public:
   virtual GridCoordinate3D getLeftBorderTFSF () const = 0;
   virtual GridCoordinate3D getRightBorderTFSF () const = 0;
   virtual GridCoordinateFP3D getZeroIncCoordFP () const = 0;
-  virtual bool doNeedTFSFUpdateExBorder (GridCoordinate3D, LayoutDirection) const = 0;
-  virtual bool doNeedTFSFUpdateEyBorder (GridCoordinate3D, LayoutDirection) const = 0;
-  virtual bool doNeedTFSFUpdateEzBorder (GridCoordinate3D, LayoutDirection) const = 0;
-  virtual bool doNeedTFSFUpdateHxBorder (GridCoordinate3D, LayoutDirection) const = 0;
-  virtual bool doNeedTFSFUpdateHyBorder (GridCoordinate3D, LayoutDirection) const = 0;
-  virtual bool doNeedTFSFUpdateHzBorder (GridCoordinate3D, LayoutDirection) const = 0;
+  virtual bool doNeedTFSFUpdateExBorder (GridCoordinate3D, LayoutDirection, bool) const = 0;
+  virtual bool doNeedTFSFUpdateEyBorder (GridCoordinate3D, LayoutDirection, bool) const = 0;
+  virtual bool doNeedTFSFUpdateEzBorder (GridCoordinate3D, LayoutDirection, bool) const = 0;
+  virtual bool doNeedTFSFUpdateHxBorder (GridCoordinate3D, LayoutDirection, bool) const = 0;
+  virtual bool doNeedTFSFUpdateHyBorder (GridCoordinate3D, LayoutDirection, bool) const = 0;
+  virtual bool doNeedTFSFUpdateHzBorder (GridCoordinate3D, LayoutDirection, bool) const = 0;
 }; /* GridLayout */
 
 #endif /* GRID_LAYOUT_H */
