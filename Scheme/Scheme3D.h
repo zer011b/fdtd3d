@@ -72,15 +72,15 @@ class Scheme3D: public Scheme
 #endif
 
   // Wave parameters
-  FieldValue waveLength;
-  FieldValue stepWaveLength;
-  FieldValue frequency;
+  FPValue waveLength;
+  FPValue stepWaveLength;
+  FPValue frequency;
 
   // dx
-  FieldValue gridStep;
+  FPValue gridStep;
 
   // dt
-  FieldValue gridTimeStep;
+  FPValue gridTimeStep;
 
   time_step totalStep;
 
@@ -97,9 +97,9 @@ class Scheme3D: public Scheme
   Grid<GridCoordinate1D> EInc;
   Grid<GridCoordinate1D> HInc;
 
-  FieldValue incidentWaveAngle1; // Teta
-  FieldValue incidentWaveAngle2; // Phi
-  FieldValue incidentWaveAngle3; // Psi
+  FPValue incidentWaveAngle1; // Teta
+  FPValue incidentWaveAngle2; // Phi
+  FPValue incidentWaveAngle3; // Psi
 
 private:
 
@@ -113,7 +113,7 @@ private:
   void performNSteps (time_step, time_step, int);
   void performAmplitudeSteps (time_step, int);
 
-  int updateAmplitude (FieldValue, FieldPointValue *, FieldValue *);
+  int updateAmplitude (FPValue, FieldPointValue *, FPValue *);
 
   void performPlaneWaveESteps (time_step);
   void performPlaneWaveHSteps (time_step);
@@ -126,7 +126,7 @@ public:
   virtual void performSteps (int);
 #endif
 
-  void initScheme (FieldValue, FieldValue);
+  void initScheme (FPValue, FPValue);
 
   void initGrids ();
 
@@ -147,9 +147,9 @@ public:
             GridCoordinate3D sizePML = GridCoordinate3D (0, 0, 0),
             bool doUseTFSF = false,
             GridCoordinate3D sizeScatteredZone = GridCoordinate3D (0, 0, 0),
-            FieldValue angleIncWave1 = 0.0,
-            FieldValue angleIncWave2 = 0.0,
-            FieldValue angleIncWave3 = 0.0) :
+            FPValue angleIncWave1 = 0.0,
+            FPValue angleIncWave2 = 0.0,
+            FPValue angleIncWave3 = 0.0) :
     yeeLayout (totSize, sizePML, sizeScatteredZone, angleIncWave1, angleIncWave2, angleIncWave3),
     Ex (yeeLayout.getExSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Ey (yeeLayout.getEySize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
@@ -199,9 +199,9 @@ public:
             GridCoordinate3D sizePML = GridCoordinate3D (0, 0, 0),
             bool doUseTFSF = false,
             GridCoordinate3D sizeScatteredZone = GridCoordinate3D (0, 0, 0),
-            FieldValue angleIncWave1 = 0.0,
-            FieldValue angleIncWave2 = 0.0,
-            FieldValue angleIncWave3 = 0.0) :
+            FPValue angleIncWave1 = 0.0,
+            FPValue angleIncWave2 = 0.0,
+            FPValue angleIncWave3 = 0.0) :
     yeeLayout (totSize, sizePML, sizeScatteredZone, angleIncWave1, angleIncWave2, angleIncWave3),
     Ex (yeeLayout.getExSize (), 0),
     Ey (yeeLayout.getEySize (), 0),
@@ -253,6 +253,10 @@ public:
     ASSERT (!doUsePML || (doUsePML && (sizePML != GridCoordinate3D (0, 0, 0))));
 
     ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
+
+#ifdef COMPLEX_FIELD_VALUES
+    ASSERT (!calculateAmplitude);
+#endif /* COMPLEX_FIELD_VALUES */
   }
 
   ~Scheme3D ()

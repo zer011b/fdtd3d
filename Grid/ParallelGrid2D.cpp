@@ -50,8 +50,8 @@ ParallelGrid::NodeGridInit ()
     ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
   }
 
-  FieldValue overall1 = (FieldValue) totalSize.getX ();
-  FieldValue overall2 = (FieldValue) totalSize.getY ();
+  FPValue overall1 = (FPValue) totalSize.getX ();
+  FPValue overall2 = (FPValue) totalSize.getY ();
 
   int left;
   NodeGridInitInner (overall1, overall2, nodeGridSizeX, nodeGridSizeY, left);

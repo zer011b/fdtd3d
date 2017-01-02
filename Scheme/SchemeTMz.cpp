@@ -32,10 +32,10 @@ SchemeTMz::performPlaneWaveESteps (time_step t)
     FieldPointValue *valH1 = HInc.getFieldPointValue (posLeft);
     FieldPointValue *valH2 = HInc.getFieldPointValue (posRight);
 
-    FieldValue S = gridTimeStep * PhysicsConst::SpeedOfLight / gridStep;
-    FieldValue arg = PhysicsConst::Pi * S / stepWaveLength;
+    FPValue S = gridTimeStep * PhysicsConst::SpeedOfLight / gridStep;
+    FPValue arg = PhysicsConst::Pi * S / stepWaveLength;
 
-    FieldValue relPhi;
+    FPValue relPhi;
     if (incidentWaveAngle == PhysicsConst::Pi / 4)
     {
       relPhi = sqrt (2) * asin (sin(arg) / (S * sqrt (2))) / asin (sin (arg) / S);
@@ -47,12 +47,12 @@ SchemeTMz::performPlaneWaveESteps (time_step t)
       relPhi = 1;
     }
 
-    FieldValue val = valE->getPrevValue () + (gridTimeStep / (relPhi * PhysicsConst::Eps0 * gridStep)) * (valH1->getPrevValue () - valH2->getPrevValue ());
+    FPValue val = valE->getPrevValue () + (gridTimeStep / (relPhi * PhysicsConst::Eps0 * gridStep)) * (valH1->getPrevValue () - valH2->getPrevValue ());
 
     valE->setCurValue (val);
   }
 
-  FieldValue freq = PhysicsConst::SpeedOfLight / waveLength;
+  FPValue freq = PhysicsConst::SpeedOfLight / waveLength;
 
   GridCoordinate1D pos (0);
   FieldPointValue *valE = EInc.getFieldPointValue (pos);
@@ -85,11 +85,11 @@ SchemeTMz::performPlaneWaveHSteps (time_step t)
     FieldPointValue *valE1 = EInc.getFieldPointValue (posLeft);
     FieldPointValue *valE2 = EInc.getFieldPointValue (posRight);
 
-    FieldValue N_lambda = waveLength / gridStep;
-    FieldValue S = gridTimeStep * PhysicsConst::SpeedOfLight / gridStep;
-    FieldValue arg = PhysicsConst::Pi * S / N_lambda;
+    FPValue N_lambda = waveLength / gridStep;
+    FPValue S = gridTimeStep * PhysicsConst::SpeedOfLight / gridStep;
+    FPValue arg = PhysicsConst::Pi * S / N_lambda;
 
-    FieldValue relPhi;
+    FPValue relPhi;
     if (incidentWaveAngle == PhysicsConst::Pi / 4)
     {
       relPhi = sqrt (2) * asin (sin(arg) / (S * sqrt (2))) / asin (sin (arg) / S);
@@ -101,7 +101,7 @@ SchemeTMz::performPlaneWaveHSteps (time_step t)
       relPhi = 1;
     }
 
-    FieldValue val = valH->getPrevValue () + (gridTimeStep / (relPhi * PhysicsConst::Mu0 * gridStep)) * (valE1->getPrevValue () - valE2->getPrevValue ());
+    FPValue val = valH->getPrevValue () + (gridTimeStep / (relPhi * PhysicsConst::Mu0 * gridStep)) * (valE1->getPrevValue () - valE2->getPrevValue ());
 
     valH->setCurValue (val);
   }
@@ -131,7 +131,7 @@ SchemeTMz::performEzSteps (time_step t, GridCoordinate3D EzStart, GridCoordinate
 void
 SchemeTMz::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate3D EzEnd)
 {
-  FieldValue eps0 = PhysicsConst::Eps0;
+  FPValue eps0 = PhysicsConst::Eps0;
 
   for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
   {
@@ -1599,16 +1599,16 @@ SchemeTMz::initGrids ()
       if (posAbs.getY () < PMLSize.getY ())
       {
         grid_coord dist = PMLSize.getY () - posAbs.getY ();
-        FieldValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-        FieldValue x2 = dist * gridStep;       // lower bounds for point i
+        FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+        FPValue x2 = dist * gridStep;       // lower bounds for point i
 
         valSigma->setCurValue (boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1))));   //   polynomial grading
       }
       else if (posAbs.getY () >= size.getY () - PMLSize.getY ())
       {
         grid_coord dist = posAbs.getY () - (size.getY () - PMLSize.getY ());
-        FieldValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-        FieldValue x2 = dist * gridStep;       // lower bounds for point i
+        FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+        FPValue x2 = dist * gridStep;       // lower bounds for point i
 
         //std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
         valSigma->setCurValue (boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1))));   //   polynomial grading

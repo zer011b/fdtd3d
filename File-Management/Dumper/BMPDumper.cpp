@@ -83,33 +83,62 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
   grid_coord sy = 1;
 
   // Create image for current values and max/min values.
-  BMP image;
-  image.SetSize (sx, sy);
-  image.SetBitDepth (24);
+  BMP imageRe;
+  imageRe.SetSize (sx, sy);
+  imageRe.SetBitDepth (24);
+
+#ifdef COMPLEX_FIELD_VALUES
+  BMP imageIm;
+  imageIm.SetSize (sx, sy);
+  imageIm.SetBitDepth (24);
+#endif /* COMPLEX_FIELD_VALUES */
 
   const FieldPointValue* value0 = grid.getFieldPointValue (0);
   ASSERT (value0);
 
-  FieldValue maxPos = 0;
-  FieldValue maxNeg = 0;
+  FPValue maxPosRe = 0;
+  FPValue maxNegRe = 0;
+
+#ifdef COMPLEX_FIELD_VALUES
+  FPValue maxPosIm = 0;
+  FPValue maxNegIm = 0;
+#endif /* COMPLEX_FIELD_VALUES */
 
   switch (dump_type)
   {
     case CURRENT:
     {
-      maxNeg = maxPos = value0->getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxNegRe = maxPosRe = value0->getCurValue ().real ();
+      maxNegIm = maxPosIm = value0->getCurValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+      maxNegRe = maxPosRe = value0->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      maxNeg = maxPos = value0->getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxNegRe = maxPosRe = value0->getPrevValue ().real ();
+      maxNegIm = maxPosIm = value0->getPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+      maxNegRe = maxPosRe = value0->getPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      maxNeg = maxPos = value0->getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxNegRe = maxPosRe = value0->getPrevPrevValue ().real ();
+      maxNegIm = maxPosIm = value0->getPrevPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+      maxNegRe = maxPosRe = value0->getPrevPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #endif /* TWO_TIME_STEPS */
@@ -127,25 +156,47 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 
     ASSERT (current);
 
-    FieldValue value = 0;
+    FPValue valueRe = 0;
+
+#ifdef COMPLEX_FIELD_VALUES
+    FPValue valueIm = 0;
+#endif /* COMPLEX_FIELD_VALUES */
 
     switch (dump_type)
     {
       case CURRENT:
       {
-        value = current->getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getCurValue ().real ();
+        valueIm = current->getCurValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
-        value = current->getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getPrevValue ().real ();
+        valueIm = current->getPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
-        value = current->getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getPrevPrevValue ().real ();
+        valueIm = current->getPrevPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getPrevPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #endif /* TWO_TIME_STEPS */
@@ -156,18 +207,33 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
       }
     }
 
-    if (value > maxPos)
+    if (valueRe > maxPosRe)
     {
-      maxPos = value;
+      maxPosRe = valueRe;
     }
-    if (value < maxNeg)
+    if (valueRe < maxNegRe)
     {
-      maxNeg = value;
+      maxNegRe = valueRe;
     }
+
+#ifdef COMPLEX_FIELD_VALUES
+    if (valueIm > maxPosIm)
+    {
+      maxPosIm = valueIm;
+    }
+    if (valueIm < maxNegIm)
+    {
+      maxNegIm = valueIm;
+    }
+#endif /* COMPLEX_FIELD_VALUES */
   }
 
   // Set max (diff between max positive and max negative).
-  const FieldValue max = maxPos - maxNeg;
+  const FPValue maxRe = maxPosRe - maxNegRe;
+
+#ifdef COMPLEX_FIELD_VALUES
+  const FPValue maxIm = maxPosIm - maxNegIm;
+#endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
   grid_iter end = grid.getSize().calculateTotalCoord ();
@@ -185,24 +251,47 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
     grid_iter py = 0;
 
     // Get pixel for image.
-    FieldValue value = 0;
+    FPValue valueRe = 0;
+
+#ifdef COMPLEX_FIELD_VALUES
+    FPValue valueIm = 0;
+#endif /* COMPLEX_FIELD_VALUES */
+
     switch (dump_type)
     {
       case CURRENT:
       {
-        value = current->getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getCurValue ().real ();
+        valueIm = current->getCurValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
-        value = current->getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getPrevValue ().real ();
+        valueIm = current->getPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
-        value = current->getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getPrevPrevValue ().real ();
+        valueIm = current->getPrevPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getPrevPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #endif /* TWO_TIME_STEPS */
@@ -212,10 +301,19 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
         UNREACHABLE;
       }
     }
-    RGBApixel pixel = BMPhelper.getPixelFromValue (value, maxNeg, max);
+
+    RGBApixel pixelRe = BMPhelper.getPixelFromValue (valueRe, maxNegRe, maxRe);
+
+#ifdef COMPLEX_FIELD_VALUES
+    RGBApixel pixelIm = BMPhelper.getPixelFromValue (valueIm, maxNegIm, maxIm);
+#endif /* COMPLEX_FIELD_VALUES */
 
     // Set pixel for current image.
-    image.SetPixel(px, py, pixel);
+    imageRe.SetPixel(px, py, pixelRe);
+
+#ifdef COMPLEX_FIELD_VALUES
+    imageIm.SetPixel(px, py, pixelIm);
+#endif /* COMPLEX_FIELD_VALUES */
   }
 
   // Write image to file.
@@ -223,22 +321,40 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
   {
     case CURRENT:
     {
-      std::string cur_bmp = cur + std::string (".bmp");
-      image.WriteToFile(cur_bmp.c_str());
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.WriteToFile (cur_bmp_re.c_str ());
+
+#ifdef COMPLEX_FIELD_VALUES
+      std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.WriteToFile (cur_bmp_im.c_str ());
+#endif /* COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      std::string prev_bmp = prev + std::string (".bmp");
-      image.WriteToFile(prev_bmp.c_str());
+      std::string prev_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.WriteToFile (prev_bmp_re.c_str ());
+
+#ifdef COMPLEX_FIELD_VALUES
+      std::string prev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.WriteToFile (prev_bmp_im.c_str ());
+#endif /* COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      std::string prevPrev_bmp = prevPrev + std::string (".bmp");
-      image.WriteToFile(prevPrev_bmp.c_str());
+      std::string prevPrev_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.WriteToFile (prevPrev_bmp_re.c_str ());
+
+#ifdef COMPLEX_FIELD_VALUES
+      std::string prevPrev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.WriteToFile (prevPrev_bmp_im.c_str ());
+#endif /* COMPLEX_FIELD_VALUES */
+
       break;
     }
 #endif /* TWO_TIME_STEPS */
@@ -262,33 +378,62 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
   grid_coord sy = size.getY ();;
 
   // Create image for current values and max/min values.
-  BMP image;
-  image.SetSize (sx, sy);
-  image.SetBitDepth (24);
+  BMP imageRe;
+  imageRe.SetSize (sx, sy);
+  imageRe.SetBitDepth (24);
+
+#ifdef COMPLEX_FIELD_VALUES
+  BMP imageIm;
+  imageIm.SetSize (sx, sy);
+  imageIm.SetBitDepth (24);
+#endif /* COMPLEX_FIELD_VALUES */
 
   const FieldPointValue* value0 = grid.getFieldPointValue (0);
   ASSERT (value0);
 
-  FieldValue maxPos = 0;
-  FieldValue maxNeg = 0;
+  FPValue maxPosRe = 0;
+  FPValue maxNegRe = 0;
+
+#ifdef COMPLEX_FIELD_VALUES
+  FPValue maxPosIm = 0;
+  FPValue maxNegIm = 0;
+#endif /* COMPLEX_FIELD_VALUES */
 
   switch (dump_type)
   {
     case CURRENT:
     {
-      maxNeg = maxPos = value0->getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxNegRe = maxPosRe = value0->getCurValue ().real ();
+      maxNegIm = maxPosIm = value0->getCurValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+      maxNegRe = maxPosRe = value0->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      maxNeg = maxPos = value0->getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxNegRe = maxPosRe = value0->getPrevValue ().real ();
+      maxNegIm = maxPosIm = value0->getPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+      maxNegRe = maxPosRe = value0->getPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      maxNeg = maxPos = value0->getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxNegRe = maxPosRe = value0->getPrevPrevValue ().real ();
+      maxNegIm = maxPosIm = value0->getPrevPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+      maxNegRe = maxPosRe = value0->getPrevPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #endif /* TWO_TIME_STEPS */
@@ -306,25 +451,47 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 
     ASSERT (current);
 
-    FieldValue value = 0;
+    FPValue valueRe = 0;
+
+#ifdef COMPLEX_FIELD_VALUES
+    FPValue valueIm = 0;
+#endif /* COMPLEX_FIELD_VALUES */
 
     switch (dump_type)
     {
       case CURRENT:
       {
-        value = current->getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getCurValue ().real ();
+        valueIm = current->getCurValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
-        value = current->getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getPrevValue ().real ();
+        valueIm = current->getPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
-        value = current->getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getPrevPrevValue ().real ();
+        valueIm = current->getPrevPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getPrevPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #endif /* TWO_TIME_STEPS */
@@ -335,18 +502,33 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
       }
     }
 
-    if (value > maxPos)
+    if (valueRe > maxPosRe)
     {
-      maxPos = value;
+      maxPosRe = valueRe;
     }
-    if (value < maxNeg)
+    if (valueRe < maxNegRe)
     {
-      maxNeg = value;
+      maxNegRe = valueRe;
     }
+
+#ifdef COMPLEX_FIELD_VALUES
+    if (valueIm > maxPosIm)
+    {
+      maxPosIm = valueIm;
+    }
+    if (valueIm < maxNegIm)
+    {
+      maxNegIm = valueIm;
+    }
+#endif /* COMPLEX_FIELD_VALUES */
   }
 
   // Set max (diff between max positive and max negative).
-  const FieldValue max = maxPos - maxNeg;
+  const FPValue maxRe = maxPosRe - maxNegRe;
+
+#ifdef COMPLEX_FIELD_VALUES
+  const FPValue maxIm = maxPosIm - maxNegIm;
+#endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
   grid_iter end = grid.getSize().calculateTotalCoord ();
@@ -364,24 +546,47 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
     grid_iter py = coord.getY ();;
 
     // Get pixel for image.
-    FieldValue value = 0;
+    FPValue valueRe = 0;
+
+#ifdef COMPLEX_FIELD_VALUES
+    FPValue valueIm = 0;
+#endif /* COMPLEX_FIELD_VALUES */
+
     switch (dump_type)
     {
       case CURRENT:
       {
-        value = current->getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getCurValue ().real ();
+        valueIm = current->getCurValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
-        value = current->getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getPrevValue ().real ();
+        valueIm = current->getPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
-        value = current->getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getPrevPrevValue ().real ();
+        valueIm = current->getPrevPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getPrevPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #endif /* TWO_TIME_STEPS */
@@ -391,10 +596,19 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
         UNREACHABLE;
       }
     }
-    RGBApixel pixel = BMPhelper.getPixelFromValue (value, maxNeg, max);
+
+    RGBApixel pixelRe = BMPhelper.getPixelFromValue (valueRe, maxNegRe, maxRe);
+
+#ifdef COMPLEX_FIELD_VALUES
+    RGBApixel pixelIm = BMPhelper.getPixelFromValue (valueIm, maxNegIm, maxIm);
+#endif /* COMPLEX_FIELD_VALUES */
 
     // Set pixel for current image.
-    image.SetPixel(px, py, pixel);
+    imageRe.SetPixel(px, py, pixelRe);
+
+#ifdef COMPLEX_FIELD_VALUES
+    imageIm.SetPixel(px, py, pixelIm);
+#endif /* COMPLEX_FIELD_VALUES */
   }
 
   // Write image to file.
@@ -402,22 +616,40 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
   {
     case CURRENT:
     {
-      std::string cur_bmp = cur + std::string (".bmp");
-      image.WriteToFile(cur_bmp.c_str());
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.WriteToFile (cur_bmp_re.c_str ());
+
+#ifdef COMPLEX_FIELD_VALUES
+      std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.WriteToFile (cur_bmp_im.c_str ());
+#endif /* COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      std::string prev_bmp = prev + std::string (".bmp");
-      image.WriteToFile(prev_bmp.c_str());
+      std::string prev_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.WriteToFile (prev_bmp_re.c_str ());
+
+#ifdef COMPLEX_FIELD_VALUES
+      std::string prev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.WriteToFile (prev_bmp_im.c_str ());
+#endif /* COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      std::string prevPrev_bmp = prevPrev + std::string (".bmp");
-      image.WriteToFile(prevPrev_bmp.c_str());
+      std::string prevPrev_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.WriteToFile (prevPrev_bmp_re.c_str ());
+
+#ifdef COMPLEX_FIELD_VALUES
+      std::string prevPrev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.WriteToFile (prevPrev_bmp_im.c_str ());
+#endif /* COMPLEX_FIELD_VALUES */
+
       break;
     }
 #endif /* TWO_TIME_STEPS */
@@ -446,26 +678,49 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
   const FieldPointValue* value0 = grid.getFieldPointValue (0);
   ASSERT (value0);
 
-  FieldValue maxPos = 0;
-  FieldValue maxNeg = 0;
+  FPValue maxPosRe = 0;
+  FPValue maxNegRe = 0;
+
+#ifdef COMPLEX_FIELD_VALUES
+  FPValue maxPosIm = 0;
+  FPValue maxNegIm = 0;
+#endif /* COMPLEX_FIELD_VALUES */
 
   switch (dump_type)
   {
     case CURRENT:
     {
-      maxNeg = maxPos = value0->getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxNegRe = maxPosRe = value0->getCurValue ().real ();
+      maxNegIm = maxPosIm = value0->getCurValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+      maxNegRe = maxPosRe = value0->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      maxNeg = maxPos = value0->getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxNegRe = maxPosRe = value0->getPrevValue ().real ();
+      maxNegIm = maxPosIm = value0->getPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+      maxNegRe = maxPosRe = value0->getPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      maxNeg = maxPos = value0->getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxNegRe = maxPosRe = value0->getPrevPrevValue ().real ();
+      maxNegIm = maxPosIm = value0->getPrevPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+      maxNegRe = maxPosRe = value0->getPrevPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #endif /* TWO_TIME_STEPS */
@@ -483,25 +738,47 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 
     ASSERT (current);
 
-    FieldValue value = 0;
+    FPValue valueRe = 0;
+
+#ifdef COMPLEX_FIELD_VALUES
+    FPValue valueIm = 0;
+#endif /* COMPLEX_FIELD_VALUES */
 
     switch (dump_type)
     {
       case CURRENT:
       {
-        value = current->getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getCurValue ().real ();
+        valueIm = current->getCurValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
-        value = current->getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getPrevValue ().real ();
+        valueIm = current->getPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
-        value = current->getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+        valueRe = current->getPrevPrevValue ().real ();
+        valueIm = current->getPrevPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+        valueRe = current->getPrevPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #endif /* TWO_TIME_STEPS */
@@ -512,25 +789,46 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
       }
     }
 
-    if (value > maxPos)
+    if (valueRe > maxPosRe)
     {
-      maxPos = value;
+      maxPosRe = valueRe;
     }
-    if (value < maxNeg)
+    if (valueRe < maxNegRe)
     {
-      maxNeg = value;
+      maxNegRe = valueRe;
     }
+
+#ifdef COMPLEX_FIELD_VALUES
+    if (valueIm > maxPosIm)
+    {
+      maxPosIm = valueIm;
+    }
+    if (valueIm < maxNegIm)
+    {
+      maxNegIm = valueIm;
+    }
+#endif /* COMPLEX_FIELD_VALUES */
   }
 
   // Set max (diff between max positive and max negative).
-  const FieldValue max = maxPos - maxNeg;
+  const FPValue maxRe = maxPosRe - maxNegRe;
+
+#ifdef COMPLEX_FIELD_VALUES
+  const FPValue maxIm = maxPosIm - maxNegIm;
+#endif /* COMPLEX_FIELD_VALUES */
 
   // Create image for current values and max/min values.
   for (grid_coord k = 0; k < sz; ++k)
   {
-    BMP image;
-    image.SetSize (sx, sy);
-    image.SetBitDepth (24);
+    BMP imageRe;
+    imageRe.SetSize (sx, sy);
+    imageRe.SetBitDepth (24);
+
+#ifdef COMPLEX_FIELD_VALUES
+    BMP imageIm;
+    imageIm.SetSize (sx, sy);
+    imageIm.SetBitDepth (24);
+#endif /* COMPLEX_FIELD_VALUES */
 
     for (grid_iter i = 0; i < size.getX (); ++i)
     {
@@ -543,24 +841,47 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
         ASSERT (current);
 
         // Get pixel for image.
-        FieldValue value = 0;
+        FPValue valueRe = 0;
+
+#ifdef COMPLEX_FIELD_VALUES
+        FPValue valueIm = 0;
+#endif /* COMPLEX_FIELD_VALUES */
+
         switch (dump_type)
         {
           case CURRENT:
           {
-            value = current->getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+            valueRe = current->getCurValue ().real ();
+            valueIm = current->getCurValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+            valueRe = current->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
             break;
           }
   #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
           case PREVIOUS:
           {
-            value = current->getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+            valueRe = current->getPrevValue ().real ();
+            valueIm = current->getPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+            valueRe = current->getPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
             break;
           }
   #if defined (TWO_TIME_STEPS)
           case PREVIOUS2:
           {
-            value = current->getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+            valueRe = current->getPrevPrevValue ().real ();
+            valueIm = current->getPrevPrevValue ().imag ();
+#else /* COMPLEX_FIELD_VALUES */
+            valueRe = current->getPrevPrevValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
             break;
           }
   #endif /* TWO_TIME_STEPS */
@@ -570,10 +891,19 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
             UNREACHABLE;
           }
         }
-        RGBApixel pixel = BMPhelper.getPixelFromValue (value, maxNeg, max);
+
+        RGBApixel pixelRe = BMPhelper.getPixelFromValue (valueRe, maxNegRe, maxRe);
+
+#ifdef COMPLEX_FIELD_VALUES
+        RGBApixel pixelIm = BMPhelper.getPixelFromValue (valueIm, maxNegIm, maxIm);
+#endif /* COMPLEX_FIELD_VALUES */
 
         // Set pixel for current image.
-        image.SetPixel(i, j, pixel);
+        imageRe.SetPixel(i, j, pixelRe);
+
+#ifdef COMPLEX_FIELD_VALUES
+        imageIm.SetPixel(i, j, pixelIm);
+#endif /* COMPLEX_FIELD_VALUES */
       }
     }
 
@@ -582,22 +912,40 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
     {
       case CURRENT:
       {
-        std::string cur_bmp = cur + int64_to_string (k) + std::string (".bmp");
-        image.WriteToFile(cur_bmp.c_str());
+        std::string cur_bmp_re = cur + int64_to_string (k) + std::string ("-Re") + std::string (".bmp");
+        imageRe.WriteToFile (cur_bmp_re.c_str ());
+
+#ifdef COMPLEX_FIELD_VALUES
+        std::string cur_bmp_im = cur + int64_to_string (k) + std::string ("-Im") + std::string (".bmp");
+        imageIm.WriteToFile (cur_bmp_im.c_str ());
+#endif /* COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
-        std::string prev_bmp = prev + int64_to_string (k) + std::string (".bmp");
-        image.WriteToFile(prev_bmp.c_str());
+        std::string prev_bmp_re = cur + int64_to_string (k) + std::string ("-Re") + std::string (".bmp");
+        imageRe.WriteToFile (prev_bmp_re.c_str ());
+
+#ifdef COMPLEX_FIELD_VALUES
+        std::string prev_bmp_im = cur + int64_to_string (k) + std::string ("-Im") + std::string (".bmp");
+        imageIm.WriteToFile (prev_bmp_im.c_str ());
+#endif /* COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
-        std::string prevPrev_bmp = prevPrev + int64_to_string (k) + std::string (".bmp");
-        image.WriteToFile(prevPrev_bmp.c_str());
+        std::string prevPrev_bmp_re = cur + int64_to_string (k) + std::string ("-Re") + std::string (".bmp");
+        imageRe.WriteToFile (prevPrev_bmp_re.c_str ());
+
+#ifdef COMPLEX_FIELD_VALUES
+        std::string prevPrev_bmp_im = cur + int64_to_string (k) + std::string ("-Im") + std::string (".bmp");
+        imageIm.WriteToFile (prevPrev_bmp_im.c_str ());
+#endif /* COMPLEX_FIELD_VALUES */
+
         break;
       }
 #endif /* TWO_TIME_STEPS */

@@ -13,12 +13,12 @@ class BMPHelper
 public:
 
   // Return value with values according to colors of pixel.
-  static FieldValue getValueFromPixel (const RGBApixel& pixel, const FieldValue& maxNeg,
-                                       const FieldValue& max);
+  static FPValue getValueFromPixel (const RGBApixel& pixel, const FPValue& maxNeg,
+                                       const FPValue& max);
 
   // Return pixel with colors according to values of value.
-  static RGBApixel getPixelFromValue (const FieldValue& value, const FieldValue& maxNeg,
-                                      const FieldValue& max);
+  static RGBApixel getPixelFromValue (const FPValue& value, const FPValue& maxNeg,
+                                      const FPValue& max);
 };
 
 #endif /* BMP_HELPER_H */

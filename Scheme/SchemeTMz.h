@@ -54,15 +54,15 @@ class SchemeTMz: public Scheme
 #endif
 
   // Wave parameters
-  FieldValue waveLength;
-  FieldValue stepWaveLength;
-  FieldValue frequency;
+  FPValue waveLength;
+  FPValue stepWaveLength;
+  FPValue frequency;
 
   // dx
-  FieldValue gridStep;
+  FPValue gridStep;
 
   // dt
-  FieldValue gridTimeStep;
+  FPValue gridTimeStep;
 
   time_step totalStep;
 
@@ -79,7 +79,7 @@ class SchemeTMz: public Scheme
   Grid<GridCoordinate1D> EInc;
   Grid<GridCoordinate1D> HInc;
 
-  FieldValue incidentWaveAngle;
+  FPValue incidentWaveAngle;
 
 private:
 
@@ -97,7 +97,7 @@ private:
   void performNSteps (time_step, time_step, int);
   void performAmplitudeSteps (time_step, int);
 
-  int updateAmplitude (FieldValue, FieldPointValue *, FieldValue *);
+  int updateAmplitude (FPValue, FieldPointValue *, FPValue *);
 
   void performPlaneWaveESteps (time_step);
   void performPlaneWaveHSteps (time_step);
@@ -110,7 +110,7 @@ public:
   virtual void performSteps (int);
 #endif
 
-  void initScheme (FieldValue, FieldValue);
+  void initScheme (FPValue, FPValue);
 
   void initGrids ();
 
@@ -131,7 +131,7 @@ public:
              GridCoordinate2D sizePML = GridCoordinate2D (0, 0),
              bool doUseTFSF = false,
              GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
-             FieldValue angleIncWave = 0.0) :
+             FPValue angleIncWave = 0.0) :
     yeeLayout (totSize, sizePML, sizeScatteredZone, PhysicsConst::Pi / 2, angleIncWave, 0),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
@@ -170,7 +170,7 @@ public:
              GridCoordinate2D sizePML = GridCoordinate2D (0, 0),
              bool doUseTFSF = false,
              GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
-             FieldValue angleIncWave = 0.0) :
+             FPValue angleIncWave = 0.0) :
     yeeLayout (totSize, sizePML, sizeScatteredZone, PhysicsConst::Pi / 2, angleIncWave, 0),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), 0),

@@ -7,14 +7,21 @@
  * Small values decrease memory usage, full values increase accuracy.
  */
 #ifdef FLOAT_VALUES
-typedef float FieldValue;
+typedef float FPValue;
 #endif /* FLOAT_VALUES */
 #ifdef DOUBLE_VALUES
-typedef double FieldValue;
+typedef double FPValue;
 #endif /* DOUBLE_VALUES */
 #ifdef LONG_DOUBLE_VALUES
-typedef long double FieldValue;
+typedef long double FPValue;
 #endif /* LONG_DOUBLE_VALUES */
+
+#ifdef COMPLEX_FIELD_VALUES
+#include <complex>
+typedef std::complex<FPValue> FieldValue;
+#else /* COMPLEX_FIELD_VALUES */
+typedef FPValue FieldValue;
+#endif /* !COMPLEX_FIELD_VALUES */
 
 #ifdef CXX11_ENABLED
 #include <cstdint>

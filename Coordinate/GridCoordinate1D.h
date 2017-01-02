@@ -87,6 +87,6 @@ public:
 };
 
 typedef GridCoordinate1DTemplate<grid_iter> GridCoordinate1D;
-typedef GridCoordinate1DTemplate<FieldValue> GridCoordinateFP1D;
+typedef GridCoordinate1DTemplate<FPValue> GridCoordinateFP1D;
 
 #endif /* GRID_COORDINATE_1D_H */

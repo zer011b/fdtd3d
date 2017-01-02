@@ -71,16 +71,16 @@ ParallelGrid::NodeGridInit ()
   }
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  FieldValue overall1 = (FieldValue) totalSize.getX ();
-  FieldValue overall2 = (FieldValue) totalSize.getY ();
+  FPValue overall1 = (FPValue) totalSize.getX ();
+  FPValue overall2 = (FPValue) totalSize.getY ();
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  FieldValue overall1 = (FieldValue) totalSize.getY ();
-  FieldValue overall2 = (FieldValue) totalSize.getZ ();
+  FPValue overall1 = (FPValue) totalSize.getY ();
+  FPValue overall2 = (FPValue) totalSize.getZ ();
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  FieldValue overall1 = (FieldValue) totalSize.getX ();
-  FieldValue overall2 = (FieldValue) totalSize.getZ ();
+  FPValue overall1 = (FPValue) totalSize.getX ();
+  FPValue overall2 = (FPValue) totalSize.getZ ();
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
   int left;
@@ -153,9 +153,9 @@ ParallelGrid::NodeGridInit ()
     ASSERT_MESSAGE ("Unsupported number of nodes for 3D parallel buffers. Use 2D or 1D ones.");
   }
 
-  FieldValue overall1 = (FieldValue) totalSize.getX ();
-  FieldValue overall2 = (FieldValue) totalSize.getY ();
-  FieldValue overall3 = (FieldValue) totalSize.getZ ();
+  FPValue overall1 = (FPValue) totalSize.getX ();
+  FPValue overall2 = (FPValue) totalSize.getY ();
+  FPValue overall3 = (FPValue) totalSize.getZ ();
 
   int left;
   int nodeGridSizeTmp1;

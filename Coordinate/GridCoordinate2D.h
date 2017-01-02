@@ -114,6 +114,6 @@ public:
 };
 
 typedef GridCoordinate2DTemplate<grid_iter> GridCoordinate2D;
-typedef GridCoordinate2DTemplate<FieldValue> GridCoordinateFP2D;
+typedef GridCoordinate2DTemplate<FPValue> GridCoordinateFP2D;
 
 #endif /* GRID_COORDINATE_2D_H */

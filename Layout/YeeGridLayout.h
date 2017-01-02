@@ -186,9 +186,9 @@ public:
   YeeGridLayout (GridCoordinate3D coordSize,
                  GridCoordinate3D sizePML,
                  GridCoordinate3D sizeScatteredZone,
-                 FieldValue incidentWaveAngle1, /**< teta */
-                 FieldValue incidentWaveAngle2, /**< phi */
-                 FieldValue incidentWaveAngle3) /**< psi */
+                 FPValue incidentWaveAngle1, /**< teta */
+                 FPValue incidentWaveAngle2, /**< phi */
+                 FPValue incidentWaveAngle3) /**< psi */
     : zeroCoord (0, 0, 0)
   , minEpsCoord (0, 0, 0)
   , minMuCoord (0, 0, 0)

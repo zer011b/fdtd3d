@@ -7,12 +7,12 @@
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
 void
-ParallelGrid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FieldValue alpha)
+ParallelGrid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FPValue alpha)
 {
   int min_left = left;
   int min_size1 = nodeGridSize1;
   int min_size2 = nodeGridSize2;
-  FieldValue min_alpha = ((FieldValue) min_size2) / ((FieldValue) min_size1);
+  FPValue min_alpha = ((FPValue) min_size2) / ((FPValue) min_size1);
 
   // Bad case, too many nodes left unused. Let's change proportion.
   for (int size1 = 2; size1 <= totalProcCount / 2; ++size1)
@@ -25,21 +25,21 @@ ParallelGrid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2,
       min_left = left_new;
       min_size1 = size1;
       min_size2 = size2;
-      min_alpha = ((FieldValue) size2) / ((FieldValue) size1);
+      min_alpha = ((FPValue) size2) / ((FPValue) size1);
     }
     else if (left_new == min_left)
     {
-      FieldValue new_alpha = ((FieldValue) size2) / ((FieldValue) size1);
+      FPValue new_alpha = ((FPValue) size2) / ((FPValue) size1);
 
-      FieldValue diff_alpha = fabs (new_alpha - alpha);
-      FieldValue diff_alpha_min = fabs (min_alpha - alpha);
+      FPValue diff_alpha = fabs (new_alpha - alpha);
+      FPValue diff_alpha_min = fabs (min_alpha - alpha);
 
       if (diff_alpha < diff_alpha_min)
       {
         min_left = left_new;
         min_size1 = size1;
         min_size2 = size2;
-        min_alpha = ((FieldValue) size2) / ((FieldValue) size1);
+        min_alpha = ((FPValue) size2) / ((FPValue) size1);
       }
     }
   }
@@ -50,11 +50,11 @@ ParallelGrid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2,
 }
 
 void
-ParallelGrid::NodeGridInitInner (FieldValue& overall1, FieldValue& overall2,
-                         int& nodeGridSize1, int& nodeGridSize2, int& left)
+ParallelGrid::NodeGridInitInner (FPValue& overall1, FPValue& overall2,
+                                 int& nodeGridSize1, int& nodeGridSize2, int& left)
 {
-  FieldValue alpha = overall2 / overall1;
-  FieldValue sqrtVal = ((FieldValue) (totalProcCount)) / alpha;
+  FPValue alpha = overall2 / overall1;
+  FPValue sqrtVal = ((FPValue) (totalProcCount)) / alpha;
   sqrtVal = sqrt (sqrtVal);
 
   if (sqrtVal <= 1.0 || alpha * sqrtVal <= 1.0)

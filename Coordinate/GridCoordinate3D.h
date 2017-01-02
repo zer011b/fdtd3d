@@ -153,7 +153,7 @@ public:
 };
 
 typedef GridCoordinate3DTemplate<grid_iter> GridCoordinate3D;
-typedef GridCoordinate3DTemplate<FieldValue> GridCoordinateFP3D;
+typedef GridCoordinate3DTemplate<FPValue> GridCoordinateFP3D;
 
 GridCoordinate3D CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinateFP3D coord);
 GridCoordinateFP3D CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinate3D coord);

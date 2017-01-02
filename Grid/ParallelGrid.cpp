@@ -1267,18 +1267,34 @@ ParallelGrid::SendRawBuffer (BufferPosition buffer, int processTo)
 
   FieldValue* rawBuffer = buffersSend[buffer].data ();
 
+  MPI_Datatype datatype;
+
 #ifdef FLOAT_VALUES
-  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_FLOAT,
-                          processTo, processId, MPI_COMM_WORLD);
+#ifdef COMPLEX_FIELD_VALUES
+  datatype = MPI_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+  datatype = MPI_FLOAT;
+#endif /* !COMPLEX_FIELD_VALUES */
 #endif /* FLOAT_VALUES */
+
 #ifdef DOUBLE_VALUES
-  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_DOUBLE,
-                          processTo, processId, MPI_COMM_WORLD);
+#ifdef COMPLEX_FIELD_VALUES
+  datatype = MPI_DOUBLE_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+  datatype = MPI_DOUBLE;
+#endif /* !COMPLEX_FIELD_VALUES */
 #endif /* DOUBLE_VALUES */
+
 #ifdef LONG_DOUBLE_VALUES
-  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), MPI_LONG_DOUBLE,
-                          processTo, processId, MPI_COMM_WORLD);
+#ifdef COMPLEX_FIELD_VALUES
+  datatype = MPI_LONG_DOUBLE_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+  datatype = MPI_LONG_DOUBLE;
+#endif /* !COMPLEX_FIELD_VALUES */
 #endif /* LONG_DOUBLE_VALUES */
+
+  int retCode = MPI_Send (rawBuffer, buffersSend[buffer].size (), datatype,
+                          processTo, processId, MPI_COMM_WORLD);
 
   ASSERT (retCode == MPI_SUCCESS);
 }
@@ -1294,18 +1310,34 @@ ParallelGrid::ReceiveRawBuffer (BufferPosition buffer, int processFrom)
 
   FieldValue* rawBuffer = buffersReceive[buffer].data ();
 
+  MPI_Datatype datatype;
+
 #ifdef FLOAT_VALUES
-  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_FLOAT,
-                          processFrom, processFrom, MPI_COMM_WORLD, &status);
+#ifdef COMPLEX_FIELD_VALUES
+  datatype = MPI_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+  datatype = MPI_FLOAT;
+#endif /* !COMPLEX_FIELD_VALUES */
 #endif /* FLOAT_VALUES */
+
 #ifdef DOUBLE_VALUES
-  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_DOUBLE,
-                          processFrom, processFrom, MPI_COMM_WORLD, &status);
+#ifdef COMPLEX_FIELD_VALUES
+  datatype = MPI_DOUBLE_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+  datatype = MPI_DOUBLE;
+#endif /* !COMPLEX_FIELD_VALUES */
 #endif /* DOUBLE_VALUES */
+
 #ifdef LONG_DOUBLE_VALUES
-  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), MPI_LONG_DOUBLE,
-                          processFrom, processFrom, MPI_COMM_WORLD, &status);
+#ifdef COMPLEX_FIELD_VALUES
+  datatype = MPI_LONG_DOUBLE_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+  datatype = MPI_LONG_DOUBLE;
+#endif /* !COMPLEX_FIELD_VALUES */
 #endif /* LONG_DOUBLE_VALUES */
+
+  int retCode = MPI_Recv (rawBuffer, buffersReceive[buffer].size (), datatype,
+                          processFrom, processFrom, MPI_COMM_WORLD, &status);
 
   ASSERT (retCode == MPI_SUCCESS);
 }
@@ -1324,28 +1356,37 @@ ParallelGrid::SendReceiveRawBuffer (BufferPosition bufferSend, int processTo,
   FieldValue* rawBufferSend = buffersSend[bufferSend].data ();
   FieldValue* rawBufferReceive = buffersReceive[bufferReceive].data ();
 
+  MPI_Datatype datatype;
+
 #ifdef FLOAT_VALUES
-  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_FLOAT,
-                              processTo, processId,
-                              rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_FLOAT,
-                              processFrom, processFrom,
-                              MPI_COMM_WORLD, &status);
+#ifdef COMPLEX_FIELD_VALUES
+  datatype = MPI_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+  datatype = MPI_FLOAT;
+#endif /* !COMPLEX_FIELD_VALUES */
 #endif /* FLOAT_VALUES */
+
 #ifdef DOUBLE_VALUES
-  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_DOUBLE,
-                              processTo, processId,
-                              rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_DOUBLE,
-                              processFrom, processFrom,
-                              MPI_COMM_WORLD, &status);
+#ifdef COMPLEX_FIELD_VALUES
+  datatype = MPI_DOUBLE_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+  datatype = MPI_DOUBLE;
+#endif /* !COMPLEX_FIELD_VALUES */
 #endif /* DOUBLE_VALUES */
+
 #ifdef LONG_DOUBLE_VALUES
-  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), MPI_LONG_DOUBLE,
-                              processTo, processId,
-                              rawBufferReceive, buffersReceive[bufferReceive].size (), MPI_LONG_DOUBLE,
-                              processFrom, processFrom,
-                              MPI_COMM_WORLD, &status);
+#ifdef COMPLEX_FIELD_VALUES
+  datatype = MPI_LONG_DOUBLE_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+  datatype = MPI_LONG_DOUBLE;
+#endif /* !COMPLEX_FIELD_VALUES */
 #endif /* LONG_DOUBLE_VALUES */
 
+  int retCode = MPI_Sendrecv (rawBufferSend, buffersSend[bufferSend].size (), datatype,
+                              processTo, processId,
+                              rawBufferReceive, buffersReceive[bufferReceive].size (), datatype,
+                              processFrom, processFrom,
+                              MPI_COMM_WORLD, &status);
 
   ASSERT (retCode == MPI_SUCCESS);
 }

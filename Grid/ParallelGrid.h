@@ -190,8 +190,8 @@ private:
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_1D_Z */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  void FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FieldValue alpha);
-  void NodeGridInitInner (FieldValue& overall1, FieldValue& overall2,
+  void FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FPValue alpha);
+  void NodeGridInitInner (FPValue& overall1, FPValue& overall2,
                           int& nodeGridSize1, int& nodeGridSize2, int& left);
   void CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, grid_coord size1,
                                  grid_coord& c2, int nodeGridSize2, bool has2, grid_coord size2);
@@ -199,8 +199,8 @@ private:
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   void FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& nodeGridSize3, int& left,
-                                  FieldValue alpha, FieldValue betta);
-  void NodeGridInitInner (FieldValue& overall1, FieldValue& overall2, FieldValue& overall3,
+                                  FPValue alpha, FPValue betta);
+  void NodeGridInitInner (FPValue& overall1, FPValue& overall2, FPValue& overall3,
                           int& nodeGridSize1, int& nodeGridSize2, int& nodeGridSize3, int& left);
   void CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, grid_coord size1,
                                  grid_coord& c2, int nodeGridSize2, bool has2, grid_coord size2,

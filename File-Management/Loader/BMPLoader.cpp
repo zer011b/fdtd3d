@@ -67,41 +67,98 @@ BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> &grid, GridFil
   grid_coord sy = 1;
 
   // Create image for values and max/min values.
-  BMP image;
-  image.SetSize (sx, sy);
-  image.SetBitDepth (24);
+  BMP imageRe;
+  imageRe.SetSize (sx, sy);
+  imageRe.SetBitDepth (24);
 
-  FieldValue max = 0;
-  FieldValue maxNeg = 0;
+#ifdef COMPLEX_FIELD_VALUES
+  BMP imageIm;
+  imageIm.SetSize (sx, sy);
+  imageIm.SetBitDepth (24);
+#endif /* COMPLEX_FIELD_VALUES */
+
+  FPValue maxRe = 0;
+  FPValue maxNegRe = 0;
+
+#ifdef COMPLEX_FIELD_VALUES
+  FPValue maxIm = 0;
+  FPValue maxNegIm = 0;
+#endif /* COMPLEX_FIELD_VALUES */
+
   switch (load_type)
   {
     case CURRENT:
     {
-      max = maxValuePos.getCurValue () - maxValueNeg.getCurValue ();
-      maxNeg = maxValueNeg.getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxRe = maxValuePos.getCurValue ().real () - maxValueNeg.getCurValue ().real ();
+      maxNegRe = maxValueNeg.getCurValue ().real ();
 
-      std::string cur_bmp = cur + std::string (".bmp");
-      image.ReadFromFile (cur_bmp.c_str());
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+
+      maxIm = maxValuePos.getCurValue ().imag () - maxValueNeg.getCurValue ().imag ();
+      maxNegIm = maxValueNeg.getCurValue ().imag ();
+
+      std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.ReadFromFile (cur_bmp_im.c_str());
+#else /* COMPLEX_FIELD_VALUES */
+      maxRe = maxValuePos.getCurValue () - maxValueNeg.getCurValue ();
+      maxNegRe = maxValueNeg.getCurValue ();
+
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      max = maxValuePos.getPrevValue () - maxValueNeg.getPrevValue ();
-      maxNeg = maxValueNeg.getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxRe = maxValuePos.getPrevValue ().real () - maxValueNeg.getPrevValue ().real ();
+      maxNegRe = maxValueNeg.getPrevValue ().real ();
 
-      std::string prev_bmp = prev + std::string (".bmp");
-      image.ReadFromFile (prev_bmp.c_str());
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+
+      maxIm = maxValuePos.getPrevValue ().imag () - maxValueNeg.getPrevValue ().imag ();
+      maxNegIm = maxValueNeg.getPrevValue ().imag ();
+
+      std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.ReadFromFile (cur_bmp_im.c_str());
+#else /* COMPLEX_FIELD_VALUES */
+      maxRe = maxValuePos.getPrevValue () - maxValueNeg.getPrevValue ();
+      maxNegRe = maxValueNeg.getPrevValue ();
+
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      max = maxValuePos.getPrevPrevValue () - maxValueNeg.getPrevPrevValue ();
-      maxNeg = maxValueNeg.getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxRe = maxValuePos.getPrevPrevValue ().real () - maxValueNeg.getPrevPrevValue ().real ();
+      maxNegRe = maxValueNeg.getPrevPrevValue ().real ();
 
-      std::string prevPrev_bmp = prevPrev + std::string (".bmp");
-      image.ReadFromFile (prevPrev_bmp.c_str());
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+
+      maxIm = maxValuePos.getPrevPrevValue ().imag () - maxValueNeg.getPrevPrevValue ().imag ();
+      maxNegIm = maxValueNeg.getPrevPrevValue ().imag ();
+
+      std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.ReadFromFile (cur_bmp_im.c_str());
+#else /* COMPLEX_FIELD_VALUES */
+      maxRe = maxValuePos.getPrevPrevValue () - maxValueNeg.getPrevPrevValue ();
+      maxNegRe = maxValueNeg.getPrevPrevValue ();
+
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #endif /* TWO_TIME_STEPS */
@@ -127,27 +184,49 @@ BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> &grid, GridFil
     grid_iter px = coord.getX ();
     grid_iter py = 0;
 
-    RGBApixel pixel = image.GetPixel(px, py);
+    RGBApixel pixelRe = imageRe.GetPixel(px, py);
 
     // Get pixel for image.
-    FieldValue currentVal = BMPhelper.getValueFromPixel (pixel, maxNeg, max);
+    FPValue currentValRe = BMPhelper.getValueFromPixel (pixelRe, maxNegRe, maxRe);
+
+#ifdef COMPLEX_FIELD_VALUES
+    RGBApixel pixelIm = imageIm.GetPixel(px, py);
+
+    FPValue currentValIm = BMPhelper.getValueFromPixel (pixelIm, maxNegIm, maxIm);
+#endif /* COMPLEX_FIELD_VALUES */
+
     switch (load_type)
     {
       case CURRENT:
       {
-        current->setCurValue (currentVal);
+#ifdef COMPLEX_FIELD_VALUES
+        current->setCurValue (FieldValue (currentValRe, currentValIm));
+#else /* COMPLEX_FIELD_VALUES */
+        current->setCurValue (currentValRe);
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
-        current->setPrevValue (currentVal);
+#ifdef COMPLEX_FIELD_VALUES
+        current->setPrevValue (FieldValue (currentValRe, currentValIm));
+#else /* COMPLEX_FIELD_VALUES */
+        current->setPrevValue (currentValRe);
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
-        current->setPrevPrevValue (currentVal);
+#ifdef COMPLEX_FIELD_VALUES
+        current->setPrevPrevValue (FieldValue (currentValRe, currentValIm));
+#else /* COMPLEX_FIELD_VALUES */
+        current->setPrevPrevValue (currentValRe);
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #endif /* TWO_TIME_STEPS */
@@ -172,41 +251,98 @@ BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> &grid, GridFil
   grid_coord sy = size.getY ();
 
   // Create image for values and max/min values.
-  BMP image;
-  image.SetSize (sx, sy);
-  image.SetBitDepth (24);
+  BMP imageRe;
+  imageRe.SetSize (sx, sy);
+  imageRe.SetBitDepth (24);
 
-  FieldValue max = 0;
-  FieldValue maxNeg = 0;
+#ifdef COMPLEX_FIELD_VALUES
+  BMP imageIm;
+  imageIm.SetSize (sx, sy);
+  imageIm.SetBitDepth (24);
+#endif /* COMPLEX_FIELD_VALUES */
+
+  FPValue maxRe = 0;
+  FPValue maxNegRe = 0;
+
+#ifdef COMPLEX_FIELD_VALUES
+  FPValue maxIm = 0;
+  FPValue maxNegIm = 0;
+#endif /* COMPLEX_FIELD_VALUES */
+
   switch (load_type)
   {
     case CURRENT:
     {
-      max = maxValuePos.getCurValue () - maxValueNeg.getCurValue ();
-      maxNeg = maxValueNeg.getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxRe = maxValuePos.getCurValue ().real () - maxValueNeg.getCurValue ().real ();
+      maxNegRe = maxValueNeg.getCurValue ().real ();
 
-      std::string cur_bmp = cur + std::string (".bmp");
-      image.ReadFromFile (cur_bmp.c_str());
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+
+      maxIm = maxValuePos.getCurValue ().imag () - maxValueNeg.getCurValue ().imag ();
+      maxNegIm = maxValueNeg.getCurValue ().imag ();
+
+      std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.ReadFromFile (cur_bmp_im.c_str());
+#else /* COMPLEX_FIELD_VALUES */
+      maxRe = maxValuePos.getCurValue () - maxValueNeg.getCurValue ();
+      maxNegRe = maxValueNeg.getCurValue ();
+
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      max = maxValuePos.getPrevValue () - maxValueNeg.getPrevValue ();
-      maxNeg = maxValueNeg.getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxRe = maxValuePos.getPrevValue ().real () - maxValueNeg.getPrevValue ().real ();
+      maxNegRe = maxValueNeg.getPrevValue ().real ();
 
-      std::string prev_bmp = prev + std::string (".bmp");
-      image.ReadFromFile (prev_bmp.c_str());
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+
+      maxIm = maxValuePos.getPrevValue ().imag () - maxValueNeg.getPrevValue ().imag ();
+      maxNegIm = maxValueNeg.getPrevValue ().imag ();
+
+      std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.ReadFromFile (cur_bmp_im.c_str());
+#else /* COMPLEX_FIELD_VALUES */
+      maxRe = maxValuePos.getPrevValue () - maxValueNeg.getPrevValue ();
+      maxNegRe = maxValueNeg.getPrevValue ();
+
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      max = maxValuePos.getPrevPrevValue () - maxValueNeg.getPrevPrevValue ();
-      maxNeg = maxValueNeg.getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+      maxRe = maxValuePos.getPrevPrevValue ().real () - maxValueNeg.getPrevPrevValue ().real ();
+      maxNegRe = maxValueNeg.getPrevPrevValue ().real ();
 
-      std::string prevPrev_bmp = prevPrev + std::string (".bmp");
-      image.ReadFromFile (prevPrev_bmp.c_str());
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+
+      maxIm = maxValuePos.getPrevPrevValue ().imag () - maxValueNeg.getPrevPrevValue ().imag ();
+      maxNegIm = maxValueNeg.getPrevPrevValue ().imag ();
+
+      std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      imageIm.ReadFromFile (cur_bmp_im.c_str());
+#else /* COMPLEX_FIELD_VALUES */
+      maxRe = maxValuePos.getPrevPrevValue () - maxValueNeg.getPrevPrevValue ();
+      maxNegRe = maxValueNeg.getPrevPrevValue ();
+
+      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      imageRe.ReadFromFile (cur_bmp_re.c_str());
+#endif /* !COMPLEX_FIELD_VALUES */
+
       break;
     }
 #endif /* TWO_TIME_STEPS */
@@ -232,27 +368,49 @@ BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> &grid, GridFil
     grid_iter px = coord.getX ();
     grid_iter py = coord.getY ();
 
-    RGBApixel pixel = image.GetPixel(px, py);
+    RGBApixel pixelRe = imageRe.GetPixel(px, py);
 
     // Get pixel for image.
-    FieldValue currentVal = BMPhelper.getValueFromPixel (pixel, maxNeg, max);
+    FPValue currentValRe = BMPhelper.getValueFromPixel (pixelRe, maxNegRe, maxRe);
+
+#ifdef COMPLEX_FIELD_VALUES
+    RGBApixel pixelIm = imageIm.GetPixel(px, py);
+
+    FPValue currentValIm = BMPhelper.getValueFromPixel (pixelIm, maxNegIm, maxIm);
+#endif /* COMPLEX_FIELD_VALUES */
+
     switch (load_type)
     {
       case CURRENT:
       {
-        current->setCurValue (currentVal);
+#ifdef COMPLEX_FIELD_VALUES
+        current->setCurValue (FieldValue (currentValRe, currentValIm));
+#else /* COMPLEX_FIELD_VALUES */
+        current->setCurValue (currentValRe);
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
-        current->setPrevValue (currentVal);
+#ifdef COMPLEX_FIELD_VALUES
+        current->setPrevValue (FieldValue (currentValRe, currentValIm));
+#else /* COMPLEX_FIELD_VALUES */
+        current->setPrevValue (currentValRe);
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
-        current->setPrevPrevValue (currentVal);
+#ifdef COMPLEX_FIELD_VALUES
+        current->setPrevPrevValue (FieldValue (currentValRe, currentValIm));
+#else /* COMPLEX_FIELD_VALUES */
+        current->setPrevPrevValue (currentValRe);
+#endif /* !COMPLEX_FIELD_VALUES */
+
         break;
       }
 #endif /* TWO_TIME_STEPS */

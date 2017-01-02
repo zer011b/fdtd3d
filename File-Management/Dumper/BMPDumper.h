@@ -8,6 +8,9 @@
  * Grid saver to BMP files.
  * Template class with coordinate parameter.
  */
+/*
+ * FIXME: get rid of duplicate code for dump of 3d, 2d and 1d grids
+ */
 template <class TCoord>
 class BMPDumper: public Dumper<TCoord>
 {

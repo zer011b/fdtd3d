@@ -6,7 +6,7 @@ __global__ void cudaCalculateTMzEzStep (CudaExitStatus *retval,
                                         FieldValue *Ez,
                                         FieldValue *Ez_prev, FieldValue *Hx_prev, FieldValue *Hy_prev,
                                         FieldValue *eps,
-                                        FieldValue gridTimeStep, FieldValue gridStep,
+                                        FPValue gridTimeStep, FPValue gridStep,
                                         GridCoordinate3D Ez_start,
                                         grid_coord Ez_endX, grid_coord Ez_endY,
                                         grid_coord sx_Ez, grid_coord sy_Ez,
@@ -63,7 +63,14 @@ __global__ void cudaCalculateTMzEzSource (CudaExitStatus *retval,
   {
     if (i == sx_Ez / 2 && j == sy_Ez / 2)
     {
-      Ez_prev[indexEz1] = cos (t * 3.1415 / 12);
+      FPValue val = cos (t * 3.1415 / 12);
+
+#ifdef COMPLEX_FIELD_VALUES
+      Ez_prev[indexEz1].real = val;
+      Ez_prev[indexEz1].imag = 0;
+#else /* COMPLEX_FIELD_VALUES */
+      Ez_prev[indexEz1] = val;
+#endif /* !COMPLEX_FIELD_VALUES */
     }
   }
 
@@ -75,7 +82,7 @@ __global__ void cudaCalculateTMzHxStep (CudaExitStatus *retval,
                                         FieldValue *Hx,
                                         FieldValue *Ez_prev, FieldValue *Hx_prev,
                                         FieldValue *mu,
-                                        FieldValue gridTimeStep, FieldValue gridStep,
+                                        FPValue gridTimeStep, FPValue gridStep,
                                         grid_coord Hx_startX, grid_coord Hx_startY,
                                         grid_coord Hx_endX, grid_coord Hx_endY,
                                         grid_coord sx_Hx, grid_coord sy_Hx,
@@ -114,7 +121,7 @@ __global__ void cudaCalculateTMzHyStep (CudaExitStatus *retval,
                                         FieldValue *Hy,
                                         FieldValue *Ez_prev, FieldValue *Hy_prev,
                                         FieldValue *mu,
-                                        FieldValue gridTimeStep, FieldValue gridStep,
+                                        FPValue gridTimeStep, FPValue gridStep,
                                         grid_coord Hy_startX, grid_coord Hy_startY,
                                         grid_coord Hy_endX, grid_coord Hy_endY,
                                         grid_coord sx_Hy, grid_coord sy_Hy,
@@ -189,7 +196,7 @@ __global__ void cudaCalculate3DExStep (CudaExitStatus *retval,
                                        FieldValue *Ex,
                                        FieldValue *Ex_prev, FieldValue *Hy_prev, FieldValue *Hz_prev,
                                        FieldValue *eps,
-                                       FieldValue gridTimeStep, FieldValue gridStep,
+                                       FPValue gridTimeStep, FPValue gridStep,
                                        grid_coord Ex_startX, grid_coord Ex_startY, grid_coord Ex_startZ,
                                        grid_coord Ex_endX, grid_coord Ex_endY, grid_coord Ex_endZ,
                                        grid_coord sx_Ex, grid_coord sy_Ex, grid_coord sz_Ex,
@@ -230,7 +237,7 @@ __global__ void cudaCalculate3DEyStep (CudaExitStatus *retval,
                                        FieldValue *Ey,
                                        FieldValue *Ey_prev, FieldValue *Hx_prev, FieldValue *Hz_prev,
                                        FieldValue *eps,
-                                       FieldValue gridTimeStep, FieldValue gridStep,
+                                       FPValue gridTimeStep, FPValue gridStep,
                                        grid_coord Ey_startX, grid_coord Ey_startY, grid_coord Ey_startZ,
                                        grid_coord Ey_endX, grid_coord Ey_endY, grid_coord Ey_endZ,
                                        grid_coord sx_Ey, grid_coord sy_Ey, grid_coord sz_Ey,
@@ -271,7 +278,7 @@ __global__ void cudaCalculate3DEzStep (CudaExitStatus *retval,
                                        FieldValue *Ez,
                                        FieldValue *Ez_prev, FieldValue *Hx_prev, FieldValue *Hy_prev,
                                        FieldValue *eps,
-                                       FieldValue gridTimeStep, FieldValue gridStep,
+                                       FPValue gridTimeStep, FPValue gridStep,
                                        grid_coord Ez_startX, grid_coord Ez_startY, grid_coord Ez_startZ,
                                        grid_coord Ez_endX, grid_coord Ez_endY, grid_coord Ez_endZ,
                                        grid_coord sx_Ez, grid_coord sy_Ez, grid_coord sz_Ez,
@@ -312,7 +319,7 @@ __global__ void cudaCalculate3DHxStep (CudaExitStatus *retval,
                                        FieldValue *Hx,
                                        FieldValue *Hx_prev, FieldValue *Ey_prev, FieldValue *Ez_prev,
                                        FieldValue *mu,
-                                       FieldValue gridTimeStep, FieldValue gridStep,
+                                       FPValue gridTimeStep, FPValue gridStep,
                                        grid_coord Hx_startX, grid_coord Hx_startY, grid_coord Hx_startZ,
                                        grid_coord Hx_endX, grid_coord Hx_endY, grid_coord Hx_endZ,
                                        grid_coord sx_Hx, grid_coord sy_Hx, grid_coord sz_Hx,
@@ -353,7 +360,7 @@ __global__ void cudaCalculate3DHyStep (CudaExitStatus *retval,
                                        FieldValue *Hy,
                                        FieldValue *Hy_prev, FieldValue *Ex_prev, FieldValue *Ez_prev,
                                        FieldValue *mu,
-                                       FieldValue gridTimeStep, FieldValue gridStep,
+                                       FPValue gridTimeStep, FPValue gridStep,
                                        grid_coord Hy_startX, grid_coord Hy_startY, grid_coord Hy_startZ,
                                        grid_coord Hy_endX, grid_coord Hy_endY, grid_coord Hy_endZ,
                                        grid_coord sx_Hy, grid_coord sy_Hy, grid_coord sz_Hy,
@@ -394,7 +401,7 @@ __global__ void cudaCalculate3DHzStep (CudaExitStatus *retval,
                                        FieldValue *Hz,
                                        FieldValue *Hz_prev, FieldValue *Ex_prev, FieldValue *Ey_prev,
                                        FieldValue *mu,
-                                       FieldValue gridTimeStep, FieldValue gridStep,
+                                       FPValue gridTimeStep, FPValue gridStep,
                                        grid_coord Hz_startX, grid_coord Hz_startY, grid_coord Hz_startZ,
                                        grid_coord Hz_endX, grid_coord Hz_endY, grid_coord Hz_endZ,
                                        grid_coord sx_Hz, grid_coord sy_Hz, grid_coord sz_Hz,
@@ -506,7 +513,14 @@ __global__ void cudaCalculate3DEzSource (CudaExitStatus *retval,
   {
     if (i == sx_Ez / 2 && j == sy_Ez / 2)
     {
-      Ez_prev[indexEz1] = cos (t * 3.1415 / 12);
+      FPValue val = cos (t * 3.1415 / 12);
+
+#ifdef COMPLEX_FIELD_VALUES
+      Ez_prev[indexEz1].real = val;
+      Ez_prev[indexEz1].imag = 0;
+#else /* COMPLEX_FIELD_VALUES */
+      Ez_prev[indexEz1] = val;
+#endif /* !COMPLEX_FIELD_VALUES */
     }
   }
 

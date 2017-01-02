@@ -195,7 +195,7 @@ int main (int argc, char** argv)
 #ifdef GRID_3D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
 
-  Scheme3D scheme (overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (10, 10), true, GridCoordinate2D (20, 20), PhysicsConst::Pi / 2, 0, 0);
+  Scheme3D scheme (overallSize, totalTimeSteps, true, 2 * totalTimeSteps, true, GridCoordinate2D (10, 10), true, GridCoordinate2D (15, 15), PhysicsConst::Pi / 2, 0, 0);
 #endif
 #endif
 
@@ -290,7 +290,7 @@ int main (int argc, char** argv)
 
     printf ("\n-------- Execution Time --------\n");
 
-    FieldValue execution_time = (FieldValue) (((FieldValue) (end_time - begin_time)) /  CLOCKS_PER_SEC);
+    FPValue execution_time = (FPValue) (((FPValue) (end_time - begin_time)) /  CLOCKS_PER_SEC);
 
     printf ("Execution time (by clock()): %f seconds.\n", execution_time);
 
