@@ -1671,7 +1671,7 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
 
-            FieldValue val = tmp->getCurValue ();
+            FPValue val = tmp->getCurValue ();
 
             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
             {
@@ -1700,7 +1700,7 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
 
-            FieldValue val = tmp->getCurValue ();
+            FPValue val = tmp->getCurValue ();
 
             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
             {
@@ -1729,7 +1729,7 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
 
-            FieldValue val = tmp->getCurValue ();
+            FPValue val = tmp->getCurValue ();
 
             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
             {
@@ -1778,7 +1778,7 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
 
-            FieldValue val = tmp->getCurValue ();
+            FPValue val = tmp->getCurValue ();
 
             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
             {
@@ -1807,7 +1807,7 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
 
-            FieldValue val = tmp->getCurValue ();
+            FPValue val = tmp->getCurValue ();
 
             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
             {
@@ -1836,7 +1836,7 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
 
-            FieldValue val = tmp->getCurValue ();
+            FPValue val = tmp->getCurValue ();
 
             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
             {
@@ -2111,9 +2111,9 @@ Scheme3D::initGrids ()
 
 #ifdef COMPLEX_FIELD_VALUES
     			valSigma->setCurValue (FieldValue (val, 0));
-#else
+#else /* COMPLEX_FIELD_VALUES */
           valSigma->setCurValue (val);
-#endif
+#endif /* !COMPLEX_FIELD_VALUES */
         }
         else if (posAbs.getX () >= size.getX () - PMLSize.getX ())
         {
@@ -2126,9 +2126,9 @@ Scheme3D::initGrids ()
 
 #ifdef COMPLEX_FIELD_VALUES
     			valSigma->setCurValue (FieldValue (val, 0));
-#else
+#else /* COMPLEX_FIELD_VALUES */
           valSigma->setCurValue (val);
-#endif
+#endif /* !COMPLEX_FIELD_VALUES */
         }
 
         SigmaX.setFieldPointValue (valSigma, pos);
@@ -2162,9 +2162,9 @@ Scheme3D::initGrids ()
 
 #ifdef COMPLEX_FIELD_VALUES
     			valSigma->setCurValue (FieldValue (val, 0));
-#else
+#else /* COMPLEX_FIELD_VALUES */
           valSigma->setCurValue (val);
-#endif
+#endif /* !COMPLEX_FIELD_VALUES */
         }
         else if (posAbs.getY () >= size.getY () - PMLSize.getY ())
         {
@@ -2177,9 +2177,9 @@ Scheme3D::initGrids ()
 
 #ifdef COMPLEX_FIELD_VALUES
     			valSigma->setCurValue (FieldValue (val, 0));
-#else
+#else /* COMPLEX_FIELD_VALUES */
           valSigma->setCurValue (val);
-#endif
+#endif /* !COMPLEX_FIELD_VALUES */
         }
 
         SigmaY.setFieldPointValue (valSigma, pos);
@@ -2213,9 +2213,9 @@ Scheme3D::initGrids ()
 
 #ifdef COMPLEX_FIELD_VALUES
     			valSigma->setCurValue (FieldValue (val, 0));
-#else
+#else /* COMPLEX_FIELD_VALUES */
           valSigma->setCurValue (val);
-#endif
+#endif /* !COMPLEX_FIELD_VALUES */
         }
         else if (posAbs.getZ () >= size.getZ () - PMLSize.getZ ())
         {
@@ -2228,9 +2228,9 @@ Scheme3D::initGrids ()
 
 #ifdef COMPLEX_FIELD_VALUES
     			valSigma->setCurValue (FieldValue (val, 0));
-#else
+#else /* COMPLEX_FIELD_VALUES */
           valSigma->setCurValue (val);
-#endif
+#endif /* !COMPLEX_FIELD_VALUES */
         }
 
         SigmaZ.setFieldPointValue (valSigma, pos);

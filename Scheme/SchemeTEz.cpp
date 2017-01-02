@@ -32,11 +32,11 @@ SchemeTEz::performPlaneWaveESteps (time_step t)
     FieldPointValue *valH1 = HInc.getFieldPointValue (posLeft);
     FieldPointValue *valH2 = HInc.getFieldPointValue (posRight);
 
-    FieldValue N_lambda = waveLength / gridStep;
-    FieldValue S = gridTimeStep * PhysicsConst::SpeedOfLight / gridStep;
-    FieldValue arg = PhysicsConst::Pi * S / N_lambda;
+    FPValue N_lambda = waveLength / gridStep;
+    FPValue S = gridTimeStep * PhysicsConst::SpeedOfLight / gridStep;
+    FPValue arg = PhysicsConst::Pi * S / N_lambda;
 
-    FieldValue relPhi;
+    FPValue relPhi;
     if (incidentWaveAngle == PhysicsConst::Pi / 4)
     {
       relPhi = sqrt (2) * asin (sin(arg) / (S * sqrt (2))) / asin (sin (arg) / S);
@@ -71,11 +71,11 @@ SchemeTEz::performPlaneWaveHSteps (time_step t)
     FieldPointValue *valE1 = EInc.getFieldPointValue (posLeft);
     FieldPointValue *valE2 = EInc.getFieldPointValue (posRight);
 
-    FieldValue N_lambda = waveLength / gridStep;
-    FieldValue S = gridTimeStep * PhysicsConst::SpeedOfLight / gridStep;
-    FieldValue arg = PhysicsConst::Pi * S / N_lambda;
+    FPValue N_lambda = waveLength / gridStep;
+    FPValue S = gridTimeStep * PhysicsConst::SpeedOfLight / gridStep;
+    FPValue arg = PhysicsConst::Pi * S / N_lambda;
 
-    FieldValue relPhi;
+    FPValue relPhi;
     if (incidentWaveAngle == PhysicsConst::Pi / 4)
     {
       relPhi = sqrt (2) * asin (sin(arg) / (S * sqrt (2))) / asin (sin (arg) / S);
@@ -92,11 +92,17 @@ SchemeTEz::performPlaneWaveHSteps (time_step t)
     valH->setCurValue (val);
   }
 
-  FieldValue freq = PhysicsConst::SpeedOfLight / waveLength;
+  FPValue freq = PhysicsConst::SpeedOfLight / waveLength;
 
   GridCoordinate1D pos (0);
   FieldPointValue *valH = HInc.getFieldPointValue (pos);
+
+#ifdef COMPLEX_FIELD_VALUES
+  valH->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq),
+                                 cos (gridTimeStep * t * 2 * PhysicsConst::Pi * freq)));
+#else /* COMPLEX_FIELD_VALUES */
   valH->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
+#endif /* !COMPLEX_FIELD_VALUES */
 
   HInc.nextTimeStep ();
 }
@@ -120,7 +126,7 @@ SchemeTEz::performExSteps (time_step t, GridCoordinate3D ExStart, GridCoordinate
 void
 SchemeTEz::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate3D ExEnd)
 {
-  FieldValue eps0 = PhysicsConst::Eps0;
+  FPValue eps0 = PhysicsConst::Eps0;
 
   for (int i = ExStart.getX (); i < ExEnd.getX (); ++i)
   {
@@ -138,7 +144,12 @@ SchemeTEz::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinat
       GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getExCoordFP (posAbs));
       FieldPointValue* valEps1 = Eps.getFieldPointValue (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX () + 0.5, realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())));
       FieldPointValue* valEps2 = Eps.getFieldPointValue (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())));
-      FieldValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
+
+#ifdef COMPLEX_FIELD_VALUES
+      FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
+#else /* COMPLEX_FIELD_VALUES */
+      FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
+#endif /* !COMPLEX_FIELD_VALUES */
 
       FieldPointValue* valHz1 = Hz.getFieldPointValue (posUp);
       FieldPointValue* valHz2 = Hz.getFieldPointValue (posDown);
@@ -153,13 +164,13 @@ SchemeTEz::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinat
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHzCoordFP (Hz.getTotalPosition (posUp)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -176,13 +187,13 @@ SchemeTEz::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinat
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHzCoordFP (Hz.getTotalPosition (posDown)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -211,7 +222,7 @@ SchemeTEz::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinat
 void
 SchemeTEz::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordinate3D ExEnd)
 {
-  FieldValue eps0 = PhysicsConst::Eps0;
+  FPValue eps0 = PhysicsConst::Eps0;
 
   for (int i = ExStart.getX (); i < ExEnd.getX (); ++i)
   {
@@ -241,13 +252,13 @@ SchemeTEz::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordi
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHzCoordFP (Hz.getTotalPosition (posUp)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -264,13 +275,13 @@ SchemeTEz::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordi
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHzCoordFP (Hz.getTotalPosition (posDown)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -284,13 +295,19 @@ SchemeTEz::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordi
         }
       }
 
+#ifdef COMPLEX_FIELD_VALUES
+      FPValue sigmaY = valSigmaY->getCurValue ().real ();
+#else /* COMPLEX_FIELD_VALUES */
+      FPValue sigmaY = valSigmaY->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
       /*
        * FIXME: precalculate coefficients
        */
-      FieldValue k_y = 1;
+      FPValue k_y = 1;
 
-      FieldValue Ca = (2 * eps0 * k_y - valSigmaY->getCurValue () * gridTimeStep) / (2 * eps0 * k_y + valSigmaY->getCurValue () * gridTimeStep);
-      FieldValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_y + valSigmaY->getCurValue () * gridTimeStep);
+      FPValue Ca = (2 * eps0 * k_y - sigmaY * gridTimeStep) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
+      FPValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
 
       FieldValue val = calculateEx_2D_TEz_Precalc (valDx->getPrevValue (),
                                                    prevHz1,
@@ -320,14 +337,25 @@ SchemeTEz::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordi
       GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getExCoordFP (posAbs));
       FieldPointValue* valEps1 = Eps.getFieldPointValue (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX () + 0.5, realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ()))));
       FieldPointValue* valEps2 = Eps.getFieldPointValue (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ()))));
-      FieldValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
 
-      FieldValue k_x = 1;
-      FieldValue k_z = 1;
+#ifdef COMPLEX_FIELD_VALUES
+      FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
 
-      FieldValue Ca = (2 * eps0 * k_z - valSigmaZ->getCurValue () * gridTimeStep) / (2 * eps0 * k_z + valSigmaZ->getCurValue () * gridTimeStep);
-      FieldValue Cb = ((2 * eps0 * k_x + valSigmaX->getCurValue () * gridTimeStep) / (eps * eps0)) / (2 * eps0 * k_z + valSigmaZ->getCurValue () * gridTimeStep);
-      FieldValue Cc = ((2 * eps0 * k_x - valSigmaX->getCurValue () * gridTimeStep) / (eps * eps0)) / (2 * eps0 * k_z + valSigmaZ->getCurValue () * gridTimeStep);
+      FPValue sigmaX = valSigmaX->getCurValue ().real ();
+      FPValue sigmaZ = valSigmaZ->getCurValue ().real ();
+#else /* COMPLEX_FIELD_VALUES */
+      FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
+
+      FPValue sigmaX = valSigmaX->getCurValue ();
+      FPValue sigmaZ = valSigmaZ->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
+      FPValue k_x = 1;
+      FPValue k_z = 1;
+
+      FPValue Ca = (2 * eps0 * k_z - sigmaZ * gridTimeStep) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
+      FPValue Cb = ((2 * eps0 * k_x + sigmaX * gridTimeStep) / (eps * eps0)) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
+      FPValue Cc = ((2 * eps0 * k_x - sigmaX * gridTimeStep) / (eps * eps0)) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
 
       FieldValue val = calculateEx_from_Dx_Precalc (valEx->getPrevValue (),
                                                     valDx->getCurValue (),
@@ -360,7 +388,7 @@ SchemeTEz::performEySteps (time_step t, GridCoordinate3D EyStart, GridCoordinate
 void
 SchemeTEz::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate3D EyEnd)
 {
-  FieldValue eps0 = PhysicsConst::Eps0;
+  FPValue eps0 = PhysicsConst::Eps0;
 
   for (int i = EyStart.getX (); i < EyEnd.getX (); ++i)
   {
@@ -378,7 +406,12 @@ SchemeTEz::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinat
       GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEyCoordFP (posAbs));
       FieldPointValue* valEps1 = Eps.getFieldPointValue (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY () + 0.5, yeeLayout.getMinEpsCoordFP ().getZ ())));
       FieldPointValue* valEps2 = Eps.getFieldPointValue (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY () - 0.5, yeeLayout.getMinEpsCoordFP ().getZ ())));
-      FieldValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
+
+#ifdef COMPLEX_FIELD_VALUES
+      FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
+#else /* COMPLEX_FIELD_VALUES */
+      FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
+#endif /* !COMPLEX_FIELD_VALUES */
 
       FieldPointValue* valHz1 = Hz.getFieldPointValue (posRight);
       FieldPointValue* valHz2 = Hz.getFieldPointValue (posLeft);
@@ -393,13 +426,13 @@ SchemeTEz::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinat
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHzCoordFP (Hz.getTotalPosition (posRight)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -416,13 +449,13 @@ SchemeTEz::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinat
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHzCoordFP (Hz.getTotalPosition (posRight)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -451,7 +484,7 @@ SchemeTEz::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinat
 void
 SchemeTEz::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordinate3D EyEnd)
 {
-  FieldValue eps0 = PhysicsConst::Eps0;
+  FPValue eps0 = PhysicsConst::Eps0;
 
   for (int i = EyStart.getX (); i < EyEnd.getX (); ++i)
   {
@@ -481,13 +514,13 @@ SchemeTEz::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordi
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHzCoordFP (Hz.getTotalPosition (posRight)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -504,13 +537,13 @@ SchemeTEz::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordi
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHzCoordFP (Hz.getTotalPosition (posLeft)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -524,13 +557,19 @@ SchemeTEz::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordi
         }
       }
 
+#ifdef COMPLEX_FIELD_VALUES
+      FPValue sigmaZ = valSigmaZ->getCurValue ().real ();
+#else /* COMPLEX_FIELD_VALUES */
+      FPValue sigmaZ = valSigmaZ->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
       /*
        * FIXME: precalculate coefficients
        */
-      FieldValue k_z = 1;
+      FPValue k_z = 1;
 
-      FieldValue Ca = (2 * eps0 * k_z - valSigmaZ->getCurValue () * gridTimeStep) / (2 * eps0 * k_z + valSigmaZ->getCurValue () * gridTimeStep);
-      FieldValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_z + valSigmaZ->getCurValue () * gridTimeStep);
+      FPValue Ca = (2 * eps0 * k_z - sigmaZ * gridTimeStep) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
+      FPValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
 
       FieldValue val = calculateEy_2D_TEz_Precalc (valDy->getPrevValue (),
                                                    prevHz1,
@@ -560,14 +599,25 @@ SchemeTEz::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordi
       GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEyCoordFP (posAbs));
       FieldPointValue* valEps1 = Eps.getFieldPointValue (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY () + 0.5, yeeLayout.getMinEpsCoordFP ().getZ ())));
       FieldPointValue* valEps2 = Eps.getFieldPointValue (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY () - 0.5, yeeLayout.getMinEpsCoordFP ().getZ ())));
-      FieldValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
 
-      FieldValue k_x = 1;
-      FieldValue k_y = 1;
+#ifdef COMPLEX_FIELD_VALUES
+      FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
 
-      FieldValue Ca = (2 * eps0 * k_x - valSigmaX->getCurValue () * gridTimeStep) / (2 * eps0 * k_x + valSigmaX->getCurValue () * gridTimeStep);
-      FieldValue Cb = ((2 * eps0 * k_y + valSigmaY->getCurValue () * gridTimeStep) / (eps * eps0)) / (2 * eps0 * k_x + valSigmaX->getCurValue () * gridTimeStep);
-      FieldValue Cc = ((2 * eps0 * k_y - valSigmaY->getCurValue () * gridTimeStep) / (eps * eps0)) / (2 * eps0 * k_x + valSigmaX->getCurValue () * gridTimeStep);
+      FPValue sigmaX = valSigmaX->getCurValue ().real ();
+      FPValue sigmaY = valSigmaY->getCurValue ().real ();
+#else /* COMPLEX_FIELD_VALUES */
+      FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
+
+      FPValue sigmaX = valSigmaX->getCurValue ();
+      FPValue sigmaY = valSigmaY->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
+      FPValue k_x = 1;
+      FPValue k_y = 1;
+
+      FPValue Ca = (2 * eps0 * k_x - sigmaX * gridTimeStep) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
+      FPValue Cb = ((2 * eps0 * k_y + sigmaY * gridTimeStep) / (eps * eps0)) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
+      FPValue Cc = ((2 * eps0 * k_y - sigmaY * gridTimeStep) / (eps * eps0)) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
 
       FieldValue val = calculateEy_from_Dy_Precalc (valEy->getPrevValue (),
                                                     valDy->getCurValue (),
@@ -600,7 +650,7 @@ SchemeTEz::performHzSteps (time_step t, GridCoordinate3D HzStart, GridCoordinate
 void
 SchemeTEz::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate3D HzEnd)
 {
-  FieldValue mu0 = PhysicsConst::Mu0;
+  FPValue mu0 = PhysicsConst::Mu0;
 
   for (int i = HzStart.getX (); i < HzEnd.getX (); ++i)
   {
@@ -624,7 +674,6 @@ SchemeTEz::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinat
       FieldPointValue* valMu2 = Mu.getFieldPointValue (yeeLayout.getMuCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY () + 0.5, yeeLayout.getMinMuCoordFP ().getZ ())));
       FieldPointValue* valMu3 = Mu.getFieldPointValue (yeeLayout.getMuCoord (GridCoordinateFP3D (realCoord.getX () + 0.5, realCoord.getY () - 0.5, yeeLayout.getMinMuCoordFP ().getZ ())));
       FieldPointValue* valMu4 = Mu.getFieldPointValue (yeeLayout.getMuCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY () - 0.5, yeeLayout.getMinMuCoordFP ().getZ ())));
-      FieldValue mu = (valMu1->getCurValue () + valMu2->getCurValue () + valMu3->getCurValue () + valMu4->getCurValue ()) / 4;
 
       FieldPointValue* valEy1 = Ey.getFieldPointValue (posRight);
       FieldPointValue* valEy2 = Ey.getFieldPointValue (posLeft);
@@ -638,6 +687,12 @@ SchemeTEz::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinat
       FieldValue prevEy1 = valEy1->getPrevValue ();
       FieldValue prevEy2 = valEy2->getPrevValue ();
 
+#ifdef COMPLEX_FIELD_VALUES
+      FPValue mu = (valMu1->getCurValue ().real () + valMu2->getCurValue ().real () + valMu3->getCurValue ().real () + valMu4->getCurValue ().real ()) / 4;
+#else /* COMPLEX_FIELD_VALUES */
+      FPValue mu = (valMu1->getCurValue () + valMu2->getCurValue () + valMu3->getCurValue () + valMu4->getCurValue ()) / 4;
+#endif /* !COMPLEX_FIELD_VALUES */
+
       if (useTFSF)
       {
         if (yeeLayout.doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::DOWN, false))
@@ -645,13 +700,13 @@ SchemeTEz::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinat
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getExCoordFP (Ex.getTotalPosition (posDown)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -668,13 +723,13 @@ SchemeTEz::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinat
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getExCoordFP (Ex.getTotalPosition (posUp)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -692,13 +747,13 @@ SchemeTEz::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinat
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEyCoordFP (Ey.getTotalPosition (posLeft)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -715,13 +770,13 @@ SchemeTEz::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinat
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getExCoordFP (Ey.getTotalPosition (posRight)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -752,8 +807,8 @@ SchemeTEz::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinat
 void
 SchemeTEz::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordinate3D HzEnd)
 {
-  FieldValue eps0 = PhysicsConst::Eps0;
-  FieldValue mu0 = PhysicsConst::Mu0;
+  FPValue eps0 = PhysicsConst::Eps0;
+  FPValue mu0 = PhysicsConst::Mu0;
 
   for (int i = HzStart.getX (); i < HzEnd.getX (); ++i)
   {
@@ -795,13 +850,13 @@ SchemeTEz::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordi
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getExCoordFP (Ex.getTotalPosition (posDown)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -818,13 +873,13 @@ SchemeTEz::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordi
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getExCoordFP (Ex.getTotalPosition (posUp)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -842,13 +897,13 @@ SchemeTEz::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordi
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEyCoordFP (Ey.getTotalPosition (posLeft)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -865,13 +920,13 @@ SchemeTEz::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordi
           GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getExCoordFP (Ey.getTotalPosition (posRight)));
           GridCoordinateFP2D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
-          FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
-          FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
-          FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FieldValue coordD1 = (FieldValue) ((grid_iter) d);
-          FieldValue coordD2 = coordD1 + 1;
-          FieldValue proportionD2 = d - coordD1;
-          FieldValue proportionD1 = 1 - proportionD2;
+          FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+          FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+          FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
+          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD2 = coordD1 + 1;
+          FPValue proportionD2 = d - coordD1;
+          FPValue proportionD1 = 1 - proportionD2;
 
           GridCoordinate1D pos1 (coordD1);
           GridCoordinate1D pos2 (coordD2);
@@ -885,10 +940,16 @@ SchemeTEz::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordi
         }
       }
 
-      FieldValue k_x = 1;
+#ifdef COMPLEX_FIELD_VALUES
+      FPValue sigmaX = valSigmaX->getCurValue ().real ();
+#else /* COMPLEX_FIELD_VALUES */
+      FPValue sigmaX = valSigmaX->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
 
-      FieldValue Ca = (2 * eps0 * k_x - valSigmaX->getCurValue () * gridTimeStep) / (2 * eps0 * k_x + valSigmaX->getCurValue () * gridTimeStep);
-      FieldValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_x + valSigmaX->getCurValue () * gridTimeStep);
+      FPValue k_x = 1;
+
+      FPValue Ca = (2 * eps0 * k_x - sigmaX * gridTimeStep) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
+      FPValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
 
       FieldValue val = calculateHz_3D_Precalc (valBz->getPrevValue (),
                                                prevEx1,
@@ -922,14 +983,25 @@ SchemeTEz::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordi
       FieldPointValue* valMu2 = Mu.getFieldPointValue (yeeLayout.getMuCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY () + 0.5, yeeLayout.getMinMuCoordFP ().getZ ())));
       FieldPointValue* valMu3 = Mu.getFieldPointValue (yeeLayout.getMuCoord (GridCoordinateFP3D (realCoord.getX () + 0.5, realCoord.getY () - 0.5, yeeLayout.getMinMuCoordFP ().getZ ())));
       FieldPointValue* valMu4 = Mu.getFieldPointValue (yeeLayout.getMuCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY () - 0.5, yeeLayout.getMinMuCoordFP ().getZ ())));
-      FieldValue mu = (valMu1->getCurValue () + valMu2->getCurValue () + valMu3->getCurValue () + valMu4->getCurValue ()) / 4;
 
-      FieldValue k_y = 1;
-      FieldValue k_z = 1;
+#ifdef COMPLEX_FIELD_VALUES
+      FPValue mu = (valMu1->getCurValue ().real () + valMu2->getCurValue ().real () + valMu3->getCurValue ().real () + valMu4->getCurValue ().real ()) / 4;
 
-      FieldValue Ca = (2 * eps0 * k_y - valSigmaY->getCurValue () * gridTimeStep) / (2 * eps0 * k_y + valSigmaY->getCurValue () * gridTimeStep);
-      FieldValue Cb = ((2 * eps0 * k_z + valSigmaZ->getCurValue () * gridTimeStep) / (mu * mu0)) / (2 * eps0 * k_y + valSigmaY->getCurValue () * gridTimeStep);
-      FieldValue Cc = ((2 * eps0 * k_z - valSigmaZ->getCurValue () * gridTimeStep) / (mu * mu0)) / (2 * eps0 * k_y + valSigmaY->getCurValue () * gridTimeStep);
+      FPValue sigmaY = valSigmaY->getCurValue ().real ();
+      FPValue sigmaZ = valSigmaZ->getCurValue ().real ();
+#else /* COMPLEX_FIELD_VALUES */
+      FPValue mu = (valMu1->getCurValue () + valMu2->getCurValue () + valMu3->getCurValue () + valMu4->getCurValue ()) / 4;
+
+      FPValue sigmaY = valSigmaY->getCurValue ();
+      FPValue sigmaZ = valSigmaZ->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
+      FPValue k_y = 1;
+      FPValue k_z = 1;
+
+      FPValue Ca = (2 * eps0 * k_y - sigmaY * gridTimeStep) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
+      FPValue Cb = ((2 * eps0 * k_z + sigmaZ * gridTimeStep) / (mu * mu0)) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
+      FPValue Cc = ((2 * eps0 * k_z - sigmaZ * gridTimeStep) / (mu * mu0)) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
 
       FieldValue val = calculateHz_from_Bz_Precalc (valHz->getPrevValue (),
                                                     valBz->getCurValue (),
@@ -991,11 +1063,17 @@ SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
       if (process == 0)
 #endif
       {
-        FieldValue freq = PhysicsConst::SpeedOfLight / waveLength;
+        FPValue freq = PhysicsConst::SpeedOfLight / waveLength;
 
         GridCoordinate2D pos (HzSize.getX () / 2, HzSize.getY () / 2);
         FieldPointValue* tmp = Hz.getFieldPointValue (pos);
+
+#ifdef COMPLEX_FIELD_VALUES
+        tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq),
+                                      cos (gridTimeStep * t * 2 * PhysicsConst::Pi * freq)));
+#else /* COMPLEX_FIELD_VALUES */
         tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
+#endif /* !COMPLEX_FIELD_VALUES */
       }
     }
 
@@ -1044,6 +1122,10 @@ SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
 void
 SchemeTEz::performAmplitudeSteps (time_step startStep, int dumpRes)
 {
+#ifdef COMPLEX_FIELD_VALUES
+  UNREACHABLE;
+#else /* COMPLEX_FIELD_VALUES */
+
   int is_stable_state = 0;
 
   GridCoordinate2D HzSize = Hz.getSize ();
@@ -1054,7 +1136,7 @@ SchemeTEz::performAmplitudeSteps (time_step startStep, int dumpRes)
 
   while (is_stable_state == 0 && t < amplitudeStepLimit)
   {
-    FieldValue maxAccuracy = -1;
+    FPValue maxAccuracy = -1;
 
     //is_stable_state = 1;
 
@@ -1086,7 +1168,7 @@ SchemeTEz::performAmplitudeSteps (time_step startStep, int dumpRes)
           FieldPointValue* tmp = Ex.getFieldPointValue (pos);
           FieldPointValue* tmpAmp = ExAmplitude.getFieldPointValue (pos);
 
-          FieldValue val = tmp->getCurValue ();
+          FPValue val = tmp->getCurValue ();
 
           if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
           {
@@ -1107,7 +1189,7 @@ SchemeTEz::performAmplitudeSteps (time_step startStep, int dumpRes)
           FieldPointValue* tmp = Ey.getFieldPointValue (pos);
           FieldPointValue* tmpAmp = EyAmplitude.getFieldPointValue (pos);
 
-          FieldValue val = tmp->getCurValue ();
+          FPValue val = tmp->getCurValue ();
 
           if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
           {
@@ -1139,11 +1221,17 @@ SchemeTEz::performAmplitudeSteps (time_step startStep, int dumpRes)
       if (process == 0)
 #endif
       {
-        FieldValue freq = PhysicsConst::SpeedOfLight / waveLength;
+        FPValue freq = PhysicsConst::SpeedOfLight / waveLength;
 
         GridCoordinate2D pos (HzSize.getX () / 2, HzSize.getY () / 2);
         FieldPointValue* tmp = Hz.getFieldPointValue (pos);
+
+#ifdef COMPLEX_FIELD_VALUES
+        tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq),
+                                      cos (gridTimeStep * t * 2 * PhysicsConst::Pi * freq)));
+#else /* COMPLEX_FIELD_VALUES */
         tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
+#endif /* !COMPLEX_FIELD_VALUES */
       }
     }
 
@@ -1158,7 +1246,9 @@ SchemeTEz::performAmplitudeSteps (time_step startStep, int dumpRes)
           FieldPointValue* tmp = Hz.getFieldPointValue (pos);
           FieldPointValue* tmpAmp = HzAmplitude.getFieldPointValue (pos);
 
-          if (updateAmplitude (tmp->getCurValue (), tmpAmp, &maxAccuracy) == 0)
+          FPValue val = tmp->getCurValue ();
+
+          if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
           {
             is_stable_state = 0;
           }
@@ -1246,20 +1336,25 @@ SchemeTEz::performAmplitudeSteps (time_step startStep, int dumpRes)
   {
     ASSERT_MESSAGE ("Stable state is not reached. Increase number of steps.\n");
   }
+#endif /* !COMPLEX_FIELD_VALUES */
 }
 
 int
-SchemeTEz::updateAmplitude (FieldValue val, FieldPointValue *amplitudeValue, FieldValue *maxAccuracy)
+SchemeTEz::updateAmplitude (FPValue val, FieldPointValue *amplitudeValue, FPValue *maxAccuracy)
 {
+#ifdef COMPLEX_FIELD_VALUES
+  UNREACHABLE;
+#else /* COMPLEX_FIELD_VALUES */
+
   int is_stable_state = 1;
 
-  FieldValue valAmp = amplitudeValue->getCurValue ();
+  FPValue valAmp = amplitudeValue->getCurValue ();
 
   val = val >= 0 ? val : -val;
 
   if (val >= valAmp)
   {
-    FieldValue accuracy = val - valAmp;
+    FPValue accuracy = val - valAmp;
     if (valAmp != 0)
     {
       accuracy /= valAmp;
@@ -1283,6 +1378,8 @@ SchemeTEz::updateAmplitude (FieldValue val, FieldPointValue *amplitudeValue, Fie
   }
 
   return is_stable_state;
+
+#endif /* !COMPLEX_FIELD_VALUES */
 }
 
 void
@@ -1312,15 +1409,15 @@ SchemeTEz::performSteps (int dumpRes)
 }
 
 void
-SchemeTEz::initScheme (FieldValue wLength, FieldValue step)
+SchemeTEz::initScheme (FPValue wLength, FPValue step)
 {
   waveLength = wLength;
   stepWaveLength = step;
-  frequency = /*PhysicsConst::SpeedOfLight / waveLength*/ 1.25*1000000000;
+  frequency = /*PhysicsConst::SpeedOfLight / waveLength*/ 2.45*1000000000;
   waveLength = PhysicsConst::SpeedOfLight / frequency;
 
   gridStep = waveLength / stepWaveLength;
-  gridTimeStep = 0.5 * gridStep / (PhysicsConst::SpeedOfLight);
+  gridTimeStep = 0.4 * gridStep / (PhysicsConst::SpeedOfLight);
 }
 
 #if defined (PARALLEL_GRID)
@@ -1338,15 +1435,13 @@ SchemeTEz::initGrids ()
   {
     for (int j = 0; j < Eps.getSize ().getY (); ++j)
     {
-      FieldPointValue* valEps;
+      FieldPointValue* valEps = new FieldPointValue ();
 
-#if defined (TWO_TIME_STEPS)
-      valEps = new FieldPointValue (1, 1, 1);
-#elif defined (ONE_TIME_STEP)
-      valEps = new FieldPointValue (1, 1);
-#else
-      valEps = new FieldPointValue (1);
-#endif
+#ifdef COMPLEX_FIELD_VALUES
+      valEps->setCurValue (FieldValue (1, 0));
+#else /* COMPLEX_FIELD_VALUES */
+      valEps->setCurValue (1);
+#endif /* !COMPLEX_FIELD_VALUES */
 
       GridCoordinate2D pos (i, j);
       GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalPosition (pos)));
@@ -1358,9 +1453,10 @@ SchemeTEz::initGrids ()
       // {
       //   valEps->setCurValue (4.0);
       // }
-      if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2) + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*0.2/0.75) * (size.getX ()*0.2/0.75))
+      if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
+          + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
       {
-        valEps->setCurValue (58.29);
+        valEps->setCurValue (4);
       }
 
       Eps.setFieldPointValue (valEps, pos);
@@ -1375,15 +1471,13 @@ SchemeTEz::initGrids ()
   {
     for (int j = 0; j < Mu.getSize ().getY (); ++j)
     {
-      FieldPointValue* valMu;
+      FieldPointValue* valMu = new FieldPointValue ();
 
-#if defined (TWO_TIME_STEPS)
-      valMu = new FieldPointValue (1, 1, 1);
-#elif defined (ONE_TIME_STEP)
-      valMu = new FieldPointValue (1, 1);
-#else
-      valMu = new FieldPointValue (1);
-#endif
+#ifdef COMPLEX_FIELD_VALUES
+      valMu->setCurValue (FieldValue (1, 0));
+#else /* COMPLEX_FIELD_VALUES */
+      valMu->setCurValue (1);
+#endif /* !COMPLEX_FIELD_VALUES */
 
       GridCoordinate2D pos (i, j);
 
@@ -1391,16 +1485,16 @@ SchemeTEz::initGrids ()
     }
   }
 
-  FieldValue eps0 = PhysicsConst::Eps0;
-  FieldValue mu0 = PhysicsConst::Mu0;
+  FPValue eps0 = PhysicsConst::Eps0;
+  FPValue mu0 = PhysicsConst::Mu0;
 
   GridCoordinate2D PMLSize = shrinkCoord (yeeLayout.getLeftBorderPML ());
 
-  FieldValue boundary = PMLSize.getX () * gridStep;
+  FPValue boundary = PMLSize.getX () * gridStep;
   uint32_t exponent = 6;
-	FieldValue R_err = 1e-16;
-	FieldValue sigma_max_1 = -log (R_err) * (exponent + 1.0) / (2.0 * sqrt (mu0 / eps0) * boundary);
-	FieldValue boundaryFactor = sigma_max_1 / (gridStep * (pow (boundary, exponent)) * (exponent + 1));
+	FPValue R_err = 1e-16;
+	FPValue sigma_max_1 = -log (R_err) * (exponent + 1.0) / (2.0 * sqrt (mu0 / eps0) * boundary);
+	FPValue boundaryFactor = sigma_max_1 / (gridStep * (pow (boundary, exponent)) * (exponent + 1));
 
   for (int i = 0; i < SigmaX.getSize ().getX (); ++i)
   {
@@ -1419,19 +1513,31 @@ SchemeTEz::initGrids ()
       if (posAbs.getX () < PMLSize.getX ())
       {
         grid_coord dist = PMLSize.getX () - posAbs.getX ();
-  			FieldValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-  			FieldValue x2 = dist * gridStep;       // lower bounds for point i
+  			FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+  			FPValue x2 = dist * gridStep;       // lower bounds for point i
 
-  			valSigma->setCurValue (boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1))));   //   polynomial grading
+  			FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
+
+#ifdef COMPLEX_FIELD_VALUES
+  			valSigma->setCurValue (FieldValue (val, 0));
+#else /* COMPLEX_FIELD_VALUES */
+        valSigma->setCurValue (val);
+#endif /* !COMPLEX_FIELD_VALUES */
       }
       else if (posAbs.getX () >= size.getX () - PMLSize.getX ())
       {
         grid_coord dist = posAbs.getX () - (size.getX () - PMLSize.getX ());
-  			FieldValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-  			FieldValue x2 = dist * gridStep;       // lower bounds for point i
+  			FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+  			FPValue x2 = dist * gridStep;       // lower bounds for point i
 
   			//std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
-  			valSigma->setCurValue (boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1))));   //   polynomial grading
+  			FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
+
+#ifdef COMPLEX_FIELD_VALUES
+  			valSigma->setCurValue (FieldValue (val, 0));
+#else /* COMPLEX_FIELD_VALUES */
+        valSigma->setCurValue (val);
+#endif /* !COMPLEX_FIELD_VALUES */
       }
 
       SigmaX.setFieldPointValue (valSigma, pos);
@@ -1455,19 +1561,31 @@ SchemeTEz::initGrids ()
       if (posAbs.getY () < PMLSize.getY ())
       {
         grid_coord dist = PMLSize.getY () - posAbs.getY ();
-        FieldValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-        FieldValue x2 = dist * gridStep;       // lower bounds for point i
+        FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+        FPValue x2 = dist * gridStep;       // lower bounds for point i
 
-        valSigma->setCurValue (boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1))));   //   polynomial grading
+        FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
+
+#ifdef COMPLEX_FIELD_VALUES
+  			valSigma->setCurValue (FieldValue (val, 0));
+#else /* COMPLEX_FIELD_VALUES */
+        valSigma->setCurValue (val);
+#endif /* !COMPLEX_FIELD_VALUES */
       }
       else if (posAbs.getY () >= size.getY () - PMLSize.getY ())
       {
         grid_coord dist = posAbs.getY () - (size.getY () - PMLSize.getY ());
-        FieldValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-        FieldValue x2 = dist * gridStep;       // lower bounds for point i
+        FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+        FPValue x2 = dist * gridStep;       // lower bounds for point i
 
         //std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
-        valSigma->setCurValue (boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1))));   //   polynomial grading
+        FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
+
+#ifdef COMPLEX_FIELD_VALUES
+  			valSigma->setCurValue (FieldValue (val, 0));
+#else /* COMPLEX_FIELD_VALUES */
+        valSigma->setCurValue (val);
+#endif /* !COMPLEX_FIELD_VALUES */
       }
 
       SigmaY.setFieldPointValue (valSigma, pos);
