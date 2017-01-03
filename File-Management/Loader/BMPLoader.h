@@ -94,4 +94,7 @@ BMPLoader<TCoord>::loadFromFile (Grid<TCoord> &grid) const
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 }
 
+template <class TCoord>
+BMPHelper BMPLoader<TCoord>::BMPhelper (PaletteType::PALETTE_BLUE_GREEN_RED);
+
 #endif /* BMP_LOADER_H */

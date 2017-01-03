@@ -1,14 +1,17 @@
 #include "Assert.h"
 #include "BMPHelper.h"
 
-/*
+/**
  * Return value according to colors of pixel.
  * Blue-Green-Red scheme.
  */
 FPValue
-BMPHelper::getValueFromPixel (const RGBApixel& pixel, const FPValue& maxNeg,
-                              const FPValue& max)
+BMPHelper::getValueFromPixelBlueGreenRed (const RGBApixel& pixel, const FPValue& maxNeg,
+                                          const FPValue& max)
 {
+  /*
+   * FIXME: use maxNeg
+   */
   FPValue retval = 0;
   FPValue max_2 = max / 2.0;
 
@@ -32,13 +35,32 @@ BMPHelper::getValueFromPixel (const RGBApixel& pixel, const FPValue& maxNeg,
   return retval;
 }
 
-/*
+/**
+ * Return value according to colors of pixel.
+ * Gray scheme.
+ */
+FPValue
+BMPHelper::getValueFromPixelGray (const RGBApixel& pixel, const FPValue& maxNeg,
+                                  const FPValue& max)
+{
+  /*
+   * FIXME: use maxNeg
+   */
+  ASSERT (pixel.Red == pixel.Green
+          && pixel.Red == pixel.Blue);
+
+  FPValue retval = ((FPValue) pixel.Red) / 255 * max;
+
+  return retval;
+}
+
+/**
  * Return pixel with colors according to values.
  * Blue-Green-Red scheme.
  */
 RGBApixel
-BMPHelper::getPixelFromValue (const FPValue& val, const FPValue& maxNeg,
-                              const FPValue& max)
+BMPHelper::getPixelFromValueBlueGreenRed (const FPValue& val, const FPValue& maxNeg,
+                                          const FPValue& max)
 {
   RGBApixel pixel;
   pixel.Alpha = 1.0;
@@ -71,4 +93,73 @@ BMPHelper::getPixelFromValue (const FPValue& val, const FPValue& maxNeg,
   }
 
   return pixel;
+}
+
+/**
+ * Return pixel with colors according to values.
+ * Gray scheme.
+ */
+RGBApixel
+BMPHelper::getPixelFromValueGray (const FPValue& val, const FPValue& maxNeg,
+                                  const FPValue& max)
+{
+  RGBApixel pixel;
+  pixel.Alpha = 1.0;
+
+  FPValue value = val - maxNeg;
+  pixel.Red = value / max * 255;
+  pixel.Green = value / max * 255;
+  pixel.Blue = value / max * 255;
+
+  return pixel;
+}
+
+FPValue
+BMPHelper::getValueFromPixel (const RGBApixel& pixel, const FPValue& maxNeg,
+                              const FPValue& max)
+{
+  switch (palette)
+  {
+    case PaletteType::PALETTE_BLUE_GREEN_RED:
+    {
+      return getValueFromPixelBlueGreenRed (pixel, maxNeg, max);
+
+      break;
+    }
+    case PaletteType::PALETTE_GRAY:
+    {
+      return getValueFromPixelGray (pixel, maxNeg, max);
+
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+}
+
+RGBApixel
+BMPHelper::getPixelFromValue (const FPValue& val, const FPValue& maxNeg,
+                              const FPValue& max)
+{
+  switch (palette)
+  {
+    case PaletteType::PALETTE_BLUE_GREEN_RED:
+    {
+      return getPixelFromValueBlueGreenRed (val, maxNeg, max);
+
+      break;
+    }
+    case PaletteType::PALETTE_GRAY:
+    {
+      return getPixelFromValueGray (val, maxNeg, max);
+
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
 }

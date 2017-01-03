@@ -261,10 +261,14 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
+  printf ("MaxRe neg %f, maxRe pos %f, maxRe %f\n", maxNegRe, maxPosRe, maxRe);
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
+
+  printf ("MaxIm neg %f, maxIm pos %f, maxIm %f\n", maxNegIm, maxPosIm, maxIm);
+  printf ("MaxMod neg %f, maxMod pos %f, maxMod %f\n", maxNegMod, maxPosMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
@@ -609,10 +613,14 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
+  printf ("MaxRe neg %f, maxRe pos %f, maxRe %f\n", maxNegRe, maxPosRe, maxRe);
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
+
+  printf ("MaxIm neg %f, maxIm pos %f, maxIm %f\n", maxNegIm, maxPosIm, maxIm);
+  printf ("MaxMod neg %f, maxMod pos %f, maxMod %f\n", maxNegMod, maxPosMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
@@ -945,10 +953,14 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
+  printf ("MaxRe neg %f, maxRe pos %f, maxRe %f\n", maxNegRe, maxPosRe, maxRe);
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
+
+  printf ("MaxIm neg %f, maxIm pos %f, maxIm %f\n", maxNegIm, maxPosIm, maxIm);
+  printf ("MaxMod neg %f, maxMod pos %f, maxMod %f\n", maxNegMod, maxPosMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Create image for current values and max/min values.
