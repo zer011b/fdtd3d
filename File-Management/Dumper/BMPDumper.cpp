@@ -91,6 +91,10 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
   BMP imageIm;
   imageIm.SetSize (sx, sy);
   imageIm.SetBitDepth (24);
+
+  BMP imageMod;
+  imageMod.SetSize (sx, sy);
+  imageMod.SetBitDepth (24);
 #endif /* COMPLEX_FIELD_VALUES */
 
   const FieldPointValue* value0 = grid.getFieldPointValue (0);
@@ -102,6 +106,9 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
   FPValue maxPosIm = 0;
   FPValue maxNegIm = 0;
+
+  FPValue maxPosMod = 0;
+  FPValue maxNegMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
   switch (dump_type)
@@ -111,6 +118,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       maxNegRe = maxPosRe = value0->getCurValue ().real ();
       maxNegIm = maxPosIm = value0->getCurValue ().imag ();
+
+      maxNegMod = maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
 #else /* COMPLEX_FIELD_VALUES */
       maxNegRe = maxPosRe = value0->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -123,6 +132,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       maxNegRe = maxPosRe = value0->getPrevValue ().real ();
       maxNegIm = maxPosIm = value0->getPrevValue ().imag ();
+
+      maxNegMod = maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
 #else /* COMPLEX_FIELD_VALUES */
       maxNegRe = maxPosRe = value0->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -135,6 +146,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       maxNegRe = maxPosRe = value0->getPrevPrevValue ().real ();
       maxNegIm = maxPosIm = value0->getPrevPrevValue ().imag ();
+
+      maxNegMod = maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
 #else /* COMPLEX_FIELD_VALUES */
       maxNegRe = maxPosRe = value0->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -160,6 +173,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
     FPValue valueIm = 0;
+
+    FPValue valueMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
     switch (dump_type)
@@ -169,6 +184,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getCurValue ().real ();
         valueIm = current->getCurValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -181,6 +198,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getPrevValue ().real ();
         valueIm = current->getPrevValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -193,6 +212,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getPrevPrevValue ().real ();
         valueIm = current->getPrevPrevValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -225,6 +246,15 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
     {
       maxNegIm = valueIm;
     }
+
+    if (valueMod > maxPosMod)
+    {
+      maxPosMod = valueMod;
+    }
+    if (valueMod < maxNegMod)
+    {
+      maxNegMod = valueMod;
+    }
 #endif /* COMPLEX_FIELD_VALUES */
   }
 
@@ -233,6 +263,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
+
+  const FPValue maxMod = maxPosMod - maxNegMod;
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
@@ -255,6 +287,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
     FPValue valueIm = 0;
+
+    FPValue valueMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
     switch (dump_type)
@@ -264,6 +298,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getCurValue ().real ();
         valueIm = current->getCurValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -276,6 +312,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getPrevValue ().real ();
         valueIm = current->getPrevValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -288,6 +326,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getPrevPrevValue ().real ();
         valueIm = current->getPrevPrevValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -306,6 +346,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
     RGBApixel pixelIm = BMPhelper.getPixelFromValue (valueIm, maxNegIm, maxIm);
+
+    RGBApixel pixelMod = BMPhelper.getPixelFromValue (valueMod, maxNegMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
     // Set pixel for current image.
@@ -313,6 +355,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
     imageIm.SetPixel(px, py, pixelIm);
+
+    imageMod.SetPixel(px, py, pixelMod);
 #endif /* COMPLEX_FIELD_VALUES */
   }
 
@@ -327,6 +371,9 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (cur_bmp_im.c_str ());
+
+      std::string cur_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
+      imageMod.WriteToFile (cur_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -340,6 +387,9 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       std::string prev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (prev_bmp_im.c_str ());
+
+      std::string prev_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
+      imageMod.WriteToFile (prev_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -353,6 +403,9 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       std::string prevPrev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (prevPrev_bmp_im.c_str ());
+
+      std::string prevPrev_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
+      imageMod.WriteToFile (prevPrev_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -386,6 +439,10 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
   BMP imageIm;
   imageIm.SetSize (sx, sy);
   imageIm.SetBitDepth (24);
+
+  BMP imageMod;
+  imageMod.SetSize (sx, sy);
+  imageMod.SetBitDepth (24);
 #endif /* COMPLEX_FIELD_VALUES */
 
   const FieldPointValue* value0 = grid.getFieldPointValue (0);
@@ -397,6 +454,9 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
   FPValue maxPosIm = 0;
   FPValue maxNegIm = 0;
+
+  FPValue maxPosMod = 0;
+  FPValue maxNegMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
   switch (dump_type)
@@ -406,6 +466,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       maxNegRe = maxPosRe = value0->getCurValue ().real ();
       maxNegIm = maxPosIm = value0->getCurValue ().imag ();
+
+      maxNegMod = maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
 #else /* COMPLEX_FIELD_VALUES */
       maxNegRe = maxPosRe = value0->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -418,6 +480,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       maxNegRe = maxPosRe = value0->getPrevValue ().real ();
       maxNegIm = maxPosIm = value0->getPrevValue ().imag ();
+
+      maxNegMod = maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
 #else /* COMPLEX_FIELD_VALUES */
       maxNegRe = maxPosRe = value0->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -430,6 +494,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       maxNegRe = maxPosRe = value0->getPrevPrevValue ().real ();
       maxNegIm = maxPosIm = value0->getPrevPrevValue ().imag ();
+
+      maxNegMod = maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
 #else /* COMPLEX_FIELD_VALUES */
       maxNegRe = maxPosRe = value0->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -455,6 +521,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
     FPValue valueIm = 0;
+
+    FPValue valueMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
     switch (dump_type)
@@ -464,6 +532,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getCurValue ().real ();
         valueIm = current->getCurValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -476,6 +546,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getPrevValue ().real ();
         valueIm = current->getPrevValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -488,6 +560,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getPrevPrevValue ().real ();
         valueIm = current->getPrevPrevValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -520,6 +594,15 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
     {
       maxNegIm = valueIm;
     }
+
+    if (valueMod > maxPosMod)
+    {
+      maxPosMod = valueMod;
+    }
+    if (valueMod < maxNegMod)
+    {
+      maxNegMod = valueMod;
+    }
 #endif /* COMPLEX_FIELD_VALUES */
   }
 
@@ -528,6 +611,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
+
+  const FPValue maxMod = maxPosMod - maxNegMod;
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
@@ -550,6 +635,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
     FPValue valueIm = 0;
+
+    FPValue valueMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
     switch (dump_type)
@@ -559,6 +646,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getCurValue ().real ();
         valueIm = current->getCurValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -571,6 +660,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getPrevValue ().real ();
         valueIm = current->getPrevValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -583,6 +674,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getPrevPrevValue ().real ();
         valueIm = current->getPrevPrevValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -601,6 +694,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
     RGBApixel pixelIm = BMPhelper.getPixelFromValue (valueIm, maxNegIm, maxIm);
+
+    RGBApixel pixelMod = BMPhelper.getPixelFromValue (valueMod, maxNegMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
     // Set pixel for current image.
@@ -608,6 +703,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
     imageIm.SetPixel(px, py, pixelIm);
+
+    imageMod.SetPixel(px, py, pixelMod);
 #endif /* COMPLEX_FIELD_VALUES */
   }
 
@@ -622,6 +719,9 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (cur_bmp_im.c_str ());
+
+      std::string cur_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
+      imageMod.WriteToFile (cur_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -635,6 +735,9 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       std::string prev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (prev_bmp_im.c_str ());
+
+      std::string prev_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
+      imageMod.WriteToFile (prev_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -648,6 +751,9 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       std::string prevPrev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (prevPrev_bmp_im.c_str ());
+
+      std::string prevPrev_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
+      imageMod.WriteToFile (prevPrev_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -684,6 +790,9 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
   FPValue maxPosIm = 0;
   FPValue maxNegIm = 0;
+
+  FPValue maxPosMod = 0;
+  FPValue maxNegMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
   switch (dump_type)
@@ -693,6 +802,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       maxNegRe = maxPosRe = value0->getCurValue ().real ();
       maxNegIm = maxPosIm = value0->getCurValue ().imag ();
+
+      maxNegMod = maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
 #else /* COMPLEX_FIELD_VALUES */
       maxNegRe = maxPosRe = value0->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -705,6 +816,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       maxNegRe = maxPosRe = value0->getPrevValue ().real ();
       maxNegIm = maxPosIm = value0->getPrevValue ().imag ();
+
+      maxNegMod = maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
 #else /* COMPLEX_FIELD_VALUES */
       maxNegRe = maxPosRe = value0->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -717,6 +830,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
       maxNegRe = maxPosRe = value0->getPrevPrevValue ().real ();
       maxNegIm = maxPosIm = value0->getPrevPrevValue ().imag ();
+
+      maxNegMod = maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
 #else /* COMPLEX_FIELD_VALUES */
       maxNegRe = maxPosRe = value0->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -742,6 +857,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
     FPValue valueIm = 0;
+
+    FPValue valueMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
     switch (dump_type)
@@ -751,6 +868,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getCurValue ().real ();
         valueIm = current->getCurValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -763,6 +882,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getPrevValue ().real ();
         valueIm = current->getPrevValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -775,6 +896,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         valueRe = current->getPrevPrevValue ().real ();
         valueIm = current->getPrevPrevValue ().imag ();
+
+        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
         valueRe = current->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -807,6 +930,15 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
     {
       maxNegIm = valueIm;
     }
+
+    if (valueMod > maxPosMod)
+    {
+      maxPosMod = valueMod;
+    }
+    if (valueMod < maxNegMod)
+    {
+      maxNegMod = valueMod;
+    }
 #endif /* COMPLEX_FIELD_VALUES */
   }
 
@@ -815,6 +947,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
+
+  const FPValue maxMod = maxPosMod - maxNegMod;
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Create image for current values and max/min values.
@@ -828,6 +962,10 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
     BMP imageIm;
     imageIm.SetSize (sx, sy);
     imageIm.SetBitDepth (24);
+
+    BMP imageMod;
+    imageMod.SetSize (sx, sy);
+    imageMod.SetBitDepth (24);
 #endif /* COMPLEX_FIELD_VALUES */
 
     for (grid_iter i = 0; i < size.getX (); ++i)
@@ -845,6 +983,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
         FPValue valueIm = 0;
+
+        FPValue valueMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
         switch (dump_type)
@@ -854,6 +994,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
             valueRe = current->getCurValue ().real ();
             valueIm = current->getCurValue ().imag ();
+
+            valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
             valueRe = current->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -866,6 +1008,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
             valueRe = current->getPrevValue ().real ();
             valueIm = current->getPrevValue ().imag ();
+
+            valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
             valueRe = current->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -878,6 +1022,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
             valueRe = current->getPrevPrevValue ().real ();
             valueIm = current->getPrevPrevValue ().imag ();
+
+            valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
             valueRe = current->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -896,6 +1042,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
         RGBApixel pixelIm = BMPhelper.getPixelFromValue (valueIm, maxNegIm, maxIm);
+
+        RGBApixel pixelMod = BMPhelper.getPixelFromValue (valueMod, maxNegMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
         // Set pixel for current image.
@@ -903,6 +1051,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 
 #ifdef COMPLEX_FIELD_VALUES
         imageIm.SetPixel(i, j, pixelIm);
+
+        imageMod.SetPixel(i, j, pixelMod);
 #endif /* COMPLEX_FIELD_VALUES */
       }
     }
@@ -918,6 +1068,9 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         std::string cur_bmp_im = cur + int64_to_string (k) + std::string ("-Im") + std::string (".bmp");
         imageIm.WriteToFile (cur_bmp_im.c_str ());
+
+        std::string cur_bmp_mod = cur + int64_to_string (k) + std::string ("-Mod") + std::string (".bmp");
+        imageMod.WriteToFile (cur_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
         break;
@@ -931,6 +1084,9 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         std::string prev_bmp_im = cur + int64_to_string (k) + std::string ("-Im") + std::string (".bmp");
         imageIm.WriteToFile (prev_bmp_im.c_str ());
+
+        std::string prev_bmp_mod = cur + int64_to_string (k) + std::string ("-Mod") + std::string (".bmp");
+        imageMod.WriteToFile (prev_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
         break;
@@ -944,6 +1100,9 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #ifdef COMPLEX_FIELD_VALUES
         std::string prevPrev_bmp_im = cur + int64_to_string (k) + std::string ("-Im") + std::string (".bmp");
         imageIm.WriteToFile (prevPrev_bmp_im.c_str ());
+
+        std::string prevPrev_bmp_mod = cur + int64_to_string (k) + std::string ("-Mod") + std::string (".bmp");
+        imageMod.WriteToFile (prevPrev_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
         break;

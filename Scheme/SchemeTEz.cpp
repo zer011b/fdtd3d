@@ -1101,6 +1101,37 @@ SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
         dumperHz.dumpGrid (Hz);
       }
     }
+
+#ifdef COMPLEX_FIELD_VALUES
+    if (t % 100 == 0)
+    {
+      if (dumpRes)
+      {
+        FPValue norm = 0;
+
+        for (grid_iter i = 0; i < Hz.getSize ().getX (); ++i)
+        {
+          for (grid_iter j = 0; j < Hz.getSize ().getY (); ++j)
+          {
+            GridCoordinate2D pos (i, j);
+
+            if (!yeeLayout.isHzInPML (Hz.getTotalPosition (pos)))
+            {
+              FieldPointValue *value = Hz.getFieldPointValue (pos);
+
+              FieldValue val = value->getCurValue ();
+
+              norm += val.real () * val.real () + val.imag () * val.imag ();
+            }
+          }
+        }
+
+        norm = sqrt (norm);
+
+        printf ("Norm at step %u: %f\n", t, norm);
+      }
+    }
+#endif /* COMPLEX_FIELD_VALUES */
   }
 
   if (dumpRes)
@@ -1117,6 +1148,34 @@ SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
     dumperHz.init (stepLimit, CURRENT, process, "2D-TEz-in-time-Hz");
     dumperHz.dumpGrid (Hz);
   }
+
+#ifdef COMPLEX_FIELD_VALUES
+  if (dumpRes)
+  {
+    FPValue norm = 0;
+
+    for (grid_iter i = 0; i < Hz.getSize ().getX (); ++i)
+    {
+      for (grid_iter j = 0; j < Hz.getSize ().getY (); ++j)
+      {
+        GridCoordinate2D pos (i, j);
+
+        if (!yeeLayout.isHzInPML (Hz.getTotalPosition (pos)))
+        {
+          FieldPointValue *value = Hz.getFieldPointValue (pos);
+
+          FieldValue val = value->getCurValue ();
+
+          norm += val.real () * val.real () + val.imag () * val.imag ();
+        }
+      }
+    }
+
+    norm = sqrt (norm);
+
+    printf ("Norm at step %u: %f\n", stepLimit, norm);
+  }
+#endif /* COMPLEX_FIELD_VALUES */
 }
 
 void
