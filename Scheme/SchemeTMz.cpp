@@ -1027,11 +1027,12 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
       {
         FPValue freq = PhysicsConst::SpeedOfLight / waveLength;
 
-        GridCoordinate2D pos (30, EzSize.getY () / 2);
+        GridCoordinate2D pos (EzSize.getX () / 2, EzSize.getY () / 2);
         FieldPointValue* tmp = Ez.getFieldPointValue (pos);
 
 #ifdef COMPLEX_FIELD_VALUES
-        tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq), 0));
+        tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq),
+                                      cos (gridTimeStep * t * 2 * PhysicsConst::Pi * freq)));
 #else /* COMPLEX_FIELD_VALUES */
         tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -1196,11 +1197,12 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
       {
         FPValue freq = PhysicsConst::SpeedOfLight / waveLength;
 
-        GridCoordinate2D pos (30, EzSize.getY () / 2);
+        GridCoordinate2D pos (EzSize.getX () / 2, EzSize.getY () / 2);
         FieldPointValue* tmp = Ez.getFieldPointValue (pos);
 
 #ifdef COMPLEX_FIELD_VALUES
-        tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq), 0));
+        tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq),
+                                      cos (gridTimeStep * t * 2 * PhysicsConst::Pi * freq)));
 #else /* COMPLEX_FIELD_VALUES */
         tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
 #endif /* !COMPLEX_FIELD_VALUES */
