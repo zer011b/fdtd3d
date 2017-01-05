@@ -58,7 +58,8 @@ Scheme3D::performPlaneWaveESteps (time_step t)
   FieldPointValue *valE = EInc.getFieldPointValue (pos);
 
 #ifdef COMPLEX_FIELD_VALUES
-  valE->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq), 0));
+  valE->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq),
+                                 cos (gridTimeStep * t * 2 * PhysicsConst::Pi * freq)));
 #else /* COMPLEX_FIELD_VALUES */
   valE->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -224,7 +225,7 @@ Scheme3D::performExSteps (time_step t, GridCoordinate3D ExStart, GridCoordinate3
 
             FieldValue diff = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
 
-            prevHy1 -= diff * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2 + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2)));
+            prevHy1 -= diff * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
           else if (yeeLayout.doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT, true))
           {
@@ -250,7 +251,7 @@ Scheme3D::performExSteps (time_step t, GridCoordinate3D ExStart, GridCoordinate3
 
             FieldValue diff = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
 
-            prevHy2 -= diff * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2 + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2)));
+            prevHy2 -= diff * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
         }
 
@@ -2053,6 +2054,10 @@ Scheme3D::initGrids ()
     }
   }
 
+  BMPDumper<GridCoordinate3D> dumper;
+  dumper.init (0, CURRENT, process, "Eps");
+  dumper.dumpGrid (Eps);
+
   for (int i = 0; i < Mu.getSize ().getX (); ++i)
   {
     for (int j = 0; j < Mu.getSize ().getY (); ++j)
@@ -2073,6 +2078,9 @@ Scheme3D::initGrids ()
       }
     }
   }
+
+  dumper.init (0, CURRENT, process, "Mu");
+  dumper.dumpGrid (Mu);
 
   FPValue eps0 = PhysicsConst::Eps0;
   FPValue mu0 = PhysicsConst::Mu0;
@@ -2237,6 +2245,13 @@ Scheme3D::initGrids ()
       }
     }
   }
+
+  dumper.init (0, CURRENT, process, "SigmaX");
+  dumper.dumpGrid (SigmaX);
+  dumper.init (0, CURRENT, process, "SigmaY");
+  dumper.dumpGrid (SigmaY);
+  dumper.init (0, CURRENT, process, "SigmaZ");
+  dumper.dumpGrid (SigmaZ);
 
   for (int i = 0; i < Ex.getSize ().getX (); ++i)
   {
