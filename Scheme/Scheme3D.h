@@ -103,6 +103,20 @@ class Scheme3D: public Scheme
 
 private:
 
+  void calculateExStep (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateEyStep (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateEzStep (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateHxStep (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateHyStep (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateHzStep (time_step, GridCoordinate3D, GridCoordinate3D);
+
+  void calculateExStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateEyStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateEzStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateHxStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateHyStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
+  void calculateHzStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
+
   void performExSteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performEySteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performEzSteps (time_step, GridCoordinate3D, GridCoordinate3D);

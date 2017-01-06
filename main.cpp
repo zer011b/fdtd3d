@@ -195,7 +195,7 @@ int main (int argc, char** argv)
 #ifdef GRID_3D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
 
-  Scheme3D scheme (overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (10, 10), true, GridCoordinate2D (15, 15), PhysicsConst::Pi / 2, 0, 0);
+  Scheme3D scheme (overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate3D (10, 10, 10), true, GridCoordinate3D (13, 13, 13), PhysicsConst::Pi / 2, 0, 0);
 #endif
 #endif
 
