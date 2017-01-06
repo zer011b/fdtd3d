@@ -1589,19 +1589,19 @@ SchemeTMz::initGrids ()
 #endif /* !COMPLEX_FIELD_VALUES */
 
       GridCoordinate2D pos (i, j);
-      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalPosition (pos)));
-      //
-      // GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalSize ()));
+      GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalPosition (pos)));
+
+      GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalSize ()));
 
       // if (posAbs.getX () > size.getX () / 2 && posAbs.getX () < yeeLayout.rightBorderTotalField.getX () - 10
       //     && posAbs.getY () > yeeLayout.leftBorderTotalField.getY () + 10 && posAbs.getY () < yeeLayout.rightBorderTotalField.getY () - 10)
       // {
       //   valEps->setCurValue (4.0);
       // }
-      // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2) + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7) * (size.getX ()*1.5/7))
-      // {
-      //   valEps->setCurValue (4.0);
-      // }
+      if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2) + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7) * (size.getX ()*1.5/7))
+      {
+        valEps->setCurValue (4.0);
+      }
 
       Eps.setFieldPointValue (valEps, pos);
     }

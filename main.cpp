@@ -176,14 +176,15 @@ int main (int argc, char** argv)
   ParallelGridCoordinate bufferLeft (bufSize);
   ParallelGridCoordinate bufferRight (bufSize);
 
-  SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (10, 10), true, GridCoordinate2D (20, 20), PhysicsConst::Pi / 4);
+  //SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (10, 10), true, GridCoordinate2D (20, 20), 0);
+  SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (10, 10), true, GridCoordinate2D (20, 20), 0);
 #endif
 #ifdef GRID_3D
   ParallelGridCoordinate overallSize (gridSizeX, gridSizeY, gridSizeZ);
   ParallelGridCoordinate bufferLeft (bufSize);
   ParallelGridCoordinate bufferRight (bufSize);
 
-  Scheme3D scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (10, 10), true, GridCoordinate2D (20, 20), PhysicsConst::Pi / 2, 0, 0);
+  Scheme3D scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate3D (10, 10, 10), true, GridCoordinate3D (20, 20, 20), PhysicsConst::Pi / 2, 0, 0);
 #endif
 #else
 #ifdef GRID_2D

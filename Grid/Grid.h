@@ -93,6 +93,11 @@ public:
   {
     return getSize ();
   }
+
+  TCoord getRelativePosition (TCoord pos)
+  {
+    return pos - TCoord (0);
+  }
 };
 
 /**

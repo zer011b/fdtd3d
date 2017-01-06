@@ -457,6 +457,8 @@ public:
   {
     return totalSize;
   }
+
+  ParallelGridCoordinate getRelativePosition (ParallelGridCoordinate);
 };
 
 #endif /* PARALLEL_GRID */
