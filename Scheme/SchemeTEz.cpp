@@ -239,9 +239,9 @@ SchemeTEz::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordi
       FieldPointValue* valSigmaY2 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())))));
 
 #ifdef COMPLEX_FIELD_VALUES
-      FPValue sigmaY = (valSigmaY1->getCurValue ().real () + valSigmaY1->getCurValue ().real ()) / 2;
+      FPValue sigmaY = (valSigmaY1->getCurValue ().real () + valSigmaY2->getCurValue ().real ()) / 2;
 #else /* COMPLEX_FIELD_VALUES */
-      FPValue sigmaY = (valSigmaY1->getCurValue () + valSigmaY1->getCurValue ()) / 2;
+      FPValue sigmaY = (valSigmaY1->getCurValue () + valSigmaY2->getCurValue ()) / 2;
 #endif /* !COMPLEX_FIELD_VALUES */
 
       FieldPointValue* valHz1 = Hz.getFieldPointValue (posUp);
@@ -340,13 +340,13 @@ SchemeTEz::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordi
 #ifdef COMPLEX_FIELD_VALUES
       FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
 
-      FPValue sigmaX = (valSigmaX1->getCurValue ().real () + valSigmaX1->getCurValue ().real ()) / 2;
-      FPValue sigmaZ = (valSigmaZ1->getCurValue ().real () + valSigmaZ1->getCurValue ().real ()) / 2;
+      FPValue sigmaX = (valSigmaX1->getCurValue ().real () + valSigmaX2->getCurValue ().real ()) / 2;
+      FPValue sigmaZ = (valSigmaZ1->getCurValue ().real () + valSigmaZ2->getCurValue ().real ()) / 2;
 #else /* COMPLEX_FIELD_VALUES */
       FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
 
-      FPValue sigmaX = (valSigmaX1->getCurValue () + valSigmaX1->getCurValue ()) / 2;
-      FPValue sigmaZ = (valSigmaZ1->getCurValue () + valSigmaZ1->getCurValue ()) / 2;
+      FPValue sigmaX = (valSigmaX1->getCurValue () + valSigmaX2->getCurValue ()) / 2;
+      FPValue sigmaZ = (valSigmaZ1->getCurValue () + valSigmaZ2->getCurValue ()) / 2;
 #endif /* !COMPLEX_FIELD_VALUES */
 
       /*
@@ -1804,6 +1804,10 @@ SchemeTEz::initGrids ()
 #if defined (PARALLEL_GRID)
   Eps.share ();
   Mu.share ();
+
+  SigmaX.share ();
+  SigmaY.share ();
+  SigmaZ.share ();
 #endif
 }
 

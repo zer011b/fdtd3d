@@ -3553,6 +3553,10 @@ Scheme3D::initGrids ()
 #if defined (PARALLEL_GRID)
   Eps.share ();
   Mu.share ();
+
+  SigmaX.share ();
+  SigmaY.share ();
+  SigmaZ.share ();
 #endif
 }
 

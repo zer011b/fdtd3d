@@ -199,8 +199,8 @@ public:
     amplitudeStepLimit (ampStep),
     usePML (doUsePML),
     useTFSF (doUseTFSF),
-    EInc (GridCoordinate1D ((grid_coord) 10*(totSize.getX () + totSize.getY ())), 0),
-    HInc (GridCoordinate1D ((grid_coord) 10*(totSize.getX () + totSize.getY ())), 0),
+    EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
+    HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
     incidentWaveAngle1 (angleIncWave1),
     incidentWaveAngle2 (angleIncWave2),
     incidentWaveAngle3 (angleIncWave3)
@@ -251,8 +251,8 @@ public:
     amplitudeStepLimit (ampStep),
     usePML (doUsePML),
     useTFSF (doUseTFSF),
-    EInc (GridCoordinate1D ((grid_coord) 10*(totSize.getX () + totSize.getY ())), 0),
-    HInc (GridCoordinate1D ((grid_coord) 10*(totSize.getX () + totSize.getY ())), 0),
+    EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
+    HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
     incidentWaveAngle1 (angleIncWave1),
     incidentWaveAngle2 (angleIncWave2),
     incidentWaveAngle3 (angleIncWave3)

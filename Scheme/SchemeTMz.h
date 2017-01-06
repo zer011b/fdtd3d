@@ -158,8 +158,8 @@ public:
     amplitudeStepLimit (ampStep),
     usePML (doUsePML),
     useTFSF (doUseTFSF),
-    EInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
-    HInc (GridCoordinate1D ((grid_coord) (totSize.getX () + totSize.getY ())), 0),
+    EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
+    HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     incidentWaveAngle (angleIncWave)
 #else
   SchemeTMz (const GridCoordinate2D& totSize,
@@ -197,8 +197,8 @@ public:
     amplitudeStepLimit (ampStep),
     usePML (doUsePML),
     useTFSF (doUseTFSF),
-    EInc (GridCoordinate1D ((grid_coord) 10*(totSize.getX () + totSize.getY ())), 0),
-    HInc (GridCoordinate1D ((grid_coord) 10*(totSize.getX () + totSize.getY ())), 0),
+    EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
+    HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     incidentWaveAngle (angleIncWave)
 #endif
   {
