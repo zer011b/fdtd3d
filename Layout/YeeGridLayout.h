@@ -220,9 +220,9 @@ public:
   , rightBorderPML (coordSize - sizePML)
   , leftBorderTotalField (sizeScatteredZone)
   , rightBorderTotalField (coordSize - sizeScatteredZone)
-  , zeroIncCoordFP (GridCoordinateFP3D (leftBorderTotalField.getX () - 0.5 - 2 * sin (incidentWaveAngle1) * cos (incidentWaveAngle2),
-                                        leftBorderTotalField.getY () - 0.5 - 2 * sin (incidentWaveAngle1) * sin (incidentWaveAngle2),
-                                        leftBorderTotalField.getZ () - 0.5 - 2 * cos (incidentWaveAngle1)))
+  , zeroIncCoordFP (GridCoordinateFP3D (leftBorderTotalField.getX () - 2.5 * sin (incidentWaveAngle1) * cos (incidentWaveAngle2),
+                                        leftBorderTotalField.getY () - 2.5 * sin (incidentWaveAngle1) * sin (incidentWaveAngle2),
+                                        leftBorderTotalField.getZ () - 2.5 * cos (incidentWaveAngle1)))
   {
     ASSERT (incidentWaveAngle1 == PhysicsConst::Pi / 2);
     ASSERT (incidentWaveAngle2 == 0);
