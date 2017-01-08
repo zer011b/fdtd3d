@@ -421,6 +421,51 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
     }
   }
 
+  if (useMetamaterials)
+  {
+    for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
+    {
+      for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
+      {
+        GridCoordinate2D pos (i, j);
+        GridCoordinate2D posAbs = Ez.getTotalPosition (pos);
+        GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (posAbs));
+
+        FieldPointValue* valD1z = D1z.getFieldPointValue (pos);
+        FieldPointValue* valDz = Dz.getFieldPointValue (pos);
+
+        FieldPointValue* valOmegaPE = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())))));
+        FieldPointValue* valGammaE = GammaE.getFieldPointValue (GammaE.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())))));
+
+#ifdef COMPLEX_FIELD_VALUES
+        FPValue omegaPE = valOmegaPE->getCurValue ().real ();
+        FPValue gammaE = valGammaE->getCurValue ().real ();
+#else /* COMPLEX_FIELD_VALUES */
+        FPValue omegaPE = valOmegaPE->getCurValue ();
+        FPValue gammaE = valGammaE->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+
+        /*
+         * FIXME: precalculate coefficients
+         */
+        FPValue A = 4*eps0 + 2*gridTimeStep*eps0*gammaE + eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE;
+
+        FieldValue val = calculateDrudeE (valDz->getCurValue (),
+                                          valDz->getPrevValue (),
+                                          valDz->getPrevPrevValue (),
+                                          valD1z->getPrevValue (),
+                                          valD1z->getPrevPrevValue (),
+                                          (4 + 2*gridTimeStep*gammaE) / A,
+                                          -8 / A,
+                                          (4 - 2*gridTimeStep*gammaE) / A,
+                                          (2*eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE - 8*eps0) / A,
+                                          (4*eps0 - 2*gridTimeStep*eps0*gammaE + eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE) / A);
+
+        valD1z->setCurValue (val);
+      }
+    }
+  }
+
   for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
   {
     for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
@@ -430,7 +475,16 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
       GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getEzCoordFP (posAbs));
 
       FieldPointValue* valEz = Ez.getFieldPointValue (pos);
-      FieldPointValue* valDz = Dz.getFieldPointValue (pos);
+      FieldPointValue* valDz;
+
+      if (useMetamaterials)
+      {
+        valDz = D1z.getFieldPointValue (pos);
+      }
+      else
+      {
+        valDz = Dz.getFieldPointValue (pos);
+      }
 
       FieldPointValue* valSigmaY = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())))));
       FieldPointValue* valSigmaZ = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())))));
@@ -448,6 +502,12 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
       FPValue sigmaZ = valSigmaZ->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
+      FPValue modifier = eps * eps0;
+      if (useMetamaterials)
+      {
+        modifier = 1;
+      }
+
       /*
        * FIXME: precalculate coefficients
        */
@@ -455,8 +515,8 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
       FPValue k_z = 1;
 
       FPValue Ca = (2 * eps0 * k_y - sigmaY * gridTimeStep) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-      FPValue Cb = ((2 * eps0 * k_z + sigmaZ * gridTimeStep) / (eps * eps0)) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-      FPValue Cc = ((2 * eps0 * k_z - sigmaZ * gridTimeStep) / (eps * eps0)) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
+      FPValue Cb = ((2 * eps0 * k_z + sigmaZ * gridTimeStep) / (modifier)) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
+      FPValue Cc = ((2 * eps0 * k_z - sigmaZ * gridTimeStep) / (modifier)) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
 
       FieldValue val = calculateEz_from_Dz_Precalc (valEz->getPrevValue (),
                                                     valDz->getCurValue (),
@@ -681,6 +741,53 @@ SchemeTMz::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordi
     }
   }
 
+  if (useMetamaterials)
+  {
+    for (int i = HxStart.getX (); i < HxEnd.getX (); ++i)
+    {
+      for (int j = HxStart.getY (); j < HxEnd.getY (); ++j)
+      {
+        GridCoordinate2D pos (i, j);
+        GridCoordinate2D posAbs = Hx.getTotalPosition (pos);
+        GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHxCoordFP (posAbs));
+
+        FieldPointValue* valB1x = B1x.getFieldPointValue (pos);
+        FieldPointValue* valBx = Bx.getFieldPointValue (pos);
+
+        FieldPointValue* valOmegaPM1 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY () - 0.5, yeeLayout.getMinEpsCoordFP ().getZ ())))));
+        FieldPointValue* valOmegaPM2 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY () + 0.5, yeeLayout.getMinEpsCoordFP ().getZ ())))));
+        FieldPointValue* valGammaM1 = GammaM.getFieldPointValue (GammaM.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY () - 0.5, yeeLayout.getMinEpsCoordFP ().getZ ())))));
+        FieldPointValue* valGammaM2 = GammaM.getFieldPointValue (GammaM.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY () + 0.5, yeeLayout.getMinEpsCoordFP ().getZ ())))));
+
+#ifdef COMPLEX_FIELD_VALUES
+        FPValue omegaPM = (valOmegaPM1->getCurValue ().real () + valOmegaPM2->getCurValue ().real ()) / 2;
+        FPValue gammaM = (valGammaM1->getCurValue ().real () + valGammaM2->getCurValue ().real ()) / 2;
+#else /* COMPLEX_FIELD_VALUES */
+        FPValue omegaPM = (valOmegaPM1->getCurValue () + valOmegaPM2->getCurValue ()) / 2;
+        FPValue gammaM = (valGammaM1->getCurValue () + valGammaM2->getCurValue ()) / 2;
+#endif /* !COMPLEX_FIELD_VALUES */
+
+        /*
+         * FIXME: precalculate coefficients
+         */
+        FPValue C = 4*mu0 + 2*gridTimeStep*mu0*gammaM + mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM;
+
+        FieldValue val = calculateDrudeH (valBx->getCurValue (),
+                                          valBx->getPrevValue (),
+                                          valBx->getPrevPrevValue (),
+                                          valB1x->getPrevValue (),
+                                          valB1x->getPrevPrevValue (),
+                                          (4 + 2*gridTimeStep*gammaM) / C,
+                                          -8 / C,
+                                          (4 - 2*gridTimeStep*gammaM) / C,
+                                          (2*mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM - 8*mu0) / C,
+                                          (4*mu0 - 2*gridTimeStep*mu0*gammaM + mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM) / C);
+
+        valB1x->setCurValue (val);
+      }
+    }
+  }
+
   for (int i = HxStart.getX (); i < HxEnd.getX (); ++i)
   {
     for (int j = HxStart.getY (); j < HxEnd.getY (); ++j)
@@ -690,7 +797,16 @@ SchemeTMz::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordi
       GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHxCoordFP (posAbs));
 
       FieldPointValue* valHx = Hx.getFieldPointValue (pos);
-      FieldPointValue* valBx = Bx.getFieldPointValue (pos);
+      FieldPointValue* valBx;
+
+      if (useMetamaterials)
+      {
+        valBx = B1x.getFieldPointValue (pos);
+      }
+      else
+      {
+        valBx = Bx.getFieldPointValue (pos);
+      }
 
       FieldPointValue* valSigmaX1 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY () + 0.5, yeeLayout.getMinEpsCoordFP ().getZ ())))));
       FieldPointValue* valSigmaX2 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX (), realCoord.getY () - 0.5, yeeLayout.getMinEpsCoordFP ().getZ ())))));
@@ -713,6 +829,12 @@ SchemeTMz::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordi
       FPValue sigmaZ = (valSigmaZ1->getCurValue () + valSigmaZ2->getCurValue ()) / 2;
 #endif /* !COMPLEX_FIELD_VALUES */
 
+      FPValue modifier = mu * mu0;
+      if (useMetamaterials)
+      {
+        modifier = 1;
+      }
+
       /*
        * FIXME: precalculate coefficients
        */
@@ -720,8 +842,8 @@ SchemeTMz::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordi
       FPValue k_z = 1;
 
       FPValue Ca = (2 * eps0 * k_z - sigmaZ * gridTimeStep) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-      FPValue Cb = ((2 * eps0 * k_x + sigmaX * gridTimeStep) / (mu * mu0)) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-      FPValue Cc = ((2 * eps0 * k_x - sigmaX * gridTimeStep) / (mu * mu0)) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
+      FPValue Cb = ((2 * eps0 * k_x + sigmaX * gridTimeStep) / (modifier)) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
+      FPValue Cc = ((2 * eps0 * k_x - sigmaX * gridTimeStep) / (modifier)) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
 
       FieldValue val = calculateHx_from_Bx_Precalc (valHx->getPrevValue (),
                                                     valBx->getCurValue (),
@@ -946,6 +1068,53 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
     }
   }
 
+  if (useMetamaterials)
+  {
+    for (int i = HyStart.getX (); i < HyEnd.getX (); ++i)
+    {
+      for (int j = HyStart.getY (); j < HyEnd.getY (); ++j)
+      {
+        GridCoordinate2D pos (i, j);
+        GridCoordinate2D posAbs = Hy.getTotalPosition (pos);
+        GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHyCoordFP (posAbs));
+
+        FieldPointValue* valB1y = B1y.getFieldPointValue (pos);
+        FieldPointValue* valBy = By.getFieldPointValue (pos);
+
+        FieldPointValue* valOmegaPM1 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())))));
+        FieldPointValue* valOmegaPM2 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX () + 0.5, realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())))));
+        FieldPointValue* valGammaM1 = GammaM.getFieldPointValue (GammaM.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())))));
+        FieldPointValue* valGammaM2 = GammaM.getFieldPointValue (GammaM.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX () + 0.5, realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())))));
+
+  #ifdef COMPLEX_FIELD_VALUES
+        FPValue omegaPM = (valOmegaPM1->getCurValue ().real () + valOmegaPM2->getCurValue ().real ()) / 2;
+        FPValue gammaM = (valGammaM1->getCurValue ().real () + valGammaM2->getCurValue ().real ()) / 2;
+  #else /* COMPLEX_FIELD_VALUES */
+        FPValue omegaPM = (valOmegaPM1->getCurValue () + valOmegaPM2->getCurValue ()) / 2;
+        FPValue gammaM = (valGammaM1->getCurValue () + valGammaM2->getCurValue ()) / 2;
+  #endif /* !COMPLEX_FIELD_VALUES */
+
+        /*
+         * FIXME: precalculate coefficients
+         */
+        FPValue C = 4*mu0 + 2*gridTimeStep*mu0*gammaM + mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM;
+
+        FieldValue val = calculateDrudeH (valBy->getCurValue (),
+                                          valBy->getPrevValue (),
+                                          valBy->getPrevPrevValue (),
+                                          valB1y->getPrevValue (),
+                                          valB1y->getPrevPrevValue (),
+                                          (4 + 2*gridTimeStep*gammaM) / C,
+                                          -8 / C,
+                                          (4 - 2*gridTimeStep*gammaM) / C,
+                                          (2*mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM - 8*mu0) / C,
+                                          (4*mu0 - 2*gridTimeStep*mu0*gammaM + mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM) / C);
+
+        valB1y->setCurValue (val);
+      }
+    }
+  }
+
   for (int i = HyStart.getX (); i < HyEnd.getX (); ++i)
   {
     for (int j = HyStart.getY (); j < HyEnd.getY (); ++j)
@@ -955,7 +1124,16 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
       GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHyCoordFP (posAbs));
 
       FieldPointValue* valHy = Hy.getFieldPointValue (pos);
-      FieldPointValue* valBy = By.getFieldPointValue (pos);
+      FieldPointValue* valBy;
+
+      if (useMetamaterials)
+      {
+        valBy = B1y.getFieldPointValue (pos);
+      }
+      else
+      {
+        valBy = By.getFieldPointValue (pos);
+      }
 
       FieldPointValue* valSigmaX1 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())))));
       FieldPointValue* valSigmaX2 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (shrinkCoord (yeeLayout.getEpsCoord (GridCoordinateFP3D (realCoord.getX () + 0.5, realCoord.getY (), yeeLayout.getMinEpsCoordFP ().getZ ())))));
@@ -978,6 +1156,12 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
       FPValue sigmaY = (valSigmaY1->getCurValue () + valSigmaY2->getCurValue ()) / 2;
 #endif /* !COMPLEX_FIELD_VALUES */
 
+      FPValue modifier = mu * mu0;
+      if (useMetamaterials)
+      {
+        modifier = 1;
+      }
+
       /*
        * FIXME: precalculate coefficients
        */
@@ -985,8 +1169,8 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
       FPValue k_y = 1;
 
       FPValue Ca = (2 * eps0 * k_x - sigmaX * gridTimeStep) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-      FPValue Cb = ((2 * eps0 * k_y + sigmaY * gridTimeStep) / (mu * mu0)) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-      FPValue Cc = ((2 * eps0 * k_y - sigmaY * gridTimeStep) / (mu * mu0)) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
+      FPValue Cb = ((2 * eps0 * k_y + sigmaY * gridTimeStep) / (modifier)) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
+      FPValue Cc = ((2 * eps0 * k_y - sigmaY * gridTimeStep) / (modifier)) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
 
       FieldValue val = calculateHy_from_By_Precalc (valHy->getPrevValue (),
                                                     valBy->getCurValue (),
@@ -1087,6 +1271,11 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
       Dz.nextTimeStep ();
     }
 
+    if (useMetamaterials)
+    {
+      D1z.nextTimeStep ();
+    }
+
     if (useTFSF)
     {
       performPlaneWaveHSteps (t);
@@ -1102,6 +1291,12 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
     {
       Bx.nextTimeStep ();
       By.nextTimeStep ();
+    }
+
+    if (useMetamaterials)
+    {
+      B1x.nextTimeStep ();
+      B1y.nextTimeStep ();
     }
 
     if (t % 100 == 0)
@@ -1524,7 +1719,7 @@ SchemeTMz::performSteps (int dumpRes)
 {
 #if defined (CUDA_ENABLED)
 
-  if (usePML || useTFSF || calculateAmplitude)
+  if (usePML || useTFSF || calculateAmplitude || useMetamaterials)
   {
     ASSERT_MESSAGE ("Cuda GPU calculations with these parameters are not implemented");
   }
@@ -1542,6 +1737,11 @@ SchemeTMz::performSteps (int dumpRes)
     dumper.dumpGrid (Ez);
   }
 #else /* CUDA_ENABLED */
+
+  if (useMetamaterials && !usePML)
+  {
+    ASSERT_MESSAGE ("Metamaterials without pml are not implemented");
+  }
 
 #ifdef PARALLEL_GRID
   if (calculateAmplitude)
@@ -1617,6 +1817,154 @@ SchemeTMz::initGrids ()
   BMPDumper<GridCoordinate2D> dumper;
   dumper.init (0, CURRENT, process, "Eps");
   dumper.dumpGrid (Eps);
+
+  for (int i = 0; i < OmegaPE.getSize ().getX (); ++i)
+  {
+    for (int j = 0; j < OmegaPE.getSize ().getY (); ++j)
+    {
+      FieldPointValue* valOmega = new FieldPointValue ();
+
+#ifdef COMPLEX_FIELD_VALUES
+      valOmega->setCurValue (FieldValue (0, 0));
+#else /* COMPLEX_FIELD_VALUES */
+      valOmega->setCurValue (0);
+#endif /* !COMPLEX_FIELD_VALUES */
+
+      GridCoordinate2D pos (i, j);
+      GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (OmegaPE.getTotalPosition (pos)));
+
+      GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (OmegaPE.getTotalSize ()));
+
+      if (posAbs.getX () >= size.getX () / 2 - 20 && posAbs.getX () < size.getX () / 2 + 20
+          && posAbs.getY () >= 50 && posAbs.getY () < size.getY () - 50)
+      {
+        valOmega->setCurValue (sqrt(2) * 2 * PhysicsConst::Pi * frequency);
+      }
+
+      // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
+      //     + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
+      // {
+      //   valOmega->setCurValue (1);
+      // }
+
+      OmegaPE.setFieldPointValue (valOmega, pos);
+    }
+  }
+
+  for (int i = 0; i < OmegaPM.getSize ().getX (); ++i)
+  {
+    for (int j = 0; j < OmegaPM.getSize ().getY (); ++j)
+    {
+      FieldPointValue* valOmega = new FieldPointValue ();
+
+#ifdef COMPLEX_FIELD_VALUES
+      valOmega->setCurValue (FieldValue (0, 0));
+#else /* COMPLEX_FIELD_VALUES */
+      valOmega->setCurValue (0);
+#endif /* !COMPLEX_FIELD_VALUES */
+
+      GridCoordinate2D pos (i, j);
+      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (OmegaPM.getTotalPosition (pos)));
+      //
+      // GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (OmegaPM.getTotalSize ()));
+      //
+      // if (posAbs.getX () >= size.getX () / 2 - 20 && posAbs.getX () < size.getX () / 2 + 20
+      //     && posAbs.getY () >= 50 && posAbs.getY () < size.getY () - 50)
+      // {
+      //   valOmega->setCurValue (sqrt(2) * 2 * PhysicsConst::Pi * frequency);
+      // }
+
+      // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
+      //     + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
+      // {
+      //   valOmega->setCurValue (1);
+      // }
+
+      OmegaPM.setFieldPointValue (valOmega, pos);
+    }
+  }
+
+  for (int i = 0; i < GammaE.getSize ().getX (); ++i)
+  {
+    for (int j = 0; j < GammaE.getSize ().getY (); ++j)
+    {
+      FieldPointValue* valGamma = new FieldPointValue ();
+
+#ifdef COMPLEX_FIELD_VALUES
+      valGamma->setCurValue (FieldValue (0, 0));
+#else /* COMPLEX_FIELD_VALUES */
+      valGamma->setCurValue (0);
+#endif /* !COMPLEX_FIELD_VALUES */
+
+      GridCoordinate2D pos (i, j);
+      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalPosition (pos)));
+      //
+      // GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalSize ()));
+
+      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (GammaE.getTotalPosition (pos)));
+      //
+      // GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (GammaE.getTotalSize ()));
+      //
+      // if (posAbs.getX () >= size.getX () / 2 - 20 && posAbs.getX () < size.getX () / 2 + 20
+      //     && posAbs.getY () >= 50 && posAbs.getY () < size.getY () - 50)
+      // {
+      //   valGamma->setCurValue (1);
+      // }
+
+      // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
+      //     + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
+      // {
+      //   valGamma->setCurValue (1);
+      // }
+
+      GammaE.setFieldPointValue (valGamma, pos);
+    }
+  }
+
+  for (int i = 0; i < GammaM.getSize ().getX (); ++i)
+  {
+    for (int j = 0; j < GammaM.getSize ().getY (); ++j)
+    {
+      FieldPointValue* valGamma = new FieldPointValue ();
+
+#ifdef COMPLEX_FIELD_VALUES
+      valGamma->setCurValue (FieldValue (0, 0));
+#else /* COMPLEX_FIELD_VALUES */
+      valGamma->setCurValue (0);
+#endif /* !COMPLEX_FIELD_VALUES */
+
+      GridCoordinate2D pos (i, j);
+      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (GammaM.getTotalPosition (pos)));
+      //
+      // GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (GammaM.getTotalSize ()));
+      //
+      // if (posAbs.getX () >= size.getX () / 2 - 20 && posAbs.getX () < size.getX () / 2 + 20
+      //     && posAbs.getY () >= 50 && posAbs.getY () < size.getY () - 50)
+      // {
+      //   valGamma->setCurValue (1);
+      // }
+
+      // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
+      //     + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
+      // {
+      //   valGamma->setCurValue (1);
+      // }
+
+      GammaM.setFieldPointValue (valGamma, pos);
+    }
+  }
+
+  dumper.init (0, CURRENT, process, "OmegaPE");
+  dumper.dumpGrid (OmegaPE);
+
+  dumper.init (0, CURRENT, process, "OmegaPM");
+  dumper.dumpGrid (OmegaPM);
+
+  dumper.init (0, CURRENT, process, "GammaE");
+  dumper.dumpGrid (GammaE);
+
+  dumper.init (0, CURRENT, process, "GammaM");
+  dumper.dumpGrid (GammaM);
 
   for (int i = 0; i < Mu.getSize ().getX (); ++i)
   {
@@ -1784,6 +2132,8 @@ SchemeTMz::initGrids ()
 
       FieldPointValue* valDz = new FieldPointValue ();
 
+      FieldPointValue* valD1z = new FieldPointValue ();
+
       FieldPointValue* valEzAmp;
       if (calculateAmplitude)
       {
@@ -1795,6 +2145,8 @@ SchemeTMz::initGrids ()
       Ez.setFieldPointValue (valEz, pos);
 
       Dz.setFieldPointValue (valDz, pos);
+
+      D1z.setFieldPointValue (valD1z, pos);
 
       if (calculateAmplitude)
       {
@@ -1811,6 +2163,8 @@ SchemeTMz::initGrids ()
 
       FieldPointValue* valBx = new FieldPointValue ();
 
+      FieldPointValue* valB1x = new FieldPointValue ();
+
       FieldPointValue* valHxAmp;
       if (calculateAmplitude)
       {
@@ -1822,6 +2176,8 @@ SchemeTMz::initGrids ()
       Hx.setFieldPointValue (valHx, pos);
 
       Bx.setFieldPointValue (valBx, pos);
+
+      B1x.setFieldPointValue (valB1x, pos);
 
       if (calculateAmplitude)
       {
@@ -1838,6 +2194,8 @@ SchemeTMz::initGrids ()
 
       FieldPointValue* valBy = new FieldPointValue ();
 
+      FieldPointValue* valB1y = new FieldPointValue ();
+
       FieldPointValue* valHyAmp;
       if (calculateAmplitude)
       {
@@ -1849,6 +2207,8 @@ SchemeTMz::initGrids ()
       Hy.setFieldPointValue (valHy, pos);
 
       By.setFieldPointValue (valBy, pos);
+
+      B1y.setFieldPointValue (valB1y, pos);
 
       if (calculateAmplitude)
       {

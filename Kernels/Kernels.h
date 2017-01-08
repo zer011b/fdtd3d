@@ -74,6 +74,9 @@
   calculateHy_3D(oldHy, Ez1, Ez2, 0.0, 0.0, dt, dx, mu)
 
 /* Kernels to calculate E from D and H from B */
+/*
+ * FIXME: unify
+ */
 #define calculateEx_from_Dx_Precalc(oldEx, Dx1, Dx2, Ca, Cb, Cc) \
   ((Ca) * (oldEx) + (Cb) * (Dx1) - (Cc) * (Dx2))
 
@@ -91,5 +94,16 @@
 
 #define calculateHz_from_Bz_Precalc(oldHz, Bz1, Bz2, Da, Db, Dc) \
   ((Da) * (oldHz) + (Db) * (Bz1) - (Dc) * (Bz2))
+
+
+
+/*
+ * FIXME: unsafe
+ */
+#define calculateDrudeE(nextD, curD, prevD, curE, prevE, b0, b1, b2, a1, a2) \
+  ((b0) * (nextD) + (b1) * (curD) + (b2) * (prevD) - (a1) * (curE) - (a2) * (prevE))
+
+#define calculateDrudeH(nextB, curB, prevB, curH, prevH, d0, d1, d2, c1, c2) \
+  ((d0) * (nextB) + (d1) * (curB) + (d2) * (prevB) - (c1) * (curH) - (c2) * (prevH))
 
 #endif /* KERNELS_H */

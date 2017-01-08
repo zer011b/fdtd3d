@@ -22,6 +22,10 @@ class SchemeTMz: public Scheme
   ParallelGrid Bx;
   ParallelGrid By;
 
+  ParallelGrid D1z;
+  ParallelGrid B1x;
+  ParallelGrid B1y;
+
   ParallelGrid EzAmplitude;
   ParallelGrid HxAmplitude;
   ParallelGrid HyAmplitude;
@@ -32,6 +36,12 @@ class SchemeTMz: public Scheme
   ParallelGrid SigmaX;
   ParallelGrid SigmaY;
   ParallelGrid SigmaZ;
+
+  ParallelGrid OmegaPE;
+  ParallelGrid GammaE;
+
+  ParallelGrid OmegaPM;
+  ParallelGrid GammaM;
 #else
   Grid<GridCoordinate2D> Ez;
   Grid<GridCoordinate2D> Hx;
@@ -40,6 +50,10 @@ class SchemeTMz: public Scheme
   Grid<GridCoordinate2D> Dz;
   Grid<GridCoordinate2D> Bx;
   Grid<GridCoordinate2D> By;
+
+  Grid<GridCoordinate2D> D1z;
+  Grid<GridCoordinate2D> B1x;
+  Grid<GridCoordinate2D> B1y;
 
   Grid<GridCoordinate2D> EzAmplitude;
   Grid<GridCoordinate2D> HxAmplitude;
@@ -51,6 +65,12 @@ class SchemeTMz: public Scheme
   Grid<GridCoordinate2D> SigmaX;
   Grid<GridCoordinate2D> SigmaY;
   Grid<GridCoordinate2D> SigmaZ;
+
+  Grid<GridCoordinate2D> OmegaPE;
+  Grid<GridCoordinate2D> GammaE;
+
+  Grid<GridCoordinate2D> OmegaPM;
+  Grid<GridCoordinate2D> GammaM;
 #endif
 
   // Wave parameters
@@ -80,6 +100,8 @@ class SchemeTMz: public Scheme
   Grid<GridCoordinate1D> HInc;
 
   FPValue incidentWaveAngle;
+
+  bool useMetamaterials;
 
 private:
 
@@ -131,7 +153,8 @@ public:
              GridCoordinate2D sizePML = GridCoordinate2D (0, 0),
              bool doUseTFSF = false,
              GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
-             FPValue angleIncWave = 0.0) :
+             FPValue angleIncWave = 0.0,
+             bool doUseMetamaterials = false) :
     yeeLayout (totSize, sizePML, sizeScatteredZone, PhysicsConst::Pi / 2, angleIncWave, 0),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
@@ -139,11 +162,18 @@ public:
     Dz (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Bx (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     By (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    D1z (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    B1x (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    B1y (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Eps (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
     Mu (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
+    OmegaPE (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
+    GammaE (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
+    OmegaPM (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
+    GammaM (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
     SigmaX (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
     SigmaY (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
     SigmaZ (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
@@ -160,7 +190,8 @@ public:
     useTFSF (doUseTFSF),
     EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
-    incidentWaveAngle (angleIncWave)
+    incidentWaveAngle (angleIncWave),
+    useMetamaterials (doUseMetamaterials)
 #else
   SchemeTMz (const GridCoordinate2D& totSize,
              time_step tStep,
@@ -170,7 +201,8 @@ public:
              GridCoordinate2D sizePML = GridCoordinate2D (0, 0),
              bool doUseTFSF = false,
              GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
-             FPValue angleIncWave = 0.0) :
+             FPValue angleIncWave = 0.0,
+             bool doUseMetamaterials = false) :
     yeeLayout (totSize, sizePML, sizeScatteredZone, PhysicsConst::Pi / 2, angleIncWave, 0),
     Ez (shrinkCoord (yeeLayout.getEzSize ()), 0),
     Hx (shrinkCoord (yeeLayout.getHxSize ()), 0),
@@ -178,11 +210,18 @@ public:
     Dz (shrinkCoord (yeeLayout.getEzSize ()), 0),
     Bx (shrinkCoord (yeeLayout.getHxSize ()), 0),
     By (shrinkCoord (yeeLayout.getHySize ()), 0),
+    D1z (shrinkCoord (yeeLayout.getEzSize ()), 0),
+    B1x (shrinkCoord (yeeLayout.getHxSize ()), 0),
+    B1y (shrinkCoord (yeeLayout.getHySize ()), 0),
     EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), 0),
     HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), 0),
     HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), 0),
     Eps (shrinkCoord (yeeLayout.getEpsSize ()), 0),
     Mu (shrinkCoord (yeeLayout.getEpsSize ()), 0),
+    OmegaPE (shrinkCoord (yeeLayout.getEpsSize ()), 0),
+    GammaE (shrinkCoord (yeeLayout.getEpsSize ()), 0),
+    OmegaPM (shrinkCoord (yeeLayout.getEpsSize ()), 0),
+    GammaM (shrinkCoord (yeeLayout.getEpsSize ()), 0),
     SigmaX (shrinkCoord (yeeLayout.getEpsSize ()), 0),
     SigmaY (shrinkCoord (yeeLayout.getEpsSize ()), 0),
     SigmaZ (shrinkCoord (yeeLayout.getEpsSize ()), 0),
@@ -199,7 +238,8 @@ public:
     useTFSF (doUseTFSF),
     EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
-    incidentWaveAngle (angleIncWave)
+    incidentWaveAngle (angleIncWave),
+    useMetamaterials (doUseMetamaterials)
 #endif
   {
     ASSERT (!doUseTFSF
