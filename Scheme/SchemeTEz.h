@@ -54,9 +54,11 @@ class SchemeTEz: public Scheme
 #endif
 
   // Wave parameters
-  FPValue waveLength;
-  FPValue stepWaveLength;
-  FPValue frequency;
+  FPValue sourceWaveLength;
+  FPValue sourceFrequency;
+
+  /** Courant number */
+  FPValue courantNum;
 
   // dx
   FPValue gridStep;
@@ -147,9 +149,9 @@ public:
     SigmaX (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
     SigmaY (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
     SigmaZ (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
-    waveLength (0),
-    stepWaveLength (0),
-    frequency (0),
+    sourceWaveLength (0),
+    sourceFrequency (0),
+    courantNum (0),
     gridStep (0),
     gridTimeStep (0),
     totalStep (tStep),
@@ -186,9 +188,9 @@ public:
     SigmaX (shrinkCoord (yeeLayout.getEpsSize ()), 0),
     SigmaY (shrinkCoord (yeeLayout.getEpsSize ()), 0),
     SigmaZ (shrinkCoord (yeeLayout.getEpsSize ()), 0),
-    waveLength (0),
-    stepWaveLength (0),
-    frequency (0),
+    sourceWaveLength (0),
+    sourceFrequency (0),
+    courantNum (0),
     gridStep (0),
     gridTimeStep (0),
     totalStep (tStep),
