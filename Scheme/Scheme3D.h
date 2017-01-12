@@ -72,9 +72,11 @@ class Scheme3D: public Scheme
 #endif
 
   // Wave parameters
-  FPValue waveLength;
-  FPValue stepWaveLength;
-  FPValue frequency;
+  FPValue sourceWaveLength;
+  FPValue sourceFrequency;
+
+  /** Courant number */
+  FPValue courantNum;
 
   // dx
   FPValue gridStep;
@@ -188,9 +190,9 @@ public:
     SigmaX (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
     SigmaY (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
     SigmaZ (totSize, bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    waveLength (0),
-    stepWaveLength (0),
-    frequency (0),
+    sourceWaveLength (0),
+    sourceFrequency (0),
+    courantNum (0),
     gridStep (0),
     gridTimeStep (0),
     totalStep (tStep),
@@ -240,9 +242,9 @@ public:
     SigmaX (totSize, 0),
     SigmaY (totSize, 0),
     SigmaZ (totSize, 0),
-    waveLength (0),
-    stepWaveLength (0),
-    frequency (0),
+    sourceWaveLength (0),
+    sourceFrequency (0),
+    courantNum (0),
     gridStep (0),
     gridTimeStep (0),
     totalStep (tStep),

@@ -72,6 +72,6 @@ BMPDumper<TCoord>::writeToFile (Grid<TCoord> &grid) const
 }
 
 template <class TCoord>
-BMPHelper BMPDumper<TCoord>::BMPhelper (PaletteType::PALETTE_GRAY);
+BMPHelper BMPDumper<TCoord>::BMPhelper (PaletteType::PALETTE_BLUE_GREEN_RED);
 
 #endif /* BMP_DUMPER_H */

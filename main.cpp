@@ -200,7 +200,7 @@ int main (int argc, char** argv)
 #endif
 #endif
 
-  scheme.initScheme (0.0002, /* dx is 2*10^(-4) meters */
+  scheme.initScheme (0.001, /* dx is 2*10^(-4) meters */
                      30000000000); /* source frequency is 3*10^10 Hz */
 
 #if defined (PARALLEL_GRID)

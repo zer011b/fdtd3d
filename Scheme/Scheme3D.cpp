@@ -32,7 +32,8 @@ Scheme3D::performPlaneWaveESteps (time_step t)
     FieldPointValue *valH1 = HInc.getFieldPointValue (posLeft);
     FieldPointValue *valH2 = HInc.getFieldPointValue (posRight);
 
-    FPValue S = gridTimeStep * PhysicsConst::SpeedOfLight / gridStep;
+    FPValue S = 1 / courantNum;
+    FPValue stepWaveLength = PhysicsConst::SpeedOfLight / (sourceFrequency * gridStep);
     FPValue arg = PhysicsConst::Pi * S / stepWaveLength;
 
     FPValue relPhi;
@@ -52,16 +53,14 @@ Scheme3D::performPlaneWaveESteps (time_step t)
     valE->setCurValue (val);
   }
 
-  FPValue freq = PhysicsConst::SpeedOfLight / waveLength;
-
   GridCoordinate1D pos (0);
   FieldPointValue *valE = EInc.getFieldPointValue (pos);
 
 #ifdef COMPLEX_FIELD_VALUES
-  valE->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq),
-                                 cos (gridTimeStep * t * 2 * PhysicsConst::Pi * freq)));
+  valE->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
+                                 cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency)));
 #else /* COMPLEX_FIELD_VALUES */
-  valE->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
+  valE->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
 #endif /* !COMPLEX_FIELD_VALUES */
 
   /*
@@ -86,9 +85,9 @@ Scheme3D::performPlaneWaveHSteps (time_step t)
     FieldPointValue *valE1 = EInc.getFieldPointValue (posLeft);
     FieldPointValue *valE2 = EInc.getFieldPointValue (posRight);
 
-    FPValue N_lambda = waveLength / gridStep;
-    FPValue S = gridTimeStep * PhysicsConst::SpeedOfLight / gridStep;
-    FPValue arg = PhysicsConst::Pi * S / N_lambda;
+    FPValue S = 1 / courantNum;
+    FPValue stepWaveLength = PhysicsConst::SpeedOfLight / (sourceFrequency * gridStep);
+    FPValue arg = PhysicsConst::Pi * S / stepWaveLength;
 
     FPValue relPhi;
     if (incidentWaveAngle2 == PhysicsConst::Pi / 4)
@@ -2589,15 +2588,13 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
       if (process == 0)
 #endif
       {
-        FPValue freq = PhysicsConst::SpeedOfLight / waveLength;
-
         GridCoordinate3D pos (EzSize.getX () / 2, EzSize.getY () / 2, EzSize.getZ () / 2);
         FieldPointValue* tmp = Ez.getFieldPointValue (pos);
 
 #ifdef COMPLEX_FIELD_VALUES
-        tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq), 0));
+        tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency), 0));
 #else /* COMPLEX_FIELD_VALUES */
-        tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
+        tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
 #endif /* !COMPLEX_FIELD_VALUES */
       }
     }
@@ -2738,15 +2735,13 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
       if (process == 0)
 #endif
       {
-        FPValue freq = PhysicsConst::SpeedOfLight / waveLength;
-
         GridCoordinate3D pos (EzSize.getX () / 2, EzSize.getY () / 2, EzSize.getZ () / 2);
         FieldPointValue* tmp = Ez.getFieldPointValue (pos);
 
 #ifdef COMPLEX_FIELD_VALUES
-        tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq), 0));
+        tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency), 0));
 #else /* COMPLEX_FIELD_VALUES */
-        tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * freq));
+        tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
 #endif /* !COMPLEX_FIELD_VALUES */
       }
     }
@@ -3104,14 +3099,14 @@ Scheme3D::performSteps (int dumpRes)
 }
 
 void
-Scheme3D::initScheme (FPValue wLength, FPValue step)
+Scheme3D::initScheme (FPValue dx, FPValue sourceFreq)
 {
-  waveLength = wLength;
-  stepWaveLength = step;
-  frequency = PhysicsConst::SpeedOfLight / waveLength;
+  sourceFrequency = sourceFreq;
+  sourceWaveLength = PhysicsConst::SpeedOfLight / sourceFrequency;
 
-  gridStep = waveLength / stepWaveLength;
-  gridTimeStep = gridStep / (2 * PhysicsConst::SpeedOfLight);
+  gridStep = dx;
+  courantNum = 2.0;
+  gridTimeStep = gridStep / (courantNum * PhysicsConst::SpeedOfLight);
 }
 
 #if defined (PARALLEL_GRID)
