@@ -28,6 +28,13 @@ class Scheme3D: public Scheme
   ParallelGrid By;
   ParallelGrid Bz;
 
+  ParallelGrid D1x;
+  ParallelGrid D1y;
+  ParallelGrid D1z;
+  ParallelGrid B1x;
+  ParallelGrid B1y;
+  ParallelGrid B1z;
+
   ParallelGrid ExAmplitude;
   ParallelGrid EyAmplitude;
   ParallelGrid EzAmplitude;
@@ -41,6 +48,12 @@ class Scheme3D: public Scheme
   ParallelGrid SigmaX;
   ParallelGrid SigmaY;
   ParallelGrid SigmaZ;
+
+  ParallelGrid OmegaPE;
+  ParallelGrid GammaE;
+
+  ParallelGrid OmegaPM;
+  ParallelGrid GammaM;
 #else
   Grid<GridCoordinate3D> Ex;
   Grid<GridCoordinate3D> Ey;
@@ -56,6 +69,13 @@ class Scheme3D: public Scheme
   Grid<GridCoordinate3D> By;
   Grid<GridCoordinate3D> Bz;
 
+  Grid<GridCoordinate3D> D1x;
+  Grid<GridCoordinate3D> D1y;
+  Grid<GridCoordinate3D> D1z;
+  Grid<GridCoordinate3D> B1x;
+  Grid<GridCoordinate3D> B1y;
+  Grid<GridCoordinate3D> B1z;
+
   Grid<GridCoordinate3D> ExAmplitude;
   Grid<GridCoordinate3D> EyAmplitude;
   Grid<GridCoordinate3D> EzAmplitude;
@@ -69,6 +89,12 @@ class Scheme3D: public Scheme
   Grid<GridCoordinate3D> SigmaX;
   Grid<GridCoordinate3D> SigmaY;
   Grid<GridCoordinate3D> SigmaZ;
+
+  Grid<GridCoordinate3D> OmegaPE;
+  Grid<GridCoordinate3D> GammaE;
+
+  Grid<GridCoordinate3D> OmegaPM;
+  Grid<GridCoordinate3D> GammaM;
 #endif
 
   // Wave parameters
@@ -102,6 +128,8 @@ class Scheme3D: public Scheme
   FPValue incidentWaveAngle1; // Teta
   FPValue incidentWaveAngle2; // Phi
   FPValue incidentWaveAngle3; // Psi
+
+  bool useMetamaterials;
 
 private:
 
@@ -165,7 +193,8 @@ public:
             GridCoordinate3D sizeScatteredZone = GridCoordinate3D (0, 0, 0),
             FPValue angleIncWave1 = 0.0,
             FPValue angleIncWave2 = 0.0,
-            FPValue angleIncWave3 = 0.0) :
+            FPValue angleIncWave3 = 0.0,
+            bool doUseMetamaterials = false) :
     yeeLayout (totSize, sizePML, sizeScatteredZone, angleIncWave1, angleIncWave2, angleIncWave3),
     Ex (yeeLayout.getExSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Ey (yeeLayout.getEySize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
@@ -179,6 +208,12 @@ public:
     Bx (yeeLayout.getHxSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     By (yeeLayout.getHySize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Bz (yeeLayout.getHzSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    D1x (yeeLayout.getExSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    D1y (yeeLayout.getEySize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    D1z (yeeLayout.getEzSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    B1x (yeeLayout.getHxSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    B1y (yeeLayout.getHySize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    B1z (yeeLayout.getHzSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     ExAmplitude (yeeLayout.getExSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     EyAmplitude (yeeLayout.getEySize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     EzAmplitude (yeeLayout.getEzSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
@@ -187,6 +222,10 @@ public:
     HzAmplitude (yeeLayout.getHzSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Eps (yeeLayout.getEpsSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     Mu (yeeLayout.getEpsSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    OmegaPE (yeeLayout.getEpsSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    GammaE (yeeLayout.getEpsSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    OmegaPM (yeeLayout.getEpsSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
+    GammaM (yeeLayout.getEpsSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     SigmaX (yeeLayout.getEpsSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     SigmaY (yeeLayout.getEpsSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
     SigmaZ (yeeLayout.getEpsSize (), bufSizeL, bufSizeR, curProcess, totalProc, 0),
@@ -205,7 +244,8 @@ public:
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
     incidentWaveAngle1 (angleIncWave1),
     incidentWaveAngle2 (angleIncWave2),
-    incidentWaveAngle3 (angleIncWave3)
+    incidentWaveAngle3 (angleIncWave3),
+    useMetamaterials (doUseMetamaterials)
 #else
   Scheme3D (const GridCoordinate3D& totSize,
             time_step tStep,
@@ -217,7 +257,8 @@ public:
             GridCoordinate3D sizeScatteredZone = GridCoordinate3D (0, 0, 0),
             FPValue angleIncWave1 = 0.0,
             FPValue angleIncWave2 = 0.0,
-            FPValue angleIncWave3 = 0.0) :
+            FPValue angleIncWave3 = 0.0,
+            bool doUseMetamaterials = false) :
     yeeLayout (totSize, sizePML, sizeScatteredZone, angleIncWave1, angleIncWave2, angleIncWave3),
     Ex (yeeLayout.getExSize (), 0),
     Ey (yeeLayout.getEySize (), 0),
@@ -231,6 +272,12 @@ public:
     Bx (yeeLayout.getHxSize (), 0),
     By (yeeLayout.getHySize (), 0),
     Bz (yeeLayout.getHzSize (), 0),
+    D1x (yeeLayout.getExSize (), 0),
+    D1y (yeeLayout.getEySize (), 0),
+    D1z (yeeLayout.getEzSize (), 0),
+    B1x (yeeLayout.getHxSize (), 0),
+    B1y (yeeLayout.getHySize (), 0),
+    B1z (yeeLayout.getHzSize (), 0),
     ExAmplitude (yeeLayout.getExSize (), 0),
     EyAmplitude (yeeLayout.getEySize (), 0),
     EzAmplitude (yeeLayout.getEzSize (), 0),
@@ -239,6 +286,10 @@ public:
     HzAmplitude (yeeLayout.getHzSize (), 0),
     Eps (yeeLayout.getEpsSize (), 0),
     Mu (yeeLayout.getEpsSize (), 0),
+    OmegaPE (yeeLayout.getEpsSize (), 0),
+    GammaE (yeeLayout.getEpsSize (), 0),
+    OmegaPM (yeeLayout.getEpsSize (), 0),
+    GammaM (yeeLayout.getEpsSize (), 0),
     SigmaX (yeeLayout.getEpsSize (), 0),
     SigmaY (yeeLayout.getEpsSize (), 0),
     SigmaZ (yeeLayout.getEpsSize (), 0),
@@ -257,7 +308,8 @@ public:
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
     incidentWaveAngle1 (angleIncWave1),
     incidentWaveAngle2 (angleIncWave2),
-    incidentWaveAngle3 (angleIncWave3)
+    incidentWaveAngle3 (angleIncWave3),
+    useMetamaterials (doUseMetamaterials)
 #endif
   {
     ASSERT (!doUseTFSF

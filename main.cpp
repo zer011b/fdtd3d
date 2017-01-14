@@ -184,7 +184,7 @@ int main (int argc, char** argv)
   ParallelGridCoordinate bufferLeft (bufSize);
   ParallelGridCoordinate bufferRight (bufSize);
 
-  Scheme3D scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate3D (10, 10, 10), true, GridCoordinate3D (13, 13, 13), PhysicsConst::Pi / 2, 0, 0);
+  Scheme3D scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate3D (10, 10, 10), false, GridCoordinate3D (13, 13, 13), PhysicsConst::Pi / 2, 0, 0, true);
 #endif
 #else
 #ifdef GRID_2D
@@ -196,11 +196,11 @@ int main (int argc, char** argv)
 #ifdef GRID_3D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
 
-  Scheme3D scheme (overallSize, totalTimeSteps, false, 2 * totalTimeSteps, false, GridCoordinate3D (10, 10, 10), true, GridCoordinate3D (13, 13, 13), PhysicsConst::Pi / 2, 0, 0);
+  Scheme3D scheme (overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate3D (10, 10, 20), false, GridCoordinate3D (13, 13, 13), PhysicsConst::Pi / 2, 0, 0, true);
 #endif
 #endif
 
-  scheme.initScheme (0.0001, /* dx */
+  scheme.initScheme (0.001, /* dx */
                      30000000000); /* source frequency */
 
 #if defined (PARALLEL_GRID)
