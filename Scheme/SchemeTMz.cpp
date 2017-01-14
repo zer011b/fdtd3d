@@ -790,16 +790,16 @@ SchemeTMz::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordi
         FPValue gammaM2 = valGammaM2->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        if (valOmegaPM1->getCurValue () == 0
-            || valOmegaPM2->getCurValue () == 0)
+        if (omegaPM1 == 0
+            || omegaPM2 == 0)
         {
           dividerOmega = sqrtf (2.0);
           dividerGamma = 2.0;
         }
         else
         {
-          if (valOmegaPM1->getCurValue () != valOmegaPM2->getCurValue ()
-              || valGammaM1->getCurValue () != valGammaM2->getCurValue ())
+          if (omegaPM1 != omegaPM2
+              || gammaM1 != gammaM2)
           {
             ASSERT_MESSAGE ("Unimplemented metamaterials border condition");
           }
@@ -811,8 +811,8 @@ SchemeTMz::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordi
         ASSERT (dividerOmega != 0);
         ASSERT (dividerGamma != 0);
 
-        omegaPM = (valOmegaPM1->getCurValue () + valOmegaPM2->getCurValue ()) / dividerOmega;
-        gammaM = (valGammaM1->getCurValue () + valGammaM2->getCurValue ()) / dividerGamma;
+        omegaPM = (omegaPM1 + omegaPM2) / dividerOmega;
+        gammaM = (gammaM1 + gammaM2) / dividerGamma;
 
         /*
          * FIXME: precalculate coefficients
@@ -1159,16 +1159,16 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
         FPValue gammaM2 = valGammaM2->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        if (valOmegaPM1->getCurValue () == 0
-            || valOmegaPM2->getCurValue () == 0)
+        if (omegaPM1 == 0
+            || omegaPM2 == 0)
         {
           dividerOmega = sqrtf (2.0);
           dividerGamma = 2.0;
         }
         else
         {
-          if (valOmegaPM1->getCurValue () != valOmegaPM2->getCurValue ()
-              || valGammaM1->getCurValue () != valGammaM2->getCurValue ())
+          if (omegaPM1 != omegaPM2
+              || gammaM1 != gammaM2)
           {
             ASSERT_MESSAGE ("Unimplemented metamaterials border condition");
           }
@@ -1180,8 +1180,8 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
         ASSERT (dividerOmega != 0);
         ASSERT (dividerGamma != 0);
 
-        omegaPM = (valOmegaPM1->getCurValue () + valOmegaPM2->getCurValue ()) / dividerOmega;
-        gammaM = (valGammaM1->getCurValue () + valGammaM2->getCurValue ()) / dividerGamma;
+        omegaPM = (omegaPM1 + omegaPM2) / dividerOmega;
+        gammaM = (gammaM1 + gammaM2) / dividerGamma;
 
         /*
          * FIXME: precalculate coefficients
