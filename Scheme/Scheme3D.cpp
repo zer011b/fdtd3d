@@ -2680,6 +2680,13 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
     BMPDumper<GridCoordinate3D> dumperHz;
     dumperHz.init (stepLimit, CURRENT, process, "3D-in-time-Hz");
     dumperHz.dumpGrid (Hz);
+
+    BMPDumper<GridCoordinate1D> dumper;
+    dumper.init (stepLimit, PREVIOUS, process, "3D-incident-E");
+    dumper.dumpGrid (EInc);
+
+    dumper.init (stepLimit, PREVIOUS, process, "3D-incident-H");
+    dumper.dumpGrid (HInc);
   }
 }
 

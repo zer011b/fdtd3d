@@ -2,6 +2,7 @@
 #define PHYSICS_CONSTANTS_H
 
 #include "FieldValue.h"
+#include <cmath>
 
 namespace PhysicsConst
 {
@@ -9,7 +10,7 @@ namespace PhysicsConst
   const CUDA_DEVICE FPValue Eps0 = 0.0000000000088541878176203892;
   const CUDA_DEVICE FPValue Mu0 = 0.0000012566370614359173;
   const CUDA_DEVICE FPValue accuracy = 0.001;
-  const CUDA_DEVICE FPValue Pi = 3.141592653589793238462643;
+  const CUDA_DEVICE FPValue Pi = M_PI;
 };
 
 #endif /* PHYSICS_CONSTANTS_H */
