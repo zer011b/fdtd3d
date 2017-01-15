@@ -453,7 +453,7 @@ public:
 
   ParallelGridCoordinate getTotalPosition (ParallelGridCoordinate);
 
-  GridCoordinate2D getTotalSize ()
+  ParallelGridCoordinate getTotalSize ()
   {
     return totalSize;
   }
