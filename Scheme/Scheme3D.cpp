@@ -2758,7 +2758,7 @@ Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate
           }
           else if (yeeLayout.doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (Ey.getTotalPosition (posRight));
+            GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (Ey.getTotalPosition (posRight));
             GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
@@ -2928,7 +2928,7 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
           }
           else if (yeeLayout.doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (Ey.getTotalPosition (posRight));
+            GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (Ey.getTotalPosition (posRight));
             GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
