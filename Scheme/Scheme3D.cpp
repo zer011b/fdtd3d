@@ -3272,23 +3272,43 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
     /*
      * FIXME: add dump step
      */
-    // if (t % 100 == 0)
-    // {
-    //   if (dumpRes)
-    //   {
-    //     BMPDumper<GridCoordinate3D> dumperEz;
-    //     dumperEz.init (t, CURRENT, process, "2D-TMz-in-time-Ez");
-    //     dumperEz.dumpGrid (Ez);
-    //
-    //     BMPDumper<GridCoordinate3D> dumperHx;
-    //     dumperHx.init (t, CURRENT, process, "2D-TMz-in-time-Hx");
-    //     dumperHx.dumpGrid (Hx);
-    //
-    //     BMPDumper<GridCoordinate3D> dumperHy;
-    //     dumperHy.init (t, CURRENT, process, "2D-TMz-in-time-Hy");
-    //     dumperHy.dumpGrid (Hy);
-    //   }
-    // }
+    if (t % 100 == 0)
+    {
+      if (dumpRes)
+      {
+        BMPDumper<GridCoordinate3D> dumperEx;
+        dumperEx.init (t, CURRENT, process, "3D-in-time-Ex");
+        dumperEx.dumpGrid (Ex);
+
+        BMPDumper<GridCoordinate3D> dumperEy;
+        dumperEy.init (t, CURRENT, process, "3D-in-time-Ey");
+        dumperEy.dumpGrid (Ey);
+
+        BMPDumper<GridCoordinate3D> dumperEz;
+        dumperEz.init (t, CURRENT, process, "3D-in-time-Ez");
+        dumperEz.dumpGrid (Ez);
+
+        BMPDumper<GridCoordinate3D> dumperHx;
+        dumperHx.init (t, CURRENT, process, "3D-in-time-Hx");
+        dumperHx.dumpGrid (Hx);
+
+        BMPDumper<GridCoordinate3D> dumperHy;
+        dumperHy.init (t, CURRENT, process, "3D-in-time-Hy");
+        dumperHy.dumpGrid (Hy);
+
+        BMPDumper<GridCoordinate3D> dumperHz;
+        dumperHz.init (t, CURRENT, process, "3D-in-time-Hz");
+        dumperHz.dumpGrid (Hz);
+        //
+        // BMPDumper<GridCoordinate3D> dumperHx;
+        // dumperHx.init (t, CURRENT, process, "2D-TMz-in-time-Hx");
+        // dumperHx.dumpGrid (Hx);
+        //
+        // BMPDumper<GridCoordinate3D> dumperHy;
+        // dumperHy.init (t, CURRENT, process, "2D-TMz-in-time-Hy");
+        // dumperHy.dumpGrid (Hy);
+      }
+    }
   }
 
   if (dumpRes)
@@ -3615,23 +3635,23 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
     /*
      * FIXME: add dump step
      */
-    // if (t % 100 == 0)
-    // {
-    //   if (dumpRes)
-    //   {
-    //     BMPDumper<GridCoordinate3D> dumperEz;
-    //     dumperEz.init (t, CURRENT, process, "2D-TMz-in-time-Ez");
-    //     dumperEz.dumpGrid (Ez);
-    //
-    //     BMPDumper<GridCoordinate3D> dumperHx;
-    //     dumperHx.init (t, CURRENT, process, "2D-TMz-in-time-Hx");
-    //     dumperHx.dumpGrid (Hx);
-    //
-    //     BMPDumper<GridCoordinate3D> dumperHy;
-    //     dumperHy.init (t, CURRENT, process, "2D-TMz-in-time-Hy");
-    //     dumperHy.dumpGrid (Hy);
-    //   }
-    // }
+    if (t % 100 == 0)
+    {
+      if (dumpRes)
+      {
+        BMPDumper<GridCoordinate3D> dumperEz;
+        dumperEz.init (t, CURRENT, process, "2D-TMz-in-time-Ez");
+        dumperEz.dumpGrid (Ez);
+
+        BMPDumper<GridCoordinate3D> dumperHx;
+        dumperHx.init (t, CURRENT, process, "2D-TMz-in-time-Hx");
+        dumperHx.dumpGrid (Hx);
+
+        BMPDumper<GridCoordinate3D> dumperHy;
+        dumperHy.init (t, CURRENT, process, "2D-TMz-in-time-Hy");
+        dumperHy.dumpGrid (Hy);
+      }
+    }
   }
 
   if (dumpRes)
@@ -3826,16 +3846,15 @@ Scheme3D::initGrids ()
 
         GridCoordinateFP3D size = yeeLayout.getEpsCoordFP (OmegaPE.getTotalSize ());
 
-        if (posAbs.getX () >= size.getX () / 4 && posAbs.getX () < 3*size.getX ()/4
-            && posAbs.getY () >= yeeLayout.getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout.getLeftBorderPML ().getY ()
-            && posAbs.getZ () >= yeeLayout.getLeftBorderPML ().getZ () && posAbs.getZ () < size.getZ () - yeeLayout.getLeftBorderPML ().getZ ())
-        {
+        // if (posAbs.getX () >= size.getX () / 4 && posAbs.getX () < 3*size.getX ()/4
+        //     && posAbs.getY () >= yeeLayout.getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout.getLeftBorderPML ().getY ()
+        //     && posAbs.getZ () >= yeeLayout.getLeftBorderPML ().getZ () && posAbs.getZ () < size.getZ () - yeeLayout.getLeftBorderPML ().getZ ())
+        // {
 
-      // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
-      //     + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0)
-      //     && (posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
-      //         + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) > (size.getX ()*0.5/7.0) * (size.getX ()*0.5/7.0))
-      // {
+        if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
+            + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2)
+            + (posAbs.getZ () - size.getZ () / 2) * (posAbs.getZ () - size.getZ () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
+        {
 #ifdef COMPLEX_FIELD_VALUES
           valOmega->setCurValue (FieldValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency, 0));
 #else /* COMPLEX_FIELD_VALUES */
@@ -3867,16 +3886,15 @@ Scheme3D::initGrids ()
 
         GridCoordinateFP3D size = yeeLayout.getEpsCoordFP (OmegaPM.getTotalSize ());
 
-        if (posAbs.getX () >= size.getX () / 4 && posAbs.getX () < 3*size.getX ()/4
-            && posAbs.getY () >= yeeLayout.getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout.getLeftBorderPML ().getY ()
-            && posAbs.getZ () >= yeeLayout.getLeftBorderPML ().getZ () && posAbs.getZ () < size.getZ () - yeeLayout.getLeftBorderPML ().getZ ())
-        {
+        // if (posAbs.getX () >= size.getX () / 4 && posAbs.getX () < 3*size.getX ()/4
+        //     && posAbs.getY () >= yeeLayout.getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout.getLeftBorderPML ().getY ()
+        //     && posAbs.getZ () >= yeeLayout.getLeftBorderPML ().getZ () && posAbs.getZ () < size.getZ () - yeeLayout.getLeftBorderPML ().getZ ())
+        // {
 
-      // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
-      //     + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0)
-      //     && (posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
-      //         + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) > (size.getX ()*0.5/7.0) * (size.getX ()*0.5/7.0))
-      // {
+        if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
+            + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2)
+            + (posAbs.getZ () - size.getZ () / 2) * (posAbs.getZ () - size.getZ () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
+        {
 #ifdef COMPLEX_FIELD_VALUES
           valOmega->setCurValue (FieldValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency, 0));
 #else /* COMPLEX_FIELD_VALUES */
