@@ -114,6 +114,8 @@ class Scheme3D: public Scheme
 
   int process;
 
+  int numProcs;
+
   bool calculateAmplitude;
 
   time_step amplitudeStepLimit;
@@ -232,6 +234,7 @@ public:
     gridTimeStep (0),
     totalStep (tStep),
     process (curProcess),
+    numProcs (totalProc),
     calculateAmplitude (calcAmp),
     amplitudeStepLimit (ampStep),
     usePML (doUsePML),
@@ -296,6 +299,7 @@ public:
     gridTimeStep (0),
     totalStep (tStep),
     process (0),
+    numProcs (1),
     calculateAmplitude (calcAmp),
     amplitudeStepLimit (ampStep),
     usePML (doUsePML),

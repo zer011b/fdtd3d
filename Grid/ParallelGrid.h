@@ -450,6 +450,11 @@ public:
   }
 
   ParallelGridCoordinate getRelativePosition (ParallelGridCoordinate);
+
+  ParallelGridCoordinate getCurrentSize () const
+  {
+    return currentSize;
+  }
 };
 
 #endif /* PARALLEL_GRID */
