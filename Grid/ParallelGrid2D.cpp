@@ -23,19 +23,26 @@ ParallelGrid::NodeGridInit ()
 }
 
 GridCoordinate2D
-ParallelGrid::GridInit ()
+ParallelGrid::GridInit (GridCoordinate2D &core)
 {
   grid_coord c1;
   grid_coord c2;
 
+  grid_coord core1;
+  grid_coord core2;
+
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX ());
-  c2 = totalSize.getY ();
+  CalculateGridSizeForNode (c1, core1, nodeGridSizeX, hasR, totalSize.getX ());
+  core2 = totalSize.getY ();
+  c2 = c2;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  c1 = totalSize.getX ();
-  CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY ());
+  core1 = totalSize.getX ();
+  c1 = core1;
+  CalculateGridSizeForNode (c2, core2, nodeGridSizeY, hasU, totalSize.getY ());
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
+
+  core = GridCoordinate2D (core1, core2);
 
   return GridCoordinate2D (c1, c2);
 }
@@ -65,13 +72,18 @@ ParallelGrid::NodeGridInit ()
 }
 
 GridCoordinate2D
-ParallelGrid::GridInit ()
+ParallelGrid::GridInit (GridCoordinate2D &core)
 {
   grid_coord c1;
   grid_coord c2;
 
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
-                            c2, nodeGridSizeY, hasU, totalSize.getY ());
+  grid_coord core1;
+  grid_coord core2;
+
+  CalculateGridSizeForNode (c1, core1, nodeGridSizeX, hasR, totalSize.getX (),
+                            c2, core2, nodeGridSizeY, hasU, totalSize.getY ());
+
+  core = GridCoordinate2D (core1, core2);
 
   return GridCoordinate2D (c1, c2);
 }

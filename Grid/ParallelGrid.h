@@ -85,11 +85,14 @@ class ParallelGrid: public ParallelGridBase
   int nodeGridSizeXYZ;
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
-  // Size of current node without buffers.
+  // Total size of grid.
   ParallelGridCoordinate totalSize;
 
   // Size of current node without buffers.
   ParallelGridCoordinate currentSize;
+
+  // Size of grid per node which is used for all buffers except at right border
+  ParallelGridCoordinate coreCurrentSize;
 
   // Size of buffer zone.
   ParallelGridCoordinate bufferSizeLeft;
@@ -140,7 +143,7 @@ private:
 
   void ParallelGridConstructor (grid_iter numTimeStepsInBuild);
   void NodeGridInit ();
-  ParallelGridCoordinate GridInit ();
+  ParallelGridCoordinate GridInit (ParallelGridCoordinate &);
   void InitDirections ();
   void InitBufferFlags ();
   void InitBuffers (grid_iter numTimeStepsInBuild);
@@ -186,15 +189,15 @@ private:
 
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  void CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, grid_coord size1);
+  void CalculateGridSizeForNode (grid_coord& c1, grid_coord& core1, int nodeGridSize1, bool has1, grid_coord size1);
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_1D_Z */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
   void FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FPValue alpha);
   void NodeGridInitInner (FPValue& overall1, FPValue& overall2,
                           int& nodeGridSize1, int& nodeGridSize2, int& left);
-  void CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, grid_coord size1,
-                                 grid_coord& c2, int nodeGridSize2, bool has2, grid_coord size2);
+  void CalculateGridSizeForNode (grid_coord& c1, grid_coord& core1, int nodeGridSize1, bool has1, grid_coord size1,
+                                 grid_coord& c2, grid_coord& core2, int nodeGridSize2, bool has2, grid_coord size2);
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -202,9 +205,9 @@ private:
                                   FPValue alpha, FPValue betta);
   void NodeGridInitInner (FPValue& overall1, FPValue& overall2, FPValue& overall3,
                           int& nodeGridSize1, int& nodeGridSize2, int& nodeGridSize3, int& left);
-  void CalculateGridSizeForNode (grid_coord& c1, int nodeGridSize1, bool has1, grid_coord size1,
-                                 grid_coord& c2, int nodeGridSize2, bool has2, grid_coord size2,
-                                 grid_coord& c3, int nodeGridSize3, bool has3, grid_coord size3);
+  void CalculateGridSizeForNode (grid_coord& c1, grid_coord& core1, int nodeGridSize1, bool has1, grid_coord size1,
+                                 grid_coord& c2, grid_coord& core2, int nodeGridSize2, bool has2, grid_coord size2,
+                                 grid_coord& c3, grid_coord& core, int nodeGridSize3, bool has3, grid_coord size3);
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
   BufferPosition getOpposite (BufferPosition direction);
@@ -217,11 +220,7 @@ public:
                 const int process, const int totalProc, uint32_t step);
 
   // Switch to next time step.
-#ifdef CXX11_ENABLED
-  virtual void nextTimeStep () override;
-#else
-  virtual void nextTimeStep ();
-#endif
+  virtual void nextTimeStep () CXX11_OVERRIDE;
 
   void nextShareStep ();
 
@@ -234,11 +233,7 @@ public:
   // Get field point at coordinate in grid.
   FieldPointValue* getFieldPointValueAbsoluteIndex (const ParallelGridCoordinate& position);
 
-#ifdef CXX11_ENABLED
-  virtual ParallelGridCoordinate getEnd () const override
-#else
-  virtual ParallelGridCoordinate getEnd () const
-#endif
+  virtual ParallelGridCoordinate getEnd () const CXX11_OVERRIDE
   {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -331,11 +326,7 @@ public:
 #endif
   }
 
-#ifdef CXX11_ENABLED
-  virtual ParallelGridCoordinate getStart () const override
-#else
-  virtual ParallelGridCoordinate getStart () const
-#endif
+  virtual ParallelGridCoordinate getStart () const CXX11_OVERRIDE
   {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)

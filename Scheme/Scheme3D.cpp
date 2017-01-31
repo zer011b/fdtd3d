@@ -1447,7 +1447,11 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
           FieldPointValue* valD1z = D1z.getFieldPointValue (pos);
           FieldPointValue* valDz = Dz.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
+          GridCoordinateFP3D coord1 = realCoord + GridCoordinateFP3D (0, 0, 0.5);
+          GridCoordinate3D coord2 = yeeLayout.getEpsCoord (coord1);
+          GridCoordinate3D coord3 = OmegaPE.getRelativePosition (coord2);
+
+          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValue (coord3);
           FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
           FieldPointValue* valGammaE1 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
           FieldPointValue* valGammaE2 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));

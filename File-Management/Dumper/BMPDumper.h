@@ -30,11 +30,7 @@ public:
   virtual ~BMPDumper () {}
 
   // Virtual method for grid loading.
-#ifdef CXX11_ENABLED
-  virtual void dumpGrid (Grid<TCoord> &grid) const override;
-#else
-  virtual void dumpGrid (Grid<TCoord> &grid) const;
-#endif
+  virtual void dumpGrid (Grid<TCoord> &grid) const CXX11_OVERRIDE;
 };
 
 /**

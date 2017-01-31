@@ -128,11 +128,7 @@ private:
 
 public:
 
-#ifdef CXX11_ENABLED
-  virtual void performSteps (int) override;
-#else
-  virtual void performSteps (int);
-#endif
+  virtual void performSteps (int) CXX11_OVERRIDE;
 
   void initScheme (FPValue, FPValue);
 
