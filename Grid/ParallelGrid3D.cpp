@@ -34,27 +34,39 @@ ParallelGrid::NodeGridInit ()
 }
 
 GridCoordinate3D
-ParallelGrid::GridInit ()
+ParallelGrid::GridInit (GridCoordinate3D &core)
 {
   grid_coord c1;
   grid_coord c2;
   grid_coord c3;
 
+  grid_coord core1;
+  grid_coord core2;
+  grid_coord core3;
+
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX ());
-  c2 = totalSize.getY ();
-  c3 = totalSize.getZ ();
+  CalculateGridSizeForNode (c1, core1, nodeGridSizeX, hasR, totalSize.getX ());
+  core2 = totalSize.getY ();
+  c2 = core2;
+  core3 = totalSize.getZ ();
+  c3 = core3;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  c1 = totalSize.getX ();
-  CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY ());
-  c3 = totalSize.getZ ();
+  core1 = totalSize.getX ();
+  c1 = core1;
+  CalculateGridSizeForNode (c2, core2, nodeGridSizeY, hasU, totalSize.getY ());
+  core3 = totalSize.getZ ();
+  c3 = core3;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
-  c1 = totalSize.getX ();
-  c2 = totalSize.getY ();
-  CalculateGridSizeForNode (c3, nodeGridSizeZ, hasF, totalSize.getZ ());
+  core1 = totalSize.getX ();
+  c1 = core1;
+  core2 = totalSize.getY ();
+  c2 = core2;
+  CalculateGridSizeForNode (c3, core3, nodeGridSizeZ, hasF, totalSize.getZ ());
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
+
+  core = GridCoordinate3D (core1, core2, core3);
 
   return GridCoordinate3D (c1, c2, c3);
 }
@@ -117,27 +129,36 @@ ParallelGrid::NodeGridInit ()
 }
 
 GridCoordinate3D
-ParallelGrid::GridInit ()
+ParallelGrid::GridInit (GridCoordinate3D &core)
 {
   grid_coord c1;
   grid_coord c2;
   grid_coord c3;
 
+  grid_coord core1;
+  grid_coord core2;
+  grid_coord core3;
+
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
-                            c2, nodeGridSizeY, hasU, totalSize.getY ());
-  c3 = totalSize.getZ ();
+  CalculateGridSizeForNode (c1, core1, nodeGridSizeX, hasR, totalSize.getX (),
+                            c2, core2, nodeGridSizeY, hasU, totalSize.getY ());
+  core3 = totalSize.getZ ();
+  c3 = core3;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  c1 = totalSize.getX ();
-  CalculateGridSizeForNode (c2, nodeGridSizeY, hasU, totalSize.getY (),
-                            c3, nodeGridSizeZ, hasF, totalSize.getZ ());
+  core1 = totalSize.getX ();
+  c1 = core1;
+  CalculateGridSizeForNode (c2, core2, nodeGridSizeY, hasU, totalSize.getY (),
+                            c3, core3, nodeGridSizeZ, hasF, totalSize.getZ ());
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  c2 = totalSize.getY ();
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
-                            c3, nodeGridSizeZ, hasF, totalSize.getZ ());
+  core2 = totalSize.getY ();
+  c2 = core2;
+  CalculateGridSizeForNode (c1, core1, nodeGridSizeX, hasR, totalSize.getX (),
+                            c3, core3, nodeGridSizeZ, hasF, totalSize.getZ ());
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
+
+  core = GridCoordinate3D (core1, core2, core3);
 
   return GridCoordinate3D (c1, c2, c3);
 }
@@ -178,15 +199,21 @@ ParallelGrid::NodeGridInit ()
 }
 
 GridCoordinate3D
-ParallelGrid::GridInit ()
+ParallelGrid::GridInit (GridCoordinate3D &core)
 {
   grid_coord c1;
   grid_coord c2;
   grid_coord c3;
 
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX (),
-                            c2, nodeGridSizeY, hasU, totalSize.getY (),
-                            c3, nodeGridSizeZ, hasF, totalSize.getZ ());
+  grid_coord core1;
+  grid_coord core2;
+  grid_coord core3;
+
+  CalculateGridSizeForNode (c1, core1, nodeGridSizeX, hasR, totalSize.getX (),
+                            c2, core2, nodeGridSizeY, hasU, totalSize.getY (),
+                            c3, core3, nodeGridSizeZ, hasF, totalSize.getZ ());
+
+  core = GridCoordinate3D (core1, core2, core3);
 
   return GridCoordinate3D (c1, c2, c3);
 }

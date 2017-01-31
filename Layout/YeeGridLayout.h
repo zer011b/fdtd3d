@@ -7,12 +7,6 @@
 
 #include <cmath>
 
-#ifdef CXX11_ENABLED
-#define OVERRIDE_FINAL_MODIFIER override final
-#else /* CXX11_ENABLED */
-#define OVERRIDE_FINAL_MODIFIER
-#endif /* !CXX11_ENABLED */
-
 /**
  * Yee grid layout which specifies how field components are placed in space
  *
@@ -65,120 +59,120 @@ public:
   /*
    * Get coordinate of circut field component
    */
-  virtual GridCoordinate3D getExCircuitElement (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getEyCircuitElement (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getEzCircuitElement (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHxCircuitElement (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHyCircuitElement (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHzCircuitElement (GridCoordinate3D, LayoutDirection) const OVERRIDE_FINAL_MODIFIER;
+  virtual GridCoordinate3D getExCircuitElement (GridCoordinate3D, LayoutDirection) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEyCircuitElement (GridCoordinate3D, LayoutDirection) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEzCircuitElement (GridCoordinate3D, LayoutDirection) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHxCircuitElement (GridCoordinate3D, LayoutDirection) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHyCircuitElement (GridCoordinate3D, LayoutDirection) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHzCircuitElement (GridCoordinate3D, LayoutDirection) const CXX11_OVERRIDE_FINAL;
 
   /*
    * Get size of field component grid
    */
-  virtual GridCoordinate3D getEpsSize () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getMuSize () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getExSize () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getEySize () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getEzSize () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHxSize () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHySize () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHzSize () const OVERRIDE_FINAL_MODIFIER;
+  virtual GridCoordinate3D getEpsSize () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getMuSize () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getExSize () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEySize () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEzSize () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHxSize () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHySize () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHzSize () const CXX11_OVERRIDE_FINAL;
 
   /*
    * Get start coordinate of field component
    */
-  virtual GridCoordinate3D getExStart (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getEyStart (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getEzStart (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHxStart (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHyStart (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHzStart (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
+  virtual GridCoordinate3D getExStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEyStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEzStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHxStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHyStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHzStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
 
   /*
    * Get end coordinate of field component
    */
-  virtual GridCoordinate3D getExEnd (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getEyEnd (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getEzEnd (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHxEnd (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHyEnd (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHzEnd (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
+  virtual GridCoordinate3D getExEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEyEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEzEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHxEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHyEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHzEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
 
   /*
    * Get minimum coordinate of field component
    */
-  virtual GridCoordinate3D getZeroCoord () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getMinEpsCoord () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getMinMuCoord () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getMinExCoord () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getMinEyCoord () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getMinEzCoord () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getMinHxCoord () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getMinHyCoord () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getMinHzCoord () const OVERRIDE_FINAL_MODIFIER;
+  virtual GridCoordinate3D getZeroCoord () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getMinEpsCoord () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getMinMuCoord () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getMinExCoord () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getMinEyCoord () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getMinEzCoord () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getMinHxCoord () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getMinHyCoord () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getMinHzCoord () const CXX11_OVERRIDE_FINAL;
 
   /*
    * Get minimum real coordinate of field component
    */
-  virtual GridCoordinateFP3D getZeroCoordFP () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getMinEpsCoordFP () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getMinMuCoordFP () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getMinExCoordFP () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getMinEyCoordFP () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getMinEzCoordFP () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getMinHxCoordFP () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getMinHyCoordFP () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getMinHzCoordFP () const OVERRIDE_FINAL_MODIFIER;
+  virtual GridCoordinateFP3D getZeroCoordFP () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getMinEpsCoordFP () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getMinMuCoordFP () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getMinExCoordFP () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getMinEyCoordFP () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getMinEzCoordFP () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getMinHxCoordFP () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getMinHyCoordFP () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getMinHzCoordFP () const CXX11_OVERRIDE_FINAL;
 
   /*
    * Get real coordinate of field component by its coordinate
    */
-  virtual GridCoordinateFP3D getEpsCoordFP (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getMuCoordFP (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getExCoordFP (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getEyCoordFP (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getEzCoordFP (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getHxCoordFP (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getHyCoordFP (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getHzCoordFP (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
+  virtual GridCoordinateFP3D getEpsCoordFP (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getMuCoordFP (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getExCoordFP (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getEyCoordFP (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getEzCoordFP (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getHxCoordFP (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getHyCoordFP (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getHzCoordFP (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
 
   /*
    * Get coordinate of field component by its real coordinate
    */
-  virtual GridCoordinate3D getEpsCoord (GridCoordinateFP3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getMuCoord (GridCoordinateFP3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getExCoord (GridCoordinateFP3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getEyCoord (GridCoordinateFP3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getEzCoord (GridCoordinateFP3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHxCoord (GridCoordinateFP3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHyCoord (GridCoordinateFP3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getHzCoord (GridCoordinateFP3D) const OVERRIDE_FINAL_MODIFIER;
+  virtual GridCoordinate3D getEpsCoord (GridCoordinateFP3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getMuCoord (GridCoordinateFP3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getExCoord (GridCoordinateFP3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEyCoord (GridCoordinateFP3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEzCoord (GridCoordinateFP3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHxCoord (GridCoordinateFP3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHyCoord (GridCoordinateFP3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHzCoord (GridCoordinateFP3D) const CXX11_OVERRIDE_FINAL;
 
   /*
    * PML
    */
-  virtual GridCoordinate3D getLeftBorderPML () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getRightBorderPML () const OVERRIDE_FINAL_MODIFIER;
-  virtual bool isInPML (GridCoordinateFP3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool isExInPML (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool isEyInPML (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool isEzInPML (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool isHxInPML (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool isHyInPML (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool isHzInPML (GridCoordinate3D) const OVERRIDE_FINAL_MODIFIER;
+  virtual GridCoordinate3D getLeftBorderPML () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getRightBorderPML () const CXX11_OVERRIDE_FINAL;
+  virtual bool isInPML (GridCoordinateFP3D) const CXX11_OVERRIDE_FINAL;
+  virtual bool isExInPML (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual bool isEyInPML (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual bool isEzInPML (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual bool isHxInPML (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual bool isHyInPML (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual bool isHzInPML (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
 
   /*
    * Total field / scattered field
    */
-  virtual GridCoordinate3D getLeftBorderTFSF () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinate3D getRightBorderTFSF () const OVERRIDE_FINAL_MODIFIER;
-  virtual GridCoordinateFP3D getZeroIncCoordFP () const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateExBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateEyBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateEzBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateHxBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateHyBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
-  virtual bool doNeedTFSFUpdateHzBorder (GridCoordinate3D, LayoutDirection, bool) const OVERRIDE_FINAL_MODIFIER;
+  virtual GridCoordinate3D getLeftBorderTFSF () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getRightBorderTFSF () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinateFP3D getZeroIncCoordFP () const CXX11_OVERRIDE_FINAL;
+  virtual bool doNeedTFSFUpdateExBorder (GridCoordinate3D, LayoutDirection, bool) const CXX11_OVERRIDE_FINAL;
+  virtual bool doNeedTFSFUpdateEyBorder (GridCoordinate3D, LayoutDirection, bool) const CXX11_OVERRIDE_FINAL;
+  virtual bool doNeedTFSFUpdateEzBorder (GridCoordinate3D, LayoutDirection, bool) const CXX11_OVERRIDE_FINAL;
+  virtual bool doNeedTFSFUpdateHxBorder (GridCoordinate3D, LayoutDirection, bool) const CXX11_OVERRIDE_FINAL;
+  virtual bool doNeedTFSFUpdateHyBorder (GridCoordinate3D, LayoutDirection, bool) const CXX11_OVERRIDE_FINAL;
+  virtual bool doNeedTFSFUpdateHzBorder (GridCoordinate3D, LayoutDirection, bool) const CXX11_OVERRIDE_FINAL;
 
   /**
    * Constructor of Yee grid

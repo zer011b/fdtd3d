@@ -19,11 +19,7 @@ class TXTDumper: public Dumper<TCoord>
 public:
 
   // Virtual method for grid saving.
-#ifdef CXX11_ENABLED
-  void dumpGrid (Grid<TCoord> &grid) const override;
-#else
-  void dumpGrid (Grid<TCoord> &grid) const;
-#endif
+  void dumpGrid (Grid<TCoord> &grid) const CXX11_OVERRIDE;
 };
 
 /**

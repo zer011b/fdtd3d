@@ -16,11 +16,14 @@ ParallelGrid::NodeGridInit ()
 }
 
 GridCoordinate1D
-ParallelGrid::GridInit ()
+ParallelGrid::GridInit (GridCoordinate1D &core)
 {
   grid_coord c1;
+  grid_coord core1;
 
-  CalculateGridSizeForNode (c1, nodeGridSizeX, hasR, totalSize.getX ());
+  CalculateGridSizeForNode (c1, core1, nodeGridSizeX, hasR, totalSize.getX ());
+
+  core = GridCoordinate1D (core1);
 
   return GridCoordinate1D (c1);
 }
