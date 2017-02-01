@@ -1,8 +1,8 @@
 #ifndef GRID_H
 #define GRID_H
 
-#include <vector>
 #include <cstdlib>
+#include <vector>
 
 #include "Assert.h"
 #include "FieldPoint.h"
@@ -21,16 +21,24 @@ class Grid
 {
 protected:
 
-  // Size of the grid.
-  // For parallel grid - size of current node plus size of buffers.
+  /**
+   * Size of the grid. For parallel grid - size of current node plus size of buffers.
+   */
   TCoord size;
 
-  // Vector of points in grid.
-  // Owns this. Deletes all FieldPointValue* itself.
+  /**
+   * Vector of points in grid. Owns this. Deletes all FieldPointValue* itself.
+   */
   VectorFieldPointValues gridValues;
 
-  // Current time step.
+  /**
+   * Current time step.
+   */
   uint32_t timeStep;
+
+  /*
+   * TODO: add grid name
+   */
 
 protected:
 
@@ -66,10 +74,10 @@ public:
   const TCoord& getSize () const;
 
   // Get start coord of the grid.
-  virtual TCoord getStart () const;
+  virtual TCoord getComputationStart () const;
 
   // Get end coord of the grid.
-  virtual TCoord getEnd () const;
+  virtual TCoord getComputationEnd () const;
 
   // Calculate position from three-dimensional coordinate.
   TCoord calculatePositionFromIndex (grid_iter index) const;
@@ -206,14 +214,14 @@ Grid<TCoord>::getSize () const
 
 template <class TCoord>
 TCoord
-Grid<TCoord>::getStart () const
+Grid<TCoord>::getComputationStart () const
 {
   return TCoord (0);
 }
 
 template <class TCoord>
 TCoord
-Grid<TCoord>::getEnd () const
+Grid<TCoord>::getComputationEnd () const
 {
   return getSize ();
 }

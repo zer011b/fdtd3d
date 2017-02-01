@@ -1,12 +1,15 @@
 #ifndef PARALLEL_GRID_H
 #define PARALLEL_GRID_H
 
-#include "Grid.h"
+#include "ParallelGridCore.h"
 
 #ifdef PARALLEL_GRID
 
 #include <mpi.h>
 
+/**
+ * Base grid of parallel grid and parallel grid coordinate
+ */
 #ifdef GRID_1D
 #define ParallelGridBase Grid<GridCoordinate1D>
 #define ParallelGridCoordinate GridCoordinate1D
@@ -22,440 +25,432 @@
 #define ParallelGridCoordinate GridCoordinate3D
 #endif /* GRID_3D */
 
-/*
- * Parallel grid buffer types.
+/**
+ * Type of buffer of values
  */
-#ifdef PARALLEL_GRID
-enum BufferPosition
-{
-#define FUNCTION(X) X,
-#include "BufferPosition.inc.h"
-};
-#endif /* PARALLEL_GRID */
-
-// Type for buffer of values.
 typedef std::vector<FieldValue> VectorBufferValues;
 
-// Type for vector of buffer
+/**
+ * Type of vector of buffers
+ */
 typedef std::vector<VectorBufferValues> VectorBuffers;
 
-// Type for vector of buffer
+/**
+ * Type of vector of requests
+ */
 typedef std::vector<MPI_Request> VectorRequests;
 
+/**
+ * Parallel grid class
+ *
+ * Dimension of grid is set during build. Virtual topology of grid is also specified during build.
+ *
+ * Possible combinations:
+ *   - 1D grid (has only one dimension and Ox axis):
+ *     - Ox axis is spread through all computational nodes. If grid size is N, and number of computational nodes is P,
+ *       then grid size per computational node is N/P. In case P is not divider of N, the last node is assigned grid
+ *       with size (N - (N/P)*(P - 1)). See PARALLEL_BUFFER_DIMENSION_1D_X.
+ *                   ___ ___ ___       ___
+ *       Ox axis -> |___|___|___| ... |___|
+ *
+ *   - 2D grid (has two dimensions and Ox,Oy axis):
+ *     - Ox axis is spread through all computational nodes, Oy axis is not spread.
+ *       If grid size is N*M, and number of computational nodes is P, then grid size per computational node is (N/P)*M.
+ *       In case P is not divider of N, the right border node by Ox axis is assigned grid with size with remainder
+ *       (N - (N/P)*(P - 1))*M. See PARALLEL_BUFFER_DIMENSION_1D_X.
+ *                   ___ ___ ___       ___
+ *                  |   |   |   | ... |   |
+ *                  |   |   |   | ... |   |
+ *       Ox axis -> |___|___|___| ... |___|
+
+ *     - Ox axis is not spread, Oy axis is spread through all computational nodes.
+ *       If grid size is N*M, and number of computational nodes is P, then grid size per computational node is N*(M/P).
+ *       In case P is not divider of M, the right border node by Oy axis is assigned grid with size with remainder
+ *       N*(M - (M/P)*(P - 1)). See PARALLEL_BUFFER_DIMENSION_1D_Y.
+ *                   _____________________
+ *                  |_____________________|
+ *                  |_____________________|
+ *                   .....................
+ *                   _____________________
+ *       Ox axis -> |_____________________|
+ *
+ *     - Ox axis is spread through all computational nodes, Oy axis is spread through all computational nodes.
+ *       If grid size is N*M, and number of computational nodes is P*Q, then grid size per computational node is
+ *       (N/P)*(M/Q). In case P is not divider of N, the right border node by Ox axis is assigned grid with size with
+ *       remainder (N - (N/P)*(P - 1))*(M/Q), in case Q is not divider of M the right border node by Oy axis is assigned
+ *       grid with size with remainder (N/P)*(M - (M/Q)*(Q - 1)), in case both P is not divider of N and
+ *       Q is not divider of M, the right corner border node by Ox and Oy axis is assigned grid with size
+ *       with remainder (N - (N/P)*(P - 1))*(M - (M/Q)*(Q - 1)). See PARALLEL_BUFFER_DIMENSION_2D_XY.
+ *                   ___ ___ ___       ___
+ *                  |___|___|___| ... |___|
+ *                  |___|___|___| ... |___|
+ *                   .....................
+ *                   ___ ___ ___  ...  ___
+ *       Ox axis -> |___|___|___| ... |___|
+ *
+ *   - 3D grid (has three dimensions and Ox,Oy,Oz axis):
+ *     - Ox axis is spread through all computational nodes, Oy axis is not spread, Oz axis is not spread.
+ *       If grid size is N*M*K, and number of computational nodes is P, then grid size per computational node is
+ *       (N/P)*M*K. In case P is not divider of N, the right border node by Ox axis is assigned grid with size
+ *       with remainder (N - (N/P)*(P - 1))*M*K. See PARALLEL_BUFFER_DIMENSION_1D_X.
+ *                     ___ ___ ____          ____
+ *                    /   /   /   /|  ...   /   /|
+ *                   /__ /__ /__ / |  ...  /__ / |
+ *                  |   |   |   |  |  ... |   |  |
+ *                  |   |   |   | /   ... |   | /
+ *       Ox axis -> |___|___|___|/    ... |___|/
+ *
+ *     - Ox axis is not spread, Oy axis is spread through all computational nodes, Oz axis is not spread.
+ *       If grid size is N*M*K, and number of computational nodes is P, then grid size per computational node is
+ *       N*(M/P)*K. In case P is not divider of M, the right border node by Oy axis is assigned grid with size
+ *       with remainder N*(M - (M/P)*(P - 1))*K. See PARALLEL_BUFFER_DIMENSION_1D_Y.
+ *                     __________________________
+ *                    /                         /|
+ *                   /________________________ //
+ *                  |_________________________|/
+ *                   .........................
+ *                     __________________________
+ *                    /                         /|
+ *                   /________________________ //|
+ *                  |_________________________|//
+ *       Ox axis -> |_________________________|/
+ *
+ *     - Ox axis is not spread, Oy axis is not spread, Oz axis is spread through all computational nodes.
+ *       If grid size is N*M*K, and number of computational nodes is P, then grid size per computational node is
+ *       N*(M/P)*K. In case P is not divider of M, the right border node by Oy axis is assigned grid with size
+ *       with remainder N*(M - (M/P)*(P - 1))*K. See PARALLEL_BUFFER_DIMENSION_1D_Z.
+ *
+ *                            __________________________
+ *                           /                         /|
+ *                          /________________________ / |
+ *                         |                         |  |
+ *                         | ....................... |  |
+ *                       __|_______________________  | /
+ *                      /                         /|_|/
+ *                     /________________________ / |
+ *                    /                         /| |
+ *                   /________________________ / | |
+ *                  |                         |  |/
+ *                  |                         |  /
+ *                  |                         | /
+ *       Ox axis -> |_________________________|/
+ *
+ *     - Ox axis is spread through all computational nodes, Oy axis is spread through all computational nodes,
+ *       Oz axis is not spread.
+ *       If grid size is N*M*K, and number of computational nodes is P*Q, then grid size per computational node is
+ *       (N/P)*(M/Q)*K. In case P is not divider of N, the right border node by Ox axis is assigned grid with size with
+ *       remainder (N - (N/P)*(P - 1))*(M/Q)*K, in case Q is not divider of M the right border node by Oy axis is
+ *       assigned grid with size with remainder (N/P)*(M - (M/Q)*(Q - 1))*K, in case both P is not divider of N and
+ *       Q is not divider of M the right corner border node by Ox and Oy axis is assigned grid with
+ *       size with remainder (N - (N/P)*(P - 1))*(M - (M/Q)*(Q - 1))*K. See PARALLEL_BUFFER_DIMENSION_2D_XY.
+ *                     ___ ___ ____          ____
+ *                    /   /   /   /|  ...   /   /|
+ *                   /__ /__ /__ //|  ...  /__ //|
+ *                  |___|___|___|//   ... |___|//
+ *                  |___|___|___|/    ... |___|/
+ *                   ............................
+ *                     ____ ___ ___   ...    ____
+ *                    /   /   /   /|  ...   /   /|
+ *                   /__ /__ /__ //   ...  /__ //
+ *       Ox axis -> |___|___|___|/    ... |___|/
+ *
+ *     - Ox axis is spread through all computational nodes, Oy axis is not spread,
+ *       Oz axis is spread through all computational nodes.
+ *       If grid size is N*M*K, and number of computational nodes is P*Q, then grid size per computational node is
+ *       (N/P)*M*(K/Q). In case P is not divider of N, the right border node by Ox axis is assigned grid with size with
+ *       remainder (N - (N/P)*(P - 1))*M*(K/Q), in case Q is not divider of K the right border node by Oz axis is
+ *       assigned grid with size with remainder (N/P)*M*(K - (K/Q)*(Q - 1)), in case both P is not divider of N and
+ *       Q is not divider of K the right corner border node by Ox and Oz axis is assigned grid with
+ *       size with remainder (N - (N/P)*(P - 1))*M*(K - (K/Q)*(Q - 1)). See PARALLEL_BUFFER_DIMENSION_2D_XZ.
+ *
+ *                         ___ ____ ___          ____
+ *                        /__ /__ /__ /|    .   /__ /|
+ *                       |   |   |   | |   .   |   | |
+ *                     __|_ _|_ _|_  | |  .  __|_  | |
+ *                    /___/___/___/|_|/  .  /___/|_|/
+ *                   /__ /__ /__ /||......./__ /||.
+ *                  |   |   |   | ||   .  |   | ||
+ *                  |   |   |   | /   .   |   | /
+ *       Ox axis -> |___|___|___|/   .    |___|/
+ *
+ *     - Ox axis is not spread, Oy axis is spread through all computational nodes,
+ *       Oz axis is spread through all computational nodes.
+ *       If grid size is N*M*K, and number of computational nodes is P*Q, then grid size per computational node is
+ *       N*(M/P)*(K/Q). In case P is not divider of M, the right border node by Oy axis is assigned grid with size with
+ *       remainder N*(M - (M/P)*(P - 1))*(K/Q), in case Q is not divider of K the right border node by Oz axis is
+ *       assigned grid with size with remainder N*(M/P)*(K - (K/Q)*(Q - 1)), in case both P is not divider of M and
+ *       Q is not divider of K the right corner border node by Oy and Oz axis is assigned grid with
+ *       size with remainder N*(M - (M/P)*(P - 1))*(K - (K/Q)*(Q - 1)). See PARALLEL_BUFFER_DIMENSION_2D_YZ.
+ *                               __________________________
+ *                              /________________________ /|
+ *                             |_________________________|/
+ *                                                      .
+ *                    __________________________ _______.__
+ *                   /________________________ /|_______. /|
+ *                  |_________________________|/________.|/|
+ *                    .        |________________________.|/
+ *                    .        .                       .
+ *                    .______.__________________     .
+ *                   /._______________________ /|  .
+ *                  |_________________________|/|.
+ *       Ox axis -> |_________________________|/
+ *
+ *     - Ox axis is spread through all computational nodes, Oy axis is spread through all computational nodes,
+ *       Oz axis is spread through all computational nodes.
+ *       If grid size is N*M*K, and number of computational nodes is P*Q*R, then grid size per computational node is
+ *       (N/P)*(M/Q)*(K/R). In case P is not divider of N, the right border node by Ox axis is assigned grid with size
+ *       with remainder (N - (N/P)*(P - 1))*(M/Q)*(K/R), in case Q is not divider of M the right border node by Oy axis
+ *       is assigned grid with size with remainder (N/P)*(M - (M/Q)*(Q - 1))*(K/R), in case R is not divider of K
+ *       the right border node by Oz axis is assigned grid with size with remainder (N/P)*(M/Q)*(K - (K/R)*(R - 1)),
+ *       in case both P is not divider of N and Q is not divider of M the right corner border node by Ox and Oy axis is
+ *       assigned grid with size with remainder (N - (N/P)*(P - 1))*(M - (M/Q)*(Q - 1))*(K/R),
+ *       in case both P is not divider of N and R is not divider of K the right corner border node by Ox and Oz axis is
+ *       assigned grid with size with remainder (N - (N/P)*(P - 1))*(M/Q)*(K - (K/R)*(R - 1)),
+ *       in case both Q is not divider of M and R is not divider of K the right corner border node by Oy and Oz axis is
+ *       assigned grid with size with remainder (N/P)*(M - (M/Q)*(Q - 1))*(K - (K/R)*(R - 1)),
+ *       in case P is not divider of N, Q is not divider of M and R is not divider of K, the right corner border node
+ *       by Ox, Oy and Oz axis is assigned grid with size with remainder
+ *       (N - (N/P)*(P - 1))*(M - (M/Q)*(Q - 1))*(K - (K/R)*(R - 1)). See PARALLEL_BUFFER_DIMENSION_3D_XYZ.
+ *
+ * On all pictures above axis are:
+ *       Oy    Oz
+ *       +    +
+ *       |   /
+ *       |  /
+ *       | /
+ *       |/_____________+ Ox
+ *
+ * All grids corresponding to computational nodes have buffers only on the sides where nodes have neighbours.
+ */
 class ParallelGrid: public ParallelGridBase
 {
-  // Current node (process) identificator.
-  int processId;
+private:
 
-  // Overall count of nodes (processes).
-  int totalProcCount;
+  /**
+   * Static data shared between all parallel grid on this computational node
+   */
+  static ParallelGridCore *parallelGridCore;
 
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  int nodeGridSizeX;
-#endif /* GRID_1D || GRID_2D || GRID_3D */
-#if defined (GRID_2D) || defined (GRID_3D)
-  int nodeGridSizeY;
-#endif /* GRID_2D || GRID_3D */
-#ifdef GRID_3D
-  int nodeGridSizeZ;
-#endif /* GRID_3D */
+private:
 
+  /**
+   * =======================================
+   * Parameters corresponding to parallelism
+   * =======================================
+   */
+
+  /**
+   * Array of coordinate in grid from which to start send values corresponding to direction
+   */
   std::vector<ParallelGridCoordinate> sendStart;
+
+  /**
+   * Array of coordinate in grid until which to send values corresponding to direction
+   */
   std::vector<ParallelGridCoordinate> sendEnd;
+
+  /**
+   * Array of coordinate in grid from which to start saving received values corresponding to direction
+   */
   std::vector<ParallelGridCoordinate> recvStart;
+
+  /**
+   * Array of coordinate in grid until which to save received values corresponding to direction
+   */
   std::vector<ParallelGridCoordinate> recvEnd;
 
-  std::vector<BufferPosition> oppositeDirections;
+  /**
+   * =======================================
+   * Parameters corresponding to data in grid
+   * =======================================
+   */
 
-  std::vector<int> directions;
-
-  std::vector< std::pair<bool, bool> > doShare;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  int nodeGridSizeXY;
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  int nodeGridSizeYZ;
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  int nodeGridSizeXZ;
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
-#ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
-  int nodeGridSizeXYZ;
-#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-  // Total size of grid.
+  /**
+   * Total size of grid (size, which is specified at its declaration)
+   */
   ParallelGridCoordinate totalSize;
 
-  // Size of current node without buffers.
+  /**
+   * Size of grid for current node without buffers (raw data which is assigned to current computational node)
+   */
   ParallelGridCoordinate currentSize;
 
-  // Size of grid per node which is used for all buffers except at right border
+  /**
+   * Size of grid per node which is used for all buffers except at right border ones (see ParallelGrid)
+   */
   ParallelGridCoordinate coreCurrentSize;
 
-  // Size of buffer zone.
-  ParallelGridCoordinate bufferSizeLeft;
-  ParallelGridCoordinate bufferSizeRight;
+  /**
+   * Size of buffer zone
+   */
+  ParallelGridCoordinate bufferSize;
 
-  // Send/Receive buffers for independent send and receive
+  /**
+   * Send buffers to send values from it
+   *
+   * TODO: remove copy to this buffer before send
+   */
   VectorBuffers buffersSend;
+
+  /**
+   * Receive buffers to receive values into
+   *
+   * TODO: remove copy from this buffer after receive
+   */
   VectorBuffers buffersReceive;
 
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  bool hasL;
-  bool hasR;
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  bool hasD;
-  bool hasU;
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  bool hasB;
-  bool hasF;
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
+  /**
+   * Step at which to perform share operations for synchronization of computational nodes
+   */
   time_step shareStep;
 
 private:
 
-  // Raw send
-  void SendRawBuffer (BufferPosition buffer, int processTo);
-
-  // Raw receive
-  void ReceiveRawBuffer (BufferPosition buffer, int processFrom);
-
-  // Raw send/receive
-  void SendReceiveRawBuffer (BufferPosition bufferSend, int processTo,
-                             BufferPosition bufferReceive, int processFrom);
-
-  void SendReceiveBuffer (BufferPosition bufferDirection);
-
+  void SendRawBuffer (BufferPosition, int);
+  void ReceiveRawBuffer (BufferPosition, int);
+  void SendReceiveRawBuffer (BufferPosition, int, BufferPosition, int);
+  void SendReceiveBuffer (BufferPosition);
   void SendReceive ();
 
-  void ParallelGridConstructor (grid_iter numTimeStepsInBuild);
-  void NodeGridInit ();
+  void ParallelGridConstructor ();
+
   ParallelGridCoordinate GridInit (ParallelGridCoordinate &);
-  void InitDirections ();
-  void InitBufferFlags ();
-  void InitBuffers (grid_iter numTimeStepsInBuild);
+
+  void InitBuffers ();
 
   void SendReceiveCoordinatesInit ();
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
   void SendReceiveCoordinatesInit1D_X ();
-  int getNodeGridX ();
+
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
   void SendReceiveCoordinatesInit1D_Y ();
-  int getNodeGridY ();
+
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
   void SendReceiveCoordinatesInit1D_Z ();
-  int getNodeGridZ ();
+
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
   void SendReceiveCoordinatesInit2D_XY ();
+
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
   void SendReceiveCoordinatesInit2D_YZ ();
+
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
   void SendReceiveCoordinatesInit2D_XZ ();
+
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
   void SendReceiveCoordinatesInit3D_XYZ ();
+
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  void CalculateGridSizeForNode (grid_coord& c1, grid_coord& core1, int nodeGridSize1, bool has1, grid_coord size1);
+
+  void CalculateGridSizeForNode (grid_coord &, grid_coord &, int, bool, grid_coord);
+
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_1D_Z */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  void FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FPValue alpha);
-  void NodeGridInitInner (FPValue& overall1, FPValue& overall2,
-                          int& nodeGridSize1, int& nodeGridSize2, int& left);
-  void CalculateGridSizeForNode (grid_coord& c1, grid_coord& core1, int nodeGridSize1, bool has1, grid_coord size1,
-                                 grid_coord& c2, grid_coord& core2, int nodeGridSize2, bool has2, grid_coord size2);
+
+  void FindProportionForNodeGrid (int &, int &, int &, FPValue);
+  void NodeGridInitInner (FPValue &, FPValue &, int &, int &, int &);
+  void CalculateGridSizeForNode (grid_coord &, grid_coord &, int, bool, grid_coord,
+                                 grid_coord &, grid_coord &, int, bool, grid_coord);
+
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  void FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& nodeGridSize3, int& left,
-                                  FPValue alpha, FPValue betta);
-  void NodeGridInitInner (FPValue& overall1, FPValue& overall2, FPValue& overall3,
-                          int& nodeGridSize1, int& nodeGridSize2, int& nodeGridSize3, int& left);
-  void CalculateGridSizeForNode (grid_coord& c1, grid_coord& core1, int nodeGridSize1, bool has1, grid_coord size1,
-                                 grid_coord& c2, grid_coord& core2, int nodeGridSize2, bool has2, grid_coord size2,
-                                 grid_coord& c3, grid_coord& core, int nodeGridSize3, bool has3, grid_coord size3);
-#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
-  BufferPosition getOpposite (BufferPosition direction);
-  void getShare (BufferPosition direction, std::pair<bool, bool>& pair);
+  void FindProportionForNodeGrid (int &, int &, int &, int &, FPValue, FPValue);
+  void NodeGridInitInner (FPValue &, FPValue &, FPValue &, int &, int &, int &, int &);
+  void CalculateGridSizeForNode (grid_coord &, grid_coord &, int, bool, grid_coord,
+                                 grid_coord &, grid_coord &, int, bool, grid_coord,
+                                 grid_coord &, grid_coord &, int, bool, grid_coord);
+
+#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 public:
 
-  ParallelGrid (const ParallelGridCoordinate& totSize,
-                const ParallelGridCoordinate& bufSizeL, const ParallelGridCoordinate& bufSizeR,
-                const int process, const int totalProc, uint32_t step);
+  ParallelGrid (const ParallelGridCoordinate &,
+                const ParallelGridCoordinate &,
+                time_step);
 
-  // Switch to next time step.
   virtual void nextTimeStep () CXX11_OVERRIDE;
 
   void nextShareStep ();
-
   void zeroShareStep ();
-
   void share ();
 
-  ParallelGridCoordinate getBufferSize () const;
+  virtual ParallelGridCoordinate getComputationEnd () const CXX11_OVERRIDE;
+  virtual ParallelGridCoordinate getComputationStart () const CXX11_OVERRIDE;
 
-  // Get field point at coordinate in grid.
-  FieldPointValue* getFieldPointValueAbsoluteIndex (const ParallelGridCoordinate& position);
-
-  virtual ParallelGridCoordinate getEnd () const CXX11_OVERRIDE
-  {
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    grid_iter diffX = 0;
-
-    if (hasR)
-    {
-      diffX = shareStep;
-    }
-    else
-    {
-      diffX += bufferSizeRight.getX ();
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    grid_iter diffY = 0;
-
-    if (hasU)
-    {
-      diffY = shareStep;
-    }
-    else
-    {
-      diffY += bufferSizeRight.getY ();
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    grid_iter diffZ = 0;
-
-    if (hasF)
-    {
-      diffZ = shareStep;
-    }
-    else
-    {
-      diffZ += bufferSizeRight.getZ ();
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    grid_iter px = ParallelGridBase::getSize ().getX ();
-#endif
-#if defined (GRID_2D) || defined (GRID_3D)
-    grid_iter py = ParallelGridBase::getSize ().getY ();
-#endif
-#ifdef GRID_3D
-    grid_iter pz = ParallelGridBase::getSize ().getZ ();
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
-    px = ParallelGridBase::getSize ().getX () - diffX;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
-    py = ParallelGridBase::getSize ().getY () - diffY;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-    pz = ParallelGridBase::getSize ().getZ () - diffZ;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-    px = ParallelGridBase::getSize ().getX () - diffX;
-    py = ParallelGridBase::getSize ().getY () - diffY;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-    py = ParallelGridBase::getSize ().getY () - diffY;
-    pz = ParallelGridBase::getSize ().getZ () - diffZ;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-    px = ParallelGridBase::getSize ().getX () - diffX;
-    pz = ParallelGridBase::getSize ().getZ () - diffZ;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    px = ParallelGridBase::getSize ().getX () - diffX;
-    py = ParallelGridBase::getSize ().getY () - diffY;
-    pz = ParallelGridBase::getSize ().getZ () - diffZ;
-#endif
-
-#ifdef GRID_1D
-    return ParallelGridCoordinate (px);
-#endif
-#ifdef GRID_2D
-    return ParallelGridCoordinate (px, py);
-#endif
-#ifdef GRID_3D
-    return ParallelGridCoordinate (px, py, pz);
-#endif
-  }
-
-  virtual ParallelGridCoordinate getStart () const CXX11_OVERRIDE
-  {
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    grid_iter diffX = 0;
-
-    if (hasL)
-    {
-      diffX += shareStep;
-    }
-    else
-    {
-      diffX += bufferSizeLeft.getX ();
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    grid_iter diffY = 0;
-
-    if (hasD)
-    {
-      diffY += shareStep;
-    }
-    else
-    {
-      diffY += bufferSizeLeft.getY ();
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    grid_iter diffZ = 0;
-
-    if (hasB)
-    {
-      diffZ += shareStep;
-    }
-    else
-    {
-      diffZ += bufferSizeLeft.getZ ();
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-    grid_iter px = 0;
-    grid_iter py = 0;
-    grid_iter pz = 0;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
-    px = diffX;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
-    py = diffY;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-    pz = diffZ;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-    px = diffX;
-    py = diffY;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-    py = diffY;
-    pz = diffZ;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-    px = diffX;
-    pz = diffZ;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    px = diffX;
-    py = diffY;
-    pz = diffZ;
-#endif
-
-#ifdef GRID_1D
-    return ParallelGridCoordinate (px);
-#endif
-#ifdef GRID_2D
-    return ParallelGridCoordinate (px, py);
-#endif
-#ifdef GRID_3D
-    return ParallelGridCoordinate (px, py, pz);
-#endif
-  }
-
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  int getNodeGridSizeX () const
-  {
-    return nodeGridSizeX;
-  }
-#endif /* GRID_1D || GRID_2D || GRID_3D */
-#if defined (GRID_2D) || defined (GRID_3D)
-  int getNodeGridSizeY () const
-  {
-    return nodeGridSizeY;
-  }
-#endif /* GRID_2D || GRID_3D */
-#ifdef GRID_3D
-  int getNodeGridSizeZ () const
-  {
-    return nodeGridSizeZ;
-  }
-#endif /* GRID_3D */
-
-  int getProcessId ()
-  {
-    return processId;
-  }
-
-  int getTotalProcCount () const
-  {
-    return totalProcCount;
-  }
-
+  ParallelGridCoordinate getStartPosition ();
   ParallelGridCoordinate getTotalPosition (ParallelGridCoordinate);
+  ParallelGridCoordinate getRelativePosition (ParallelGridCoordinate);
 
+  /**
+   * Getter for total size of grid
+   *
+   * @return total size of grid
+   */
   ParallelGridCoordinate getTotalSize ()
   {
     return totalSize;
-  }
+  } /* getTotalSize */
 
-  ParallelGridCoordinate getRelativePosition (ParallelGridCoordinate);
-
+  /**
+   * Getter for size of grid assigned to current node
+   *
+   * @return size of grid assigned to current node
+   */
   ParallelGridCoordinate getCurrentSize () const
   {
     return currentSize;
-  }
-};
+  } /* getCurrentSize */
+
+  /**
+   * Getter for size of buffer
+   *
+   * @return size of buffer
+   */
+  ParallelGridCoordinate getBufferSize () const
+  {
+    return bufferSize;
+  } /* getBufferSize */
+
+  void initBufferOffsets (grid_coord &, grid_coord &, grid_coord &, grid_coord &, grid_coord &, grid_coord &);
+
+public:
+
+  static void initializeParallelCore (ParallelGridCore *);
+  static ParallelGridCore *getParallelCore ();
+
+}; /* ParallelGrid */
 
 #endif /* PARALLEL_GRID */
 

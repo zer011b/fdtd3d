@@ -148,6 +148,9 @@ int main (int argc, char** argv)
   printf ("Start process %d of %d\n", rank, numProcs);
 #endif /* PRINT_MESSAGE */
 
+  ParallelGridCore parallelGridCore (rank, numProcs);
+  ParallelGrid::initializeParallelCore (&parallelGridCore);
+
   is_parallel_grid = true;
 #else /* PARALLEL_GRID */
   is_parallel_grid = false;
@@ -173,18 +176,16 @@ int main (int argc, char** argv)
 #if defined (PARALLEL_GRID)
 #ifdef GRID_2D
   ParallelGridCoordinate overallSize (gridSizeX, gridSizeY);
-  ParallelGridCoordinate bufferLeft (bufSize);
-  ParallelGridCoordinate bufferRight (bufSize);
+  ParallelGridCoordinate bufferSize (bufSize);
 
-  //SchemeTMz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), false, GridCoordinate2D (30, 30), 0, true);
-  SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), true, GridCoordinate2D (30, 30), 0);
+  SchemeTMz scheme (overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), false, GridCoordinate2D (30, 30), 0, false);
+  //SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), true, GridCoordinate2D (30, 30), 0);
 #endif
 #ifdef GRID_3D
   ParallelGridCoordinate overallSize (gridSizeX, gridSizeY, gridSizeZ);
-  ParallelGridCoordinate bufferLeft (bufSize);
-  ParallelGridCoordinate bufferRight (bufSize);
+  ParallelGridCoordinate bufferSize (bufSize);
 
-  Scheme3D scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate3D (10, 10, 10), false, GridCoordinate3D (13, 13, 13), PhysicsConst::Pi / 2, 0, 0, true);
+  Scheme3D scheme (overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate3D (10, 10, 10), false, GridCoordinate3D (13, 13, 13), PhysicsConst::Pi / 2, 0, 0, true);
 #endif
 #else
 #ifdef GRID_2D
@@ -202,10 +203,6 @@ int main (int argc, char** argv)
 
   scheme.initScheme (0.0005, /* dx */
                      30000000000); /* source frequency */
-
-#if defined (PARALLEL_GRID)
-  scheme.initProcess (rank);
-#endif
 
   scheme.initGrids ();
 
