@@ -2,8 +2,7 @@
 #define SCHEME_TMZ_H
 
 #include "Scheme.h"
-#include "ParallelGrid.h"
-#include "Grid.h"
+#include "GridInterface.h"
 #include "YeeGridLayout.h"
 #include "PhysicsConst.h"
 
@@ -135,15 +134,8 @@ public:
   void initGrids ();
 
 #if defined (PARALLEL_GRID)
-  void initProcess (int);
-#endif
-
-#if defined (PARALLEL_GRID)
   SchemeTMz (const GridCoordinate2D& totSize,
-             const GridCoordinate2D& bufSizeL,
-             const GridCoordinate2D& bufSizeR,
-             const int curProcess,
-             const int totalProc,
+             const GridCoordinate2D& bufSize,
              time_step tStep,
              bool calcAmp = false,
              time_step ampStep = 0,
@@ -154,34 +146,33 @@ public:
              FPValue angleIncWave = 0.0,
              bool doUseMetamaterials = false) :
     yeeLayout (totSize, sizePML, sizeScatteredZone, PhysicsConst::Pi / 2, angleIncWave, 0),
-    Ez (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    Hx (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    Hy (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    Dz (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    Bx (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    By (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    D1z (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    B1x (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    B1y (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), bufSizeL, bufSizeR, curProcess, totalProc, 0),
-    Eps (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
-    Mu (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
-    OmegaPE (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
-    GammaE (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
-    OmegaPM (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
-    GammaM (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
-    SigmaX (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
-    SigmaY (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
-    SigmaZ (shrinkCoord (yeeLayout.getEpsSize ()), bufSizeL + GridCoordinate2D (1, 1), bufSizeR + GridCoordinate2D (1, 1), curProcess, totalProc, 0),
+    Ez (shrinkCoord (yeeLayout.getEzSize ()), bufSize, 0),
+    Hx (shrinkCoord (yeeLayout.getHxSize ()), bufSize, 0),
+    Hy (shrinkCoord (yeeLayout.getHySize ()), bufSize, 0),
+    Dz (shrinkCoord (yeeLayout.getEzSize ()), bufSize, 0),
+    Bx (shrinkCoord (yeeLayout.getHxSize ()), bufSize, 0),
+    By (shrinkCoord (yeeLayout.getHySize ()), bufSize, 0),
+    D1z (shrinkCoord (yeeLayout.getEzSize ()), bufSize, 0),
+    B1x (shrinkCoord (yeeLayout.getHxSize ()), bufSize, 0),
+    B1y (shrinkCoord (yeeLayout.getHySize ()), bufSize, 0),
+    EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), bufSize, 0),
+    HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), bufSize, 0),
+    HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), bufSize, 0),
+    Eps (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
+    Mu (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
+    OmegaPE (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
+    GammaE (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
+    OmegaPM (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
+    GammaM (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
+    SigmaX (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
+    SigmaY (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
+    SigmaZ (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
     sourceWaveLength (0),
     sourceFrequency (0),
     courantNum (0),
     gridStep (0),
     gridTimeStep (0),
     totalStep (tStep),
-    process (curProcess),
     calculateAmplitude (calcAmp),
     amplitudeStepLimit (ampStep),
     usePML (doUsePML),
@@ -229,7 +220,6 @@ public:
     gridStep (0),
     gridTimeStep (0),
     totalStep (tStep),
-    process (0),
     calculateAmplitude (calcAmp),
     amplitudeStepLimit (ampStep),
     usePML (doUsePML),

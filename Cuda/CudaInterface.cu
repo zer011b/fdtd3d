@@ -159,27 +159,27 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
     cudaCheckErrorCmd (cudaMemcpy (mu_cuda, tmp_mu, sizeMuRaw, cudaMemcpyHostToDevice));
 
 #if not defined (PARALLEL_GRID)
-    GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getStart ());
-    GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getEnd ());
+    GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getComputationStart ());
+    GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getComputationEnd ());
 
-    GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getStart ());
-    GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getEnd ());
+    GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getComputationStart ());
+    GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getComputationEnd ());
 
-    GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getStart ());
-    GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getEnd ());
+    GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getComputationStart ());
+    GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getComputationEnd ());
 #endif
 
     for (time_step stepEnd = t + shareStep; t < stepEnd; ++t)
     {
 #if defined (PARALLEL_GRID)
-      GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getStart ());
-      GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getEnd ());
+      GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getComputationStart ());
+      GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getComputationEnd ());
 
-      GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getStart ());
-      GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getEnd ());
+      GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getComputationStart ());
+      GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getComputationEnd ());
 
-      GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getStart ());
-      GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getEnd ());
+      GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getComputationStart ());
+      GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getComputationEnd ());
 #endif
 
       cudaCheckExitStatus (cudaCalculateTMzEzStep <<< blocksEz, threadsEz >>> (exitStatusCuda,
@@ -561,44 +561,44 @@ void cudaExecute3DSteps (CudaExitStatus *retval,
     cudaCheckErrorCmd (cudaMemcpy (mu_cuda, tmp_mu, sizeMuRaw, cudaMemcpyHostToDevice));
 
 #if not defined (PARALLEL_GRID)
-    GridCoordinate3D ExStart = yeeLayout.getExStart (Ex.getStart ());
+    GridCoordinate3D ExStart = yeeLayout.getExStart (Ex.getComputationStart ());
     GridCoordinate3D ExEnd = yeeLayout.getExEnd (Ex.getSize ());
 
-    GridCoordinate3D EyStart = yeeLayout.getEyStart (Ey.getStart ());
+    GridCoordinate3D EyStart = yeeLayout.getEyStart (Ey.getComputationStart ());
     GridCoordinate3D EyEnd = yeeLayout.getEyEnd (Ey.getSize ());
 
-    GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getStart ());
+    GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getComputationStart ());
     GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getSize ());
 
-    GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getStart ());
+    GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getComputationStart ());
     GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getSize ());
 
-    GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getStart ());
+    GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getComputationStart ());
     GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getSize ());
 
-    GridCoordinate3D HzStart = yeeLayout.getHzStart (Hz.getStart ());
+    GridCoordinate3D HzStart = yeeLayout.getHzStart (Hz.getComputationStart ());
     GridCoordinate3D HzEnd = yeeLayout.getHzEnd (Hz.getSize ());
 #endif
 
     for (time_step stepEnd = t + shareStep; t < stepEnd; ++t)
     {
 #if defined (PARALLEL_GRID)
-      GridCoordinate3D ExStart = yeeLayout.getExStart (Ex.getStart ());
+      GridCoordinate3D ExStart = yeeLayout.getExStart (Ex.getComputationStart ());
       GridCoordinate3D ExEnd = yeeLayout.getExEnd (Ex.getSize ());
 
-      GridCoordinate3D EyStart = yeeLayout.getEyStart (Ey.getStart ());
+      GridCoordinate3D EyStart = yeeLayout.getEyStart (Ey.getComputationStart ());
       GridCoordinate3D EyEnd = yeeLayout.getEyEnd (Ey.getSize ());
 
-      GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getStart ());
+      GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getComputationStart ());
       GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getSize ());
 
-      GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getStart ());
+      GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getComputationStart ());
       GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getSize ());
 
-      GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getStart ());
+      GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getComputationStart ());
       GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getSize ());
 
-      GridCoordinate3D HzStart = yeeLayout.getHzStart (Hz.getStart ());
+      GridCoordinate3D HzStart = yeeLayout.getHzStart (Hz.getComputationStart ());
       GridCoordinate3D HzEnd = yeeLayout.getHzEnd (Hz.getSize ());
 #endif
 

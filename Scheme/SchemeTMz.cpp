@@ -1282,14 +1282,14 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
 
   for (int t = startStep; t < stepLimit; ++t)
   {
-    GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getStart ());
-    GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getEnd ());
+    GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getComputationStart ());
+    GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getComputationEnd ());
 
-    GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getStart ());
-    GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getEnd ());
+    GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getComputationStart ());
+    GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getComputationEnd ());
 
-    GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getStart ());
-    GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getEnd ());
+    GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getComputationStart ());
+    GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getComputationEnd ());
 
     if (useTFSF)
     {
@@ -1301,7 +1301,7 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
     if (!useTFSF)
     {
 #if defined (PARALLEL_GRID)
-      if (process == 0)
+      if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
 #endif
       {
         GridCoordinate2D pos (70, EzSize.getY () / 2);
@@ -1391,15 +1391,15 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
       if (dumpRes)
       {
         BMPDumper<GridCoordinate2D> dumperEz;
-        dumperEz.init (t, CURRENT, process, "2D-TMz-in-time-Ez");
+        dumperEz.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time-Ez");
         dumperEz.dumpGrid (Ez);
 
         BMPDumper<GridCoordinate2D> dumperHx;
-        dumperHx.init (t, CURRENT, process, "2D-TMz-in-time-Hx");
+        dumperHx.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time-Hx");
         dumperHx.dumpGrid (Hx);
 
         BMPDumper<GridCoordinate2D> dumperHy;
-        dumperHy.init (t, CURRENT, process, "2D-TMz-in-time-Hy");
+        dumperHy.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time-Hy");
         dumperHy.dumpGrid (Hy);
       }
     }
@@ -1408,15 +1408,15 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
   if (dumpRes)
   {
     BMPDumper<GridCoordinate2D> dumperEz;
-    dumperEz.init (stepLimit, CURRENT, process, "2D-TMz-in-time-Ez");
+    dumperEz.init (stepLimit, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time-Ez");
     dumperEz.dumpGrid (Ez);
 
     BMPDumper<GridCoordinate2D> dumperHx;
-    dumperHx.init (stepLimit, CURRENT, process, "2D-TMz-in-time-Hx");
+    dumperHx.init (stepLimit, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time-Hx");
     dumperHx.dumpGrid (Hx);
 
     BMPDumper<GridCoordinate2D> dumperHy;
-    dumperHy.init (stepLimit, CURRENT, process, "2D-TMz-in-time-Hy");
+    dumperHy.init (stepLimit, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time-Hy");
     dumperHy.dumpGrid (Hy);
 
     // for (int i = 0; i < EzSize.getX (); ++i)
@@ -1461,14 +1461,14 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
 
     //is_stable_state = 1;
 
-    GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getStart ());
-    GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getEnd ());
+    GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getComputationStart ());
+    GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getComputationEnd ());
 
-    GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getStart ());
-    GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getEnd ());
+    GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getComputationStart ());
+    GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getComputationEnd ());
 
-    GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getStart ());
-    GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getEnd ());
+    GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getComputationStart ());
+    GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getComputationEnd ());
 
     if (useTFSF)
     {
@@ -1480,7 +1480,7 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
     if (!useTFSF)
     {
 #if defined (PARALLEL_GRID)
-      if (process == 0)
+      if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
 #endif
       {
         GridCoordinate2D pos (70, EzSize.getY () / 2);
@@ -1660,13 +1660,13 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
 #if defined (PARALLEL_GRID)
     for (int rank = 0; rank < Ez.getTotalProcCount (); ++rank)
     {
-      if (process == rank)
+      if (ParallelGrid::getParallelCore ()->getProcessId () == rank)
       {
         for (int rankDest = 0; rankDest < Ez.getTotalProcCount (); ++rankDest)
         {
           if (rankDest != rank)
           {
-            int retCode = MPI_Send (&is_stable_state, 1, MPI_INT, 0, process, MPI_COMM_WORLD);
+            int retCode = MPI_Send (&is_stable_state, 1, MPI_INT, 0, ParallelGrid::getParallelCore ()->getProcessId (), MPI_COMM_WORLD);
 
             ASSERT (retCode == MPI_SUCCESS);
           }
@@ -1700,7 +1700,7 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
   if (dumpRes)
   {
     BMPDumper<GridCoordinate2D> dumper;
-    dumper.init (t, CURRENT, process, "2D-TMz-amplitude-Ez");
+    dumper.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-amplitude-Ez");
     dumper.dumpGrid (EzAmplitude);
 
     // FieldValue norm = 0;
@@ -1811,14 +1811,14 @@ SchemeTMz::performSteps (int dumpRes)
 
   CudaExitStatus status;
 
-  cudaExecute2DTMzSteps (&status, yeeLayout, gridTimeStep, gridStep, Ez, Hx, Hy, Eps, Mu, totalStep, process);
+  cudaExecute2DTMzSteps (&status, yeeLayout, gridTimeStep, gridStep, Ez, Hx, Hy, Eps, Mu, totalStep, ParallelGrid::getParallelCore ()->getProcessId ());
 
   ASSERT (status == CUDA_OK);
 
   if (dumpRes)
   {
     BMPDumper<GridCoordinate2D> dumper;
-    dumper.init (totalStep, ALL, process, "2D-TMz-in-time");
+    dumper.init (totalStep, ALL, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time");
     dumper.dumpGrid (Ez);
   }
 #else /* CUDA_ENABLED */
@@ -1855,14 +1855,6 @@ SchemeTMz::initScheme (FPValue dx, FPValue sourceFreq)
   courantNum = 2.0;
   gridTimeStep = gridStep / (courantNum * PhysicsConst::SpeedOfLight);
 }
-
-#if defined (PARALLEL_GRID)
-void
-SchemeTMz::initProcess (int rank)
-{
-  process = rank;
-}
-#endif
 
 void
 SchemeTMz::initGrids ()
@@ -1910,7 +1902,7 @@ SchemeTMz::initGrids ()
   }
 
   BMPDumper<GridCoordinate2D> dumper;
-  dumper.init (0, CURRENT, process, "Eps");
+  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "Eps");
   dumper.dumpGrid (Eps);
 
   for (int i = 0; i < OmegaPE.getSize ().getX (); ++i)
@@ -2069,16 +2061,16 @@ SchemeTMz::initGrids ()
     }
   }
 
-  dumper.init (0, CURRENT, process, "OmegaPE");
+  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "OmegaPE");
   dumper.dumpGrid (OmegaPE);
 
-  dumper.init (0, CURRENT, process, "OmegaPM");
+  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "OmegaPM");
   dumper.dumpGrid (OmegaPM);
 
-  dumper.init (0, CURRENT, process, "GammaE");
+  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "GammaE");
   dumper.dumpGrid (GammaE);
 
-  dumper.init (0, CURRENT, process, "GammaM");
+  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "GammaM");
   dumper.dumpGrid (GammaM);
 
   for (int i = 0; i < Mu.getSize ().getX (); ++i)
@@ -2223,19 +2215,19 @@ SchemeTMz::initGrids ()
 
   {
     BMPDumper<GridCoordinate2D> dumper;
-    dumper.init (0, CURRENT, process, "SigmaX");
+    dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "SigmaX");
     dumper.dumpGrid (SigmaX);
   }
 
   {
     BMPDumper<GridCoordinate2D> dumper;
-    dumper.init (0, CURRENT, process, "SigmaY");
+    dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "SigmaY");
     dumper.dumpGrid (SigmaY);
   }
 
   {
     BMPDumper<GridCoordinate2D> dumper;
-    dumper.init (0, CURRENT, process, "SigmaZ");
+    dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "SigmaZ");
     dumper.dumpGrid (SigmaZ);
   }
 

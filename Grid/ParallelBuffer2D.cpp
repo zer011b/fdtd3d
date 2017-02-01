@@ -4,10 +4,12 @@
 
 #ifdef PARALLEL_GRID
 
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+    || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+    || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
 void
-ParallelGrid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FPValue alpha)
+ParallelGridCore::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FPValue alpha)
 {
   int min_left = left;
   int min_size1 = nodeGridSize1;
@@ -50,8 +52,8 @@ ParallelGrid::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2,
 }
 
 void
-ParallelGrid::NodeGridInitInner (FPValue& overall1, FPValue& overall2,
-                                 int& nodeGridSize1, int& nodeGridSize2, int& left)
+ParallelGridCore::NodeGridInitInner (FPValue& overall1, FPValue& overall2,
+                                       int& nodeGridSize1, int& nodeGridSize2, int& left)
 {
   FPValue alpha = overall2 / overall1;
   FPValue sqrtVal = ((FPValue) (totalProcCount)) / alpha;
