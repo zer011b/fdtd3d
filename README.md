@@ -42,18 +42,30 @@ Example of build with scripts. This will build 2D parallel grid with x buffer, d
 ```
 
 # Build Flags
+
+Solver incorporates following features which could be set up during build.
+
 ```c_cpp
 CMAKE_BUILD_TYPE - build type (Debug or Release)
-VALUE_TYPE - use float (f), double (d) or long double (ld)
+VALUE_TYPE - use float (f), double (d) or long double (ld) floating point values
 COMPLEX_FIELD_VALUES - use complex values or not (ON of OFF)
 TIME_STEPS - number of steps in time (1 or 2)
 PARALLEL_GRID_DIMENSION - number of dimensions in parallel grid (1, 2 or 3)
-PRINT_MESSAGE - print output (ON or OFF)
+PRINT_MESSAGE - print debug output (ON or OFF)
 PARALLEL_GRID - use parallel grid or not (ON or OFF)
 PARALLEL_BUFFER_DIMENSION - dimension of parallel buffers, i.e. actual coordinate systems (x, y, z, xy, yz, xz, xyz)
 CXX11_ENABLED - allow support of C++11 (ON or OFF)
 CUDA_ENABLED - enable support of GPU (ON or OFF)
 CUDA_ARCH_SM_TYPE - sm type for GPU
+```
+
+# Launch
+
+Exmaple of launch command for 2D build
+
+```sh
+cd Release/Source
+./fdtd3d 100 100 100 1 1
 ```
 
 # About
