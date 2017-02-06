@@ -3,10 +3,12 @@
 Release*/
 Debug*/
 
-# third-party
+# Third-party
 
-third-party/
+Third-party/
 
 # patches
 
 *.patch
+
+OldVersion/
