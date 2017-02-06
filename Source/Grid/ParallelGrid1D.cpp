@@ -6,19 +6,25 @@
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
 
+/**
+ * Initialize 1D grid of computational nodes
+ */
 void
 ParallelGridCore::NodeGridInit ()
 {
   nodeGridSizeX = totalProcCount;
 
 #if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %d.\n", processId,
-    nodeGridSizeX);
+  printf ("Nodes' grid process #%d: %d.\n",
+          processId,
+          nodeGridSizeX);
 #endif /* PRINT_MESSAGE */
-}
+} /* ParallelGridCore::NodeGridInit */
 
 /**
  * Initialize size of grid per node
+ *
+ * TODO: move to layout
  *
  * @return size of grid for current node
  */
@@ -32,7 +38,11 @@ ParallelGrid::GridInit (GridCoordinate1D &coreSize) /**< out: size of grid for n
   grid_coord c1;
   grid_coord core1;
 
-  CalculateGridSizeForNode (c1, core1, parallelGridCore->getNodeGridSizeX (), parallelGridCore->getHasR (), totalSize.getX ());
+  CalculateGridSizeForNode (c1,
+                            core1,
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
+                            totalSize.getX ());
 
   coreSize = GridCoordinate1D (core1);
 

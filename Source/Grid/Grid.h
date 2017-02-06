@@ -11,7 +11,7 @@
 /**
  * Type of vector of points in grid.
  */
-typedef std::vector<FieldPointValue*> VectorFieldPointValues;
+typedef std::vector<FieldPointValue *> VectorFieldPointValues;
 
 /**
  * Non-parallel grid class.
@@ -34,7 +34,7 @@ protected:
   /**
    * Current time step.
    */
-  uint32_t timeStep;
+  time_step timeStep;
 
   /*
    * TODO: add grid name
@@ -43,106 +43,85 @@ protected:
 
 protected:
 
-  // Check whether position is appropriate to get/set value from.
-  static bool isLegitIndex (const TCoord& position,
-                            const TCoord& sizeCoord);
-
-  // Calculate N-dimensional coordinate from position.
-  static grid_iter calculateIndexFromPosition (const TCoord& position,
-                                               const TCoord& sizeCoord);
+  static bool isLegitIndex (const TCoord &, const TCoord &);
+  static grid_iter calculateIndexFromPosition (const TCoord &, const TCoord &);
 
 private:
 
-  // Get values in the grid.
   VectorFieldPointValues& getValues ();
-
-  // Replace previous layer with current and so on.
   void shiftInTime ();
-
-  // Check whether position is appropriate to get/set value from.
-  bool isLegitIndex (const TCoord& position) const;
-
-  // Calculate N-dimensional coordinate from position.
-  grid_iter calculateIndexFromPosition (const TCoord& position) const;
+  bool isLegitIndex (const TCoord &) const;
+  grid_iter calculateIndexFromPosition (const TCoord &) const;
 
 public:
 
-  Grid (const TCoord& s, uint32_t step, const char * = "unnamed");
-  Grid (uint32_t step, const char * = "unnamed");
+  Grid (const TCoord& s, time_step step, const char * = "unnamed");
+  Grid (time_step step, const char * = "unnamed");
   ~Grid ();
 
-  // Get size of the grid.
-  const TCoord& getSize () const;
+  const TCoord &getSize () const;
+  TCoord getTotalPosition (TCoord) const;
+  TCoord getTotalSize () const;
+  TCoord getRelativePosition (TCoord) const;
 
-  // Get start coord of the grid.
   virtual TCoord getComputationStart () const;
-
-  // Get end coord of the grid.
   virtual TCoord getComputationEnd () const;
+  TCoord calculatePositionFromIndex (grid_iter) const;
 
-  // Calculate position from three-dimensional coordinate.
-  TCoord calculatePositionFromIndex (grid_iter index) const;
+  void setFieldPointValue (FieldPointValue *, const TCoord &);
+  virtual FieldPointValue *getFieldPointValue (const TCoord &);
+  virtual FieldPointValue *getFieldPointValue (grid_iter);
 
-  // Set field point at coordinate in grid.
-  void setFieldPointValue (FieldPointValue* value, const TCoord& position);
-
-  // Get field point at coordinate in grid.
-  virtual FieldPointValue* getFieldPointValue (const TCoord& position);
-  virtual FieldPointValue* getFieldPointValue (grid_iter coord);
-
-  // Switch to next time step.
   virtual void nextTimeStep ();
+}; /* Grid */
 
-  TCoord getTotalPosition (TCoord pos)
-  {
-    return TCoord (0) + pos;
-  }
-
-  TCoord getTotalSize ()
-  {
-    return getSize ();
-  }
-
-  TCoord getRelativePosition (TCoord pos)
-  {
-    return pos - TCoord (0);
-  }
-};
+/*
+ * Templates definition
+ */
 
 /**
- * ======== Consructors and destructor ========
+ * Constructor of grid
  */
 template <class TCoord>
-Grid<TCoord>::Grid (const TCoord& s, uint32_t step, const char *name) :
-  size (s),
-  gridValues (size.calculateTotalCoord ()),
-  timeStep (step),
-  gridName (name)
+Grid<TCoord>::Grid (const TCoord &s, /**< size of grid */
+                    time_step step, /**< default time step */
+                    const char *name) /**< name of grid */
+  : size (s)
+  , gridValues (size.calculateTotalCoord ())
+  , timeStep (step)
+  , gridName (name)
 {
   for (int i = 0; i < gridValues.size (); ++i)
   {
 #ifdef CXX11_ENABLED
     gridValues[i] = nullptr;
-#else
+#else /* CXX11_ENABLED */
     gridValues[i] = NULL;
-#endif
+#endif /* !CXX11_ENABLED */
   }
 
 #if PRINT_MESSAGE
-  printf ("New grid with raw size: %lu.\n", gridValues.size ());
+  printf ("New grid '%s' with raw size: %lu.\n", gridName, gridValues.size ());
 #endif /* PRINT_MESSAGE */
-}
+} /* Grid<TCoord>::Grid */
 
+/**
+ * Constructor of grid without size
+ */
 template <class TCoord>
-Grid<TCoord>::Grid (uint32_t step, const char *name) :
-  timeStep (step),
-  gridName (name)
+Grid<TCoord>::Grid (time_step step, /**< default time step */
+                    const char *name) /**< name of grid */
+  : timeStep (step)
+  , gridName (name)
 {
 #if PRINT_MESSAGE
-  printf ("New grid without size.\n");
+  printf ("New grid '%s' without size.\n", gridName);
 #endif /* PRINT_MESSAGE */
-}
+} /* Grid<TCoord>::Grid */
 
+/**
+ * Destructor of grid. Should free all field point values
+ */
 template <class TCoord>
 Grid<TCoord>::~Grid ()
 {
@@ -151,27 +130,31 @@ Grid<TCoord>::~Grid ()
   {
     delete i_p;
   }
-#else
+#else /* CXX11_ENABLED */
   for (VectorFieldPointValues::iterator iter = gridValues.begin ();
-       iter != gridValues.end (); ++iter)
+       iter != gridValues.end ();
+       ++iter)
   {
     delete (*iter);
   }
-#endif
-
-}
+#endif /* !CXX11_ENABLED */
+} /* Grid<TCoord>::~Grid */
 
 /**
- * ======== Private methods ========
+ * Get values of the grid
+ *
+ * @return values of the grid
  */
-
 template <class TCoord>
 VectorFieldPointValues&
 Grid<TCoord>::getValues ()
 {
   return gridValues;
-}
+} /* Grid<TCoord>::getValues */
 
+/**
+ * Replace previous time layer with current and so on
+ */
 template <class TCoord>
 void
 Grid<TCoord>::shiftInTime ()
@@ -181,58 +164,83 @@ Grid<TCoord>::shiftInTime ()
   {
     i_p->shiftInTime ();
   }
-#else
+#else /* CXX11_ENABLED */
   for (VectorFieldPointValues::iterator iter = gridValues.begin ();
-       iter != gridValues.end (); ++iter)
+       iter != gridValues.end ();
+       ++iter)
   {
     (*iter)->shiftInTime ();
   }
-#endif
-}
-
-template <class TCoord>
-bool
-Grid<TCoord>::isLegitIndex (const TCoord& position) const
-{
-  return isLegitIndex (position, size);
-}
-
-template <class TCoord>
-grid_iter
-Grid<TCoord>::calculateIndexFromPosition (const TCoord& position) const
-{
-  return calculateIndexFromPosition (position, size);
-}
+#endif /* !CXX11_ENABLED */
+} /* Grid<TCoord>::shiftInTime */
 
 /**
- * ======== Public methods ========
+ * Check whether position is appropriate to get/set value from
+ *
+ * @return flag whether position is appropriate to get/set value from
  */
+template <class TCoord>
+bool
+Grid<TCoord>::isLegitIndex (const TCoord& position) const /**< coordinate in grid */
+{
+  return isLegitIndex (position, size);
+} /* Grid<TCoord>::isLegitIndex */
 
+/**
+ * Calculate one-dimensional coordinate from N-dimensional position
+ *
+ * @return one-dimensional coordinate from N-dimensional position
+ */
+template <class TCoord>
+grid_iter
+Grid<TCoord>::calculateIndexFromPosition (const TCoord& position) const /**< coordinate in grid */
+{
+  return calculateIndexFromPosition (position, size);
+} /* Grid<TCoord>::calculateIndexFromPosition */
+
+/**
+ * Get size of the grid
+ *
+ * @return size of the grid
+ */
 template <class TCoord>
 const TCoord&
 Grid<TCoord>::getSize () const
 {
   return size;
-}
+} /* Grid<TCoord>::getSize */
 
+/**
+ * Get first coordinate from which to perfrom computations at current step
+ *
+ * @return first coordinate from which to perfrom computations at current step
+ */
 template <class TCoord>
 TCoord
 Grid<TCoord>::getComputationStart () const
 {
   return TCoord (0);
-}
+} /* Grid<TCoord>::getComputationStart */
 
+/**
+ * Get last coordinate until which to perfrom computations at current step
+ *
+ * @return last coordinate until which to perfrom computations at current step
+ */
 template <class TCoord>
 TCoord
 Grid<TCoord>::getComputationEnd () const
 {
   return getSize ();
-}
+} /* Grid<TCoord>::getComputationEnd () */
 
+/**
+ * Set field point value at coordinate in grid
+ */
 template <class TCoord>
 void
-Grid<TCoord>::setFieldPointValue (FieldPointValue* value,
-                                  const TCoord& position)
+Grid<TCoord>::setFieldPointValue (FieldPointValue *value, /**< field point value */
+                                  const TCoord &position) /**< coordinate in grid */
 {
   ASSERT (isLegitIndex (position));
   ASSERT (value);
@@ -242,25 +250,32 @@ Grid<TCoord>::setFieldPointValue (FieldPointValue* value,
   delete gridValues[coord];
 
   gridValues[coord] = value;
-}
+} /* Grid<TCoord>::setFieldPointValue */
 
+/**
+ * Get field point value at coordinate in grid
+ *
+ * @return field point value
+ */
 template <class TCoord>
-FieldPointValue*
-Grid<TCoord>::getFieldPointValue (const TCoord& position)
+FieldPointValue *
+Grid<TCoord>::getFieldPointValue (const TCoord &position) /**< cooridnate in grid */
 {
   ASSERT (isLegitIndex (position));
 
   grid_iter coord = calculateIndexFromPosition (position);
-  FieldPointValue* value = gridValues[coord];
 
-  ASSERT (value);
+  return getFieldPointValue (coord);
+} /* Grid<TCoord>::getFieldPointValue */
 
-  return value;
-}
-
+/**
+ * Get field point value at coordinate in grid
+ *
+ * @return field point value
+ */
 template <class TCoord>
-FieldPointValue*
-Grid<TCoord>::getFieldPointValue (grid_iter coord)
+FieldPointValue *
+Grid<TCoord>::getFieldPointValue (grid_iter coord) /**< index in grid */
 {
   ASSERT (coord >= 0 && coord < size.calculateTotalCoord ());
 
@@ -269,13 +284,52 @@ Grid<TCoord>::getFieldPointValue (grid_iter coord)
   ASSERT (value);
 
   return value;
-}
+} /* Grid<TCoord>::getFieldPointValue */
 
+/**
+ * Switch to next time step
+ */
 template <class TCoord>
 void
 Grid<TCoord>::nextTimeStep ()
 {
   shiftInTime ();
-}
+} /* Grid<TCoord>::nextTimeStep */
+
+/**
+ * Get total position in grid. Is equal to position in non-parallel grid
+ *
+ * @return total position in grid
+ */
+template <class TCoord>
+TCoord
+Grid<TCoord>::getTotalPosition (TCoord pos) const /**< position in grid */
+{
+  return TCoord (0) + pos;
+} /* Grid<TCoord>::getTotalPosition */
+
+/**
+ * Get total size of grid. Is equal to size in non-parallel grid
+ *
+ * @return total size of grid
+ */
+template <class TCoord>
+TCoord
+Grid<TCoord>::getTotalSize () const
+{
+  return getSize ();
+} /* Grid<TCoord>::getTotalSize */
+
+/**
+ * Get relative position in grid. Is equal to position in non-parallel grid
+ *
+ * @return relative position in grid
+ */
+template <class TCoord>
+TCoord
+Grid<TCoord>::getRelativePosition (TCoord pos) const /**< position in grid */
+{
+  return pos - TCoord (0);
+} /* gGrid<TCoord>::etRelativePosition */
 
 #endif /* GRID_H */

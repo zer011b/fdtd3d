@@ -378,7 +378,7 @@ private:
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
   void FindProportionForNodeGrid (int &, int &, int &, FPValue);
-  void NodeGridInitInner (FPValue &, FPValue &, int &, int &, int &);
+  void NodeGridInitInner (const FPValue &, const FPValue &, int &, int &, int &);
   void CalculateGridSizeForNode (grid_coord &, grid_coord &, int, bool, grid_coord,
                                  grid_coord &, grid_coord &, int, bool, grid_coord);
 
@@ -387,7 +387,7 @@ private:
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
   void FindProportionForNodeGrid (int &, int &, int &, int &, FPValue, FPValue);
-  void NodeGridInitInner (FPValue &, FPValue &, FPValue &, int &, int &, int &, int &);
+  void NodeGridInitInner (const FPValue &, const FPValue &, const FPValue &, int &, int &, int &, int &);
   void CalculateGridSizeForNode (grid_coord &, grid_coord &, int, bool, grid_coord,
                                  grid_coord &, grid_coord &, int, bool, grid_coord,
                                  grid_coord &, grid_coord &, int, bool, grid_coord);
@@ -418,7 +418,7 @@ public:
    *
    * @return total size of grid
    */
-  ParallelGridCoordinate getTotalSize ()
+  ParallelGridCoordinate getTotalSize () const
   {
     return totalSize;
   } /* getTotalSize */

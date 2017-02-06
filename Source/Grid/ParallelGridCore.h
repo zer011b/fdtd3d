@@ -222,7 +222,7 @@ public:
    *
    * @return precalculated value of nodeGridSizeX * nodeGridSizeY
    */
-  int getNodeGridSizeXY ()
+  int getNodeGridSizeXY () const
   {
     return nodeGridSizeXY;
   } /* getNodeGridSizeXY */
@@ -235,7 +235,7 @@ public:
    *
    * @return precalculated value of nodeGridSizeY * nodeGridSizeZ
    */
-  int getNodeGridSizeYZ ()
+  int getNodeGridSizeYZ () const
   {
     return nodeGridSizeYZ;
   } /* getNodeGridSizeYZ */
@@ -248,7 +248,7 @@ public:
    *
    * @return precalculated value of nodeGridSizeX * nodeGridSizeZ
    */
-  int getNodeGridSizeXZ ()
+  int getNodeGridSizeXZ () const
   {
     return nodeGridSizeXZ;
   } /* getNodeGridSizeXZ */
@@ -261,7 +261,7 @@ public:
    *
    * @return precalculated value of nodeGridSizeX * nodeGridSizeY * nodeGridSizeZ
    */
-  int getNodeGridSizeXYZ ()
+  int getNodeGridSizeXYZ () const
   {
     return nodeGridSizeXYZ;
   } /* getNodeGridSizeXYZ */
@@ -271,14 +271,14 @@ public:
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  int getNodeGridX ();
+  int getNodeGridX () const;
 
   /**
    * Getter for flag whether computational node has left neighbour
    *
    * @return flag whether computational node has left neighbour
    */
-  bool getHasL ()
+  bool getHasL () const
   {
     return hasL;
   } /* getHasL */
@@ -288,7 +288,7 @@ public:
    *
    * @return flag whether computational node has right neighbour
    */
-  bool getHasR ()
+  bool getHasR () const
   {
     return hasR;
   } /* getHasR */
@@ -299,14 +299,14 @@ public:
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  int getNodeGridY ();
+  int getNodeGridY () const;
 
   /**
    * Getter for flag whether computational node has down neighbour
    *
    * @return flag whether computational node has down neighbour
    */
-  bool getHasD ()
+  bool getHasD () const
   {
     return hasD;
   } /* getHasD */
@@ -316,7 +316,7 @@ public:
    *
    * @return flag whether computational node has up neighbour
    */
-  bool getHasU ()
+  bool getHasU () const
   {
     return hasU;
   } /* getHasU */
@@ -327,14 +327,14 @@ public:
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  int getNodeGridZ ();
+  int getNodeGridZ () const;
 
   /**
    * Getter for flag whether computational node has back neighbour
    *
    * @return flag whether computational node has back neighbour
    */
-  bool getHasB ()
+  bool getHasB () const
   {
     return hasB;
   } /* getHasB */
@@ -344,7 +344,7 @@ public:
    *
    * @return flag whether computational node has front neighbour
    */
-  bool getHasF ()
+  bool getHasF () const
   {
     return hasF;
   } /* getHasF */
@@ -357,7 +357,7 @@ public:
    *
    * @return id of process corresponding to current computational node
    */
-  int getProcessId ()
+  int getProcessId () const
   {
     return processId;
   } /* getProcessId */
@@ -379,7 +379,7 @@ public:
    * @return flags corresponding to direction, whether send and receive procedures should be performed
    * for this direction
    */
-  std::vector< std::pair<bool, bool> > &getDoShare ()
+  const std::vector< std::pair<bool, bool> > &getDoShare ()
   {
     return doShare;
   } /* getDoShare */
@@ -389,7 +389,7 @@ public:
    *
    * @return opposite buffer position corresponding to buffer position
    */
-  std::vector<BufferPosition> &getOppositeDirections ()
+  const std::vector<BufferPosition> &getOppositeDirections ()
   {
     return oppositeDirections;
   } /* getOppositeDirections */
@@ -399,7 +399,7 @@ public:
    *
    * @return process ids corresponding to directions
    */
-  std::vector<int> &getDirections ()
+  const std::vector<int> &getDirections ()
   {
     return directions;
   } /* getDirections */

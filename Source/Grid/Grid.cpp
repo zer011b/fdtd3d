@@ -1,12 +1,14 @@
 #include "Grid.h"
 
 /**
- * ======== Static methods ========
+ * Check whether position is appropriate to get/set value from
+ *
+ * @return flag whether position is appropriate to get/set value from
  */
 template<>
 bool
-Grid<GridCoordinate1D>::isLegitIndex (const GridCoordinate1D& position,
-                                      const GridCoordinate1D& sizeCoord)
+Grid<GridCoordinate1D>::isLegitIndex (const GridCoordinate1D &position, /**< coordinate in grid */
+                                      const GridCoordinate1D &sizeCoord) /**< size of grid */
 {
   const grid_coord& px = position.getX ();
   const grid_coord& sx = sizeCoord.getX ();
@@ -17,22 +19,32 @@ Grid<GridCoordinate1D>::isLegitIndex (const GridCoordinate1D& position,
   }
 
   return true;
-}
+} /* Grid<GridCoordinate1D>::isLegitIndex */
 
+/**
+ * Calculate one-dimensional coordinate from one-dimensional position
+ *
+ * @return one-dimensional coordinate from one-dimensional position
+ */
 template<>
 grid_iter
-Grid<GridCoordinate1D>::calculateIndexFromPosition (const GridCoordinate1D& position,
-                                                    const GridCoordinate1D& sizeCoord)
+Grid<GridCoordinate1D>::calculateIndexFromPosition (const GridCoordinate1D &position, /**< coordinate in grid */
+                                                    const GridCoordinate1D &sizeCoord) /**< size of grid */
 {
   const grid_coord& px = position.getX ();
 
   return px;
-}
+} /* Grid<GridCoordinate1D>::calculateIndexFromPosition */
 
+/**
+ * Check whether position is appropriate to get/set value from
+ *
+ * @return flag whether position is appropriate to get/set value from
+ */
 template<>
 bool
-Grid<GridCoordinate2D>::isLegitIndex (const GridCoordinate2D& position,
-                                      const GridCoordinate2D& sizeCoord)
+Grid<GridCoordinate2D>::isLegitIndex (const GridCoordinate2D &position, /**< coordinate in grid */
+                                      const GridCoordinate2D &sizeCoord) /**< size of grid */
 {
   const grid_coord& px = position.getX ();
   const grid_coord& sx = sizeCoord.getX ();
@@ -50,12 +62,17 @@ Grid<GridCoordinate2D>::isLegitIndex (const GridCoordinate2D& position,
   }
 
   return true;
-}
+} /* Grid<GridCoordinate2D>::isLegitIndex */
 
+/**
+ * Calculate one-dimensional coordinate from two-dimensional position
+ *
+ * @return one-dimensional coordinate from two-dimensional position
+ */
 template<>
 grid_iter
-Grid<GridCoordinate2D>::calculateIndexFromPosition (const GridCoordinate2D& position,
-                                                    const GridCoordinate2D& sizeCoord)
+Grid<GridCoordinate2D>::calculateIndexFromPosition (const GridCoordinate2D &position, /**< coordinate in grid */
+                                                    const GridCoordinate2D &sizeCoord) /**< size of grid */
 {
   const grid_coord& px = position.getX ();
 
@@ -63,12 +80,17 @@ Grid<GridCoordinate2D>::calculateIndexFromPosition (const GridCoordinate2D& posi
   const grid_coord& sy = sizeCoord.getY ();
 
   return px * sy + py;
-}
+} /* Grid<GridCoordinate2D>::calculateIndexFromPosition */
 
+/**
+ * Check whether position is appropriate to get/set value from
+ *
+ * @return flag whether position is appropriate to get/set value from
+ */
 template<>
 bool
-Grid<GridCoordinate3D>::isLegitIndex (const GridCoordinate3D& position,
-                                      const GridCoordinate3D& sizeCoord)
+Grid<GridCoordinate3D>::isLegitIndex (const GridCoordinate3D &position, /**< coordinate in grid */
+                                      const GridCoordinate3D &sizeCoord) /**< size of grid */
 {
   const grid_coord& px = position.getX ();
   const grid_coord& sx = sizeCoord.getX ();
@@ -93,12 +115,17 @@ Grid<GridCoordinate3D>::isLegitIndex (const GridCoordinate3D& position,
   }
 
   return true;
-}
+} /* Grid<GridCoordinate3D>::isLegitIndex */
 
+/**
+ * Calculate one-dimensional coordinate from two-dimensional position
+ *
+ * @return one-dimensional coordinate from two-dimensional position
+ */
 template<>
 grid_iter
-Grid<GridCoordinate3D>::calculateIndexFromPosition (const GridCoordinate3D& position,
-                                                    const GridCoordinate3D& sizeCoord)
+Grid<GridCoordinate3D>::calculateIndexFromPosition (const GridCoordinate3D& position, /**< coordinate in grid */
+                                                    const GridCoordinate3D& sizeCoord) /**< size of grid */
 {
   const grid_coord& px = position.getX ();
 
@@ -109,22 +136,24 @@ Grid<GridCoordinate3D>::calculateIndexFromPosition (const GridCoordinate3D& posi
   const grid_coord& sz = sizeCoord.getZ ();
 
   return px * sy * sz + py * sz + pz;
-}
+} /* Grid<GridCoordinate3D>::calculateIndexFromPosition */
 
 /**
- * ======== Public methods ========
+ * Calculate position coordinate from one-dimensional index
  */
-
 template <>
 GridCoordinate1D
-Grid<GridCoordinate1D>::calculatePositionFromIndex (grid_iter index) const
+Grid<GridCoordinate1D>::calculatePositionFromIndex (grid_iter index) const /**< index in grid */
 {
   return GridCoordinate1D (index);
-}
+} /* Grid<GridCoordinate1D>::calculatePositionFromIndex */
 
+/**
+ * Calculate position coordinate from one-dimensional index
+ */
 template <>
 GridCoordinate2D
-Grid<GridCoordinate2D>::calculatePositionFromIndex (grid_iter index) const
+Grid<GridCoordinate2D>::calculatePositionFromIndex (grid_iter index) const /**< index in grid */
 {
   const grid_coord& sx = size.getX ();
   const grid_coord& sy = size.getY ();
@@ -132,12 +161,16 @@ Grid<GridCoordinate2D>::calculatePositionFromIndex (grid_iter index) const
   grid_coord x = index / sy;
   index %= sy;
   grid_coord y = index;
-  return GridCoordinate2D (x, y);
-}
 
+  return GridCoordinate2D (x, y);
+} /* Grid<GridCoordinate2D>::calculatePositionFromIndex */
+
+/**
+ * Calculate position coordinate from one-dimensional index
+ */
 template <>
 GridCoordinate3D
-Grid<GridCoordinate3D>::calculatePositionFromIndex (grid_iter index) const
+Grid<GridCoordinate3D>::calculatePositionFromIndex (grid_iter index) const /**< index in grid */
 {
   const grid_coord& sy = size.getY ();
   const grid_coord& sz = size.getZ ();
@@ -148,5 +181,6 @@ Grid<GridCoordinate3D>::calculatePositionFromIndex (grid_iter index) const
   grid_coord y = index / sz;
   index %= sz;
   grid_coord z = index;
+
   return GridCoordinate3D (x, y, z);
-}
+} /* Grid<GridCoordinate3D>::calculatePositionFromIndex */

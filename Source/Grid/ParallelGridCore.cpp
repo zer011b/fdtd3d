@@ -704,7 +704,7 @@ ParallelGridCore::getShare (BufferPosition direction, /**< direction of share op
  * @return number of nodes in the grid by Ox axis
  */
 int
-ParallelGridCore::getNodeGridX ()
+ParallelGridCore::getNodeGridX () const
 {
   int pidX;
 
@@ -734,7 +734,7 @@ ParallelGridCore::getNodeGridX ()
  * @return number of nodes in the grid by Oy axis
  */
 int
-ParallelGridCore::getNodeGridY ()
+ParallelGridCore::getNodeGridY () const
 {
   int pidY;
 
@@ -771,7 +771,7 @@ ParallelGridCore::getNodeGridY ()
  * @return number of nodes in the grid by Oz axis
  */
 int
-ParallelGridCore::getNodeGridZ ()
+ParallelGridCore::getNodeGridZ () const
 {
   int pidZ;
 

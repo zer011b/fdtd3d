@@ -9,6 +9,10 @@
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || \
     defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || \
     defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+
+/**
+ * Initialize 3D grid of computational nodes
+ */
 void
 ParallelGridCore::NodeGridInit ()
 {
@@ -17,11 +21,13 @@ ParallelGridCore::NodeGridInit ()
   nodeGridSizeY = 1;
   nodeGridSizeZ = 1;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
+
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
   nodeGridSizeX = 1;
   nodeGridSizeY = totalProcCount;
   nodeGridSizeZ = 1;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
+
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
   nodeGridSizeX = 1;
   nodeGridSizeY = 1;
@@ -29,10 +35,13 @@ ParallelGridCore::NodeGridInit ()
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 
 #if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%dx%d.\n", processId,
-    nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ);
+  printf ("Nodes' grid process #%d: %dx%dx%d.\n",
+          processId,
+          nodeGridSizeX,
+          nodeGridSizeY,
+          nodeGridSizeZ);
 #endif /* PRINT_MESSAGE */
-}
+} /* ParallelGridCore::NodeGridInit */
 
 /**
  * Initialize size of grid per node
@@ -55,25 +64,39 @@ ParallelGrid::GridInit (GridCoordinate3D &coreSize) /**< out: size of grid for n
   grid_coord core3;
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  CalculateGridSizeForNode (c1, core1, parallelGridCore->getNodeGridSizeX (), hasR, totalSize.getX ());
+  CalculateGridSizeForNode (c1,
+                            core1,
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
+                            totalSize.getX ());
   core2 = totalSize.getY ();
   c2 = core2;
   core3 = totalSize.getZ ();
   c3 = core3;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
+
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
   core1 = totalSize.getX ();
   c1 = core1;
-  CalculateGridSizeForNode (c2, core2, parallelGridCore->getNodeGridSizeY (), hasU, totalSize.getY ());
+  CalculateGridSizeForNode (c2,
+                            core2,
+                            parallelGridCore->getNodeGridSizeY (),
+                            parallelGridCore->getHasU (),
+                            totalSize.getY ());
   core3 = totalSize.getZ ();
   c3 = core3;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
+
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
   core1 = totalSize.getX ();
   c1 = core1;
   core2 = totalSize.getY ();
   c2 = core2;
-  CalculateGridSizeForNode (c3, core3, parallelGridCore->getNodeGridSizeZ (), hasF, totalSize.getZ ());
+  CalculateGridSizeForNode (c3,
+                            core3,
+                            parallelGridCore->getNodeGridSizeZ (),
+                            parallelGridCore->getHasF (),
+                            totalSize.getZ ());
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 
   coreSize = GridCoordinate3D (core1, core2, core3);
@@ -85,6 +108,10 @@ ParallelGrid::GridInit (GridCoordinate3D &coreSize) /**< out: size of grid for n
           PARALLEL_BUFFER_DIMENSION_1D_Z */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+
+/**
+ * Initialize 3D grid of computational nodes
+ */
 void
 ParallelGridCore::NodeGridInit ()
 {
@@ -97,10 +124,12 @@ ParallelGridCore::NodeGridInit ()
   FPValue overall1 = (FPValue) totalSize.getX ();
   FPValue overall2 = (FPValue) totalSize.getY ();
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
+
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
   FPValue overall1 = (FPValue) totalSize.getY ();
   FPValue overall2 = (FPValue) totalSize.getZ ();
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
+
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
   FPValue overall1 = (FPValue) totalSize.getX ();
   FPValue overall2 = (FPValue) totalSize.getZ ();
@@ -134,10 +163,14 @@ ParallelGridCore::NodeGridInit ()
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
 #if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n", processId,
-    nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ, left);
+  printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n",
+          processId,
+          nodeGridSizeX,
+          nodeGridSizeY,
+          nodeGridSizeZ,
+          left);
 #endif /* PRINT_MESSAGE */
-}
+} /* ParallelGridCore::NodeGridInit */
 
 /**
  * Initialize size of grid per node
@@ -160,22 +193,48 @@ ParallelGrid::GridInit (GridCoordinate3D &coreSize) /**< out: size of grid for n
   grid_coord core3;
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  CalculateGridSizeForNode (c1, core1, parallelGridCore->getNodeGridSizeX (), hasR, totalSize.getX (),
-                            c2, core2, parallelGridCore->getNodeGridSizeY (), hasU, totalSize.getY ());
+  CalculateGridSizeForNode (c1,
+                            core1,
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
+                            totalSize.getX (),
+                            c2,
+                            core2,
+                            parallelGridCore->getNodeGridSizeY (),
+                            parallelGridCore->getHasU (),
+                            totalSize.getY ());
   core3 = totalSize.getZ ();
   c3 = core3;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
+
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
   core1 = totalSize.getX ();
   c1 = core1;
-  CalculateGridSizeForNode (c2, core2, parallelGridCore->getNodeGridSizeY (), hasU, totalSize.getY (),
-                            c3, core3, parallelGridCore->getNodeGridSizeZ (), hasF, totalSize.getZ ());
+  CalculateGridSizeForNode (c2,
+                            core2,
+                            parallelGridCore->getNodeGridSizeY (),
+                            parallelGridCore->getHasU (),
+                            totalSize.getY (),
+                            c3,
+                            core3,
+                            parallelGridCore->getNodeGridSizeZ (),
+                            parallelGridCore->getHasF (),
+                            totalSize.getZ ());
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
+
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
   core2 = totalSize.getY ();
   c2 = core2;
-  CalculateGridSizeForNode (c1, core1, parallelGridCore->getNodeGridSizeX (), hasR, totalSize.getX (),
-                            c3, core3, parallelGridCore->getNodeGridSizeZ (), hasF, totalSize.getZ ());
+  CalculateGridSizeForNode (c1,
+                            core1,
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
+                            totalSize.getX (),
+                            c3,
+                            core3,
+                            parallelGridCore->getNodeGridSizeZ (),
+                            parallelGridCore->getHasF (),
+                            totalSize.getZ ());
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
   coreSize = GridCoordinate3D (core1, core2, core3);
@@ -187,6 +246,10 @@ ParallelGrid::GridInit (GridCoordinate3D &coreSize) /**< out: size of grid for n
           PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
+
+/**
+ * Initialize 3D grid of computational nodes
+ */
 void
 ParallelGridCore::NodeGridInit ()
 {
@@ -213,11 +276,14 @@ ParallelGridCore::NodeGridInit ()
   nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
 
 #if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n", processId,
-    nodeGridSizeX, nodeGridSizeY, nodeGridSizeZ, left);
-  //printf ("Grid size for #%d process: %dx%dx%d.\n", processId, c1, c2, c3);
+  printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n",
+          processId,
+          nodeGridSizeX,
+          nodeGridSizeY,
+          nodeGridSizeZ,
+          left);
 #endif /* PRINT_MESSAGE */
-}
+} /* ParallelGridCore::NodeGridInit */
 
 /**
  * Initialize size of grid per node
@@ -239,9 +305,21 @@ ParallelGrid::GridInit (GridCoordinate3D &coreSize) /**< out: size of grid for n
   grid_coord core2;
   grid_coord core3;
 
-  CalculateGridSizeForNode (c1, core1, parallelGridCore->getNodeGridSizeX (), parallelGridCore->getHasR (), totalSize.getX (),
-                            c2, core2, parallelGridCore->getNodeGridSizeY (), parallelGridCore->getHasU (), totalSize.getY (),
-                            c3, core3, parallelGridCore->getNodeGridSizeZ (), parallelGridCore->getHasF (), totalSize.getZ ());
+  CalculateGridSizeForNode (c1,
+                            core1,
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
+                            totalSize.getX (),
+                            c2,
+                            core2,
+                            parallelGridCore->getNodeGridSizeY (),
+                            parallelGridCore->getHasU (),
+                            totalSize.getY (),
+                            c3,
+                            core3,
+                            parallelGridCore->getNodeGridSizeZ (),
+                            parallelGridCore->getHasF (),
+                            totalSize.getZ ());
 
   coreSize = GridCoordinate3D (core1, core2, core3);
 
@@ -251,4 +329,5 @@ ParallelGrid::GridInit (GridCoordinate3D &coreSize) /**< out: size of grid for n
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #endif /* PARALLEL_GRID */
+
 #endif /* GRID_3D */
