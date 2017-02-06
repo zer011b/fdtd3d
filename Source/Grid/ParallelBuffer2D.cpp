@@ -8,15 +8,24 @@
     || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
     || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
+/**
+ * Find proportion for computational nodes grid
+ */
 void
-ParallelGridCore::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSize2, int& left, FPValue alpha)
+ParallelGridCore::FindProportionForNodeGrid (int &nodeGridSize1, /**< out: first axis nodes grid size */
+                                             int &nodeGridSize2, /**< out: second axis nodes grid size */
+                                             int &left, /**< out: number of left unused computational nodes */
+                                             FPValue alpha) /**< preferred proportion between second and first axis */
 {
+  /*
+   * Bad case, too many nodes left unused. Let's change proportion.
+   */
+
   int min_left = left;
   int min_size1 = nodeGridSize1;
   int min_size2 = nodeGridSize2;
   FPValue min_alpha = ((FPValue) min_size2) / ((FPValue) min_size1);
 
-  // Bad case, too many nodes left unused. Let's change proportion.
   for (int size1 = 2; size1 <= totalProcCount / 2; ++size1)
   {
     int size2 = totalProcCount / size1;
@@ -49,11 +58,17 @@ ParallelGridCore::FindProportionForNodeGrid (int& nodeGridSize1, int& nodeGridSi
   nodeGridSize1 = min_size1;
   nodeGridSize2 = min_size2;
   left = min_left;
-}
+} /* ParallelGridCore::FindProportionForNodeGrid */
 
+/**
+ * Initialize nodes grid
+ */
 void
-ParallelGridCore::NodeGridInitInner (FPValue& overall1, FPValue& overall2,
-                                       int& nodeGridSize1, int& nodeGridSize2, int& left)
+ParallelGridCore::NodeGridInitInner (const FPValue &overall1, /**< size of grid by first axis */
+                                     const FPValue &overall2, /**< size of grid by second axis */
+                                     int &nodeGridSize1, /**< out: first axis nodes grid size */
+                                     int &nodeGridSize2, /**< out: second axis nodes grid size */
+                                     int &left) /**< out: number of left unused computational nodes */
 {
   FPValue alpha = overall2 / overall1;
   FPValue sqrtVal = ((FPValue) (totalProcCount)) / alpha;
@@ -61,7 +76,9 @@ ParallelGridCore::NodeGridInitInner (FPValue& overall1, FPValue& overall2,
 
   if (sqrtVal <= 1.0 || alpha * sqrtVal <= 1.0)
   {
-    // Unproportional calculational/node grids
+    /*
+     * Unproportional nodes grid
+     */
 
     sqrtVal = 2;
   }
@@ -77,12 +94,14 @@ ParallelGridCore::NodeGridInitInner (FPValue& overall1, FPValue& overall2,
 
   if (left > 0)
   {
-    // Bad case, too many nodes left unused. Let's change proportion.
+    /*
+     * Bad case, too many nodes left unused. Let's change proportion.
+     */
     FindProportionForNodeGrid (nodeGridSize1, nodeGridSize2, left, alpha);
   }
 
   ASSERT (nodeGridSize1 > 1 && nodeGridSize2 > 1);
-}
+} /* ParallelGridCore::NodeGridInitInner */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ) ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ */

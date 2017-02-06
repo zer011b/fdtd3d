@@ -120,7 +120,8 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
   gridValues.resize (size.calculateTotalCoord ());
 
 #if PRINT_MESSAGE
-  printf ("New grid for proc: %d (of %d) with raw size: %lu.\n",
+  printf ("New grid '%s' for proc: %d (of %d) with raw size: %lu.\n",
+          gridName
           parallelGridCore->getProcessId (),
           parallelGridCore->getTotalProcCount (),
           gridValues.size ());
@@ -2383,9 +2384,9 @@ ParallelGrid::getComputationStart () const
 } /* ParallelGrid::getComputationStart */
 
 /**
- * Get first coordinate from which to perfrom computations at current step
+ * Get last coordinate until which to perfrom computations at current step
  *
- * @return first coordinate from which to perfrom computations at current step
+ * @return last coordinate until which to perfrom computations at current step
  */
 ParallelGridCoordinate
 ParallelGrid::getComputationEnd () const
