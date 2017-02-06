@@ -1,0 +1,67 @@
+message ("Source build.")
+
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Helpers")
+add_subdirectory (Helpers)
+
+if ("${CUDA_ENABLED}")
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Source/Physics")
+endif ()
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Physics")
+add_subdirectory (Physics)
+
+if ("${CUDA_ENABLED}")
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Source/Kernels")
+endif ()
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Kernels")
+add_subdirectory (Kernels)
+set (LIBS ${LIBS} Kernels)
+
+if ("${CUDA_ENABLED}")
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Source/Coordinate")
+endif ()
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Coordinate")
+add_subdirectory (Coordinate)
+set (LIBS ${LIBS} Coordinate)
+
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Grid")
+add_subdirectory (Grid)
+set (LIBS ${LIBS} Grid)
+
+if ("${CUDA_ENABLED}")
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Source/Layout")
+endif ()
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Layout")
+add_subdirectory (Layout)
+set (LIBS ${LIBS} Layout)
+
+if ("${CUDA_ENABLED}")
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Source/Cuda")
+  include_directories ("${PROJECT_SOURCE_DIR}/Source/Cuda")
+  add_subdirectory (Cuda)
+  set (LIBS ${LIBS} CudaScheme)
+endif ()
+
+include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/")
+include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/Loader")
+include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/Dumper")
+add_subdirectory (File-Management)
+set (LIBS ${LIBS} Loader)
+set (LIBS ${LIBS} Dumper)
+
+if ("${CUDA_ENABLED}")
+  cuda_include_directories ("${PROJECT_SOURCE_DIR}/Source/Scheme")
+endif ()
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Scheme")
+add_subdirectory (Scheme)
+set (LIBS ${LIBS} Scheme)
+
+if ("${CUDA_ENABLED}")
+  cuda_add_executable(fdtd3d main.cpp)
+else ()
+  add_executable (fdtd3d main.cpp)
+endif ()
+
+target_link_libraries (fdtd3d ${LIBS})
+
+#set_target_properties (fdtd3d PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS}")
+#set_target_properties (fdtd3d PROPERTIES LINK_FLAGS "${LINK_FLAGS}")

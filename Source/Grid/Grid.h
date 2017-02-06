@@ -9,7 +9,7 @@
 #include "GridCoordinate3D.h"
 
 /**
- * Vector of points in grid.
+ * Type of vector of points in grid.
  */
 typedef std::vector<FieldPointValue*> VectorFieldPointValues;
 
@@ -39,6 +39,7 @@ protected:
   /*
    * TODO: add grid name
    */
+  std::string gridName;
 
 protected:
 
@@ -66,8 +67,8 @@ private:
 
 public:
 
-  Grid (const TCoord& s, uint32_t step);
-  Grid (uint32_t step);
+  Grid (const TCoord& s, uint32_t step, const char * = "unnamed");
+  Grid (uint32_t step, const char * = "unnamed");
   ~Grid ();
 
   // Get size of the grid.
@@ -112,10 +113,11 @@ public:
  * ======== Consructors and destructor ========
  */
 template <class TCoord>
-Grid<TCoord>::Grid (const TCoord& s, uint32_t step) :
+Grid<TCoord>::Grid (const TCoord& s, uint32_t step, const char *name) :
   size (s),
   gridValues (size.calculateTotalCoord ()),
-  timeStep (step)
+  timeStep (step),
+  gridName (name)
 {
   for (int i = 0; i < gridValues.size (); ++i)
   {
@@ -132,8 +134,9 @@ Grid<TCoord>::Grid (const TCoord& s, uint32_t step) :
 }
 
 template <class TCoord>
-Grid<TCoord>::Grid (uint32_t step) :
-  timeStep (step)
+Grid<TCoord>::Grid (uint32_t step, const char *name) :
+  timeStep (step),
+  gridName (name)
 {
 #if PRINT_MESSAGE
   printf ("New grid without size.\n");
