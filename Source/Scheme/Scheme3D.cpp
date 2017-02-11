@@ -3175,6 +3175,12 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
 void
 Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dumpRes)
 {
+#ifdef PARALLEL_GRID
+  int processId = ParallelGrid::getParallelCore ()->getProcessId ();
+#else /* PARALLEL_GRID */
+  int processId = 0;
+#endif /* !PARALLEL_GRID */
+
   GridCoordinate3D EzSize = Ez.getSize ();
 
   time_step stepLimit = startStep + numberTimeSteps;
@@ -3211,14 +3217,14 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
     if (!useTFSF)
     {
 #if defined (PARALLEL_GRID)
-      //if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
+      //if (processId == 0)
 #endif
       {
         grid_coord start;
         grid_coord end;
 #ifdef PARALLEL_GRID
-        start = ParallelGrid::getParallelCore ()->getProcessId () == 0 ? yeeLayout.getLeftBorderPML ().getZ () : 0;
-        end = ParallelGrid::getParallelCore ()->getProcessId () == ParallelGrid::getParallelCore ()->getTotalProcCount () - 1 ? Ez.getRelativePosition (yeeLayout.getRightBorderPML ()).getZ () : Ez.getCurrentSize ().getZ ();
+        start = processId == 0 ? yeeLayout.getLeftBorderPML ().getZ () : 0;
+        end = processId == ParallelGrid::getParallelCore ()->getTotalProcCount () - 1 ? Ez.getRelativePosition (yeeLayout.getRightBorderPML ()).getZ () : Ez.getCurrentSize ().getZ ();
 #else /* PARALLEL_GRID */
         start = yeeLayout.getLeftBorderPML ().getZ ();
         end = yeeLayout.getRightBorderPML ().getZ ();
@@ -3291,35 +3297,35 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
       if (dumpRes)
       {
         TXTDumper<GridCoordinate3D> dumperEx;
-        dumperEx.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Ex");
+        dumperEx.init (t, CURRENT, processId, "3D-in-time-Ex");
         dumperEx.dumpGrid (Ex);
 
         TXTDumper<GridCoordinate3D> dumperEy;
-        dumperEy.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Ey");
+        dumperEy.init (t, CURRENT, processId, "3D-in-time-Ey");
         dumperEy.dumpGrid (Ey);
 
         TXTDumper<GridCoordinate3D> dumperEz;
-        dumperEz.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Ez");
+        dumperEz.init (t, CURRENT, processId, "3D-in-time-Ez");
         dumperEz.dumpGrid (Ez);
 
         TXTDumper<GridCoordinate3D> dumperHx;
-        dumperHx.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Hx");
+        dumperHx.init (t, CURRENT, processId, "3D-in-time-Hx");
         dumperHx.dumpGrid (Hx);
 
         TXTDumper<GridCoordinate3D> dumperHy;
-        dumperHy.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Hy");
+        dumperHy.init (t, CURRENT, processId, "3D-in-time-Hy");
         dumperHy.dumpGrid (Hy);
 
         TXTDumper<GridCoordinate3D> dumperHz;
-        dumperHz.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Hz");
+        dumperHz.init (t, CURRENT, processId, "3D-in-time-Hz");
         dumperHz.dumpGrid (Hz);
         //
         // BMPDumper<GridCoordinate3D> dumperHx;
-        // dumperHx.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time-Hx");
+        // dumperHx.init (t, CURRENT, processId, "2D-TMz-in-time-Hx");
         // dumperHx.dumpGrid (Hx);
         //
         // BMPDumper<GridCoordinate3D> dumperHy;
-        // dumperHy.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time-Hy");
+        // dumperHy.init (t, CURRENT, processId, "2D-TMz-in-time-Hy");
         // dumperHy.dumpGrid (Hy);
       }
     }
@@ -3331,34 +3337,34 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
      * FIXME: leave only one dumper
      */
     BMPDumper<GridCoordinate3D> dumperEx;
-    dumperEx.init (stepLimit, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Ex");
+    dumperEx.init (stepLimit, CURRENT, processId, "3D-in-time-Ex");
     dumperEx.dumpGrid (Ex);
 
     BMPDumper<GridCoordinate3D> dumperEy;
-    dumperEy.init (stepLimit, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Ey");
+    dumperEy.init (stepLimit, CURRENT, processId, "3D-in-time-Ey");
     dumperEy.dumpGrid (Ey);
 
     BMPDumper<GridCoordinate3D> dumperEz;
-    dumperEz.init (stepLimit, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Ez");
+    dumperEz.init (stepLimit, CURRENT, processId, "3D-in-time-Ez");
     dumperEz.dumpGrid (Ez);
 
     BMPDumper<GridCoordinate3D> dumperHx;
-    dumperHx.init (stepLimit, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Hx");
+    dumperHx.init (stepLimit, CURRENT, processId, "3D-in-time-Hx");
     dumperHx.dumpGrid (Hx);
 
     BMPDumper<GridCoordinate3D> dumperHy;
-    dumperHy.init (stepLimit, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Hy");
+    dumperHy.init (stepLimit, CURRENT, processId, "3D-in-time-Hy");
     dumperHy.dumpGrid (Hy);
 
     BMPDumper<GridCoordinate3D> dumperHz;
-    dumperHz.init (stepLimit, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-in-time-Hz");
+    dumperHz.init (stepLimit, CURRENT, processId, "3D-in-time-Hz");
     dumperHz.dumpGrid (Hz);
 
     // BMPDumper<GridCoordinate1D> dumper;
-    // dumper.init (stepLimit, PREVIOUS, ParallelGrid::getParallelCore ()->getProcessId (), "3D-incident-E");
+    // dumper.init (stepLimit, PREVIOUS, processId, "3D-incident-E");
     // dumper.dumpGrid (EInc);
     //
-    // dumper.init (stepLimit, PREVIOUS, ParallelGrid::getParallelCore ()->getProcessId (), "3D-incident-H");
+    // dumper.init (stepLimit, PREVIOUS, processId, "3D-incident-H");
     // dumper.dumpGrid (HInc);
   }
 }
@@ -3369,6 +3375,12 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
 #ifdef COMPLEX_FIELD_VALUES
   UNREACHABLE;
 #else /* COMPLEX_FIELD_VALUES */
+
+#ifdef PARALLEL_GRID
+  int processId = ParallelGrid::getParallelCore ()->getProcessId ();
+#else /* PARALLEL_GRID */
+  int processId = 0;
+#endif /* !PARALLEL_GRID */
 
   int is_stable_state = 0;
 
@@ -3412,7 +3424,7 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
     if (!useTFSF)
     {
 #if defined (PARALLEL_GRID)
-      if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
+      if (processId == 0)
 #endif
       {
         for (grid_coord k = yeeLayout.getLeftBorderPML ().getZ (); k < yeeLayout.getRightBorderPML ().getZ (); ++k)
@@ -3654,15 +3666,15 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
       if (dumpRes)
       {
         BMPDumper<GridCoordinate3D> dumperEz;
-        dumperEz.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time-Ez");
+        dumperEz.init (t, CURRENT, processId, "2D-TMz-in-time-Ez");
         dumperEz.dumpGrid (Ez);
 
         BMPDumper<GridCoordinate3D> dumperHx;
-        dumperHx.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time-Hx");
+        dumperHx.init (t, CURRENT, processId, "2D-TMz-in-time-Hx");
         dumperHx.dumpGrid (Hx);
 
         BMPDumper<GridCoordinate3D> dumperHy;
-        dumperHy.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "2D-TMz-in-time-Hy");
+        dumperHy.init (t, CURRENT, processId, "2D-TMz-in-time-Hy");
         dumperHy.dumpGrid (Hy);
       }
     }
@@ -3674,27 +3686,27 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
      * FIXME: leave only one dumper
      */
     BMPDumper<GridCoordinate3D> dumperEx;
-    dumperEx.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-amplitude-Ex");
+    dumperEx.init (t, CURRENT, processId, "3D-amplitude-Ex");
     dumperEx.dumpGrid (ExAmplitude);
 
     BMPDumper<GridCoordinate3D> dumperEy;
-    dumperEy.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-amplitude-Ey");
+    dumperEy.init (t, CURRENT, processId, "3D-amplitude-Ey");
     dumperEy.dumpGrid (EyAmplitude);
 
     BMPDumper<GridCoordinate3D> dumperEz;
-    dumperEz.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-amplitude-Ez");
+    dumperEz.init (t, CURRENT, processId, "3D-amplitude-Ez");
     dumperEz.dumpGrid (EzAmplitude);
 
     BMPDumper<GridCoordinate3D> dumperHx;
-    dumperHx.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-amplitude-Hx");
+    dumperHx.init (t, CURRENT, processId, "3D-amplitude-Hx");
     dumperHx.dumpGrid (HxAmplitude);
 
     BMPDumper<GridCoordinate3D> dumperHy;
-    dumperHy.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-amplitude-Hy");
+    dumperHy.init (t, CURRENT, processId, "3D-amplitude-Hy");
     dumperHy.dumpGrid (HyAmplitude);
 
     BMPDumper<GridCoordinate3D> dumperHz;
-    dumperHz.init (t, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "3D-amplitude-Hz");
+    dumperHz.init (t, CURRENT, processId, "3D-amplitude-Hz");
     dumperHz.dumpGrid (HzAmplitude);
   }
 
@@ -3753,6 +3765,12 @@ Scheme3D::performSteps (int dumpRes)
 {
 #if defined (CUDA_ENABLED)
 
+#ifdef PARALLEL_GRID
+  int processId = ParallelGrid::getParallelCore ()->getProcessId ();
+#else /* PARALLEL_GRID */
+  int processId = 0;
+#endif /* !PARALLEL_GRID */
+
   if (usePML || useTFSF || calculateAmplitude || useMetamaterials)
   {
     ASSERT_MESSAGE ("Cuda GPU calculations with these parameters are not implemented");
@@ -3760,14 +3778,14 @@ Scheme3D::performSteps (int dumpRes)
 
   CudaExitStatus status;
 
-  cudaExecute3DSteps (&status, yeeLayout, gridTimeStep, gridStep, Ex, Ey, Ez, Hx, Hy, Hz, Eps, Mu, totalStep, ParallelGrid::getParallelCore ()->getProcessId ());
+  cudaExecute3DSteps (&status, yeeLayout, gridTimeStep, gridStep, Ex, Ey, Ez, Hx, Hy, Hz, Eps, Mu, totalStep, processId);
 
   ASSERT (status == CUDA_OK);
 
   if (dumpRes)
   {
     BMPDumper<GridCoordinate3D> dumper;
-    dumper.init (totalStep, ALL, ParallelGrid::getParallelCore ()->getProcessId (), "3D-TMz-in-time");
+    dumper.init (totalStep, ALL, processId, "3D-TMz-in-time");
     dumper.dumpGrid (Ez);
   }
 #else /* CUDA_ENABLED */
@@ -3808,6 +3826,12 @@ Scheme3D::initScheme (FPValue dx, FPValue sourceFreq)
 void
 Scheme3D::initGrids ()
 {
+#ifdef PARALLEL_GRID
+  int processId = ParallelGrid::getParallelCore ()->getProcessId ();
+#else /* PARALLEL_GRID */
+  int processId = 0;
+#endif /* !PARALLEL_GRID */
+
   for (int i = 0; i < Eps.getSize ().getX (); ++i)
   {
     for (int j = 0; j < Eps.getSize ().getY (); ++j)
@@ -3830,7 +3854,7 @@ Scheme3D::initGrids ()
   }
 
   BMPDumper<GridCoordinate3D> dumper;
-  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "Eps");
+  dumper.init (0, CURRENT, processId, "Eps");
   dumper.dumpGrid (Eps);
 
   for (int i = 0; i < OmegaPE.getSize ().getX (); ++i)
@@ -3993,16 +4017,16 @@ Scheme3D::initGrids ()
     }
   }
 
-  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "OmegaPE");
+  dumper.init (0, CURRENT, processId, "OmegaPE");
   dumper.dumpGrid (OmegaPE);
 
-  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "OmegaPM");
+  dumper.init (0, CURRENT, processId, "OmegaPM");
   dumper.dumpGrid (OmegaPM);
 
-  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "GammaE");
+  dumper.init (0, CURRENT, processId, "GammaE");
   dumper.dumpGrid (GammaE);
 
-  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "GammaM");
+  dumper.init (0, CURRENT, processId, "GammaM");
   dumper.dumpGrid (GammaM);
 
   for (int i = 0; i < Mu.getSize ().getX (); ++i)
@@ -4026,7 +4050,7 @@ Scheme3D::initGrids ()
     }
   }
 
-  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "Mu");
+  dumper.init (0, CURRENT, processId, "Mu");
   dumper.dumpGrid (Mu);
 
   FPValue eps0 = PhysicsConst::Eps0;
@@ -4193,11 +4217,11 @@ Scheme3D::initGrids ()
     }
   }
 
-  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "SigmaX");
+  dumper.init (0, CURRENT, processId, "SigmaX");
   dumper.dumpGrid (SigmaX);
-  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "SigmaY");
+  dumper.init (0, CURRENT, processId, "SigmaY");
   dumper.dumpGrid (SigmaY);
-  dumper.init (0, CURRENT, ParallelGrid::getParallelCore ()->getProcessId (), "SigmaZ");
+  dumper.init (0, CURRENT, processId, "SigmaZ");
   dumper.dumpGrid (SigmaZ);
 
   for (int i = 0; i < Ex.getSize ().getX (); ++i)

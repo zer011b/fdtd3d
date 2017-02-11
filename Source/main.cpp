@@ -136,6 +136,13 @@ int main (int argc, char** argv)
   struct timeval  tv1, tv2;
   gettimeofday(&tv1, NULL);
 
+#ifdef GRID_2D
+  GridCoordinate2D overallSize (gridSizeX, gridSizeY);
+#endif
+#ifdef GRID_3D
+  GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
+#endif
+
 #if defined (PARALLEL_GRID)
   MPI_Init(&argc, &argv);
 
@@ -148,7 +155,39 @@ int main (int argc, char** argv)
   printf ("Start process %d of %d\n", rank, numProcs);
 #endif /* PRINT_MESSAGE */
 
-  ParallelGridCore parallelGridCore (rank, numProcs);
+  ParallelGridCoordinateFP desiredProportion;
+
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
+  FPValue overall1 = (FPValue) overallSize.getX ();
+  FPValue overall2 = (FPValue) overallSize.getY ();
+
+  desiredProportion.setX (overall2 / overall1);
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
+
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
+  FPValue overall1 = (FPValue) overallSize.getY ();
+  FPValue overall2 = (FPValue) overallSize.getZ ();
+
+  desiredProportion.setX (overall2 / overall1);
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
+
+#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
+  FPValue overall1 = (FPValue) overallSize.getX ();
+  FPValue overall2 = (FPValue) overallSize.getZ ();
+
+  desiredProportion.setX (overall2 / overall1);
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
+
+#ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
+  FPValue overall1 = (FPValue) overallSize.getX ();
+  FPValue overall2 = (FPValue) overallSize.getY ();
+  FPValue overall3 = (FPValue) overallSize.getZ ();
+
+  desiredProportion.setX (overall2 / overall1);
+  desiredProportion.setY (overall3 / overall1);
+#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+  ParallelGridCore parallelGridCore (rank, numProcs, desiredProportion);
   ParallelGrid::initializeParallelCore (&parallelGridCore);
 
   is_parallel_grid = true;
@@ -174,29 +213,21 @@ int main (int argc, char** argv)
 #endif
 
 #if defined (PARALLEL_GRID)
-#ifdef GRID_2D
-  ParallelGridCoordinate overallSize (gridSizeX, gridSizeY);
   ParallelGridCoordinate bufferSize (bufSize);
 
+#ifdef GRID_2D
   SchemeTMz scheme (overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), false, GridCoordinate2D (30, 30), 0, false);
   //SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), true, GridCoordinate2D (30, 30), 0);
 #endif
 #ifdef GRID_3D
-  ParallelGridCoordinate overallSize (gridSizeX, gridSizeY, gridSizeZ);
-  ParallelGridCoordinate bufferSize (bufSize);
-
   Scheme3D scheme (overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate3D (10, 10, 10), false, GridCoordinate3D (13, 13, 13), PhysicsConst::Pi / 2, 0, 0, true);
 #endif
 #else
 #ifdef GRID_2D
-  GridCoordinate2D overallSize (gridSizeX, gridSizeY);
-
   //SchemeTMz scheme (overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), false, GridCoordinate2D (30, 30), /*PhysicsConst::Pi / 4*/0, true);
   SchemeTEz scheme (overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), true, GridCoordinate2D (30, 30), /*PhysicsConst::Pi / 4*/0);
 #endif
 #ifdef GRID_3D
-  GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
-
   Scheme3D scheme (overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate3D (10, 10, 10), false, GridCoordinate3D (13, 13, 13), PhysicsConst::Pi / 2, 0, 0, true);
 #endif
 #endif

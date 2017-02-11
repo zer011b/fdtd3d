@@ -10,7 +10,7 @@
  * Initialize 2D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit ()
+ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
 {
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
   nodeGridSizeX = totalProcCount;
@@ -83,18 +83,15 @@ ParallelGrid::GridInit (GridCoordinate2D &coreSize) /**< out: size of grid for n
  * Initialize 2D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit ()
+ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
 {
   if (totalProcCount < 4)
   {
     ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
   }
 
-  FPValue overall1 = (FPValue) totalSize.getX ();
-  FPValue overall2 = (FPValue) totalSize.getY ();
-
   int left;
-  NodeGridInitInner (overall1, overall2, nodeGridSizeX, nodeGridSizeY, left);
+  NodeGridInitInner (desiredProportion.getX (), nodeGridSizeX, nodeGridSizeY, left);
 
   nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
 

@@ -803,9 +803,10 @@ ParallelGridCore::getNodeGridZ () const
  * Initialize parallel data common for all parallel grids on a single computational node
  */
 void
-ParallelGridCore::ParallelGridCoreConstructor ()
+ParallelGridCore::ParallelGridCoreConstructor (ParallelGridCoordinateFP desiredProportion) /**< desired relation
+                                                                                            *   values */
 {
-  NodeGridInit ();
+  NodeGridInit (desiredProportion);
 
   /*
    * Return if node not used.
@@ -846,7 +847,9 @@ ParallelGridCore::ParallelGridCoreConstructor ()
  * Constructor for code data of parallel grid shared between all parallel grid on a single computational node
  */
 ParallelGridCore::ParallelGridCore (int process, /**< id of computational node */
-                                    int totalProc) /**< total number of computational nodes */
+                                    int totalProc, /**< total number of computational nodes */
+                                    ParallelGridCoordinateFP desiredProportion) /**< desired relation values (not used
+                                                                                 *   for 1D buffer dimensions) */
   : processId (process)
   , totalProcCount (totalProc)
 {
@@ -874,7 +877,7 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
 
   initOppositeDirections ();
 
-  ParallelGridCoreConstructor ();
+  ParallelGridCoreConstructor (desiredProportion);
 
   doShare.resize (BUFFER_COUNT);
   for (int i = 0; i < BUFFER_COUNT; ++i)

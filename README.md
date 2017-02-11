@@ -25,20 +25,21 @@ cd Debug
 cmake .. -DCMAKE_BUILD_TYPE=Debug
 make
 ```
+
 ## Additional Example
 
-main.cpp has example of parallel grid usage, independent of all build parameters. Build command for 3D grid:
+Build command for 3D grid:
 
 ```sh
 cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DTIME_STEPS=2 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xyz -DCXX11_ENABLED=ON -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50
 ```
 
-## Build using scripts [OUTDATED]
+# Testing
 
-Example of build with scripts. This will build 2D parallel grid with x buffer, double values and two time steps. For more info check Docs folder.
+To start unit tests do next
 
 ```sh
-./tools/build.sh . Debug double 2 2 OFF ON x
+./Tools/build-and-run-unit-tests.sh <home_dir_of_the_project>
 ```
 
 # Build Flags
@@ -59,9 +60,11 @@ CUDA_ENABLED - enable support of GPU (ON or OFF)
 CUDA_ARCH_SM_TYPE - sm type for GPU
 ```
 
+If any of the flags change or some new are added, testing scripts should be updated.
+
 # Launch
 
-Exmaple of launch command for 2D build
+Example of launch command for 2D build
 
 ```sh
 cd Release/Source

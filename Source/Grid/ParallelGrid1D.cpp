@@ -10,7 +10,7 @@
  * Initialize 1D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit ()
+ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
 {
   nodeGridSizeX = totalProcCount;
 
