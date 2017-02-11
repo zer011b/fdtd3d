@@ -31,11 +31,13 @@ typedef FPValue FieldValue;
 #define CXX11_OVERRIDE override
 #define CXX11_FINAL final
 #define CXX11_OVERRIDE_FINAL CXX11_OVERRIDE CXX11_FINAL
+#define NULLPTR nullptr
 #else /* CXX11_ENABLED */
 #include <stdint.h>
 #define CXX11_OVERRIDE
 #define CXX11_FINAL
 #define CXX11_OVERRIDE_FINAL
+#define NULLPTR NULL
 #endif /* !CXX11_ENABLED */
 
 #ifdef __CUDACC__

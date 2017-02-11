@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <vector>
+#include <string>
 
 #include "Assert.h"
 #include "FieldPoint.h"
@@ -50,6 +51,9 @@ private:
 
   VectorFieldPointValues& getValues ();
   void shiftInTime ();
+
+protected:
+
   bool isLegitIndex (const TCoord &) const;
   grid_iter calculateIndexFromPosition (const TCoord &) const;
 
@@ -93,15 +97,11 @@ Grid<TCoord>::Grid (const TCoord &s, /**< size of grid */
 {
   for (int i = 0; i < gridValues.size (); ++i)
   {
-#ifdef CXX11_ENABLED
-    gridValues[i] = nullptr;
-#else /* CXX11_ENABLED */
-    gridValues[i] = NULL;
-#endif /* !CXX11_ENABLED */
+    gridValues[i] = NULLPTR;
   }
 
 #if PRINT_MESSAGE
-  printf ("New grid '%s' with raw size: %lu.\n", gridName, gridValues.size ());
+  printf ("New grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
 #endif /* PRINT_MESSAGE */
 } /* Grid<TCoord>::Grid */
 
@@ -115,7 +115,7 @@ Grid<TCoord>::Grid (time_step step, /**< default time step */
   , gridName (name)
 {
 #if PRINT_MESSAGE
-  printf ("New grid '%s' without size.\n", gridName);
+  printf ("New grid '%s' without size.\n", gridName.data ());
 #endif /* PRINT_MESSAGE */
 } /* Grid<TCoord>::Grid */
 

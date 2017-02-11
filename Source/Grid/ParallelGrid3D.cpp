@@ -14,7 +14,7 @@
  * Initialize 3D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit ()
+ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
 {
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
   nodeGridSizeX = totalProcCount;
@@ -113,32 +113,17 @@ ParallelGrid::GridInit (GridCoordinate3D &coreSize) /**< out: size of grid for n
  * Initialize 3D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit ()
+ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
 {
   if (totalProcCount < 4)
   {
     ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
   }
 
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  FPValue overall1 = (FPValue) totalSize.getX ();
-  FPValue overall2 = (FPValue) totalSize.getY ();
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
-
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  FPValue overall1 = (FPValue) totalSize.getY ();
-  FPValue overall2 = (FPValue) totalSize.getZ ();
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
-
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  FPValue overall1 = (FPValue) totalSize.getX ();
-  FPValue overall2 = (FPValue) totalSize.getZ ();
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
-
   int left;
   int nodeGridSizeTmp1;
   int nodeGridSizeTmp2;
-  NodeGridInitInner (overall1, overall2, nodeGridSizeTmp1, nodeGridSizeTmp2, left);
+  NodeGridInitInner (desiredProportion.getX (), nodeGridSizeTmp1, nodeGridSizeTmp2, left);
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
   nodeGridSizeX = nodeGridSizeTmp1;
@@ -251,22 +236,18 @@ ParallelGrid::GridInit (GridCoordinate3D &coreSize) /**< out: size of grid for n
  * Initialize 3D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit ()
+ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
 {
   if (totalProcCount < 8)
   {
     ASSERT_MESSAGE ("Unsupported number of nodes for 3D parallel buffers. Use 2D or 1D ones.");
   }
 
-  FPValue overall1 = (FPValue) totalSize.getX ();
-  FPValue overall2 = (FPValue) totalSize.getY ();
-  FPValue overall3 = (FPValue) totalSize.getZ ();
-
   int left;
   int nodeGridSizeTmp1;
   int nodeGridSizeTmp2;
   int nodeGridSizeTmp3;
-  NodeGridInitInner (overall1, overall2, overall3, nodeGridSizeTmp1, nodeGridSizeTmp2, nodeGridSizeTmp3, left);
+  NodeGridInitInner (desiredProportion.getX (), desiredProportion.getY (), nodeGridSizeTmp1, nodeGridSizeTmp2, nodeGridSizeTmp3, left);
 
   nodeGridSizeX = nodeGridSizeTmp1;
   nodeGridSizeY = nodeGridSizeTmp2;

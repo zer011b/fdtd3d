@@ -6,6 +6,27 @@
 #ifdef PARALLEL_GRID
 
 /**
+ * Base grid of parallel grid and parallel grid coordinate
+ */
+#ifdef GRID_1D
+#define ParallelGridBase Grid<GridCoordinate1D>
+#define ParallelGridCoordinate GridCoordinate1D
+#define ParallelGridCoordinateFP GridCoordinateFP1D
+#endif /* GRID_1D */
+
+#ifdef GRID_2D
+#define ParallelGridBase Grid<GridCoordinate2D>
+#define ParallelGridCoordinate GridCoordinate2D
+#define ParallelGridCoordinateFP GridCoordinateFP2D
+#endif /* GRID_2D */
+
+#ifdef GRID_3D
+#define ParallelGridBase Grid<GridCoordinate3D>
+#define ParallelGridCoordinate GridCoordinate3D
+#define ParallelGridCoordinateFP GridCoordinateFP3D
+#endif /* GRID_3D */
+
+/**
  * Parallel grid buffer types.
  */
 enum BufferPosition
@@ -163,14 +184,14 @@ private:
   /*
    * TODO: make names start with lower case
    */
-  void NodeGridInit ();
-  void ParallelGridCoreConstructor ();
+  void NodeGridInit (ParallelGridCoordinateFP);
+  void ParallelGridCoreConstructor (ParallelGridCoordinateFP);
   void InitBufferFlags ();
   void InitDirections ();
 
 public:
 
-  ParallelGridCore (int, int);
+  ParallelGridCore (int, int, ParallelGridCoordinateFP);
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
 
@@ -403,6 +424,20 @@ public:
   {
     return directions;
   } /* getDirections */
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+
+  void FindProportionForNodeGrid (int &, int &, int &, FPValue);
+  void NodeGridInitInner (const FPValue &, int &, int &, int &);
+
+#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ */
+
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
+  void FindProportionForNodeGrid (int &, int &, int &, int &, FPValue, FPValue);
+  void NodeGridInitInner (const FPValue &, const FPValue &, int &, int &, int &, int &);
+
+#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 }; /* ParallelGridCore */
 
 #endif /* PARALLEL_GRID */

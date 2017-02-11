@@ -2,10 +2,7 @@
 
 Release*/
 Debug*/
-
-# Third-party
-
-Third-party/
+Build*/
 
 # patches
 

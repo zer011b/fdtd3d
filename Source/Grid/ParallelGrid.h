@@ -8,24 +8,6 @@
 #include <mpi.h>
 
 /**
- * Base grid of parallel grid and parallel grid coordinate
- */
-#ifdef GRID_1D
-#define ParallelGridBase Grid<GridCoordinate1D>
-#define ParallelGridCoordinate GridCoordinate1D
-#endif /* GRID_1D */
-
-#ifdef GRID_2D
-#define ParallelGridBase Grid<GridCoordinate2D>
-#define ParallelGridCoordinate GridCoordinate2D
-#endif /* GRID_2D */
-
-#ifdef GRID_3D
-#define ParallelGridBase Grid<GridCoordinate3D>
-#define ParallelGridCoordinate GridCoordinate3D
-#endif /* GRID_3D */
-
-/**
  * Type of buffer of values
  */
 typedef std::vector<FieldValue> VectorBufferValues;
@@ -377,8 +359,6 @@ private:
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
-  void FindProportionForNodeGrid (int &, int &, int &, FPValue);
-  void NodeGridInitInner (const FPValue &, const FPValue &, int &, int &, int &);
   void CalculateGridSizeForNode (grid_coord &, grid_coord &, int, bool, grid_coord,
                                  grid_coord &, grid_coord &, int, bool, grid_coord);
 
@@ -386,8 +366,6 @@ private:
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  void FindProportionForNodeGrid (int &, int &, int &, int &, FPValue, FPValue);
-  void NodeGridInitInner (const FPValue &, const FPValue &, const FPValue &, int &, int &, int &, int &);
   void CalculateGridSizeForNode (grid_coord &, grid_coord &, int, bool, grid_coord,
                                  grid_coord &, grid_coord &, int, bool, grid_coord,
                                  grid_coord &, grid_coord &, int, bool, grid_coord);
@@ -409,7 +387,8 @@ public:
   virtual ParallelGridCoordinate getComputationEnd () const CXX11_OVERRIDE;
   virtual ParallelGridCoordinate getComputationStart () const CXX11_OVERRIDE;
 
-  ParallelGridCoordinate getStartPosition ();
+  ParallelGridCoordinate getStartPosition () const;
+  ParallelGridCoordinate getChunkStartPosition () const;
   ParallelGridCoordinate getTotalPosition (ParallelGridCoordinate);
   ParallelGridCoordinate getRelativePosition (ParallelGridCoordinate);
 
@@ -443,7 +422,9 @@ public:
     return bufferSize;
   } /* getBufferSize */
 
-  void initBufferOffsets (grid_coord &, grid_coord &, grid_coord &, grid_coord &, grid_coord &, grid_coord &);
+  void initBufferOffsets (grid_coord &, grid_coord &, grid_coord &, grid_coord &, grid_coord &, grid_coord &) const;
+
+  Grid<ParallelGridCoordinate> gatherFullGrid () const;
 
 public:
 
