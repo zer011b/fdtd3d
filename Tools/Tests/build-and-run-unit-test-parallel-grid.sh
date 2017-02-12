@@ -6,6 +6,12 @@ HOME_DIR=$1
 # Build directory of unit test
 BUILD_DIR=$2
 
+# CXX compiler
+CXX_COMPILER=$3
+
+# C compiler
+C_COMPILER=$4
+
 cd ${BUILD_DIR}
 
 function build
@@ -33,7 +39,9 @@ function build
               -DPARALLEL_BUFFER_DIMENSION=${PARALLEL_BUFFER} \
               -DCXX11_ENABLED=${CXX11_ENABLED} \
               -DCUDA_ENABLED=OFF \
-              -DCUDA_ARCH_SM_TYPE=sm_50
+              -DCUDA_ARCH_SM_TYPE=sm_50 \
+              -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
+              -DCMAKE_C_COMPILER=${C_COMPILER}
 
             res=$(echo $?)
 

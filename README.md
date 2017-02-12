@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/zer011b/fdtd3d.svg?branch=master)](https://travis-ci.org/zer011b/fdtd3d)
+
 # fdtd3d
 
 This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP/Cuda) if required. The key idea is building of solver for your specific needs with different components, i.e. concurrency support with enabled MPI, OpenMP or GPU support, parallel buffer types, specific dimension and others.
@@ -39,7 +41,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DT
 To start unit tests do next
 
 ```sh
-./Tools/build-and-run-unit-tests.sh <home_dir_of_the_project>
+./Tools/build-and-run-unit-tests.sh <home_dir_of_the_project> <cxx_compiler> <c_compiler> false
 ```
 
 # Build Flags
