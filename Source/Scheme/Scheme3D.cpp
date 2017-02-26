@@ -141,10 +141,10 @@ Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate
 
         GridCoordinate3D posAbs = Ex.getTotalPosition (pos);
 
-        GridCoordinate3D posDown = yeeLayout.getExCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout.getExCircuitElement (pos, LayoutDirection::UP);
-        GridCoordinate3D posBack = yeeLayout.getExCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout.getExCircuitElement (pos, LayoutDirection::FRONT);
+        GridCoordinate3D posDown = yeeLayout->getExCircuitElement (pos, LayoutDirection::DOWN);
+        GridCoordinate3D posUp = yeeLayout->getExCircuitElement (pos, LayoutDirection::UP);
+        GridCoordinate3D posBack = yeeLayout->getExCircuitElement (pos, LayoutDirection::BACK);
+        GridCoordinate3D posFront = yeeLayout->getExCircuitElement (pos, LayoutDirection::FRONT);
 
         FieldPointValue* valEx = Ex.getFieldPointValue (pos);
 
@@ -164,10 +164,10 @@ Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::DOWN, true))
+          if (yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::DOWN, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHzCoordFP (Hz.getTotalPosition (posUp));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (posUp));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -190,10 +190,10 @@ Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate
 
             prevHz1 -= -diff * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
-          else if (yeeLayout.doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::UP, true))
+          else if (yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::UP, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHzCoordFP (Hz.getTotalPosition (posDown));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (posDown));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -217,10 +217,10 @@ Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate
             prevHz2 -= -diff * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
 
-          if (yeeLayout.doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::BACK, true))
+          if (yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::BACK, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHyCoordFP (Hy.getTotalPosition (posFront));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (posFront));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -243,10 +243,10 @@ Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate
 
             prevHy1 -= diff * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT, true))
+          else if (yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHyCoordFP (Hy.getTotalPosition (posBack));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (posBack));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -307,10 +307,10 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
 
         GridCoordinate3D posAbs = Ex.getTotalPosition (pos);
 
-        GridCoordinate3D posDown = yeeLayout.getExCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout.getExCircuitElement (pos, LayoutDirection::UP);
-        GridCoordinate3D posBack = yeeLayout.getExCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout.getExCircuitElement (pos, LayoutDirection::FRONT);
+        GridCoordinate3D posDown = yeeLayout->getExCircuitElement (pos, LayoutDirection::DOWN);
+        GridCoordinate3D posUp = yeeLayout->getExCircuitElement (pos, LayoutDirection::UP);
+        GridCoordinate3D posBack = yeeLayout->getExCircuitElement (pos, LayoutDirection::BACK);
+        GridCoordinate3D posFront = yeeLayout->getExCircuitElement (pos, LayoutDirection::FRONT);
 
         FieldPointValue* valDx = Dx.getFieldPointValue (pos);
 
@@ -330,10 +330,10 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::DOWN, true))
+          if (yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::DOWN, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHzCoordFP (Hz.getTotalPosition (posUp));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (posUp));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -356,10 +356,10 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
 
             prevHz1 -= -diff * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
-          else if (yeeLayout.doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::UP, true))
+          else if (yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::UP, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHzCoordFP (Hz.getTotalPosition (posDown));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (posDown));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -383,10 +383,10 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
             prevHz2 -= -diff * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
 
-          if (yeeLayout.doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::BACK, true))
+          if (yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::BACK, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHyCoordFP (Hy.getTotalPosition (posFront));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (posFront));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -409,10 +409,10 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
 
             prevHy1 -= diff * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT, true))
+          else if (yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHyCoordFP (Hy.getTotalPosition (posBack));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (posBack));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -476,18 +476,18 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
 
           GridCoordinate3D posAbs = Ex.getTotalPosition (pos);
 
-          GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (posAbs);
+          GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (posAbs);
 
           FieldPointValue* valD1x = D1x.getFieldPointValue (pos);
           FieldPointValue* valDx = Dx.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
-          FieldPointValue* valGammaE1 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-          FieldPointValue* valGammaE2 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
+          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
+          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
+          FieldPointValue* valGammaE1 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
+          FieldPointValue* valGammaE2 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
 
-          FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-          FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
+          FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
+          FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
 
 #ifdef COMPLEX_FIELD_VALUES
           FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
@@ -549,9 +549,9 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
         FieldPointValue* valSigmaX = SigmaX.getFieldPointValue (pos);
         FieldPointValue* valSigmaZ = SigmaZ.getFieldPointValue (pos);
 
-        GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (posAbs);
-        FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-        FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
+        GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (posAbs);
+        FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
+        FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
 
 #ifdef COMPLEX_FIELD_VALUES
         FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
@@ -622,10 +622,10 @@ Scheme3D::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate
 
         GridCoordinate3D posAbs = Ey.getTotalPosition (pos);
 
-        GridCoordinate3D posLeft = yeeLayout.getEyCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout.getEyCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posBack = yeeLayout.getEyCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout.getEyCircuitElement (pos, LayoutDirection::FRONT);
+        GridCoordinate3D posLeft = yeeLayout->getEyCircuitElement (pos, LayoutDirection::LEFT);
+        GridCoordinate3D posRight = yeeLayout->getEyCircuitElement (pos, LayoutDirection::RIGHT);
+        GridCoordinate3D posBack = yeeLayout->getEyCircuitElement (pos, LayoutDirection::BACK);
+        GridCoordinate3D posFront = yeeLayout->getEyCircuitElement (pos, LayoutDirection::FRONT);
 
         FieldPointValue* valEy = Ey.getFieldPointValue (pos);
 
@@ -645,10 +645,10 @@ Scheme3D::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::LEFT, true))
+          if (yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::LEFT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHzCoordFP (Hz.getTotalPosition (posRight));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (posRight));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -671,10 +671,10 @@ Scheme3D::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate
 
             prevHz1 -= -diff * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
-          else if (yeeLayout.doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::RIGHT, true))
+          else if (yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::RIGHT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHzCoordFP (Hz.getTotalPosition (posLeft));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (posLeft));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -698,10 +698,10 @@ Scheme3D::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate
             prevHz2 -= -diff * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
 
-          if (yeeLayout.doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::BACK, true))
+          if (yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::BACK, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHxCoordFP (Hx.getTotalPosition (posFront));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (posFront));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -724,10 +724,10 @@ Scheme3D::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate
 
             prevHx1 -= diff * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::FRONT, true))
+          else if (yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::FRONT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHxCoordFP (Hx.getTotalPosition (posBack));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (posBack));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -788,10 +788,10 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
 
         GridCoordinate3D posAbs = Ey.getTotalPosition (pos);
 
-        GridCoordinate3D posLeft = yeeLayout.getEyCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout.getEyCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posBack = yeeLayout.getEyCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout.getEyCircuitElement (pos, LayoutDirection::FRONT);
+        GridCoordinate3D posLeft = yeeLayout->getEyCircuitElement (pos, LayoutDirection::LEFT);
+        GridCoordinate3D posRight = yeeLayout->getEyCircuitElement (pos, LayoutDirection::RIGHT);
+        GridCoordinate3D posBack = yeeLayout->getEyCircuitElement (pos, LayoutDirection::BACK);
+        GridCoordinate3D posFront = yeeLayout->getEyCircuitElement (pos, LayoutDirection::FRONT);
 
         FieldPointValue* valDy = Dy.getFieldPointValue (pos);
 
@@ -811,10 +811,10 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::LEFT, true))
+          if (yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::LEFT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHzCoordFP (Hz.getTotalPosition (posRight));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (posRight));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -837,10 +837,10 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
 
             prevHz1 -= -diff * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
-          else if (yeeLayout.doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::RIGHT, true))
+          else if (yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::RIGHT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHzCoordFP (Hz.getTotalPosition (posLeft));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (posLeft));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -864,10 +864,10 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
             prevHz2 -= -diff * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
 
-          if (yeeLayout.doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::BACK, true))
+          if (yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::BACK, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHxCoordFP (Hx.getTotalPosition (posFront));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (posFront));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -890,10 +890,10 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
 
             prevHx1 -= diff * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::FRONT, true))
+          else if (yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::FRONT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHxCoordFP (Hx.getTotalPosition (posBack));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (posBack));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -957,18 +957,18 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
 
           GridCoordinate3D posAbs = Ey.getTotalPosition (pos);
 
-          GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (posAbs);
+          GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (posAbs);
 
           FieldPointValue* valD1y = D1y.getFieldPointValue (pos);
           FieldPointValue* valDy = Dy.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
-          FieldPointValue* valGammaE1 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-          FieldPointValue* valGammaE2 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
+          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
+          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
+          FieldPointValue* valGammaE1 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
+          FieldPointValue* valGammaE2 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
 
-          FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-          FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
+          FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
+          FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
 
   #ifdef COMPLEX_FIELD_VALUES
           FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
@@ -1030,9 +1030,9 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
         FieldPointValue* valSigmaX = SigmaX.getFieldPointValue (pos);
         FieldPointValue* valSigmaY = SigmaY.getFieldPointValue (pos);
 
-        GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (posAbs);
-        FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-        FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
+        GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (posAbs);
+        FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
+        FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
 
 #ifdef COMPLEX_FIELD_VALUES
         FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
@@ -1103,10 +1103,10 @@ Scheme3D::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate
 
         GridCoordinate3D posAbs = Ez.getTotalPosition (pos);
 
-        GridCoordinate3D posLeft = yeeLayout.getEzCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout.getEzCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posDown = yeeLayout.getEzCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout.getEzCircuitElement (pos, LayoutDirection::UP);
+        GridCoordinate3D posLeft = yeeLayout->getEzCircuitElement (pos, LayoutDirection::LEFT);
+        GridCoordinate3D posRight = yeeLayout->getEzCircuitElement (pos, LayoutDirection::RIGHT);
+        GridCoordinate3D posDown = yeeLayout->getEzCircuitElement (pos, LayoutDirection::DOWN);
+        GridCoordinate3D posUp = yeeLayout->getEzCircuitElement (pos, LayoutDirection::UP);
 
         FieldPointValue* valEz = Ez.getFieldPointValue (pos);
 
@@ -1125,13 +1125,13 @@ Scheme3D::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::LEFT, true))
+          if (yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::LEFT, true))
           {
             /*
              * HInc: 0, 1, etc.
              */
-            GridCoordinateFP3D realCoord = yeeLayout.getHyCoordFP (Hy.getTotalPosition (posRight));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (posRight));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1154,10 +1154,10 @@ Scheme3D::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate
 
             prevHy1 -= diff * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::RIGHT, true))
+          else if (yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::RIGHT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHyCoordFP (Hy.getTotalPosition (posLeft));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (posLeft));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1181,10 +1181,10 @@ Scheme3D::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate
             prevHy2 -= diff * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
 
-          if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN, true))
+          if (yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHxCoordFP (Hx.getTotalPosition (posUp));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (posUp));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1207,10 +1207,10 @@ Scheme3D::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate
 
             prevHx1 -= diff * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP, true))
+          else if (yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHxCoordFP (Hx.getTotalPosition (posDown));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (posDown));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1271,10 +1271,10 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
 
         GridCoordinate3D posAbs = Ez.getTotalPosition (pos);
 
-        GridCoordinate3D posLeft = yeeLayout.getEzCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout.getEzCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posDown = yeeLayout.getEzCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout.getEzCircuitElement (pos, LayoutDirection::UP);
+        GridCoordinate3D posLeft = yeeLayout->getEzCircuitElement (pos, LayoutDirection::LEFT);
+        GridCoordinate3D posRight = yeeLayout->getEzCircuitElement (pos, LayoutDirection::RIGHT);
+        GridCoordinate3D posDown = yeeLayout->getEzCircuitElement (pos, LayoutDirection::DOWN);
+        GridCoordinate3D posUp = yeeLayout->getEzCircuitElement (pos, LayoutDirection::UP);
 
         FieldPointValue* valDz = Dz.getFieldPointValue (pos);
 
@@ -1293,13 +1293,13 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::LEFT, true))
+          if (yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::LEFT, true))
           {
             /*
              * HInc: 0, 1, etc.
              */
-            GridCoordinateFP3D realCoord = yeeLayout.getHyCoordFP (Hy.getTotalPosition (posRight));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (posRight));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1322,10 +1322,10 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
 
             prevHy1 -= diff * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::RIGHT, true))
+          else if (yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::RIGHT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHyCoordFP (Hy.getTotalPosition (posLeft));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (posLeft));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1349,10 +1349,10 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
             prevHy2 -= diff * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
 
-          if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN, true))
+          if (yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHxCoordFP (Hx.getTotalPosition (posUp));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (posUp));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1375,10 +1375,10 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
 
             prevHx1 -= diff * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP, true))
+          else if (yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getHxCoordFP (Hx.getTotalPosition (posDown));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (posDown));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1443,22 +1443,22 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
 
           FieldPointValue* valEz = Ez.getFieldPointValue (pos);
 
-          GridCoordinateFP3D realCoord = yeeLayout.getEzCoordFP (posAbs);
+          GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (posAbs);
 
           FieldPointValue* valD1z = D1z.getFieldPointValue (pos);
           FieldPointValue* valDz = Dz.getFieldPointValue (pos);
 
           GridCoordinateFP3D coord1 = realCoord + GridCoordinateFP3D (0, 0, 0.5);
-          GridCoordinate3D coord2 = yeeLayout.getEpsCoord (coord1);
+          GridCoordinate3D coord2 = yeeLayout->getEpsCoord (coord1);
           GridCoordinate3D coord3 = OmegaPE.getRelativePosition (coord2);
 
           FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValue (coord3);
-          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
-          FieldPointValue* valGammaE1 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
-          FieldPointValue* valGammaE2 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
+          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
+          FieldPointValue* valGammaE1 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
+          FieldPointValue* valGammaE2 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
 
-          FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
-          FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout.getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
+          FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
+          FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
 
   #ifdef COMPLEX_FIELD_VALUES
           FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
@@ -1589,10 +1589,10 @@ Scheme3D::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinate
 
         GridCoordinate3D posAbs = Hx.getTotalPosition (pos);
 
-        GridCoordinate3D posDown = yeeLayout.getHxCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout.getHxCircuitElement (pos, LayoutDirection::UP);
-        GridCoordinate3D posBack = yeeLayout.getHxCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout.getHxCircuitElement (pos, LayoutDirection::FRONT);
+        GridCoordinate3D posDown = yeeLayout->getHxCircuitElement (pos, LayoutDirection::DOWN);
+        GridCoordinate3D posUp = yeeLayout->getHxCircuitElement (pos, LayoutDirection::UP);
+        GridCoordinate3D posBack = yeeLayout->getHxCircuitElement (pos, LayoutDirection::BACK);
+        GridCoordinate3D posFront = yeeLayout->getHxCircuitElement (pos, LayoutDirection::FRONT);
 
         FieldPointValue* valHx = Hx.getFieldPointValue (pos);
 
@@ -1612,10 +1612,10 @@ Scheme3D::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinate
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN, true))
+          if (yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEzCoordFP (Ez.getTotalPosition (posDown));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (posDown));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1638,10 +1638,10 @@ Scheme3D::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinate
 
             prevEz2 += diff * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
-          else if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP, true))
+          else if (yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEzCoordFP (Ez.getTotalPosition (posUp));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (posUp));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1665,10 +1665,10 @@ Scheme3D::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinate
             prevEz1 += diff * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
 
-          if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::BACK, true))
+          if (yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::BACK, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (Ey.getTotalPosition (posBack));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (posBack));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1691,10 +1691,10 @@ Scheme3D::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinate
 
             prevEy2 += diff * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::FRONT, true))
+          else if (yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::FRONT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (Ey.getTotalPosition (posFront));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (posFront));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1756,10 +1756,10 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
 
         GridCoordinate3D posAbs = Hx.getTotalPosition (pos);
 
-        GridCoordinate3D posDown = yeeLayout.getHxCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout.getHxCircuitElement (pos, LayoutDirection::UP);
-        GridCoordinate3D posBack = yeeLayout.getHxCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout.getHxCircuitElement (pos, LayoutDirection::FRONT);
+        GridCoordinate3D posDown = yeeLayout->getHxCircuitElement (pos, LayoutDirection::DOWN);
+        GridCoordinate3D posUp = yeeLayout->getHxCircuitElement (pos, LayoutDirection::UP);
+        GridCoordinate3D posBack = yeeLayout->getHxCircuitElement (pos, LayoutDirection::BACK);
+        GridCoordinate3D posFront = yeeLayout->getHxCircuitElement (pos, LayoutDirection::FRONT);
 
         FieldPointValue* valBx = Bx.getFieldPointValue (pos);
 
@@ -1779,10 +1779,10 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN, true))
+          if (yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEzCoordFP (Ez.getTotalPosition (posDown));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (posDown));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1805,10 +1805,10 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
 
             prevEz2 += diff * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
-          else if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP, true))
+          else if (yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEzCoordFP (Ez.getTotalPosition (posUp));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (posUp));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1832,10 +1832,10 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
             prevEz1 += diff * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
 
-          if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::BACK, true))
+          if (yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::BACK, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (Ey.getTotalPosition (posBack));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (posBack));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1858,10 +1858,10 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
 
             prevEy2 += diff * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::FRONT, true))
+          else if (yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::FRONT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (Ey.getTotalPosition (posFront));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (posFront));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -1922,25 +1922,25 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
           GridCoordinate3D posAbs = Hx.getTotalPosition (pos);
 
           FieldPointValue* valHx = Hx.getFieldPointValue (pos);
-          GridCoordinateFP3D realCoord = yeeLayout.getHxCoordFP (posAbs);
+          GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (posAbs);
 
           FieldPointValue* valB1x = B1x.getFieldPointValue (pos);
           FieldPointValue* valBx = Bx.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPM1 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
-          FieldPointValue* valOmegaPM2 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
-          FieldPointValue* valOmegaPM3 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
-          FieldPointValue* valOmegaPM4 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
+          FieldPointValue* valOmegaPM1 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
+          FieldPointValue* valOmegaPM2 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
+          FieldPointValue* valOmegaPM3 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
+          FieldPointValue* valOmegaPM4 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
 
-          FieldPointValue* valGammaM1 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
-          FieldPointValue* valGammaM2 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
-          FieldPointValue* valGammaM3 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
-          FieldPointValue* valGammaM4 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
+          FieldPointValue* valGammaM1 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
+          FieldPointValue* valGammaM2 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
+          FieldPointValue* valGammaM3 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
+          FieldPointValue* valGammaM4 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
 
-          FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
-          FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
-          FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
-          FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
+          FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
+          FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
+          FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
+          FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
 
           FPValue omegaPM;
           FPValue gammaM;
@@ -2124,10 +2124,10 @@ Scheme3D::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinate
 
         GridCoordinate3D posAbs = Hy.getTotalPosition (pos);
 
-        GridCoordinate3D posLeft = yeeLayout.getHyCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout.getHyCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posBack = yeeLayout.getHyCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout.getHyCircuitElement (pos, LayoutDirection::FRONT);
+        GridCoordinate3D posLeft = yeeLayout->getHyCircuitElement (pos, LayoutDirection::LEFT);
+        GridCoordinate3D posRight = yeeLayout->getHyCircuitElement (pos, LayoutDirection::RIGHT);
+        GridCoordinate3D posBack = yeeLayout->getHyCircuitElement (pos, LayoutDirection::BACK);
+        GridCoordinate3D posFront = yeeLayout->getHyCircuitElement (pos, LayoutDirection::FRONT);
 
         FieldPointValue* valHy = Hy.getFieldPointValue (pos);
 
@@ -2147,10 +2147,10 @@ Scheme3D::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinate
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::LEFT, true))
+          if (yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::LEFT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEzCoordFP (Ez.getTotalPosition (posLeft));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (posLeft));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2173,10 +2173,10 @@ Scheme3D::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinate
 
             prevEz2 += diff * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
-          else if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::RIGHT, true))
+          else if (yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::RIGHT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEzCoordFP (Ez.getTotalPosition (posRight));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (posRight));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2200,10 +2200,10 @@ Scheme3D::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinate
             prevEz1 += diff * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
 
-          if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::BACK, true))
+          if (yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::BACK, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (Ex.getTotalPosition (posBack));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (posBack));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2226,10 +2226,10 @@ Scheme3D::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinate
 
             prevEx2 += diff * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::FRONT, true))
+          else if (yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::FRONT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (Ex.getTotalPosition (posFront));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (posFront));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2291,10 +2291,10 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
 
         GridCoordinate3D posAbs = Hy.getTotalPosition (pos);
 
-        GridCoordinate3D posLeft = yeeLayout.getHyCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout.getHyCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posBack = yeeLayout.getHyCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout.getHyCircuitElement (pos, LayoutDirection::FRONT);
+        GridCoordinate3D posLeft = yeeLayout->getHyCircuitElement (pos, LayoutDirection::LEFT);
+        GridCoordinate3D posRight = yeeLayout->getHyCircuitElement (pos, LayoutDirection::RIGHT);
+        GridCoordinate3D posBack = yeeLayout->getHyCircuitElement (pos, LayoutDirection::BACK);
+        GridCoordinate3D posFront = yeeLayout->getHyCircuitElement (pos, LayoutDirection::FRONT);
 
         FieldPointValue* valBy = By.getFieldPointValue (pos);
 
@@ -2314,10 +2314,10 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::LEFT, true))
+          if (yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::LEFT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEzCoordFP (Ez.getTotalPosition (posLeft));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (posLeft));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2340,10 +2340,10 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
 
             prevEz2 += diff * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
-          else if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::RIGHT, true))
+          else if (yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::RIGHT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEzCoordFP (Ez.getTotalPosition (posRight));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (posRight));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2367,10 +2367,10 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
             prevEz1 += diff * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
           }
 
-          if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::BACK, true))
+          if (yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::BACK, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (Ex.getTotalPosition (posBack));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (posBack));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2393,10 +2393,10 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
 
             prevEx2 += diff * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::FRONT, true))
+          else if (yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::FRONT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (Ex.getTotalPosition (posFront));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (posFront));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2457,25 +2457,25 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
           GridCoordinate3D posAbs = Hy.getTotalPosition (pos);
 
           FieldPointValue* valHy = Hy.getFieldPointValue (pos);
-          GridCoordinateFP3D realCoord = yeeLayout.getHyCoordFP (posAbs);
+          GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (posAbs);
 
           FieldPointValue* valB1y = B1y.getFieldPointValue (pos);
           FieldPointValue* valBy = By.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPM1 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
-          FieldPointValue* valOmegaPM2 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
-          FieldPointValue* valOmegaPM3 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
-          FieldPointValue* valOmegaPM4 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
+          FieldPointValue* valOmegaPM1 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
+          FieldPointValue* valOmegaPM2 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
+          FieldPointValue* valOmegaPM3 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
+          FieldPointValue* valOmegaPM4 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
 
-          FieldPointValue* valGammaM1 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
-          FieldPointValue* valGammaM2 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
-          FieldPointValue* valGammaM3 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
-          FieldPointValue* valGammaM4 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
+          FieldPointValue* valGammaM1 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
+          FieldPointValue* valGammaM2 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
+          FieldPointValue* valGammaM3 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
+          FieldPointValue* valGammaM4 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
 
-          FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
-          FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
-          FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
-          FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
+          FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
+          FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
+          FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
+          FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
 
           FPValue omegaPM;
           FPValue gammaM;
@@ -2659,10 +2659,10 @@ Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate
 
         GridCoordinate3D posAbs = Hz.getTotalPosition (pos);
 
-        GridCoordinate3D posLeft = yeeLayout.getHzCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout.getHzCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posDown = yeeLayout.getHzCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout.getHzCircuitElement (pos, LayoutDirection::UP);
+        GridCoordinate3D posLeft = yeeLayout->getHzCircuitElement (pos, LayoutDirection::LEFT);
+        GridCoordinate3D posRight = yeeLayout->getHzCircuitElement (pos, LayoutDirection::RIGHT);
+        GridCoordinate3D posDown = yeeLayout->getHzCircuitElement (pos, LayoutDirection::DOWN);
+        GridCoordinate3D posUp = yeeLayout->getHzCircuitElement (pos, LayoutDirection::UP);
 
         FieldPointValue* valHz = Hz.getFieldPointValue (pos);
 
@@ -2682,10 +2682,10 @@ Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::DOWN, true))
+          if (yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::DOWN, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (Ex.getTotalPosition (posDown));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (posDown));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2708,10 +2708,10 @@ Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate
 
             prevEx2 += diff * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::UP, true))
+          else if (yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::UP, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (Ex.getTotalPosition (posUp));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (posUp));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2735,10 +2735,10 @@ Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate
             prevEx1 += diff * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
           }
 
-          if (yeeLayout.doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::LEFT, true))
+          if (yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::LEFT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (Ey.getTotalPosition (posLeft));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (posLeft));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2761,10 +2761,10 @@ Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate
 
             prevEy2 += diff * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT, true))
+          else if (yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (Ey.getTotalPosition (posRight));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (posRight));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2826,10 +2826,10 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
 
         GridCoordinate3D posAbs = Hz.getTotalPosition (pos);
 
-        GridCoordinate3D posLeft = yeeLayout.getHzCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout.getHzCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posDown = yeeLayout.getHzCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout.getHzCircuitElement (pos, LayoutDirection::UP);
+        GridCoordinate3D posLeft = yeeLayout->getHzCircuitElement (pos, LayoutDirection::LEFT);
+        GridCoordinate3D posRight = yeeLayout->getHzCircuitElement (pos, LayoutDirection::RIGHT);
+        GridCoordinate3D posDown = yeeLayout->getHzCircuitElement (pos, LayoutDirection::DOWN);
+        GridCoordinate3D posUp = yeeLayout->getHzCircuitElement (pos, LayoutDirection::UP);
 
         FieldPointValue* valBz = Bz.getFieldPointValue (pos);
 
@@ -2852,10 +2852,10 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
 
         if (useTFSF)
         {
-          if (yeeLayout.doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::DOWN, true))
+          if (yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::DOWN, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (Ex.getTotalPosition (posDown));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (posDown));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2878,10 +2878,10 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
 
             prevEx2 += diff * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::UP, true))
+          else if (yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::UP, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (Ex.getTotalPosition (posUp));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (posUp));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2905,10 +2905,10 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
             prevEx1 += diff * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
           }
 
-          if (yeeLayout.doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::LEFT, true))
+          if (yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::LEFT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (Ey.getTotalPosition (posLeft));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (posLeft));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2931,10 +2931,10 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
 
             prevEy2 += diff * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
           }
-          else if (yeeLayout.doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT, true))
+          else if (yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT, true))
           {
-            GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (Ey.getTotalPosition (posRight));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout.getZeroIncCoordFP ();
+            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (posRight));
+            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
 
             FPValue x = realCoord.getX () - zeroCoordFP.getX ();
             FPValue y = realCoord.getY () - zeroCoordFP.getY ();
@@ -2994,25 +2994,25 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
           GridCoordinate3D pos (i, j, k);
 
           GridCoordinate3D posAbs = Hz.getTotalPosition (pos);
-          GridCoordinateFP3D realCoord = yeeLayout.getHzCoordFP (posAbs);
+          GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (posAbs);
 
           FieldPointValue* valB1z = B1z.getFieldPointValue (pos);
           FieldPointValue* valBz = Bz.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPM1 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-          FieldPointValue* valOmegaPM2 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-          FieldPointValue* valOmegaPM3 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0))));
-          FieldPointValue* valOmegaPM4 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
+          FieldPointValue* valOmegaPM1 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
+          FieldPointValue* valOmegaPM2 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
+          FieldPointValue* valOmegaPM3 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0))));
+          FieldPointValue* valOmegaPM4 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
 
-          FieldPointValue* valGammaM1 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-          FieldPointValue* valGammaM2 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-          FieldPointValue* valGammaM3 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0))));
-          FieldPointValue* valGammaM4 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
+          FieldPointValue* valGammaM1 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
+          FieldPointValue* valGammaM2 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
+          FieldPointValue* valGammaM3 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0))));
+          FieldPointValue* valGammaM4 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
 
-          FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-          FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-          FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-          FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout.getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
+          FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
+          FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
+          FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
+          FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
 
           FPValue omegaPM;
           FPValue gammaM;
@@ -3126,11 +3126,11 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
         FieldPointValue* valSigmaY = SigmaY.getFieldPointValue (pos);
         FieldPointValue* valSigmaZ = SigmaZ.getFieldPointValue (pos);
 
-        // GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout.getHzCoordFP (posAbs));
-        // FieldPointValue* valMu1 = Mu.getFieldPointValue (yeeLayout.getMuCoord (GridCoordinateFP3D (realCoord.getX () + 0.5, realCoord.getY () + 0.5, yeeLayout.getMinMuCoordFP ().getZ ())));
-        // FieldPointValue* valMu2 = Mu.getFieldPointValue (yeeLayout.getMuCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY () + 0.5, yeeLayout.getMinMuCoordFP ().getZ ())));
-        // FieldPointValue* valMu3 = Mu.getFieldPointValue (yeeLayout.getMuCoord (GridCoordinateFP3D (realCoord.getX () + 0.5, realCoord.getY () - 0.5, yeeLayout.getMinMuCoordFP ().getZ ())));
-        // FieldPointValue* valMu4 = Mu.getFieldPointValue (yeeLayout.getMuCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY () - 0.5, yeeLayout.getMinMuCoordFP ().getZ ())));
+        // GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout->getHzCoordFP (posAbs));
+        // FieldPointValue* valMu1 = Mu.getFieldPointValue (yeeLayout->getMuCoord (GridCoordinateFP3D (realCoord.getX () + 0.5, realCoord.getY () + 0.5, yeeLayout->getMinMuCoordFP ().getZ ())));
+        // FieldPointValue* valMu2 = Mu.getFieldPointValue (yeeLayout->getMuCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY () + 0.5, yeeLayout->getMinMuCoordFP ().getZ ())));
+        // FieldPointValue* valMu3 = Mu.getFieldPointValue (yeeLayout->getMuCoord (GridCoordinateFP3D (realCoord.getX () + 0.5, realCoord.getY () - 0.5, yeeLayout->getMinMuCoordFP ().getZ ())));
+        // FieldPointValue* valMu4 = Mu.getFieldPointValue (yeeLayout->getMuCoord (GridCoordinateFP3D (realCoord.getX () - 0.5, realCoord.getY () - 0.5, yeeLayout->getMinMuCoordFP ().getZ ())));
         // FieldValue mu = (valMu1->getCurValue () + valMu2->getCurValue () + valMu3->getCurValue () + valMu4->getCurValue ()) / 4;
         FieldPointValue* valMu = Mu.getFieldPointValue (pos);
 
@@ -3187,23 +3187,23 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
 
   for (int t = startStep; t < stepLimit; ++t)
   {
-    GridCoordinate3D ExStart = yeeLayout.getExStart (Ex.getComputationStart ());
-    GridCoordinate3D ExEnd = yeeLayout.getExEnd (Ex.getComputationEnd ());
+    GridCoordinate3D ExStart = yeeLayout->getExStart (Ex.getComputationStart ());
+    GridCoordinate3D ExEnd = yeeLayout->getExEnd (Ex.getComputationEnd ());
 
-    GridCoordinate3D EyStart = yeeLayout.getEyStart (Ey.getComputationStart ());
-    GridCoordinate3D EyEnd = yeeLayout.getEyEnd (Ey.getComputationEnd ());
+    GridCoordinate3D EyStart = yeeLayout->getEyStart (Ey.getComputationStart ());
+    GridCoordinate3D EyEnd = yeeLayout->getEyEnd (Ey.getComputationEnd ());
 
-    GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getComputationStart ());
-    GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getComputationEnd ());
+    GridCoordinate3D EzStart = yeeLayout->getEzStart (Ez.getComputationStart ());
+    GridCoordinate3D EzEnd = yeeLayout->getEzEnd (Ez.getComputationEnd ());
 
-    GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getComputationStart ());
-    GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getComputationEnd ());
+    GridCoordinate3D HxStart = yeeLayout->getHxStart (Hx.getComputationStart ());
+    GridCoordinate3D HxEnd = yeeLayout->getHxEnd (Hx.getComputationEnd ());
 
-    GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getComputationStart ());
-    GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getComputationEnd ());
+    GridCoordinate3D HyStart = yeeLayout->getHyStart (Hy.getComputationStart ());
+    GridCoordinate3D HyEnd = yeeLayout->getHyEnd (Hy.getComputationEnd ());
 
-    GridCoordinate3D HzStart = yeeLayout.getHzStart (Hz.getComputationStart ());
-    GridCoordinate3D HzEnd = yeeLayout.getHzEnd (Hz.getComputationEnd ());
+    GridCoordinate3D HzStart = yeeLayout->getHzStart (Hz.getComputationStart ());
+    GridCoordinate3D HzEnd = yeeLayout->getHzEnd (Hz.getComputationEnd ());
 
     if (useTFSF)
     {
@@ -3223,11 +3223,11 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
         grid_coord start;
         grid_coord end;
 #ifdef PARALLEL_GRID
-        start = processId == 0 ? yeeLayout.getLeftBorderPML ().getZ () : 0;
-        end = processId == ParallelGrid::getParallelCore ()->getTotalProcCount () - 1 ? Ez.getRelativePosition (yeeLayout.getRightBorderPML ()).getZ () : Ez.getCurrentSize ().getZ ();
+        start = processId == 0 ? yeeLayout->getLeftBorderPML ().getZ () : 0;
+        end = processId == ParallelGrid::getParallelCore ()->getTotalProcCount () - 1 ? Ez.getRelativePosition (yeeLayout->getRightBorderPML ()).getZ () : Ez.getCurrentSize ().getZ ();
 #else /* PARALLEL_GRID */
-        start = yeeLayout.getLeftBorderPML ().getZ ();
-        end = yeeLayout.getRightBorderPML ().getZ ();
+        start = yeeLayout->getLeftBorderPML ().getZ ();
+        end = yeeLayout->getRightBorderPML ().getZ ();
 #endif /* !PARALLEL_GRID */
         for (grid_coord k = start; k < end; ++k)
         {
@@ -3394,23 +3394,23 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
 
     //is_stable_state = 1;
 
-    GridCoordinate3D ExStart = yeeLayout.getExStart (Ex.getComputationStart ());
-    GridCoordinate3D ExEnd = yeeLayout.getExEnd (Ex.getComputationEnd ());
+    GridCoordinate3D ExStart = yeeLayout->getExStart (Ex.getComputationStart ());
+    GridCoordinate3D ExEnd = yeeLayout->getExEnd (Ex.getComputationEnd ());
 
-    GridCoordinate3D EyStart = yeeLayout.getEyStart (Ey.getComputationStart ());
-    GridCoordinate3D EyEnd = yeeLayout.getEyEnd (Ey.getComputationEnd ());
+    GridCoordinate3D EyStart = yeeLayout->getEyStart (Ey.getComputationStart ());
+    GridCoordinate3D EyEnd = yeeLayout->getEyEnd (Ey.getComputationEnd ());
 
-    GridCoordinate3D EzStart = yeeLayout.getEzStart (Ez.getComputationStart ());
-    GridCoordinate3D EzEnd = yeeLayout.getEzEnd (Ez.getComputationEnd ());
+    GridCoordinate3D EzStart = yeeLayout->getEzStart (Ez.getComputationStart ());
+    GridCoordinate3D EzEnd = yeeLayout->getEzEnd (Ez.getComputationEnd ());
 
-    GridCoordinate3D HxStart = yeeLayout.getHxStart (Hx.getComputationStart ());
-    GridCoordinate3D HxEnd = yeeLayout.getHxEnd (Hx.getComputationEnd ());
+    GridCoordinate3D HxStart = yeeLayout->getHxStart (Hx.getComputationStart ());
+    GridCoordinate3D HxEnd = yeeLayout->getHxEnd (Hx.getComputationEnd ());
 
-    GridCoordinate3D HyStart = yeeLayout.getHyStart (Hy.getComputationStart ());
-    GridCoordinate3D HyEnd = yeeLayout.getHyEnd (Hy.getComputationEnd ());
+    GridCoordinate3D HyStart = yeeLayout->getHyStart (Hy.getComputationStart ());
+    GridCoordinate3D HyEnd = yeeLayout->getHyEnd (Hy.getComputationEnd ());
 
-    GridCoordinate3D HzStart = yeeLayout.getHzStart (Hz.getComputationStart ());
-    GridCoordinate3D HzEnd = yeeLayout.getHzEnd (Hz.getComputationEnd ());
+    GridCoordinate3D HzStart = yeeLayout->getHzStart (Hz.getComputationStart ());
+    GridCoordinate3D HzEnd = yeeLayout->getHzEnd (Hz.getComputationEnd ());
 
     if (useTFSF)
     {
@@ -3427,7 +3427,7 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
       if (processId == 0)
 #endif
       {
-        for (grid_coord k = yeeLayout.getLeftBorderPML ().getZ (); k < yeeLayout.getRightBorderPML ().getZ (); ++k)
+        for (grid_coord k = yeeLayout->getLeftBorderPML ().getZ (); k < yeeLayout->getRightBorderPML ().getZ (); ++k)
         {
           GridCoordinate3D pos (EzSize.getX () / 8, EzSize.getY () / 2, k);
           FieldPointValue* tmp = Ez.getFieldPointValue (pos);
@@ -3450,15 +3450,15 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
         {
           GridCoordinate3D pos (i, j, k);
 
-          if (!yeeLayout.isExInPML (Ex.getTotalPosition (pos)))
+          if (!yeeLayout->isExInPML (Ex.getTotalPosition (pos)))
           {
             FieldPointValue* tmp = Ex.getFieldPointValue (pos);
             FieldPointValue* tmpAmp = ExAmplitude.getFieldPointValue (pos);
 
-            GridCoordinateFP3D realCoord = yeeLayout.getExCoordFP (Ex.getTotalPosition (pos));
+            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (pos));
 
-            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
-            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
+            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
+            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
 
             FPValue val = tmp->getCurValue ();
 
@@ -3479,15 +3479,15 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
         {
           GridCoordinate3D pos (i, j, k);
 
-          if (!yeeLayout.isEyInPML (Ey.getTotalPosition (pos)))
+          if (!yeeLayout->isEyInPML (Ey.getTotalPosition (pos)))
           {
             FieldPointValue* tmp = Ey.getFieldPointValue (pos);
             FieldPointValue* tmpAmp = EyAmplitude.getFieldPointValue (pos);
 
-            GridCoordinateFP3D realCoord = yeeLayout.getEyCoordFP (Ey.getTotalPosition (pos));
+            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (pos));
 
-            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
-            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
+            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
+            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
 
             FPValue val = tmp->getCurValue ();
 
@@ -3508,15 +3508,15 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
         {
           GridCoordinate3D pos (i, j, k);
 
-          if (!yeeLayout.isEzInPML (Ez.getTotalPosition (pos)))
+          if (!yeeLayout->isEzInPML (Ez.getTotalPosition (pos)))
           {
             FieldPointValue* tmp = Ez.getFieldPointValue (pos);
             FieldPointValue* tmpAmp = EzAmplitude.getFieldPointValue (pos);
 
-            GridCoordinateFP3D realCoord = yeeLayout.getEzCoordFP (Ez.getTotalPosition (pos));
+            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (pos));
 
-            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
-            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
+            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
+            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
 
             FPValue val = tmp->getCurValue ();
 
@@ -3557,15 +3557,15 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
         {
           GridCoordinate3D pos (i, j, k);
 
-          if (!yeeLayout.isHxInPML (Hx.getTotalPosition (pos)))
+          if (!yeeLayout->isHxInPML (Hx.getTotalPosition (pos)))
           {
             FieldPointValue* tmp = Hx.getFieldPointValue (pos);
             FieldPointValue* tmpAmp = HxAmplitude.getFieldPointValue (pos);
 
-            GridCoordinateFP3D realCoord = yeeLayout.getHxCoordFP (Hx.getTotalPosition (pos));
+            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (pos));
 
-            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
-            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
+            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
+            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
 
             FPValue val = tmp->getCurValue ();
 
@@ -3586,15 +3586,15 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
         {
           GridCoordinate3D pos (i, j, k);
 
-          if (!yeeLayout.isHyInPML (Hy.getTotalPosition (pos)))
+          if (!yeeLayout->isHyInPML (Hy.getTotalPosition (pos)))
           {
             FieldPointValue* tmp = Hy.getFieldPointValue (pos);
             FieldPointValue* tmpAmp = HyAmplitude.getFieldPointValue (pos);
 
-            GridCoordinateFP3D realCoord = yeeLayout.getHyCoordFP (Hy.getTotalPosition (pos));
+            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (pos));
 
-            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
-            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
+            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
+            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
 
             FPValue val = tmp->getCurValue ();
 
@@ -3615,15 +3615,15 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
         {
           GridCoordinate3D pos (i, j, k);
 
-          if (!yeeLayout.isHzInPML (Hz.getTotalPosition (pos)))
+          if (!yeeLayout->isHzInPML (Hz.getTotalPosition (pos)))
           {
             FieldPointValue* tmp = Hz.getFieldPointValue (pos);
             FieldPointValue* tmpAmp = HzAmplitude.getFieldPointValue (pos);
 
-            GridCoordinateFP3D realCoord = yeeLayout.getHzCoordFP (Hz.getTotalPosition (pos));
+            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (pos));
 
-            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getLeftBorderTFSF ());
-            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout.getRightBorderTFSF ());
+            GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
+            GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
 
             FPValue val = tmp->getCurValue ();
 
@@ -3872,13 +3872,13 @@ Scheme3D::initGrids ()
 #endif /* !COMPLEX_FIELD_VALUES */
 
         GridCoordinate3D pos (i, j, k);
-        GridCoordinateFP3D posAbs = yeeLayout.getEpsCoordFP (OmegaPE.getTotalPosition (pos));
+        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (OmegaPE.getTotalPosition (pos));
 
-        GridCoordinateFP3D size = yeeLayout.getEpsCoordFP (OmegaPE.getTotalSize ());
+        GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (OmegaPE.getTotalSize ());
 
         if (posAbs.getX () >= size.getX () / 4 && posAbs.getX () < 3*size.getX ()/4
-            && posAbs.getY () >= yeeLayout.getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout.getLeftBorderPML ().getY ()
-            && posAbs.getZ () >= yeeLayout.getLeftBorderPML ().getZ () && posAbs.getZ () < size.getZ () - yeeLayout.getLeftBorderPML ().getZ ())
+            && posAbs.getY () >= yeeLayout->getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout->getLeftBorderPML ().getY ()
+            && posAbs.getZ () >= yeeLayout->getLeftBorderPML ().getZ () && posAbs.getZ () < size.getZ () - yeeLayout->getLeftBorderPML ().getZ ())
         {
 
 //         if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
@@ -3912,13 +3912,13 @@ Scheme3D::initGrids ()
 #endif /* !COMPLEX_FIELD_VALUES */
 
         GridCoordinate3D pos (i, j, k);
-        GridCoordinateFP3D posAbs = yeeLayout.getEpsCoordFP (OmegaPM.getTotalPosition (pos));
+        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (OmegaPM.getTotalPosition (pos));
 
-        GridCoordinateFP3D size = yeeLayout.getEpsCoordFP (OmegaPM.getTotalSize ());
+        GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (OmegaPM.getTotalSize ());
 
         if (posAbs.getX () >= size.getX () / 4 && posAbs.getX () < 3*size.getX ()/4
-            && posAbs.getY () >= yeeLayout.getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout.getLeftBorderPML ().getY ()
-            && posAbs.getZ () >= yeeLayout.getLeftBorderPML ().getZ () && posAbs.getZ () < size.getZ () - yeeLayout.getLeftBorderPML ().getZ ())
+            && posAbs.getY () >= yeeLayout->getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout->getLeftBorderPML ().getY ()
+            && posAbs.getZ () >= yeeLayout->getLeftBorderPML ().getZ () && posAbs.getZ () < size.getZ () - yeeLayout->getLeftBorderPML ().getZ ())
         {
 
 //         if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
@@ -3952,13 +3952,13 @@ Scheme3D::initGrids ()
 #endif /* !COMPLEX_FIELD_VALUES */
 
         GridCoordinate3D pos (i, j, k);
-      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalPosition (pos)));
+      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout->getEpsCoordFP (Eps.getTotalPosition (pos)));
       //
-      // GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalSize ()));
+      // GridCoordinateFP2D size = shrinkCoord (yeeLayout->getEpsCoordFP (Eps.getTotalSize ()));
 
-      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (GammaE.getTotalPosition (pos)));
+      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout->getEpsCoordFP (GammaE.getTotalPosition (pos)));
       //
-      // GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (GammaE.getTotalSize ()));
+      // GridCoordinateFP2D size = shrinkCoord (yeeLayout->getEpsCoordFP (GammaE.getTotalSize ()));
       //
       // if (posAbs.getX () >= size.getX () / 2 - 20 && posAbs.getX () < size.getX () / 2 + 20
       //     && posAbs.getY () >= 50 && posAbs.getY () < size.getY () - 50)
@@ -3992,13 +3992,13 @@ Scheme3D::initGrids ()
 #endif /* !COMPLEX_FIELD_VALUES */
 
         GridCoordinate3D pos (i, j, k);
-      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalPosition (pos)));
+      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout->getEpsCoordFP (Eps.getTotalPosition (pos)));
       //
-      // GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (Eps.getTotalSize ()));
+      // GridCoordinateFP2D size = shrinkCoord (yeeLayout->getEpsCoordFP (Eps.getTotalSize ()));
 
-      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout.getEpsCoordFP (GammaE.getTotalPosition (pos)));
+      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout->getEpsCoordFP (GammaE.getTotalPosition (pos)));
       //
-      // GridCoordinateFP2D size = shrinkCoord (yeeLayout.getEpsCoordFP (GammaE.getTotalSize ()));
+      // GridCoordinateFP2D size = shrinkCoord (yeeLayout->getEpsCoordFP (GammaE.getTotalSize ()));
       //
       // if (posAbs.getX () >= size.getX () / 2 - 20 && posAbs.getX () < size.getX () / 2 + 20
       //     && posAbs.getY () >= 50 && posAbs.getY () < size.getY () - 50)
@@ -4056,7 +4056,7 @@ Scheme3D::initGrids ()
   FPValue eps0 = PhysicsConst::Eps0;
   FPValue mu0 = PhysicsConst::Mu0;
 
-  GridCoordinate3D PMLSize = yeeLayout.getLeftBorderPML ();
+  GridCoordinate3D PMLSize = yeeLayout->getLeftBorderPML ();
 
   FPValue boundary = PMLSize.getX () * gridStep;
   uint32_t exponent = 6;
@@ -4073,9 +4073,9 @@ Scheme3D::initGrids ()
         FieldPointValue* valSigma = new FieldPointValue ();
 
         GridCoordinate3D pos (i, j, k);
-        GridCoordinateFP3D posAbs = yeeLayout.getEpsCoordFP (SigmaX.getTotalPosition (pos));
+        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (SigmaX.getTotalPosition (pos));
 
-        GridCoordinateFP3D size = yeeLayout.getEpsCoordFP (SigmaX.getTotalSize ());
+        GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (SigmaX.getTotalSize ());
 
         /*
          * FIXME: add layout coordinates for material: sigma, eps, etc.
@@ -4124,9 +4124,9 @@ Scheme3D::initGrids ()
         FieldPointValue* valSigma = new FieldPointValue ();
 
         GridCoordinate3D pos (i, j, k);
-        GridCoordinateFP3D posAbs = yeeLayout.getEpsCoordFP (SigmaY.getTotalPosition (pos));
+        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (SigmaY.getTotalPosition (pos));
 
-        GridCoordinateFP3D size = yeeLayout.getEpsCoordFP (SigmaY.getTotalSize ());
+        GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (SigmaY.getTotalSize ());
 
         /*
          * FIXME: add layout coordinates for material: sigma, eps, etc.
@@ -4175,9 +4175,9 @@ Scheme3D::initGrids ()
         FieldPointValue* valSigma = new FieldPointValue ();
 
         GridCoordinate3D pos (i, j, k);
-        GridCoordinateFP3D posAbs = yeeLayout.getEpsCoordFP (SigmaZ.getTotalPosition (pos));
+        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (SigmaZ.getTotalPosition (pos));
 
-        GridCoordinateFP3D size = yeeLayout.getEpsCoordFP (SigmaZ.getTotalSize ());
+        GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (SigmaZ.getTotalSize ());
 
         /*
          * FIXME: add layout coordinates for material: sigma, eps, etc.

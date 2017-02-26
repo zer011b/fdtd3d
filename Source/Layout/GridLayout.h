@@ -102,6 +102,9 @@ public:
   virtual GridCoordinate3D getHySize () const = 0;
   virtual GridCoordinate3D getHzSize () const = 0;
 
+  virtual GridCoordinate3D getSizePML () const = 0;
+  virtual GridCoordinate3D getSizeTFSF () const = 0;
+
   /*
    * Get start coordinate of field component
    */

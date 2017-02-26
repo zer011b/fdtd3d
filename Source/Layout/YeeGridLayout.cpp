@@ -1162,3 +1162,15 @@ YeeGridLayout::doNeedTFSFUpdateHzBorder (GridCoordinate3D coord, LayoutDirection
 
   return false;
 }
+
+GridCoordinate3D
+YeeGridLayout::getSizePML () const
+{
+  return leftBorderPML;
+}
+
+GridCoordinate3D
+YeeGridLayout::getSizeTFSF () const
+{
+  return leftBorderTotalField;
+}

@@ -3,14 +3,14 @@
 
 #include "Scheme.h"
 #include "GridInterface.h"
-#include "YeeGridLayout.h"
+#include "ParallelYeeGridLayout.h"
 #include "PhysicsConst.h"
 
 #ifdef GRID_2D
 
 class SchemeTMz: public Scheme
 {
-  YeeGridLayout yeeLayout;
+  YeeGridLayout *yeeLayout;
 
 #if defined (PARALLEL_GRID)
   ParallelGrid Ez;
@@ -134,39 +134,38 @@ public:
   void initGrids ();
 
 #if defined (PARALLEL_GRID)
-  SchemeTMz (const GridCoordinate2D& totSize,
+  SchemeTMz (ParallelYeeGridLayout *layout,
+             const GridCoordinate2D& totSize,
              const GridCoordinate2D& bufSize,
              time_step tStep,
              bool calcAmp = false,
              time_step ampStep = 0,
              bool doUsePML = false,
-             GridCoordinate2D sizePML = GridCoordinate2D (0, 0),
              bool doUseTFSF = false,
-             GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
              FPValue angleIncWave = 0.0,
              bool doUseMetamaterials = false) :
-    yeeLayout (totSize, sizePML, sizeScatteredZone, PhysicsConst::Pi / 2, angleIncWave, 0),
-    Ez (shrinkCoord (yeeLayout.getEzSize ()), bufSize, 0),
-    Hx (shrinkCoord (yeeLayout.getHxSize ()), bufSize, 0),
-    Hy (shrinkCoord (yeeLayout.getHySize ()), bufSize, 0),
-    Dz (shrinkCoord (yeeLayout.getEzSize ()), bufSize, 0),
-    Bx (shrinkCoord (yeeLayout.getHxSize ()), bufSize, 0),
-    By (shrinkCoord (yeeLayout.getHySize ()), bufSize, 0),
-    D1z (shrinkCoord (yeeLayout.getEzSize ()), bufSize, 0),
-    B1x (shrinkCoord (yeeLayout.getHxSize ()), bufSize, 0),
-    B1y (shrinkCoord (yeeLayout.getHySize ()), bufSize, 0),
-    EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), bufSize, 0),
-    HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), bufSize, 0),
-    HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), bufSize, 0),
-    Eps (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
-    Mu (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
-    OmegaPE (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
-    GammaE (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
-    OmegaPM (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
-    GammaM (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
-    SigmaX (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
-    SigmaY (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
-    SigmaZ (shrinkCoord (yeeLayout.getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0),
+    yeeLayout (layout),
+    Ez (shrinkCoord (layout->getEzSize ()), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode ()),
+    Hx (shrinkCoord (layout->getHxSize ()), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode ()),
+    Hy (shrinkCoord (layout->getHySize ()), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode ()),
+    Dz (shrinkCoord (layout->getEzSize ()), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode ()),
+    Bx (shrinkCoord (layout->getHxSize ()), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode ()),
+    By (shrinkCoord (layout->getHySize ()), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode ()),
+    D1z (shrinkCoord (layout->getEzSize ()), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode ()),
+    B1x (shrinkCoord (layout->getHxSize ()), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode ()),
+    B1y (shrinkCoord (layout->getHySize ()), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode ()),
+    EzAmplitude (shrinkCoord (layout->getEzSize ()), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode ()),
+    HxAmplitude (shrinkCoord (layout->getHxSize ()), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode ()),
+    HyAmplitude (shrinkCoord (layout->getHySize ()), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode ()),
+    Eps (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
+    Mu (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getMuSizeForCurNode (), layout->getMuCoreSizePerNode ()),
+    OmegaPE (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
+    GammaE (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
+    OmegaPM (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
+    GammaM (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
+    SigmaX (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
+    SigmaY (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
+    SigmaZ (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
     sourceWaveLength (0),
     sourceFrequency (0),
     courantNum (0),
@@ -182,38 +181,37 @@ public:
     incidentWaveAngle (angleIncWave),
     useMetamaterials (doUseMetamaterials)
 #else
-  SchemeTMz (const GridCoordinate2D& totSize,
+  SchemeTMz (YeeGridLayout *layout,
+             const GridCoordinate2D& totSize,
              time_step tStep,
              bool calcAmp = false,
              time_step ampStep = 0,
              bool doUsePML = false,
-             GridCoordinate2D sizePML = GridCoordinate2D (0, 0),
              bool doUseTFSF = false,
-             GridCoordinate2D sizeScatteredZone = GridCoordinate2D (0, 0),
              FPValue angleIncWave = 0.0,
              bool doUseMetamaterials = false) :
-    yeeLayout (totSize, sizePML, sizeScatteredZone, PhysicsConst::Pi / 2, angleIncWave, 0),
-    Ez (shrinkCoord (yeeLayout.getEzSize ()), 0),
-    Hx (shrinkCoord (yeeLayout.getHxSize ()), 0),
-    Hy (shrinkCoord (yeeLayout.getHySize ()), 0),
-    Dz (shrinkCoord (yeeLayout.getEzSize ()), 0),
-    Bx (shrinkCoord (yeeLayout.getHxSize ()), 0),
-    By (shrinkCoord (yeeLayout.getHySize ()), 0),
-    D1z (shrinkCoord (yeeLayout.getEzSize ()), 0),
-    B1x (shrinkCoord (yeeLayout.getHxSize ()), 0),
-    B1y (shrinkCoord (yeeLayout.getHySize ()), 0),
-    EzAmplitude (shrinkCoord (yeeLayout.getEzSize ()), 0),
-    HxAmplitude (shrinkCoord (yeeLayout.getHxSize ()), 0),
-    HyAmplitude (shrinkCoord (yeeLayout.getHySize ()), 0),
-    Eps (shrinkCoord (yeeLayout.getEpsSize ()), 0),
-    Mu (shrinkCoord (yeeLayout.getEpsSize ()), 0),
-    OmegaPE (shrinkCoord (yeeLayout.getEpsSize ()), 0),
-    GammaE (shrinkCoord (yeeLayout.getEpsSize ()), 0),
-    OmegaPM (shrinkCoord (yeeLayout.getEpsSize ()), 0),
-    GammaM (shrinkCoord (yeeLayout.getEpsSize ()), 0),
-    SigmaX (shrinkCoord (yeeLayout.getEpsSize ()), 0),
-    SigmaY (shrinkCoord (yeeLayout.getEpsSize ()), 0),
-    SigmaZ (shrinkCoord (yeeLayout.getEpsSize ()), 0),
+    yeeLayout (layout),
+    Ez (shrinkCoord (layout->getEzSize ()), 0),
+    Hx (shrinkCoord (layout->getHxSize ()), 0),
+    Hy (shrinkCoord (layout->getHySize ()), 0),
+    Dz (shrinkCoord (layout->getEzSize ()), 0),
+    Bx (shrinkCoord (layout->getHxSize ()), 0),
+    By (shrinkCoord (layout->getHySize ()), 0),
+    D1z (shrinkCoord (layout->getEzSize ()), 0),
+    B1x (shrinkCoord (layout->getHxSize ()), 0),
+    B1y (shrinkCoord (layout->getHySize ()), 0),
+    EzAmplitude (shrinkCoord (layout->getEzSize ()), 0),
+    HxAmplitude (shrinkCoord (layout->getHxSize ()), 0),
+    HyAmplitude (shrinkCoord (layout->getHySize ()), 0),
+    Eps (shrinkCoord (layout->getEpsSize ()), 0),
+    Mu (shrinkCoord (layout->getEpsSize ()), 0),
+    OmegaPE (shrinkCoord (layout->getEpsSize ()), 0),
+    GammaE (shrinkCoord (layout->getEpsSize ()), 0),
+    OmegaPM (shrinkCoord (layout->getEpsSize ()), 0),
+    GammaM (shrinkCoord (layout->getEpsSize ()), 0),
+    SigmaX (shrinkCoord (layout->getEpsSize ()), 0),
+    SigmaY (shrinkCoord (layout->getEpsSize ()), 0),
+    SigmaZ (shrinkCoord (layout->getEpsSize ()), 0),
     sourceWaveLength (0),
     sourceFrequency (0),
     courantNum (0),
@@ -233,11 +231,15 @@ public:
     ASSERT (!doUseTFSF
             || (doUseTFSF
                 && (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0)
-                && sizeScatteredZone != GridCoordinate2D (0, 0)));
+                && shrinkCoord (yeeLayout->getSizeTFSF ()) != GridCoordinate2D (0, 0)));
 
-    ASSERT (!doUsePML || (doUsePML && (sizePML != GridCoordinate2D (0, 0))));
+    ASSERT (!doUsePML || (doUsePML && (shrinkCoord (yeeLayout->getSizePML ()) != GridCoordinate2D (0, 0))));
 
     ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
+
+#ifdef COMPLEX_FIELD_VALUES
+    ASSERT (!calculateAmplitude);
+#endif /* COMPLEX_FIELD_VALUES */
   }
 
   ~SchemeTMz ()

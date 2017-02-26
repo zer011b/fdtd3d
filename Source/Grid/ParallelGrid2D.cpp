@@ -30,51 +30,6 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
 #endif /* PRINT_MESSAGE */
 } /* ParallelGridCore::NodeGridInit */
 
-/**
- * Initialize size of grid per node
- *
- * TODO: move to layout
- *
- * @return size of grid for current node
- */
-GridCoordinate2D
-ParallelGrid::GridInit (GridCoordinate2D &coreSize) /**< out: size of grid for node, except the node at the right
-                                                     *        border which is assigned all the data which is left after
-                                                     *        equal spread for all nodes. Thus, for all nodes except
-                                                     *        node at the right border core and returned sizes are
-                                                     *        the same */
-{
-  grid_coord c1;
-  grid_coord c2;
-
-  grid_coord core1;
-  grid_coord core2;
-
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  CalculateGridSizeForNode (c1,
-                            core1,
-                            parallelGridCore->getNodeGridSizeX (),
-                            parallelGridCore->getHasR (),
-                            totalSize.getX ());
-  core2 = totalSize.getY ();
-  c2 = core2;
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
-
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  core1 = totalSize.getX ();
-  c1 = core1;
-  CalculateGridSizeForNode (c2,
-                            core2,
-                            parallelGridCore->getNodeGridSizeY (),
-                            parallelGridCore->getHasU (),
-                            totalSize.getY ());
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
-
-  coreSize = GridCoordinate2D (core1, core2);
-
-  return GridCoordinate2D (c1, c2);
-} /* ParallelGrid::GridInit */
-
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
@@ -103,40 +58,6 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
           left);
 #endif /* PRINT_MESSAGE */
 } /* ParallelGridCore::NodeGridInit */
-
-/**
- * Initialize size of grid per node
- *
- * @return size of grid for current node
- */
-GridCoordinate2D
-ParallelGrid::GridInit (GridCoordinate2D &coreSize) /**< out: size of grid for node, except the node at the right
-                                                     *        border which is assigned all the data which is left after
-                                                     *        equal spread for all nodes. Thus, for all nodes except
-                                                     *        node at the right border core and returned sizes are
-                                                     *        the same */
-{
-  grid_coord c1;
-  grid_coord c2;
-
-  grid_coord core1;
-  grid_coord core2;
-
-  CalculateGridSizeForNode (c1,
-                            core1,
-                            parallelGridCore->getNodeGridSizeX (),
-                            parallelGridCore->getHasR (),
-                            totalSize.getX (),
-                            c2,
-                            core2,
-                            parallelGridCore->getNodeGridSizeY (),
-                            parallelGridCore->getHasU (),
-                            totalSize.getY ());
-
-  coreSize = GridCoordinate2D (core1, core2);
-
-  return GridCoordinate2D (c1, c2);
-} /* ParallelGrid::GridInit */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 
