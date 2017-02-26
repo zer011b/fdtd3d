@@ -16,6 +16,8 @@
  */
 class YeeGridLayout: public GridLayout
 {
+protected:
+
   const GridCoordinate3D zeroCoord; /**< Zero coordinate of grid */
   const GridCoordinate3D minEpsCoord; /**< Minimum epsilon coordinate */
   const GridCoordinate3D minMuCoord; /**< Minimum mu coordinate */
@@ -77,6 +79,9 @@ public:
   virtual GridCoordinate3D getHxSize () const CXX11_OVERRIDE_FINAL;
   virtual GridCoordinate3D getHySize () const CXX11_OVERRIDE_FINAL;
   virtual GridCoordinate3D getHzSize () const CXX11_OVERRIDE_FINAL;
+
+  virtual GridCoordinate3D getSizePML () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getSizeTFSF () const CXX11_OVERRIDE_FINAL;
 
   /*
    * Get start coordinate of field component
@@ -256,6 +261,6 @@ public:
   virtual ~YeeGridLayout ()
   {
   } /* ~YeeGridLayout */
-};
+}; /* YeeGridLayout */
 
 #endif /* YEE_GRID_LAYOUT_H */

@@ -40,11 +40,19 @@ ParallelGridCore *ParallelGrid::parallelGridCore = NULLPTR;
  */
 ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total size of grid */
                             const ParallelGridCoordinate &bufSize, /**< buffer size */
-                            time_step step) /**< start time step */
+                            time_step step, /**< start time step */
+                            ParallelGridCoordinate curSize,  /**< size of grid for current node, received from layout */
+                            ParallelGridCoordinate coreCurSize) /**< size of grid per node which is same for all nodes
+                                                                 *   except the one at the right border
+                                                                 *   (coreSizePerNode == sizeForCurNode for all nodes
+                                                                 *   except theone at the right border) (is received
+                                                                 *   from layout) */
   : ParallelGridBase (step)
   , totalSize (totSize)
   , shareStep (0)
   , bufferSize (ParallelGridCoordinate (0))
+  , currentSize (curSize)
+  , coreCurrentSize (coreCurSize)
 {
   /*
    * Check that buffer size is equal for all coordinate axes
@@ -1719,71 +1727,6 @@ ParallelGrid::share ()
 } /* ParallelGrid::share */
 
 /**
- * Identify size of grid for current computational node
- */
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-void
-ParallelGrid::CalculateGridSizeForNode (grid_coord &c1, grid_coord &core1, int nodeGridSize1, bool has1, grid_coord size1)
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_1D_Z) */
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-void
-ParallelGrid::CalculateGridSizeForNode (grid_coord &c1, grid_coord &core1, int nodeGridSize1, bool has1, grid_coord size1,
-                                        grid_coord &c2, grid_coord &core2, int nodeGridSize2, bool has2, grid_coord size2)
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ */
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-void
-ParallelGrid::CalculateGridSizeForNode (grid_coord &c1, grid_coord &core1, int nodeGridSize1, bool has1, grid_coord size1,
-                                        grid_coord &c2, grid_coord &core2, int nodeGridSize2, bool has2, grid_coord size2,
-                                        grid_coord &c3, grid_coord &core3, int nodeGridSize3, bool has3, grid_coord size3)
-#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-{
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  core1 = size1 / nodeGridSize1;
-
-  if (has1)
-  {
-    c1 = core1;
-  }
-  else
-  {
-    c1 = size1 - (nodeGridSize1 - 1) * (size1 / nodeGridSize1);
-  }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_1D_Z) ||
-          PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ) ||
-          PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  core2 = size2 / nodeGridSize2;
-
-  if (has2)
-  {
-    c2 = core2;
-  }
-  else
-  {
-    c2 = size2 - (nodeGridSize2 - 1) * (size2 / nodeGridSize2);
-  }
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ) ||
-          PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  core3 = size3 / nodeGridSize3;
-
-  if (has3)
-  {
-    c3 = core3;
-  }
-  else
-  {
-    c3 = size3 - (nodeGridSize3 - 1) * (size3 / nodeGridSize3);
-  }
-#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-} /* ParallelGrid::CalculateGridSizeForNode */
-
-/**
  * Init parallel buffers
  */
 void
@@ -2063,11 +2006,6 @@ ParallelGrid::InitBuffers ()
 void
 ParallelGrid::ParallelGridConstructor ()
 {
-  /*
-   * TODO: move this to layout
-   */
-  currentSize = GridInit (coreCurrentSize);
-
   grid_coord left_coord, right_coord;
   grid_coord down_coord, up_coord;
   grid_coord back_coord, front_coord;

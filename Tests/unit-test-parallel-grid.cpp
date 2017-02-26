@@ -19,6 +19,7 @@
 #ifdef PARALLEL_GRID
 
 #include "ParallelGrid.h"
+#include "ParallelYeeGridLayout.h"
 #include <mpi.h>
 
 #ifdef CXX11_ENABLED
@@ -70,15 +71,21 @@ int main (int argc, char** argv)
 #endif /* PRINT_MESSAGE */
 
 #ifdef GRID_1D
-  GridCoordinate2D overallSize (gridSizeX);
+  GridCoordinate1D overallSize (gridSizeX);
+  GridCoordinate1D pmlSize (10);
+  GridCoordinate1D tfsfSize (20);
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
   GridCoordinate2D overallSize (gridSizeX, gridSizeY);
+  GridCoordinate2D pmlSize (10, 10);
+  GridCoordinate2D tfsfSize (20, 20);
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
+  GridCoordinate3D pmlSize (10, 10, 10);
+  GridCoordinate3D tfsfSize (20, 20, 20);
 #endif /* GRID_3D */
 
   ParallelGridCoordinateFP desiredProportion;
@@ -118,7 +125,10 @@ int main (int argc, char** argv)
 
   ParallelGridCoordinate bufferSize (bufSize);
 
-  ParallelGrid grid (overallSize, bufferSize, 0);
+  ParallelYeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, PhysicsConst::Pi / 2, 0, 0);
+  yeeLayout.Initialize (parallelGridCore);
+
+  ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode (), yeeLayout.getCoreSizePerNode ());
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   for (int i = 0; i < grid.getSize ().getX (); ++i)

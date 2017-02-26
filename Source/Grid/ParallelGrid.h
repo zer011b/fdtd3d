@@ -296,8 +296,6 @@ private:
 
   void ParallelGridConstructor ();
 
-  ParallelGridCoordinate GridInit (ParallelGridCoordinate &);
-
   void InitBuffers ();
 
   void SendReceiveCoordinatesInit ();
@@ -350,33 +348,13 @@ private:
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-
-  void CalculateGridSizeForNode (grid_coord &, grid_coord &, int, bool, grid_coord);
-
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_1D_Z */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-
-  void CalculateGridSizeForNode (grid_coord &, grid_coord &, int, bool, grid_coord,
-                                 grid_coord &, grid_coord &, int, bool, grid_coord);
-
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-
-  void CalculateGridSizeForNode (grid_coord &, grid_coord &, int, bool, grid_coord,
-                                 grid_coord &, grid_coord &, int, bool, grid_coord,
-                                 grid_coord &, grid_coord &, int, bool, grid_coord);
-
-#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
 public:
 
   ParallelGrid (const ParallelGridCoordinate &,
                 const ParallelGridCoordinate &,
-                time_step);
+                time_step,
+                ParallelGridCoordinate,
+                ParallelGridCoordinate);
 
   virtual void nextTimeStep () CXX11_OVERRIDE;
 
