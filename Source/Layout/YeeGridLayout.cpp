@@ -321,38 +321,38 @@ YeeGridLayout::getEzStart (GridCoordinate3D start) const
 GridCoordinate3D
 YeeGridLayout::getHxStart (GridCoordinate3D start) const
 {
-  return minHxCoord + start + GridCoordinate3D (0, 0, 0);
+  return minHxCoord + start + GridCoordinate3D (1, 0, 0);
 }
 
 GridCoordinate3D
 YeeGridLayout::getHyStart (GridCoordinate3D start) const
 {
-  return minHyCoord + start + GridCoordinate3D (0, 0, 0);
+  return minHyCoord + start + GridCoordinate3D (0, 1, 0);
 }
 
 GridCoordinate3D
 YeeGridLayout::getHzStart (GridCoordinate3D start) const
 {
-  return minHzCoord + start + GridCoordinate3D (0, 0, 0);
+  return minHzCoord + start + GridCoordinate3D (0, 0, 1);
 }
 
 
 GridCoordinate3D
 YeeGridLayout::getExEnd (GridCoordinate3D end) const
 {
-  return minExCoord + end - GridCoordinate3D (0, 1, 1);
+  return minExCoord + end - GridCoordinate3D (1, 0, 0);
 }
 
 GridCoordinate3D
 YeeGridLayout::getEyEnd (GridCoordinate3D end) const
 {
-  return minEyCoord + end - GridCoordinate3D (1, 0, 1);
+  return minEyCoord + end - GridCoordinate3D (0, 1, 0);
 }
 
 GridCoordinate3D
 YeeGridLayout::getEzEnd (GridCoordinate3D end) const
 {
-  return minEzCoord + end - GridCoordinate3D (1, 1, 0);
+  return minEzCoord + end - GridCoordinate3D (0, 0, 1);
 }
 
 GridCoordinate3D
