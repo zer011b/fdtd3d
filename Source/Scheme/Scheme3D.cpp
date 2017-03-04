@@ -3810,9 +3810,9 @@ Scheme3D::initGrids ()
 
         GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (OmegaPE.getTotalSize ());
 
-        if (posAbs.getX () >= size.getX () / 4 && posAbs.getX () < 3*size.getX ()/4
-            && posAbs.getY () >= yeeLayout->getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout->getLeftBorderPML ().getY ()
-            && posAbs.getZ () >= yeeLayout->getLeftBorderPML ().getZ () && posAbs.getZ () < size.getZ () - yeeLayout->getLeftBorderPML ().getZ ())
+        if (posAbs.getX () >= 20 && posAbs.getX () < 60
+            && posAbs.getY () >= 20 && posAbs.getY () < 140
+            && posAbs.getZ () >= 20 && posAbs.getZ () < 140)
         {
 
 //         if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
@@ -3850,9 +3850,9 @@ Scheme3D::initGrids ()
 
         GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (OmegaPM.getTotalSize ());
 
-        if (posAbs.getX () >= size.getX () / 4 && posAbs.getX () < 3*size.getX ()/4
-            && posAbs.getY () >= yeeLayout->getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout->getLeftBorderPML ().getY ()
-            && posAbs.getZ () >= yeeLayout->getLeftBorderPML ().getZ () && posAbs.getZ () < size.getZ () - yeeLayout->getLeftBorderPML ().getZ ())
+        if (posAbs.getX () >= 20 && posAbs.getX () < 60
+            && posAbs.getY () >= 20 && posAbs.getY () < 140
+            && posAbs.getZ () >= 20 && posAbs.getZ () < 140)
         {
 
 //         if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
