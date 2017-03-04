@@ -302,9 +302,9 @@ public:
             || (doUseTFSF
                 && incidentWaveAngle1 == PhysicsConst::Pi / 2
                 && (incidentWaveAngle2 == PhysicsConst::Pi / 4 || incidentWaveAngle2 == 0)
-                && yeeLayout->getSizeTFSF ()) != GridCoordinate3D (0, 0, 0)));
+                && yeeLayout->getSizeTFSF () != GridCoordinate3D (0, 0, 0)));
 
-    ASSERT (!doUsePML || (doUsePML && (yeeLayout->getSizePML ()) != GridCoordinate3D (0, 0, 0))));
+    ASSERT (!doUsePML || (doUsePML && (yeeLayout->getSizePML () != GridCoordinate3D (0, 0, 0))));
 
     ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
 
