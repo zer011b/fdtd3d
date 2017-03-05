@@ -2314,6 +2314,17 @@ ParallelGrid::getRelativePosition (ParallelGridCoordinate pos) /**< total positi
 } /* ParallelGrid::getRelativePosition */
 
 /**
+ * Get field point value at relative coordinate in grid
+ *
+ * @return field point value
+ */
+FieldPointValue *
+ParallelGrid::getFieldPointValueByRelativePos (const ParallelGridCoordinate &relPosition) /**< relative coordinate in grid */
+{
+  return getFieldPointValue (getRelativePosition (relPosition));
+} /* ParallelGrid::getFieldPointValueByRelativePos */
+
+/**
  * Get first coordinate from which to perfrom computations at current step
  *
  * @return first coordinate from which to perfrom computations at current step

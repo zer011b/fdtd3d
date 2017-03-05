@@ -148,6 +148,23 @@ private:
   void calculateHyStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
   void calculateHzStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
 
+  FieldValue approximateIncidentWave (GridCoordinateFP3D, FPValue, Grid<GridCoordinate1D> &);
+  FieldValue approximateIncidentWaveE (GridCoordinateFP3D);
+  FieldValue approximateIncidentWaveH (GridCoordinateFP3D);
+
+  void calculateExTFSF (GridCoordinate3D, FieldValue &, FieldValue &, FieldValue &, FieldValue &,
+                        GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
+  void calculateEyTFSF (GridCoordinate3D, FieldValue &, FieldValue &, FieldValue &, FieldValue &,
+                        GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
+  void calculateEzTFSF (GridCoordinate3D, FieldValue &, FieldValue &, FieldValue &, FieldValue &,
+                        GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
+  void calculateHxTFSF (GridCoordinate3D, FieldValue &, FieldValue &, FieldValue &, FieldValue &,
+                        GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
+  void calculateHyTFSF (GridCoordinate3D, FieldValue &, FieldValue &, FieldValue &, FieldValue &,
+                        GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
+  void calculateHzTFSF (GridCoordinate3D, FieldValue &, FieldValue &, FieldValue &, FieldValue &,
+                        GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
+
   void performExSteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performEySteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performEzSteps (time_step, GridCoordinate3D, GridCoordinate3D);
