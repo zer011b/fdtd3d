@@ -19,6 +19,8 @@
 
 #ifdef GRID_3D
 
+#define DO_USE_3D_MODE (true)
+
 void
 Scheme3D::performPlaneWaveESteps (time_step t)
 {
@@ -127,6 +129,116 @@ Scheme3D::performExSteps (time_step t, GridCoordinate3D ExStart, GridCoordinate3
   }
 }
 
+FieldValue
+Scheme3D::approximateIncidentWave (GridCoordinateFP3D realCoord, FPValue dDiff, Grid<GridCoordinate1D> &FieldInc)
+{
+  GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
+
+  FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+  FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+  FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
+  FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
+              + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
+              + z * cos (incidentWaveAngle1) - dDiff;
+  FPValue coordD1 = (FPValue) ((grid_iter) d);
+  FPValue coordD2 = coordD1 + 1;
+  FPValue proportionD2 = d - coordD1;
+  FPValue proportionD1 = 1 - proportionD2;
+
+  GridCoordinate1D pos1 (coordD1);
+  GridCoordinate1D pos2 (coordD2);
+
+  FieldPointValue *val1 = FieldInc.getFieldPointValue (pos1);
+  FieldPointValue *val2 = FieldInc.getFieldPointValue (pos2);
+
+  return proportionD1 * val1->getPrevValue () + proportionD2 * val2->getPrevValue ();
+}
+
+FieldValue
+Scheme3D::approximateIncidentWaveE (GridCoordinateFP3D realCoord)
+{
+  return approximateIncidentWave (realCoord, 0.0, EInc);
+}
+
+FieldValue
+Scheme3D::approximateIncidentWaveH (GridCoordinateFP3D realCoord)
+{
+  return approximateIncidentWave (realCoord, 0.5, HInc);
+}
+
+void
+Scheme3D::calculateExTFSF (GridCoordinate3D posAbs,
+                           FieldValue &valHz1,
+                           FieldValue &valHz2,
+                           FieldValue &valHy1,
+                           FieldValue &valHy2,
+                           GridCoordinate3D posDown,
+                           GridCoordinate3D posUp,
+                           GridCoordinate3D posBack,
+                           GridCoordinate3D posFront)
+{
+  bool do_need_update_down = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::DOWN, DO_USE_3D_MODE);
+  bool do_need_update_up = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::UP, DO_USE_3D_MODE);
+
+  bool do_need_update_back = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::BACK, DO_USE_3D_MODE);
+  bool do_need_update_front = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT, DO_USE_3D_MODE);
+
+  GridCoordinate3D auxPosY;
+  GridCoordinate3D auxPosZ;
+  FieldValue diffY;
+  FieldValue diffZ;
+
+  if (do_need_update_down)
+  {
+    auxPosY = posUp;
+  }
+  else if (do_need_update_up)
+  {
+    auxPosY = posDown;
+  }
+
+  if (do_need_update_back)
+  {
+    auxPosZ = posFront;
+  }
+  else if (do_need_update_front)
+  {
+    auxPosZ = posBack;
+  }
+
+  if (do_need_update_down || do_need_update_up)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (auxPosY));
+
+    diffY = approximateIncidentWaveH (realCoord);
+  }
+
+  if (do_need_update_back || do_need_update_front)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (auxPosZ));
+
+    diffZ = approximateIncidentWaveH (realCoord);
+  }
+
+  if (do_need_update_down)
+  {
+    valHz1 -= -diffY * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
+  }
+  else if (do_need_update_up)
+  {
+    valHz2 -= -diffY * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
+  }
+
+  if (do_need_update_back)
+  {
+    valHy1 -= diffZ * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+  }
+  else if (do_need_update_front)
+  {
+    valHy2 -= diffZ * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+  }
+}
+
 void
 Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate3D ExEnd)
 {
@@ -149,14 +261,11 @@ Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate
         GridCoordinate3D posBack = yeeLayout->getExCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getExCircuitElement (pos, LayoutDirection::FRONT);
 
-        FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-        FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
+        FieldPointValue* valEps1 = Eps.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
+        FieldPointValue* valEps2 = Eps.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
+                                                          Approximation::getMaterial (valEps2));
 
         FieldPointValue* valHz1 = Hz.getFieldPointValue (posUp);
         FieldPointValue* valHz2 = Hz.getFieldPointValue (posDown);
@@ -172,102 +281,7 @@ Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate
 
         if (useTFSF)
         {
-          bool do_need_update_down = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::DOWN, true);
-          bool do_need_update_up = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::UP, true);
-
-          bool do_need_update_back = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::BACK, true);
-          bool do_need_update_front = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT, true);
-
-          GridCoordinate3D auxPosY;
-          GridCoordinate3D auxPosZ;
-          FieldValue diffY;
-          FieldValue diffZ;
-
-          if (do_need_update_down)
-          {
-            auxPosY = posUp;
-          }
-          else if (do_need_update_up)
-          {
-            auxPosY = posDown;
-          }
-
-          if (do_need_update_back)
-          {
-            auxPosZ = posFront;
-          }
-          else if (do_need_update_front)
-          {
-            auxPosZ = posBack;
-          }
-
-          if (do_need_update_down || do_need_update_up)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (auxPosY));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffY = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_back || do_need_update_front)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (auxPosZ));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffZ = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_down)
-          {
-            prevHz1 -= -diffY * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-          else if (do_need_update_up)
-          {
-            prevHz2 -= -diffY * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-
-          if (do_need_update_back)
-          {
-            prevHy1 -= diffZ * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
-          else if (do_need_update_front)
-          {
-            prevHy2 -= diffZ * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
+          calculateExTFSF (posAbs, prevHz1, prevHz2, prevHy1, prevHy2, posDown, posUp, posBack, posFront);
         }
 
         FieldValue val = calculateEx_3D (valEx->getPrevValue (),
@@ -307,14 +321,11 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
         GridCoordinate3D posBack = yeeLayout->getExCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getExCircuitElement (pos, LayoutDirection::FRONT);
 
-        FieldPointValue* valSigmaY1 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-        FieldPointValue* valSigmaY2 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
+        FieldPointValue* valSigmaY1 = SigmaY.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
+        FieldPointValue* valSigmaY2 = SigmaY.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue sigmaY = (valSigmaY1->getCurValue ().real () + valSigmaY2->getCurValue ().real ()) / 2;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue sigmaY = (valSigmaY1->getCurValue () + valSigmaY2->getCurValue ()) / 2;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
+                                                             Approximation::getMaterial (valSigmaY2));
 
         FieldPointValue* valHz1 = Hz.getFieldPointValue (posUp);
         FieldPointValue* valHz2 = Hz.getFieldPointValue (posDown);
@@ -330,102 +341,7 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
 
         if (useTFSF)
         {
-          bool do_need_update_down = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::DOWN, true);
-          bool do_need_update_up = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::UP, true);
-
-          bool do_need_update_back = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::BACK, true);
-          bool do_need_update_front = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT, true);
-
-          GridCoordinate3D auxPosY;
-          GridCoordinate3D auxPosZ;
-          FieldValue diffY;
-          FieldValue diffZ;
-
-          if (do_need_update_down)
-          {
-            auxPosY = posUp;
-          }
-          else if (do_need_update_up)
-          {
-            auxPosY = posDown;
-          }
-
-          if (do_need_update_back)
-          {
-            auxPosZ = posFront;
-          }
-          else if (do_need_update_front)
-          {
-            auxPosZ = posBack;
-          }
-
-          if (do_need_update_down || do_need_update_up)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (auxPosY));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffY = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_back || do_need_update_front)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (auxPosZ));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffZ = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_down)
-          {
-            prevHz1 -= -diffY * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-          else if (do_need_update_up)
-          {
-            prevHz2 -= -diffY * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-
-          if (do_need_update_back)
-          {
-            prevHy1 -= diffZ * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
-          else if (do_need_update_front)
-          {
-            prevHy2 -= diffZ * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
+          calculateExTFSF (posAbs, prevHz1, prevHz2, prevHy1, prevHy2, posDown, posUp, posBack, posFront);
         }
 
         /*
@@ -464,25 +380,26 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
           FieldPointValue* valD1x = D1x.getFieldPointValue (pos);
           FieldPointValue* valDx = Dx.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
-          FieldPointValue* valGammaE1 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-          FieldPointValue* valGammaE2 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
+          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
+          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
 
-          FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-          FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
+          FieldPointValue* valGammaE1 = GammaE.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
+          FieldPointValue* valGammaE2 = GammaE.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
 
-#ifdef COMPLEX_FIELD_VALUES
-          FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
+          FieldPointValue* valEps1 = Eps.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
+          FieldPointValue* valEps2 = Eps.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
 
-          FPValue omegaPE = (valOmegaPE1->getCurValue ().real () + valOmegaPE2->getCurValue ().real ()) / 2;
-          FPValue gammaE = (valGammaE1->getCurValue ().real () + valGammaE2->getCurValue ().real ()) / 2;
-#else /* COMPLEX_FIELD_VALUES */
-          FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
+          FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
+                                                            Approximation::getMaterial (valEps2));
 
-          FPValue omegaPE = (valOmegaPE1->getCurValue () + valOmegaPE2->getCurValue ()) / 2;
-          FPValue gammaE = (valGammaE1->getCurValue () + valGammaE2->getCurValue ()) / 2;
-#endif /* !COMPLEX_FIELD_VALUES */
+          FPValue omegaPE;
+          FPValue gammaE;
+          Approximation::approximateDrudeModel (omegaPE,
+                                                gammaE,
+                                                Approximation::getMaterial (valOmegaPE1),
+                                                Approximation::getMaterial (valOmegaPE2),
+                                                Approximation::getMaterial (valGammaE1),
+                                                Approximation::getMaterial (valGammaE2));
 
           /*
            * FIXME: precalculate coefficients
@@ -531,23 +448,21 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
 
         FieldPointValue* valSigmaX1 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
         FieldPointValue* valSigmaX2 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
+
         FieldPointValue* valSigmaZ1 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
         FieldPointValue* valSigmaZ2 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
 
         FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
         FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
+        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
+                                                          Approximation::getMaterial (valEps2));
 
-        FPValue sigmaX = (valSigmaX1->getCurValue ().real () + valSigmaX2->getCurValue ().real ()) / 2;
-        FPValue sigmaZ = (valSigmaZ1->getCurValue ().real () + valSigmaZ2->getCurValue ().real ()) / 2;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
+        FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
+                                                             Approximation::getMaterial (valSigmaX2));
 
-        FPValue sigmaX = (valSigmaX1->getCurValue () + valSigmaX2->getCurValue ()) / 2;
-        FPValue sigmaZ = (valSigmaZ1->getCurValue () + valSigmaZ2->getCurValue ()) / 2;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
+                                                             Approximation::getMaterial (valSigmaZ2));
 
         FPValue modifier = eps * eps0;
         if (useMetamaterials)
@@ -592,6 +507,79 @@ Scheme3D::performEySteps (time_step t, GridCoordinate3D EyStart, GridCoordinate3
 }
 
 void
+Scheme3D::calculateEyTFSF (GridCoordinate3D posAbs,
+                           FieldValue &valHz1,
+                           FieldValue &valHz2,
+                           FieldValue &valHx1,
+                           FieldValue &valHx2,
+                           GridCoordinate3D posLeft,
+                           GridCoordinate3D posRight,
+                           GridCoordinate3D posBack,
+                           GridCoordinate3D posFront)
+{
+  bool do_need_update_left = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::LEFT, DO_USE_3D_MODE);
+  bool do_need_update_right = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::RIGHT, DO_USE_3D_MODE);
+
+  bool do_need_update_back = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::BACK, DO_USE_3D_MODE);
+  bool do_need_update_front = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::FRONT, DO_USE_3D_MODE);
+
+  GridCoordinate3D auxPosX;
+  GridCoordinate3D auxPosZ;
+  FieldValue diffX;
+  FieldValue diffZ;
+
+  if (do_need_update_left)
+  {
+    auxPosX = posRight;
+  }
+  else if (do_need_update_right)
+  {
+    auxPosX = posLeft;
+  }
+
+  if (do_need_update_back)
+  {
+    auxPosZ = posFront;
+  }
+  else if (do_need_update_front)
+  {
+    auxPosZ = posBack;
+  }
+
+  if (do_need_update_left || do_need_update_right)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (auxPosX));
+
+    diffX = approximateIncidentWaveH (realCoord);
+  }
+
+  if (do_need_update_back || do_need_update_front)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (auxPosZ));
+
+    diffZ = approximateIncidentWaveH (realCoord);
+  }
+
+  if (do_need_update_left)
+  {
+    valHz1 -= -diffX * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
+  }
+  else if (do_need_update_right)
+  {
+    valHz2 -= -diffX * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
+  }
+
+  if (do_need_update_back)
+  {
+    valHx1 -= diffZ * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+  }
+  else if (do_need_update_front)
+  {
+    valHx2 -= diffZ * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+  }
+}
+
+void
 Scheme3D::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate3D EyEnd)
 {
   FPValue eps0 = PhysicsConst::Eps0;
@@ -616,11 +604,8 @@ Scheme3D::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate
         FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
         FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
+                                                          Approximation::getMaterial (valEps2));
 
         FieldPointValue* valHz1 = Hz.getFieldPointValue (posRight);
         FieldPointValue* valHz2 = Hz.getFieldPointValue (posLeft);
@@ -636,102 +621,7 @@ Scheme3D::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate
 
         if (useTFSF)
         {
-          bool do_need_update_left = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::LEFT, true);
-          bool do_need_update_right = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::RIGHT, true);
-
-          bool do_need_update_back = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::BACK, true);
-          bool do_need_update_front = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::FRONT, true);
-
-          GridCoordinate3D auxPosX;
-          GridCoordinate3D auxPosZ;
-          FieldValue diffX;
-          FieldValue diffZ;
-
-          if (do_need_update_left)
-          {
-            auxPosX = posRight;
-          }
-          else if (do_need_update_right)
-          {
-            auxPosX = posLeft;
-          }
-
-          if (do_need_update_back)
-          {
-            auxPosZ = posFront;
-          }
-          else if (do_need_update_front)
-          {
-            auxPosZ = posBack;
-          }
-
-          if (do_need_update_left || do_need_update_right)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (auxPosX));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffX = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_back || do_need_update_front)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (auxPosZ));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffZ = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_left)
-          {
-            prevHz1 -= -diffX * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-          else if (do_need_update_right)
-          {
-            prevHz2 -= -diffX * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-
-          if (do_need_update_back)
-          {
-            prevHx1 -= diffZ * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
-          else if (do_need_update_front)
-          {
-            prevHx2 -= diffZ * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
+          calculateEyTFSF (posAbs, prevHz1, prevHz2, prevHx1, prevHx2, posLeft, posRight, posBack, posFront);
         }
 
         FieldValue val = calculateEy_3D (valEy->getPrevValue (),
@@ -774,11 +664,8 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
         FieldPointValue* valSigmaZ1 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
         FieldPointValue* valSigmaZ2 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue sigmaZ = (valSigmaZ1->getCurValue ().real () + valSigmaZ2->getCurValue ().real ()) / 2;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue sigmaZ = (valSigmaZ1->getCurValue () + valSigmaZ2->getCurValue ()) / 2;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
+                                                             Approximation::getMaterial (valSigmaZ2));
 
         FieldPointValue* valHz1 = Hz.getFieldPointValue (posRight);
         FieldPointValue* valHz2 = Hz.getFieldPointValue (posLeft);
@@ -794,102 +681,7 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
 
         if (useTFSF)
         {
-          bool do_need_update_left = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::LEFT, true);
-          bool do_need_update_right = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::RIGHT, true);
-
-          bool do_need_update_back = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::BACK, true);
-          bool do_need_update_front = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::FRONT, true);
-
-          GridCoordinate3D auxPosX;
-          GridCoordinate3D auxPosZ;
-          FieldValue diffX;
-          FieldValue diffZ;
-
-          if (do_need_update_left)
-          {
-            auxPosX = posRight;
-          }
-          else if (do_need_update_right)
-          {
-            auxPosX = posLeft;
-          }
-
-          if (do_need_update_back)
-          {
-            auxPosZ = posFront;
-          }
-          else if (do_need_update_front)
-          {
-            auxPosZ = posBack;
-          }
-
-          if (do_need_update_left || do_need_update_right)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (auxPosX));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffX = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_back || do_need_update_front)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (auxPosZ));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffZ = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_left)
-          {
-            prevHz1 -= -diffX * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-          else if (do_need_update_right)
-          {
-            prevHz2 -= -diffX * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-
-          if (do_need_update_back)
-          {
-            prevHx1 -= diffZ * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
-          else if (do_need_update_front)
-          {
-            prevHx2 -= diffZ * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
+          calculateEyTFSF (posAbs, prevHz1, prevHz2, prevHx1, prevHx2, posLeft, posRight, posBack, posFront);
         }
 
         /*
@@ -930,23 +722,24 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
 
           FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
           FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
+
           FieldPointValue* valGammaE1 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
           FieldPointValue* valGammaE2 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
 
           FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
           FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
 
-  #ifdef COMPLEX_FIELD_VALUES
-          FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
+          FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
+                                                            Approximation::getMaterial (valEps2));
 
-          FPValue omegaPE = (valOmegaPE1->getCurValue ().real () + valOmegaPE2->getCurValue ().real ()) / 2;
-          FPValue gammaE = (valGammaE1->getCurValue ().real () + valGammaE2->getCurValue ().real ()) / 2;
-  #else /* COMPLEX_FIELD_VALUES */
-          FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
-
-          FPValue omegaPE = (valOmegaPE1->getCurValue () + valOmegaPE2->getCurValue ()) / 2;
-          FPValue gammaE = (valGammaE1->getCurValue () + valGammaE2->getCurValue ()) / 2;
-  #endif /* !COMPLEX_FIELD_VALUES */
+          FPValue omegaPE;
+          FPValue gammaE;
+          Approximation::approximateDrudeModel (omegaPE,
+                                                gammaE,
+                                                Approximation::getMaterial (valOmegaPE1),
+                                                Approximation::getMaterial (valOmegaPE2),
+                                                Approximation::getMaterial (valGammaE1),
+                                                Approximation::getMaterial (valGammaE2));
 
           /*
            * FIXME: precalculate coefficients
@@ -1002,17 +795,14 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
         FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
         FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
+        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
+                                                          Approximation::getMaterial (valEps2));
 
-        FPValue sigmaX = (valSigmaX1->getCurValue ().real () + valSigmaX2->getCurValue ().real ()) / 2;
-        FPValue sigmaY = (valSigmaY1->getCurValue ().real () + valSigmaY2->getCurValue ().real ()) / 2;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
+        FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
+                                                             Approximation::getMaterial (valSigmaX2));
 
-        FPValue sigmaX = (valSigmaX1->getCurValue () + valSigmaX2->getCurValue ()) / 2;
-        FPValue sigmaY = (valSigmaY1->getCurValue () + valSigmaY2->getCurValue ()) / 2;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
+                                                             Approximation::getMaterial (valSigmaY2));
 
         FPValue modifier = eps * eps0;
         if (useMetamaterials)
@@ -1057,6 +847,79 @@ Scheme3D::performEzSteps (time_step t, GridCoordinate3D EzStart, GridCoordinate3
 }
 
 void
+Scheme3D::calculateEzTFSF (GridCoordinate3D posAbs,
+                           FieldValue &valHy1,
+                           FieldValue &valHy2,
+                           FieldValue &valHx1,
+                           FieldValue &valHx2,
+                           GridCoordinate3D posLeft,
+                           GridCoordinate3D posRight,
+                           GridCoordinate3D posDown,
+                           GridCoordinate3D posUp)
+{
+  bool do_need_update_left = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::LEFT, DO_USE_3D_MODE);
+  bool do_need_update_right = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::RIGHT, DO_USE_3D_MODE);
+
+  bool do_need_update_down = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN, DO_USE_3D_MODE);
+  bool do_need_update_up = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP, DO_USE_3D_MODE);
+
+  GridCoordinate3D auxPosX;
+  GridCoordinate3D auxPosY;
+  FieldValue diffX;
+  FieldValue diffY;
+
+  if (do_need_update_left)
+  {
+    auxPosX = posRight;
+  }
+  else if (do_need_update_right)
+  {
+    auxPosX = posLeft;
+  }
+
+  if (do_need_update_down)
+  {
+    auxPosY = posUp;
+  }
+  else if (do_need_update_up)
+  {
+    auxPosY = posDown;
+  }
+
+  if (do_need_update_left || do_need_update_right)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (auxPosX));
+
+    diffX = approximateIncidentWaveH (realCoord);
+  }
+
+  if (do_need_update_down || do_need_update_up)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (auxPosY));
+
+    diffY = approximateIncidentWaveH (realCoord);
+  }
+
+  if (do_need_update_left)
+  {
+    valHy1 -= diffX * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+  }
+  else if (do_need_update_right)
+  {
+    valHy2 -= diffX * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+  }
+
+  if (do_need_update_down)
+  {
+    valHx1 -= diffY * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+  }
+  else if (do_need_update_up)
+  {
+    valHx2 -= diffY * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+  }
+}
+
+void
 Scheme3D::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate3D EzEnd)
 {
   FPValue eps0 = PhysicsConst::Eps0;
@@ -1081,11 +944,8 @@ Scheme3D::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate
         FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
         FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
+                                                          Approximation::getMaterial (valEps2));
 
         FieldPointValue* valHy1 = Hy.getFieldPointValue (posRight);
         FieldPointValue* valHy2 = Hy.getFieldPointValue (posLeft);
@@ -1100,102 +960,7 @@ Scheme3D::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate
 
         if (useTFSF)
         {
-          bool do_need_update_left = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::LEFT, true);
-          bool do_need_update_right = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::RIGHT, true);
-
-          bool do_need_update_down = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN, true);
-          bool do_need_update_up = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP, true);
-
-          GridCoordinate3D auxPosX;
-          GridCoordinate3D auxPosY;
-          FieldValue diffX;
-          FieldValue diffY;
-
-          if (do_need_update_left)
-          {
-            auxPosX = posRight;
-          }
-          else if (do_need_update_right)
-          {
-            auxPosX = posLeft;
-          }
-
-          if (do_need_update_down)
-          {
-            auxPosY = posUp;
-          }
-          else if (do_need_update_up)
-          {
-            auxPosY = posDown;
-          }
-
-          if (do_need_update_left || do_need_update_right)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (auxPosX));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffX = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_down || do_need_update_up)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (auxPosY));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffY = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_left)
-          {
-            prevHy1 -= diffX * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
-          else if (do_need_update_right)
-          {
-            prevHy2 -= diffX * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
-
-          if (do_need_update_down)
-          {
-            prevHx1 -= diffY * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
-          else if (do_need_update_up)
-          {
-            prevHx2 -= diffY * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
+          calculateEzTFSF (posAbs, prevHy1, prevHy2, prevHx1, prevHx2, posLeft, posRight, posDown, posUp);
         }
 
         FieldValue val = calculateEz_3D (valEz->getPrevValue (),
@@ -1238,11 +1003,8 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
         FieldPointValue* valSigmaX1 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
         FieldPointValue* valSigmaX2 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue sigmaX = (valSigmaX1->getCurValue ().real () + valSigmaX2->getCurValue ().real ()) / 2;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue sigmaX = (valSigmaX1->getCurValue () + valSigmaX2->getCurValue ()) / 2;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
+                                                             Approximation::getMaterial (valSigmaX2));
 
         FieldPointValue* valHy1 = Hy.getFieldPointValue (posRight);
         FieldPointValue* valHy2 = Hy.getFieldPointValue (posLeft);
@@ -1257,102 +1019,7 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
 
         if (useTFSF)
         {
-          bool do_need_update_left = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::LEFT, true);
-          bool do_need_update_right = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::RIGHT, true);
-
-          bool do_need_update_down = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN, true);
-          bool do_need_update_up = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP, true);
-
-          GridCoordinate3D auxPosX;
-          GridCoordinate3D auxPosY;
-          FieldValue diffX;
-          FieldValue diffY;
-
-          if (do_need_update_left)
-          {
-            auxPosX = posRight;
-          }
-          else if (do_need_update_right)
-          {
-            auxPosX = posLeft;
-          }
-
-          if (do_need_update_down)
-          {
-            auxPosY = posUp;
-          }
-          else if (do_need_update_up)
-          {
-            auxPosY = posDown;
-          }
-
-          if (do_need_update_left || do_need_update_right)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (auxPosX));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffX = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_down || do_need_update_up)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (auxPosY));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1) - 0.5;
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valH1 = HInc.getFieldPointValue (pos1);
-            FieldPointValue *valH2 = HInc.getFieldPointValue (pos2);
-
-            diffY = proportionD1 * valH1->getPrevValue () + proportionD2 * valH2->getPrevValue ();
-          }
-
-          if (do_need_update_left)
-          {
-            prevHy1 -= diffX * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
-          else if (do_need_update_right)
-          {
-            prevHy2 -= diffX * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
-
-          if (do_need_update_down)
-          {
-            prevHx1 -= diffY * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
-          else if (do_need_update_up)
-          {
-            prevHx2 -= diffY * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
+          calculateEzTFSF (posAbs, prevHy1, prevHy2, prevHx1, prevHx2, posLeft, posRight, posDown, posUp);
         }
 
         /*
@@ -1401,17 +1068,17 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
           FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
           FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
 
-#ifdef COMPLEX_FIELD_VALUES
-          FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
+          FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
+                                                            Approximation::getMaterial (valEps2));
 
-          FPValue omegaPE = (valOmegaPE1->getCurValue ().real () + valOmegaPE2->getCurValue ().real ()) / 2;
-          FPValue gammaE = (valGammaE1->getCurValue ().real () + valGammaE2->getCurValue ().real ()) / 2;
-#else /* COMPLEX_FIELD_VALUES */
-          FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
-
-          FPValue omegaPE = (valOmegaPE1->getCurValue () + valOmegaPE2->getCurValue ()) / 2;
-          FPValue gammaE = (valGammaE1->getCurValue () + valGammaE2->getCurValue ()) / 2;
-#endif /* !COMPLEX_FIELD_VALUES */
+          FPValue omegaPE;
+          FPValue gammaE;
+          Approximation::approximateDrudeModel (omegaPE,
+                                                gammaE,
+                                                Approximation::getMaterial (valOmegaPE1),
+                                                Approximation::getMaterial (valOmegaPE2),
+                                                Approximation::getMaterial (valGammaE1),
+                                                Approximation::getMaterial (valGammaE2));
 
           /*
            * FIXME: precalculate coefficients
@@ -1466,17 +1133,14 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
         FieldPointValue* valSigmaZ1 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
         FieldPointValue* valSigmaZ2 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue eps = (valEps1->getCurValue ().real () + valEps2->getCurValue ().real ()) / 2;
+        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
+                                                          Approximation::getMaterial (valEps2));
 
-        FPValue sigmaY = (valSigmaY1->getCurValue ().real () + valSigmaY2->getCurValue ().real ()) / 2;
-        FPValue sigmaZ = (valSigmaZ1->getCurValue ().real () + valSigmaZ2->getCurValue ().real ()) / 2;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue eps = (valEps1->getCurValue () + valEps2->getCurValue ()) / 2;
+        FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
+                                                             Approximation::getMaterial (valSigmaY2));
 
-        FPValue sigmaY = (valSigmaY1->getCurValue () + valSigmaY2->getCurValue ()) / 2;
-        FPValue sigmaZ = (valSigmaZ1->getCurValue () + valSigmaZ2->getCurValue ()) / 2;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
+                                                             Approximation::getMaterial (valSigmaZ2));
 
         FPValue modifier = eps * eps0;
         if (useMetamaterials)
@@ -1524,6 +1188,79 @@ Scheme3D::performHxSteps (time_step t, GridCoordinate3D HxStart, GridCoordinate3
 }
 
 void
+Scheme3D::calculateHxTFSF (GridCoordinate3D posAbs,
+                           FieldValue &valEz1,
+                           FieldValue &valEz2,
+                           FieldValue &valEy1,
+                           FieldValue &valEy2,
+                           GridCoordinate3D posDown,
+                           GridCoordinate3D posUp,
+                           GridCoordinate3D posBack,
+                           GridCoordinate3D posFront)
+{
+  bool do_need_update_down = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN, DO_USE_3D_MODE);
+  bool do_need_update_up = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP, DO_USE_3D_MODE);
+
+  bool do_need_update_back = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::BACK, DO_USE_3D_MODE);
+  bool do_need_update_front = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::FRONT, DO_USE_3D_MODE);
+
+  GridCoordinate3D auxPosY;
+  GridCoordinate3D auxPosZ;
+  FieldValue diffY;
+  FieldValue diffZ;
+
+  if (do_need_update_down)
+  {
+    auxPosY = posDown;
+  }
+  else if (do_need_update_up)
+  {
+    auxPosY = posUp;
+  }
+
+  if (do_need_update_back)
+  {
+    auxPosZ = posBack;
+  }
+  else if (do_need_update_front)
+  {
+    auxPosZ = posFront;
+  }
+
+  if (do_need_update_down || do_need_update_up)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (auxPosY));
+
+    diffY = approximateIncidentWaveE (realCoord);
+  }
+
+  if (do_need_update_back || do_need_update_front)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (auxPosZ));
+
+    diffZ = approximateIncidentWaveE (realCoord);
+  }
+
+  if (do_need_update_down)
+  {
+    valEz2 += diffY * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
+  }
+  else if (do_need_update_up)
+  {
+    valEz1 += diffY * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
+  }
+
+  if (do_need_update_back)
+  {
+    valEy2 += diffZ * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+  }
+  else if (do_need_update_front)
+  {
+    valEy1 += diffZ * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+  }
+}
+
+void
 Scheme3D::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinate3D HxEnd)
 {
   FPValue eps0 = PhysicsConst::Eps0;
@@ -1551,11 +1288,10 @@ Scheme3D::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinate
         FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
         FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue mu = (valMu1->getCurValue ().real () + valMu2->getCurValue ().real () + valMu3->getCurValue ().real () + valMu4->getCurValue ().real ()) / 4;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue mu = (valMu1->getCurValue () + valMu2->getCurValue () + valMu3->getCurValue () + valMu4->getCurValue ()) / 4;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
+                                                         Approximation::getMaterial (valMu2),
+                                                         Approximation::getMaterial (valMu3),
+                                                         Approximation::getMaterial (valMu4));
 
         FieldPointValue* valEz1 = Ez.getFieldPointValue (posUp);
         FieldPointValue* valEz2 = Ez.getFieldPointValue (posDown);
@@ -1571,102 +1307,7 @@ Scheme3D::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinate
 
         if (useTFSF)
         {
-          bool do_need_update_down = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN, true);
-          bool do_need_update_up = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP, true);
-
-          bool do_need_update_back = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::BACK, true);
-          bool do_need_update_front = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::FRONT, true);
-
-          GridCoordinate3D auxPosY;
-          GridCoordinate3D auxPosZ;
-          FieldValue diffY;
-          FieldValue diffZ;
-
-          if (do_need_update_down)
-          {
-            auxPosY = posDown;
-          }
-          else if (do_need_update_up)
-          {
-            auxPosY = posUp;
-          }
-
-          if (do_need_update_back)
-          {
-            auxPosZ = posBack;
-          }
-          else if (do_need_update_front)
-          {
-            auxPosZ = posFront;
-          }
-
-          if (do_need_update_down || do_need_update_up)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (auxPosY));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffY = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_back || do_need_update_front)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (auxPosZ));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffZ = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_down)
-          {
-            prevEz2 += diffY * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-          else if (do_need_update_up)
-          {
-            prevEz1 += diffY * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-
-          if (do_need_update_back)
-          {
-            prevEy2 += diffZ * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
-          else if (do_need_update_front)
-          {
-            prevEy1 += diffZ * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
+          calculateHxTFSF (posAbs, prevEz1, prevEz2, prevEy1, prevEy2, posDown, posUp, posBack, posFront);
         }
 
         FieldValue val = calculateHx_3D (valHx->getPrevValue (),
@@ -1712,11 +1353,10 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
         FieldPointValue* valSigmaY3 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
         FieldPointValue* valSigmaY4 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue sigmaY = (valSigmaY1->getCurValue ().real () + valSigmaY2->getCurValue ().real () + valSigmaY3->getCurValue ().real () + valSigmaY4->getCurValue ().real ()) / 4;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue sigmaY = (valSigmaY1->getCurValue () + valSigmaY2->getCurValue () + valSigmaY3->getCurValue () + valSigmaY4->getCurValue ()) / 4;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
+                                                             Approximation::getMaterial (valSigmaY2),
+                                                             Approximation::getMaterial (valSigmaY3),
+                                                             Approximation::getMaterial (valSigmaY4));
 
         FieldPointValue* valEz1 = Ez.getFieldPointValue (posUp);
         FieldPointValue* valEz2 = Ez.getFieldPointValue (posDown);
@@ -1732,102 +1372,7 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
 
         if (useTFSF)
         {
-          bool do_need_update_down = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN, true);
-          bool do_need_update_up = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP, true);
-
-          bool do_need_update_back = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::BACK, true);
-          bool do_need_update_front = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::FRONT, true);
-
-          GridCoordinate3D auxPosY;
-          GridCoordinate3D auxPosZ;
-          FieldValue diffY;
-          FieldValue diffZ;
-
-          if (do_need_update_down)
-          {
-            auxPosY = posDown;
-          }
-          else if (do_need_update_up)
-          {
-            auxPosY = posUp;
-          }
-
-          if (do_need_update_back)
-          {
-            auxPosZ = posBack;
-          }
-          else if (do_need_update_front)
-          {
-            auxPosZ = posFront;
-          }
-
-          if (do_need_update_down || do_need_update_up)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (auxPosY));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffY = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_back || do_need_update_front)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (auxPosZ));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffZ = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_down)
-          {
-            prevEz2 += diffY * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-          else if (do_need_update_up)
-          {
-            prevEz1 += diffY * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-
-          if (do_need_update_back)
-          {
-            prevEy2 += diffZ * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
-          else if (do_need_update_front)
-          {
-            prevEy1 += diffZ * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
+          calculateHxTFSF (posAbs, prevEz1, prevEz2, prevEy1, prevEy2, posDown, posUp, posBack, posFront);
         }
 
         FPValue k_y = 1;
@@ -1880,43 +1425,23 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
           FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
           FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
 
+          FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
+                                                           Approximation::getMaterial (valMu2),
+                                                           Approximation::getMaterial (valMu3),
+                                                           Approximation::getMaterial (valMu4));
+
           FPValue omegaPM;
           FPValue gammaM;
-
-#ifdef COMPLEX_FIELD_VALUES
-          FPValue mu1 = valMu1->getCurValue ().real ();
-          FPValue mu2 = valMu2->getCurValue ().real ();
-          FPValue mu3 = valMu3->getCurValue ().real ();
-          FPValue mu4 = valMu4->getCurValue ().real ();
-
-          FPValue omegaPM1 = valOmegaPM1->getCurValue ().real ();
-          FPValue omegaPM2 = valOmegaPM2->getCurValue ().real ();
-          FPValue omegaPM3 = valOmegaPM3->getCurValue ().real ();
-          FPValue omegaPM4 = valOmegaPM4->getCurValue ().real ();
-
-          FPValue gammaM1 = valGammaM1->getCurValue ().real ();
-          FPValue gammaM2 = valGammaM2->getCurValue ().real ();
-          FPValue gammaM3 = valGammaM3->getCurValue ().real ();
-          FPValue gammaM4 = valGammaM4->getCurValue ().real ();
-#else /* COMPLEX_FIELD_VALUES */
-          FPValue mu1 = valMu1->getCurValue ();
-          FPValue mu2 = valMu2->getCurValue ();
-          FPValue mu3 = valMu3->getCurValue ();
-          FPValue mu4 = valMu4->getCurValue ();
-
-          FPValue omegaPM1 = valOmegaPM1->getCurValue ();
-          FPValue omegaPM2 = valOmegaPM2->getCurValue ();
-          FPValue omegaPM3 = valOmegaPM3->getCurValue ();
-          FPValue omegaPM4 = valOmegaPM4->getCurValue ();
-
-          FPValue gammaM1 = valGammaM1->getCurValue ();
-          FPValue gammaM2 = valGammaM2->getCurValue ();
-          FPValue gammaM3 = valGammaM3->getCurValue ();
-          FPValue gammaM4 = valGammaM4->getCurValue ();
-#endif /* !COMPLEX_FIELD_VALUES */
-
-          Approximation::approximateDrudeModel (omegaPM, gammaM, omegaPM1, omegaPM2, omegaPM3, omegaPM4, gammaM1, gammaM2, gammaM3, gammaM4);
-          FPValue mu = Approximation::approximateMaterial (mu1, mu2, mu3, mu4);
+          Approximation::approximateDrudeModel (omegaPM,
+                                                gammaM,
+                                                Approximation::getMaterial (valOmegaPM1),
+                                                Approximation::getMaterial (valOmegaPM2),
+                                                Approximation::getMaterial (valOmegaPM3),
+                                                Approximation::getMaterial (valOmegaPM4),
+                                                Approximation::getMaterial (valGammaM1),
+                                                Approximation::getMaterial (valGammaM2),
+                                                Approximation::getMaterial (valGammaM3),
+                                                Approximation::getMaterial (valGammaM4));
 
           /*
            * FIXME: precalculate coefficients
@@ -1978,41 +1503,20 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
         FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
         FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue mu1 = valMu1->getCurValue ().real ();
-        FPValue mu2 = valMu2->getCurValue ().real ();
-        FPValue mu3 = valMu3->getCurValue ().real ();
-        FPValue mu4 = valMu4->getCurValue ().real ();
+        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
+                                                         Approximation::getMaterial (valMu2),
+                                                         Approximation::getMaterial (valMu3),
+                                                         Approximation::getMaterial (valMu4));
 
-        FPValue sigmaX1 = valSigmaX1->getCurValue ().real ();
-        FPValue sigmaX2 = valSigmaX2->getCurValue ().real ();
-        FPValue sigmaX3 = valSigmaX3->getCurValue ().real ();
-        FPValue sigmaX4 = valSigmaX4->getCurValue ().real ();
+        FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
+                                                             Approximation::getMaterial (valSigmaX2),
+                                                             Approximation::getMaterial (valSigmaX3),
+                                                             Approximation::getMaterial (valSigmaX4));
 
-        FPValue sigmaZ1 = valSigmaZ1->getCurValue ().real ();
-        FPValue sigmaZ2 = valSigmaZ2->getCurValue ().real ();
-        FPValue sigmaZ3 = valSigmaZ3->getCurValue ().real ();
-        FPValue sigmaZ4 = valSigmaZ4->getCurValue ().real ();
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue mu1 = valMu1->getCurValue ();
-        FPValue mu2 = valMu2->getCurValue ();
-        FPValue mu3 = valMu3->getCurValue ();
-        FPValue mu4 = valMu4->getCurValue ();
-
-        FPValue sigmaX1 = valSigmaX1->getCurValue ();
-        FPValue sigmaX2 = valSigmaX2->getCurValue ();
-        FPValue sigmaX3 = valSigmaX3->getCurValue ();
-        FPValue sigmaX4 = valSigmaX4->getCurValue ();
-
-        FPValue sigmaZ1 = valSigmaZ1->getCurValue ();
-        FPValue sigmaZ2 = valSigmaZ2->getCurValue ();
-        FPValue sigmaZ3 = valSigmaZ3->getCurValue ();
-        FPValue sigmaZ4 = valSigmaZ4->getCurValue ();
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        FPValue mu = Approximation::approximateMaterial (mu1, mu2, mu3, mu4);
-        FPValue sigmaX = Approximation::approximateMaterial (sigmaX1, sigmaX2, sigmaX3, sigmaX4);
-        FPValue sigmaZ = Approximation::approximateMaterial (sigmaZ1, sigmaZ2, sigmaZ3, sigmaZ4);
+        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
+                                                             Approximation::getMaterial (valSigmaZ2),
+                                                             Approximation::getMaterial (valSigmaZ3),
+                                                             Approximation::getMaterial (valSigmaZ4));
 
         FPValue modifier = mu * mu0;
         if (useMetamaterials)
@@ -2057,6 +1561,79 @@ Scheme3D::performHySteps (time_step t, GridCoordinate3D HyStart, GridCoordinate3
 }
 
 void
+Scheme3D::calculateHyTFSF (GridCoordinate3D posAbs,
+                           FieldValue &valEz1,
+                           FieldValue &valEz2,
+                           FieldValue &valEx1,
+                           FieldValue &valEx2,
+                           GridCoordinate3D posLeft,
+                           GridCoordinate3D posRight,
+                           GridCoordinate3D posBack,
+                           GridCoordinate3D posFront)
+{
+  bool do_need_update_left = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::LEFT, DO_USE_3D_MODE);
+  bool do_need_update_right = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::RIGHT, DO_USE_3D_MODE);
+
+  bool do_need_update_back = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::BACK, DO_USE_3D_MODE);
+  bool do_need_update_front = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::FRONT, DO_USE_3D_MODE);
+
+  GridCoordinate3D auxPosX;
+  GridCoordinate3D auxPosZ;
+  FieldValue diffX;
+  FieldValue diffZ;
+
+  if (do_need_update_left)
+  {
+    auxPosX = posLeft;
+  }
+  else if (do_need_update_right)
+  {
+    auxPosX = posRight;
+  }
+
+  if (do_need_update_back)
+  {
+    auxPosZ = posBack;
+  }
+  else if (do_need_update_front)
+  {
+    auxPosZ = posFront;
+  }
+
+  if (do_need_update_left || do_need_update_right)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (auxPosX));
+
+    diffX = approximateIncidentWaveE (realCoord);
+  }
+
+  if (do_need_update_back || do_need_update_front)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (auxPosZ));
+
+    diffZ = approximateIncidentWaveE (realCoord);
+  }
+
+  if (do_need_update_left)
+  {
+    valEz2 += diffX * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
+  }
+  else if (do_need_update_right)
+  {
+    valEz1 += diffX * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
+  }
+
+  if (do_need_update_back)
+  {
+    valEx2 += diffZ * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+  }
+  else if (do_need_update_front)
+  {
+    valEx1 += diffZ * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+  }
+}
+
+void
 Scheme3D::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinate3D HyEnd)
 {
   FPValue eps0 = PhysicsConst::Eps0;
@@ -2084,11 +1661,10 @@ Scheme3D::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinate
         FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
         FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue mu = (valMu1->getCurValue ().real () + valMu2->getCurValue ().real () + valMu3->getCurValue ().real () + valMu4->getCurValue ().real ()) / 4;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue mu = (valMu1->getCurValue () + valMu2->getCurValue () + valMu3->getCurValue () + valMu4->getCurValue ()) / 4;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
+                                                         Approximation::getMaterial (valMu2),
+                                                         Approximation::getMaterial (valMu3),
+                                                         Approximation::getMaterial (valMu4));
 
         FieldPointValue* valEz1 = Ez.getFieldPointValue (posRight);
         FieldPointValue* valEz2 = Ez.getFieldPointValue (posLeft);
@@ -2104,102 +1680,7 @@ Scheme3D::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinate
 
         if (useTFSF)
         {
-          bool do_need_update_left = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::LEFT, true);
-          bool do_need_update_right = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::RIGHT, true);
-
-          bool do_need_update_back = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::BACK, true);
-          bool do_need_update_front = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::FRONT, true);
-
-          GridCoordinate3D auxPosX;
-          GridCoordinate3D auxPosZ;
-          FieldValue diffX;
-          FieldValue diffZ;
-
-          if (do_need_update_left)
-          {
-            auxPosX = posLeft;
-          }
-          else if (do_need_update_right)
-          {
-            auxPosX = posRight;
-          }
-
-          if (do_need_update_back)
-          {
-            auxPosZ = posBack;
-          }
-          else if (do_need_update_front)
-          {
-            auxPosZ = posFront;
-          }
-
-          if (do_need_update_left || do_need_update_right)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (auxPosX));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffX = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_back || do_need_update_front)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (auxPosZ));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffZ = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_left)
-          {
-            prevEz2 += diffX * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-          else if (do_need_update_right)
-          {
-            prevEz1 += diffX * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-
-          if (do_need_update_back)
-          {
-            prevEx2 += diffZ * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
-          else if (do_need_update_front)
-          {
-            prevEx1 += diffZ * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
+          calculateHyTFSF (posAbs, prevEz1, prevEz2, prevEx1, prevEx2, posLeft, posRight, posBack, posFront);
         }
 
         FieldValue val = calculateHy_3D (valHy->getPrevValue (),
@@ -2245,11 +1726,10 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
         FieldPointValue* valSigmaZ3 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
         FieldPointValue* valSigmaZ4 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue sigmaZ = (valSigmaZ1->getCurValue ().real () + valSigmaZ2->getCurValue ().real () + valSigmaZ3->getCurValue ().real () + valSigmaZ4->getCurValue ().real ()) / 4;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue sigmaZ = (valSigmaZ1->getCurValue () + valSigmaZ2->getCurValue () + valSigmaZ3->getCurValue () + valSigmaZ4->getCurValue ()) / 4;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
+                                                             Approximation::getMaterial (valSigmaZ2),
+                                                             Approximation::getMaterial (valSigmaZ3),
+                                                             Approximation::getMaterial (valSigmaZ4));
 
         FieldPointValue* valEz1 = Ez.getFieldPointValue (posRight);
         FieldPointValue* valEz2 = Ez.getFieldPointValue (posLeft);
@@ -2265,102 +1745,7 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
 
         if (useTFSF)
         {
-          bool do_need_update_left = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::LEFT, true);
-          bool do_need_update_right = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::RIGHT, true);
-
-          bool do_need_update_back = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::BACK, true);
-          bool do_need_update_front = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::FRONT, true);
-
-          GridCoordinate3D auxPosX;
-          GridCoordinate3D auxPosZ;
-          FieldValue diffX;
-          FieldValue diffZ;
-
-          if (do_need_update_left)
-          {
-            auxPosX = posLeft;
-          }
-          else if (do_need_update_right)
-          {
-            auxPosX = posRight;
-          }
-
-          if (do_need_update_back)
-          {
-            auxPosZ = posBack;
-          }
-          else if (do_need_update_front)
-          {
-            auxPosZ = posFront;
-          }
-
-          if (do_need_update_left || do_need_update_right)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (auxPosX));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffX = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_back || do_need_update_front)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (auxPosZ));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffZ = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_left)
-          {
-            prevEz2 += diffX * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-          else if (do_need_update_right)
-          {
-            prevEz1 += diffX * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
-          }
-
-          if (do_need_update_back)
-          {
-            prevEx2 += diffZ * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
-          else if (do_need_update_front)
-          {
-            prevEx1 += diffZ * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
+          calculateHyTFSF (posAbs, prevEz1, prevEz2, prevEx1, prevEx2, posLeft, posRight, posBack, posFront);
         }
 
         FPValue k_z = 1;
@@ -2413,43 +1798,23 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
           FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
           FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
 
+          FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
+                                                           Approximation::getMaterial (valMu2),
+                                                           Approximation::getMaterial (valMu3),
+                                                           Approximation::getMaterial (valMu4));
+
           FPValue omegaPM;
           FPValue gammaM;
-
-#ifdef COMPLEX_FIELD_VALUES
-          FPValue mu1 = valMu1->getCurValue ().real ();
-          FPValue mu2 = valMu2->getCurValue ().real ();
-          FPValue mu3 = valMu3->getCurValue ().real ();
-          FPValue mu4 = valMu4->getCurValue ().real ();
-
-          FPValue omegaPM1 = valOmegaPM1->getCurValue ().real ();
-          FPValue omegaPM2 = valOmegaPM2->getCurValue ().real ();
-          FPValue omegaPM3 = valOmegaPM3->getCurValue ().real ();
-          FPValue omegaPM4 = valOmegaPM4->getCurValue ().real ();
-
-          FPValue gammaM1 = valGammaM1->getCurValue ().real ();
-          FPValue gammaM2 = valGammaM2->getCurValue ().real ();
-          FPValue gammaM3 = valGammaM3->getCurValue ().real ();
-          FPValue gammaM4 = valGammaM4->getCurValue ().real ();
-#else /* COMPLEX_FIELD_VALUES */
-          FPValue mu1 = valMu1->getCurValue ();
-          FPValue mu2 = valMu2->getCurValue ();
-          FPValue mu3 = valMu3->getCurValue ();
-          FPValue mu4 = valMu4->getCurValue ();
-
-          FPValue omegaPM1 = valOmegaPM1->getCurValue ();
-          FPValue omegaPM2 = valOmegaPM2->getCurValue ();
-          FPValue omegaPM3 = valOmegaPM3->getCurValue ();
-          FPValue omegaPM4 = valOmegaPM4->getCurValue ();
-
-          FPValue gammaM1 = valGammaM1->getCurValue ();
-          FPValue gammaM2 = valGammaM2->getCurValue ();
-          FPValue gammaM3 = valGammaM3->getCurValue ();
-          FPValue gammaM4 = valGammaM4->getCurValue ();
-#endif /* !COMPLEX_FIELD_VALUES */
-
-          Approximation::approximateDrudeModel (omegaPM, gammaM, omegaPM1, omegaPM2, omegaPM3, omegaPM4, gammaM1, gammaM2, gammaM3, gammaM4);
-          FPValue mu = Approximation::approximateMaterial (mu1, mu2, mu3, mu4);
+          Approximation::approximateDrudeModel (omegaPM,
+                                                gammaM,
+                                                Approximation::getMaterial (valOmegaPM1),
+                                                Approximation::getMaterial (valOmegaPM2),
+                                                Approximation::getMaterial (valOmegaPM3),
+                                                Approximation::getMaterial (valOmegaPM4),
+                                                Approximation::getMaterial (valGammaM1),
+                                                Approximation::getMaterial (valGammaM2),
+                                                Approximation::getMaterial (valGammaM3),
+                                                Approximation::getMaterial (valGammaM4));
 
           /*
            * FIXME: precalculate coefficients
@@ -2511,41 +1876,20 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
         FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
         FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue mu1 = valMu1->getCurValue ().real ();
-        FPValue mu2 = valMu2->getCurValue ().real ();
-        FPValue mu3 = valMu3->getCurValue ().real ();
-        FPValue mu4 = valMu4->getCurValue ().real ();
+        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
+                                                         Approximation::getMaterial (valMu2),
+                                                         Approximation::getMaterial (valMu3),
+                                                         Approximation::getMaterial (valMu4));
 
-        FPValue sigmaX1 = valSigmaX1->getCurValue ().real ();
-        FPValue sigmaX2 = valSigmaX2->getCurValue ().real ();
-        FPValue sigmaX3 = valSigmaX3->getCurValue ().real ();
-        FPValue sigmaX4 = valSigmaX4->getCurValue ().real ();
+       FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
+                                                            Approximation::getMaterial (valSigmaX2),
+                                                            Approximation::getMaterial (valSigmaX3),
+                                                            Approximation::getMaterial (valSigmaX4));
 
-        FPValue sigmaY1 = valSigmaY1->getCurValue ().real ();
-        FPValue sigmaY2 = valSigmaY2->getCurValue ().real ();
-        FPValue sigmaY3 = valSigmaY3->getCurValue ().real ();
-        FPValue sigmaY4 = valSigmaY4->getCurValue ().real ();
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue mu1 = valMu1->getCurValue ();
-        FPValue mu2 = valMu2->getCurValue ();
-        FPValue mu3 = valMu3->getCurValue ();
-        FPValue mu4 = valMu4->getCurValue ();
-
-        FPValue sigmaX1 = valSigmaX1->getCurValue ();
-        FPValue sigmaX2 = valSigmaX2->getCurValue ();
-        FPValue sigmaX3 = valSigmaX3->getCurValue ();
-        FPValue sigmaX4 = valSigmaX4->getCurValue ();
-
-        FPValue sigmaY1 = valSigmaY1->getCurValue ();
-        FPValue sigmaY2 = valSigmaY2->getCurValue ();
-        FPValue sigmaY3 = valSigmaY3->getCurValue ();
-        FPValue sigmaY4 = valSigmaY4->getCurValue ();
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        FPValue mu = Approximation::approximateMaterial (mu1, mu2, mu3, mu4);
-        FPValue sigmaX = Approximation::approximateMaterial (sigmaX1, sigmaX2, sigmaX3, sigmaX4);
-        FPValue sigmaY = Approximation::approximateMaterial (sigmaY1, sigmaY2, sigmaY3, sigmaY4);
+       FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
+                                                            Approximation::getMaterial (valSigmaY2),
+                                                            Approximation::getMaterial (valSigmaY3),
+                                                            Approximation::getMaterial (valSigmaY4));
 
         FPValue modifier = mu * mu0;
         if (useMetamaterials)
@@ -2590,6 +1934,78 @@ Scheme3D::performHzSteps (time_step t, GridCoordinate3D HzStart, GridCoordinate3
 }
 
 void
+Scheme3D::calculateHzTFSF (GridCoordinate3D posAbs,
+                           FieldValue &valEx1,
+                           FieldValue &valEx2,
+                           FieldValue &valEy1,
+                           FieldValue &valEy2,
+                           GridCoordinate3D posLeft,
+                           GridCoordinate3D posRight,
+                           GridCoordinate3D posDown,
+                           GridCoordinate3D posUp)
+{
+  bool do_need_update_left = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::LEFT, DO_USE_3D_MODE);
+  bool do_need_update_right = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT, DO_USE_3D_MODE);
+  bool do_need_update_down = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::DOWN, DO_USE_3D_MODE);
+  bool do_need_update_up = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::UP, DO_USE_3D_MODE);
+
+  GridCoordinate2D auxPosX;
+  GridCoordinate2D auxPosY;
+  FieldValue diffX;
+  FieldValue diffY;
+
+  if (do_need_update_left)
+  {
+    auxPosX = posLeft;
+  }
+  else if (do_need_update_right)
+  {
+    auxPosX = posRight;
+  }
+
+  if (do_need_update_down)
+  {
+    auxPosY = posDown;
+  }
+  else if (do_need_update_up)
+  {
+    auxPosY = posUp;
+  }
+
+  if (do_need_update_down || do_need_update_up)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (auxPosY));
+
+    diffY = approximateIncidentWaveE (realCoord);
+  }
+
+  if (do_need_update_left || do_need_update_right)
+  {
+    GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (auxPosX));
+
+    diffX = approximateIncidentWaveE (realCoord);
+  }
+
+  if (do_need_update_down)
+  {
+    valEx2 += diffY * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+  }
+  else if (do_need_update_up)
+  {
+    valEx1 += diffY * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+  }
+
+  if (do_need_update_left)
+  {
+    valEy2 += diffX * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+  }
+  else if (do_need_update_right)
+  {
+    valEy1 += diffX * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+  }
+}
+
+void
 Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate3D HzEnd)
 {
   FPValue eps0 = PhysicsConst::Eps0;
@@ -2617,11 +2033,10 @@ Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate
         FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
         FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue mu = (valMu1->getCurValue ().real () + valMu2->getCurValue ().real () + valMu3->getCurValue ().real () + valMu4->getCurValue ().real ()) / 4;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue mu = (valMu1->getCurValue () + valMu2->getCurValue () + valMu3->getCurValue () + valMu4->getCurValue ()) / 4;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
+                                                         Approximation::getMaterial (valMu2),
+                                                         Approximation::getMaterial (valMu3),
+                                                         Approximation::getMaterial (valMu4));
 
         FieldPointValue* valEy1 = Ey.getFieldPointValue (posRight);
         FieldPointValue* valEy2 = Ey.getFieldPointValue (posLeft);
@@ -2637,101 +2052,7 @@ Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate
 
         if (useTFSF)
         {
-          bool do_need_update_left = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::LEFT, true);
-          bool do_need_update_right = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT, true);
-          bool do_need_update_down = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::DOWN, true);
-          bool do_need_update_up = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::UP, true);
-
-          GridCoordinate2D auxPosX;
-          GridCoordinate2D auxPosY;
-          FieldValue diffX;
-          FieldValue diffY;
-
-          if (do_need_update_left)
-          {
-            auxPosX = posLeft;
-          }
-          else if (do_need_update_right)
-          {
-            auxPosX = posRight;
-          }
-
-          if (do_need_update_down)
-          {
-            auxPosY = posDown;
-          }
-          else if (do_need_update_up)
-          {
-            auxPosY = posUp;
-          }
-
-          if (do_need_update_down || do_need_update_up)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (posDown));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffY = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_left || do_need_update_right)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (posLeft));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffX = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_down)
-          {
-            prevEx2 += diffY * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
-          else if (do_need_update_up)
-          {
-            prevEx1 += diffY * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
-
-          if (do_need_update_left)
-          {
-            prevEy2 += diffX * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
-          else if (do_need_update_right)
-          {
-            prevEy1 += diffX * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
+          calculateHzTFSF (posAbs, prevEx1, prevEx2, prevEy1, prevEy2, posLeft, posRight, posDown, posUp);
         }
 
         FieldValue val = calculateHz_3D (valHz->getPrevValue (),
@@ -2772,17 +2093,15 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
         GridCoordinate3D posDown = yeeLayout->getHzCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getHzCircuitElement (pos, LayoutDirection::UP);
 
-
         FieldPointValue* valSigmaX1 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
         FieldPointValue* valSigmaX2 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0))));
         FieldPointValue* valSigmaX3 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
         FieldPointValue* valSigmaX4 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue sigmaX = (valSigmaX1->getCurValue ().real () + valSigmaX2->getCurValue ().real () + valSigmaX3->getCurValue ().real () + valSigmaX4->getCurValue ().real ()) / 4;
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue sigmaX = (valSigmaX1->getCurValue () + valSigmaX2->getCurValue () + valSigmaX3->getCurValue () + valSigmaX4->getCurValue ()) / 4;
-#endif /* !COMPLEX_FIELD_VALUES */
+        FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
+                                                             Approximation::getMaterial (valSigmaX2),
+                                                             Approximation::getMaterial (valSigmaX3),
+                                                             Approximation::getMaterial (valSigmaX4));
 
         FieldPointValue* valEy1 = Ey.getFieldPointValue (posRight);
         FieldPointValue* valEy2 = Ey.getFieldPointValue (posLeft);
@@ -2798,101 +2117,7 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
 
         if (useTFSF)
         {
-          bool do_need_update_left = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::LEFT, true);
-          bool do_need_update_right = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT, true);
-          bool do_need_update_down = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::DOWN, true);
-          bool do_need_update_up = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::UP, true);
-
-          GridCoordinate2D auxPosX;
-          GridCoordinate2D auxPosY;
-          FieldValue diffX;
-          FieldValue diffY;
-
-          if (do_need_update_left)
-          {
-            auxPosX = posLeft;
-          }
-          else if (do_need_update_right)
-          {
-            auxPosX = posRight;
-          }
-
-          if (do_need_update_down)
-          {
-            auxPosY = posDown;
-          }
-          else if (do_need_update_up)
-          {
-            auxPosY = posUp;
-          }
-
-          if (do_need_update_down || do_need_update_up)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (posDown));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffY = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_left || do_need_update_right)
-          {
-            GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (posLeft));
-            GridCoordinateFP3D zeroCoordFP = yeeLayout->getZeroIncCoordFP ();
-
-            FPValue x = realCoord.getX () - zeroCoordFP.getX ();
-            FPValue y = realCoord.getY () - zeroCoordFP.getY ();
-            FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-            FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-                           + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-                           + z * cos (incidentWaveAngle1);
-            FPValue coordD1 = (FPValue) ((grid_iter) d);
-            FPValue coordD2 = coordD1 + 1;
-            FPValue proportionD2 = d - coordD1;
-            FPValue proportionD1 = 1 - proportionD2;
-
-            GridCoordinate1D pos1 (coordD1);
-            GridCoordinate1D pos2 (coordD2);
-
-            FieldPointValue *valE1 = EInc.getFieldPointValue (pos1);
-            FieldPointValue *valE2 = EInc.getFieldPointValue (pos2);
-
-            diffX = proportionD1 * valE1->getPrevValue () + proportionD2 * valE2->getPrevValue ();
-          }
-
-          if (do_need_update_down)
-          {
-            prevEx2 += diffY * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
-          else if (do_need_update_up)
-          {
-            prevEx1 += diffY * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-          }
-
-          if (do_need_update_left)
-          {
-            prevEy2 += diffX * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
-          else if (do_need_update_right)
-          {
-            prevEy1 += diffX * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-          }
+          calculateHzTFSF (posAbs, prevEx1, prevEx2, prevEy1, prevEy2, posLeft, posRight, posDown, posUp);
         }
 
         FPValue k_x = 1;
@@ -2943,43 +2168,23 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
           FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
           FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
 
+          FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
+                                                           Approximation::getMaterial (valMu2),
+                                                           Approximation::getMaterial (valMu3),
+                                                           Approximation::getMaterial (valMu4));
+
           FPValue omegaPM;
           FPValue gammaM;
-
-#ifdef COMPLEX_FIELD_VALUES
-          FPValue mu1 = valMu1->getCurValue ().real ();
-          FPValue mu2 = valMu2->getCurValue ().real ();
-          FPValue mu3 = valMu3->getCurValue ().real ();
-          FPValue mu4 = valMu4->getCurValue ().real ();
-
-          FPValue omegaPM1 = valOmegaPM1->getCurValue ().real ();
-          FPValue omegaPM2 = valOmegaPM2->getCurValue ().real ();
-          FPValue omegaPM3 = valOmegaPM3->getCurValue ().real ();
-          FPValue omegaPM4 = valOmegaPM4->getCurValue ().real ();
-
-          FPValue gammaM1 = valGammaM1->getCurValue ().real ();
-          FPValue gammaM2 = valGammaM2->getCurValue ().real ();
-          FPValue gammaM3 = valGammaM3->getCurValue ().real ();
-          FPValue gammaM4 = valGammaM4->getCurValue ().real ();
-#else /* COMPLEX_FIELD_VALUES */
-          FPValue mu1 = valMu1->getCurValue ();
-          FPValue mu2 = valMu2->getCurValue ();
-          FPValue mu3 = valMu3->getCurValue ();
-          FPValue mu4 = valMu4->getCurValue ();
-
-          FPValue omegaPM1 = valOmegaPM1->getCurValue ();
-          FPValue omegaPM2 = valOmegaPM2->getCurValue ();
-          FPValue omegaPM3 = valOmegaPM3->getCurValue ();
-          FPValue omegaPM4 = valOmegaPM4->getCurValue ();
-
-          FPValue gammaM1 = valGammaM1->getCurValue ();
-          FPValue gammaM2 = valGammaM2->getCurValue ();
-          FPValue gammaM3 = valGammaM3->getCurValue ();
-          FPValue gammaM4 = valGammaM4->getCurValue ();
-#endif /* !COMPLEX_FIELD_VALUES */
-
-          Approximation::approximateDrudeModel (omegaPM, gammaM, omegaPM1, omegaPM2, omegaPM3, omegaPM4, gammaM1, gammaM2, gammaM3, gammaM4);
-          FPValue mu = Approximation::approximateMaterial (mu1, mu2, mu3, mu4);
+          Approximation::approximateDrudeModel (omegaPM,
+                                                gammaM,
+                                                Approximation::getMaterial (valOmegaPM1),
+                                                Approximation::getMaterial (valOmegaPM2),
+                                                Approximation::getMaterial (valOmegaPM3),
+                                                Approximation::getMaterial (valOmegaPM4),
+                                                Approximation::getMaterial (valGammaM1),
+                                                Approximation::getMaterial (valGammaM2),
+                                                Approximation::getMaterial (valGammaM3),
+                                                Approximation::getMaterial (valGammaM4));
 
           /*
            * FIXME: precalculate coefficients
@@ -3041,44 +2246,20 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
         FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
         FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
 
-        FPValue omegaPM;
-        FPValue gammaM;
+        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
+                                                         Approximation::getMaterial (valMu2),
+                                                         Approximation::getMaterial (valMu3),
+                                                         Approximation::getMaterial (valMu4));
 
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue mu1 = valMu1->getCurValue ().real ();
-        FPValue mu2 = valMu2->getCurValue ().real ();
-        FPValue mu3 = valMu3->getCurValue ().real ();
-        FPValue mu4 = valMu4->getCurValue ().real ();
+        FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
+                                                             Approximation::getMaterial (valSigmaY2),
+                                                             Approximation::getMaterial (valSigmaY3),
+                                                             Approximation::getMaterial (valSigmaY4));
 
-        FPValue sigmaY1 = valSigmaY1->getCurValue ().real ();
-        FPValue sigmaY2 = valSigmaY2->getCurValue ().real ();
-        FPValue sigmaY3 = valSigmaY3->getCurValue ().real ();
-        FPValue sigmaY4 = valSigmaY4->getCurValue ().real ();
-
-        FPValue sigmaZ1 = valSigmaZ1->getCurValue ().real ();
-        FPValue sigmaZ2 = valSigmaZ2->getCurValue ().real ();
-        FPValue sigmaZ3 = valSigmaZ3->getCurValue ().real ();
-        FPValue sigmaZ4 = valSigmaZ4->getCurValue ().real ();
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue mu1 = valMu1->getCurValue ();
-        FPValue mu2 = valMu2->getCurValue ();
-        FPValue mu3 = valMu3->getCurValue ();
-        FPValue mu4 = valMu4->getCurValue ();
-
-        FPValue sigmaY1 = valSigmaY1->getCurValue ();
-        FPValue sigmaY2 = valSigmaY2->getCurValue ();
-        FPValue sigmaY3 = valSigmaY3->getCurValue ();
-        FPValue sigmaY4 = valSigmaY4->getCurValue ();
-
-        FPValue sigmaZ1 = valSigmaZ1->getCurValue ();
-        FPValue sigmaZ2 = valSigmaZ2->getCurValue ();
-        FPValue sigmaZ3 = valSigmaZ3->getCurValue ();
-        FPValue sigmaZ4 = valSigmaZ4->getCurValue ();
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        FPValue mu = Approximation::approximateMaterial (mu1, mu2, mu3, mu4);
-        FPValue sigmaY = Approximation::approximateMaterial (sigmaY1, sigmaY2, sigmaY3, sigmaY4);
-        FPValue sigmaZ = Approximation::approximateMaterial (sigmaZ1, sigmaZ2, sigmaZ3, sigmaZ4);
+        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
+                                                             Approximation::getMaterial (valSigmaZ2),
+                                                             Approximation::getMaterial (valSigmaZ3),
+                                                             Approximation::getMaterial (valSigmaZ4));
 
         FPValue modifier = mu * mu0;
         if (useMetamaterials)
@@ -3810,9 +2991,9 @@ Scheme3D::initGrids ()
 
         GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (OmegaPE.getTotalSize ());
 
-        if (posAbs.getX () >= 20 && posAbs.getX () < 60
-            && posAbs.getY () >= 20 && posAbs.getY () < 140
-            && posAbs.getZ () >= 20 && posAbs.getZ () < 140)
+        if (posAbs.getX () >= 20 && posAbs.getX () < 40
+            && posAbs.getY () >= 20 && posAbs.getY () < 60
+            && posAbs.getZ () >= 20 && posAbs.getZ () < 60)
         {
 
 //         if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
@@ -3850,9 +3031,9 @@ Scheme3D::initGrids ()
 
         GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (OmegaPM.getTotalSize ());
 
-        if (posAbs.getX () >= 20 && posAbs.getX () < 60
-            && posAbs.getY () >= 20 && posAbs.getY () < 140
-            && posAbs.getZ () >= 20 && posAbs.getZ () < 140)
+        if (posAbs.getX () >= 20 && posAbs.getX () < 40
+            && posAbs.getY () >= 20 && posAbs.getY () < 60
+            && posAbs.getZ () >= 20 && posAbs.getZ () < 60)
         {
 
 //         if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)

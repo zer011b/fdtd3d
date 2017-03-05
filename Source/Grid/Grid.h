@@ -76,6 +76,8 @@ public:
   virtual FieldPointValue *getFieldPointValue (const TCoord &);
   virtual FieldPointValue *getFieldPointValue (grid_iter);
 
+  virtual FieldPointValue *getFieldPointValueByRelativePos (const TCoord &);
+
   virtual void nextTimeStep ();
 }; /* Grid */
 
@@ -259,7 +261,7 @@ Grid<TCoord>::setFieldPointValue (FieldPointValue *value, /**< field point value
  */
 template <class TCoord>
 FieldPointValue *
-Grid<TCoord>::getFieldPointValue (const TCoord &position) /**< cooridnate in grid */
+Grid<TCoord>::getFieldPointValue (const TCoord &position) /**< coordinate in grid */
 {
   ASSERT (isLegitIndex (position));
 
@@ -285,6 +287,18 @@ Grid<TCoord>::getFieldPointValue (grid_iter coord) /**< index in grid */
 
   return value;
 } /* Grid<TCoord>::getFieldPointValue */
+
+/**
+ * Get field point value at relative coordinate in grid
+ *
+ * @return field point value
+ */
+template <class TCoord>
+FieldPointValue *
+Grid<TCoord>::getFieldPointValueByRelativePos (const TCoord &relPosition) /**< relative coordinate in grid */
+{
+  return getFieldPointValue (relPosition);
+} /* Grid<TCoord>::getFieldPointValueByRelativePos */
 
 /**
  * Switch to next time step

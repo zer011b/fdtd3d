@@ -82,3 +82,13 @@ Approximation::approximateDrudeModel (FPValue &omega,
   omega = (omega1 + omega2) / dividerOmega;
   gamma = (gamma1 + gamma2) / dividerGamma;
 }
+
+FPValue
+Approximation::getMaterial (const FieldPointValue *val)
+{
+#ifdef COMPLEX_FIELD_VALUES
+  return val->getCurValue ().real ();
+#else /* COMPLEX_FIELD_VALUES */
+  return val->getCurValue ();
+#endif /* !COMPLEX_FIELD_VALUES */
+}
