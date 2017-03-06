@@ -2411,27 +2411,27 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
     {
       if (dumpRes)
       {
-        TXTDumper<GridCoordinate3D> dumperEx;
+        DATDumper<GridCoordinate3D> dumperEx;
         dumperEx.init (t, CURRENT, processId, "3D-in-time-Ex");
         dumperEx.dumpGrid (Ex);
 
-        TXTDumper<GridCoordinate3D> dumperEy;
+        DATDumper<GridCoordinate3D> dumperEy;
         dumperEy.init (t, CURRENT, processId, "3D-in-time-Ey");
         dumperEy.dumpGrid (Ey);
 
-        TXTDumper<GridCoordinate3D> dumperEz;
+        DATDumper<GridCoordinate3D> dumperEz;
         dumperEz.init (t, CURRENT, processId, "3D-in-time-Ez");
         dumperEz.dumpGrid (Ez);
 
-        TXTDumper<GridCoordinate3D> dumperHx;
+        DATDumper<GridCoordinate3D> dumperHx;
         dumperHx.init (t, CURRENT, processId, "3D-in-time-Hx");
         dumperHx.dumpGrid (Hx);
 
-        TXTDumper<GridCoordinate3D> dumperHy;
+        DATDumper<GridCoordinate3D> dumperHy;
         dumperHy.init (t, CURRENT, processId, "3D-in-time-Hy");
         dumperHy.dumpGrid (Hy);
 
-        TXTDumper<GridCoordinate3D> dumperHz;
+        DATDumper<GridCoordinate3D> dumperHz;
         dumperHz.init (t, CURRENT, processId, "3D-in-time-Hz");
         dumperHz.dumpGrid (Hz);
         //
@@ -2442,6 +2442,31 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
         // BMPDumper<GridCoordinate3D> dumperHy;
         // dumperHy.init (t, CURRENT, processId, "2D-TMz-in-time-Hy");
         // dumperHy.dumpGrid (Hy);
+#ifdef PARALLEL_GRID
+        Grid<GridCoordinate3D> totalEx = Ex.gatherFullGrid ();
+        dumperEx.init (t, CURRENT, processId, "3D-in-time-total-Ex");
+        dumperEx.dumpGrid (totalEx);
+
+        Grid<GridCoordinate3D> totalEy = Ey.gatherFullGrid ();
+        dumperEy.init (t, CURRENT, processId, "3D-in-time-total-Ey");
+        dumperEy.dumpGrid (totalEy);
+
+        Grid<GridCoordinate3D> totalEz = Ez.gatherFullGrid ();
+        dumperEz.init (t, CURRENT, processId, "3D-in-time-total-Ez");
+        dumperEz.dumpGrid (totalEz);
+
+        Grid<GridCoordinate3D> totalHx = Hx.gatherFullGrid ();
+        dumperHx.init (t, CURRENT, processId, "3D-in-time-total-Hx");
+        dumperHx.dumpGrid (totalHx);
+
+        Grid<GridCoordinate3D> totalHy = Hy.gatherFullGrid ();
+        dumperHy.init (t, CURRENT, processId, "3D-in-time-total-Hy");
+        dumperHy.dumpGrid (totalHy);
+
+        Grid<GridCoordinate3D> totalHz = Hz.gatherFullGrid ();
+        dumperHz.init (t, CURRENT, processId, "3D-in-time-total-Hz");
+        dumperHz.dumpGrid (totalHz);
+#endif
       }
     }
   }
@@ -2455,25 +2480,49 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
     dumperEx.init (stepLimit, CURRENT, processId, "3D-in-time-Ex");
     dumperEx.dumpGrid (Ex);
 
+    DATDumper<GridCoordinate3D> dumperDATEx;
+    dumperDATEx.init (stepLimit, CURRENT, processId, "3D-in-time-Ex");
+    dumperDATEx.dumpGrid (Ex);
+
     BMPDumper<GridCoordinate3D> dumperEy;
     dumperEy.init (stepLimit, CURRENT, processId, "3D-in-time-Ey");
     dumperEy.dumpGrid (Ey);
+
+    DATDumper<GridCoordinate3D> dumperDATEy;
+    dumperDATEy.init (stepLimit, CURRENT, processId, "3D-in-time-Ey");
+    dumperDATEy.dumpGrid (Ey);
 
     BMPDumper<GridCoordinate3D> dumperEz;
     dumperEz.init (stepLimit, CURRENT, processId, "3D-in-time-Ez");
     dumperEz.dumpGrid (Ez);
 
+    DATDumper<GridCoordinate3D> dumperDATEz;
+    dumperDATEz.init (stepLimit, CURRENT, processId, "3D-in-time-Ez");
+    dumperDATEz.dumpGrid (Ez);
+
     BMPDumper<GridCoordinate3D> dumperHx;
     dumperHx.init (stepLimit, CURRENT, processId, "3D-in-time-Hx");
     dumperHx.dumpGrid (Hx);
+
+    DATDumper<GridCoordinate3D> dumperDATHx;
+    dumperDATHx.init (stepLimit, CURRENT, processId, "3D-in-time-Hx");
+    dumperDATHx.dumpGrid (Hx);
 
     BMPDumper<GridCoordinate3D> dumperHy;
     dumperHy.init (stepLimit, CURRENT, processId, "3D-in-time-Hy");
     dumperHy.dumpGrid (Hy);
 
+    DATDumper<GridCoordinate3D> dumperDATHy;
+    dumperDATHy.init (stepLimit, CURRENT, processId, "3D-in-time-Hy");
+    dumperDATHy.dumpGrid (Hy);
+
     BMPDumper<GridCoordinate3D> dumperHz;
     dumperHz.init (stepLimit, CURRENT, processId, "3D-in-time-Hz");
     dumperHz.dumpGrid (Hz);
+
+    DATDumper<GridCoordinate3D> dumperDATHz;
+    dumperDATHz.init (stepLimit, CURRENT, processId, "3D-in-time-Hz");
+    dumperDATHz.dumpGrid (Hz);
 
     // BMPDumper<GridCoordinate1D> dumper;
     // dumper.init (stepLimit, PREVIOUS, processId, "3D-incident-E");
@@ -2481,6 +2530,31 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
     //
     // dumper.init (stepLimit, PREVIOUS, processId, "3D-incident-H");
     // dumper.dumpGrid (HInc);
+#ifdef PARALLEL_GRID
+    Grid<GridCoordinate3D> totalEx = Ex.gatherFullGrid ();
+    dumperEx.init (stepLimit, CURRENT, processId, "3D-in-time-total-Ex");
+    dumperEx.dumpGrid (totalEx);
+
+    Grid<GridCoordinate3D> totalEy = Ey.gatherFullGrid ();
+    dumperEy.init (stepLimit, CURRENT, processId, "3D-in-time-total-Ey");
+    dumperEy.dumpGrid (totalEy);
+
+    Grid<GridCoordinate3D> totalEz = Ez.gatherFullGrid ();
+    dumperEz.init (stepLimit, CURRENT, processId, "3D-in-time-total-Ez");
+    dumperEz.dumpGrid (totalEz);
+
+    Grid<GridCoordinate3D> totalHx = Hx.gatherFullGrid ();
+    dumperHx.init (stepLimit, CURRENT, processId, "3D-in-time-total-Hx");
+    dumperHx.dumpGrid (totalHx);
+
+    Grid<GridCoordinate3D> totalHy = Hy.gatherFullGrid ();
+    dumperHy.init (stepLimit, CURRENT, processId, "3D-in-time-total-Hy");
+    dumperHy.dumpGrid (totalHy);
+
+    Grid<GridCoordinate3D> totalHz = Hz.gatherFullGrid ();
+    dumperHz.init (stepLimit, CURRENT, processId, "3D-in-time-total-Hz");
+    dumperHz.dumpGrid (totalHz);
+#endif
   }
 }
 
