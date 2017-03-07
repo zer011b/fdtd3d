@@ -151,7 +151,7 @@ int main (int argc, char** argv)
   GridCoordinate3D tfsfSize (13, 13, 13);
 
   FPValue incidentWaveAngle1 = PhysicsConst::Pi / 2; /**< teta */
-  FPValue incidentWaveAngle2 = 0; /**< phi */
+  FPValue incidentWaveAngle2 = PhysicsConst::Pi / 4; /**< phi */
   FPValue incidentWaveAngle3 = 0; /**< psi */
 #endif
 
