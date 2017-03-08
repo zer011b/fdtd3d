@@ -1174,3 +1174,57 @@ YeeGridLayout::getSizeTFSF () const
 {
   return leftBorderTotalField;
 }
+
+FPValue
+YeeGridLayout::getIncidentWaveAngle1 () const
+{
+  return incidentWaveAngle1;
+}
+
+FPValue
+YeeGridLayout::getIncidentWaveAngle2 () const
+{
+  return incidentWaveAngle2;
+}
+
+FPValue
+YeeGridLayout::getIncidentWaveAngle3 () const
+{
+  return incidentWaveAngle3;
+}
+
+FieldValue
+YeeGridLayout::getExFromIncidentE (FieldValue valE) const
+{
+  return valE * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+}
+
+FieldValue
+YeeGridLayout::getEyFromIncidentE (FieldValue valE) const
+{
+  return valE * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+}
+
+FieldValue
+YeeGridLayout::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
+}
+
+FieldValue
+YeeGridLayout::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+}
+
+FieldValue
+YeeGridLayout::getHyFromIncidentH (FieldValue valH) const
+{
+  return valH * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+}
+
+FieldValue
+YeeGridLayout::getHzFromIncidentH (FieldValue valH) const
+{
+  return - valH * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
+}

@@ -237,7 +237,7 @@ int main (int argc, char** argv)
   //SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), true, GridCoordinate2D (30, 30), 0);
 #endif
 #ifdef GRID_3D
-  Scheme3D scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, incidentWaveAngle1, incidentWaveAngle2, incidentWaveAngle3, true);
+  Scheme3D scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, true);
 #endif
 #else
 #ifdef GRID_2D
@@ -245,7 +245,7 @@ int main (int argc, char** argv)
   SchemeTEz scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, incidentWaveAngle2);
 #endif
 #ifdef GRID_3D
-  Scheme3D scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, incidentWaveAngle1, incidentWaveAngle2, incidentWaveAngle3, true);
+  Scheme3D scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, true);
 #endif
 #endif
 

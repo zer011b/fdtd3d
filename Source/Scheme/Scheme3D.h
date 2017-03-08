@@ -126,10 +126,6 @@ class Scheme3D: public Scheme
   Grid<GridCoordinate1D> EInc;
   Grid<GridCoordinate1D> HInc;
 
-  FPValue incidentWaveAngle1; // Teta
-  FPValue incidentWaveAngle2; // Phi
-  FPValue incidentWaveAngle3; // Psi
-
   bool useMetamaterials;
 
 private:
@@ -197,9 +193,6 @@ public:
             time_step ampStep = 0,
             bool doUsePML = false,
             bool doUseTFSF = false,
-            FPValue angleIncWave1 = 0.0,
-            FPValue angleIncWave2 = 0.0,
-            FPValue angleIncWave3 = 0.0,
             bool doUseMetamaterials = false) :
     yeeLayout (layout),
     Ex (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode ()),
@@ -247,9 +240,6 @@ public:
     useTFSF (doUseTFSF),
     EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
-    incidentWaveAngle1 (angleIncWave1),
-    incidentWaveAngle2 (angleIncWave2),
-    incidentWaveAngle3 (angleIncWave3),
     useMetamaterials (doUseMetamaterials)
 #else
   Scheme3D (YeeGridLayout *layout,
@@ -259,9 +249,6 @@ public:
             time_step ampStep = 0,
             bool doUsePML = false,
             bool doUseTFSF = false,
-            FPValue angleIncWave1 = 0.0,
-            FPValue angleIncWave2 = 0.0,
-            FPValue angleIncWave3 = 0.0,
             bool doUseMetamaterials = false) :
     yeeLayout (layout),
     Ex (layout->getExSize (), 0),
@@ -309,17 +296,11 @@ public:
     useTFSF (doUseTFSF),
     EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
-    incidentWaveAngle1 (angleIncWave1),
-    incidentWaveAngle2 (angleIncWave2),
-    incidentWaveAngle3 (angleIncWave3),
     useMetamaterials (doUseMetamaterials)
 #endif
   {
     ASSERT (!doUseTFSF
-            || (doUseTFSF
-                && incidentWaveAngle1 == PhysicsConst::Pi / 2
-                && (incidentWaveAngle2 == PhysicsConst::Pi / 4 || incidentWaveAngle2 == 0)
-                && yeeLayout->getSizeTFSF () != GridCoordinate3D (0, 0, 0)));
+            || (doUseTFSF && yeeLayout->getSizeTFSF () != GridCoordinate3D (0, 0, 0)));
 
     ASSERT (!doUsePML || (doUsePML && (yeeLayout->getSizePML () != GridCoordinate3D (0, 0, 0))));
 
