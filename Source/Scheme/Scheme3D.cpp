@@ -396,6 +396,8 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
           FPValue gammaE;
           Approximation::approximateDrudeModel (omegaPE,
                                                 gammaE,
+                                                Approximation::getMaterial (valEps1),
+                                                Approximation::getMaterial (valEps2),
                                                 Approximation::getMaterial (valOmegaPE1),
                                                 Approximation::getMaterial (valOmegaPE2),
                                                 Approximation::getMaterial (valGammaE1),
@@ -736,6 +738,8 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
           FPValue gammaE;
           Approximation::approximateDrudeModel (omegaPE,
                                                 gammaE,
+                                                Approximation::getMaterial (valEps1),
+                                                Approximation::getMaterial (valEps2),
                                                 Approximation::getMaterial (valOmegaPE1),
                                                 Approximation::getMaterial (valOmegaPE2),
                                                 Approximation::getMaterial (valGammaE1),
@@ -1075,6 +1079,8 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
           FPValue gammaE;
           Approximation::approximateDrudeModel (omegaPE,
                                                 gammaE,
+                                                Approximation::getMaterial (valEps1),
+                                                Approximation::getMaterial (valEps2),
                                                 Approximation::getMaterial (valOmegaPE1),
                                                 Approximation::getMaterial (valOmegaPE2),
                                                 Approximation::getMaterial (valGammaE1),
@@ -1434,6 +1440,10 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
           FPValue gammaM;
           Approximation::approximateDrudeModel (omegaPM,
                                                 gammaM,
+                                                Approximation::getMaterial (valMu1),
+                                                Approximation::getMaterial (valMu2),
+                                                Approximation::getMaterial (valMu3),
+                                                Approximation::getMaterial (valMu4),
                                                 Approximation::getMaterial (valOmegaPM1),
                                                 Approximation::getMaterial (valOmegaPM2),
                                                 Approximation::getMaterial (valOmegaPM3),
@@ -1807,6 +1817,10 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
           FPValue gammaM;
           Approximation::approximateDrudeModel (omegaPM,
                                                 gammaM,
+                                                Approximation::getMaterial (valMu1),
+                                                Approximation::getMaterial (valMu2),
+                                                Approximation::getMaterial (valMu3),
+                                                Approximation::getMaterial (valMu4),
                                                 Approximation::getMaterial (valOmegaPM1),
                                                 Approximation::getMaterial (valOmegaPM2),
                                                 Approximation::getMaterial (valOmegaPM3),
@@ -2177,6 +2191,10 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
           FPValue gammaM;
           Approximation::approximateDrudeModel (omegaPM,
                                                 gammaM,
+                                                Approximation::getMaterial (valMu1),
+                                                Approximation::getMaterial (valMu2),
+                                                Approximation::getMaterial (valMu3),
+                                                Approximation::getMaterial (valMu4),
                                                 Approximation::getMaterial (valOmegaPM1),
                                                 Approximation::getMaterial (valOmegaPM2),
                                                 Approximation::getMaterial (valOmegaPM3),
