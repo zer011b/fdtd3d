@@ -12,8 +12,9 @@ public:
 
   static FPValue approximateMetaMaterial (FPValue, FPValue);
 
-  static void approximateDrudeModel (FPValue &, FPValue &, FPValue, FPValue, FPValue, FPValue);
-  static void approximateDrudeModel (FPValue &, FPValue &, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
+  static void approximateDrudeModel (FPValue &, FPValue &, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
+  static void approximateDrudeModel (FPValue &, FPValue &, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue,
+                                     FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
 
   static FPValue getMaterial (const FieldPointValue *);
 };
