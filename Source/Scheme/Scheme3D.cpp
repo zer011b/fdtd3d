@@ -41,13 +41,13 @@ Scheme3D::performPlaneWaveESteps (time_step t)
     FPValue arg = PhysicsConst::Pi * S / stepWaveLength;
 
     FPValue relPhi;
-    if (incidentWaveAngle2 == PhysicsConst::Pi / 4)
+    if (yeeLayout->getIncidentWaveAngle2 () == PhysicsConst::Pi / 4)
     {
       relPhi = sqrt (2) * asin (sin(arg) / (S * sqrt (2))) / asin (sin (arg) / S);
     }
     else
     {
-      ASSERT (incidentWaveAngle2 == 0);
+      ASSERT (yeeLayout->getIncidentWaveAngle2 () == 0);
 
       relPhi = 1;
     }
@@ -94,13 +94,13 @@ Scheme3D::performPlaneWaveHSteps (time_step t)
     FPValue arg = PhysicsConst::Pi * S / stepWaveLength;
 
     FPValue relPhi;
-    if (incidentWaveAngle2 == PhysicsConst::Pi / 4)
+    if (yeeLayout->getIncidentWaveAngle2 () == PhysicsConst::Pi / 4)
     {
       relPhi = sqrt (2) * asin (sin(arg) / (S * sqrt (2))) / asin (sin (arg) / S);
     }
     else
     {
-      ASSERT (incidentWaveAngle2 == 0);
+      ASSERT (yeeLayout->getIncidentWaveAngle2 () == 0);
 
       relPhi = 1;
     }
@@ -137,9 +137,9 @@ Scheme3D::approximateIncidentWave (GridCoordinateFP3D realCoord, FPValue dDiff, 
   FPValue x = realCoord.getX () - zeroCoordFP.getX ();
   FPValue y = realCoord.getY () - zeroCoordFP.getY ();
   FPValue z = realCoord.getZ () - zeroCoordFP.getZ ();
-  FPValue d = x * sin (incidentWaveAngle1) * cos (incidentWaveAngle2)
-              + y * sin (incidentWaveAngle1) * sin (incidentWaveAngle2)
-              + z * cos (incidentWaveAngle1) - dDiff;
+  FPValue d = x * sin (yeeLayout->getIncidentWaveAngle1 ()) * cos (yeeLayout->getIncidentWaveAngle2 ())
+              + y * sin (yeeLayout->getIncidentWaveAngle1 ()) * sin (yeeLayout->getIncidentWaveAngle2 ())
+              + z * cos (yeeLayout->getIncidentWaveAngle1 ()) - dDiff;
   FPValue coordD1 = (FPValue) ((grid_iter) d);
   FPValue coordD2 = coordD1 + 1;
   FPValue proportionD2 = d - coordD1;
@@ -210,32 +210,32 @@ Scheme3D::calculateExTFSF (GridCoordinate3D posAbs,
   {
     GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (auxPosY));
 
-    diffY = approximateIncidentWaveH (realCoord);
+    diffY = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
   }
 
   if (do_need_update_back || do_need_update_front)
   {
     GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (auxPosZ));
 
-    diffZ = approximateIncidentWaveH (realCoord);
+    diffZ = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (realCoord));
   }
 
   if (do_need_update_down)
   {
-    valHz1 -= -diffY * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
+    valHz1 -= diffY;
   }
   else if (do_need_update_up)
   {
-    valHz2 -= -diffY * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
+    valHz2 -= diffY;
   }
 
   if (do_need_update_back)
   {
-    valHy1 -= diffZ * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+    valHy1 -= diffZ;
   }
   else if (do_need_update_front)
   {
-    valHy2 -= diffZ * (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+    valHy2 -= diffZ;
   }
 }
 
@@ -552,32 +552,32 @@ Scheme3D::calculateEyTFSF (GridCoordinate3D posAbs,
   {
     GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz.getTotalPosition (auxPosX));
 
-    diffX = approximateIncidentWaveH (realCoord);
+    diffX = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
   }
 
   if (do_need_update_back || do_need_update_front)
   {
     GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (auxPosZ));
 
-    diffZ = approximateIncidentWaveH (realCoord);
+    diffZ = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (realCoord));
   }
 
   if (do_need_update_left)
   {
-    valHz1 -= -diffX * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
+    valHz1 -= diffX;
   }
   else if (do_need_update_right)
   {
-    valHz2 -= -diffX * cos (incidentWaveAngle3) * sin (incidentWaveAngle1);
+    valHz2 -= diffX;
   }
 
   if (do_need_update_back)
   {
-    valHx1 -= diffZ * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+    valHx1 -= diffZ;
   }
   else if (do_need_update_front)
   {
-    valHx2 -= diffZ * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+    valHx2 -= diffZ;
   }
 }
 
@@ -894,32 +894,32 @@ Scheme3D::calculateEzTFSF (GridCoordinate3D posAbs,
   {
     GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy.getTotalPosition (auxPosX));
 
-    diffX = approximateIncidentWaveH (realCoord);
+    diffX = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (realCoord));
   }
 
   if (do_need_update_down || do_need_update_up)
   {
     GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx.getTotalPosition (auxPosY));
 
-    diffY = approximateIncidentWaveH (realCoord);
+    diffY = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (realCoord));
   }
 
   if (do_need_update_left)
   {
-    valHy1 -= diffX * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+    valHy1 -= diffX;
   }
   else if (do_need_update_right)
   {
-    valHy2 -= diffX * ( - sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+    valHy2 -= diffX;
   }
 
   if (do_need_update_down)
   {
-    valHx1 -= diffY * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+    valHx1 -= diffY;
   }
   else if (do_need_update_up)
   {
-    valHx2 -= diffY * (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+    valHx2 -= diffY;
   }
 }
 
@@ -1237,32 +1237,32 @@ Scheme3D::calculateHxTFSF (GridCoordinate3D posAbs,
   {
     GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (auxPosY));
 
-    diffY = approximateIncidentWaveE (realCoord);
+    diffY = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord));
   }
 
   if (do_need_update_back || do_need_update_front)
   {
     GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (auxPosZ));
 
-    diffZ = approximateIncidentWaveE (realCoord);
+    diffZ = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord));
   }
 
   if (do_need_update_down)
   {
-    valEz2 += diffY * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
+    valEz2 += diffY;
   }
   else if (do_need_update_up)
   {
-    valEz1 += diffY * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
+    valEz1 += diffY;
   }
 
   if (do_need_update_back)
   {
-    valEy2 += diffZ * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+    valEy2 += diffZ;
   }
   else if (do_need_update_front)
   {
-    valEy1 += diffZ * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+    valEy1 += diffZ;
   }
 }
 
@@ -1614,32 +1614,32 @@ Scheme3D::calculateHyTFSF (GridCoordinate3D posAbs,
   {
     GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez.getTotalPosition (auxPosX));
 
-    diffX = approximateIncidentWaveE (realCoord);
+    diffX = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord));
   }
 
   if (do_need_update_back || do_need_update_front)
   {
     GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (auxPosZ));
 
-    diffZ = approximateIncidentWaveE (realCoord);
+    diffZ = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord));
   }
 
   if (do_need_update_left)
   {
-    valEz2 += diffX * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
+    valEz2 += diffX;
   }
   else if (do_need_update_right)
   {
-    valEz1 += diffX * sin (incidentWaveAngle3) * sin (incidentWaveAngle1);
+    valEz1 += diffX;
   }
 
   if (do_need_update_back)
   {
-    valEx2 += diffZ * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+    valEx2 += diffZ;
   }
   else if (do_need_update_front)
   {
-    valEx1 += diffZ * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+    valEx1 += diffZ;
   }
 }
 
@@ -1990,32 +1990,32 @@ Scheme3D::calculateHzTFSF (GridCoordinate3D posAbs,
   {
     GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex.getTotalPosition (auxPosY));
 
-    diffY = approximateIncidentWaveE (realCoord);
+    diffY = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord));
   }
 
   if (do_need_update_left || do_need_update_right)
   {
     GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey.getTotalPosition (auxPosX));
 
-    diffX = approximateIncidentWaveE (realCoord);
+    diffX = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord));
   }
 
   if (do_need_update_down)
   {
-    valEx2 += diffY * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+    valEx2 += diffY;
   }
   else if (do_need_update_up)
   {
-    valEx1 += diffY * (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+    valEx1 += diffY;
   }
 
   if (do_need_update_left)
   {
-    valEy2 += diffX * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+    valEy2 += diffX;
   }
   else if (do_need_update_right)
   {
-    valEy1 += diffX * ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+    valEy1 += diffX;
   }
 }
 

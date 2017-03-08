@@ -200,6 +200,17 @@ public:
   virtual bool doNeedTFSFUpdateHxBorder (GridCoordinate3D, LayoutDirection, bool) const = 0;
   virtual bool doNeedTFSFUpdateHyBorder (GridCoordinate3D, LayoutDirection, bool) const = 0;
   virtual bool doNeedTFSFUpdateHzBorder (GridCoordinate3D, LayoutDirection, bool) const = 0;
+
+  virtual FPValue getIncidentWaveAngle1 () const = 0;
+  virtual FPValue getIncidentWaveAngle2 () const = 0;
+  virtual FPValue getIncidentWaveAngle3 () const = 0;
+
+  virtual FieldValue getExFromIncidentE (FieldValue) const = 0;
+  virtual FieldValue getEyFromIncidentE (FieldValue) const = 0;
+  virtual FieldValue getEzFromIncidentE (FieldValue) const = 0;
+  virtual FieldValue getHxFromIncidentH (FieldValue) const = 0;
+  virtual FieldValue getHyFromIncidentH (FieldValue) const = 0;
+  virtual FieldValue getHzFromIncidentH (FieldValue) const = 0;
 }; /* GridLayout */
 
 #endif /* GRID_LAYOUT_H */
