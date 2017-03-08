@@ -176,6 +176,8 @@ private:
   void performPlaneWaveESteps (time_step);
   void performPlaneWaveHSteps (time_step);
 
+  //void makeGridScattered (Grid<GridCoordinate3D> &);
+
 public:
 
   virtual void performSteps (int) CXX11_OVERRIDE;
