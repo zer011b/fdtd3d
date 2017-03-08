@@ -14,12 +14,12 @@ template <class TCoord>
 class DATDumper: public Dumper<TCoord>
 {
   // Save grid to file for specific layer.
-  void writeToFile (Grid<TCoord> &grid, GridFileType type) const;
+  void writeToFile (Grid<TCoord> &grid, GridFileType type, TCoord, TCoord) const;
 
 public:
 
   // Virtual method for grid saving.
-  void dumpGrid (Grid<TCoord> &grid) const CXX11_OVERRIDE;
+  void dumpGrid (Grid<TCoord> &grid, TCoord, TCoord) const CXX11_OVERRIDE;
 };
 
 /**
@@ -31,8 +31,11 @@ public:
  */
 template <class TCoord>
 void
-DATDumper<TCoord>::writeToFile (Grid<TCoord> &grid, GridFileType type) const
+DATDumper<TCoord>::writeToFile (Grid<TCoord> &grid, GridFileType type, TCoord startCoord, TCoord endCoord) const
 {
+  /**
+   * FIXME: use startCoord and endCoord
+   */
   std::ofstream file;
   switch (type)
   {
@@ -122,12 +125,15 @@ DATDumper<TCoord>::writeToFile (Grid<TCoord> &grid, GridFileType type) const
  */
 template <class TCoord>
 void
-DATDumper<TCoord>::dumpGrid (Grid<TCoord> &grid) const
+DATDumper<TCoord>::dumpGrid (Grid<TCoord> &grid, TCoord startCoord, TCoord endCoord) const
 {
+  /**
+   * FIXME: use startCoord and endCoord
+   */
   const TCoord& size = grid.getSize ();
   std::cout << "Saving grid to binary. Size: " << size.calculateTotalCoord () << ". " << std::endl;
 
-  writeToFile (grid, CURRENT);
+  writeToFile (grid, CURRENT, startCoord, endCoord);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
 #ifdef CXX11_ENABLED
   if (GridFileManager::type == ALL)
@@ -135,7 +141,7 @@ DATDumper<TCoord>::dumpGrid (Grid<TCoord> &grid) const
   if (this->GridFileManager::type == ALL)
 #endif
   {
-    writeToFile (grid, PREVIOUS);
+    writeToFile (grid, PREVIOUS, startCoord, endCoord);
   }
 #if defined (TWO_TIME_STEPS)
 #ifdef CXX11_ENABLED
@@ -144,7 +150,7 @@ DATDumper<TCoord>::dumpGrid (Grid<TCoord> &grid) const
   if (this->GridFileManager::type == ALL)
 #endif
   {
-    writeToFile (grid, PREVIOUS2);
+    writeToFile (grid, PREVIOUS2, startCoord, endCoord);
   }
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */

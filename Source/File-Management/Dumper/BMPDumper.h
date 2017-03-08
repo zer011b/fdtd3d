@@ -20,17 +20,17 @@ class BMPDumper: public Dumper<TCoord>
 private:
 
   // Save grid to file for specific layer.
-  void writeToFile (Grid<TCoord> &grid, GridFileType dump_type) const;
+  void writeToFile (Grid<TCoord> &grid, GridFileType dump_type, TCoord, TCoord) const;
 
   // Save grid to file for all layers.
-  void writeToFile (Grid<TCoord> &grid) const;
+  void writeToFile (Grid<TCoord> &grid, TCoord, TCoord) const;
 
 public:
 
   virtual ~BMPDumper () {}
 
   // Virtual method for grid loading.
-  virtual void dumpGrid (Grid<TCoord> &grid) const CXX11_OVERRIDE;
+  virtual void dumpGrid (Grid<TCoord> &grid, TCoord, TCoord) const CXX11_OVERRIDE;
 };
 
 /**
@@ -42,9 +42,9 @@ public:
  */
 template <class TCoord>
 void
-BMPDumper<TCoord>::writeToFile (Grid<TCoord> &grid) const
+BMPDumper<TCoord>::writeToFile (Grid<TCoord> &grid, TCoord startCoord, TCoord endCoord) const
 {
-  writeToFile (grid, CURRENT);
+  writeToFile (grid, CURRENT, startCoord, endCoord);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
 #ifdef CXX11_ENABLED
   if (GridFileManager::type == ALL)
@@ -52,7 +52,7 @@ BMPDumper<TCoord>::writeToFile (Grid<TCoord> &grid) const
   if (this->GridFileManager::type == ALL)
 #endif
   {
-    writeToFile (grid, PREVIOUS);
+    writeToFile (grid, PREVIOUS, startCoord, endCoord);
   }
 #if defined (TWO_TIME_STEPS)
 #ifdef CXX11_ENABLED
@@ -61,7 +61,7 @@ BMPDumper<TCoord>::writeToFile (Grid<TCoord> &grid) const
   if (this->GridFileManager::type == ALL)
 #endif
   {
-    writeToFile (grid, PREVIOUS2);
+    writeToFile (grid, PREVIOUS2, startCoord, endCoord);
   }
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */

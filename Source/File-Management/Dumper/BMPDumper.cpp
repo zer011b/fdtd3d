@@ -7,7 +7,9 @@
  */
 template<>
 void
-BMPDumper<GridCoordinate1D>::dumpGrid (Grid<GridCoordinate1D> &grid) const
+BMPDumper<GridCoordinate1D>::dumpGrid (Grid<GridCoordinate1D> &grid,
+                                       GridCoordinate1D startCoord,
+                                       GridCoordinate1D endCoord) const
 {
 #if PRINT_MESSAGE
   const GridCoordinate1D& size = grid.getSize ();
@@ -16,7 +18,7 @@ BMPDumper<GridCoordinate1D>::dumpGrid (Grid<GridCoordinate1D> &grid) const
   std::cout << "Saving 1D to BMP image. Size: " << sx << "x1. " << std::endl;
 #endif /* PRINT_MESSAGE */
 
-  writeToFile (grid);
+  writeToFile (grid, startCoord, endCoord);
 
 #if PRINT_MESSAGE
   std::cout << "Saved. " << std::endl;
@@ -28,7 +30,9 @@ BMPDumper<GridCoordinate1D>::dumpGrid (Grid<GridCoordinate1D> &grid) const
  */
 template<>
 void
-BMPDumper<GridCoordinate2D>::dumpGrid (Grid<GridCoordinate2D> &grid) const
+BMPDumper<GridCoordinate2D>::dumpGrid (Grid<GridCoordinate2D> &grid,
+                                       GridCoordinate2D startCoord,
+                                       GridCoordinate2D endCoord) const
 {
 #if PRINT_MESSAGE
   const GridCoordinate2D& size = grid.getSize ();
@@ -39,7 +43,7 @@ BMPDumper<GridCoordinate2D>::dumpGrid (Grid<GridCoordinate2D> &grid) const
   std::cout << "Saving 2D to BMP image. Size: " << sx << "x" << sy << ". " << std::endl;
 #endif /* PRINT_MESSAGE */
 
-  writeToFile (grid);
+  writeToFile (grid, startCoord, endCoord);
 
 #if PRINT_MESSAGE
   std::cout << "Saved. " << std::endl;
@@ -51,7 +55,9 @@ BMPDumper<GridCoordinate2D>::dumpGrid (Grid<GridCoordinate2D> &grid) const
  */
 template<>
 void
-BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> &grid) const
+BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> &grid,
+                                       GridCoordinate3D startCoord,
+                                       GridCoordinate3D endCoord) const
 {
 //  ASSERT_MESSAGE ("3D Dumper is not implemented.")
 #if PRINT_MESSAGE
@@ -64,7 +70,7 @@ BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> &grid) const
   std::cout << "Saving 3D to BMP image. Size: " << sx << "x" << sy << "x" << sz << ". " << std::endl;
 #endif /* PRINT_MESSAGE */
 
-  writeToFile (grid);
+  writeToFile (grid, startCoord, endCoord);
 
 #if PRINT_MESSAGE
   std::cout << "Saved. " << std::endl;
@@ -76,7 +82,7 @@ BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> &grid) const
  */
 template<>
 void
-BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFileType dump_type) const
+BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFileType dump_type, GridCoordinate1D startCoord, GridCoordinate1D endCoord) const
 {
   const GridCoordinate1D& size = grid.getSize ();
   grid_coord sx = size.getX ();
@@ -97,7 +103,7 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
   imageMod.SetBitDepth (24);
 #endif /* COMPLEX_FIELD_VALUES */
 
-  const FieldPointValue* value0 = grid.getFieldPointValue (0);
+  const FieldPointValue* value0 = grid.getFieldPointValue (startCoord);
   ASSERT (value0);
 
   FPValue maxPosRe = 0;
@@ -163,9 +169,9 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
   }
 
   // Go through all values and calculate max/min.
-  for (grid_iter i = 0; i < grid.getSize ().calculateTotalCoord (); ++i)
+  for (grid_coord i = startCoord.getX (); i < endCoord.getX (); ++i)
   {
-    const FieldPointValue* current = grid.getFieldPointValue (i);
+    const FieldPointValue* current = grid.getFieldPointValue (GridCoordinate1D (i));
 
     ASSERT (current);
 
@@ -272,15 +278,12 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
-  grid_iter end = grid.getSize().calculateTotalCoord ();
-  for (grid_iter iter = 0; iter < end; ++iter)
+  for (grid_coord i = startCoord.getX (); i < endCoord.getX (); ++i)
   {
     // Get current point value.
-    const FieldPointValue* current = grid.getFieldPointValue (iter);
+    GridCoordinate1D coord (i);
+    const FieldPointValue* current = grid.getFieldPointValue (coord);
     ASSERT (current);
-
-    // Calculate its position from index in array.
-    GridCoordinate1D coord = grid.calculatePositionFromIndex (iter);
 
     // Pixel coordinate.
     grid_iter px = coord.getX ();
@@ -428,7 +431,7 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
  */
 template<>
 void
-BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFileType dump_type) const
+BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFileType dump_type, GridCoordinate2D startCoord, GridCoordinate2D endCoord) const
 {
   const GridCoordinate2D& size = grid.getSize ();
   grid_coord sx = size.getX ();
@@ -449,7 +452,7 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
   imageMod.SetBitDepth (24);
 #endif /* COMPLEX_FIELD_VALUES */
 
-  const FieldPointValue* value0 = grid.getFieldPointValue (0);
+  const FieldPointValue* value0 = grid.getFieldPointValue (startCoord);
   ASSERT (value0);
 
   FPValue maxPosRe = 0;
@@ -515,99 +518,102 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
   }
 
   // Go through all values and calculate max/min.
-  for (grid_iter i = 0; i < grid.getSize ().calculateTotalCoord (); ++i)
+  for (grid_coord i = startCoord.getX (); i < endCoord.getX (); ++i)
   {
-    const FieldPointValue* current = grid.getFieldPointValue (i);
+    for (grid_coord j = startCoord.getY (); j < endCoord.getY (); ++j)
+    {
+      const FieldPointValue* current = grid.getFieldPointValue (GridCoordinate2D (i, j));
 
-    ASSERT (current);
+      ASSERT (current);
 
-    FPValue valueRe = 0;
+      FPValue valueRe = 0;
 
 #ifdef COMPLEX_FIELD_VALUES
-    FPValue valueIm = 0;
+      FPValue valueIm = 0;
 
-    FPValue valueMod = 0;
+      FPValue valueMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
-    switch (dump_type)
-    {
-      case CURRENT:
+      switch (dump_type)
       {
+        case CURRENT:
+        {
 #ifdef COMPLEX_FIELD_VALUES
-        valueRe = current->getCurValue ().real ();
-        valueIm = current->getCurValue ().imag ();
+          valueRe = current->getCurValue ().real ();
+          valueIm = current->getCurValue ().imag ();
 
-        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
+          valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
-        valueRe = current->getCurValue ();
+          valueRe = current->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        break;
-      }
+          break;
+        }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-      case PREVIOUS:
-      {
+        case PREVIOUS:
+        {
 #ifdef COMPLEX_FIELD_VALUES
-        valueRe = current->getPrevValue ().real ();
-        valueIm = current->getPrevValue ().imag ();
+          valueRe = current->getPrevValue ().real ();
+          valueIm = current->getPrevValue ().imag ();
 
-        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
+          valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
-        valueRe = current->getPrevValue ();
+          valueRe = current->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        break;
-      }
+          break;
+        }
 #if defined (TWO_TIME_STEPS)
-      case PREVIOUS2:
-      {
+        case PREVIOUS2:
+        {
 #ifdef COMPLEX_FIELD_VALUES
-        valueRe = current->getPrevPrevValue ().real ();
-        valueIm = current->getPrevPrevValue ().imag ();
+          valueRe = current->getPrevPrevValue ().real ();
+          valueIm = current->getPrevPrevValue ().imag ();
 
-        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
+          valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
-        valueRe = current->getPrevPrevValue ();
+          valueRe = current->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        break;
-      }
+          break;
+        }
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-      default:
-      {
-        UNREACHABLE;
+        default:
+        {
+          UNREACHABLE;
+        }
       }
-    }
 
-    if (valueRe > maxPosRe)
-    {
-      maxPosRe = valueRe;
-    }
-    if (valueRe < maxNegRe)
-    {
-      maxNegRe = valueRe;
-    }
+      if (valueRe > maxPosRe)
+      {
+        maxPosRe = valueRe;
+      }
+      if (valueRe < maxNegRe)
+      {
+        maxNegRe = valueRe;
+      }
 
 #ifdef COMPLEX_FIELD_VALUES
-    if (valueIm > maxPosIm)
-    {
-      maxPosIm = valueIm;
-    }
-    if (valueIm < maxNegIm)
-    {
-      maxNegIm = valueIm;
-    }
+      if (valueIm > maxPosIm)
+      {
+        maxPosIm = valueIm;
+      }
+      if (valueIm < maxNegIm)
+      {
+        maxNegIm = valueIm;
+      }
 
-    if (valueMod > maxPosMod)
-    {
-      maxPosMod = valueMod;
-    }
-    if (valueMod < maxNegMod)
-    {
-      maxNegMod = valueMod;
-    }
+      if (valueMod > maxPosMod)
+      {
+        maxPosMod = valueMod;
+      }
+      if (valueMod < maxNegMod)
+      {
+        maxNegMod = valueMod;
+      }
 #endif /* COMPLEX_FIELD_VALUES */
+    }
   }
 
   // Set max (diff between max positive and max negative).
@@ -624,96 +630,97 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
-  grid_iter end = grid.getSize().calculateTotalCoord ();
-  for (grid_iter iter = 0; iter < end; ++iter)
+  for (grid_coord i = startCoord.getX (); i < endCoord.getX (); ++i)
   {
-    // Get current point value.
-    const FieldPointValue* current = grid.getFieldPointValue (iter);
-    ASSERT (current);
+    for (grid_coord j = startCoord.getY (); j < endCoord.getY (); ++j)
+    {
+      GridCoordinate2D coord (i, j);
 
-    // Calculate its position from index in array.
-    GridCoordinate2D coord = grid.calculatePositionFromIndex (iter);
+      // Get current point value.
+      const FieldPointValue* current = grid.getFieldPointValue (coord);
+      ASSERT (current);
 
-    // Pixel coordinate.
-    grid_iter px = coord.getX ();
-    grid_iter py = coord.getY ();;
+      // Pixel coordinate.
+      grid_iter px = coord.getX ();
+      grid_iter py = coord.getY ();;
 
-    // Get pixel for image.
-    FPValue valueRe = 0;
+      // Get pixel for image.
+      FPValue valueRe = 0;
 
 #ifdef COMPLEX_FIELD_VALUES
-    FPValue valueIm = 0;
+      FPValue valueIm = 0;
 
-    FPValue valueMod = 0;
+      FPValue valueMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
-    switch (dump_type)
-    {
-      case CURRENT:
+      switch (dump_type)
       {
+        case CURRENT:
+        {
 #ifdef COMPLEX_FIELD_VALUES
-        valueRe = current->getCurValue ().real ();
-        valueIm = current->getCurValue ().imag ();
+          valueRe = current->getCurValue ().real ();
+          valueIm = current->getCurValue ().imag ();
 
-        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
+          valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
-        valueRe = current->getCurValue ();
+          valueRe = current->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        break;
-      }
+          break;
+        }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-      case PREVIOUS:
-      {
+        case PREVIOUS:
+        {
 #ifdef COMPLEX_FIELD_VALUES
-        valueRe = current->getPrevValue ().real ();
-        valueIm = current->getPrevValue ().imag ();
+          valueRe = current->getPrevValue ().real ();
+          valueIm = current->getPrevValue ().imag ();
 
-        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
+          valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
-        valueRe = current->getPrevValue ();
+          valueRe = current->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        break;
-      }
+          break;
+        }
 #if defined (TWO_TIME_STEPS)
-      case PREVIOUS2:
-      {
+        case PREVIOUS2:
+        {
 #ifdef COMPLEX_FIELD_VALUES
-        valueRe = current->getPrevPrevValue ().real ();
-        valueIm = current->getPrevPrevValue ().imag ();
+          valueRe = current->getPrevPrevValue ().real ();
+          valueIm = current->getPrevPrevValue ().imag ();
 
-        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
+          valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
-        valueRe = current->getPrevPrevValue ();
+          valueRe = current->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        break;
-      }
+          break;
+        }
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-      default:
-      {
-        UNREACHABLE;
+        default:
+        {
+          UNREACHABLE;
+        }
       }
+
+      RGBApixel pixelRe = BMPhelper.getPixelFromValue (valueRe, maxNegRe, maxRe);
+
+#ifdef COMPLEX_FIELD_VALUES
+      RGBApixel pixelIm = BMPhelper.getPixelFromValue (valueIm, maxNegIm, maxIm);
+
+      RGBApixel pixelMod = BMPhelper.getPixelFromValue (valueMod, maxNegMod, maxMod);
+#endif /* COMPLEX_FIELD_VALUES */
+
+      // Set pixel for current image.
+      imageRe.SetPixel(px, py, pixelRe);
+
+#ifdef COMPLEX_FIELD_VALUES
+      imageIm.SetPixel(px, py, pixelIm);
+
+      imageMod.SetPixel(px, py, pixelMod);
+#endif /* COMPLEX_FIELD_VALUES */
     }
-
-    RGBApixel pixelRe = BMPhelper.getPixelFromValue (valueRe, maxNegRe, maxRe);
-
-#ifdef COMPLEX_FIELD_VALUES
-    RGBApixel pixelIm = BMPhelper.getPixelFromValue (valueIm, maxNegIm, maxIm);
-
-    RGBApixel pixelMod = BMPhelper.getPixelFromValue (valueMod, maxNegMod, maxMod);
-#endif /* COMPLEX_FIELD_VALUES */
-
-    // Set pixel for current image.
-    imageRe.SetPixel(px, py, pixelRe);
-
-#ifdef COMPLEX_FIELD_VALUES
-    imageIm.SetPixel(px, py, pixelIm);
-
-    imageMod.SetPixel(px, py, pixelMod);
-#endif /* COMPLEX_FIELD_VALUES */
   }
 
   // Write image to file.
@@ -780,7 +787,7 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
  */
 template<>
 void
-BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFileType dump_type) const
+BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFileType dump_type, GridCoordinate3D startCoord, GridCoordinate3D endCoord) const
 {
 //  ASSERT_MESSAGE ("3D Dumper is not implemented.")
 
@@ -789,7 +796,7 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
   grid_coord sy = size.getY ();
   grid_coord sz = size.getZ ();
 
-  const FieldPointValue* value0 = grid.getFieldPointValue (0);
+  const FieldPointValue* value0 = grid.getFieldPointValue (startCoord);
   ASSERT (value0);
 
   FPValue maxPosRe = 0;
@@ -855,99 +862,105 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
   }
 
   // Go through all values and calculate max/min.
-  for (grid_iter i = 0; i < grid.getSize ().calculateTotalCoord (); ++i)
+  for (grid_coord i = startCoord.getX (); i < endCoord.getX (); ++i)
   {
-    const FieldPointValue* current = grid.getFieldPointValue (i);
+    for (grid_coord j = startCoord.getY (); j < endCoord.getY (); ++j)
+    {
+      for (grid_coord k = startCoord.getZ (); k < endCoord.getZ (); ++k)
+      {
+        const FieldPointValue* current = grid.getFieldPointValue (GridCoordinate3D (i, j, k));
 
-    ASSERT (current);
+        ASSERT (current);
 
-    FPValue valueRe = 0;
+        FPValue valueRe = 0;
 
 #ifdef COMPLEX_FIELD_VALUES
-    FPValue valueIm = 0;
+        FPValue valueIm = 0;
 
-    FPValue valueMod = 0;
+        FPValue valueMod = 0;
 #endif /* COMPLEX_FIELD_VALUES */
 
-    switch (dump_type)
-    {
-      case CURRENT:
-      {
+        switch (dump_type)
+        {
+          case CURRENT:
+          {
 #ifdef COMPLEX_FIELD_VALUES
-        valueRe = current->getCurValue ().real ();
-        valueIm = current->getCurValue ().imag ();
+            valueRe = current->getCurValue ().real ();
+            valueIm = current->getCurValue ().imag ();
 
-        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
+            valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
-        valueRe = current->getCurValue ();
+            valueRe = current->getCurValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        break;
-      }
+            break;
+          }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-      case PREVIOUS:
-      {
+          case PREVIOUS:
+          {
 #ifdef COMPLEX_FIELD_VALUES
-        valueRe = current->getPrevValue ().real ();
-        valueIm = current->getPrevValue ().imag ();
+            valueRe = current->getPrevValue ().real ();
+            valueIm = current->getPrevValue ().imag ();
 
-        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
+            valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
-        valueRe = current->getPrevValue ();
+            valueRe = current->getPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        break;
-      }
+            break;
+          }
 #if defined (TWO_TIME_STEPS)
-      case PREVIOUS2:
-      {
+          case PREVIOUS2:
+          {
 #ifdef COMPLEX_FIELD_VALUES
-        valueRe = current->getPrevPrevValue ().real ();
-        valueIm = current->getPrevPrevValue ().imag ();
+            valueRe = current->getPrevPrevValue ().real ();
+            valueIm = current->getPrevPrevValue ().imag ();
 
-        valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
+            valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
 #else /* COMPLEX_FIELD_VALUES */
-        valueRe = current->getPrevPrevValue ();
+            valueRe = current->getPrevPrevValue ();
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        break;
-      }
+            break;
+          }
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-      default:
-      {
-        UNREACHABLE;
-      }
-    }
+          default:
+          {
+            UNREACHABLE;
+          }
+        }
 
-    if (valueRe > maxPosRe)
-    {
-      maxPosRe = valueRe;
-    }
-    if (valueRe < maxNegRe)
-    {
-      maxNegRe = valueRe;
-    }
+        if (valueRe > maxPosRe)
+        {
+          maxPosRe = valueRe;
+        }
+        if (valueRe < maxNegRe)
+        {
+          maxNegRe = valueRe;
+        }
 
 #ifdef COMPLEX_FIELD_VALUES
-    if (valueIm > maxPosIm)
-    {
-      maxPosIm = valueIm;
-    }
-    if (valueIm < maxNegIm)
-    {
-      maxNegIm = valueIm;
-    }
+        if (valueIm > maxPosIm)
+        {
+          maxPosIm = valueIm;
+        }
+        if (valueIm < maxNegIm)
+        {
+          maxNegIm = valueIm;
+        }
 
-    if (valueMod > maxPosMod)
-    {
-      maxPosMod = valueMod;
-    }
-    if (valueMod < maxNegMod)
-    {
-      maxNegMod = valueMod;
-    }
+        if (valueMod > maxPosMod)
+        {
+          maxPosMod = valueMod;
+        }
+        if (valueMod < maxNegMod)
+        {
+          maxNegMod = valueMod;
+        }
 #endif /* COMPLEX_FIELD_VALUES */
+      }
+    }
   }
 
   // Set max (diff between max positive and max negative).
@@ -964,7 +977,7 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Create image for current values and max/min values.
-  for (grid_coord k = 0; k < sz; ++k)
+  for (grid_coord k = startCoord.getZ (); k < endCoord.getZ (); ++k)
   {
     BMP imageRe;
     imageRe.SetSize (sx, sy);
@@ -980,9 +993,9 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
     imageMod.SetBitDepth (24);
 #endif /* COMPLEX_FIELD_VALUES */
 
-    for (grid_iter i = 0; i < size.getX (); ++i)
+    for (grid_iter i = startCoord.getX (); i < endCoord.getX (); ++i)
     {
-      for (grid_iter j = 0; j < size.getY (); ++j)
+      for (grid_iter j = startCoord.getY (); j < endCoord.getY (); ++j)
       {
         GridCoordinate3D pos (i, j, k);
 
