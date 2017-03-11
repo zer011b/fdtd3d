@@ -230,7 +230,9 @@ public:
   {
     ASSERT (!doUseTFSF
             || (doUseTFSF
-                && (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0)
+                && (yeeLayout->getIncidentWaveAngle1 () == PhysicsConst::Pi / 2
+                    && (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0)
+                    && yeeLayout->getIncidentWaveAngle3 () == PhysicsConst::Pi / 2)
                 && shrinkCoord (yeeLayout->getSizeTFSF ()) != GridCoordinate2D (0, 0)));
 
     ASSERT (!doUsePML || (doUsePML && (shrinkCoord (yeeLayout->getSizePML ()) != GridCoordinate2D (0, 0))));

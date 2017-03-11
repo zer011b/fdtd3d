@@ -241,9 +241,8 @@ public:
   , incidentWaveAngle2 (incWaveAngle2)
   , incidentWaveAngle3 (incWaveAngle3)
   {
-    ASSERT (incidentWaveAngle1 == PhysicsConst::Pi / 2 && incidentWaveAngle2 == 0 && incidentWaveAngle3 == 0
-            || incidentWaveAngle1 == PhysicsConst::Pi / 2 && incidentWaveAngle2 == PhysicsConst::Pi / 4 && incidentWaveAngle3 == 0);
-
+    ASSERT (incWaveAngle1 >= 0 && incWaveAngle1 <= PhysicsConst::Pi / 2);
+    ASSERT (incWaveAngle2 >= 0 && incWaveAngle2 <= PhysicsConst::Pi / 2);
     /* Ex is:
      *       1 <= x < 1 + size.getx()
      *       0.5 <= y < 0.5 + size.getY()
