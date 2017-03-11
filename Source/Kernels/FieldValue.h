@@ -63,4 +63,9 @@ typedef uint64_t grid_iter;
  */
 typedef uint32_t time_step;
 
+/**
+ * Macro for square
+ */
+#define SQR(x) ((x) * (x))
+
 #endif /* FIELD_VALUES_H */

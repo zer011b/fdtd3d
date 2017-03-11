@@ -99,6 +99,7 @@ class Scheme3D: public Scheme
   // Wave parameters
   FPValue sourceWaveLength;
   FPValue sourceFrequency;
+  FPValue relPhaseVelocity;
 
   /** Courant number */
   FPValue courantNum;
