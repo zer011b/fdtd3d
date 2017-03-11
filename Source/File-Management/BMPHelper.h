@@ -10,6 +10,13 @@ enum class PaletteType: uint32_t
   PALETTE_GRAY
 };
 
+enum class OrthogonalAxis: uint32_t
+{
+  X,
+  Y,
+  Z
+};
+
 /**
  * Class to statically include in BMPLoader and BMPDumper.
  * Blue-Green-Red scheme is implemented.
@@ -19,6 +26,8 @@ class BMPHelper
 private:
 
   PaletteType palette;
+
+  OrthogonalAxis orthogonalAxis;
 
 private:
 
@@ -35,8 +44,10 @@ private:
 
 public:
 
-  BMPHelper (PaletteType colorPalette)
+  BMPHelper (PaletteType colorPalette,
+             OrthogonalAxis orthAxis)
     : palette (colorPalette)
+  , orthogonalAxis (orthAxis)
   {
   }
 
@@ -47,6 +58,11 @@ public:
   // Return pixel with colors according to values of value.
   RGBApixel getPixelFromValue (const FPValue& value, const FPValue& maxNeg,
                                const FPValue& max);
+
+  OrthogonalAxis getOrthogonalAxis ()
+  {
+    return orthogonalAxis;
+  }
 };
 
 #endif /* BMP_HELPER_H */

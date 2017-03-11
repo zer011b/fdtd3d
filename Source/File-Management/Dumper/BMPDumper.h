@@ -68,6 +68,6 @@ BMPDumper<TCoord>::writeToFile (Grid<TCoord> &grid, TCoord startCoord, TCoord en
 }
 
 template <class TCoord>
-BMPHelper BMPDumper<TCoord>::BMPhelper (PaletteType::PALETTE_BLUE_GREEN_RED);
+BMPHelper BMPDumper<TCoord>::BMPhelper (PaletteType::PALETTE_BLUE_GREEN_RED, OrthogonalAxis::Z);
 
 #endif /* BMP_DUMPER_H */

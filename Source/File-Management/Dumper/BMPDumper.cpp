@@ -976,28 +976,92 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
   printf ("MaxMod neg %f, maxMod pos %f, maxMod %f\n", maxNegMod, maxPosMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
+  grid_coord coordStart1, coordEnd1;
+  grid_coord coordStart2, coordEnd2;
+  grid_coord coordStart3, coordEnd3;
+
+  grid_coord size1;
+  grid_coord size2;
+  grid_coord size3;
+
+  if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::X)
+  {
+    coordStart1 = startCoord.getX ();
+    coordEnd1 = endCoord.getX ();
+    size1 = sx;
+
+    coordStart2 = startCoord.getY ();
+    coordEnd2 = endCoord.getY ();
+    size2 = sy;
+
+    coordStart3 = startCoord.getZ ();
+    coordEnd3 = endCoord.getZ ();
+    size3 = sz;
+  }
+  else if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::Y)
+  {
+    coordStart1 = startCoord.getY ();
+    coordEnd1 = endCoord.getY ();
+    size1 = sy;
+
+    coordStart2 = startCoord.getX ();
+    coordEnd2 = endCoord.getX ();
+    size2 = sx;
+
+    coordStart3 = startCoord.getZ ();
+    coordEnd3 = endCoord.getZ ();
+    size3 = sz;
+  }
+  else if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::Z)
+  {
+    coordStart1 = startCoord.getZ ();
+    coordEnd1 = endCoord.getZ ();
+    size1 = sz;
+
+    coordStart2 = startCoord.getX ();
+    coordEnd2 = endCoord.getX ();
+    size2 = sx;
+
+    coordStart3 = startCoord.getY ();
+    coordEnd3 = endCoord.getY ();
+    size3 = sy;
+  }
+
   // Create image for current values and max/min values.
-  for (grid_coord k = startCoord.getZ (); k < endCoord.getZ (); ++k)
+  for (grid_coord coord1 = coordStart1; coord1 < coordEnd1; ++coord1)
   {
     BMP imageRe;
-    imageRe.SetSize (sx, sy);
+    imageRe.SetSize (size2, size3);
     imageRe.SetBitDepth (24);
 
 #ifdef COMPLEX_FIELD_VALUES
     BMP imageIm;
-    imageIm.SetSize (sx, sy);
+    imageIm.SetSize (size2, size3);
     imageIm.SetBitDepth (24);
 
     BMP imageMod;
-    imageMod.SetSize (sx, sy);
+    imageMod.SetSize (size2, size3);
     imageMod.SetBitDepth (24);
 #endif /* COMPLEX_FIELD_VALUES */
 
-    for (grid_iter i = startCoord.getX (); i < endCoord.getX (); ++i)
+    for (grid_iter coord2 = coordStart2; coord2 < coordEnd2; ++coord2)
     {
-      for (grid_iter j = startCoord.getY (); j < endCoord.getY (); ++j)
+      for (grid_iter coord3 = coordStart3; coord3 < coordEnd3; ++coord3)
       {
-        GridCoordinate3D pos (i, j, k);
+        GridCoordinate3D pos;
+
+        if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::X)
+        {
+          pos = GridCoordinate3D (coord1, coord2, coord3);
+        }
+        else if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::Y)
+        {
+          pos = GridCoordinate3D (coord2, coord1, coord3);
+        }
+        else if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::Z)
+        {
+          pos = GridCoordinate3D (coord3, coord1, coord2);
+        }
 
         // Get current point value.
         const FieldPointValue* current = grid.getFieldPointValue (pos);
@@ -1072,12 +1136,12 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #endif /* COMPLEX_FIELD_VALUES */
 
         // Set pixel for current image.
-        imageRe.SetPixel(i, j, pixelRe);
+        imageRe.SetPixel(coord2, coord3, pixelRe);
 
 #ifdef COMPLEX_FIELD_VALUES
-        imageIm.SetPixel(i, j, pixelIm);
+        imageIm.SetPixel(coord2, coord3, pixelIm);
 
-        imageMod.SetPixel(i, j, pixelMod);
+        imageMod.SetPixel(coord2, coord3, pixelMod);
 #endif /* COMPLEX_FIELD_VALUES */
       }
     }
@@ -1087,14 +1151,14 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
     {
       case CURRENT:
       {
-        std::string cur_bmp_re = cur + int64_to_string (k) + std::string ("-Re") + std::string (".bmp");
+        std::string cur_bmp_re = cur + int64_to_string (coord1) + std::string ("-Re") + std::string (".bmp");
         imageRe.WriteToFile (cur_bmp_re.c_str ());
 
 #ifdef COMPLEX_FIELD_VALUES
-        std::string cur_bmp_im = cur + int64_to_string (k) + std::string ("-Im") + std::string (".bmp");
+        std::string cur_bmp_im = cur + int64_to_string (coord1) + std::string ("-Im") + std::string (".bmp");
         imageIm.WriteToFile (cur_bmp_im.c_str ());
 
-        std::string cur_bmp_mod = cur + int64_to_string (k) + std::string ("-Mod") + std::string (".bmp");
+        std::string cur_bmp_mod = cur + int64_to_string (coord1) + std::string ("-Mod") + std::string (".bmp");
         imageMod.WriteToFile (cur_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
@@ -1103,14 +1167,14 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
       case PREVIOUS:
       {
-        std::string prev_bmp_re = cur + int64_to_string (k) + std::string ("-Re") + std::string (".bmp");
+        std::string prev_bmp_re = cur + int64_to_string (coord1) + std::string ("-Re") + std::string (".bmp");
         imageRe.WriteToFile (prev_bmp_re.c_str ());
 
 #ifdef COMPLEX_FIELD_VALUES
-        std::string prev_bmp_im = cur + int64_to_string (k) + std::string ("-Im") + std::string (".bmp");
+        std::string prev_bmp_im = cur + int64_to_string (coord1) + std::string ("-Im") + std::string (".bmp");
         imageIm.WriteToFile (prev_bmp_im.c_str ());
 
-        std::string prev_bmp_mod = cur + int64_to_string (k) + std::string ("-Mod") + std::string (".bmp");
+        std::string prev_bmp_mod = cur + int64_to_string (coord1) + std::string ("-Mod") + std::string (".bmp");
         imageMod.WriteToFile (prev_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
@@ -1119,14 +1183,14 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
 #if defined (TWO_TIME_STEPS)
       case PREVIOUS2:
       {
-        std::string prevPrev_bmp_re = cur + int64_to_string (k) + std::string ("-Re") + std::string (".bmp");
+        std::string prevPrev_bmp_re = cur + int64_to_string (coord1) + std::string ("-Re") + std::string (".bmp");
         imageRe.WriteToFile (prevPrev_bmp_re.c_str ());
 
 #ifdef COMPLEX_FIELD_VALUES
-        std::string prevPrev_bmp_im = cur + int64_to_string (k) + std::string ("-Im") + std::string (".bmp");
+        std::string prevPrev_bmp_im = cur + int64_to_string (coord1) + std::string ("-Im") + std::string (".bmp");
         imageIm.WriteToFile (prevPrev_bmp_im.c_str ());
 
-        std::string prevPrev_bmp_mod = cur + int64_to_string (k) + std::string ("-Mod") + std::string (".bmp");
+        std::string prevPrev_bmp_mod = cur + int64_to_string (coord1) + std::string ("-Mod") + std::string (".bmp");
         imageMod.WriteToFile (prevPrev_bmp_mod.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
 
