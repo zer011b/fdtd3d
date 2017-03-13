@@ -1931,8 +1931,8 @@ Scheme3D::calculateHzTFSF (GridCoordinate3D posAbs,
   bool do_need_update_down = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::DOWN, DO_USE_3D_MODE);
   bool do_need_update_up = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::UP, DO_USE_3D_MODE);
 
-  GridCoordinate2D auxPosX;
-  GridCoordinate2D auxPosY;
+  GridCoordinate3D auxPosX;
+  GridCoordinate3D auxPosY;
   FieldValue diffX;
   FieldValue diffY;
 
