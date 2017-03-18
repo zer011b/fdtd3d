@@ -2338,7 +2338,7 @@ ParallelGrid::getComputationStart () const
 
   if (parallelGridCore->getHasL ())
   {
-    diffX += shareStep;
+    diffX += shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -2349,7 +2349,7 @@ ParallelGrid::getComputationStart () const
 
   if (parallelGridCore->getHasD ())
   {
-    diffY += shareStep;
+    diffY += shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -2360,7 +2360,7 @@ ParallelGrid::getComputationStart () const
 
   if (parallelGridCore->getHasB ())
   {
-    diffZ += shareStep;
+    diffZ += shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -2421,7 +2421,7 @@ ParallelGrid::getComputationEnd () const
 
   if (parallelGridCore->getHasR ())
   {
-    diffX = shareStep;
+    diffX = shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
         PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -2431,7 +2431,7 @@ ParallelGrid::getComputationEnd () const
 
   if (parallelGridCore->getHasU ())
   {
-    diffY = shareStep;
+    diffY = shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
         PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -2441,7 +2441,7 @@ ParallelGrid::getComputationEnd () const
 
   if (parallelGridCore->getHasF ())
   {
-    diffZ = shareStep;
+    diffZ = shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
         PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
