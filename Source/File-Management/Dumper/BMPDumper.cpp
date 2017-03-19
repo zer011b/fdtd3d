@@ -1060,7 +1060,7 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
         }
         else if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::Z)
         {
-          pos = GridCoordinate3D (coord3, coord1, coord2);
+          pos = GridCoordinate3D (coord2, coord3, coord1);
         }
 
         // Get current point value.
