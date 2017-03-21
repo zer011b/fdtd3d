@@ -362,15 +362,15 @@ public:
   void zeroShareStep ();
   void share ();
 
-  virtual ParallelGridCoordinate getComputationEnd () const CXX11_OVERRIDE;
-  virtual ParallelGridCoordinate getComputationStart () const CXX11_OVERRIDE;
+  virtual ParallelGridCoordinate getComputationEnd (ParallelGridCoordinate) const CXX11_OVERRIDE;
+  virtual ParallelGridCoordinate getComputationStart (ParallelGridCoordinate) const CXX11_OVERRIDE;
 
   ParallelGridCoordinate getStartPosition () const;
   ParallelGridCoordinate getChunkStartPosition () const;
   ParallelGridCoordinate getTotalPosition (ParallelGridCoordinate);
   ParallelGridCoordinate getRelativePosition (ParallelGridCoordinate);
 
-  FieldPointValue *getFieldPointValueByRelativePos (const ParallelGridCoordinate &);
+  FieldPointValue *getFieldPointValueByAbsolutePos (const ParallelGridCoordinate &);
 
   /**
    * Getter for total size of grid

@@ -2314,87 +2314,70 @@ ParallelGrid::getRelativePosition (ParallelGridCoordinate pos) /**< total positi
 } /* ParallelGrid::getRelativePosition */
 
 /**
- * Get field point value at relative coordinate in grid
+ * Get field point value at absolute coordinate in grid
  *
  * @return field point value
  */
 FieldPointValue *
-ParallelGrid::getFieldPointValueByRelativePos (const ParallelGridCoordinate &relPosition) /**< relative coordinate in grid */
+ParallelGrid::getFieldPointValueByAbsolutePos (const ParallelGridCoordinate &absPosition) /**< absolute coordinate in grid */
 {
-  return getFieldPointValue (getRelativePosition (relPosition));
-} /* ParallelGrid::getFieldPointValueByRelativePos */
+  return getFieldPointValue (getRelativePosition (absPosition));
+} /* ParallelGrid::getFieldPointValueByAbsolutePos */
 
 /**
- * Get first coordinate from which to perfrom computations at current step
+ * Get first coordinate from which to perform computations at current step
  *
- * @return first coordinate from which to perfrom computations at current step
+ * @return first coordinate from which to perform computations at current step
  */
 ParallelGridCoordinate
-ParallelGrid::getComputationStart () const
+ParallelGrid::getComputationStart (ParallelGridCoordinate diffPosStart) const /**< layout coordinate modifier */
 {
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  grid_iter diffX = diffPosStart.getX ();
+#endif
+#if defined (GRID_2D) || defined (GRID_3D)
+  grid_iter diffY = diffPosStart.getY ();
+#endif
+#if defined (GRID_3D)
+  grid_iter diffZ = diffPosStart.getZ ();
+#endif
+
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  grid_iter diffX = 0;
-
   if (parallelGridCore->getHasL ())
   {
-    diffX += shareStep + 1;
+    diffX = shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  grid_iter diffY = 0;
-
   if (parallelGridCore->getHasD ())
   {
-    diffY += shareStep + 1;
+    diffY = shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  grid_iter diffZ = 0;
-
   if (parallelGridCore->getHasB ())
   {
-    diffZ += shareStep + 1;
+    diffZ = shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
-  grid_iter px = 0;
-  grid_iter py = 0;
-  grid_iter pz = 0;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
-  px = diffX;
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
-  py = diffY;
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  pz = diffZ;
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-  px = diffX;
-  py = diffY;
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  py = diffY;
-  pz = diffZ;
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  px = diffX;
-  pz = diffZ;
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  px = diffX;
-  py = diffY;
-  pz = diffZ;
-#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  grid_iter px = diffX;
+#endif
+#if defined (GRID_2D) || defined (GRID_3D)
+  grid_iter py = diffY;
+#endif
+#if defined (GRID_3D)
+  grid_iter pz = diffZ;
+#endif
 
 #ifdef GRID_1D
   return ParallelGridCoordinate (px);
@@ -2408,79 +2391,58 @@ ParallelGrid::getComputationStart () const
 } /* ParallelGrid::getComputationStart */
 
 /**
- * Get last coordinate until which to perfrom computations at current step
+ * Get last coordinate until which to perform computations at current step
  *
- * @return last coordinate until which to perfrom computations at current step
+ * @return last coordinate until which to perform computations at current step
  */
 ParallelGridCoordinate
-ParallelGrid::getComputationEnd () const
+ParallelGrid::getComputationEnd (ParallelGridCoordinate diffPosEnd) const /**< layout coordinate modifier */
 {
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-  defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  grid_iter diffX = 0;
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  grid_iter diffX = diffPosEnd.getX ();
+#endif
+#if defined (GRID_2D) || defined (GRID_3D)
+  grid_iter diffY = diffPosEnd.getY ();
+#endif
+#if defined (GRID_3D)
+  grid_iter diffZ = diffPosEnd.getZ ();
+#endif
 
-  if (parallelGridCore->getHasR ())
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (parallelGridCore->getHasL ())
   {
     diffX = shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-        PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-  defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  grid_iter diffY = 0;
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
-  if (parallelGridCore->getHasU ())
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (parallelGridCore->getHasD ())
   {
     diffY = shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-        PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-  defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  grid_iter diffZ = 0;
+          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
-  if (parallelGridCore->getHasF ())
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (parallelGridCore->getHasB ())
   {
     diffZ = shareStep + 1;
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
-        PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_iter px = ParallelGridBase::getSize ().getX ();
+  grid_iter px = ParallelGridBase::getSize ().getX () - diffX;
 #endif
 #if defined (GRID_2D) || defined (GRID_3D)
-  grid_iter py = ParallelGridBase::getSize ().getY ();
+  grid_iter py = ParallelGridBase::getSize ().getY () - diffY;
 #endif
 #ifdef GRID_3D
-  grid_iter pz = ParallelGridBase::getSize ().getZ ();
-#endif
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
-  px = ParallelGridBase::getSize ().getX () - diffX;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
-  py = ParallelGridBase::getSize ().getY () - diffY;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  pz = ParallelGridBase::getSize ().getZ () - diffZ;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-  px = ParallelGridBase::getSize ().getX () - diffX;
-  py = ParallelGridBase::getSize ().getY () - diffY;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  py = ParallelGridBase::getSize ().getY () - diffY;
-  pz = ParallelGridBase::getSize ().getZ () - diffZ;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  px = ParallelGridBase::getSize ().getX () - diffX;
-  pz = ParallelGridBase::getSize ().getZ () - diffZ;
-#endif
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  px = ParallelGridBase::getSize ().getX () - diffX;
-  py = ParallelGridBase::getSize ().getY () - diffY;
-  pz = ParallelGridBase::getSize ().getZ () - diffZ;
+  grid_iter pz = ParallelGridBase::getSize ().getZ () - diffZ;
 #endif
 
 #ifdef GRID_1D

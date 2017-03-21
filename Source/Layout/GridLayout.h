@@ -108,22 +108,22 @@ public:
   /*
    * Get start coordinate of field component
    */
-  virtual GridCoordinate3D getExStart (GridCoordinate3D) const = 0;
-  virtual GridCoordinate3D getEyStart (GridCoordinate3D) const = 0;
-  virtual GridCoordinate3D getEzStart (GridCoordinate3D) const = 0;
-  virtual GridCoordinate3D getHxStart (GridCoordinate3D) const = 0;
-  virtual GridCoordinate3D getHyStart (GridCoordinate3D) const = 0;
-  virtual GridCoordinate3D getHzStart (GridCoordinate3D) const = 0;
+  virtual GridCoordinate3D getExStartDiff () const = 0;
+  virtual GridCoordinate3D getEyStartDiff () const = 0;
+  virtual GridCoordinate3D getEzStartDiff () const = 0;
+  virtual GridCoordinate3D getHxStartDiff () const = 0;
+  virtual GridCoordinate3D getHyStartDiff () const = 0;
+  virtual GridCoordinate3D getHzStartDiff () const = 0;
 
   /*
    * Get end coordinate of field component
    */
-  virtual GridCoordinate3D getExEnd (GridCoordinate3D) const = 0;
-  virtual GridCoordinate3D getEyEnd (GridCoordinate3D) const = 0;
-  virtual GridCoordinate3D getEzEnd (GridCoordinate3D) const = 0;
-  virtual GridCoordinate3D getHxEnd (GridCoordinate3D) const = 0;
-  virtual GridCoordinate3D getHyEnd (GridCoordinate3D) const = 0;
-  virtual GridCoordinate3D getHzEnd (GridCoordinate3D) const = 0;
+  virtual GridCoordinate3D getExEndDiff () const = 0;
+  virtual GridCoordinate3D getEyEndDiff () const = 0;
+  virtual GridCoordinate3D getEzEndDiff () const = 0;
+  virtual GridCoordinate3D getHxEndDiff () const = 0;
+  virtual GridCoordinate3D getHyEndDiff () const = 0;
+  virtual GridCoordinate3D getHzEndDiff () const = 0;
 
   /*
    * Get minimum coordinate of field component

@@ -111,6 +111,12 @@ public:
     TcoordType rhs_x = rhs.GridCoordinate1DTemplate<TcoordType>::getX ();
     return x <= rhs_x && getY () <= rhs.getY ();
   }
+
+  GridCoordinate2DTemplate CUDA_DEVICE CUDA_HOST operator- () const
+  {
+    TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
+    return GridCoordinate2DTemplate (- x, - getY ());
+  }
 };
 
 typedef GridCoordinate2DTemplate<grid_iter> GridCoordinate2D;

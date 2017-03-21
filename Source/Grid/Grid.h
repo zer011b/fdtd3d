@@ -68,15 +68,15 @@ public:
   TCoord getTotalSize () const;
   TCoord getRelativePosition (TCoord) const;
 
-  virtual TCoord getComputationStart () const;
-  virtual TCoord getComputationEnd () const;
+  virtual TCoord getComputationStart (TCoord) const;
+  virtual TCoord getComputationEnd (TCoord) const;
   TCoord calculatePositionFromIndex (grid_iter) const;
 
   void setFieldPointValue (FieldPointValue *, const TCoord &);
   virtual FieldPointValue *getFieldPointValue (const TCoord &);
   virtual FieldPointValue *getFieldPointValue (grid_iter);
 
-  virtual FieldPointValue *getFieldPointValueByRelativePos (const TCoord &);
+  virtual FieldPointValue *getFieldPointValueByAbsolutePos (const TCoord &);
 
   virtual void nextTimeStep ();
 }; /* Grid */
@@ -219,9 +219,9 @@ Grid<TCoord>::getSize () const
  */
 template <class TCoord>
 TCoord
-Grid<TCoord>::getComputationStart () const
+Grid<TCoord>::getComputationStart (TCoord diffPosStart) const
 {
-  return TCoord (0);
+  return TCoord (0) + diffPosStart;
 } /* Grid<TCoord>::getComputationStart */
 
 /**
@@ -231,9 +231,9 @@ Grid<TCoord>::getComputationStart () const
  */
 template <class TCoord>
 TCoord
-Grid<TCoord>::getComputationEnd () const
+Grid<TCoord>::getComputationEnd (TCoord diffPosEnd) const
 {
-  return getSize ();
+  return getSize () - diffPosEnd;
 } /* Grid<TCoord>::getComputationEnd () */
 
 /**
@@ -295,10 +295,10 @@ Grid<TCoord>::getFieldPointValue (grid_iter coord) /**< index in grid */
  */
 template <class TCoord>
 FieldPointValue *
-Grid<TCoord>::getFieldPointValueByRelativePos (const TCoord &relPosition) /**< relative coordinate in grid */
+Grid<TCoord>::getFieldPointValueByAbsolutePos (const TCoord &relPosition) /**< relative coordinate in grid */
 {
   return getFieldPointValue (relPosition);
-} /* Grid<TCoord>::getFieldPointValueByRelativePos */
+} /* Grid<TCoord>::getFieldPointValueByAbsolutePos */
 
 /**
  * Switch to next time step

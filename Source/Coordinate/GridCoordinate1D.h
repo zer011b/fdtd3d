@@ -84,6 +84,11 @@ public:
   {
     return getX () <= rhs.getX ();
   }
+
+  GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator- () const
+  {
+    return GridCoordinate1DTemplate (- getX ());
+  }
 };
 
 typedef GridCoordinate1DTemplate<grid_iter> GridCoordinate1D;
