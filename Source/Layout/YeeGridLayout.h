@@ -90,22 +90,22 @@ public:
   /*
    * Get start coordinate of field component
    */
-  virtual GridCoordinate3D getExStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
-  virtual GridCoordinate3D getEyStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
-  virtual GridCoordinate3D getEzStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
-  virtual GridCoordinate3D getHxStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
-  virtual GridCoordinate3D getHyStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
-  virtual GridCoordinate3D getHzStart (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getExStartDiff () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEyStartDiff () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEzStartDiff () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHxStartDiff () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHyStartDiff () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHzStartDiff () const CXX11_OVERRIDE_FINAL;
 
   /*
    * Get end coordinate of field component
    */
-  virtual GridCoordinate3D getExEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
-  virtual GridCoordinate3D getEyEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
-  virtual GridCoordinate3D getEzEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
-  virtual GridCoordinate3D getHxEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
-  virtual GridCoordinate3D getHyEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
-  virtual GridCoordinate3D getHzEnd (GridCoordinate3D) const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getExEndDiff () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEyEndDiff () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getEzEndDiff () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHxEndDiff () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHyEndDiff () const CXX11_OVERRIDE_FINAL;
+  virtual GridCoordinate3D getHzEndDiff () const CXX11_OVERRIDE_FINAL;
 
   /*
    * Get minimum coordinate of field component

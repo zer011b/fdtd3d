@@ -150,6 +150,13 @@ public:
 
     return x <= rhs_x && y <= rhs_y && getZ () <= rhs.getZ ();
   }
+
+  GridCoordinate3DTemplate CUDA_DEVICE CUDA_HOST operator- () const
+  {
+    TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
+    TcoordType y = GridCoordinate2DTemplate<TcoordType>::getY ();
+    return GridCoordinate3DTemplate (- x, - y, - getZ ());
+  }
 };
 
 typedef GridCoordinate3DTemplate<grid_iter> GridCoordinate3D;

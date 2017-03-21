@@ -1288,14 +1288,14 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
 
   for (int t = startStep; t < stepLimit; ++t)
   {
-    GridCoordinate3D EzStart = yeeLayout->getEzStart (Ez.getComputationStart ());
-    GridCoordinate3D EzEnd = yeeLayout->getEzEnd (Ez.getComputationEnd ());
+    GridCoordinate3D EzStart = Ez.getComputationStart (yeeLayout->getEzStartDiff ());
+    GridCoordinate3D EzEnd = Ez.getComputationEnd (yeeLayout->getEzEndDiff ());
 
-    GridCoordinate3D HxStart = yeeLayout->getHxStart (Hx.getComputationStart ());
-    GridCoordinate3D HxEnd = yeeLayout->getHxEnd (Hx.getComputationEnd ());
+    GridCoordinate3D HxStart = Hx.getComputationStart (yeeLayout->getHxStartDiff ());
+    GridCoordinate3D HxEnd = Hx.getComputationEnd (yeeLayout->getHxEndDiff ());
 
-    GridCoordinate3D HyStart = yeeLayout->getHyStart (Hy.getComputationStart ());
-    GridCoordinate3D HyEnd = yeeLayout->getHyEnd (Hy.getComputationEnd ());
+    GridCoordinate3D HyStart = Hy.getComputationStart (yeeLayout->getHyStartDiff ());
+    GridCoordinate3D HyEnd = Hy.getComputationEnd (yeeLayout->getHyEndDiff ());
 
     if (useTFSF)
     {
@@ -1473,14 +1473,14 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
 
     //is_stable_state = 1;
 
-    GridCoordinate3D EzStart = yeeLayout->getEzStart (Ez.getComputationStart ());
-    GridCoordinate3D EzEnd = yeeLayout->getEzEnd (Ez.getComputationEnd ());
+    GridCoordinate3D EzStart = Ez.getComputationStart (yeeLayout->getEzStartDiff ());
+    GridCoordinate3D EzEnd = Ez.getComputationEnd (yeeLayout->getEzEndDiff ());
 
-    GridCoordinate3D HxStart = yeeLayout->getHxStart (Hx.getComputationStart ());
-    GridCoordinate3D HxEnd = yeeLayout->getHxEnd (Hx.getComputationEnd ());
+    GridCoordinate3D HxStart = Hx.getComputationStart (yeeLayout->getHxStartDiff ());
+    GridCoordinate3D HxEnd = Hx.getComputationEnd (yeeLayout->getHxEndDiff ());
 
-    GridCoordinate3D HyStart = yeeLayout->getHyStart (Hy.getComputationStart ());
-    GridCoordinate3D HyEnd = yeeLayout->getHyEnd (Hy.getComputationEnd ());
+    GridCoordinate3D HyStart = Hy.getComputationStart (yeeLayout->getHyStartDiff ());
+    GridCoordinate3D HyEnd = Hy.getComputationEnd (yeeLayout->getHyEndDiff ());
 
     if (useTFSF)
     {

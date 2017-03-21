@@ -229,8 +229,8 @@ Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate
         GridCoordinate3D posBack = yeeLayout->getExCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getExCircuitElement (pos, LayoutDirection::FRONT);
 
-        FieldPointValue* valEps1 = Eps.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
-        FieldPointValue* valEps2 = Eps.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
+        FieldPointValue* valEps1 = Eps.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
+        FieldPointValue* valEps2 = Eps.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
 
         FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
                                                           Approximation::getMaterial (valEps2));
@@ -289,8 +289,8 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
         GridCoordinate3D posBack = yeeLayout->getExCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getExCircuitElement (pos, LayoutDirection::FRONT);
 
-        FieldPointValue* valSigmaY1 = SigmaY.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
-        FieldPointValue* valSigmaY2 = SigmaY.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
+        FieldPointValue* valSigmaY1 = SigmaY.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
+        FieldPointValue* valSigmaY2 = SigmaY.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
 
         FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
                                                              Approximation::getMaterial (valSigmaY2));
@@ -348,14 +348,14 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
           FieldPointValue* valD1x = D1x.getFieldPointValue (pos);
           FieldPointValue* valDx = Dx.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
-          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
+          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
+          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
 
-          FieldPointValue* valGammaE1 = GammaE.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
-          FieldPointValue* valGammaE2 = GammaE.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
+          FieldPointValue* valGammaE1 = GammaE.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
+          FieldPointValue* valGammaE2 = GammaE.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
 
-          FieldPointValue* valEps1 = Eps.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
-          FieldPointValue* valEps2 = Eps.getFieldPointValueByRelativePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
+          FieldPointValue* valEps1 = Eps.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
+          FieldPointValue* valEps2 = Eps.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
 
           FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
                                                             Approximation::getMaterial (valEps2));
@@ -2330,23 +2330,23 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
 
   for (int t = startStep; t < stepLimit; ++t)
   {
-    GridCoordinate3D ExStart = yeeLayout->getExStart (Ex.getComputationStart ());
-    GridCoordinate3D ExEnd = yeeLayout->getExEnd (Ex.getComputationEnd ());
+    GridCoordinate3D ExStart = Ex.getComputationStart (yeeLayout->getExStartDiff ());
+    GridCoordinate3D ExEnd = Ex.getComputationEnd (yeeLayout->getExEndDiff ());
 
-    GridCoordinate3D EyStart = yeeLayout->getEyStart (Ey.getComputationStart ());
-    GridCoordinate3D EyEnd = yeeLayout->getEyEnd (Ey.getComputationEnd ());
+    GridCoordinate3D EyStart = Ey.getComputationStart (yeeLayout->getEyStartDiff ());
+    GridCoordinate3D EyEnd = Ey.getComputationEnd (yeeLayout->getEyEndDiff ());
 
-    GridCoordinate3D EzStart = yeeLayout->getEzStart (Ez.getComputationStart ());
-    GridCoordinate3D EzEnd = yeeLayout->getEzEnd (Ez.getComputationEnd ());
+    GridCoordinate3D EzStart = Ez.getComputationStart (yeeLayout->getEzStartDiff ());
+    GridCoordinate3D EzEnd = Ez.getComputationEnd (yeeLayout->getEzEndDiff ());
 
-    GridCoordinate3D HxStart = yeeLayout->getHxStart (Hx.getComputationStart ());
-    GridCoordinate3D HxEnd = yeeLayout->getHxEnd (Hx.getComputationEnd ());
+    GridCoordinate3D HxStart = Hx.getComputationStart (yeeLayout->getHxStartDiff ());
+    GridCoordinate3D HxEnd = Hx.getComputationEnd (yeeLayout->getHxEndDiff ());
 
-    GridCoordinate3D HyStart = yeeLayout->getHyStart (Hy.getComputationStart ());
-    GridCoordinate3D HyEnd = yeeLayout->getHyEnd (Hy.getComputationEnd ());
+    GridCoordinate3D HyStart = Hy.getComputationStart (yeeLayout->getHyStartDiff ());
+    GridCoordinate3D HyEnd = Hy.getComputationEnd (yeeLayout->getHyEndDiff ());
 
-    GridCoordinate3D HzStart = yeeLayout->getHzStart (Hz.getComputationStart ());
-    GridCoordinate3D HzEnd = yeeLayout->getHzEnd (Hz.getComputationEnd ());
+    GridCoordinate3D HzStart = Hz.getComputationStart (yeeLayout->getHzStartDiff ());
+    GridCoordinate3D HzEnd = Hz.getComputationEnd (yeeLayout->getHzEndDiff ());
 
     if (useTFSF)
     {
@@ -3090,23 +3090,23 @@ Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
 
     //is_stable_state = 1;
 
-    GridCoordinate3D ExStart = yeeLayout->getExStart (Ex.getComputationStart ());
-    GridCoordinate3D ExEnd = yeeLayout->getExEnd (Ex.getComputationEnd ());
+    GridCoordinate3D ExStart = Ex.getComputationStart (yeeLayout->getExStartDiff ());
+    GridCoordinate3D ExEnd = Ex.getComputationEnd (yeeLayout->getExEndDiff ());
 
-    GridCoordinate3D EyStart = yeeLayout->getEyStart (Ey.getComputationStart ());
-    GridCoordinate3D EyEnd = yeeLayout->getEyEnd (Ey.getComputationEnd ());
+    GridCoordinate3D EyStart = Ey.getComputationStart (yeeLayout->getEyStartDiff ());
+    GridCoordinate3D EyEnd = Ey.getComputationEnd (yeeLayout->getEyEndDiff ());
 
-    GridCoordinate3D EzStart = yeeLayout->getEzStart (Ez.getComputationStart ());
-    GridCoordinate3D EzEnd = yeeLayout->getEzEnd (Ez.getComputationEnd ());
+    GridCoordinate3D EzStart = Ez.getComputationStart (yeeLayout->getEzStartDiff ());
+    GridCoordinate3D EzEnd = Ez.getComputationEnd (yeeLayout->getEzEndDiff ());
 
-    GridCoordinate3D HxStart = yeeLayout->getHxStart (Hx.getComputationStart ());
-    GridCoordinate3D HxEnd = yeeLayout->getHxEnd (Hx.getComputationEnd ());
+    GridCoordinate3D HxStart = Hx.getComputationStart (yeeLayout->getHxStartDiff ());
+    GridCoordinate3D HxEnd = Hx.getComputationEnd (yeeLayout->getHxEndDiff ());
 
-    GridCoordinate3D HyStart = yeeLayout->getHyStart (Hy.getComputationStart ());
-    GridCoordinate3D HyEnd = yeeLayout->getHyEnd (Hy.getComputationEnd ());
+    GridCoordinate3D HyStart = Hy.getComputationStart (yeeLayout->getHyStartDiff ());
+    GridCoordinate3D HyEnd = Hy.getComputationEnd (yeeLayout->getHyEndDiff ());
 
-    GridCoordinate3D HzStart = yeeLayout->getHzStart (Hz.getComputationStart ());
-    GridCoordinate3D HzEnd = yeeLayout->getHzEnd (Hz.getComputationEnd ());
+    GridCoordinate3D HzStart = Hz.getComputationStart (yeeLayout->getHzStartDiff ());
+    GridCoordinate3D HzEnd = Hz.getComputationEnd (yeeLayout->getHzEndDiff ());
 
     if (useTFSF)
     {

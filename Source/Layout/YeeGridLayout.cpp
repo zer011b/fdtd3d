@@ -301,76 +301,76 @@ YeeGridLayout::getHzSize () const
 }
 
 GridCoordinate3D
-YeeGridLayout::getExStart (GridCoordinate3D start) const
+YeeGridLayout::getExStartDiff () const
 {
-  return minExCoord + start + GridCoordinate3D (0, 1, 1);
+  return minExCoord + GridCoordinate3D (0, 1, 1);
 }
 
 GridCoordinate3D
-YeeGridLayout::getEyStart (GridCoordinate3D start) const
+YeeGridLayout::getEyStartDiff () const
 {
-  return minEyCoord + start + GridCoordinate3D (1, 0, 1);
+  return minEyCoord + GridCoordinate3D (1, 0, 1);
 }
 
 GridCoordinate3D
-YeeGridLayout::getEzStart (GridCoordinate3D start) const
+YeeGridLayout::getEzStartDiff () const
 {
-  return minEzCoord + start + GridCoordinate3D (1, 1, 0);
+  return minEzCoord + GridCoordinate3D (1, 1, 0);
 }
 
 GridCoordinate3D
-YeeGridLayout::getHxStart (GridCoordinate3D start) const
+YeeGridLayout::getHxStartDiff () const
 {
-  return minHxCoord + start + GridCoordinate3D (1, 0, 0);
+  return minHxCoord + GridCoordinate3D (1, 0, 0);
 }
 
 GridCoordinate3D
-YeeGridLayout::getHyStart (GridCoordinate3D start) const
+YeeGridLayout::getHyStartDiff () const
 {
-  return minHyCoord + start + GridCoordinate3D (0, 1, 0);
+  return minHyCoord + GridCoordinate3D (0, 1, 0);
 }
 
 GridCoordinate3D
-YeeGridLayout::getHzStart (GridCoordinate3D start) const
+YeeGridLayout::getHzStartDiff () const
 {
-  return minHzCoord + start + GridCoordinate3D (0, 0, 1);
+  return minHzCoord + GridCoordinate3D (0, 0, 1);
 }
 
 
 GridCoordinate3D
-YeeGridLayout::getExEnd (GridCoordinate3D end) const
+YeeGridLayout::getExEndDiff () const
 {
-  return minExCoord + end - GridCoordinate3D (1, 0, 0);
+  return - minExCoord + GridCoordinate3D (1, 0, 0);
 }
 
 GridCoordinate3D
-YeeGridLayout::getEyEnd (GridCoordinate3D end) const
+YeeGridLayout::getEyEndDiff () const
 {
-  return minEyCoord + end - GridCoordinate3D (0, 1, 0);
+  return - minEyCoord + GridCoordinate3D (0, 1, 0);
 }
 
 GridCoordinate3D
-YeeGridLayout::getEzEnd (GridCoordinate3D end) const
+YeeGridLayout::getEzEndDiff () const
 {
-  return minEzCoord + end - GridCoordinate3D (0, 0, 1);
+  return  - minEzCoord + GridCoordinate3D (0, 0, 1);
 }
 
 GridCoordinate3D
-YeeGridLayout::getHxEnd (GridCoordinate3D end) const
+YeeGridLayout::getHxEndDiff () const
 {
-  return minHxCoord + end - GridCoordinate3D (0, 1, 1);
+  return - minHxCoord + GridCoordinate3D (0, 1, 1);
 }
 
 GridCoordinate3D
-YeeGridLayout::getHyEnd (GridCoordinate3D end) const
+YeeGridLayout::getHyEndDiff () const
 {
-  return minHyCoord + end - GridCoordinate3D (1, 0, 1);
+  return - minHyCoord + GridCoordinate3D (1, 0, 1);
 }
 
 GridCoordinate3D
-YeeGridLayout::getHzEnd (GridCoordinate3D end) const
+YeeGridLayout::getHzEndDiff () const
 {
-  return minHzCoord + end - GridCoordinate3D (1, 1, 0);
+  return - minHzCoord + GridCoordinate3D (1, 1, 0);
 }
 
 GridCoordinate3D
