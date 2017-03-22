@@ -1398,15 +1398,15 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
       {
         BMPDumper<GridCoordinate2D> dumperEz;
         dumperEz.init (t, CURRENT, processId, "2D-TMz-in-time-Ez");
-        dumperEz.dumpGrid (Ez);
+        dumperEz.dumpGrid (Ez, GridCoordinate2D (0), Ez.getSize ());
 
         BMPDumper<GridCoordinate2D> dumperHx;
         dumperHx.init (t, CURRENT, processId, "2D-TMz-in-time-Hx");
-        dumperHx.dumpGrid (Hx);
+        dumperHx.dumpGrid (Hx, GridCoordinate2D (0), Hx.getSize ());
 
         BMPDumper<GridCoordinate2D> dumperHy;
         dumperHy.init (t, CURRENT, processId, "2D-TMz-in-time-Hy");
-        dumperHy.dumpGrid (Hy);
+        dumperHy.dumpGrid (Hy, GridCoordinate2D (0), Hy.getSize ());
       }
     }
   }
@@ -1415,15 +1415,15 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
   {
     BMPDumper<GridCoordinate2D> dumperEz;
     dumperEz.init (stepLimit, CURRENT, processId, "2D-TMz-in-time-Ez");
-    dumperEz.dumpGrid (Ez);
+    dumperEz.dumpGrid (Ez, GridCoordinate2D (0), Ez.getSize ());
 
     BMPDumper<GridCoordinate2D> dumperHx;
     dumperHx.init (stepLimit, CURRENT, processId, "2D-TMz-in-time-Hx");
-    dumperHx.dumpGrid (Hx);
+    dumperHx.dumpGrid (Hx, GridCoordinate2D (0), Hx.getSize ());
 
     BMPDumper<GridCoordinate2D> dumperHy;
     dumperHy.init (stepLimit, CURRENT, processId, "2D-TMz-in-time-Hy");
-    dumperHy.dumpGrid (Hy);
+    dumperHy.dumpGrid (Hy, GridCoordinate2D (0), Hy.getSize ());
 
     // for (int i = 0; i < EzSize.getX (); ++i)
     // {
@@ -1678,7 +1678,7 @@ SchemeTMz::performAmplitudeSteps (time_step startStep, int dumpRes)
   {
     BMPDumper<GridCoordinate2D> dumper;
     dumper.init (t, CURRENT, processId, "2D-TMz-amplitude-Ez");
-    dumper.dumpGrid (EzAmplitude);
+    dumper.dumpGrid (EzAmplitude, GridCoordinate2D (0), EzAmplitude.getSize ());
 
     // FieldValue norm = 0;
     //
@@ -1802,7 +1802,7 @@ SchemeTMz::performSteps (int dumpRes)
   {
     BMPDumper<GridCoordinate2D> dumper;
     dumper.init (totalStep, ALL, processId, "2D-TMz-in-time");
-    dumper.dumpGrid (Ez);
+    dumper.dumpGrid (Ez, GridCoordinate2D (0), Ez.getSize ());
   }
 #else /* CUDA_ENABLED */
 
@@ -1892,7 +1892,7 @@ SchemeTMz::initGrids ()
 
   BMPDumper<GridCoordinate2D> dumper;
   dumper.init (0, CURRENT, processId, "Eps");
-  dumper.dumpGrid (Eps);
+  dumper.dumpGrid (Eps, GridCoordinate2D (0), Eps.getSize ());
 
   for (int i = 0; i < OmegaPE.getSize ().getX (); ++i)
   {
@@ -2051,16 +2051,16 @@ SchemeTMz::initGrids ()
   }
 
   dumper.init (0, CURRENT, processId, "OmegaPE");
-  dumper.dumpGrid (OmegaPE);
+  dumper.dumpGrid (OmegaPE, GridCoordinate2D (0), OmegaPE.getSize ());
 
   dumper.init (0, CURRENT, processId, "OmegaPM");
-  dumper.dumpGrid (OmegaPM);
+  dumper.dumpGrid (OmegaPM, GridCoordinate2D (0), OmegaPM.getSize ());
 
   dumper.init (0, CURRENT, processId, "GammaE");
-  dumper.dumpGrid (GammaE);
+  dumper.dumpGrid (GammaE, GridCoordinate2D (0), GammaE.getSize ());
 
   dumper.init (0, CURRENT, processId, "GammaM");
-  dumper.dumpGrid (GammaM);
+  dumper.dumpGrid (GammaM, GridCoordinate2D (0), GammaM.getSize ());
 
   for (int i = 0; i < Mu.getSize ().getX (); ++i)
   {
@@ -2205,19 +2205,19 @@ SchemeTMz::initGrids ()
   {
     BMPDumper<GridCoordinate2D> dumper;
     dumper.init (0, CURRENT, processId, "SigmaX");
-    dumper.dumpGrid (SigmaX);
+    dumper.dumpGrid (SigmaX, GridCoordinate2D (0), SigmaX.getSize ());
   }
 
   {
     BMPDumper<GridCoordinate2D> dumper;
     dumper.init (0, CURRENT, processId, "SigmaY");
-    dumper.dumpGrid (SigmaY);
+    dumper.dumpGrid (SigmaY, GridCoordinate2D (0), SigmaY.getSize ());
   }
 
   {
     BMPDumper<GridCoordinate2D> dumper;
     dumper.init (0, CURRENT, processId, "SigmaZ");
-    dumper.dumpGrid (SigmaZ);
+    dumper.dumpGrid (SigmaZ, GridCoordinate2D (0), SigmaZ.getSize ());
   }
 
   for (int i = 0; i < Ez.getSize ().getX (); ++i)
