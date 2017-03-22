@@ -2442,32 +2442,32 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
         BMPDumper<GridCoordinate3D> dumperEx;
         DATDumper<GridCoordinate3D> dumperDATEx;
         dumperDATEx.init (t, CURRENT, processId, "3D-in-time-Ex");
-        dumperDATEx.dumpGrid (Ex, GridCoordinate3D (0), GridCoordinate3D (0));
+        dumperDATEx.dumpGrid (Ex, GridCoordinate3D (0), Ex.getSize ());
 
         BMPDumper<GridCoordinate3D> dumperEy;
         DATDumper<GridCoordinate3D> dumperDATEy;
         dumperDATEy.init (t, CURRENT, processId, "3D-in-time-Ey");
-        dumperDATEy.dumpGrid (Ey, GridCoordinate3D (0), GridCoordinate3D (0));
+        dumperDATEy.dumpGrid (Ey, GridCoordinate3D (0), Ey.getSize ());
 
         BMPDumper<GridCoordinate3D> dumperEz;
         DATDumper<GridCoordinate3D> dumperDATEz;
         dumperDATEz.init (t, CURRENT, processId, "3D-in-time-Ez");
-        dumperDATEz.dumpGrid (Ez, GridCoordinate3D (0), GridCoordinate3D (0));
+        dumperDATEz.dumpGrid (Ez, GridCoordinate3D (0), Ez.getSize ());
 
         BMPDumper<GridCoordinate3D> dumperHx;
         DATDumper<GridCoordinate3D> dumperDATHx;
         dumperDATHx.init (t, CURRENT, processId, "3D-in-time-Hx");
-        dumperDATHx.dumpGrid (Hx, GridCoordinate3D (0), GridCoordinate3D (0));
+        dumperDATHx.dumpGrid (Hx, GridCoordinate3D (0), Hx.getSize ());
 
         BMPDumper<GridCoordinate3D> dumperHy;
         DATDumper<GridCoordinate3D> dumperDATHy;
         dumperDATHy.init (t, CURRENT, processId, "3D-in-time-Hy");
-        dumperDATHy.dumpGrid (Hy, GridCoordinate3D (0), GridCoordinate3D (0));
+        dumperDATHy.dumpGrid (Hy, GridCoordinate3D (0), Hy.getSize ());
 
         BMPDumper<GridCoordinate3D> dumperHz;
         DATDumper<GridCoordinate3D> dumperDATHz;
         dumperDATHz.init (t, CURRENT, processId, "3D-in-time-Hz");
-        dumperDATHz.dumpGrid (Hz, GridCoordinate3D (0), GridCoordinate3D (0));
+        dumperDATHz.dumpGrid (Hz, GridCoordinate3D (0), Hz.getSize ());
         //
         // BMPDumper<GridCoordinate3D> dumperHx;
         // dumperHx.init (t, CURRENT, processId, "2D-TMz-in-time-Hx");
@@ -2673,32 +2673,32 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
     BMPDumper<GridCoordinate3D> dumperEx;
     DATDumper<GridCoordinate3D> dumperDATEx;
     dumperDATEx.init (stepLimit, CURRENT, processId, "3D-in-time-Ex");
-    dumperDATEx.dumpGrid (Ex, GridCoordinate3D (0), GridCoordinate3D (0));
+    dumperDATEx.dumpGrid (Ex, GridCoordinate3D (0), Ex.getSize ());
 
     BMPDumper<GridCoordinate3D> dumperEy;
     DATDumper<GridCoordinate3D> dumperDATEy;
     dumperDATEy.init (stepLimit, CURRENT, processId, "3D-in-time-Ey");
-    dumperDATEy.dumpGrid (Ey, GridCoordinate3D (0), GridCoordinate3D (0));
+    dumperDATEy.dumpGrid (Ey, GridCoordinate3D (0), Ey.getSize ());
 
     BMPDumper<GridCoordinate3D> dumperEz;
     DATDumper<GridCoordinate3D> dumperDATEz;
     dumperDATEz.init (stepLimit, CURRENT, processId, "3D-in-time-Ez");
-    dumperDATEz.dumpGrid (Ez, GridCoordinate3D (0), GridCoordinate3D (0));
+    dumperDATEz.dumpGrid (Ez, GridCoordinate3D (0), Ez.getSize ());
 
     BMPDumper<GridCoordinate3D> dumperHx;
     DATDumper<GridCoordinate3D> dumperDATHx;
     dumperDATHx.init (stepLimit, CURRENT, processId, "3D-in-time-Hx");
-    dumperDATHx.dumpGrid (Hx, GridCoordinate3D (0), GridCoordinate3D (0));
+    dumperDATHx.dumpGrid (Hx, GridCoordinate3D (0), Hx.getSize ());
 
     BMPDumper<GridCoordinate3D> dumperHy;
     DATDumper<GridCoordinate3D> dumperDATHy;
     dumperDATHy.init (stepLimit, CURRENT, processId, "3D-in-time-Hy");
-    dumperDATHy.dumpGrid (Hy, GridCoordinate3D (0), GridCoordinate3D (0));
+    dumperDATHy.dumpGrid (Hy, GridCoordinate3D (0), Hy.getSize ());
 
     BMPDumper<GridCoordinate3D> dumperHz;
     DATDumper<GridCoordinate3D> dumperDATHz;
     dumperDATHz.init (stepLimit, CURRENT, processId, "3D-in-time-Hz");
-    dumperDATHz.dumpGrid (Hz, GridCoordinate3D (0), GridCoordinate3D (0));
+    dumperDATHz.dumpGrid (Hz, GridCoordinate3D (0), Hz.getSize ());
 
     // BMPDumper<GridCoordinate1D> dumper;
     // dumper.init (stepLimit, PREVIOUS, processId, "3D-incident-E");

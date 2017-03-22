@@ -143,7 +143,7 @@ int main (int argc, char** argv)
 
   FPValue incidentWaveAngle1 = PhysicsConst::Pi / 2; /**< teta */
   FPValue incidentWaveAngle2 = 0; /**< phi */
-  FPValue incidentWaveAngle3 = 0; /**< psi */
+  FPValue incidentWaveAngle3 = PhysicsConst::Pi / 2; /**< psi */
 #endif
 #ifdef GRID_3D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
@@ -233,7 +233,7 @@ int main (int argc, char** argv)
   ParallelGridCoordinate bufferSize (bufSize);
 
 #ifdef GRID_2D
-  SchemeTMz scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, false, incidentWaveAngle2, false);
+  SchemeTMz scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, false, incidentWaveAngle2, true);
   //SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), true, GridCoordinate2D (30, 30), 0);
 #endif
 #ifdef GRID_3D
