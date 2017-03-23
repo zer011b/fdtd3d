@@ -2374,7 +2374,7 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
 #endif /* !PARALLEL_GRID */
         for (grid_coord k = start; k < end; ++k)
         {
-          GridCoordinate3D pos (EzSize.getX () / 8, EzSize.getY () / 2, k);
+          GridCoordinate3D pos (20, EzSize.getY () / 2, k);
           FieldPointValue* tmp = Ez.getFieldPointValue (pos);
 
   #ifdef COMPLEX_FIELD_VALUES
@@ -2435,7 +2435,7 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
     /*
      * FIXME: add dump step
      */
-    if (t % 100 == 0)
+    if (t % 1000 == 0)
     {
       if (dumpRes)
       {
@@ -3578,21 +3578,21 @@ Scheme3D::initGrids ()
 
         GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (OmegaPE.getTotalSize ());
 
-//         if (posAbs.getX () >= 20 && posAbs.getX () < 40
-//             && posAbs.getY () >= 20 && posAbs.getY () < 60
-//             && posAbs.getZ () >= 20 && posAbs.getZ () < 60)
-//         {
-//
+        if (posAbs.getX () >= 30 && posAbs.getX () < 50
+            && posAbs.getY () >= 20 && posAbs.getY () < 60
+            && posAbs.getZ () >= 20 && posAbs.getZ () < 60)
+        {
+
 // //         if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
 // //             + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2)
 // //             + (posAbs.getZ () - size.getZ () / 2) * (posAbs.getZ () - size.getZ () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
 // //         {
-// #ifdef COMPLEX_FIELD_VALUES
-//           valOmega->setCurValue (FieldValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency, 0));
-// #else /* COMPLEX_FIELD_VALUES */
-//           valOmega->setCurValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency);
-// #endif /* !COMPLEX_FIELD_VALUES */
-//         }
+#ifdef COMPLEX_FIELD_VALUES
+          valOmega->setCurValue (FieldValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency, 0));
+#else /* COMPLEX_FIELD_VALUES */
+          valOmega->setCurValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency);
+#endif /* !COMPLEX_FIELD_VALUES */
+        }
 
         OmegaPE.setFieldPointValue (valOmega, pos);
       }
@@ -3618,21 +3618,21 @@ Scheme3D::initGrids ()
 
         GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (OmegaPM.getTotalSize ());
 
-//         if (posAbs.getX () >= 20 && posAbs.getX () < 40
-//             && posAbs.getY () >= 20 && posAbs.getY () < 60
-//             && posAbs.getZ () >= 20 && posAbs.getZ () < 60)
-//         {
+        if (posAbs.getX () >= 30 && posAbs.getX () < 50
+            && posAbs.getY () >= 20 && posAbs.getY () < 60
+            && posAbs.getZ () >= 20 && posAbs.getZ () < 60)
+        {
 //
 // //         if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
 // //             + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2)
 // //             + (posAbs.getZ () - size.getZ () / 2) * (posAbs.getZ () - size.getZ () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
 // //         {
-// #ifdef COMPLEX_FIELD_VALUES
-//           valOmega->setCurValue (FieldValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency, 0));
-// #else /* COMPLEX_FIELD_VALUES */
-//           valOmega->setCurValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency);
-// #endif /* !COMPLEX_FIELD_VALUES */
-//         }
+#ifdef COMPLEX_FIELD_VALUES
+          valOmega->setCurValue (FieldValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency, 0));
+#else /* COMPLEX_FIELD_VALUES */
+          valOmega->setCurValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency);
+#endif /* !COMPLEX_FIELD_VALUES */
+        }
 
         OmegaPM.setFieldPointValue (valOmega, pos);
       }
