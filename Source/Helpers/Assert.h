@@ -3,10 +3,14 @@
 
 #include <cstdio>
 
-// This function is used to exit and debugging purposes.
+/*
+ * This function is used to exit and debugging purposes.
+ */
 void program_fail ();
 
-// Indicates program point, which should not be reached.
+/*
+ * Indicates program point, which should not be reached.
+ */
 #if PRINT_MESSAGE
 #define UNREACHABLE \
 { \
@@ -20,7 +24,9 @@ void program_fail ();
 }
 #endif /* !PRINT_MESSAGE */
 
-// Unconditional assert with message.
+/*
+ * Unconditional assert with message.
+ */
 #if PRINT_MESSAGE
 #define ASSERT_MESSAGE(x) \
 { \
@@ -34,7 +40,9 @@ void program_fail ();
 }
 #endif /* !PRINT_MESSAGE */
 
-// Conditional assert with default message.
+/*
+ * Conditional assert with default message.
+ */
 #if PRINT_MESSAGE
 #define ASSERT(x) \
 { \
@@ -52,6 +60,18 @@ void program_fail ();
     program_fail (); \
   } \
 }
+#endif /* !PRINT_MESSAGE */
+
+/*
+ * Debug printf
+ */
+#if PRINT_MESSAGE
+#define DPRINTF(...) \
+{ \
+    printf (__VA_ARGS__); \
+}
+#else /* PRINT_MESSAGE */
+#define DPRINTF(...)
 #endif /* !PRINT_MESSAGE */
 
 #endif /* ASSERT_H */

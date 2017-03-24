@@ -42,6 +42,10 @@ protected:
    */
   std::string gridName;
 
+  /*
+   * TODO: add debug uninitialized flag
+   */
+
 protected:
 
   static bool isLegitIndex (const TCoord &, const TCoord &);
@@ -52,6 +56,9 @@ private:
   VectorFieldPointValues& getValues ();
   void shiftInTime ();
 
+  void deleteGrid ();
+  void copyGrid (const Grid &);
+
 protected:
 
   bool isLegitIndex (const TCoord &) const;
@@ -61,7 +68,10 @@ public:
 
   Grid (const TCoord& s, time_step step, const char * = "unnamed");
   Grid (time_step step, const char * = "unnamed");
+  Grid (const Grid &grid);
   ~Grid ();
+
+  Grid<TCoord> & operator = (const Grid<TCoord> &grid);
 
   const TCoord &getSize () const;
   TCoord getTotalPosition (TCoord) const;
@@ -102,9 +112,7 @@ Grid<TCoord>::Grid (const TCoord &s, /**< size of grid */
     gridValues[i] = NULLPTR;
   }
 
-#if PRINT_MESSAGE
-  printf ("New grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
-#endif /* PRINT_MESSAGE */
+  DPRINTF ("New grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
 } /* Grid<TCoord>::Grid */
 
 /**
@@ -116,9 +124,18 @@ Grid<TCoord>::Grid (time_step step, /**< default time step */
   : timeStep (step)
   , gridName (name)
 {
-#if PRINT_MESSAGE
-  printf ("New grid '%s' without size.\n", gridName.data ());
-#endif /* PRINT_MESSAGE */
+  DPRINTF ("New grid '%s' without size.\n", gridName.data ());
+} /* Grid<TCoord>::Grid */
+
+/**
+ * Copy constructor
+ */
+template <class TCoord>
+Grid<TCoord>::Grid (const Grid<TCoord> &grid) /**< grid to copy */
+{
+  copyGrid (grid);
+
+  DPRINTF ("New copied grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
 } /* Grid<TCoord>::Grid */
 
 /**
@@ -127,20 +144,58 @@ Grid<TCoord>::Grid (time_step step, /**< default time step */
 template <class TCoord>
 Grid<TCoord>::~Grid ()
 {
-#ifdef CXX11_ENABLED
-  for (FieldPointValue* i_p : gridValues)
-  {
-    delete i_p;
-  }
-#else /* CXX11_ENABLED */
+  deleteGrid ();
+} /* Grid<TCoord>::~Grid */
+
+/**
+ * Delete grid
+ */
+template <class TCoord>
+void
+Grid<TCoord>::deleteGrid ()
+{
   for (VectorFieldPointValues::iterator iter = gridValues.begin ();
        iter != gridValues.end ();
        ++iter)
   {
     delete (*iter);
   }
-#endif /* !CXX11_ENABLED */
-} /* Grid<TCoord>::~Grid */
+} /* Grid<TCoord>::deleteGrid */
+
+/**
+ * Copy one grid to another
+ */
+template <class TCoord>
+void
+Grid<TCoord>::copyGrid (const Grid<TCoord> &grid) /*< grid to copy */
+{
+  size = grid.size;
+  gridValues.resize (grid.gridValues.size ());
+  timeStep = grid.timeStep;
+  gridName = grid.gridName;
+
+  for (VectorFieldPointValues::iterator iter = gridValues.begin ();
+       iter != gridValues.end ();
+       ++iter)
+  {
+    delete (*iter);
+  }
+} /* Grid<TCoord>::copyGrid */
+
+/**
+ * Operator =
+ */
+template <class TCoord>
+Grid<TCoord> &
+Grid<TCoord>::operator = (const Grid<TCoord> &grid) /*< grid to assign */
+{
+  deleteGrid ();
+  copyGrid (grid);
+
+  DPRINTF ("Copied grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
+
+  return *this;
+} /* Grid<TCoord>::operator= */
 
 /**
  * Get values of the grid
