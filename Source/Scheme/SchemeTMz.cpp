@@ -105,6 +105,40 @@ SchemeTMz::performPlaneWaveHSteps (time_step t)
   HInc.nextTimeStep ();
 }
 
+FieldValue
+SchemeTMz::approximateIncidentWave (GridCoordinateFP2D realCoord, FPValue dDiff, Grid<GridCoordinate1D> &FieldInc)
+{
+  GridCoordinateFP2D zeroCoordFP = shrinkCoord (yeeLayout->getZeroIncCoordFP ());
+
+  FPValue x = realCoord.getX () - zeroCoordFP.getX ();
+  FPValue y = realCoord.getY () - zeroCoordFP.getY ();
+  FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - dDiff;
+  FPValue coordD1 = (FPValue) ((grid_iter) d);
+  FPValue coordD2 = coordD1 + 1;
+  FPValue proportionD2 = d - coordD1;
+  FPValue proportionD1 = 1 - proportionD2;
+
+  GridCoordinate1D pos1 (coordD1);
+  GridCoordinate1D pos2 (coordD2);
+
+  FieldPointValue *val1 = FieldInc.getFieldPointValue (pos1);
+  FieldPointValue *val2 = FieldInc.getFieldPointValue (pos2);
+
+  return proportionD1 * val1->getPrevValue () + proportionD2 * val2->getPrevValue ();
+}
+
+FieldValue
+SchemeTMz::approximateIncidentWaveE (GridCoordinateFP2D realCoord)
+{
+  return approximateIncidentWave (realCoord, 0.0, EInc);
+}
+
+FieldValue
+SchemeTMz::approximateIncidentWaveH (GridCoordinateFP2D realCoord)
+{
+  return approximateIncidentWave (realCoord, 0.5, HInc);
+}
+
 /*
  * FIXME: replace GridCoordinate3D with GridCoordinate2D
  */
@@ -1392,23 +1426,105 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
       B1y.nextTimeStep ();
     }
 
-    if (t % 100 == 0)
+    FPValue cosVal = cos(yeeLayout->getIncidentWaveAngle2 ());
+    FPValue sinVal = sin(yeeLayout->getIncidentWaveAngle2 ());
+
+    FPValue fpPosX = 462 - 430*cosVal;
+    FPValue fpPosY = 455 - 430*sinVal;
+
+    grid_coord posX1 = (grid_coord) fpPosX;
+    grid_coord posX2 = posX1 + 1;
+
+    grid_coord posY1 = (grid_coord) fpPosY;
+    grid_coord posY2 = posY1 + 1;
+
+    GridCoordinate2D pos1 (posX1, posY1);
+    GridCoordinate2D pos2 (posX2, posY1);
+    GridCoordinate2D pos3 (posX1, posY2);
+    GridCoordinate2D pos4 (posX2, posY2);
+
+#ifdef PARALLEL_GRID
+    FieldPointValue *val1 = Ez.getFieldPointValueOrNullByAbsolutePos (pos1);
+    FieldPointValue *val2 = Ez.getFieldPointValueOrNullByAbsolutePos (pos2);
+    FieldPointValue *val3 = Ez.getFieldPointValueOrNullByAbsolutePos (pos3);
+    FieldPointValue *val4 = Ez.getFieldPointValueOrNullByAbsolutePos (pos4);
+#else
+    FieldPointValue *val1 = Ez.getFieldPointValue (pos1);
+    FieldPointValue *val2 = Ez.getFieldPointValue (pos2);
+    FieldPointValue *val3 = Ez.getFieldPointValue (pos3);
+    FieldPointValue *val4 = Ez.getFieldPointValue (pos4);
+#endif
+
+    if (val1 != NULLPTR
+        && val2 != NULLPTR
+        && val3 != NULLPTR
+        && val4 != NULLPTR)
     {
-      if (dumpRes)
-      {
-        BMPDumper<GridCoordinate2D> dumperEz;
-        dumperEz.init (t, CURRENT, processId, "2D-TMz-in-time-Ez");
-        dumperEz.dumpGrid (Ez, GridCoordinate2D (0), Ez.getSize ());
+      FPValue propX = (FPValue)posX2 - fpPosX;
+      FPValue propY = (FPValue)posY2 - fpPosY;
 
-        BMPDumper<GridCoordinate2D> dumperHx;
-        dumperHx.init (t, CURRENT, processId, "2D-TMz-in-time-Hx");
-        dumperHx.dumpGrid (Hx, GridCoordinate2D (0), Hx.getSize ());
+      FPValue propX1 = 1.0 - propX;
+      FPValue propY1 = 1.0 - propY;
 
-        BMPDumper<GridCoordinate2D> dumperHy;
-        dumperHy.init (t, CURRENT, processId, "2D-TMz-in-time-Hy");
-        dumperHy.dumpGrid (Hy, GridCoordinate2D (0), Hy.getSize ());
-      }
+      FPValue proportion1 = propX * propY;
+      FPValue proportion2 = propX1 * propY;
+      FPValue proportion3 = propX * propY1;
+      FPValue proportion4 = propX1 * propY1;
+
+      FieldValue valCurTotal = proportion1 * val1->getCurValue ()
+                               + proportion2 * val2->getCurValue ()
+                               + proportion3 * val3->getCurValue ()
+                               + proportion4 * val4->getCurValue ();
+
+      GridCoordinateFP2D realCoord1 = shrinkCoord (yeeLayout->getEzCoordFP (pos1));
+      GridCoordinateFP2D realCoord2 = shrinkCoord (yeeLayout->getEzCoordFP (pos2));
+      GridCoordinateFP2D realCoord3 = shrinkCoord (yeeLayout->getEzCoordFP (pos3));
+      GridCoordinateFP2D realCoord4 = shrinkCoord (yeeLayout->getEzCoordFP (pos4));
+
+      FieldValue valCurInc1 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord1));
+      FieldValue valCurInc2 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord2));
+      FieldValue valCurInc3 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord3));
+      FieldValue valCurInc4 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord4));
+
+      FieldValue valCurInc = proportion1 * valCurInc1
+                             + proportion2 * valCurInc2
+                             + proportion3 * valCurInc3
+                             + proportion4 * valCurInc4;
+
+      FieldValue valCurScat = valCurTotal - valCurInc;
+      printf ("=== t=%u; angle %f === Points: %f*(%lu,%lu), %f*(%lu,%lu), %f*(%lu,%lu), %f*(%lu,%lu) => Incident: %f(%f,%f); Scattered: %f(%f,%f) ===\n",
+              t,
+              yeeLayout->getIncidentWaveAngle2 (),
+              proportion1, pos1.getX (), pos1.getY (),
+              proportion2, pos2.getX (), pos2.getY (),
+              proportion3, pos3.getX (), pos3.getY (),
+              proportion4, pos4.getX (), pos4.getY (),
+              sqrt (SQR (valCurInc.real ()) + SQR (valCurInc.imag ())),
+              valCurInc.real (),
+              valCurInc.imag (),
+              sqrt (SQR (valCurScat.real ()) + SQR (valCurScat.imag ())),
+              valCurScat.real (),
+              valCurScat.imag ());
     }
+
+
+    // if (t % 100 == 0)
+    // {
+    //   if (dumpRes)
+    //   {
+    //     BMPDumper<GridCoordinate2D> dumperEz;
+    //     dumperEz.init (t, CURRENT, processId, "2D-TMz-in-time-Ez");
+    //     dumperEz.dumpGrid (Ez, GridCoordinate2D (0), Ez.getSize ());
+    //
+    //     BMPDumper<GridCoordinate2D> dumperHx;
+    //     dumperHx.init (t, CURRENT, processId, "2D-TMz-in-time-Hx");
+    //     dumperHx.dumpGrid (Hx, GridCoordinate2D (0), Hx.getSize ());
+    //
+    //     BMPDumper<GridCoordinate2D> dumperHy;
+    //     dumperHy.init (t, CURRENT, processId, "2D-TMz-in-time-Hy");
+    //     dumperHy.dumpGrid (Hy, GridCoordinate2D (0), Hy.getSize ());
+    //   }
+    // }
   }
 
   if (dumpRes)
@@ -1915,8 +2031,11 @@ SchemeTMz::initGrids ()
 
       GridCoordinateFP2D size = shrinkCoord (yeeLayout->getEpsCoordFP (OmegaPE.getTotalSize ()));
 
-      if (posAbs.getX () >= 120 && posAbs.getX () < size.getX () - 120
-          && posAbs.getY () >= yeeLayout->getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout->getLeftBorderPML ().getY ())
+      // if (posAbs.getX () >= 120 && posAbs.getX () < size.getX () - 120
+      //     && posAbs.getY () >= yeeLayout->getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout->getLeftBorderPML ().getY ())
+      // {
+      if (posAbs.getX () >= 437 && posAbs.getX () < 487
+            && posAbs.getY () >= 405 && posAbs.getY () < 505)
       {
 
       // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
@@ -1964,8 +2083,11 @@ SchemeTMz::initGrids ()
       //   valOmega->setCurValue (1);
       // }
 
-      if (posAbs.getX () >= 120 && posAbs.getX () < size.getX () - 120
-          && posAbs.getY () >= yeeLayout->getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout->getLeftBorderPML ().getY ())
+      // if (posAbs.getX () >= 120 && posAbs.getX () < size.getX () - 120
+      //     && posAbs.getY () >= yeeLayout->getLeftBorderPML ().getY () && posAbs.getY () < size.getY () - yeeLayout->getLeftBorderPML ().getY ())
+      // {
+      if (posAbs.getX () >= 437 && posAbs.getX () < 487
+            && posAbs.getY () >= 405 && posAbs.getY () < 505)
       {
 
       // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
