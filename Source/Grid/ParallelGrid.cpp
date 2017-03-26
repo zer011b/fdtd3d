@@ -2410,7 +2410,7 @@ ParallelGrid::getComputationEnd (ParallelGridCoordinate diffPosEnd) const /**< l
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (parallelGridCore->getHasL ())
+  if (parallelGridCore->getHasR ())
   {
     diffX = shareStep + 1;
   }
@@ -2419,7 +2419,7 @@ ParallelGrid::getComputationEnd (ParallelGridCoordinate diffPosEnd) const /**< l
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (parallelGridCore->getHasD ())
+  if (parallelGridCore->getHasU ())
   {
     diffY = shareStep + 1;
   }
@@ -2428,7 +2428,7 @@ ParallelGrid::getComputationEnd (ParallelGridCoordinate diffPosEnd) const /**< l
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (parallelGridCore->getHasB ())
+  if (parallelGridCore->getHasF ())
   {
     diffZ = shareStep + 1;
   }
