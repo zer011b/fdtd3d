@@ -4,6 +4,8 @@
 #include "EasyBMP.h"
 #include "FieldPoint.h"
 
+#ifdef CXX11_ENABLED
+
 enum class PaletteType: uint32_t
 {
   PALETTE_BLUE_GREEN_RED,
@@ -16,6 +18,59 @@ enum class OrthogonalAxis: uint32_t
   Y,
   Z
 };
+
+#else /* CXX11_ENABLED */
+
+class PaletteType
+{
+public:
+  enum PaletteTypeEnum
+  {
+    PALETTE_BLUE_GREEN_RED,
+    PALETTE_GRAY
+  };
+
+  PaletteType (PaletteTypeEnum new_type)
+    : paletteType (new_type)
+  {
+  }
+
+  operator int ()
+  {
+    return paletteType;
+  }
+
+private:
+
+  PaletteTypeEnum paletteType;
+};
+
+class OrthogonalAxis
+{
+public:
+  enum OrthogonalAxisEnum
+  {
+    X,
+    Y,
+    Z
+  };
+
+  OrthogonalAxis (OrthogonalAxisEnum new_axis)
+    : orthogonalAxis (new_axis)
+  {
+  }
+
+  operator int ()
+  {
+    return orthogonalAxis;
+  }
+
+private:
+
+  OrthogonalAxisEnum orthogonalAxis;
+};
+
+#endif /* !CXX11_ENABLED */
 
 /**
  * Class to statically include in BMPLoader and BMPDumper.
