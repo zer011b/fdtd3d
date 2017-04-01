@@ -2325,6 +2325,28 @@ ParallelGrid::getFieldPointValueByAbsolutePos (const ParallelGridCoordinate &abs
 } /* ParallelGrid::getFieldPointValueByAbsolutePos */
 
 /**
+ * Get field point value at absolute coordinate in grid. If current node does not contain this coordinate, return NULLPTR
+ *
+ * @return field point value or NULLPTR
+ */
+FieldPointValue *
+ParallelGrid::getFieldPointValueOrNullByAbsolutePos (const ParallelGridCoordinate &absPosition) /**< absolute coordinate in grid */
+{
+  ParallelGridCoordinate posStart = getStartPosition ();
+  ParallelGridCoordinate posEnd = posStart + getSize ();
+
+  if (!(absPosition >= posStart)
+      || !(absPosition < posEnd))
+  {
+    return NULLPTR;
+  }
+
+  ParallelGridCoordinate relPosition = getRelativePosition (absPosition);
+
+  return getFieldPointValue (relPosition);
+} /* ParallelGrid::getFieldPointValueOrNullByAbsolutePos */
+
+/**
  * Get first coordinate from which to perform computations at current step
  *
  * @return first coordinate from which to perform computations at current step

@@ -371,6 +371,7 @@ public:
   ParallelGridCoordinate getRelativePosition (ParallelGridCoordinate);
 
   FieldPointValue *getFieldPointValueByAbsolutePos (const ParallelGridCoordinate &);
+  FieldPointValue *getFieldPointValueOrNullByAbsolutePos (const ParallelGridCoordinate &);
 
   /**
    * Getter for total size of grid
