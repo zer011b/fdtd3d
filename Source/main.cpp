@@ -49,7 +49,7 @@ int main (int argc, char** argv)
 #endif
 
   int bufSize = 10;
-  int dumpRes = 0;
+  bool dumpRes = false;
 
   int numCudaGPUs = 1;
 
@@ -81,7 +81,7 @@ int main (int argc, char** argv)
     gridSizeX = std::stoi (argv[2]);
     gridSizeY = std::stoi (argv[3]);
     bufSize = std::stoi (argv[4]);
-    dumpRes = std::stoi (argv[5]);
+    dumpRes = (bool) std::stoi (argv[5]);
 #ifdef CUDA_ENABLED
     numCudaGPUs = std::stoi (argv[6]);
     cudaThreadsX = std::stoi (argv[7]);
@@ -94,7 +94,7 @@ int main (int argc, char** argv)
     gridSizeY = std::stoi (argv[3]);
     gridSizeZ = std::stoi (argv[4]);
     bufSize = std::stoi (argv[5]);
-    dumpRes = std::stoi (argv[6]);
+    dumpRes = (bool) std::stoi (argv[6]);
 #ifdef CUDA_ENABLED
     numCudaGPUs = std::stoi (argv[7]);
     cudaThreadsX = std::stoi (argv[8]);
@@ -108,7 +108,7 @@ int main (int argc, char** argv)
     gridSizeX = atoi (argv[2]);
     gridSizeY = atoi (argv[3]);
     bufSize = atoi (argv[4]);
-    dumpRes = atoi (argv[5]);
+    dumpRes = (bool) atoi (argv[5]);
 #ifdef CUDA_ENABLED
     numCudaGPUs = atoi (argv[6]);
     cudaThreadsX = atoi (argv[7]);
@@ -121,7 +121,7 @@ int main (int argc, char** argv)
     gridSizeY = atoi (argv[3]);
     gridSizeZ = atoi (argv[4]);
     bufSize = atoi (argv[5]);
-    dumpRes = atoi (argv[6]);
+    dumpRes = (bool) atoi (argv[6]);
 #ifdef CUDA_ENABLED
     numCudaGPUs = atoi (argv[7]);
     cudaThreadsX = atoi (argv[8]);
@@ -233,19 +233,19 @@ int main (int argc, char** argv)
   ParallelGridCoordinate bufferSize (bufSize);
 
 #ifdef GRID_2D
-  SchemeTMz scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, false, incidentWaveAngle2, true);
+  SchemeTMz scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, false, incidentWaveAngle2, true, dumpRes);
   //SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), true, GridCoordinate2D (30, 30), 0);
 #endif
 #ifdef GRID_3D
-  Scheme3D scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, true);
+  Scheme3D scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, true, dumpRes);
 #endif
 #else
 #ifdef GRID_2D
   //SchemeTMz scheme (overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), false, GridCoordinate2D (30, 30), /*PhysicsConst::Pi / 4*/0, true);
-  SchemeTEz scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, incidentWaveAngle2);
+  SchemeTEz scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, incidentWaveAngle2, dumpRes);
 #endif
 #ifdef GRID_3D
-  Scheme3D scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, false, true);
+  Scheme3D scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, false, true, dumpRes);
 #endif
 #endif
 
@@ -254,7 +254,7 @@ int main (int argc, char** argv)
 
   scheme.initGrids ();
 
-  scheme.performSteps (dumpRes);
+  scheme.performSteps ();
 
   gettimeofday(&tv2, NULL);
 

@@ -4,7 +4,7 @@
 class Scheme
 {
 public:
-  virtual void performSteps (int) = 0;
+  virtual void performSteps () = 0;
 };
 
 #endif /* SCHEME_H */

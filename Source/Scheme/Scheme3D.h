@@ -129,6 +129,8 @@ class Scheme3D: public Scheme
 
   bool useMetamaterials;
 
+  bool dumpRes;
+
 private:
 
   void calculateExStep (time_step, GridCoordinate3D, GridCoordinate3D);
@@ -169,8 +171,8 @@ private:
   void performHySteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performHzSteps (time_step, GridCoordinate3D, GridCoordinate3D);
 
-  void performNSteps (time_step, time_step, int);
-  void performAmplitudeSteps (time_step, int);
+  void performNSteps (time_step, time_step);
+  void performAmplitudeSteps (time_step);
 
   int updateAmplitude (FPValue, FieldPointValue *, FPValue *);
 
@@ -181,7 +183,7 @@ private:
 
 public:
 
-  virtual void performSteps (int) CXX11_OVERRIDE;
+  virtual void performSteps () CXX11_OVERRIDE;
 
   void initScheme (FPValue, FPValue);
 
@@ -196,7 +198,8 @@ public:
             time_step ampStep = 0,
             bool doUsePML = false,
             bool doUseTFSF = false,
-            bool doUseMetamaterials = false) :
+            bool doUseMetamaterials = false,
+            bool doDumpRes = false) :
     yeeLayout (layout),
     Ex (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode ()),
     Ey (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode ()),
@@ -243,7 +246,8 @@ public:
     useTFSF (doUseTFSF),
     EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
-    useMetamaterials (doUseMetamaterials)
+    useMetamaterials (doUseMetamaterials),
+    dumpRes (doDumpRes)
 #else
   Scheme3D (YeeGridLayout *layout,
             const GridCoordinate3D& totSize,
@@ -252,7 +256,8 @@ public:
             time_step ampStep = 0,
             bool doUsePML = false,
             bool doUseTFSF = false,
-            bool doUseMetamaterials = false) :
+            bool doUseMetamaterials = false,
+            bool doDumpRes = false) :
     yeeLayout (layout),
     Ex (layout->getExSize (), 0),
     Ey (layout->getEySize (), 0),
@@ -299,7 +304,8 @@ public:
     useTFSF (doUseTFSF),
     EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0),
-    useMetamaterials (doUseMetamaterials)
+    useMetamaterials (doUseMetamaterials),
+    dumpRes (doDumpRes)
 #endif
   {
     ASSERT (!doUseTFSF

@@ -104,6 +104,8 @@ class SchemeTMz: public Scheme
 
   bool useMetamaterials;
 
+  bool dumpRes;
+
 private:
 
   void calculateEzStep (time_step, GridCoordinate3D, GridCoordinate3D);
@@ -117,8 +119,8 @@ private:
   void performEzSteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performHxSteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performHySteps (time_step, GridCoordinate3D, GridCoordinate3D);
-  void performNSteps (time_step, time_step, int);
-  void performAmplitudeSteps (time_step, int);
+  void performNSteps (time_step, time_step);
+  void performAmplitudeSteps (time_step);
 
   int updateAmplitude (FPValue, FieldPointValue *, FPValue *);
 
@@ -127,7 +129,7 @@ private:
 
 public:
 
-  virtual void performSteps (int) CXX11_OVERRIDE;
+  virtual void performSteps () CXX11_OVERRIDE;
 
   void initScheme (FPValue, FPValue);
 
@@ -143,7 +145,8 @@ public:
              bool doUsePML = false,
              bool doUseTFSF = false,
              FPValue angleIncWave = 0.0,
-             bool doUseMetamaterials = false) :
+             bool doUseMetamaterials = false,
+             bool doDumpRes = false) :
     yeeLayout (layout),
     Ez (shrinkCoord (layout->getEzSize ()), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode ()),
     Hx (shrinkCoord (layout->getHxSize ()), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode ()),
@@ -179,7 +182,8 @@ public:
     EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     incidentWaveAngle (angleIncWave),
-    useMetamaterials (doUseMetamaterials)
+    useMetamaterials (doUseMetamaterials),
+    dumpRes (doDumpRes)
 #else
   SchemeTMz (YeeGridLayout *layout,
              const GridCoordinate2D& totSize,
@@ -189,7 +193,8 @@ public:
              bool doUsePML = false,
              bool doUseTFSF = false,
              FPValue angleIncWave = 0.0,
-             bool doUseMetamaterials = false) :
+             bool doUseMetamaterials = false,
+             bool doDumpRes = false) :
     yeeLayout (layout),
     Ez (shrinkCoord (layout->getEzSize ()), 0),
     Hx (shrinkCoord (layout->getHxSize ()), 0),
@@ -225,7 +230,8 @@ public:
     EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     incidentWaveAngle (angleIncWave),
-    useMetamaterials (doUseMetamaterials)
+    useMetamaterials (doUseMetamaterials),
+    dumpRes (doDumpRes)
 #endif
   {
     ASSERT (!doUseTFSF
