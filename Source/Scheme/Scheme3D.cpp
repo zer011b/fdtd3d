@@ -2274,7 +2274,7 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
 }
 
 void
-Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dumpRes)
+Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 {
 #ifdef PARALLEL_GRID
   int processId = ParallelGrid::getParallelCore ()->getProcessId ();
@@ -3066,7 +3066,7 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps, int dum
 }
 
 void
-Scheme3D::performAmplitudeSteps (time_step startStep, int dumpRes)
+Scheme3D::performAmplitudeSteps (time_step startStep)
 {
 #ifdef COMPLEX_FIELD_VALUES
   UNREACHABLE;
@@ -3457,7 +3457,7 @@ Scheme3D::updateAmplitude (FPValue val, FieldPointValue *amplitudeValue, FPValue
 }
 
 void
-Scheme3D::performSteps (int dumpRes)
+Scheme3D::performSteps ()
 {
 #if defined (CUDA_ENABLED)
 
@@ -3498,11 +3498,11 @@ Scheme3D::performSteps (int dumpRes)
   }
 #endif /* PARALLEL_GRID */
 
-  performNSteps (0, totalStep, dumpRes);
+  performNSteps (0, totalStep);
 
   if (calculateAmplitude)
   {
-    performAmplitudeSteps (totalStep, dumpRes);
+    performAmplitudeSteps (totalStep);
   }
 
 #endif /* !CUDA_ENABLED */
@@ -3556,8 +3556,12 @@ Scheme3D::initGrids ()
   }
 
   BMPDumper<GridCoordinate3D> dumper;
-  dumper.init (0, CURRENT, processId, "Eps");
-  dumper.dumpGrid (Eps, GridCoordinate3D (0), Eps.getSize ());
+
+  if (dumpRes)
+  {
+    dumper.init (0, CURRENT, processId, "Eps");
+    dumper.dumpGrid (Eps, GridCoordinate3D (0), Eps.getSize ());
+  }
 
   for (int i = 0; i < OmegaPE.getSize ().getX (); ++i)
   {
@@ -3719,17 +3723,20 @@ Scheme3D::initGrids ()
     }
   }
 
-  dumper.init (0, CURRENT, processId, "OmegaPE");
-  dumper.dumpGrid (OmegaPE, GridCoordinate3D (0), Eps.getSize ());
+  if (dumpRes)
+  {
+    dumper.init (0, CURRENT, processId, "OmegaPE");
+    dumper.dumpGrid (OmegaPE, GridCoordinate3D (0), Eps.getSize ());
 
-  dumper.init (0, CURRENT, processId, "OmegaPM");
-  dumper.dumpGrid (OmegaPM, GridCoordinate3D (0), Eps.getSize ());
+    dumper.init (0, CURRENT, processId, "OmegaPM");
+    dumper.dumpGrid (OmegaPM, GridCoordinate3D (0), Eps.getSize ());
 
-  dumper.init (0, CURRENT, processId, "GammaE");
-  dumper.dumpGrid (GammaE, GridCoordinate3D (0), Eps.getSize ());
+    dumper.init (0, CURRENT, processId, "GammaE");
+    dumper.dumpGrid (GammaE, GridCoordinate3D (0), Eps.getSize ());
 
-  dumper.init (0, CURRENT, processId, "GammaM");
-  dumper.dumpGrid (GammaM, GridCoordinate3D (0), Eps.getSize ());
+    dumper.init (0, CURRENT, processId, "GammaM");
+    dumper.dumpGrid (GammaM, GridCoordinate3D (0), Eps.getSize ());
+  }
 
   for (int i = 0; i < Mu.getSize ().getX (); ++i)
   {
@@ -3752,8 +3759,11 @@ Scheme3D::initGrids ()
     }
   }
 
-  dumper.init (0, CURRENT, processId, "Mu");
-  dumper.dumpGrid (Mu, GridCoordinate3D (0), Eps.getSize ());
+  if (dumpRes)
+  {
+    dumper.init (0, CURRENT, processId, "Mu");
+    dumper.dumpGrid (Mu, GridCoordinate3D (0), Eps.getSize ());
+  }
 
   FPValue eps0 = PhysicsConst::Eps0;
   FPValue mu0 = PhysicsConst::Mu0;
@@ -3919,12 +3929,15 @@ Scheme3D::initGrids ()
     }
   }
 
-  dumper.init (0, CURRENT, processId, "SigmaX");
-  dumper.dumpGrid (SigmaX, GridCoordinate3D (0), Eps.getSize ());
-  dumper.init (0, CURRENT, processId, "SigmaY");
-  dumper.dumpGrid (SigmaY, GridCoordinate3D (0), Eps.getSize ());
-  dumper.init (0, CURRENT, processId, "SigmaZ");
-  dumper.dumpGrid (SigmaZ, GridCoordinate3D (0), Eps.getSize ());
+  if (dumpRes)
+  {
+    dumper.init (0, CURRENT, processId, "SigmaX");
+    dumper.dumpGrid (SigmaX, GridCoordinate3D (0), Eps.getSize ());
+    dumper.init (0, CURRENT, processId, "SigmaY");
+    dumper.dumpGrid (SigmaY, GridCoordinate3D (0), Eps.getSize ());
+    dumper.init (0, CURRENT, processId, "SigmaZ");
+    dumper.dumpGrid (SigmaZ, GridCoordinate3D (0), Eps.getSize ());
+  }
 
   for (int i = 0; i < Ex.getSize ().getX (); ++i)
   {

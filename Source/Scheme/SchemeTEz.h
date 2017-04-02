@@ -82,6 +82,8 @@ class SchemeTEz: public Scheme
 
   FPValue incidentWaveAngle;
 
+  bool dumpRes;
+
 private:
 
   void calculateExStep (time_step, GridCoordinate3D, GridCoordinate3D);
@@ -95,8 +97,8 @@ private:
   void performExSteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performEySteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performHzSteps (time_step, GridCoordinate3D, GridCoordinate3D);
-  void performNSteps (time_step, time_step, int);
-  void performAmplitudeSteps (time_step, int);
+  void performNSteps (time_step, time_step);
+  void performAmplitudeSteps (time_step);
 
   int updateAmplitude (FPValue, FieldPointValue *, FPValue *);
 
@@ -105,7 +107,7 @@ private:
 
 public:
 
-  virtual void performSteps (int) CXX11_OVERRIDE;
+  virtual void performSteps () CXX11_OVERRIDE;
 
   void initScheme (FPValue, FPValue);
 
@@ -120,7 +122,8 @@ public:
              time_step ampStep = 0,
              bool doUsePML = false,
              bool doUseTFSF = false,
-             FPValue angleIncWave = 0.0) :
+             FPValue angleIncWave = 0.0,
+             bool doDumpRes = false) :
     yeeLayout (layout),
     Ex (shrinkCoord (layout->getExSize ()), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode ()),
     Ey (shrinkCoord (layout->getEySize ()), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode ()),
@@ -148,7 +151,8 @@ public:
     useTFSF (doUseTFSF),
     EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
-    incidentWaveAngle (angleIncWave)
+    incidentWaveAngle (angleIncWave),
+    dumpRes (doDumpRes)
 #else
   SchemeTEz (YeeGridLayout *layout,
              const GridCoordinate2D& totSize,
@@ -157,7 +161,8 @@ public:
              time_step ampStep = 0,
              bool doUsePML = false,
              bool doUseTFSF = false,
-             FPValue angleIncWave = 0.0) :
+             FPValue angleIncWave = 0.0,
+             bool doDumpRes = false) :
     yeeLayout (layout),
     Ex (shrinkCoord (layout->getExSize ()), 0),
     Ey (shrinkCoord (layout->getEySize ()), 0),
@@ -185,7 +190,8 @@ public:
     useTFSF (doUseTFSF),
     EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
     HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY ())), 0),
-    incidentWaveAngle (angleIncWave)
+    incidentWaveAngle (angleIncWave),
+    dumpRes (doDumpRes)
 #endif
   {
     ASSERT (!doUseTFSF

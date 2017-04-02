@@ -1025,7 +1025,7 @@ SchemeTEz::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordi
 }
 
 void
-SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps, int dumpRes)
+SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps)
 {
 #ifdef PARALLEL_GRID
   int processId = ParallelGrid::getParallelCore ()->getProcessId ();
@@ -1192,7 +1192,7 @@ SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps, int du
 }
 
 void
-SchemeTEz::performAmplitudeSteps (time_step startStep, int dumpRes)
+SchemeTEz::performAmplitudeSteps (time_step startStep)
 {
 #ifdef COMPLEX_FIELD_VALUES
   UNREACHABLE;
@@ -1424,7 +1424,7 @@ SchemeTEz::updateAmplitude (FPValue val, FieldPointValue *amplitudeValue, FPValu
 }
 
 void
-SchemeTEz::performSteps (int dumpRes)
+SchemeTEz::performSteps ()
 {
 #if defined (CUDA_ENABLED)
 
@@ -1439,11 +1439,11 @@ SchemeTEz::performSteps (int dumpRes)
   }
 #endif /* PARALLEL_GRID */
 
-  performNSteps (0, totalStep, dumpRes);
+  performNSteps (0, totalStep);
 
   if (calculateAmplitude)
   {
-    performAmplitudeSteps (totalStep, dumpRes);
+    performAmplitudeSteps (totalStep);
   }
 
 #endif /* !CUDA_ENABLED */
@@ -1502,8 +1502,12 @@ SchemeTEz::initGrids ()
   }
 
   BMPDumper<GridCoordinate2D> dumper;
-  dumper.init (0, CURRENT, processId, "Eps");
-  dumper.dumpGrid (Eps, GridCoordinate2D (0), Eps.getSize ());
+
+  if (dumpRes)
+  {
+    dumper.init (0, CURRENT, processId, "Eps");
+    dumper.dumpGrid (Eps, GridCoordinate2D (0), Eps.getSize ());
+  }
 
   for (int i = 0; i < Mu.getSize ().getX (); ++i)
   {
@@ -1645,20 +1649,14 @@ SchemeTEz::initGrids ()
     }
   }
 
+  if (dumpRes)
   {
-    BMPDumper<GridCoordinate2D> dumper;
     dumper.init (0, CURRENT, processId, "SigmaX");
     dumper.dumpGrid (SigmaX, GridCoordinate2D (0), SigmaX.getSize ());
-  }
 
-  {
-    BMPDumper<GridCoordinate2D> dumper;
     dumper.init (0, CURRENT, processId, "SigmaY");
     dumper.dumpGrid (SigmaY, GridCoordinate2D (0), SigmaY.getSize ());
-  }
 
-  {
-    BMPDumper<GridCoordinate2D> dumper;
     dumper.init (0, CURRENT, processId, "SigmaZ");
     dumper.dumpGrid (SigmaZ, GridCoordinate2D (0), SigmaZ.getSize ());
   }
