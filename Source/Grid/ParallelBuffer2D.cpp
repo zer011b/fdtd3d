@@ -61,46 +61,103 @@ ParallelGridCore::FindProportionForNodeGrid (int &nodeGridSize1, /**< out: first
 } /* ParallelGridCore::FindProportionForNodeGrid */
 
 /**
- * Initialize nodes grid
+ * Helper struct for pairs
+ */
+struct Pair
+{
+  grid_coord n; /**< first axis nodes grid size */
+  grid_coord m; /**< second axis nodes grid size */
+
+  /**
+   * Constructor with nodes grid sizes
+   */
+  Pair (grid_coord newN = 0, /**< first axis nodes grid size */
+        grid_coord newM = 0) /**< second axis nodes grid size */
+    : n (newN)
+  , m (newM)
+  {
+  } /* Pair */
+}; /* Pair */
+
+/**
+ * Initialize parallel grid virtual topology as optimal for current number of processes and specified grid sizes
  */
 void
-ParallelGridCore::NodeGridInitInner (const FPValue &alpha, /**< desired relation between size by second axis and size
-                                                            *   by first axis */
-                                     int &nodeGridSize1, /**< out: first axis nodes grid size */
-                                     int &nodeGridSize2, /**< out: second axis nodes grid size */
-                                     int &left) /**< out: number of left unused computational nodes */
+ParallelGridCore::initOptimal (grid_coord size1, /**< grid size by first axis */
+                               grid_coord size2, /**< grid size by second axis */
+                               int &nodeGridSize1, /**< out: first axis nodes grid size */
+                               int &nodeGridSize2, /**< out: second axis nodes grid size */
+                               int &left) /**< out: number of left unused computational nodes */
 {
-  FPValue sqrtVal = ((FPValue) (totalProcCount)) / alpha;
-  sqrtVal = sqrt (sqrtVal);
+  /*
+   * Find allowed pairs of node grid sizes
+   */
+  std::vector<Pair> allowedPairs;
 
-  if (sqrtVal <= 1.0 || alpha * sqrtVal <= 1.0)
+  grid_coord gcd1 = ParallelGridCore::greatestCommonDivider (size1, (grid_coord) totalProcCount);
+
+  for (grid_coord n = 1; n <= gcd1; ++n)
   {
-    /*
-     * Unproportional nodes grid
-     */
+    if (gcd1 % n != 0)
+    {
+      continue;
+    }
 
-    sqrtVal = 2;
+    FPValue m_fp = ((FPValue) totalProcCount) / ((FPValue) n);
+    grid_coord m = (grid_coord) m_fp;
+
+    FPValue b1_fp = ((FPValue) size2) / ((FPValue)m);
+    grid_coord b1 = (grid_coord) b1_fp;
+
+    if (m == m_fp && b1 == b1_fp)
+    {
+      allowedPairs.push_back (Pair (n, m));
+    }
+  }
+
+  ASSERT (allowedPairs.size () > 0);
+
+  FPValue optimal_n = sqrt (((FPValue) size1 * totalProcCount) / ((FPValue) size2));
+
+  Pair pair_left = allowedPairs[0];
+  Pair pair_right = allowedPairs[0];
+
+  for (std::vector<Pair>::iterator it = allowedPairs.begin ();
+       it != allowedPairs.end ();
+       ++it)
+  {
+    if (it->n < optimal_n)
+    {
+      pair_left = *it;
+    }
+    else
+    {
+      pair_right = *it;
+      break;
+    }
+  }
+
+  /*
+   * This heavily depends on the parallel grid sharing scheme
+   */
+#define func(pair) \
+  ((size1) / (pair.n) + (size2) / (pair.m))
+
+  if (func (pair_left) < func (pair_right))
+  {
+    nodeGridSize1 = pair_left.n;
+    nodeGridSize2 = pair_left.m;
   }
   else
   {
-    sqrtVal = round (sqrtVal);
+    nodeGridSize1 = pair_right.n;
+    nodeGridSize2 = pair_right.m;
   }
 
-  nodeGridSize1 = (int) sqrtVal;
-  nodeGridSize2 = totalProcCount / nodeGridSize1;
+#undef func
 
-  left = totalProcCount - nodeGridSize1 * nodeGridSize2;
-
-  if (left > 0)
-  {
-    /*
-     * Bad case, too many nodes left unused. Let's change proportion.
-     */
-    FindProportionForNodeGrid (nodeGridSize1, nodeGridSize2, left, alpha);
-  }
-
-  ASSERT (nodeGridSize1 > 1 && nodeGridSize2 > 1);
-} /* ParallelGridCore::NodeGridInitInner */
+  left = 0;
+} /* ParallelGridCore::initOptimal */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ) ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ */

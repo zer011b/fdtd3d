@@ -10,7 +10,7 @@
  * Initialize 2D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
+ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid */
 {
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
   nodeGridSizeX = totalProcCount;
@@ -22,12 +22,12 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
   nodeGridSizeY = totalProcCount;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 
-#if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%d.\n",
-          processId,
-          nodeGridSizeX,
-          nodeGridSizeY);
-#endif /* PRINT_MESSAGE */
+  if (getProcessId () == 0)
+  {
+    printf ("Nodes' grid: %dx%d.\n",
+            nodeGridSizeX,
+            nodeGridSizeY);
+  }
 } /* ParallelGridCore::NodeGridInit */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y */
@@ -38,7 +38,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
  * Initialize 2D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
+ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid */
 {
   if (totalProcCount < 4)
   {
@@ -46,17 +46,17 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
   }
 
   int left;
-  NodeGridInitInner (desiredProportion.getX (), nodeGridSizeX, nodeGridSizeY, left);
+  initOptimal (size.getX (), size.getY (), nodeGridSizeX, nodeGridSizeY, left);
 
   nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
 
-#if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%d. %d node(s) unused.\n",
-          processId,
-          nodeGridSizeX,
-          nodeGridSizeY,
-          left);
-#endif /* PRINT_MESSAGE */
+  if (getProcessId () == 0)
+  {
+    printf ("Nodes' grid: %dx%d. %d node(s) unused.\n",
+            nodeGridSizeX,
+            nodeGridSizeY,
+            left);
+  }
 } /* ParallelGridCore::NodeGridInit */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */

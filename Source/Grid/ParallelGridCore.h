@@ -184,14 +184,14 @@ private:
   /*
    * TODO: make names start with lower case
    */
-  void NodeGridInit (ParallelGridCoordinateFP);
-  void ParallelGridCoreConstructor (ParallelGridCoordinateFP);
+  void NodeGridInit (ParallelGridCoordinate);
+  void ParallelGridCoreConstructor (ParallelGridCoordinate);
   void InitBufferFlags ();
   void InitDirections ();
 
 public:
 
-  ParallelGridCore (int, int, ParallelGridCoordinateFP);
+  ParallelGridCore (int, int, ParallelGridCoordinate);
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
 
@@ -428,16 +428,35 @@ public:
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
   void FindProportionForNodeGrid (int &, int &, int &, FPValue);
-  void NodeGridInitInner (const FPValue &, int &, int &, int &);
+  void initOptimal (grid_coord, grid_coord, int &, int &, int &);
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
   void FindProportionForNodeGrid (int &, int &, int &, int &, FPValue, FPValue);
-  void NodeGridInitInner (const FPValue &, const FPValue &, int &, int &, int &, int &);
+  void initOptimal (grid_coord, grid_coord, grid_coord, int &, int &, int &, int &);
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+
+  /**
+   * Find greatest common divider of two integer numbers
+   *
+   * @return greatest common divider of two integer numbers
+   */
+  static grid_coord greatestCommonDivider (grid_coord a, /**< first integer number */
+                                           grid_coord b) /**< second integer number */
+  {
+    if (b == 0)
+    {
+      return a;
+    }
+    else
+    {
+      return greatestCommonDivider (b, a % b);
+    }
+  } /* greatestCommonDivider */
 }; /* ParallelGridCore */
 
 #endif /* PARALLEL_GRID */
