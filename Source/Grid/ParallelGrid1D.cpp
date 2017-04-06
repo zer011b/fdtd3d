@@ -10,15 +10,15 @@
  * Initialize 1D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
+ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid */
 {
   nodeGridSizeX = totalProcCount;
 
-#if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %d.\n",
-          processId,
-          nodeGridSizeX);
-#endif /* PRINT_MESSAGE */
+  if (getProcessId () == 0)
+  {
+    printf ("Nodes' grid: %d.\n",
+            nodeGridSizeX);
+  }
 } /* ParallelGridCore::NodeGridInit */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */

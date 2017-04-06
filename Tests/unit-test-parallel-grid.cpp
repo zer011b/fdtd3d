@@ -88,39 +88,7 @@ int main (int argc, char** argv)
   GridCoordinate3D tfsfSize (20, 20, 20);
 #endif /* GRID_3D */
 
-  ParallelGridCoordinateFP desiredProportion;
-
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  FPValue overall1 = (FPValue) overallSize.getX ();
-  FPValue overall2 = (FPValue) overallSize.getY ();
-
-  desiredProportion.setX (overall2 / overall1);
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
-
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  FPValue overall1 = (FPValue) overallSize.getY ();
-  FPValue overall2 = (FPValue) overallSize.getZ ();
-
-  desiredProportion.setX (overall2 / overall1);
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
-
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  FPValue overall1 = (FPValue) overallSize.getX ();
-  FPValue overall2 = (FPValue) overallSize.getZ ();
-
-  desiredProportion.setX (overall2 / overall1);
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
-
-#ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
-  FPValue overall1 = (FPValue) overallSize.getX ();
-  FPValue overall2 = (FPValue) overallSize.getY ();
-  FPValue overall3 = (FPValue) overallSize.getZ ();
-
-  desiredProportion.setX (overall2 / overall1);
-  desiredProportion.setY (overall3 / overall1);
-#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-  ParallelGridCore parallelGridCore (rank, numProcs, desiredProportion);
+  ParallelGridCore parallelGridCore (rank, numProcs, overallSize);
   ParallelGrid::initializeParallelCore (&parallelGridCore);
 
   ParallelGridCoordinate bufferSize (bufSize);

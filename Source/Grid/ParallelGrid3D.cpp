@@ -14,7 +14,7 @@
  * Initialize 3D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
+ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid */
 {
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
   nodeGridSizeX = totalProcCount;
@@ -34,13 +34,13 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
   nodeGridSizeZ = totalProcCount;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 
-#if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%dx%d.\n",
-          processId,
-          nodeGridSizeX,
-          nodeGridSizeY,
-          nodeGridSizeZ);
-#endif /* PRINT_MESSAGE */
+  if (getProcessId () == 0)
+  {
+    printf ("Nodes' grid: %dx%dx%d.\n",
+            nodeGridSizeX,
+            nodeGridSizeY,
+            nodeGridSizeZ);
+  }
 } /* ParallelGridCore::NodeGridInit */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y ||
@@ -54,7 +54,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
  * Initialize 3D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
+ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< desired relation values */
 {
   if (totalProcCount < 4)
   {
@@ -64,9 +64,9 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
   int left;
   int nodeGridSizeTmp1;
   int nodeGridSizeTmp2;
-  NodeGridInitInner (desiredProportion.getX (), nodeGridSizeTmp1, nodeGridSizeTmp2, left);
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
+  initOptimal (size.getX (), size.getY (), nodeGridSizeTmp1, nodeGridSizeTmp2, left);
   nodeGridSizeX = nodeGridSizeTmp1;
   nodeGridSizeY = nodeGridSizeTmp2;
   nodeGridSizeZ = 1;
@@ -74,6 +74,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
   nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
+  initOptimal (size.getY (), size.getZ (), nodeGridSizeTmp1, nodeGridSizeTmp2, left);
   nodeGridSizeX = 1;
   nodeGridSizeY = nodeGridSizeTmp1;
   nodeGridSizeZ = nodeGridSizeTmp2;
@@ -81,6 +82,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
   nodeGridSizeYZ = nodeGridSizeY * nodeGridSizeZ;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
+  initOptimal (size.getX (), size.getZ (), nodeGridSizeTmp1, nodeGridSizeTmp2, left);
   nodeGridSizeX = nodeGridSizeTmp1;
   nodeGridSizeY = 1;
   nodeGridSizeZ = nodeGridSizeTmp2;
@@ -88,14 +90,14 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
   nodeGridSizeXZ = nodeGridSizeX * nodeGridSizeZ;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
-#if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n",
-          processId,
-          nodeGridSizeX,
-          nodeGridSizeY,
-          nodeGridSizeZ,
-          left);
-#endif /* PRINT_MESSAGE */
+  if (getProcessId () == 0)
+  {
+    printf ("Nodes' grid: %dx%dx%d. %d node(s) unused.\n",
+            nodeGridSizeX,
+            nodeGridSizeY,
+            nodeGridSizeZ,
+            left);
+  }
 } /* ParallelGridCore::NodeGridInit */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
@@ -107,7 +109,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
  * Initialize 3D grid of computational nodes
  */
 void
-ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**< desired relation values */
+ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid */
 {
   if (totalProcCount < 8)
   {
@@ -118,7 +120,8 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
   int nodeGridSizeTmp1;
   int nodeGridSizeTmp2;
   int nodeGridSizeTmp3;
-  NodeGridInitInner (desiredProportion.getX (), desiredProportion.getY (), nodeGridSizeTmp1, nodeGridSizeTmp2, nodeGridSizeTmp3, left);
+
+  initOptimal (size.getX (), size.getY (), size.getZ (), nodeGridSizeTmp1, nodeGridSizeTmp2, nodeGridSizeTmp3, left);
 
   nodeGridSizeX = nodeGridSizeTmp1;
   nodeGridSizeY = nodeGridSizeTmp2;
@@ -127,14 +130,14 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinateFP desiredProportion) /**<
   nodeGridSizeXYZ = nodeGridSizeX * nodeGridSizeY * nodeGridSizeZ;
   nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
 
-#if PRINT_MESSAGE
-  printf ("Nodes' grid process #%d: %dx%dx%d. %d node(s) unused.\n",
-          processId,
-          nodeGridSizeX,
-          nodeGridSizeY,
-          nodeGridSizeZ,
-          left);
-#endif /* PRINT_MESSAGE */
+  if (getProcessId () == 0)
+  {
+    printf ("Nodes' grid: %dx%dx%d. %d node(s) unused.\n",
+            nodeGridSizeX,
+            nodeGridSizeY,
+            nodeGridSizeZ,
+            left);
+  }
 } /* ParallelGridCore::NodeGridInit */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
