@@ -13,7 +13,7 @@
 
 #ifdef PARALLEL_GRID
 void cudaExecute2DTMzSteps (CudaExitStatus *retval,
-                            YeeGridLayout &,
+                            YeeGridLayout *,
                             FieldValue, FieldValue,
                             ParallelGrid &,
                             ParallelGrid &,
@@ -24,7 +24,7 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             int);
 
 void cudaExecute3DSteps (CudaExitStatus *retval,
-                         YeeGridLayout &,
+                         YeeGridLayout *,
                          FieldValue, FieldValue,
                          ParallelGrid &,
                          ParallelGrid &,
@@ -38,7 +38,7 @@ void cudaExecute3DSteps (CudaExitStatus *retval,
                          int);
 #else
 void cudaExecute2DTMzSteps (CudaExitStatus *retval,
-                            YeeGridLayout &,
+                            YeeGridLayout *,
                             FieldValue, FieldValue,
                             Grid<GridCoordinate2D> &,
                             Grid<GridCoordinate2D> &,
@@ -49,7 +49,7 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
                             int);
 
 void cudaExecute3DSteps (CudaExitStatus *retval,
-                         YeeGridLayout &,
+                         YeeGridLayout *,
                          FieldValue, FieldValue,
                          Grid<GridCoordinate3D> &,
                          Grid<GridCoordinate3D> &,
