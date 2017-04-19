@@ -263,6 +263,11 @@ private:
   ParallelGridCoordinate coreCurrentSize;
 
   /**
+   * Absolute start position of chunk of current node
+   */
+  ParallelGridCoordinate posStart;
+
+  /**
    * Size of buffer zone
    */
   ParallelGridCoordinate bufferSize;
@@ -347,6 +352,8 @@ private:
   void SendReceiveCoordinatesInit3D_XYZ ();
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+  void initializeStartPosition ();
 
 public:
 
