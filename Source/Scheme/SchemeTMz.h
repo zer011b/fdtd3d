@@ -116,6 +116,10 @@ private:
   void calculateHxStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
   void calculateHyStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
 
+  FieldValue approximateIncidentWave (GridCoordinateFP2D, FPValue, Grid<GridCoordinate1D> &);
+  FieldValue approximateIncidentWaveE (GridCoordinateFP2D);
+  FieldValue approximateIncidentWaveH (GridCoordinateFP2D);
+
   void performEzSteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performHxSteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performHySteps (time_step, GridCoordinate3D, GridCoordinate3D);

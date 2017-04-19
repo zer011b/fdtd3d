@@ -60,7 +60,7 @@ int main (int argc, char** argv)
 #ifdef CUDA_ENABLED
   if (argc != 9)
 #else
-  if (argc != 6)
+  if (argc != 7)
 #endif
 #endif
 #ifdef GRID_3D
@@ -140,20 +140,16 @@ int main (int argc, char** argv)
   GridCoordinate2D overallSize (gridSizeX, gridSizeY);
   GridCoordinate2D pmlSize (10, 10);
   GridCoordinate2D tfsfSize (20, 20);
-
-  FPValue incidentWaveAngle1 = PhysicsConst::Pi / 2; /**< teta */
-  FPValue incidentWaveAngle2 = PhysicsConst::Pi / 4; /**< phi */
-  FPValue incidentWaveAngle3 = PhysicsConst::Pi / 2; /**< psi */
 #endif
 #ifdef GRID_3D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
   GridCoordinate3D pmlSize (10, 10, 10);
   GridCoordinate3D tfsfSize (13, 13, 13);
+#endif
 
   FPValue incidentWaveAngle1 = PhysicsConst::Pi / 2; /**< teta */
-  FPValue incidentWaveAngle2 = atoi(argv[7])*PhysicsConst::Pi / 180; /**< phi */
+  FPValue incidentWaveAngle2 = atoi(argv[argc - 1])*PhysicsConst::Pi / 180; /**< phi */
   FPValue incidentWaveAngle3 = PhysicsConst::Pi / 2; /**< psi */
-#endif
 
 #if defined (PARALLEL_GRID)
   MPI_Init(&argc, &argv);
@@ -229,25 +225,27 @@ int main (int argc, char** argv)
   dimension = 3;
 #endif
 
-#ifdef GRID_2D
-  #define SCHEME SchemeTMz
-  //#define SCHEME SchemeTEz
-#endif
-#ifdef GRID_3D
-  #define SCHEME Scheme3D
-#endif
-
 #if defined (PARALLEL_GRID)
   ParallelGridCoordinate bufferSize (bufSize);
 
-  SCHEME scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, true, dumpRes);
+#ifdef GRID_2D
+  SchemeTMz scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, incidentWaveAngle2, true, dumpRes);
+#endif
+#ifdef GRID_3D
+  Scheme3D scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, true, dumpRes);
+#endif
 #else
-  SCHEME scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, true, dumpRes);
+#ifdef GRID_2D
+  SchemeTMz scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, incidentWaveAngle2, true, dumpRes);
+#endif
+#ifdef GRID_3D
+  Scheme3D scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, true, dumpRes);
+#endif
 #endif
 
 #undef SCHEME
 
-  scheme.initScheme (0.01 / 5, /* dx */
+  scheme.initScheme (0.01 / 50, /* dx */
                      PhysicsConst::SpeedOfLight / (0.02)); /* source frequency */
 
   scheme.initGrids ();
