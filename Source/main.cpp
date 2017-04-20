@@ -232,14 +232,14 @@ int main (int argc, char** argv)
   SchemeTMz scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, incidentWaveAngle2, true, dumpRes);
 #endif
 #ifdef GRID_3D
-  Scheme3D scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, true, dumpRes);
+  Scheme3D scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, false, dumpRes);
 #endif
 #else
 #ifdef GRID_2D
   SchemeTMz scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, incidentWaveAngle2, true, dumpRes);
 #endif
 #ifdef GRID_3D
-  Scheme3D scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, true, dumpRes);
+  Scheme3D scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, false, dumpRes);
 #endif
 #endif
 

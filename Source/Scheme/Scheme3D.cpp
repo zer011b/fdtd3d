@@ -2432,87 +2432,178 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
       B1z.nextTimeStep ();
     }
 
-    FPValue cosVal = cos(yeeLayout->getIncidentWaveAngle2 ());
-    FPValue sinVal = sin(yeeLayout->getIncidentWaveAngle2 ());
+    //if (SQR (posAbs.getX () - 57) + SQR (posAbs.getY () - 57) + SQR (posAbs.getZ () - 23) < SQR (8))
 
-    FPValue fpPosX = 57.0 - 43.0*cosVal;
-    FPValue fpPosY = 60.0 - 43.0*sinVal;
+    // Reverse scattering diagram
+//     FPValue cosVal = cos(yeeLayout->getIncidentWaveAngle2 ());
+//     FPValue sinVal = sin(yeeLayout->getIncidentWaveAngle2 ());
+//
+//     FPValue fpPosX = 57.0 - 43.0*cosVal;
+//     FPValue fpPosY = 60.0 - 43.0*sinVal;
+//
+//     grid_coord posX1 = (grid_coord) fpPosX;
+//     grid_coord posX2 = posX1 + 1;
+//
+//     grid_coord posY1 = (grid_coord) fpPosY;
+//     grid_coord posY2 = posY1 + 1;
+//
+//     grid_coord posZ = Ez.getTotalSize ().getZ () / 2;
+//
+//     GridCoordinate3D pos1 (posX1, posY1, posZ);
+//     GridCoordinate3D pos2 (posX2, posY1, posZ);
+//     GridCoordinate3D pos3 (posX1, posY2, posZ);
+//     GridCoordinate3D pos4 (posX2, posY2, posZ);
+//
+// #ifdef PARALLEL_GRID
+//     FieldPointValue *val1 = Ez.getFieldPointValueOrNullByAbsolutePos (pos1);
+//     FieldPointValue *val2 = Ez.getFieldPointValueOrNullByAbsolutePos (pos2);
+//     FieldPointValue *val3 = Ez.getFieldPointValueOrNullByAbsolutePos (pos3);
+//     FieldPointValue *val4 = Ez.getFieldPointValueOrNullByAbsolutePos (pos4);
+// #else
+//     FieldPointValue *val1 = Ez.getFieldPointValue (pos1);
+//     FieldPointValue *val2 = Ez.getFieldPointValue (pos2);
+//     FieldPointValue *val3 = Ez.getFieldPointValue (pos3);
+//     FieldPointValue *val4 = Ez.getFieldPointValue (pos4);
+// #endif
+//
+//     if (val1 != NULLPTR
+//         && val2 != NULLPTR
+//         && val3 != NULLPTR
+//         && val4 != NULLPTR)
+//     {
+//       FPValue propX = (FPValue)posX2 - fpPosX;
+//       FPValue propY = (FPValue)posY2 - fpPosY;
+//
+//       FPValue propX1 = 1.0 - propX;
+//       FPValue propY1 = 1.0 - propY;
+//
+//       FPValue proportion1 = propX * propY;
+//       FPValue proportion2 = propX1 * propY;
+//       FPValue proportion3 = propX * propY1;
+//       FPValue proportion4 = propX1 * propY1;
+//
+//       FieldValue valCurTotal = proportion1 * val1->getCurValue ()
+//                                + proportion2 * val2->getCurValue ()
+//                                + proportion3 * val3->getCurValue ()
+//                                + proportion4 * val4->getCurValue ();
+//
+//       GridCoordinateFP3D realCoord1 = yeeLayout->getEzCoordFP (pos1);
+//       GridCoordinateFP3D realCoord2 = yeeLayout->getEzCoordFP (pos2);
+//       GridCoordinateFP3D realCoord3 = yeeLayout->getEzCoordFP (pos3);
+//       GridCoordinateFP3D realCoord4 = yeeLayout->getEzCoordFP (pos4);
+//
+//       FieldValue valCurInc1 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord1));
+//       FieldValue valCurInc2 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord2));
+//       FieldValue valCurInc3 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord3));
+//       FieldValue valCurInc4 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord4));
+//
+//       FieldValue valCurInc = proportion1 * valCurInc1
+//                              + proportion2 * valCurInc2
+//                              + proportion3 * valCurInc3
+//                              + proportion4 * valCurInc4;
+//
+//       FieldValue valCurScat = valCurTotal - valCurInc;
+//       printf ("=== t=%u; angle %f === Points: %f*(%lu,%lu), %f*(%lu,%lu), %f*(%lu,%lu), %f*(%lu,%lu) => Incident: %f(%f,%f); Scattered: %f(%f,%f) ===\n",
+//               t,
+//               yeeLayout->getIncidentWaveAngle2 (),
+//               proportion1, pos1.getX (), pos1.getY (),
+//               proportion2, pos2.getX (), pos2.getY (),
+//               proportion3, pos3.getX (), pos3.getY (),
+//               proportion4, pos4.getX (), pos4.getY (),
+//               sqrt (SQR (valCurInc.real ()) + SQR (valCurInc.imag ())),
+//               valCurInc.real (),
+//               valCurInc.imag (),
+//               sqrt (SQR (valCurScat.real ()) + SQR (valCurScat.imag ())),
+//               valCurScat.real (),
+//               valCurScat.imag ());
+//     }
 
-    grid_coord posX1 = (grid_coord) fpPosX;
-    grid_coord posX2 = posX1 + 1;
-
-    grid_coord posY1 = (grid_coord) fpPosY;
-    grid_coord posY2 = posY1 + 1;
-
-    grid_coord posZ = Ez.getTotalSize ().getZ () / 2;
-
-    GridCoordinate3D pos1 (posX1, posY1, posZ);
-    GridCoordinate3D pos2 (posX2, posY1, posZ);
-    GridCoordinate3D pos3 (posX1, posY2, posZ);
-    GridCoordinate3D pos4 (posX2, posY2, posZ);
-
-#ifdef PARALLEL_GRID
-    FieldPointValue *val1 = Ez.getFieldPointValueOrNullByAbsolutePos (pos1);
-    FieldPointValue *val2 = Ez.getFieldPointValueOrNullByAbsolutePos (pos2);
-    FieldPointValue *val3 = Ez.getFieldPointValueOrNullByAbsolutePos (pos3);
-    FieldPointValue *val4 = Ez.getFieldPointValueOrNullByAbsolutePos (pos4);
-#else
-    FieldPointValue *val1 = Ez.getFieldPointValue (pos1);
-    FieldPointValue *val2 = Ez.getFieldPointValue (pos2);
-    FieldPointValue *val3 = Ez.getFieldPointValue (pos3);
-    FieldPointValue *val4 = Ez.getFieldPointValue (pos4);
-#endif
-
-    if (val1 != NULLPTR
-        && val2 != NULLPTR
-        && val3 != NULLPTR
-        && val4 != NULLPTR)
+    // straight scattering diagram
+    for (FPValue angle = 0; angle < PhysicsConst::Pi / 2; angle += PhysicsConst::Pi / 90)
     {
-      FPValue propX = (FPValue)posX2 - fpPosX;
-      FPValue propY = (FPValue)posY2 - fpPosY;
+      FPValue cosVal = cos(angle);
+      FPValue sinVal = sin(angle);
 
-      FPValue propX1 = 1.0 - propX;
-      FPValue propY1 = 1.0 - propY;
+      FPValue fpPosX = 58.0 - 43.0*cosVal;
+      FPValue fpPosY = 58.0 - 43.0*sinVal;
 
-      FPValue proportion1 = propX * propY;
-      FPValue proportion2 = propX1 * propY;
-      FPValue proportion3 = propX * propY1;
-      FPValue proportion4 = propX1 * propY1;
+      grid_coord posX1 = (grid_coord) fpPosX;
+      grid_coord posX2 = posX1 + 1;
 
-      FieldValue valCurTotal = proportion1 * val1->getCurValue ()
-                               + proportion2 * val2->getCurValue ()
-                               + proportion3 * val3->getCurValue ()
-                               + proportion4 * val4->getCurValue ();
+      grid_coord posY1 = (grid_coord) fpPosY;
+      grid_coord posY2 = posY1 + 1;
 
-      GridCoordinateFP3D realCoord1 = yeeLayout->getEzCoordFP (pos1);
-      GridCoordinateFP3D realCoord2 = yeeLayout->getEzCoordFP (pos2);
-      GridCoordinateFP3D realCoord3 = yeeLayout->getEzCoordFP (pos3);
-      GridCoordinateFP3D realCoord4 = yeeLayout->getEzCoordFP (pos4);
+      grid_coord posZ = Ez.getTotalSize ().getZ () / 2;
 
-      FieldValue valCurInc1 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord1));
-      FieldValue valCurInc2 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord2));
-      FieldValue valCurInc3 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord3));
-      FieldValue valCurInc4 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord4));
+      GridCoordinate3D pos1 (posX1, posY1, posZ);
+      GridCoordinate3D pos2 (posX2, posY1, posZ);
+      GridCoordinate3D pos3 (posX1, posY2, posZ);
+      GridCoordinate3D pos4 (posX2, posY2, posZ);
 
-      FieldValue valCurInc = proportion1 * valCurInc1
-                             + proportion2 * valCurInc2
-                             + proportion3 * valCurInc3
-                             + proportion4 * valCurInc4;
+  #ifdef PARALLEL_GRID
+      FieldPointValue *val1 = Ez.getFieldPointValueOrNullByAbsolutePos (pos1);
+      FieldPointValue *val2 = Ez.getFieldPointValueOrNullByAbsolutePos (pos2);
+      FieldPointValue *val3 = Ez.getFieldPointValueOrNullByAbsolutePos (pos3);
+      FieldPointValue *val4 = Ez.getFieldPointValueOrNullByAbsolutePos (pos4);
+  #else
+      FieldPointValue *val1 = Ez.getFieldPointValue (pos1);
+      FieldPointValue *val2 = Ez.getFieldPointValue (pos2);
+      FieldPointValue *val3 = Ez.getFieldPointValue (pos3);
+      FieldPointValue *val4 = Ez.getFieldPointValue (pos4);
+  #endif
 
-      FieldValue valCurScat = valCurTotal - valCurInc;
-      printf ("=== t=%u; angle %f === Points: %f*(%lu,%lu), %f*(%lu,%lu), %f*(%lu,%lu), %f*(%lu,%lu) => Incident: %f(%f,%f); Scattered: %f(%f,%f) ===\n",
-              t,
-              yeeLayout->getIncidentWaveAngle2 (),
-              proportion1, pos1.getX (), pos1.getY (),
-              proportion2, pos2.getX (), pos2.getY (),
-              proportion3, pos3.getX (), pos3.getY (),
-              proportion4, pos4.getX (), pos4.getY (),
-              sqrt (SQR (valCurInc.real ()) + SQR (valCurInc.imag ())),
-              valCurInc.real (),
-              valCurInc.imag (),
-              sqrt (SQR (valCurScat.real ()) + SQR (valCurScat.imag ())),
-              valCurScat.real (),
-              valCurScat.imag ());
+      if (val1 != NULLPTR
+          && val2 != NULLPTR
+          && val3 != NULLPTR
+          && val4 != NULLPTR)
+      {
+        FPValue propX = (FPValue)posX2 - fpPosX;
+        FPValue propY = (FPValue)posY2 - fpPosY;
+
+        FPValue propX1 = 1.0 - propX;
+        FPValue propY1 = 1.0 - propY;
+
+        FPValue proportion1 = propX * propY;
+        FPValue proportion2 = propX1 * propY;
+        FPValue proportion3 = propX * propY1;
+        FPValue proportion4 = propX1 * propY1;
+
+        FieldValue valCurTotal = proportion1 * val1->getCurValue ()
+                                 + proportion2 * val2->getCurValue ()
+                                 + proportion3 * val3->getCurValue ()
+                                 + proportion4 * val4->getCurValue ();
+
+        GridCoordinateFP3D realCoord1 = yeeLayout->getEzCoordFP (pos1);
+        GridCoordinateFP3D realCoord2 = yeeLayout->getEzCoordFP (pos2);
+        GridCoordinateFP3D realCoord3 = yeeLayout->getEzCoordFP (pos3);
+        GridCoordinateFP3D realCoord4 = yeeLayout->getEzCoordFP (pos4);
+
+        FieldValue valCurInc1 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord1));
+        FieldValue valCurInc2 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord2));
+        FieldValue valCurInc3 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord3));
+        FieldValue valCurInc4 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord4));
+
+        FieldValue valCurInc = proportion1 * valCurInc1
+                               + proportion2 * valCurInc2
+                               + proportion3 * valCurInc3
+                               + proportion4 * valCurInc4;
+
+        FieldValue valCurScat = valCurTotal - valCurInc;
+        printf ("=== t=%u, inc angle=%f; angle %f === Points: %f*(%lu,%lu), %f*(%lu,%lu), %f*(%lu,%lu), %f*(%lu,%lu) => Incident: %f(%f,%f); Scattered: %f(%f,%f) ===\n",
+                t,
+                yeeLayout->getIncidentWaveAngle2 (),
+                angle,
+                proportion1, pos1.getX (), pos1.getY (),
+                proportion2, pos2.getX (), pos2.getY (),
+                proportion3, pos3.getX (), pos3.getY (),
+                proportion4, pos4.getX (), pos4.getY (),
+                sqrt (SQR (valCurInc.real ()) + SQR (valCurInc.imag ())),
+                valCurInc.real (),
+                valCurInc.imag (),
+                sqrt (SQR (valCurScat.real ()) + SQR (valCurScat.imag ())),
+                valCurScat.real (),
+                valCurScat.imag ());
+      }
     }
 
     /*
@@ -2849,10 +2940,6 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
       val->setCurValue (val->getCurValue () - incVal);
     }
 
-    GridCoordinate3D pos (14, 105, totalEz.getSize ().getZ () / 2);
-    FieldPointValue *val = totalEz.getFieldPointValue (pos);
-    FieldValue valCurTotal = val->getCurValue ();
-
     for (grid_iter i = 0; i < totalEz.getSize ().calculateTotalCoord (); ++i)
     {
       FieldPointValue *val = totalEz.getFieldPointValue (i);
@@ -2878,18 +2965,6 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 
       val->setCurValue (val->getCurValue () - incVal);
     }
-
-    val = totalEz.getFieldPointValue (pos);
-    FieldValue valCurScat = val->getCurValue ();
-    FieldValue valCurInc = valCurTotal - valCurScat;
-    printf ("\n\n=========== Res: angle %f -> Incident: %f(%f,%f); Scattered: %f(%f,%f) ===========\n\n",
-            yeeLayout->getIncidentWaveAngle2 (),
-            sqrt (SQR (valCurInc.real ()) + SQR (valCurInc.imag ())),
-            valCurInc.real (),
-            valCurInc.imag (),
-            sqrt (SQR (valCurScat.real ()) + SQR (valCurScat.imag ())),
-            valCurScat.real (),
-            valCurScat.imag ());
 
     for (grid_iter i = 0; i < totalHx.getSize ().calculateTotalCoord (); ++i)
     {
@@ -3039,10 +3114,6 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
       val->setCurValue (val->getCurValue () - incVal);
     }
 
-    GridCoordinate3D pos (14, 105, Ez.getSize ().getZ () / 2);
-    FieldPointValue *val = Ez.getFieldPointValue (pos);
-    FieldValue valCurTotal = val->getCurValue ();
-
     for (grid_iter i = 0; i < Ez.getSize ().calculateTotalCoord (); ++i)
     {
       FieldPointValue *val = Ez.getFieldPointValue (i);
@@ -3068,18 +3139,6 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 
       val->setCurValue (val->getCurValue () - incVal);
     }
-
-    val = Ez.getFieldPointValue (pos);
-    FieldValue valCurScat = val->getCurValue ();
-    FieldValue valCurInc = valCurTotal - valCurScat;
-    printf ("\n\n=========== Res: angle %f -> Incident: %f(%f,%f); Scattered: %f(%f,%f) ===========\n\n",
-            yeeLayout->getIncidentWaveAngle2 (),
-            sqrt (SQR (valCurInc.real ()) + SQR (valCurInc.imag ())),
-            valCurInc.real (),
-            valCurInc.imag (),
-            sqrt (SQR (valCurScat.real ()) + SQR (valCurScat.imag ())),
-            valCurScat.real (),
-            valCurScat.imag ());
 
     for (grid_iter i = 0; i < Hx.getSize ().calculateTotalCoord (); ++i)
     {
@@ -3665,6 +3724,17 @@ Scheme3D::initGrids ()
 
         GridCoordinate3D pos (i, j, k);
 
+        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (OmegaPE.getTotalPosition (pos));
+
+        if (SQR (posAbs.getX () - 58) + SQR (posAbs.getY () - 58) + SQR (posAbs.getZ () - 20) < SQR (5))
+        {
+#ifdef COMPLEX_FIELD_VALUES
+          eps->setCurValue (FieldValue (2, 0));
+#else /* COMPLEX_FIELD_VALUES */
+          eps->setCurValue (2);
+#endif /* !COMPLEX_FIELD_VALUES */
+        }
+
         Eps.setFieldPointValue (eps, pos);
       }
     }
@@ -3697,9 +3767,11 @@ Scheme3D::initGrids ()
 
         GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (OmegaPE.getTotalSize ());
 
-        if (posAbs.getX () >= 55 && posAbs.getX () < 60
-            && posAbs.getY () >= 55 && posAbs.getY () < 65
-            && posAbs.getZ () >= 15 && posAbs.getZ () < 25)
+        // if (posAbs.getX () >= 55 && posAbs.getX () < 60
+        //     && posAbs.getY () >= 55 && posAbs.getY () < 65
+        //     && posAbs.getZ () >= 15 && posAbs.getZ () < 25)
+        // {
+        if (SQR (posAbs.getX () - 57) + SQR (posAbs.getY () - 57) + SQR (posAbs.getZ () - 23) < SQR (8))
         {
 
 // //         if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
