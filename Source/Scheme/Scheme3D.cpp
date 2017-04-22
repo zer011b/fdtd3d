@@ -2518,6 +2518,11 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 //               valCurScat.imag ());
 //     }
 
+    grid_coord posZ = Ez.getTotalSize ().getZ () / 2;
+
+    // if (EzStart.getZ () <= posZ && posZ < EzEnd.getZ ())
+    {
+
     // straight scattering diagram
     for (FPValue angle = 0; angle < PhysicsConst::Pi / 2; angle += PhysicsConst::Pi / 90)
     {
@@ -2532,8 +2537,6 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 
       grid_coord posY1 = (grid_coord) fpPosY;
       grid_coord posY2 = posY1 + 1;
-
-      grid_coord posZ = Ez.getTotalSize ().getZ () / 2;
 
       GridCoordinate3D pos1 (posX1, posY1, posZ);
       GridCoordinate3D pos2 (posX2, posY1, posZ);
@@ -2606,10 +2609,12 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
       }
     }
 
+    }
+
     /*
      * FIXME: add dump step
      */
-    if (t % 1000 == 0)
+    if (t % 100 == 0)
     {
       if (dumpRes)
       {
@@ -2625,8 +2630,8 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 
         BMPDumper<GridCoordinate3D> dumperEz;
         DATDumper<GridCoordinate3D> dumperDATEz;
-        dumperDATEz.init (t, CURRENT, processId, "3D-in-time-Ez");
-        dumperDATEz.dumpGrid (Ez, GridCoordinate3D (0), Ez.getSize ());
+        dumperEz.init (t, CURRENT, processId, "3D-in-time-Ez");
+        dumperEz.dumpGrid (Ez, GridCoordinate3D (0), Ez.getSize ());
 
         BMPDumper<GridCoordinate3D> dumperHx;
         DATDumper<GridCoordinate3D> dumperDATHx;
@@ -3724,16 +3729,24 @@ Scheme3D::initGrids ()
 
         GridCoordinate3D pos (i, j, k);
 
-        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (OmegaPE.getTotalPosition (pos));
+        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (Eps.getTotalPosition (pos));
 
-        if (SQR (posAbs.getX () - 58) + SQR (posAbs.getY () - 58) + SQR (posAbs.getZ () - 20) < SQR (5))
-        {
+//         if (SQR (posAbs.getX () - 58.5) + SQR (posAbs.getY () - 58.5) + SQR (posAbs.getZ () - 20.5) < SQR (5))
+//         {
+// #ifdef COMPLEX_FIELD_VALUES
+//           eps->setCurValue (FieldValue (2, 0));
+// #else /* COMPLEX_FIELD_VALUES */
+//           eps->setCurValue (2);
+// #endif /* !COMPLEX_FIELD_VALUES */
+//         }
+
 #ifdef COMPLEX_FIELD_VALUES
-          eps->setCurValue (FieldValue (2, 0));
+        FieldValue epsVal (2, 0);
 #else /* COMPLEX_FIELD_VALUES */
-          eps->setCurValue (2);
+        FieldValue epsVal (2);
 #endif /* !COMPLEX_FIELD_VALUES */
-        }
+
+        eps->setCurValue (Approximation::approximateSphere (posAbs, GridCoordinateFP3D (58.5, 58.5, 20.5), 5, epsVal));
 
         Eps.setFieldPointValue (eps, pos);
       }
