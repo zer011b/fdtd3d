@@ -216,3 +216,63 @@ Approximation::phaseVelocityIncidentWave2D (FPValue delta,
                                       PhysicsConst::Pi / 2,
                                       incidentWaveAngle2);
 }
+
+FieldValue
+Approximation::approximateSphere (GridCoordinateFP3D midPos,
+                                  GridCoordinateFP3D center,
+                                  FPValue radius,
+                                  FieldValue eps)
+{
+  FPValue d = sqrt (SQR (midPos.getX () - center.getX ()) + SQR (midPos.getY () - center.getY ()) + SQR (midPos.getZ () - center.getZ ()));
+
+  FPValue diff = d - radius;
+
+#ifdef COMPLEX_FIELD_VALUES
+  FieldValue eps_vacuum (1, 0);
+#else /* COMPLEX_FIELD_VALUES */
+  FieldValue eps_vacuum (1);
+#endif /* !COMPLEX_FIELD_VALUES */
+
+  if (diff < -0.5)
+  {
+    return eps;
+  }
+  else if (diff > 0.5)
+  {
+    return eps_vacuum;
+  }
+
+  FPValue proportion = 0.5 - diff;
+
+  return proportion * eps + (1 - proportion) * eps_vacuum;
+
+  // FPValue d1 = sqrt (SQR (pos1.getX () - center.getX ()) + SQR (pos1.getY () - center.getY ()) + SQR (pos1.getZ () - center.getZ ()));
+  // FPValue d2 = sqrt (SQR (pos2.getX () - center.getX ()) + SQR (pos2.getY () - center.getY ()) + SQR (pos2.getZ () - center.getZ ()));
+  // FPValue d3 = sqrt (SQR (pos3.getX () - center.getX ()) + SQR (pos3.getY () - center.getY ()) + SQR (pos3.getZ () - center.getZ ()));
+  // FPValue d4 = sqrt (SQR (pos4.getX () - center.getX ()) + SQR (pos4.getY () - center.getY ()) + SQR (pos4.getZ () - center.getZ ()));
+  //
+  // FPValue d5 = sqrt (SQR (pos5.getX () - center.getX ()) + SQR (pos5.getY () - center.getY ()) + SQR (pos5.getZ () - center.getZ ()));
+  // FPValue d6 = sqrt (SQR (pos6.getX () - center.getX ()) + SQR (pos6.getY () - center.getY ()) + SQR (pos6.getZ () - center.getZ ()));
+  // FPValue d7 = sqrt (SQR (pos7.getX () - center.getX ()) + SQR (pos7.getY () - center.getY ()) + SQR (pos7.getZ () - center.getZ ()));
+  // FPValue d8 = sqrt (SQR (pos8.getX () - center.getX ()) + SQR (pos8.getY () - center.getY ()) + SQR (pos8.getZ () - center.getZ ()));
+
+  // bool inR1 = d1 < radius;
+  // bool inR2 = d2 < radius;
+  // bool inR3 = d3 < radius;
+  // bool inR4 = d4 < radius;
+  //
+  // bool inR5 = d5 < radius;
+  // bool inR6 = d6 < radius;
+  // bool inR7 = d7 < radius;
+  // bool inR8 = d8 < radius;
+
+  // total number of cases 1+1+8+12+
+  //
+  // if (inR1 && inR2 && inR3 && inR4
+  //     && inR5 && inR6 && inR7 && inR8)
+  // {
+  //   return eps;
+  // }
+  //
+  // if (inR1 && inR2 && inR3 && inR4)
+}

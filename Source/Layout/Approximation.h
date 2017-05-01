@@ -2,6 +2,7 @@
 #define APPROXIMATION_H
 
 #include "FieldPoint.h"
+#include "GridCoordinate3D.h"
 
 class Approximation
 {
@@ -24,6 +25,8 @@ public:
 
   static FPValue phaseVelocityIncidentWave3D (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
   static FPValue phaseVelocityIncidentWave2D (FPValue, FPValue, FPValue, FPValue, FPValue);
+
+  static FieldValue approximateSphere (GridCoordinateFP3D, GridCoordinateFP3D, FPValue, FieldValue);
 };
 
 #endif /* APPROXIMATION_H */
