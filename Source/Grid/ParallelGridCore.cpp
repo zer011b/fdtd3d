@@ -883,6 +883,34 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
   {
     getShare ((BufferPosition) i, doShare[i]);
   }
+
+  calcClockAll.resize (totalProcCount);
+  shareClockAll.resize (totalProcCount);
 } /* ParallelGridCore */
+
+void ParallelGridCore::ShareClocks ()
+{
+//   for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
+//   {
+//     ParallelGridCoordinate chunkStart = getChunkStartPosition ();
+//     ParallelGridCoordinate chunkEnd = chunkStart + getCurrentSize ();
+//
+//     /*
+//      * Send start coord, end coord
+//      */
+// #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+//     grid_coord startX;
+//     grid_coord endX;
+//
+//     if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+//     {
+//       startX = chunkStart.getX ();
+//       endX = chunkEnd.getX ();
+//     }
+//
+//     MPI_Bcast (&startX, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
+//     MPI_Bcast (&endX, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
+// #endif /* GRID_1D || GRID_2D || GRID_3D */
+}
 
 #endif /* PARALLEL_GRID */

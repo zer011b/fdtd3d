@@ -1288,6 +1288,10 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
 
   for (int t = startStep; t < stepLimit; ++t)
   {
+#ifdef PARALLEL_GRID
+    Ez.getParallelCore ()->StartCalcClock ();
+#endif
+
     GridCoordinate3D EzStart = Ez.getComputationStart (yeeLayout->getEzStartDiff ());
     GridCoordinate3D EzEnd = Ez.getComputationEnd (yeeLayout->getEzEndDiff ());
 
@@ -1409,6 +1413,10 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
         dumperHy.dumpGrid (Hy, GridCoordinate2D (0), Hy.getSize ());
       }
     }
+
+#ifdef PARALLEL_GRID
+    Ez.getParallelCore ()->StopCalcClock ();
+#endif
   }
 
   if (dumpRes)

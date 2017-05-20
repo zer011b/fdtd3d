@@ -414,6 +414,9 @@ public:
 
   Grid<ParallelGridCoordinate> gatherFullGrid () const;
 
+  void Rebalance ();
+  void RebalanceWithSize (ParallelGridCoordinate newSize);
+
 public:
 
   static void initializeParallelCore (ParallelGridCore *);

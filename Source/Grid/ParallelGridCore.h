@@ -40,6 +40,69 @@ enum BufferPosition
  */
 class ParallelGridCore
 {
+public:
+  timespec calcClock;
+  timespec shareClock;
+
+  timespec calcStart;
+  timespec calcStop;
+
+  timespec shareStart;
+  timespec shareStop;
+
+  std::vector<timespec> calcClockAll;
+  std::vector<timespec> shareClockAll;
+
+  void StartCalcClock ()
+  {
+    int status = clock_gettime (CLOCK_MONOTONIC, &calcStart);
+    ASSERT (status == 0);
+  }
+  void StopCalcClock ()
+  {
+    int status = clock_gettime (CLOCK_MONOTONIC, &calcStop);
+    ASSERT (status == 0);
+
+    timespec diff;
+    timespec_diff (&calcStart, &calcStop, &diff);
+
+    calcClock.tv_sec += diff.tv_sec;
+    calcClock.tv_nsec += diff.tv_nsec;
+  }
+
+  void StartShareClock ()
+  {
+    int status = clock_gettime (CLOCK_MONOTONIC, &shareStart);
+    ASSERT (status == 0);
+  }
+  void StopShareClock ()
+  {
+    int status = clock_gettime (CLOCK_MONOTONIC, &shareStop);
+    ASSERT (status == 0);
+
+    timespec diff;
+    timespec_diff (&shareStart, &shareStop, &diff);
+
+    shareClock.tv_sec += diff.tv_sec;
+    shareClock.tv_nsec += diff.tv_nsec;
+  }
+
+  void timespec_diff(struct timespec *start, struct timespec *stop,
+                     struct timespec *result)
+  {
+      if ((stop->tv_nsec - start->tv_nsec) < 0) {
+          result->tv_sec = stop->tv_sec - start->tv_sec - 1;
+          result->tv_nsec = stop->tv_nsec - start->tv_nsec + 1000000000;
+      } else {
+          result->tv_sec = stop->tv_sec - start->tv_sec;
+          result->tv_nsec = stop->tv_nsec - start->tv_nsec;
+      }
+
+      return;
+  }
+
+  void ShareClocks ();
+
 private:
 
   /**

@@ -49,7 +49,6 @@ protected:
 
 private:
 
-  VectorFieldPointValues& getValues ();
   void shiftInTime ();
 
 protected:
@@ -58,6 +57,8 @@ protected:
   grid_iter calculateIndexFromPosition (const TCoord &) const;
 
 public:
+
+  VectorFieldPointValues& getValues ();
 
   Grid (const TCoord& s, time_step step, const char * = "unnamed");
   Grid (time_step step, const char * = "unnamed");

@@ -169,6 +169,16 @@ int main (int argc, char** argv)
 
   ParallelGridCore parallelGridCore (rank, numProcs, overallSize);
   ParallelGrid::initializeParallelCore (&parallelGridCore);
+//
+// #ifdef GRID_3D
+//   printf ("#%d --- (%d,%d,%d)\n",
+//           rank,
+//           parallelGridCore.getNodeGridX (),
+//           parallelGridCore.getNodeGridY (),
+//           parallelGridCore.getNodeGridZ ());
+// #endif
+
+  exit (1);
 
   is_parallel_grid = true;
 

@@ -1816,9 +1816,11 @@ ParallelGrid::SendReceive ()
 void
 ParallelGrid::share ()
 {
+  parallelGridCore->StartShareClock ();
   SendReceive ();
 
   MPI_Barrier (MPI_COMM_WORLD);
+  parallelGridCore->StopShareClock ();
 } /* ParallelGrid::share */
 
 /**
@@ -2842,5 +2844,109 @@ ParallelGrid::gatherFullGrid () const
 
   return grid;
 } /* ParallelGrid::gatherFullGrid */
+
+void ParallelGrid::Rebalance ()
+{
+
+
+
+}
+
+void ParallelGrid::RebalanceWithSize (ParallelGridCoordinate newSize)
+{
+  ParallelGridBase totalGrid = gatherFullGrid ();
+
+  ParallelGridCoordinate oldSize = currentSize;
+
+  currentSize = newSize;
+
+  ParallelGridConstructor ();
+
+  gridValues.resize (size.calculateTotalCoord ());
+
+#if PRINT_MESSAGE
+  printf ("Rebalance grid '%s' for proc: %d (of %d) from raw size: %lu, to raw size %lu\n",
+          gridName.data (),
+          parallelGridCore->getProcessId (),
+          parallelGridCore->getTotalProcCount (),
+          oldSize.calculateTotalCoord (),
+          gridValues.size ());
+#endif /* PRINT_MESSAGE */
+
+  initializeStartPosition ();
+
+  {
+    ParallelGridCoordinate chunkStart = getChunkStartPosition ();
+    ParallelGridCoordinate chunkEnd = chunkStart + getCurrentSize ();
+
+#ifdef GRID_1D
+    ParallelGridCoordinate sizeCoord (chunkEnd.getX () - chunkStart.getX ());
+#endif /* GRID_1D */
+#ifdef GRID_2D
+    ParallelGridCoordinate sizeCoord (chunkEnd.getX () - chunkStart.getX (),
+                                      chunkEnd.getY () - chunkStart.getY ());
+#endif /* GRID_2D */
+#ifdef GRID_3D
+    ParallelGridCoordinate sizeCoord (chunkEnd.getX () - chunkStart.getX (),
+                                      chunkEnd.getY () - chunkStart.getY (),
+                                      chunkEnd.getZ () - chunkStart.getZ ());
+#endif /* GRID_3D */
+
+    grid_coord left_coord, right_coord;
+    grid_coord down_coord, up_coord;
+    grid_coord back_coord, front_coord;
+
+    initBufferOffsets (left_coord, right_coord, down_coord, up_coord, back_coord, front_coord);
+
+    grid_iter index = 0;
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    for (grid_coord i = left_coord; i < left_coord + sizeCoord.getX (); ++i)
+    {
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+      for (grid_coord j = down_coord; j < down_coord + sizeCoord.getY (); ++j)
+      {
+#endif /* GRID_2D || GRID_3D */
+#if defined (GRID_3D)
+        for (grid_coord k = back_coord; k < back_coord + sizeCoord.getZ (); ++k)
+        {
+#endif /* GRID_3D */
+
+#ifdef GRID_1D
+          ParallelGridCoordinate pos (i);
+          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.getX ());
+#endif /* GRID_1D */
+#ifdef GRID_2D
+          ParallelGridCoordinate pos (i, j);
+          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.getX (),
+                                           j - down_coord + chunkStart.getY ());
+#endif /* GRID_2D */
+#ifdef GRID_3D
+          ParallelGridCoordinate pos (i, j, k);
+          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.getX (),
+                                           j - down_coord + chunkStart.getY (),
+                                           k - back_coord + chunkStart.getZ ());
+#endif /* GRID_3D */
+
+          grid_iter coord = calculateIndexFromPosition (pos);
+
+          FieldPointValue *val = gridValues[coord];
+
+          grid_iter coord_total = calculateIndexFromPosition (posTotal, totalSize);
+
+          *val = *totalGrid.getValues ()[coord_total];
+
+#if defined (GRID_3D)
+        }
+#endif /* GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+      }
+#endif /* GRID_2D || GRID_3D */
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    }
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+  }
+}
 
 #endif /* PARALLEL_GRID */
