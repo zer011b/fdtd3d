@@ -117,6 +117,12 @@ public:
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
     return GridCoordinate2DTemplate (- x, - getY ());
   }
+
+  void print () const
+  {
+    TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
+    printf ("Coord (%lu,%lu)\n", x, getY ());
+  }
 };
 
 typedef GridCoordinate2DTemplate<grid_iter> GridCoordinate2D;

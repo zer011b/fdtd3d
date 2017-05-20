@@ -49,7 +49,6 @@ protected:
 
 private:
 
-  VectorFieldPointValues& getValues ();
   void shiftInTime ();
 
 protected:
@@ -58,6 +57,8 @@ protected:
   grid_iter calculateIndexFromPosition (const TCoord &) const;
 
 public:
+
+  VectorFieldPointValues& getValues ();
 
   Grid (const TCoord& s, time_step step, const char * = "unnamed");
   Grid (time_step step, const char * = "unnamed");
@@ -263,7 +264,11 @@ template <class TCoord>
 FieldPointValue *
 Grid<TCoord>::getFieldPointValue (const TCoord &position) /**< coordinate in grid */
 {
-  ASSERT (isLegitIndex (position));
+  if (!isLegitIndex (position))
+  {
+    position.print ();
+    ASSERT (false);
+  }
 
   grid_iter coord = calculateIndexFromPosition (position);
 

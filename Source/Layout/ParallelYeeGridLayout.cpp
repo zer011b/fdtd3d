@@ -126,6 +126,16 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
                             size.getX ());
   core2 = size.getY ();
   c2 = core2;
+
+  if (parallelGridCore.getProcessId () == 0)
+  {
+    core1 = size.getX () - 4 * (parallelGridCore.getTotalProcCount () - 1);
+  }
+  else
+  {
+    core1 = 4;
+  }
+
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y

@@ -5,6 +5,8 @@
 #include "Kernels.h"
 #include "SchemeTMz.h"
 
+#include <unistd.h>
+
 #if defined (PARALLEL_GRID)
 #include <mpi.h>
 #endif
@@ -1276,18 +1278,23 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
 void
 SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
 {
+  time_step diffStepT = 100;
+  time_step diffT = diffStepT;
+
 #ifdef PARALLEL_GRID
   int processId = ParallelGrid::getParallelCore ()->getProcessId ();
 #else /* PARALLEL_GRID */
   int processId = 0;
 #endif /* !PARALLEL_GRID */
 
-  GridCoordinate2D EzSize = Ez.getSize ();
-
   time_step stepLimit = startStep + numberTimeSteps;
 
   for (int t = startStep; t < stepLimit; ++t)
   {
+#ifdef PARALLEL_GRID
+    Ez.getParallelCore ()->StartCalcClock ();
+#endif
+
     GridCoordinate3D EzStart = Ez.getComputationStart (yeeLayout->getEzStartDiff ());
     GridCoordinate3D EzEnd = Ez.getComputationEnd (yeeLayout->getEzEndDiff ());
 
@@ -1310,7 +1317,9 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
       if (processId == 0)
 #endif
       {
-        GridCoordinate2D pos (70, EzSize.getY () / 2);
+        GridCoordinate2D EzSize = Ez.getSize ();
+
+        GridCoordinate2D pos (EzSize.getX () / 2, EzSize.getY () / 2);
         FieldPointValue* tmp = Ez.getFieldPointValue (pos);
 
 #ifdef COMPLEX_FIELD_VALUES
@@ -1377,6 +1386,16 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
     performHxSteps (t, HxStart, HxEnd);
     performHySteps (t, HyStart, HyEnd);
 
+    if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
+    {
+      // sleep (1);
+    }
+
+#ifdef PARALLEL_GRID
+    Ez.getParallelCore ()->StopCalcClock ();
+#endif
+
+
     Hx.nextTimeStep ();
     Hy.nextTimeStep ();
 
@@ -1391,6 +1410,10 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
       B1x.nextTimeStep ();
       B1y.nextTimeStep ();
     }
+
+#ifdef PARALLEL_GRID
+    Ez.getParallelCore ()->StartCalcClock ();
+#endif
 
     if (t % 100 == 0)
     {
@@ -1408,6 +1431,57 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
         dumperHy.init (t, CURRENT, processId, "2D-TMz-in-time-Hy");
         dumperHy.dumpGrid (Hy, GridCoordinate2D (0), Hy.getSize ());
       }
+    }
+
+#ifdef PARALLEL_GRID
+    Ez.getParallelCore ()->StopCalcClock ();
+#endif
+
+    if (t % diffT == 0)
+    {
+      printf ("%u %u ===============================\n", t, diffT);
+      Ez.getParallelCore ()->ShareClocks ();
+
+      Ez.Rebalance (diffT);
+      Hx.Rebalance (diffT);
+      Hy.Rebalance (diffT);
+      Dz.Rebalance (diffT);
+      Bx.Rebalance (diffT);
+      By.Rebalance (diffT);
+      D1z.Rebalance (diffT);
+      B1x.Rebalance (diffT);
+      B1y.Rebalance (diffT);
+
+      if (calculateAmplitude)
+      {
+        EzAmplitude.Rebalance (diffT);
+        HxAmplitude.Rebalance (diffT);
+        HyAmplitude.Rebalance (diffT);
+      }
+      Eps.Rebalance (diffT);
+      Mu.Rebalance (diffT);
+      OmegaPE.Rebalance (diffT);
+      GammaE.Rebalance (diffT);
+      OmegaPM.Rebalance (diffT);
+      GammaM.Rebalance (diffT);
+      SigmaX.Rebalance (diffT);
+      SigmaY.Rebalance (diffT);
+      uint32_t hasChanged = SigmaZ.Rebalance (diffT);
+
+      if (hasChanged)
+      {
+          printf ("Changed %d!\n", ParallelGrid::getParallelCore ()->getProcessId ());
+        ParallelGrid::getParallelCore ()->calcClock.tv_sec = 0;
+        ParallelGrid::getParallelCore ()->calcClock.tv_nsec = 0;
+
+        ParallelGrid::getParallelCore ()->shareClock.tv_sec = 0;
+        ParallelGrid::getParallelCore ()->shareClock.tv_nsec = 0;
+
+        hasChanged = false;
+      }
+
+      //diffT += 1;
+      //diffT *= 2;
     }
   }
 
