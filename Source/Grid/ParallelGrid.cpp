@@ -134,6 +134,13 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
 
 void ParallelGrid::gatherStartPosition ()
 {
+#if PRINT_MESSAGE
+  printf ("Gather start position for '%s' for proc: %d (of %d).\n",
+          gridName.data (),
+          parallelGridCore->getProcessId (),
+          parallelGridCore->getTotalProcCount ());
+#endif /* PRINT_MESSAGE */
+
   for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
   {
     /*
@@ -401,8 +408,7 @@ void ParallelGrid::gatherStartPosition ()
     {
       posStart = ParallelGridCoordinate (0);
     }
-
-    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+    else if (process == ParallelGrid::getParallelCore ()->getProcessId ())
     {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
   defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -454,6 +460,30 @@ void ParallelGrid::gatherStartPosition ()
 #endif
 #ifdef GRID_3D
       bbSz = beforeSize.getZ () + currentSize.getZ ();
+#endif
+    }
+
+    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+    {
+#ifdef PRINT_MESSAGE
+#ifdef GRID_1D
+      printf ("Start pos (%u) for grid '%s' for proc %d (of %d)\n",
+              bSx,
+#endif
+#ifdef GRID_2D
+      printf ("Start pos (%u,%u) for grid '%s' for proc %d (of %d)\n",
+              bSx,
+              bSy,
+#endif
+#ifdef GRID_3D
+      printf ("Start pos (%u,%u,%u) for grid '%s' for proc %d (of %d)\n",
+              bSx,
+              bSy,
+              bSz,
+#endif
+              gridName.data (),
+              parallelGridCore->getProcessId (),
+              parallelGridCore->getTotalProcCount ());
 #endif
     }
 
@@ -3143,7 +3173,7 @@ void ParallelGrid::RebalanceWithSize (ParallelGridCoordinate newSize)
           parallelGridCore->getProcessId (),
           parallelGridCore->getTotalProcCount (),
           oldSize.calculateTotalCoord (),
-          gridValues.size ());
+          currentSize.calculateTotalCoord ());
 #endif /* PRINT_MESSAGE */
 
   gatherStartPosition ();
@@ -3220,6 +3250,15 @@ void ParallelGrid::RebalanceWithSize (ParallelGridCoordinate newSize)
     }
 #endif /* GRID_1D || GRID_2D || GRID_3D */
   }
+
+#if PRINT_MESSAGE
+  printf ("Rebalance grid '%s' for proc: %d (of %d) from raw size: %lu, to raw size %lu. Done\n",
+          gridName.data (),
+          parallelGridCore->getProcessId (),
+          parallelGridCore->getTotalProcCount (),
+          oldSize.calculateTotalCoord (),
+          currentSize.calculateTotalCoord ());
+#endif /* PRINT_MESSAGE */
 }
 
 #endif /* PARALLEL_GRID */

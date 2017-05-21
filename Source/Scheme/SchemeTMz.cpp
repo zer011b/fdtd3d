@@ -1308,58 +1308,58 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
 
     performEzSteps (t, EzStart, EzEnd);
 
-    if (!useTFSF)
-    {
-#if defined (PARALLEL_GRID)
-      if (processId == 0)
-#endif
-      {
-        GridCoordinate2D pos (70, EzSize.getY () / 2);
-        FieldPointValue* tmp = Ez.getFieldPointValue (pos);
-
-#ifdef COMPLEX_FIELD_VALUES
-        tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
-                                      cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency)));
-#else /* COMPLEX_FIELD_VALUES */
-        tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        // for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
-        // {
-        //   for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
-        //   {
-        //     GridCoordinate2D pos (i, j);
-        //
-        //     GridCoordinate2D posAbs = Ez.getTotalPosition (pos);
-        //
-        //     GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout->getEzCoordFP (posAbs));
-        //
-        //     if (realCoord.getX () == EzSize.getX () / 2 - 20 + 0.5
-        //         || realCoord.getX () == EzSize.getX () / 2 + 20 + 0.5
-        //         || realCoord.getY () == EzSize.getY () / 2 - 20 + 0.5
-        //         || realCoord.getY () == EzSize.getY () / 2 + 20 + 0.5)
-        //     {
-        //       FieldPointValue* tmp = Ez.getFieldPointValue (pos);
-        //
-        //       FieldValue diff_x = (i - ((FieldValue) EzSize.getX ()) / 2);
-        //       FieldValue diff_y = (j - ((FieldValue) EzSize.getY ()) / 2);
-        //
-        //       FieldValue sqr = diff_x * diff_x + diff_y * diff_y;
-        //
-        //     // if (sqr >= 100 && sqr < 400)
-        //     // {
-        //       FieldValue inTime = gridTimeStep * t * 2 * PhysicsConst::Pi * freq;
-        //       FieldValue inSpace = 2 * PhysicsConst::Pi * sqrt (sqr) / stepWaveLength;
-        //
-        //       if (gridTimeStep * t * PhysicsConst::SpeedOfLight - gridStep * sqrt (sqr) >= 0)
-        //       {
-        //         tmp->setCurValue (sin (inTime - inSpace));
-        //       }
-        //     }
-        //   }
-        // }
-      }
-    }
+//     if (!useTFSF)
+//     {
+// #if defined (PARALLEL_GRID)
+//       if (processId == 0)
+// #endif
+//       {
+//         GridCoordinate2D pos (70, EzSize.getY () / 2);
+//         FieldPointValue* tmp = Ez.getFieldPointValue (pos);
+//
+// #ifdef COMPLEX_FIELD_VALUES
+//         tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
+//                                       cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency)));
+// #else /* COMPLEX_FIELD_VALUES */
+//         tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
+// #endif /* !COMPLEX_FIELD_VALUES */
+//
+//         // for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
+//         // {
+//         //   for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
+//         //   {
+//         //     GridCoordinate2D pos (i, j);
+//         //
+//         //     GridCoordinate2D posAbs = Ez.getTotalPosition (pos);
+//         //
+//         //     GridCoordinateFP2D realCoord = shrinkCoord (yeeLayout->getEzCoordFP (posAbs));
+//         //
+//         //     if (realCoord.getX () == EzSize.getX () / 2 - 20 + 0.5
+//         //         || realCoord.getX () == EzSize.getX () / 2 + 20 + 0.5
+//         //         || realCoord.getY () == EzSize.getY () / 2 - 20 + 0.5
+//         //         || realCoord.getY () == EzSize.getY () / 2 + 20 + 0.5)
+//         //     {
+//         //       FieldPointValue* tmp = Ez.getFieldPointValue (pos);
+//         //
+//         //       FieldValue diff_x = (i - ((FieldValue) EzSize.getX ()) / 2);
+//         //       FieldValue diff_y = (j - ((FieldValue) EzSize.getY ()) / 2);
+//         //
+//         //       FieldValue sqr = diff_x * diff_x + diff_y * diff_y;
+//         //
+//         //     // if (sqr >= 100 && sqr < 400)
+//         //     // {
+//         //       FieldValue inTime = gridTimeStep * t * 2 * PhysicsConst::Pi * freq;
+//         //       FieldValue inSpace = 2 * PhysicsConst::Pi * sqrt (sqr) / stepWaveLength;
+//         //
+//         //       if (gridTimeStep * t * PhysicsConst::SpeedOfLight - gridStep * sqrt (sqr) >= 0)
+//         //       {
+//         //         tmp->setCurValue (sin (inTime - inSpace));
+//         //       }
+//         //     }
+//         //   }
+//         // }
+//       }
+//     }
 
     Ez.nextTimeStep ();
 
@@ -1427,9 +1427,13 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
     D1z.Rebalance ();
     B1x.Rebalance ();
     B1y.Rebalance ();
-    EzAmplitude.Rebalance ();
-    HxAmplitude.Rebalance ();
-    HyAmplitude.Rebalance ();
+
+    if (calculateAmplitude)
+    {
+      EzAmplitude.Rebalance ();
+      HxAmplitude.Rebalance ();
+      HyAmplitude.Rebalance ();
+    }
     Eps.Rebalance ();
     Mu.Rebalance ();
     OmegaPE.Rebalance ();

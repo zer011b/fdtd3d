@@ -178,8 +178,6 @@ int main (int argc, char** argv)
 //           parallelGridCore.getNodeGridZ ());
 // #endif
 
-  exit (1);
-
   is_parallel_grid = true;
 
   ParallelYeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, incidentWaveAngle1, incidentWaveAngle2, incidentWaveAngle3);
