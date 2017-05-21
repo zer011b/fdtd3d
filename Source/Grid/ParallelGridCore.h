@@ -5,6 +5,8 @@
 
 #ifdef PARALLEL_GRID
 
+#include <mpi.h>
+
 /**
  * Base grid of parallel grid and parallel grid coordinate
  */
@@ -355,7 +357,11 @@ public:
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  int getNodeGridX () const;
+  int getNodeGridX () const
+  {
+    return getNodeGridX (processId);
+  }
+  int getNodeGridX (int) const;
 
   /**
    * Getter for flag whether computational node has left neighbour
@@ -383,7 +389,11 @@ public:
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  int getNodeGridY () const;
+  int getNodeGridY () const
+  {
+    return getNodeGridY (processId);
+  }
+  int getNodeGridY (int) const;
 
   /**
    * Getter for flag whether computational node has down neighbour
@@ -411,7 +421,11 @@ public:
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  int getNodeGridZ () const;
+  int getNodeGridZ () const
+  {
+    return getNodeGridZ (processId);
+  }
+  int getNodeGridZ (int) const;
 
   /**
    * Getter for flag whether computational node has back neighbour

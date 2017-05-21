@@ -704,18 +704,18 @@ ParallelGridCore::getShare (BufferPosition direction, /**< direction of share op
  * @return number of nodes in the grid by Ox axis
  */
 int
-ParallelGridCore::getNodeGridX () const
+ParallelGridCore::getNodeGridX (int process) const
 {
   int pidX;
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
 
-  pidX = processId;
+  pidX = process;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
       defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  pidX = processId % nodeGridSizeX;
+  pidX = process % nodeGridSizeX;
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -734,25 +734,25 @@ ParallelGridCore::getNodeGridX () const
  * @return number of nodes in the grid by Oy axis
  */
 int
-ParallelGridCore::getNodeGridY () const
+ParallelGridCore::getNodeGridY (int process) const
 {
   int pidY;
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
 
-  pidY = processId;
+  pidY = process;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
 
-  pidY = processId / nodeGridSizeX;
+  pidY = process / nodeGridSizeX;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
 
-  pidY = processId % nodeGridSizeY;
+  pidY = process % nodeGridSizeY;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  int pidXY = processId % nodeGridSizeXY;
+  int pidXY = process % nodeGridSizeXY;
   pidY = pidXY / nodeGridSizeX;
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -771,25 +771,25 @@ ParallelGridCore::getNodeGridY () const
  * @return number of nodes in the grid by Oz axis
  */
 int
-ParallelGridCore::getNodeGridZ () const
+ParallelGridCore::getNodeGridZ (int process) const
 {
   int pidZ;
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
 
-  pidZ = processId;
+  pidZ = process;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
 
-  pidZ = processId / nodeGridSizeY;
+  pidZ = process / nodeGridSizeY;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
-  pidZ = processId / nodeGridSizeX;
+  pidZ = process / nodeGridSizeX;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  pidZ = processId / nodeGridSizeXY;
+  pidZ = process / nodeGridSizeXY;
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
@@ -890,27 +890,42 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
 
 void ParallelGridCore::ShareClocks ()
 {
-//   for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
-//   {
-//     ParallelGridCoordinate chunkStart = getChunkStartPosition ();
-//     ParallelGridCoordinate chunkEnd = chunkStart + getCurrentSize ();
-//
-//     /*
-//      * Send start coord, end coord
-//      */
-// #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-//     grid_coord startX;
-//     grid_coord endX;
-//
-//     if (process == ParallelGrid::getParallelCore ()->getProcessId ())
-//     {
-//       startX = chunkStart.getX ();
-//       endX = chunkEnd.getX ();
-//     }
-//
-//     MPI_Bcast (&startX, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
-//     MPI_Bcast (&endX, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
-// #endif /* GRID_1D || GRID_2D || GRID_3D */
+  for (int process = 0; process < getTotalProcCount (); ++process)
+  {
+    uint64_t calcClockSec;
+    uint64_t calcClockNSec;
+
+    uint64_t shareClockSec;
+    uint64_t shareClockNSec;
+
+    if (process == getProcessId ())
+    {
+      calcClockSec = (uint64_t) calcClock.tv_sec;
+      calcClockNSec = (uint64_t) calcClock.tv_nsec;
+
+      shareClockSec = (uint64_t) shareClock.tv_sec;
+      shareClockNSec = (uint64_t) shareClock.tv_nsec;
+    }
+
+    MPI_Bcast (&calcClockSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
+    MPI_Bcast (&calcClockNSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
+    MPI_Bcast (&shareClockSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
+    MPI_Bcast (&shareClockNSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
+
+    timespec calc;
+    timespec share;
+
+    calc.tv_sec = calcClockSec;
+    calc.tv_nsec = calcClockNSec;
+
+    share.tv_sec = shareClockSec;
+    share.tv_nsec = shareClockNSec;
+
+    calcClockAll[process] = calc;
+    shareClockAll[process] = share;
+
+    MPI_Barrier (MPI_COMM_WORLD);
+  }
 }
 
 #endif /* PARALLEL_GRID */
