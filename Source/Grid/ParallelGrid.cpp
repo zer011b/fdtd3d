@@ -3122,9 +3122,7 @@ ParallelGrid::gatherFullGrid () const
 
 void ParallelGrid::Rebalance ()
 {
-
-
-
+  RebalanceWithSize (currentSize);
 }
 
 void ParallelGrid::RebalanceWithSize (ParallelGridCoordinate newSize)

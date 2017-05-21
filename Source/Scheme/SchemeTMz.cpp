@@ -1417,6 +1417,28 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
 #ifdef PARALLEL_GRID
     Ez.getParallelCore ()->StopCalcClock ();
 #endif
+
+    Ez.Rebalance ();
+    Hx.Rebalance ();
+    Hy.Rebalance ();
+    Dz.Rebalance ();
+    Bx.Rebalance ();
+    By.Rebalance ();
+    D1z.Rebalance ();
+    B1x.Rebalance ();
+    B1y.Rebalance ();
+    EzAmplitude.Rebalance ();
+    HxAmplitude.Rebalance ();
+    HyAmplitude.Rebalance ();
+    Eps.Rebalance ();
+    Mu.Rebalance ();
+    OmegaPE.Rebalance ();
+    GammaE.Rebalance ();
+    OmegaPM.Rebalance ();
+    GammaM.Rebalance ();
+    SigmaX.Rebalance ();
+    SigmaY.Rebalance ();
+    SigmaZ.Rebalance ();
   }
 
   if (dumpRes)
