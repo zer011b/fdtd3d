@@ -1418,6 +1418,8 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
     Ez.getParallelCore ()->StopCalcClock ();
 #endif
 
+    Ez.getParallelCore ()->ShareClocks ();
+
     Ez.Rebalance ();
     Hx.Rebalance ();
     Hy.Rebalance ();

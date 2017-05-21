@@ -3152,7 +3152,75 @@ ParallelGrid::gatherFullGrid () const
 
 void ParallelGrid::Rebalance ()
 {
-  RebalanceWithSize (currentSize);
+  ParallelGridCoordinate newSize = currentSize;
+
+  bool reduceX = false;
+  // bool reduceY = false;
+  // bool reduceZ = false;
+
+  bool increaseX = false;
+  // bool increaseY = false;
+  // bool increaseZ = false;
+
+  grid_coord diff_step = 10;
+
+  timespec calcClock = ParallelGrid::getParallelCore ()->calcClock;
+
+  for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
+  {
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+  defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
+    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+    {
+      if (ParallelGrid::getParallelCore ()->getNodeGridX () != ParallelGrid::getParallelCore ()->getNodeGridSizeX () - 1)
+      {
+        timespec right = ParallelGrid::getParallelCore ()->calcClockAll[ParallelGrid::getParallelCore ()->getDirections ()[RIGHT]];
+        // timespec diff;
+        // ParallelGrid::getParallelCore ()->timespec_diff (&calcClock, &right, &diff);
+
+        if (calcClock.tv_sec > right.tv_sec
+            || calcClock.tv_sec == right.tv_sec && calcClock.tv_nsec > right.tv_nsec + 1)
+        {
+          //reduceX = true;
+#ifdef GRID_1D
+          newSize = newSize - GridCoordinate1D (diff_step);
+#endif
+#ifdef GRID_2D
+          newSize = newSize - GridCoordinate2D (diff_step, 0);
+#endif
+#ifdef GRID_3D
+          newSize = newSize - GridCoordinate3D (diff_step, 0, 0);
+#endif
+        }
+      }
+      else if (ParallelGrid::getParallelCore ()->getNodeGridX (process) + 1 == ParallelGrid::getParallelCore ()->getNodeGridX ())
+      {
+        timespec left = ParallelGrid::getParallelCore ()->calcClockAll[ParallelGrid::getParallelCore ()->getDirections ()[LEFT]];
+        // timespec diff;
+        // ParallelGrid::getParallelCore ()->timespec_diff (&calcClock, &left, &diff);
+
+        if (calcClock.tv_sec > left.tv_sec
+            || calcClock.tv_sec == left.tv_sec && calcClock.tv_nsec > left.tv_nsec + 1)
+        {
+#ifdef GRID_1D
+          newSize = newSize + GridCoordinate1D (diff_step);
+#endif
+#ifdef GRID_2D
+          newSize = newSize + GridCoordinate2D (diff_step, 0);
+#endif
+#ifdef GRID_3D
+          newSize = newSize + GridCoordinate3D (diff_step, 0, 0);
+#endif
+        }
+      }
+    }
+#endif
+
+    MPI_Barrier (MPI_COMM_WORLD);
+  }
+
+  RebalanceWithSize (newSize);
 }
 
 void ParallelGrid::RebalanceWithSize (ParallelGridCoordinate newSize)
