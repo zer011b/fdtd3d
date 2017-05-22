@@ -1381,6 +1381,11 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
     performHxSteps (t, HxStart, HxEnd);
     performHySteps (t, HyStart, HyEnd);
 
+#ifdef PARALLEL_GRID
+    Ez.getParallelCore ()->StopCalcClock ();
+#endif
+
+
     Hx.nextTimeStep ();
     Hy.nextTimeStep ();
 
@@ -1395,6 +1400,10 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
       B1x.nextTimeStep ();
       B1y.nextTimeStep ();
     }
+
+#ifdef PARALLEL_GRID
+    Ez.getParallelCore ()->StartCalcClock ();
+#endif
 
     if (t % 100 == 0)
     {
@@ -1418,33 +1427,36 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
     Ez.getParallelCore ()->StopCalcClock ();
 #endif
 
-    Ez.getParallelCore ()->ShareClocks ();
-
-    Ez.Rebalance ();
-    Hx.Rebalance ();
-    Hy.Rebalance ();
-    Dz.Rebalance ();
-    Bx.Rebalance ();
-    By.Rebalance ();
-    D1z.Rebalance ();
-    B1x.Rebalance ();
-    B1y.Rebalance ();
-
-    if (calculateAmplitude)
+    if (t % 10 == 0)
     {
-      EzAmplitude.Rebalance ();
-      HxAmplitude.Rebalance ();
-      HyAmplitude.Rebalance ();
+      Ez.getParallelCore ()->ShareClocks ();
+
+      Ez.Rebalance ();
+      Hx.Rebalance ();
+      Hy.Rebalance ();
+      Dz.Rebalance ();
+      Bx.Rebalance ();
+      By.Rebalance ();
+      D1z.Rebalance ();
+      B1x.Rebalance ();
+      B1y.Rebalance ();
+
+      if (calculateAmplitude)
+      {
+        EzAmplitude.Rebalance ();
+        HxAmplitude.Rebalance ();
+        HyAmplitude.Rebalance ();
+      }
+      Eps.Rebalance ();
+      Mu.Rebalance ();
+      OmegaPE.Rebalance ();
+      GammaE.Rebalance ();
+      OmegaPM.Rebalance ();
+      GammaM.Rebalance ();
+      SigmaX.Rebalance ();
+      SigmaY.Rebalance ();
+      SigmaZ.Rebalance ();
     }
-    Eps.Rebalance ();
-    Mu.Rebalance ();
-    OmegaPE.Rebalance ();
-    GammaE.Rebalance ();
-    OmegaPM.Rebalance ();
-    GammaM.Rebalance ();
-    SigmaX.Rebalance ();
-    SigmaY.Rebalance ();
-    SigmaZ.Rebalance ();
   }
 
   if (dumpRes)
