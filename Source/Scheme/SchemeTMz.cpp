@@ -1455,7 +1455,19 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
       GammaM.Rebalance ();
       SigmaX.Rebalance ();
       SigmaY.Rebalance ();
-      SigmaZ.Rebalance ();
+      uint32_t hasChanged = SigmaZ.Rebalance ();
+
+      if (hasChanged)
+      {
+          printf ("Changed %d!\n", ParallelGrid::getParallelCore ()->getProcessId ());
+        ParallelGrid::getParallelCore ()->calcClock.tv_sec = 0;
+        ParallelGrid::getParallelCore ()->calcClock.tv_nsec = 0;
+
+        ParallelGrid::getParallelCore ()->shareClock.tv_sec = 0;
+        ParallelGrid::getParallelCore ()->shareClock.tv_nsec = 0;
+
+        hasChanged = false;
+      }
     }
   }
 

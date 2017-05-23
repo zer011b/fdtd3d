@@ -3150,7 +3150,7 @@ ParallelGrid::gatherFullGrid () const
   return grid;
 } /* ParallelGrid::gatherFullGrid */
 
-void ParallelGrid::Rebalance ()
+uint32_t ParallelGrid::Rebalance ()
 {
   ParallelGridCoordinate newSize = currentSize;
 
@@ -3163,9 +3163,11 @@ void ParallelGrid::Rebalance ()
   // bool increaseZ = false;
 
   grid_coord diff_step = 2;
-  unsigned long long time_diff_step = 1000000000;
+  unsigned long long time_diff_step = 100000000;
 
   timespec calcClock = ParallelGrid::getParallelCore ()->calcClock;
+
+  uint32_t hasChanged = 0;
 
   for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
   {
@@ -3197,6 +3199,8 @@ void ParallelGrid::Rebalance ()
 #ifdef GRID_3D
           newSize = newSize - GridCoordinate3D (diff_step, 0, 0);
 #endif
+
+          hasChanged = 1;
         }
       }
     }
@@ -3219,6 +3223,8 @@ void ParallelGrid::Rebalance ()
 #ifdef GRID_3D
         newSize = newSize + GridCoordinate3D (diff_step, 0, 0);
 #endif
+
+        hasChanged = 1;
       }
     }
 #endif
@@ -3256,6 +3262,8 @@ void ParallelGrid::Rebalance ()
 #ifdef GRID_3D
           newSize = newSize - GridCoordinate3D (diff_step, 0, 0);
 #endif
+
+          hasChanged = 1;
         }
       }
     }
@@ -3278,20 +3286,37 @@ void ParallelGrid::Rebalance ()
 #ifdef GRID_3D
         newSize = newSize + GridCoordinate3D (diff_step, 0, 0);
 #endif
+
+        hasChanged = 1;
       }
     }
 #endif
 
     MPI_Barrier (MPI_COMM_WORLD);
   }
-  // 
-  // ParallelGrid::getParallelCore ()->calcClock.tv_sec = 0;
-  // ParallelGrid::getParallelCore ()->calcClock.tv_nsec = 0;
-  //
-  // ParallelGrid::getParallelCore ()->shareClock.tv_sec = 0;
-  // ParallelGrid::getParallelCore ()->shareClock.tv_nsec = 0;
+
+  for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
+  {
+    uint32_t hasOtherChanged;
+
+    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+    {
+      hasOtherChanged = hasChanged;
+    }
+
+    MPI_Bcast (&hasOtherChanged, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
+
+    if (process != ParallelGrid::getParallelCore ()->getProcessId ())
+    {
+      hasChanged |= hasOtherChanged;
+    }
+
+    MPI_Barrier (MPI_COMM_WORLD);
+  }
 
   RebalanceWithSize (newSize);
+
+  return hasChanged;
 }
 
 void ParallelGrid::RebalanceWithSize (ParallelGridCoordinate newSize)
