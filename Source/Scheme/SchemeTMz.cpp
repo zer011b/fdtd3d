@@ -1427,35 +1427,36 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
     Ez.getParallelCore ()->StopCalcClock ();
 #endif
 
-    if (t % 10 == 0)
+    const time_step diffT = 10;
+    if (t % diffT == 0)
     {
       Ez.getParallelCore ()->ShareClocks ();
 
-      Ez.Rebalance ();
-      Hx.Rebalance ();
-      Hy.Rebalance ();
-      Dz.Rebalance ();
-      Bx.Rebalance ();
-      By.Rebalance ();
-      D1z.Rebalance ();
-      B1x.Rebalance ();
-      B1y.Rebalance ();
+      Ez.Rebalance (diffT);
+      Hx.Rebalance (diffT);
+      Hy.Rebalance (diffT);
+      Dz.Rebalance (diffT);
+      Bx.Rebalance (diffT);
+      By.Rebalance (diffT);
+      D1z.Rebalance (diffT);
+      B1x.Rebalance (diffT);
+      B1y.Rebalance (diffT);
 
       if (calculateAmplitude)
       {
-        EzAmplitude.Rebalance ();
-        HxAmplitude.Rebalance ();
-        HyAmplitude.Rebalance ();
+        EzAmplitude.Rebalance (diffT);
+        HxAmplitude.Rebalance (diffT);
+        HyAmplitude.Rebalance (diffT);
       }
-      Eps.Rebalance ();
-      Mu.Rebalance ();
-      OmegaPE.Rebalance ();
-      GammaE.Rebalance ();
-      OmegaPM.Rebalance ();
-      GammaM.Rebalance ();
-      SigmaX.Rebalance ();
-      SigmaY.Rebalance ();
-      uint32_t hasChanged = SigmaZ.Rebalance ();
+      Eps.Rebalance (diffT);
+      Mu.Rebalance (diffT);
+      OmegaPE.Rebalance (diffT);
+      GammaE.Rebalance (diffT);
+      OmegaPM.Rebalance (diffT);
+      GammaM.Rebalance (diffT);
+      SigmaX.Rebalance (diffT);
+      SigmaY.Rebalance (diffT);
+      uint32_t hasChanged = SigmaZ.Rebalance (diffT);
 
       if (hasChanged)
       {

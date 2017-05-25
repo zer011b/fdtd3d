@@ -3150,174 +3150,230 @@ ParallelGrid::gatherFullGrid () const
   return grid;
 } /* ParallelGrid::gatherFullGrid */
 
-uint32_t ParallelGrid::Rebalance ()
+uint32_t ParallelGrid::Rebalance (time_step dt)
 {
   ParallelGridCoordinate newSize = currentSize;
 
-  bool reduceX = false;
+  // bool reduceX = false;
   // bool reduceY = false;
   // bool reduceZ = false;
 
-  bool increaseX = false;
+  // bool increaseX = false;
   // bool increaseY = false;
   // bool increaseZ = false;
 
-  grid_coord diff_step = 2;
-  unsigned long long time_diff_step = 100000000;
+  // grid_coord diff_step = 1;
+  // unsigned long long time_diff_step = 10000000;
 
   timespec calcClock = ParallelGrid::getParallelCore ()->calcClock;
+  //
+  // grid_coord minX = 4;
+  // grid_coord maxX = totalSize.getX () - minX * (ParallelGrid::getParallelCore ()->getTotalProcCount () - 1);
+  //
+  //
+  // FPValue time_length =
 
-  uint32_t hasChanged = 0;
-
-  for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
-  {
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-  defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-
-    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
-    {
-      if (ParallelGrid::getParallelCore ()->getNodeGridX () != ParallelGrid::getParallelCore ()->getNodeGridSizeX () - 1)
-      {
-        timespec right = ParallelGrid::getParallelCore ()->calcClockAll[ParallelGrid::getParallelCore ()->getDirections ()[RIGHT]];
-        // timespec diff;
-        // ParallelGrid::getParallelCore ()->timespec_diff (&calcClock, &right, &diff);
-
-        if (process == 0)
-          printf ("%lu.%lu    %lu.%lu\n", calcClock.tv_sec, calcClock.tv_nsec, right.tv_sec, right.tv_nsec);
-
-        if ((calcClock.tv_sec > right.tv_sec
-            || calcClock.tv_sec == right.tv_sec && calcClock.tv_nsec > right.tv_nsec + time_diff_step)
-            && newSize.getX () > diff_step && newSize.getX () > 2)
-        {
-          //reduceX = true;
-#ifdef GRID_1D
-          newSize = newSize - GridCoordinate1D (diff_step);
-#endif
-#ifdef GRID_2D
-          newSize = newSize - GridCoordinate2D (diff_step, 0);
-#endif
-#ifdef GRID_3D
-          newSize = newSize - GridCoordinate3D (diff_step, 0, 0);
-#endif
-
-          hasChanged = 1;
-        }
-      }
-    }
-    else if (ParallelGrid::getParallelCore ()->getNodeGridX (process) + 1 == ParallelGrid::getParallelCore ()->getNodeGridX ())
-    {
-      timespec left = ParallelGrid::getParallelCore ()->calcClockAll[ParallelGrid::getParallelCore ()->getDirections ()[LEFT]];
-      // timespec diff;
-      // ParallelGrid::getParallelCore ()->timespec_diff (&calcClock, &left, &diff);
-
-      if ((calcClock.tv_sec < left.tv_sec
-          || calcClock.tv_sec == left.tv_sec && calcClock.tv_nsec + time_diff_step < left.tv_nsec)
-          && (newSize.getX () < totalSize.getX () - diff_step - 1) && newSize.getX () < totalSize.getX () - 2 - 1)
-      {
-#ifdef GRID_1D
-        newSize = newSize + GridCoordinate1D (diff_step);
-#endif
-#ifdef GRID_2D
-        newSize = newSize + GridCoordinate2D (diff_step, 0);
-#endif
-#ifdef GRID_3D
-        newSize = newSize + GridCoordinate3D (diff_step, 0, 0);
-#endif
-
-        hasChanged = 1;
-      }
-    }
-#endif
-
-    MPI_Barrier (MPI_COMM_WORLD);
-  }
-
-  for (int process = ParallelGrid::getParallelCore ()->getTotalProcCount () - 1; process >= 0; --process)
-  {
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-  defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-
-    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
-    {
-      if (ParallelGrid::getParallelCore ()->getNodeGridX () != 0)
-      {
-        timespec left = ParallelGrid::getParallelCore ()->calcClockAll[ParallelGrid::getParallelCore ()->getDirections ()[LEFT]];
-        // timespec diff;
-        // ParallelGrid::getParallelCore ()->timespec_diff (&calcClock, &right, &diff);
-
-        if (process == 0)
-          printf ("%lu.%lu    %lu.%lu\n", calcClock.tv_sec, calcClock.tv_nsec, left.tv_sec, left.tv_nsec);
-
-        if ((calcClock.tv_sec > left.tv_sec
-            || calcClock.tv_sec == left.tv_sec && calcClock.tv_nsec > left.tv_nsec + time_diff_step)
-            && newSize.getX () > diff_step && newSize.getX () > 2)
-        {
-          //reduceX = true;
-#ifdef GRID_1D
-          newSize = newSize - GridCoordinate1D (diff_step);
-#endif
-#ifdef GRID_2D
-          newSize = newSize - GridCoordinate2D (diff_step, 0);
-#endif
-#ifdef GRID_3D
-          newSize = newSize - GridCoordinate3D (diff_step, 0, 0);
-#endif
-
-          hasChanged = 1;
-        }
-      }
-    }
-    else if (ParallelGrid::getParallelCore ()->getNodeGridX (process) == ParallelGrid::getParallelCore ()->getNodeGridX () + 1)
-    {
-      timespec right = ParallelGrid::getParallelCore ()->calcClockAll[ParallelGrid::getParallelCore ()->getDirections ()[RIGHT]];
-      // timespec diff;
-      // ParallelGrid::getParallelCore ()->timespec_diff (&calcClock, &left, &diff);
-
-      if ((calcClock.tv_sec < right.tv_sec
-          || calcClock.tv_sec == right.tv_sec && calcClock.tv_nsec + time_diff_step < right.tv_nsec)
-          && (newSize.getX () < totalSize.getX () - diff_step - 1) && newSize.getX () < totalSize.getX () - 2 - 1)
-      {
-#ifdef GRID_1D
-        newSize = newSize + GridCoordinate1D (diff_step);
-#endif
-#ifdef GRID_2D
-        newSize = newSize + GridCoordinate2D (diff_step, 0);
-#endif
-#ifdef GRID_3D
-        newSize = newSize + GridCoordinate3D (diff_step, 0, 0);
-#endif
-
-        hasChanged = 1;
-      }
-    }
-#endif
-
-    MPI_Barrier (MPI_COMM_WORLD);
-  }
+  std::vector<FPValue> speed (ParallelGrid::getParallelCore ()->getTotalProcCount ());
+  FPValue sumSpeed = 0;
 
   for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
   {
-    uint32_t hasOtherChanged;
+    speed[process] = (dt * currentSize.calculateTotalCoord () * 1000000000) / (calcClock.tv_nsec);
+    sumSpeed += speed[process];
+  }
 
-    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+  grid_coord x = ((FPValue)totalSize.getX ()) * speed[ParallelGrid::getParallelCore ()->getProcessId ()] / (sumSpeed);
+
+  printf ("%d %d %f\n", ParallelGrid::getParallelCore ()->getProcessId (), x, speed[ParallelGrid::getParallelCore ()->getProcessId ()]);
+
+  newSize.setX (x);
+
+  if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
+  {
+    grid_coord sumX = 0;
+    for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
     {
-      hasOtherChanged = hasChanged;
+      sumX += ((FPValue)totalSize.getX ()) * speed[process] / (sumSpeed);
     }
 
-    MPI_Bcast (&hasOtherChanged, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
+    newSize.setX (x + totalSize.getX () - sumX);
 
-    if (process != ParallelGrid::getParallelCore ()->getProcessId ())
-    {
-      hasChanged |= hasOtherChanged;
-    }
-
-    MPI_Barrier (MPI_COMM_WORLD);
+    printf ("!!! %d %lu %u\n", sumX, newSize.getX (), x);
   }
 
   RebalanceWithSize (newSize);
 
-  return hasChanged;
+  return newSize != currentSize;
 }
+
+// uint32_t ParallelGrid::Rebalance ()
+// {
+//   ParallelGridCoordinate newSize = currentSize;
+//
+//   bool reduceX = false;
+//   // bool reduceY = false;
+//   // bool reduceZ = false;
+//
+//   bool increaseX = false;
+//   // bool increaseY = false;
+//   // bool increaseZ = false;
+//
+//   grid_coord diff_step = 1;
+//   unsigned long long time_diff_step = 10000000;
+//
+//   timespec calcClock = ParallelGrid::getParallelCore ()->calcClock;
+//
+//   uint32_t hasChanged = 0;
+//
+//   for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
+//   {
+// #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+//   defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+//
+//     if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+//     {
+//       if (ParallelGrid::getParallelCore ()->getNodeGridX () != ParallelGrid::getParallelCore ()->getNodeGridSizeX () - 1)
+//       {
+//         timespec right = ParallelGrid::getParallelCore ()->calcClockAll[ParallelGrid::getParallelCore ()->getDirections ()[RIGHT]];
+//         // timespec diff;
+//         // ParallelGrid::getParallelCore ()->timespec_diff (&calcClock, &right, &diff);
+//
+//         if (process == 0)
+//           printf ("%lu.%lu    %lu.%lu\n", calcClock.tv_sec, calcClock.tv_nsec, right.tv_sec, right.tv_nsec);
+//
+//         if ((calcClock.tv_sec > right.tv_sec
+//             || calcClock.tv_sec == right.tv_sec && calcClock.tv_nsec > right.tv_nsec + time_diff_step)
+//             && newSize.getX () > diff_step && newSize.getX () > 2)
+//         {
+//           //reduceX = true;
+// #ifdef GRID_1D
+//           newSize = newSize - GridCoordinate1D (diff_step);
+// #endif
+// #ifdef GRID_2D
+//           newSize = newSize - GridCoordinate2D (diff_step, 0);
+// #endif
+// #ifdef GRID_3D
+//           newSize = newSize - GridCoordinate3D (diff_step, 0, 0);
+// #endif
+//
+//           hasChanged = 1;
+//         }
+//       }
+//     }
+//     else if (ParallelGrid::getParallelCore ()->getNodeGridX (process) + 1 == ParallelGrid::getParallelCore ()->getNodeGridX ())
+//     {
+//       timespec left = ParallelGrid::getParallelCore ()->calcClockAll[ParallelGrid::getParallelCore ()->getDirections ()[LEFT]];
+//       // timespec diff;
+//       // ParallelGrid::getParallelCore ()->timespec_diff (&calcClock, &left, &diff);
+//
+//       if ((calcClock.tv_sec < left.tv_sec
+//           || calcClock.tv_sec == left.tv_sec && calcClock.tv_nsec + time_diff_step < left.tv_nsec)
+//           && (newSize.getX () < totalSize.getX () - diff_step - 1) && newSize.getX () < totalSize.getX () - 2 - 1)
+//       {
+// #ifdef GRID_1D
+//         newSize = newSize + GridCoordinate1D (diff_step);
+// #endif
+// #ifdef GRID_2D
+//         newSize = newSize + GridCoordinate2D (diff_step, 0);
+// #endif
+// #ifdef GRID_3D
+//         newSize = newSize + GridCoordinate3D (diff_step, 0, 0);
+// #endif
+//
+//         hasChanged = 1;
+//       }
+//     }
+// #endif
+//
+//     MPI_Barrier (MPI_COMM_WORLD);
+//   }
+//
+//   for (int process = ParallelGrid::getParallelCore ()->getTotalProcCount () - 1; process >= 0; --process)
+//   {
+// #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+//   defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+//
+//     if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+//     {
+//       if (ParallelGrid::getParallelCore ()->getNodeGridX () != 0)
+//       {
+//         timespec left = ParallelGrid::getParallelCore ()->calcClockAll[ParallelGrid::getParallelCore ()->getDirections ()[LEFT]];
+//         // timespec diff;
+//         // ParallelGrid::getParallelCore ()->timespec_diff (&calcClock, &right, &diff);
+//
+//         if (process == 0)
+//           printf ("%lu.%lu    %lu.%lu\n", calcClock.tv_sec, calcClock.tv_nsec, left.tv_sec, left.tv_nsec);
+//
+//         if ((calcClock.tv_sec > left.tv_sec
+//             || calcClock.tv_sec == left.tv_sec && calcClock.tv_nsec > left.tv_nsec + time_diff_step)
+//             && newSize.getX () > diff_step && newSize.getX () > 2)
+//         {
+//           //reduceX = true;
+// #ifdef GRID_1D
+//           newSize = newSize - GridCoordinate1D (diff_step);
+// #endif
+// #ifdef GRID_2D
+//           newSize = newSize - GridCoordinate2D (diff_step, 0);
+// #endif
+// #ifdef GRID_3D
+//           newSize = newSize - GridCoordinate3D (diff_step, 0, 0);
+// #endif
+//
+//           hasChanged = 1;
+//         }
+//       }
+//     }
+//     else if (ParallelGrid::getParallelCore ()->getNodeGridX (process) == ParallelGrid::getParallelCore ()->getNodeGridX () + 1)
+//     {
+//       timespec right = ParallelGrid::getParallelCore ()->calcClockAll[ParallelGrid::getParallelCore ()->getDirections ()[RIGHT]];
+//       // timespec diff;
+//       // ParallelGrid::getParallelCore ()->timespec_diff (&calcClock, &left, &diff);
+//
+//       if ((calcClock.tv_sec < right.tv_sec
+//           || calcClock.tv_sec == right.tv_sec && calcClock.tv_nsec + time_diff_step < right.tv_nsec)
+//           && (newSize.getX () < totalSize.getX () - diff_step - 1) && newSize.getX () < totalSize.getX () - 2 - 1)
+//       {
+// #ifdef GRID_1D
+//         newSize = newSize + GridCoordinate1D (diff_step);
+// #endif
+// #ifdef GRID_2D
+//         newSize = newSize + GridCoordinate2D (diff_step, 0);
+// #endif
+// #ifdef GRID_3D
+//         newSize = newSize + GridCoordinate3D (diff_step, 0, 0);
+// #endif
+//
+//         hasChanged = 1;
+//       }
+//     }
+// #endif
+//
+//     MPI_Barrier (MPI_COMM_WORLD);
+//   }
+//
+//   for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
+//   {
+//     uint32_t hasOtherChanged;
+//
+//     if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+//     {
+//       hasOtherChanged = hasChanged;
+//     }
+//
+//     MPI_Bcast (&hasOtherChanged, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
+//
+//     if (process != ParallelGrid::getParallelCore ()->getProcessId ())
+//     {
+//       hasChanged |= hasOtherChanged;
+//     }
+//
+//     MPI_Barrier (MPI_COMM_WORLD);
+//   }
+//
+//   RebalanceWithSize (newSize);
+//
+//   return hasChanged;
+// }
 
 void ParallelGrid::RebalanceWithSize (ParallelGridCoordinate newSize)
 {

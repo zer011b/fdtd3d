@@ -407,7 +407,7 @@ public:
 
   Grid<ParallelGridCoordinate> gatherFullGrid () const;
 
-  uint32_t Rebalance ();
+  uint32_t Rebalance (time_step);
   void RebalanceWithSize (ParallelGridCoordinate newSize);
 
 public:
