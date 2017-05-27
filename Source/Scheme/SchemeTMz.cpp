@@ -1287,8 +1287,6 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
   int processId = 0;
 #endif /* !PARALLEL_GRID */
 
-  GridCoordinate2D EzSize = Ez.getSize ();
-
   time_step stepLimit = startStep + numberTimeSteps;
 
   for (int t = startStep; t < stepLimit; ++t)
@@ -1319,6 +1317,8 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
       if (processId == 0)
 #endif
       {
+        GridCoordinate2D EzSize = Ez.getSize ();
+
         GridCoordinate2D pos (EzSize.getX () / 2, EzSize.getY () / 2);
         FieldPointValue* tmp = Ez.getFieldPointValue (pos);
 

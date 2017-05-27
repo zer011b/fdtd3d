@@ -264,7 +264,11 @@ template <class TCoord>
 FieldPointValue *
 Grid<TCoord>::getFieldPointValue (const TCoord &position) /**< coordinate in grid */
 {
-  ASSERT (isLegitIndex (position));
+  if (!isLegitIndex (position))
+  {
+    position.print ();
+    ASSERT (false);
+  }
 
   grid_iter coord = calculateIndexFromPosition (position);
 

@@ -89,6 +89,11 @@ public:
   {
     return GridCoordinate1DTemplate (- getX ());
   }
+
+  void print () const
+  {
+    printf ("Coord (%lu)\n", getX ());
+  }
 };
 
 typedef GridCoordinate1DTemplate<grid_iter> GridCoordinate1D;
