@@ -3153,6 +3153,7 @@ ParallelGrid::gatherFullGrid () const
 uint32_t ParallelGrid::Rebalance (time_step dt)
 {
   ParallelGridCoordinate newSize = currentSize;
+  ParallelGridCoordinate oldSize = currentSize;
 
   // bool reduceX = false;
   // bool reduceY = false;
@@ -3179,9 +3180,12 @@ uint32_t ParallelGrid::Rebalance (time_step dt)
 
   FPValue speedCur = (dt * currentSize.calculateTotalCoord ()) / ((FPValue)calcClock.tv_sec + ((FPValue)calcClock.tv_nsec) / 1000000000);
 
-  // printf ("#%u %f\n",
-  //         ParallelGrid::getParallelCore ()->getProcessId (),
-  //         speedCur);
+  printf ("#%u %f=(%u * %lu) / (%f)\n",
+          ParallelGrid::getParallelCore ()->getProcessId (),
+          speedCur,
+          dt,
+          currentSize.calculateTotalCoord (),
+          (FPValue)calcClock.tv_sec + ((FPValue)calcClock.tv_nsec) / 1000000000);
 
   std::vector<FPValue> speed (ParallelGrid::getParallelCore ()->getTotalProcCount ());
   FPValue sumSpeed = 0;
@@ -3260,7 +3264,9 @@ uint32_t ParallelGrid::Rebalance (time_step dt)
 
   RebalanceWithSize (newSize);
 
-  return newSize != currentSize;
+  //printf ("#%u -- %d %lu %lu\n", ParallelGrid::getParallelCore ()->getProcessId (), newSize.getX () != oldSize.getX (), newSize.getX (), currentSize.getX ());
+
+  return newSize != oldSize;
 }
 
 // uint32_t ParallelGrid::Rebalance ()

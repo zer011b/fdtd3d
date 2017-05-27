@@ -70,6 +70,12 @@ public:
 
     calcClock.tv_sec += diff.tv_sec;
     calcClock.tv_nsec += diff.tv_nsec;
+
+    if (calcClock.tv_nsec >= 1000000000)
+    {
+      calcClock.tv_sec += 1;
+      calcClock.tv_nsec -= 1000000000;
+    }
   }
 
   void StartShareClock ()

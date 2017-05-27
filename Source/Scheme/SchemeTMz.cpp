@@ -1278,6 +1278,9 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
 void
 SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
 {
+  time_step diffStepT = 100;
+  time_step diffT = diffStepT;
+
 #ifdef PARALLEL_GRID
   int processId = ParallelGrid::getParallelCore ()->getProcessId ();
 #else /* PARALLEL_GRID */
@@ -1385,7 +1388,7 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
 
     if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
     {
-      sleep (1);
+      // sleep (1);
     }
 
 #ifdef PARALLEL_GRID
@@ -1434,9 +1437,9 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
     Ez.getParallelCore ()->StopCalcClock ();
 #endif
 
-    const time_step diffT = 10;
     if (t % diffT == 0)
     {
+      printf ("%u %u ===============================\n", t, diffT);
       Ez.getParallelCore ()->ShareClocks ();
 
       Ez.Rebalance (diffT);
@@ -1476,6 +1479,9 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
 
         hasChanged = false;
       }
+
+      //diffT += 1;
+      //diffT *= 2;
     }
   }
 
