@@ -3166,25 +3166,73 @@ uint32_t ParallelGrid::Rebalance (time_step dt)
   // unsigned long long time_diff_step = 10000000;
 
   timespec calcClock = ParallelGrid::getParallelCore ()->calcClock;
-  //
-  // grid_coord minX = 4;
-  // grid_coord maxX = totalSize.getX () - minX * (ParallelGrid::getParallelCore ()->getTotalProcCount () - 1);
+
+  grid_coord minX = 4;
+  grid_coord maxX = totalSize.getX () - minX * (ParallelGrid::getParallelCore ()->getTotalProcCount () - 1);
   //
   //
   // FPValue time_length =
+
+  // printf ("#%u %f\n",
+  //         ParallelGrid::getParallelCore ()->getProcessId (),
+  //         calcClock.tv_sec + calcClock.tv_nsec / 1000000000);
+
+  FPValue speedCur = (dt * currentSize.calculateTotalCoord ()) / ((FPValue)calcClock.tv_sec + ((FPValue)calcClock.tv_nsec) / 1000000000);
+
+  // printf ("#%u %f\n",
+  //         ParallelGrid::getParallelCore ()->getProcessId (),
+  //         speedCur);
 
   std::vector<FPValue> speed (ParallelGrid::getParallelCore ()->getTotalProcCount ());
   FPValue sumSpeed = 0;
 
   for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
   {
-    speed[process] = (dt * currentSize.calculateTotalCoord () * 1000000000) / (calcClock.tv_nsec);
+    FPValue speedP;
+
+    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+    {
+      speedP = speedCur;
+    }
+
+    MPI_Bcast (&speedP, 1, MPI_DOUBLE, process, MPI_COMM_WORLD);
+
+    speed[process] = speedP;
     sumSpeed += speed[process];
+
+    MPI_Barrier (MPI_COMM_WORLD);
   }
 
-  grid_coord x = ((FPValue)totalSize.getX ()) * speed[ParallelGrid::getParallelCore ()->getProcessId ()] / (sumSpeed);
+  // for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
+  // {
+    //speed[process] = (dt * currentSize.calculateTotalCoord () * 1000000000) / (ParallelGrid::getParallelCore ()->calcClockAll[process].tv_nsec);
+    //sumSpeed += speed[process];
+    // printf ("#%u %d:%f\n",
+    //         ParallelGrid::getParallelCore ()->getProcessId (),
+    //         process,
+    //         speed[process]);
+  // }
 
-  printf ("%d %d %f\n", ParallelGrid::getParallelCore ()->getProcessId (), x, speed[ParallelGrid::getParallelCore ()->getProcessId ()]);
+  grid_coord x = ((FPValue)totalSize.getX ()) * speedCur / (sumSpeed);
+
+  if (x < minX)
+  {
+    x = minX;
+  }
+  else if (x > maxX)
+  {
+    x = maxX;
+  }
+
+  printf ("#%d x=%d speed=%f time=%lu.%lu totalX=%f dt=%u sumSpeed=%f\n",
+          ParallelGrid::getParallelCore ()->getProcessId (),
+          x,
+          speed[ParallelGrid::getParallelCore ()->getProcessId ()],
+          calcClock.tv_sec,
+          calcClock.tv_nsec,
+          (FPValue)totalSize.getX (),
+          dt,
+          sumSpeed);
 
   newSize.setX (x);
 
@@ -3193,7 +3241,16 @@ uint32_t ParallelGrid::Rebalance (time_step dt)
     grid_coord sumX = 0;
     for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
     {
-      sumX += ((FPValue)totalSize.getX ()) * speed[process] / (sumSpeed);
+      grid_coord x_n = ((FPValue)totalSize.getX ()) * speed[process] / (sumSpeed);
+      if (x_n < minX)
+      {
+        x_n = minX;
+      }
+      else if (x_n > maxX)
+      {
+        x_n = maxX;
+      }
+      sumX += x_n;
     }
 
     newSize.setX (x + totalSize.getX () - sumX);

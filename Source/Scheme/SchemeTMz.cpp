@@ -5,6 +5,8 @@
 #include "Kernels.h"
 #include "SchemeTMz.h"
 
+#include <unistd.h>
+
 #if defined (PARALLEL_GRID)
 #include <mpi.h>
 #endif
@@ -1380,6 +1382,11 @@ SchemeTMz::performNSteps (time_step startStep, time_step numberTimeSteps)
 
     performHxSteps (t, HxStart, HxEnd);
     performHySteps (t, HyStart, HyEnd);
+
+    if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
+    {
+      sleep (1);
+    }
 
 #ifdef PARALLEL_GRID
     Ez.getParallelCore ()->StopCalcClock ();
