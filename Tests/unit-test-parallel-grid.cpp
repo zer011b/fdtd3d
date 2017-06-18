@@ -91,9 +91,11 @@ int main (int argc, char** argv)
   ParallelGridCore parallelGridCore (rank, numProcs, overallSize);
   ParallelGrid::initializeParallelCore (&parallelGridCore);
 
+  bool isDoubleMaterialPrecision = false;
+
   ParallelGridCoordinate bufferSize (bufSize);
 
-  ParallelYeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, PhysicsConst::Pi / 2, 0, 0);
+  ParallelYeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, PhysicsConst::Pi / 2, 0, 0, isDoubleMaterialPrecision);
   yeeLayout.Initialize (parallelGridCore);
 
   ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode (), yeeLayout.getCoreSizePerNode ());

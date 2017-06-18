@@ -8,93 +8,56 @@
 
 #ifdef GRID_3D
 
+#if defined (PARALLEL_GRID)
+typedef ParallelGrid FieldGrid;
+#else
+typedef Grid<GridCoordinate3D> FieldGrid;
+#endif
+
 class Scheme3D: public Scheme
 {
   YeeGridLayout *yeeLayout;
 
-#if defined (PARALLEL_GRID)
-  ParallelGrid Ex;
-  ParallelGrid Ey;
-  ParallelGrid Ez;
-  ParallelGrid Hx;
-  ParallelGrid Hy;
-  ParallelGrid Hz;
+  FieldGrid Ex;
+  FieldGrid Ey;
+  FieldGrid Ez;
+  FieldGrid Hx;
+  FieldGrid Hy;
+  FieldGrid Hz;
 
-  ParallelGrid Dx;
-  ParallelGrid Dy;
-  ParallelGrid Dz;
-  ParallelGrid Bx;
-  ParallelGrid By;
-  ParallelGrid Bz;
+  FieldGrid Dx;
+  FieldGrid Dy;
+  FieldGrid Dz;
+  FieldGrid Bx;
+  FieldGrid By;
+  FieldGrid Bz;
 
-  ParallelGrid D1x;
-  ParallelGrid D1y;
-  ParallelGrid D1z;
-  ParallelGrid B1x;
-  ParallelGrid B1y;
-  ParallelGrid B1z;
+  FieldGrid D1x;
+  FieldGrid D1y;
+  FieldGrid D1z;
+  FieldGrid B1x;
+  FieldGrid B1y;
+  FieldGrid B1z;
 
-  ParallelGrid ExAmplitude;
-  ParallelGrid EyAmplitude;
-  ParallelGrid EzAmplitude;
-  ParallelGrid HxAmplitude;
-  ParallelGrid HyAmplitude;
-  ParallelGrid HzAmplitude;
+  FieldGrid ExAmplitude;
+  FieldGrid EyAmplitude;
+  FieldGrid EzAmplitude;
+  FieldGrid HxAmplitude;
+  FieldGrid HyAmplitude;
+  FieldGrid HzAmplitude;
 
-  ParallelGrid Eps;
-  ParallelGrid Mu;
+  FieldGrid Eps;
+  FieldGrid Mu;
 
-  ParallelGrid SigmaX;
-  ParallelGrid SigmaY;
-  ParallelGrid SigmaZ;
+  FieldGrid SigmaX;
+  FieldGrid SigmaY;
+  FieldGrid SigmaZ;
 
-  ParallelGrid OmegaPE;
-  ParallelGrid GammaE;
+  FieldGrid OmegaPE;
+  FieldGrid GammaE;
 
-  ParallelGrid OmegaPM;
-  ParallelGrid GammaM;
-#else
-  Grid<GridCoordinate3D> Ex;
-  Grid<GridCoordinate3D> Ey;
-  Grid<GridCoordinate3D> Ez;
-  Grid<GridCoordinate3D> Hx;
-  Grid<GridCoordinate3D> Hy;
-  Grid<GridCoordinate3D> Hz;
-
-  Grid<GridCoordinate3D> Dx;
-  Grid<GridCoordinate3D> Dy;
-  Grid<GridCoordinate3D> Dz;
-  Grid<GridCoordinate3D> Bx;
-  Grid<GridCoordinate3D> By;
-  Grid<GridCoordinate3D> Bz;
-
-  Grid<GridCoordinate3D> D1x;
-  Grid<GridCoordinate3D> D1y;
-  Grid<GridCoordinate3D> D1z;
-  Grid<GridCoordinate3D> B1x;
-  Grid<GridCoordinate3D> B1y;
-  Grid<GridCoordinate3D> B1z;
-
-  Grid<GridCoordinate3D> ExAmplitude;
-  Grid<GridCoordinate3D> EyAmplitude;
-  Grid<GridCoordinate3D> EzAmplitude;
-  Grid<GridCoordinate3D> HxAmplitude;
-  Grid<GridCoordinate3D> HyAmplitude;
-  Grid<GridCoordinate3D> HzAmplitude;
-
-  Grid<GridCoordinate3D> Eps;
-  Grid<GridCoordinate3D> Mu;
-
-  Grid<GridCoordinate3D> SigmaX;
-  Grid<GridCoordinate3D> SigmaY;
-  Grid<GridCoordinate3D> SigmaZ;
-
-  Grid<GridCoordinate3D> OmegaPE;
-  Grid<GridCoordinate3D> GammaE;
-
-  Grid<GridCoordinate3D> OmegaPM;
-  Grid<GridCoordinate3D> GammaM;
-#endif
+  FieldGrid OmegaPM;
+  FieldGrid GammaM;
 
   // Wave parameters
   FPValue sourceWaveLength;
@@ -375,6 +338,9 @@ public:
                Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &,
                Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &);
   FPValue Pointing_inc (FPValue angleTeta, FPValue anglePhi);
+
+  FPValue getMaterial (FieldGrid, GridCoordinate3D, GridType, GridType);
+  FPValue getMaterial (FieldGrid, GridType);
 };
 
 #endif /* GRID_3D */

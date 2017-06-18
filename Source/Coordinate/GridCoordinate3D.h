@@ -157,6 +157,21 @@ public:
     TcoordType y = GridCoordinate2DTemplate<TcoordType>::getY ();
     return GridCoordinate3DTemplate (- x, - y, - getZ ());
   }
+
+  GridCoordinate3DTemplate CUDA_DEVICE CUDA_HOST operator* (FPValue rhs) const
+  {
+    TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
+    TcoordType y = GridCoordinate2DTemplate<TcoordType>::getY ();
+    return GridCoordinate3DTemplate (x * rhs, y * rhs, getZ () * rhs);
+  }
+
+  template<class TCoord>
+  friend GridCoordinate3DTemplate CUDA_DEVICE CUDA_HOST operator* (FPValue lhs, const GridCoordinate3DTemplate<TCoord>& rhs)
+  {
+    TCoord x = rhs.GridCoordinate1DTemplate<TCoord>::getX ();
+    TCoord y = rhs.GridCoordinate2DTemplate<TCoord>::getY ();
+    return GridCoordinate3DTemplate<TCoord> (lhs * x, lhs * y, lhs * rhs.getZ ());
+  }
 };
 
 typedef GridCoordinate3DTemplate<grid_iter> GridCoordinate3D;

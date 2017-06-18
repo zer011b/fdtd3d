@@ -4,71 +4,68 @@
 #include "GridCoordinate3D.h"
 
 #ifdef CXX11_ENABLED
+#define ENUM_CLASS(name, type, ...) \
+  enum class name : type \
+  { \
+    __VA_ARGS__ \
+  };
+#else /* CXX11_ENABLED */
+#define ENUM_CLASS(name, type, ...) \
+  class name \
+  { \
+    public: \
+    \
+    enum Temp { __VA_ARGS__ }; \
+    \
+    name (Temp new_val) : temp (new_val) {} \
+    \
+    operator type () { return temp; } \
+    \
+  private: \
+    Temp temp; \
+  };
+#endif /* !CXX11_ENABLED */
 
 /**
  * Direction in which to get circut elements
  *
  * FIXME: add base type of uint32_t
  */
-enum class LayoutDirection
-{
+ENUM_CLASS(LayoutDirection, uint8_t,
   LEFT, /**< left by Ox */
   RIGHT, /**< right by Ox */
   DOWN, /**< left by Oy */
   UP, /**< right by Oy */
   BACK, /**< left by Oz */
   FRONT /**< right by Oz */
-}; /* LayoutDirection */
-
-#else /* CXX11_ENABLED */
+);
 
 /**
- * Direction in which to get circut elements.
- *
- * Note: simple implementation of 'enum class' without C++11 support
+ * Type of electromagnetic field.
  */
-class LayoutDirection
-{
-public:
-
-  /**
-   * Direction in which to get circut elements
-   */
-  enum LayoutDir
-  {
-    LEFT, /**< left by Ox */
-    RIGHT, /**< right by Ox */
-    DOWN, /**< left by Oy */
-    UP, /**< right by Oy */
-    BACK, /**< left by Oz */
-    FRONT /**< right by Oz */
-  }; /* LayoutDir */
-
-  /**
-   * Default constructor
-   */
-  LayoutDirection (LayoutDir new_dir) /**< direction in which to get circuit element */
-    : dir (new_dir)
-  {
-  } /* LayoutDirection */
-
-  /**
-   * Cast operator to integer
-   *
-   * FIXME: replace with cast operator to uint32_t
-   */
-  operator int ()
-  {
-    return dir;
-  } /* operator int */
-
-private:
-
-  /** Direction in which to get circut elements */
-  LayoutDir dir;
-}; /* LayoutDirection */
-
-#endif /* !CXX11_ENABLED */
+ENUM_CLASS(GridType, uint8_t,
+  EX,
+  EY,
+  EZ,
+  HX,
+  HY,
+  HZ,
+  DX,
+  DY,
+  DZ,
+  BX,
+  BY,
+  BZ,
+  EPS,
+  MU,
+  SIGMAX,
+  SIGMAY,
+  SIGMAZ,
+  OMEGAPE,
+  OMEGAPM,
+  GAMMAE,
+  GAMMAM
+);
 
 /**
  * Interface for grid layout which specifies how field components are placed in space

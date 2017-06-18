@@ -117,6 +117,19 @@ public:
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
     return GridCoordinate2DTemplate (- x, - getY ());
   }
+
+  GridCoordinate2DTemplate CUDA_DEVICE CUDA_HOST operator* (FPValue rhs) const
+  {
+    TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
+    return GridCoordinate2DTemplate (x * rhs, getY () * rhs);
+  }
+
+  template<class TCoord>
+  friend GridCoordinate2DTemplate CUDA_DEVICE CUDA_HOST operator* (FPValue lhs, const GridCoordinate2DTemplate<TCoord>& rhs)
+  {
+    TCoord x = rhs.GridCoordinate1DTemplate<TCoord>::getX ();
+    return GridCoordinate2DTemplate<TCoord> (lhs * x, lhs * rhs.getY ());
+  }
 };
 
 typedef GridCoordinate2DTemplate<grid_iter> GridCoordinate2D;

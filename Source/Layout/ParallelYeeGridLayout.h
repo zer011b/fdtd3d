@@ -95,8 +95,15 @@ public:
                          GridCoordinate3D sizeScatteredZone,
                          FPValue incidentWaveAngle1, /**< teta */
                          FPValue incidentWaveAngle2, /**< phi */
-                         FPValue incidentWaveAngle3) /**< psi */
-    : YeeGridLayout (coordSize, sizePML, sizeScatteredZone, incidentWaveAngle1, incidentWaveAngle2, incidentWaveAngle3)
+                         FPValue incidentWaveAngle3, /**< psi */
+                         bool isDoubleMaterialPrecision)
+    : YeeGridLayout (coordSize,
+                     sizePML,
+                     sizeScatteredZone,
+                     incidentWaveAngle1,
+                     incidentWaveAngle2,
+                     incidentWaveAngle3,
+                     isDoubleMaterialPrecision)
   {
   } /* ParallelYeeGridLayout */
 
