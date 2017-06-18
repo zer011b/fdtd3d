@@ -151,6 +151,8 @@ int main (int argc, char** argv)
   FPValue incidentWaveAngle2 = atoi(argv[argc - 1])*PhysicsConst::Pi / 180; /**< phi */
   FPValue incidentWaveAngle3 = PhysicsConst::Pi / 2; /**< psi */
 
+  bool isDoubleMaterialPrecision = false;
+
 #if defined (PARALLEL_GRID)
   MPI_Init(&argc, &argv);
 
@@ -168,12 +170,12 @@ int main (int argc, char** argv)
 
   is_parallel_grid = true;
 
-  ParallelYeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, incidentWaveAngle1, incidentWaveAngle2, incidentWaveAngle3);
+  ParallelYeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, incidentWaveAngle1, incidentWaveAngle2, incidentWaveAngle3, isDoubleMaterialPrecision);
   yeeLayout.Initialize (parallelGridCore);
 #else /* PARALLEL_GRID */
   is_parallel_grid = false;
 
-  YeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, incidentWaveAngle1, incidentWaveAngle2, incidentWaveAngle3);
+  YeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, incidentWaveAngle1, incidentWaveAngle2, incidentWaveAngle3, isDoubleMaterialPrecision);
 #endif /* !PARALLEL_GRID */
 
 #ifdef CUDA_ENABLED

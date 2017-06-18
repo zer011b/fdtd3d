@@ -220,20 +220,15 @@ Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Ex.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (posAbs);
 
         FieldPointValue* valEx = Ex.getFieldPointValue (pos);
+
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::EX, Eps, GridType::EPS);
 
         GridCoordinate3D posDown = yeeLayout->getExCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getExCircuitElement (pos, LayoutDirection::UP);
         GridCoordinate3D posBack = yeeLayout->getExCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getExCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valEps1 = Eps.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
-        FieldPointValue* valEps2 = Eps.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
-
-        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
-                                                          Approximation::getMaterial (valEps2));
 
         FieldPointValue* valHz1 = Hz.getFieldPointValue (posUp);
         FieldPointValue* valHz2 = Hz.getFieldPointValue (posDown);
@@ -279,21 +274,16 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
       for (int k = ExStart.getZ (); k < ExEnd.getZ (); ++k)
       {
         GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Ex.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (posAbs);
+        GridCoordinate3D posAbs = Dx.getTotalPosition (pos);
 
         FieldPointValue* valDx = Dx.getFieldPointValue (pos);
+
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DX, SigmaY, GridType::SIGMAY);
 
         GridCoordinate3D posDown = yeeLayout->getExCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getExCircuitElement (pos, LayoutDirection::UP);
         GridCoordinate3D posBack = yeeLayout->getExCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getExCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valSigmaY1 = SigmaY.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
-        FieldPointValue* valSigmaY2 = SigmaY.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
-
-        FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
-                                                             Approximation::getMaterial (valSigmaY2));
 
         FieldPointValue* valHz1 = Hz.getFieldPointValue (posUp);
         FieldPointValue* valHz2 = Hz.getFieldPointValue (posDown);
@@ -342,34 +332,14 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
         for (int k = ExStart.getZ (); k < ExEnd.getZ (); ++k)
         {
           GridCoordinate3D pos (i, j, k);
-          GridCoordinate3D posAbs = Ex.getTotalPosition (pos);
-          GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (posAbs);
+          GridCoordinate3D posAbs = Dx.getTotalPosition (pos);
 
           FieldPointValue* valD1x = D1x.getFieldPointValue (pos);
           FieldPointValue* valDx = Dx.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
-          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
-
-          FieldPointValue* valGammaE1 = GammaE.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
-          FieldPointValue* valGammaE2 = GammaE.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
-
-          FieldPointValue* valEps1 = Eps.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)));
-          FieldPointValue* valEps2 = Eps.getFieldPointValueByAbsolutePos (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)));
-
-          FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
-                                                            Approximation::getMaterial (valEps2));
-
           FPValue omegaPE;
           FPValue gammaE;
-          Approximation::approximateDrudeModel (omegaPE,
-                                                gammaE,
-                                                Approximation::getMaterial (valEps1),
-                                                Approximation::getMaterial (valEps2),
-                                                Approximation::getMaterial (valOmegaPE1),
-                                                Approximation::getMaterial (valOmegaPE2),
-                                                Approximation::getMaterial (valGammaE1),
-                                                Approximation::getMaterial (valGammaE2));
+          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DX, Eps, GridType::EPS, OmegaPE, GridType::OMEGAPE, GammaE, GridType::GAMMAE, omegaPE, gammaE);
 
           /*
            * FIXME: precalculate coefficients
@@ -401,7 +371,6 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Ex.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (posAbs);
 
         FieldPointValue* valEx = Ex.getFieldPointValue (pos);
 
@@ -416,23 +385,9 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
           valDx = Dx.getFieldPointValue (pos);
         }
 
-        FieldPointValue* valSigmaX1 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-        FieldPointValue* valSigmaX2 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
-
-        FieldPointValue* valSigmaZ1 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-        FieldPointValue* valSigmaZ2 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
-
-        FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0))));
-        FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0))));
-
-        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
-                                                          Approximation::getMaterial (valEps2));
-
-        FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
-                                                             Approximation::getMaterial (valSigmaX2));
-
-        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
-                                                             Approximation::getMaterial (valSigmaZ2));
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DX, Eps, GridType::EPS);
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DX, SigmaX, GridType::SIGMAX);
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DX, SigmaZ, GridType::SIGMAZ);
 
         FPValue modifier = eps * eps0;
         if (useMetamaterials)
@@ -562,20 +517,15 @@ Scheme3D::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Ey.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (posAbs);
 
         FieldPointValue* valEy = Ey.getFieldPointValue (pos);
+
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::EY, Eps, GridType::EPS);
 
         GridCoordinate3D posLeft = yeeLayout->getEyCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getEyCircuitElement (pos, LayoutDirection::RIGHT);
         GridCoordinate3D posBack = yeeLayout->getEyCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getEyCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-        FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
-
-        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
-                                                          Approximation::getMaterial (valEps2));
 
         FieldPointValue* valHz1 = Hz.getFieldPointValue (posRight);
         FieldPointValue* valHz2 = Hz.getFieldPointValue (posLeft);
@@ -621,21 +571,16 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
       for (int k = EyStart.getZ (); k < EyEnd.getZ (); ++k)
       {
         GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Ey.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (posAbs);
+        GridCoordinate3D posAbs = Dy.getTotalPosition (pos);
 
         FieldPointValue* valDy = Dy.getFieldPointValue (pos);
+
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DY, SigmaZ, GridType::SIGMAZ);
 
         GridCoordinate3D posLeft = yeeLayout->getEyCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getEyCircuitElement (pos, LayoutDirection::RIGHT);
         GridCoordinate3D posBack = yeeLayout->getEyCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getEyCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valSigmaZ1 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-        FieldPointValue* valSigmaZ2 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
-
-        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
-                                                             Approximation::getMaterial (valSigmaZ2));
 
         FieldPointValue* valHz1 = Hz.getFieldPointValue (posRight);
         FieldPointValue* valHz2 = Hz.getFieldPointValue (posLeft);
@@ -684,34 +629,14 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
         for (int k = EyStart.getZ (); k < EyEnd.getZ (); ++k)
         {
           GridCoordinate3D pos (i, j, k);
-          GridCoordinate3D posAbs = Ey.getTotalPosition (pos);
-          GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (posAbs);
+          GridCoordinate3D posAbs = Dy.getTotalPosition (pos);
 
           FieldPointValue* valD1y = D1y.getFieldPointValue (pos);
           FieldPointValue* valDy = Dy.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
-
-          FieldPointValue* valGammaE1 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-          FieldPointValue* valGammaE2 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
-
-          FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-          FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
-
-          FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
-                                                            Approximation::getMaterial (valEps2));
-
           FPValue omegaPE;
           FPValue gammaE;
-          Approximation::approximateDrudeModel (omegaPE,
-                                                gammaE,
-                                                Approximation::getMaterial (valEps1),
-                                                Approximation::getMaterial (valEps2),
-                                                Approximation::getMaterial (valOmegaPE1),
-                                                Approximation::getMaterial (valOmegaPE2),
-                                                Approximation::getMaterial (valGammaE1),
-                                                Approximation::getMaterial (valGammaE2));
+          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DY, Eps, GridType::EPS, OmegaPE, GridType::OMEGAPE, GammaE, GridType::GAMMAE, omegaPE, gammaE);
 
           /*
            * FIXME: precalculate coefficients
@@ -743,7 +668,6 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Ey.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (posAbs);
 
         FieldPointValue* valEy = Ey.getFieldPointValue (pos);
 
@@ -758,23 +682,9 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
           valDy = Dy.getFieldPointValue (pos);
         }
 
-        FieldPointValue* valSigmaX1 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-        FieldPointValue* valSigmaX2 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
-
-        FieldPointValue* valSigmaY1 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-        FieldPointValue* valSigmaY2 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
-
-        FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0))));
-        FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0))));
-
-        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
-                                                          Approximation::getMaterial (valEps2));
-
-        FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
-                                                             Approximation::getMaterial (valSigmaX2));
-
-        FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
-                                                             Approximation::getMaterial (valSigmaY2));
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DY, Eps, GridType::EPS);
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DY, SigmaX, GridType::SIGMAX);
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DY, SigmaY, GridType::SIGMAY);
 
         FPValue modifier = eps * eps0;
         if (useMetamaterials)
@@ -904,20 +814,15 @@ Scheme3D::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Ez.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (posAbs);
 
         FieldPointValue* valEz = Ez.getFieldPointValue (pos);
+
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::EZ, Eps, GridType::EPS);
 
         GridCoordinate3D posLeft = yeeLayout->getEzCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getEzCircuitElement (pos, LayoutDirection::RIGHT);
         GridCoordinate3D posDown = yeeLayout->getEzCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getEzCircuitElement (pos, LayoutDirection::UP);
-
-        FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
-        FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
-
-        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
-                                                          Approximation::getMaterial (valEps2));
 
         FieldPointValue* valHy1 = Hy.getFieldPointValue (posRight);
         FieldPointValue* valHy2 = Hy.getFieldPointValue (posLeft);
@@ -963,20 +868,15 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Ez.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (posAbs);
 
         FieldPointValue* valDz = Dz.getFieldPointValue (pos);
+
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DZ, SigmaX, GridType::SIGMAX);
 
         GridCoordinate3D posLeft = yeeLayout->getEzCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getEzCircuitElement (pos, LayoutDirection::RIGHT);
         GridCoordinate3D posDown = yeeLayout->getEzCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getEzCircuitElement (pos, LayoutDirection::UP);
-
-        FieldPointValue* valSigmaX1 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
-        FieldPointValue* valSigmaX2 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
-
-        FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
-                                                             Approximation::getMaterial (valSigmaX2));
 
         FieldPointValue* valHy1 = Hy.getFieldPointValue (posRight);
         FieldPointValue* valHy2 = Hy.getFieldPointValue (posLeft);
@@ -1025,34 +925,13 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
         {
           GridCoordinate3D pos (i, j, k);
           GridCoordinate3D posAbs = Ez.getTotalPosition (pos);
-          GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (posAbs);
-
-          FieldPointValue* valEz = Ez.getFieldPointValue (pos);
 
           FieldPointValue* valD1z = D1z.getFieldPointValue (pos);
           FieldPointValue* valDz = Dz.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPE1 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
-          FieldPointValue* valOmegaPE2 = OmegaPE.getFieldPointValue (OmegaPE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
-          FieldPointValue* valGammaE1 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
-          FieldPointValue* valGammaE2 = GammaE.getFieldPointValue (GammaE.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
-
-          FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
-          FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
-
-          FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
-                                                            Approximation::getMaterial (valEps2));
-
           FPValue omegaPE;
           FPValue gammaE;
-          Approximation::approximateDrudeModel (omegaPE,
-                                                gammaE,
-                                                Approximation::getMaterial (valEps1),
-                                                Approximation::getMaterial (valEps2),
-                                                Approximation::getMaterial (valOmegaPE1),
-                                                Approximation::getMaterial (valOmegaPE2),
-                                                Approximation::getMaterial (valGammaE1),
-                                                Approximation::getMaterial (valGammaE2));
+          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DZ, Eps, GridType::EPS, OmegaPE, GridType::OMEGAPE, GammaE, GridType::GAMMAE, omegaPE, gammaE);
 
           /*
            * FIXME: precalculate coefficients
@@ -1084,7 +963,6 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Ez.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (posAbs);
 
         FieldPointValue* valEz = Ez.getFieldPointValue (pos);
         FieldPointValue* valDz;
@@ -1098,23 +976,9 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
           valDz = Dz.getFieldPointValue (pos);
         }
 
-        FieldPointValue* valEps1 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
-        FieldPointValue* valEps2 = Eps.getFieldPointValue (Eps.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
-
-        FieldPointValue* valSigmaY1 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
-        FieldPointValue* valSigmaY2 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
-
-        FieldPointValue* valSigmaZ1 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5))));
-        FieldPointValue* valSigmaZ2 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5))));
-
-        FPValue eps = Approximation::approximateMaterial (Approximation::getMaterial (valEps1),
-                                                          Approximation::getMaterial (valEps2));
-
-        FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
-                                                             Approximation::getMaterial (valSigmaY2));
-
-        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
-                                                             Approximation::getMaterial (valSigmaZ2));
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DZ, Eps, GridType::EPS);
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DZ, SigmaY, GridType::SIGMAY);
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DZ, SigmaZ, GridType::SIGMAZ);
 
         FPValue modifier = eps * eps0;
         if (useMetamaterials)
@@ -1248,24 +1112,15 @@ Scheme3D::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinate
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Hx.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (posAbs);
 
         FieldPointValue* valHx = Hx.getFieldPointValue (pos);
+
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::HX, Mu, GridType::MU);
 
         GridCoordinate3D posDown = yeeLayout->getHxCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getHxCircuitElement (pos, LayoutDirection::UP);
         GridCoordinate3D posBack = yeeLayout->getHxCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getHxCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
-        FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
-        FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
-        FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
-
-        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
-                                                         Approximation::getMaterial (valMu2),
-                                                         Approximation::getMaterial (valMu3),
-                                                         Approximation::getMaterial (valMu4));
 
         FieldPointValue* valEz1 = Ez.getFieldPointValue (posUp);
         FieldPointValue* valEz2 = Ez.getFieldPointValue (posDown);
@@ -1313,24 +1168,15 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Hx.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (posAbs);
 
         FieldPointValue* valBx = Bx.getFieldPointValue (pos);
+
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BX, SigmaY, GridType::SIGMAY);
 
         GridCoordinate3D posDown = yeeLayout->getHxCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getHxCircuitElement (pos, LayoutDirection::UP);
         GridCoordinate3D posBack = yeeLayout->getHxCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getHxCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valSigmaY1 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
-        FieldPointValue* valSigmaY2 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
-        FieldPointValue* valSigmaY3 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
-        FieldPointValue* valSigmaY4 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
-
-        FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
-                                                             Approximation::getMaterial (valSigmaY2),
-                                                             Approximation::getMaterial (valSigmaY3),
-                                                             Approximation::getMaterial (valSigmaY4));
 
         FieldPointValue* valEz1 = Ez.getFieldPointValue (posUp);
         FieldPointValue* valEz2 = Ez.getFieldPointValue (posDown);
@@ -1377,49 +1223,13 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
         {
           GridCoordinate3D pos (i, j, k);
           GridCoordinate3D posAbs = Hx.getTotalPosition (pos);
-          GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (posAbs);
-
-          FieldPointValue* valHx = Hx.getFieldPointValue (pos);
 
           FieldPointValue* valB1x = B1x.getFieldPointValue (pos);
           FieldPointValue* valBx = Bx.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPM1 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
-          FieldPointValue* valOmegaPM2 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
-          FieldPointValue* valOmegaPM3 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
-          FieldPointValue* valOmegaPM4 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
-
-          FieldPointValue* valGammaM1 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
-          FieldPointValue* valGammaM2 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
-          FieldPointValue* valGammaM3 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
-          FieldPointValue* valGammaM4 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
-
-          FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
-          FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
-          FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
-          FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
-
-          FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
-                                                           Approximation::getMaterial (valMu2),
-                                                           Approximation::getMaterial (valMu3),
-                                                           Approximation::getMaterial (valMu4));
-
           FPValue omegaPM;
           FPValue gammaM;
-          Approximation::approximateDrudeModel (omegaPM,
-                                                gammaM,
-                                                Approximation::getMaterial (valMu1),
-                                                Approximation::getMaterial (valMu2),
-                                                Approximation::getMaterial (valMu3),
-                                                Approximation::getMaterial (valMu4),
-                                                Approximation::getMaterial (valOmegaPM1),
-                                                Approximation::getMaterial (valOmegaPM2),
-                                                Approximation::getMaterial (valOmegaPM3),
-                                                Approximation::getMaterial (valOmegaPM4),
-                                                Approximation::getMaterial (valGammaM1),
-                                                Approximation::getMaterial (valGammaM2),
-                                                Approximation::getMaterial (valGammaM3),
-                                                Approximation::getMaterial (valGammaM4));
+          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BX, Mu, GridType::MU, OmegaPM, GridType::OMEGAPM, GammaM, GridType::GAMMAM, omegaPM, gammaM);
 
           /*
            * FIXME: precalculate coefficients
@@ -1451,7 +1261,6 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Hx.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (posAbs);
 
         FieldPointValue* valHx = Hx.getFieldPointValue (pos);
 
@@ -1466,35 +1275,9 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
           valBx = Bx.getFieldPointValue (pos);
         }
 
-        FieldPointValue* valSigmaX1 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
-        FieldPointValue* valSigmaX2 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
-        FieldPointValue* valSigmaX3 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
-        FieldPointValue* valSigmaX4 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
-
-        FieldPointValue* valSigmaZ1 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
-        FieldPointValue* valSigmaZ2 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
-        FieldPointValue* valSigmaZ3 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
-        FieldPointValue* valSigmaZ4 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
-
-        FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5))));
-        FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5))));
-        FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5))));
-        FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5))));
-
-        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
-                                                         Approximation::getMaterial (valMu2),
-                                                         Approximation::getMaterial (valMu3),
-                                                         Approximation::getMaterial (valMu4));
-
-        FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
-                                                             Approximation::getMaterial (valSigmaX2),
-                                                             Approximation::getMaterial (valSigmaX3),
-                                                             Approximation::getMaterial (valSigmaX4));
-
-        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
-                                                             Approximation::getMaterial (valSigmaZ2),
-                                                             Approximation::getMaterial (valSigmaZ3),
-                                                             Approximation::getMaterial (valSigmaZ4));
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BX, Mu, GridType::MU);
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BX, SigmaX, GridType::SIGMAX);
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BX, SigmaZ, GridType::SIGMAZ);
 
         FPValue modifier = mu * mu0;
         if (useMetamaterials)
@@ -1625,24 +1408,15 @@ Scheme3D::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinate
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Hy.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (posAbs);
 
         FieldPointValue* valHy = Hy.getFieldPointValue (pos);
+
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::HY, Mu, GridType::MU);
 
         GridCoordinate3D posLeft = yeeLayout->getHyCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getHyCircuitElement (pos, LayoutDirection::RIGHT);
         GridCoordinate3D posBack = yeeLayout->getHyCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getHyCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
-        FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
-        FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
-        FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
-
-        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
-                                                         Approximation::getMaterial (valMu2),
-                                                         Approximation::getMaterial (valMu3),
-                                                         Approximation::getMaterial (valMu4));
 
         FieldPointValue* valEz1 = Ez.getFieldPointValue (posRight);
         FieldPointValue* valEz2 = Ez.getFieldPointValue (posLeft);
@@ -1690,24 +1464,15 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Hy.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (posAbs);
 
         FieldPointValue* valBy = By.getFieldPointValue (pos);
+
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BY, SigmaZ, GridType::SIGMAZ);
 
         GridCoordinate3D posLeft = yeeLayout->getHyCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getHyCircuitElement (pos, LayoutDirection::RIGHT);
         GridCoordinate3D posBack = yeeLayout->getHyCircuitElement (pos, LayoutDirection::BACK);
         GridCoordinate3D posFront = yeeLayout->getHyCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valSigmaZ1 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
-        FieldPointValue* valSigmaZ2 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
-        FieldPointValue* valSigmaZ3 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
-        FieldPointValue* valSigmaZ4 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
-
-        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
-                                                             Approximation::getMaterial (valSigmaZ2),
-                                                             Approximation::getMaterial (valSigmaZ3),
-                                                             Approximation::getMaterial (valSigmaZ4));
 
         FieldPointValue* valEz1 = Ez.getFieldPointValue (posRight);
         FieldPointValue* valEz2 = Ez.getFieldPointValue (posLeft);
@@ -1754,49 +1519,13 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
         {
           GridCoordinate3D pos (i, j, k);
           GridCoordinate3D posAbs = Hy.getTotalPosition (pos);
-          GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (posAbs);
-
-          FieldPointValue* valHy = Hy.getFieldPointValue (pos);
 
           FieldPointValue* valB1y = B1y.getFieldPointValue (pos);
           FieldPointValue* valBy = By.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPM1 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
-          FieldPointValue* valOmegaPM2 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
-          FieldPointValue* valOmegaPM3 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
-          FieldPointValue* valOmegaPM4 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
-
-          FieldPointValue* valGammaM1 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
-          FieldPointValue* valGammaM2 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
-          FieldPointValue* valGammaM3 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
-          FieldPointValue* valGammaM4 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
-
-          FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
-          FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
-          FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
-          FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
-
-          FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
-                                                           Approximation::getMaterial (valMu2),
-                                                           Approximation::getMaterial (valMu3),
-                                                           Approximation::getMaterial (valMu4));
-
           FPValue omegaPM;
           FPValue gammaM;
-          Approximation::approximateDrudeModel (omegaPM,
-                                                gammaM,
-                                                Approximation::getMaterial (valMu1),
-                                                Approximation::getMaterial (valMu2),
-                                                Approximation::getMaterial (valMu3),
-                                                Approximation::getMaterial (valMu4),
-                                                Approximation::getMaterial (valOmegaPM1),
-                                                Approximation::getMaterial (valOmegaPM2),
-                                                Approximation::getMaterial (valOmegaPM3),
-                                                Approximation::getMaterial (valOmegaPM4),
-                                                Approximation::getMaterial (valGammaM1),
-                                                Approximation::getMaterial (valGammaM2),
-                                                Approximation::getMaterial (valGammaM3),
-                                                Approximation::getMaterial (valGammaM4));
+          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BY, Mu, GridType::MU, OmegaPM, GridType::OMEGAPM, GammaM, GridType::GAMMAM, omegaPM, gammaM);
 
           /*
            * FIXME: precalculate coefficients
@@ -1828,7 +1557,6 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Hy.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (posAbs);
 
         FieldPointValue* valHy = Hy.getFieldPointValue (pos);
 
@@ -1843,35 +1571,9 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
           valBy = By.getFieldPointValue (pos);
         }
 
-        FieldPointValue* valSigmaX1 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
-        FieldPointValue* valSigmaX2 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
-        FieldPointValue* valSigmaX3 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
-        FieldPointValue* valSigmaX4 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
-
-        FieldPointValue* valSigmaY1 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
-        FieldPointValue* valSigmaY2 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
-        FieldPointValue* valSigmaY3 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
-        FieldPointValue* valSigmaY4 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
-
-        FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5))));
-        FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5))));
-        FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5))));
-        FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5))));
-
-        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
-                                                         Approximation::getMaterial (valMu2),
-                                                         Approximation::getMaterial (valMu3),
-                                                         Approximation::getMaterial (valMu4));
-
-       FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
-                                                            Approximation::getMaterial (valSigmaX2),
-                                                            Approximation::getMaterial (valSigmaX3),
-                                                            Approximation::getMaterial (valSigmaX4));
-
-       FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
-                                                            Approximation::getMaterial (valSigmaY2),
-                                                            Approximation::getMaterial (valSigmaY3),
-                                                            Approximation::getMaterial (valSigmaY4));
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BY, Mu, GridType::MU);
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BY, SigmaX, GridType::SIGMAX);
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BY, SigmaY, GridType::SIGMAY);
 
         FPValue modifier = mu * mu0;
         if (useMetamaterials)
@@ -2001,24 +1703,15 @@ Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Hz.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (posAbs);
 
         FieldPointValue* valHz = Hz.getFieldPointValue (pos);
+
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::HZ, Mu, GridType::MU);
 
         GridCoordinate3D posLeft = yeeLayout->getHzCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getHzCircuitElement (pos, LayoutDirection::RIGHT);
         GridCoordinate3D posDown = yeeLayout->getHzCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getHzCircuitElement (pos, LayoutDirection::UP);
-
-        FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-        FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0))));
-        FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-        FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
-
-        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
-                                                         Approximation::getMaterial (valMu2),
-                                                         Approximation::getMaterial (valMu3),
-                                                         Approximation::getMaterial (valMu4));
 
         FieldPointValue* valEy1 = Ey.getFieldPointValue (posRight);
         FieldPointValue* valEy2 = Ey.getFieldPointValue (posLeft);
@@ -2066,24 +1759,15 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Hz.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (posAbs);
 
         FieldPointValue* valBz = Bz.getFieldPointValue (pos);
+
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BZ, SigmaX, GridType::SIGMAX);
 
         GridCoordinate3D posLeft = yeeLayout->getHzCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getHzCircuitElement (pos, LayoutDirection::RIGHT);
         GridCoordinate3D posDown = yeeLayout->getHzCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getHzCircuitElement (pos, LayoutDirection::UP);
-
-        FieldPointValue* valSigmaX1 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-        FieldPointValue* valSigmaX2 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0))));
-        FieldPointValue* valSigmaX3 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-        FieldPointValue* valSigmaX4 = SigmaX.getFieldPointValue (SigmaX.getRelativePosition (yeeLayout->getMuCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
-
-        FPValue sigmaX = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaX1),
-                                                             Approximation::getMaterial (valSigmaX2),
-                                                             Approximation::getMaterial (valSigmaX3),
-                                                             Approximation::getMaterial (valSigmaX4));
 
         FieldPointValue* valEy1 = Ey.getFieldPointValue (posRight);
         FieldPointValue* valEy2 = Ey.getFieldPointValue (posLeft);
@@ -2130,47 +1814,13 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
         {
           GridCoordinate3D pos (i, j, k);
           GridCoordinate3D posAbs = Hz.getTotalPosition (pos);
-          GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (posAbs);
 
           FieldPointValue* valB1z = B1z.getFieldPointValue (pos);
           FieldPointValue* valBz = Bz.getFieldPointValue (pos);
 
-          FieldPointValue* valOmegaPM1 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-          FieldPointValue* valOmegaPM2 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-          FieldPointValue* valOmegaPM3 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0))));
-          FieldPointValue* valOmegaPM4 = OmegaPM.getFieldPointValue (OmegaPM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
-
-          FieldPointValue* valGammaM1 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-          FieldPointValue* valGammaM2 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-          FieldPointValue* valGammaM3 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0))));
-          FieldPointValue* valGammaM4 = GammaM.getFieldPointValue (GammaM.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
-
-          FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-          FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-          FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-          FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-
-          FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
-                                                           Approximation::getMaterial (valMu2),
-                                                           Approximation::getMaterial (valMu3),
-                                                           Approximation::getMaterial (valMu4));
-
           FPValue omegaPM;
           FPValue gammaM;
-          Approximation::approximateDrudeModel (omegaPM,
-                                                gammaM,
-                                                Approximation::getMaterial (valMu1),
-                                                Approximation::getMaterial (valMu2),
-                                                Approximation::getMaterial (valMu3),
-                                                Approximation::getMaterial (valMu4),
-                                                Approximation::getMaterial (valOmegaPM1),
-                                                Approximation::getMaterial (valOmegaPM2),
-                                                Approximation::getMaterial (valOmegaPM3),
-                                                Approximation::getMaterial (valOmegaPM4),
-                                                Approximation::getMaterial (valGammaM1),
-                                                Approximation::getMaterial (valGammaM2),
-                                                Approximation::getMaterial (valGammaM3),
-                                                Approximation::getMaterial (valGammaM4));
+          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BZ, Mu, GridType::MU, OmegaPM, GridType::OMEGAPM, GammaM, GridType::GAMMAM, omegaPM, gammaM);
 
           /*
            * FIXME: precalculate coefficients
@@ -2202,7 +1852,6 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
       {
         GridCoordinate3D pos (i, j, k);
         GridCoordinate3D posAbs = Hz.getTotalPosition (pos);
-        GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (posAbs);
 
         FieldPointValue* valHz = Hz.getFieldPointValue (pos);
 
@@ -2217,35 +1866,9 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
           valBz = Bz.getFieldPointValue (pos);
         }
 
-        FieldPointValue* valSigmaY1 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-        FieldPointValue* valSigmaY2 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-        FieldPointValue* valSigmaY3 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0))));
-        FieldPointValue* valSigmaY4 = SigmaY.getFieldPointValue (SigmaY.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
-
-        FieldPointValue* valSigmaZ1 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-        FieldPointValue* valSigmaZ2 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-        FieldPointValue* valSigmaZ3 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0))));
-        FieldPointValue* valSigmaZ4 = SigmaZ.getFieldPointValue (SigmaZ.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0))));
-
-        FieldPointValue* valMu1 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-        FieldPointValue* valMu2 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-        FieldPointValue* valMu3 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0))));
-        FieldPointValue* valMu4 = Mu.getFieldPointValue (Mu.getRelativePosition (yeeLayout->getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0))));
-
-        FPValue mu = Approximation::approximateMaterial (Approximation::getMaterial (valMu1),
-                                                         Approximation::getMaterial (valMu2),
-                                                         Approximation::getMaterial (valMu3),
-                                                         Approximation::getMaterial (valMu4));
-
-        FPValue sigmaY = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaY1),
-                                                             Approximation::getMaterial (valSigmaY2),
-                                                             Approximation::getMaterial (valSigmaY3),
-                                                             Approximation::getMaterial (valSigmaY4));
-
-        FPValue sigmaZ = Approximation::approximateMaterial (Approximation::getMaterial (valSigmaZ1),
-                                                             Approximation::getMaterial (valSigmaZ2),
-                                                             Approximation::getMaterial (valSigmaZ3),
-                                                             Approximation::getMaterial (valSigmaZ4));
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BZ, Mu, GridType::MU);
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BZ, SigmaY, GridType::SIGMAY);
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BZ, SigmaZ, GridType::SIGMAZ);
 
         FPValue modifier = mu * mu0;
         if (useMetamaterials)
@@ -3111,23 +2734,23 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
       val->setCurValue (val->getCurValue () - incVal);
     }
 
-    dumperEx.init (stepLimit, CURRENT, processId, "3D-in-time-total-Ex");
-    dumperEx.dumpGrid (totalEx, startEx, endEx);
+    // dumperEx.init (stepLimit, CURRENT, processId, "3D-in-time-total-Ex");
+    // dumperEx.dumpGrid (totalEx, startEx, endEx);
 
-    dumperEy.init (stepLimit, CURRENT, processId, "3D-in-time-total-Ey");
-    dumperEy.dumpGrid (totalEy, startEy, endEy);
+    // dumperEy.init (stepLimit, CURRENT, processId, "3D-in-time-total-Ey");
+    // dumperEy.dumpGrid (totalEy, startEy, endEy);
 
     dumperEz.init (stepLimit, CURRENT, processId, "3D-in-time-total-Ez");
     dumperEz.dumpGrid (totalEz, startEz, endEz);
 
-    dumperHx.init (stepLimit, CURRENT, processId, "3D-in-time-total-Hx");
-    dumperHx.dumpGrid (totalHx, startHx, endHx);
+    // dumperHx.init (stepLimit, CURRENT, processId, "3D-in-time-total-Hx");
+    // dumperHx.dumpGrid (totalHx, startHx, endHx);
 
-    dumperHy.init (stepLimit, CURRENT, processId, "3D-in-time-total-Hy");
-    dumperHy.dumpGrid (totalHy, startHy, endHy);
+    // dumperHy.init (stepLimit, CURRENT, processId, "3D-in-time-total-Hy");
+    // dumperHy.dumpGrid (totalHy, startHy, endHy);
 
-    dumperHz.init (stepLimit, CURRENT, processId, "3D-in-time-total-Hz");
-    dumperHz.dumpGrid (totalHz, startHz, endHz);
+    // dumperHz.init (stepLimit, CURRENT, processId, "3D-in-time-total-Hz");
+    // dumperHz.dumpGrid (totalHz, startHz, endHz);
 #else
     for (grid_iter i = 0; i < Ex.getSize ().calculateTotalCoord (); ++i)
     {
@@ -3798,7 +3421,8 @@ Scheme3D::initGrids ()
         FieldValue epsVal (2);
 #endif /* !COMPLEX_FIELD_VALUES */
 
-        eps->setCurValue (Approximation::approximateSphere_1 (posAbs, GridCoordinateFP3D (40.5, 40.5, 40.5), 20, epsVal));
+        FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
+        eps->setCurValue (Approximation::approximateSphere (posAbs, GridCoordinateFP3D (40.5, 40.5, 40.5) * modifier, 20 * modifier, epsVal));
 
         Eps.setFieldPointValue (eps, pos);
       }
@@ -4020,7 +3644,7 @@ Scheme3D::initGrids ()
   FPValue eps0 = PhysicsConst::Eps0;
   FPValue mu0 = PhysicsConst::Mu0;
 
-  GridCoordinate3D PMLSize = yeeLayout->getLeftBorderPML ();
+  GridCoordinate3D PMLSize = yeeLayout->getLeftBorderPML () * (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
 
   FPValue boundary = PMLSize.getX () * gridStep;
   uint32_t exponent = 6;
