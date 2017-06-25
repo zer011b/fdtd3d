@@ -5,8 +5,6 @@
 
 #ifdef PARALLEL_GRID
 
-#include <mpi.h>
-
 /**
  * Type of buffer of values
  */
@@ -258,11 +256,6 @@ private:
   ParallelGridCoordinate currentSize;
 
   /**
-   * Size of grid per node which is used for all buffers except at right border ones (see ParallelGrid)
-   */
-  ParallelGridCoordinate coreCurrentSize;
-
-  /**
    * Absolute start position of chunk of current node
    */
   ParallelGridCoordinate posStart;
@@ -353,14 +346,14 @@ private:
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
-  void initializeStartPosition ();
+  void initializeStartPosition (ParallelGridCoordinate);
+  void gatherStartPosition ();
 
 public:
 
   ParallelGrid (const ParallelGridCoordinate &,
                 const ParallelGridCoordinate &,
                 time_step,
-                ParallelGridCoordinate,
                 ParallelGridCoordinate);
 
   virtual void nextTimeStep () CXX11_OVERRIDE;
@@ -413,6 +406,9 @@ public:
   void initBufferOffsets (grid_coord &, grid_coord &, grid_coord &, grid_coord &, grid_coord &, grid_coord &) const;
 
   Grid<ParallelGridCoordinate> gatherFullGrid () const;
+
+  uint32_t Rebalance (time_step);
+  void RebalanceWithSize (ParallelGridCoordinate newSize);
 
 public:
 

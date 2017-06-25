@@ -5,6 +5,8 @@
 
 #ifdef PARALLEL_GRID
 
+#include <mpi.h>
+
 /**
  * Base grid of parallel grid and parallel grid coordinate
  */
@@ -40,6 +42,75 @@ enum BufferPosition
  */
 class ParallelGridCore
 {
+public:
+  timespec calcClock;
+  timespec shareClock;
+
+  timespec calcStart;
+  timespec calcStop;
+
+  timespec shareStart;
+  timespec shareStop;
+
+  std::vector<timespec> calcClockAll;
+  std::vector<timespec> shareClockAll;
+
+  void StartCalcClock ()
+  {
+    int status = clock_gettime (CLOCK_MONOTONIC, &calcStart);
+    ASSERT (status == 0);
+  }
+  void StopCalcClock ()
+  {
+    int status = clock_gettime (CLOCK_MONOTONIC, &calcStop);
+    ASSERT (status == 0);
+
+    timespec diff;
+    timespec_diff (&calcStart, &calcStop, &diff);
+
+    calcClock.tv_sec += diff.tv_sec;
+    calcClock.tv_nsec += diff.tv_nsec;
+
+    if (calcClock.tv_nsec >= 1000000000)
+    {
+      calcClock.tv_sec += 1;
+      calcClock.tv_nsec -= 1000000000;
+    }
+  }
+
+  void StartShareClock ()
+  {
+    int status = clock_gettime (CLOCK_MONOTONIC, &shareStart);
+    ASSERT (status == 0);
+  }
+  void StopShareClock ()
+  {
+    int status = clock_gettime (CLOCK_MONOTONIC, &shareStop);
+    ASSERT (status == 0);
+
+    timespec diff;
+    timespec_diff (&shareStart, &shareStop, &diff);
+
+    shareClock.tv_sec += diff.tv_sec;
+    shareClock.tv_nsec += diff.tv_nsec;
+  }
+
+  void timespec_diff(struct timespec *start, struct timespec *stop,
+                     struct timespec *result)
+  {
+      if ((stop->tv_nsec - start->tv_nsec) < 0) {
+          result->tv_sec = stop->tv_sec - start->tv_sec - 1;
+          result->tv_nsec = stop->tv_nsec - start->tv_nsec + 1000000000;
+      } else {
+          result->tv_sec = stop->tv_sec - start->tv_sec;
+          result->tv_nsec = stop->tv_nsec - start->tv_nsec;
+      }
+
+      return;
+  }
+
+  void ShareClocks ();
+
 private:
 
   /**
@@ -292,7 +363,11 @@ public:
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  int getNodeGridX () const;
+  int getNodeGridX () const
+  {
+    return getNodeGridX (processId);
+  }
+  int getNodeGridX (int) const;
 
   /**
    * Getter for flag whether computational node has left neighbour
@@ -320,7 +395,11 @@ public:
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  int getNodeGridY () const;
+  int getNodeGridY () const
+  {
+    return getNodeGridY (processId);
+  }
+  int getNodeGridY (int) const;
 
   /**
    * Getter for flag whether computational node has down neighbour
@@ -348,7 +427,11 @@ public:
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  int getNodeGridZ () const;
+  int getNodeGridZ () const
+  {
+    return getNodeGridZ (processId);
+  }
+  int getNodeGridZ (int) const;
 
   /**
    * Getter for flag whether computational node has back neighbour

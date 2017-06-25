@@ -169,6 +169,14 @@ int main (int argc, char** argv)
 
   ParallelGridCore parallelGridCore (rank, numProcs, overallSize);
   ParallelGrid::initializeParallelCore (&parallelGridCore);
+//
+// #ifdef GRID_3D
+//   printf ("#%d --- (%d,%d,%d)\n",
+//           rank,
+//           parallelGridCore.getNodeGridX (),
+//           parallelGridCore.getNodeGridY (),
+//           parallelGridCore.getNodeGridZ ());
+// #endif
 
   is_parallel_grid = true;
 
@@ -201,7 +209,7 @@ int main (int argc, char** argv)
   ParallelGridCoordinate bufferSize (bufSize);
 
 #ifdef GRID_2D
-  SchemeTMz scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, false, incidentWaveAngle2, true, dumpRes);
+  SchemeTMz scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, false, false, incidentWaveAngle2, false, dumpRes);
   //SchemeTEz scheme (overallSize, bufferLeft, bufferRight, rank, numProcs, totalTimeSteps, false, 2 * totalTimeSteps, true, GridCoordinate2D (20, 20), true, GridCoordinate2D (30, 30), 0);
 #endif
 #ifdef GRID_3D
