@@ -89,6 +89,8 @@ public:
   virtual FieldPointValue *getFieldPointValueByAbsolutePos (const TCoord &);
 
   virtual void nextTimeStep ();
+
+  const std::string &getName () const;
 }; /* Grid */
 
 /*
@@ -399,6 +401,18 @@ TCoord
 Grid<TCoord>::getRelativePosition (TCoord pos) const /**< position in grid */
 {
   return pos - TCoord (0);
-} /* gGrid<TCoord>::etRelativePosition */
+} /* gGrid<TCoord>::getRelativePosition */
+
+/**
+ * Get name of grid
+ *
+ * @return name of grid
+ */
+template <class TCoord>
+const std::string &
+Grid<TCoord>::getName () const
+{
+  return gridName;
+} /* gGrid<TCoord>::getName */
 
 #endif /* GRID_H */

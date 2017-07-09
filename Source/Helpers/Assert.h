@@ -74,4 +74,41 @@ void program_fail ();
 #define DPRINTF(...)
 #endif /* !PRINT_MESSAGE */
 
+/*
+ * Enum class for c++11 and not c++11 builds
+ */
+#ifdef CXX11_ENABLED
+#define ENUM_CLASS(name, type, ...) \
+  enum class name : type \
+  { \
+    __VA_ARGS__ \
+  };
+#else /* CXX11_ENABLED */
+#define ENUM_CLASS(name, type, ...) \
+  class name \
+  { \
+    public: \
+    \
+    enum Temp { __VA_ARGS__ }; \
+    \
+    name (Temp new_val) : temp (new_val) {} \
+    \
+    operator type () { return temp; } \
+    \
+  private: \
+    Temp temp; \
+  };
+#endif /* !CXX11_ENABLED */
+
+/*
+ * String to number
+ */
+#ifdef CXX11_ENABLED
+#define STOI(str) std::stoi (str)
+#define STOF(str) std::stof (str)
+#else /* CXX11_ENABLED */
+#define STOI(str) atoi (str)
+#define STOF(str) atof (str)
+#endif /* !CXX11_ENABLED */
+
 #endif /* ASSERT_H */

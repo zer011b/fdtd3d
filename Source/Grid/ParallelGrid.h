@@ -361,7 +361,8 @@ public:
                 const ParallelGridCoordinate &,
                 time_step,
                 ParallelGridCoordinate,
-                ParallelGridCoordinate);
+                ParallelGridCoordinate,
+                const char * = "unnamed");
 
   virtual void nextTimeStep () CXX11_OVERRIDE;
 

@@ -1907,45 +1907,57 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 
   GridCoordinate3D startEx (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinExCoordFP ().getX ()) + 1,
                             grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinExCoordFP ().getY ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinExCoordFP ().getZ ()) + 1);
+                            //grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinExCoordFP ().getZ ()) + 1);
+                            Ex.getSize ().getZ () / 2);
   GridCoordinate3D endEx (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinExCoordFP ().getX ()),
                           grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinExCoordFP ().getY ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinExCoordFP ().getZ ()));
+                          //grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinExCoordFP ().getZ ()));
+                          Ex.getSize ().getZ () / 2 + 1);
 
   GridCoordinate3D startEy (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinEyCoordFP ().getX ()) + 1,
                             grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinEyCoordFP ().getY ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinEyCoordFP ().getZ ()) + 1);
+                            //grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinEyCoordFP ().getZ ()) + 1);
+                            Ey.getSize ().getZ () / 2);
   GridCoordinate3D endEy (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinEyCoordFP ().getX ()),
                           grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinEyCoordFP ().getY ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinEyCoordFP ().getZ ()));
+                          //grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinEyCoordFP ().getZ ()));
+                          Ey.getSize ().getZ () / 2 + 1);
 
   GridCoordinate3D startEz (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinEzCoordFP ().getX ()) + 1,
                             grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinEzCoordFP ().getY ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinEzCoordFP ().getZ ()) + 1);
+                            //grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinEzCoordFP ().getZ ()) + 1);
+                            Ez.getSize ().getZ () / 2);
   GridCoordinate3D endEz (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinEzCoordFP ().getX ()),
                           grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinEzCoordFP ().getY ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinEzCoordFP ().getZ ()));
+                          //grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinEzCoordFP ().getZ ()));
+                          Ez.getSize ().getZ () / 2 + 1);
 
   GridCoordinate3D startHx (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinHxCoordFP ().getX ()) + 1,
                             grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinHxCoordFP ().getY ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinHxCoordFP ().getZ ()) + 1);
+                            //grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinHxCoordFP ().getZ ()) + 1);
+                            Hx.getSize ().getZ () / 2);
   GridCoordinate3D endHx (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinHxCoordFP ().getX ()),
                           grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinHxCoordFP ().getY ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinHxCoordFP ().getZ ()));
+                          //grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinHxCoordFP ().getZ ()));
+                          Hx.getSize ().getZ () / 2 + 1);
 
   GridCoordinate3D startHy (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinHyCoordFP ().getX ()) + 1,
                             grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinHyCoordFP ().getY ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinHyCoordFP ().getZ ()) + 1);
+                            //grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinHyCoordFP ().getZ ()) + 1);
+                            Hy.getSize ().getZ () / 2);
   GridCoordinate3D endHy (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinHyCoordFP ().getX ()),
                           grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinHyCoordFP ().getY ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinHyCoordFP ().getZ ()));
+                          //grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinHyCoordFP ().getZ ()));
+                          Hy.getSize ().getZ () / 2 + 1);
 
   GridCoordinate3D startHz (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinHzCoordFP ().getX ()) + 1,
                             grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinHzCoordFP ().getY ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinHzCoordFP ().getZ ()) + 1);
+                            //grid_coord (yeeLayout->getLeftBorderPML ().getZ () - yeeLayout->getMinHzCoordFP ().getZ ()) + 1);
+                            Hz.getSize ().getZ () / 2);
   GridCoordinate3D endHz (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinHzCoordFP ().getX ()),
                           grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinHzCoordFP ().getY ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinHzCoordFP ().getZ ()));
+                          //grid_coord (yeeLayout->getRightBorderPML ().getZ () - yeeLayout->getMinHzCoordFP ().getZ ()));
+                          Hz.getSize ().getZ () / 2);
 
   GridCoordinate3D EzSize = Ez.getSize ();
 
