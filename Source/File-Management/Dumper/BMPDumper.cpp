@@ -15,7 +15,7 @@ BMPDumper<GridCoordinate1D>::dumpGrid (Grid<GridCoordinate1D> &grid,
   const GridCoordinate1D& size = grid.getSize ();
 
   grid_coord sx = size.getX ();
-  std::cout << "Saving 1D to BMP image. Size: " << sx << "x1. " << std::endl;
+  std::cout << "Saving 1D Grid <" << grid.getName () << "> to BMP image. Size: " << sx << "x1. " << std::endl;
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);
@@ -40,7 +40,7 @@ BMPDumper<GridCoordinate2D>::dumpGrid (Grid<GridCoordinate2D> &grid,
   grid_coord sx = size.getX ();
   grid_coord sy = size.getY ();
 
-  std::cout << "Saving 2D to BMP image. Size: " << sx << "x" << sy << ". " << std::endl;
+  std::cout << "Saving 2D Grid <" << grid.getName () << "> to BMP image. Size: " << sx << "x" << sy << ". " << std::endl;
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);
@@ -67,7 +67,7 @@ BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> &grid,
   grid_coord sy = size.getY ();
   grid_coord sz = size.getZ ();
 
-  std::cout << "Saving 3D to BMP image. Size: " << sx << "x" << sy << "x" << sz << ". " << std::endl;
+  std::cout << "Saving 3D Grid <" << grid.getName () << "> to BMP image. Size: " << sx << "x" << sy << "x" << sz << ". " << std::endl;
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);
@@ -267,14 +267,18 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
+#if PRINT_MESSAGE
   printf ("MaxRe neg %f, maxRe pos %f, maxRe %f\n", maxNegRe, maxPosRe, maxRe);
+#endif /* PRINT_MESSAGE */
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
 
+#if PRINT_MESSAGE
   printf ("MaxIm neg %f, maxIm pos %f, maxIm %f\n", maxNegIm, maxPosIm, maxIm);
   printf ("MaxMod neg %f, maxMod pos %f, maxMod %f\n", maxNegMod, maxPosMod, maxMod);
+#endif /* PRINT_MESSAGE */
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
@@ -619,14 +623,18 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
+#if PRINT_MESSAGE
   printf ("MaxRe neg %f, maxRe pos %f, maxRe %f\n", maxNegRe, maxPosRe, maxRe);
+#endif /* PRINT_MESSAGE */
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
 
+#if PRINT_MESSAGE
   printf ("MaxIm neg %f, maxIm pos %f, maxIm %f\n", maxNegIm, maxPosIm, maxIm);
   printf ("MaxMod neg %f, maxMod pos %f, maxMod %f\n", maxNegMod, maxPosMod, maxMod);
+#endif /* PRINT_MESSAGE */
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
@@ -966,14 +974,18 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
+#if PRINT_MESSAGE
   printf ("MaxRe neg %f, maxRe pos %f, maxRe %f\n", maxNegRe, maxPosRe, maxRe);
+#endif /* PRINT_MESSAGE */
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
 
+#if PRINT_MESSAGE
   printf ("MaxIm neg %f, maxIm pos %f, maxIm %f\n", maxNegIm, maxPosIm, maxIm);
   printf ("MaxMod neg %f, maxMod pos %f, maxMod %f\n", maxNegMod, maxPosMod, maxMod);
+#endif /* PRINT_MESSAGE */
 #endif /* COMPLEX_FIELD_VALUES */
 
   grid_coord coordStart1, coordEnd1;

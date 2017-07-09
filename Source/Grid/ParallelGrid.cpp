@@ -42,12 +42,13 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
                             const ParallelGridCoordinate &bufSize, /**< buffer size */
                             time_step step, /**< start time step */
                             ParallelGridCoordinate curSize,  /**< size of grid for current node, received from layout */
-                            ParallelGridCoordinate coreCurSize) /**< size of grid per node which is same for all nodes
+                            ParallelGridCoordinate coreCurSize, /**< size of grid per node which is same for all nodes
                                                                  *   except the one at the right border
                                                                  *   (coreSizePerNode == sizeForCurNode for all nodes
                                                                  *   except theone at the right border) (is received
                                                                  *   from layout) */
-  : ParallelGridBase (step)
+                            const char * name) /**< name of grid */
+  : ParallelGridBase (step, name)
   , totalSize (totSize)
   , shareStep (0)
   , bufferSize (ParallelGridCoordinate (0))

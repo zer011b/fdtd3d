@@ -14,11 +14,6 @@
 #include "CudaInterface.h"
 #endif
 
-#ifdef CXX11_ENABLED
-#else
-#include "cstdlib"
-#endif
-
 #include "BMPDumper.h"
 #include "BMPLoader.h"
 #include "DATDumper.h"
@@ -30,128 +25,28 @@
 
 #include "PhysicsConst.h"
 
+#include "Settings.h"
+
+extern Settings solverSettings;
+
 int cudaThreadsX = 8;
 int cudaThreadsY = 8;
 int cudaThreadsZ = 8;
 
 int main (int argc, char** argv)
 {
-  int totalTimeSteps = 100;
+  solverSettings.setFromCmd (argc, argv);
 
 #ifdef GRID_2D
-  int gridSizeX = 100;
-  int gridSizeY = 100;
+  GridCoordinate2D overallSize (solverSettings.getSizeX (), solverSettings.getSizeY ());
+  GridCoordinate2D pmlSize (solverSettings.getPmlSizeX (), solverSettings.getPmlSizeY ());
+  GridCoordinate2D tfsfSize (solverSettings.getTfsfSizeX (), solverSettings.getTfsfSizeY ());
 #endif
 #ifdef GRID_3D
-  int gridSizeX = 100;
-  int gridSizeY = 100;
-  int gridSizeZ = 100;
+  GridCoordinate3D overallSize (solverSettings.getSizeX (), solverSettings.getSizeY (), solverSettings.getSizeZ ());
+  GridCoordinate3D pmlSize (solverSettings.getPmlSizeX (), solverSettings.getPmlSizeY (), solverSettings.getPmlSizeZ ());
+  GridCoordinate3D tfsfSize (solverSettings.getTfsfSizeX (), solverSettings.getTfsfSizeY (), solverSettings.getTfsfSizeZ ());
 #endif
-
-  int bufSize = 10;
-  bool dumpRes = false;
-
-  int numCudaGPUs = 1;
-
-  int dimension;
-  bool is_parallel_grid;
-
-#ifdef GRID_2D
-#ifdef CUDA_ENABLED
-  if (argc != 9)
-#else
-  if (argc != 7)
-#endif
-#endif
-#ifdef GRID_3D
-#ifdef CUDA_ENABLED
-  if (argc != 11)
-#else
-  if (argc != 8)
-#endif
-#endif
-  {
-    return 1;
-  }
-  else
-  {
-#ifdef CXX11_ENABLED
-#ifdef GRID_2D
-    totalTimeSteps = std::stoi (argv[1]);
-    gridSizeX = std::stoi (argv[2]);
-    gridSizeY = std::stoi (argv[3]);
-    bufSize = std::stoi (argv[4]);
-    dumpRes = (bool) std::stoi (argv[5]);
-#ifdef CUDA_ENABLED
-    numCudaGPUs = std::stoi (argv[6]);
-    cudaThreadsX = std::stoi (argv[7]);
-    cudaThreadsY = std::stoi (argv[8]);
-#endif
-#endif
-#ifdef GRID_3D
-    totalTimeSteps = std::stoi (argv[1]);
-    gridSizeX = std::stoi (argv[2]);
-    gridSizeY = std::stoi (argv[3]);
-    gridSizeZ = std::stoi (argv[4]);
-    bufSize = std::stoi (argv[5]);
-    dumpRes = (bool) std::stoi (argv[6]);
-#ifdef CUDA_ENABLED
-    numCudaGPUs = std::stoi (argv[7]);
-    cudaThreadsX = std::stoi (argv[8]);
-    cudaThreadsY = std::stoi (argv[9]);
-    cudaThreadsZ = std::stoi (argv[10]);
-#endif
-#endif
-#else
-#ifdef GRID_2D
-    totalTimeSteps = atoi (argv[1]);
-    gridSizeX = atoi (argv[2]);
-    gridSizeY = atoi (argv[3]);
-    bufSize = atoi (argv[4]);
-    dumpRes = (bool) atoi (argv[5]);
-#ifdef CUDA_ENABLED
-    numCudaGPUs = atoi (argv[6]);
-    cudaThreadsX = atoi (argv[7]);
-    cudaThreadsY = atoi (argv[8]);
-#endif
-#endif
-#ifdef GRID_3D
-    totalTimeSteps = atoi (argv[1]);
-    gridSizeX = atoi (argv[2]);
-    gridSizeY = atoi (argv[3]);
-    gridSizeZ = atoi (argv[4]);
-    bufSize = atoi (argv[5]);
-    dumpRes = (bool) atoi (argv[6]);
-#ifdef CUDA_ENABLED
-    numCudaGPUs = atoi (argv[7]);
-    cudaThreadsX = atoi (argv[8]);
-    cudaThreadsY = atoi (argv[9]);
-    cudaThreadsZ = atoi (argv[10]);
-#endif
-#endif
-#endif
-  }
-
-  const clock_t begin_time = clock();
-  struct timeval  tv1, tv2;
-  gettimeofday(&tv1, NULL);
-
-#ifdef GRID_2D
-  GridCoordinate2D overallSize (gridSizeX, gridSizeY);
-  GridCoordinate2D pmlSize (10, 10);
-  GridCoordinate2D tfsfSize (20, 20);
-#endif
-#ifdef GRID_3D
-  GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
-  GridCoordinate3D pmlSize (10, 10, 10);
-  GridCoordinate3D tfsfSize (17, 17, 17);
-#endif
-
-  FPValue incidentWaveAngle1 = PhysicsConst::Pi / 2; /**< teta */
-  FPValue incidentWaveAngle2 = atoi(argv[argc - 1])*PhysicsConst::Pi / 180; /**< phi */
-  FPValue incidentWaveAngle3 = PhysicsConst::Pi / 2; /**< psi */
-
-  bool isDoubleMaterialPrecision = false;
 
 #if defined (PARALLEL_GRID)
   MPI_Init(&argc, &argv);
@@ -168,57 +63,95 @@ int main (int argc, char** argv)
   ParallelGridCore parallelGridCore (rank, numProcs, overallSize);
   ParallelGrid::initializeParallelCore (&parallelGridCore);
 
-  is_parallel_grid = true;
+  bool is_parallel_grid = true;
 
-  ParallelYeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, incidentWaveAngle1, incidentWaveAngle2, incidentWaveAngle3, isDoubleMaterialPrecision);
+  ParallelYeeGridLayout yeeLayout (overallSize,
+                                   pmlSize,
+                                   tfsfSize,
+                                   solverSettings.getIncidentWaveAngle1 (),
+                                   solverSettings.getIncidentWaveAngle2 (),
+                                   solverSettings.getIncidentWaveAngle3 (),
+                                   solverSettings.getIsDoubleMaterialPrecision ());
   yeeLayout.Initialize (parallelGridCore);
 #else /* PARALLEL_GRID */
-  is_parallel_grid = false;
+  bool is_parallel_grid = false;
 
-  YeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, incidentWaveAngle1, incidentWaveAngle2, incidentWaveAngle3, isDoubleMaterialPrecision);
+  YeeGridLayout yeeLayout (overallSize,
+                           pmlSize,
+                           tfsfSize,
+                           solverSettings.getIncidentWaveAngle1 (),
+                           solverSettings.getIncidentWaveAngle2 (),
+                           solverSettings.getIncidentWaveAngle3 (),
+                           solverSettings.getIsDoubleMaterialPrecision ());
 #endif /* !PARALLEL_GRID */
 
 #ifdef CUDA_ENABLED
   cudaInfo ();
 
 #if defined (PARALLEL_GRID)
-  cudaInit (rank % numCudaGPUs);
+  cudaInit (rank % solverSettings.getNumCudaGPUs ());
 #else
-  cudaInit (numCudaGPUs);
+  cudaInit (solverSettings.getNumCudaGPUs ());
 #endif
-#endif
-
-#ifdef GRID_2D
-  dimension = 2;
-#endif
-#ifdef GRID_3D
-  dimension = 3;
 #endif
 
 #if defined (PARALLEL_GRID)
-  ParallelGridCoordinate bufferSize (bufSize);
+  ParallelGridCoordinate bufferSize (solverSettings.getBufSize ());
 
 #ifdef GRID_2D
-  SchemeTMz scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, incidentWaveAngle2, true, dumpRes);
+  SchemeTMz scheme (&yeeLayout, overallSize, bufferSize,
+                    solverSettings.getNumTimeSteps (),
+                    solverSettings.getIsAmplitudeMode (),
+                    solverSettings.getAmplitudeTimeSteps (),
+                    solverSettings.getDoUsePML (),
+                    solverSettings.getDoUseTFSF (),
+                    solverSettings.getIncidentWaveAngle2 (),
+                    solverSettings.getDoUseMetamaterials (),
+                    solverSettings.getDoDumpRes ());
 #endif
 #ifdef GRID_3D
-  Scheme3D scheme (&yeeLayout, overallSize, bufferSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, false, false, dumpRes);
+  Scheme3D scheme (&yeeLayout, overallSize, bufferSize,
+                   solverSettings.getNumTimeSteps (),
+                   solverSettings.getIsAmplitudeMode (),
+                   solverSettings.getAmplitudeTimeSteps (),
+                   solverSettings.getDoUsePML (),
+                   solverSettings.getDoUseTFSF (),
+                   solverSettings.getDoUseMetamaterials (),
+                   solverSettings.getDoUseNTFF (),
+                   solverSettings.getDoDumpRes ());
 #endif
 #else
 #ifdef GRID_2D
-  SchemeTMz scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, incidentWaveAngle2, true, dumpRes);
+  SchemeTMz scheme (&yeeLayout, overallSize,
+                    solverSettings.getNumTimeSteps (),
+                    solverSettings.getIsAmplitudeMode (),
+                    solverSettings.getAmplitudeTimeSteps (),
+                    solverSettings.getDoUsePML (),
+                    solverSettings.getDoUseTFSF (),
+                    solverSettings.getIncidentWaveAngle2 (),
+                    solverSettings.getDoUseMetamaterials (),
+                    solverSettings.getDoDumpRes ());
 #endif
 #ifdef GRID_3D
-  Scheme3D scheme (&yeeLayout, overallSize, totalTimeSteps, false, 2 * totalTimeSteps, true, true, false, false, dumpRes);
+  Scheme3D scheme (&yeeLayout, overallSize,
+                   solverSettings.getNumTimeSteps (),
+                   solverSettings.getIsAmplitudeMode (),
+                   solverSettings.getAmplitudeTimeSteps (),
+                   solverSettings.getDoUsePML (),
+                   solverSettings.getDoUseTFSF (),
+                   solverSettings.getDoUseMetamaterials (),
+                   solverSettings.getDoUseNTFF (),
+                   solverSettings.getDoDumpRes ());
 #endif
 #endif
 
-#undef SCHEME
-
-  scheme.initScheme (0.01 / 20, /* dx */
-                     PhysicsConst::SpeedOfLight / (0.02)); /* source frequency */
+  scheme.initScheme (solverSettings.getDx (), /* dx */
+                     PhysicsConst::SpeedOfLight / solverSettings.getSourceWavelength ()); /* source frequency */
 
   scheme.initGrids ();
+
+  struct timeval tv1, tv2;
+  gettimeofday(&tv1, NULL);
 
   scheme.performSteps ();
 
@@ -237,19 +170,18 @@ int main (int argc, char** argv)
   {
 #endif /* PARALLEL_GRID */
 
-    const clock_t end_time = clock();
     printf ("Total time = %f seconds\n",
          (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec));
 
-    printf ("Dimension: %d\n", dimension);
+    printf ("Dimension: %d\n", solverSettings.getDimension ());
 #ifdef GRID_2D
-    printf ("Grid size: %dx%d\n", gridSizeX, gridSizeY);
+    printf ("Grid size: %dx%d\n", solverSettings.getSizeX (), solverSettings.getSizeY ());
 #endif
 #ifdef GRID_3D
-    printf ("Grid size: %dx%dx%d\n", gridSizeX, gridSizeY, gridSizeZ);
+    printf ("Grid size: %dx%dx%d\n", solverSettings.getSizeX (), solverSettings.getSizeY (), solverSettings.getSizeZ ());
 #endif
-    printf ("Number of time steps: %d\n", totalTimeSteps);
+    printf ("Number of time steps: %d\n", solverSettings.getNumTimeSteps ());
 
     printf ("\n");
 
@@ -298,14 +230,8 @@ int main (int argc, char** argv)
     printf ("Parallel grid scheme: XYZ\n");
 #endif
 
-    printf ("Buffer size: %d\n", bufSize);
+    printf ("Buffer size: %d\n", solverSettings.getBufSize ());
 #endif
-
-    printf ("\n-------- Execution Time --------\n");
-
-    FPValue execution_time = (FPValue) (((FPValue) (end_time - begin_time)) /  CLOCKS_PER_SEC);
-
-    printf ("Execution time (by clock()): %f seconds.\n", execution_time);
 
 #if defined (PARALLEL_GRID)
   }

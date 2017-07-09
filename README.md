@@ -70,7 +70,9 @@ Example of launch command for 2D build
 
 ```sh
 cd Release/Source
-./fdtd3d 100 100 100 1 1
+./fdtd3d --help
+
+./fdtd3d --save-res --time-steps 10 --sizex 80 --same-size --use-tfsf --3d --angle-phi 0 --use-pml --dx 0.0005 --wavelength 0.02
 ```
 
 # About

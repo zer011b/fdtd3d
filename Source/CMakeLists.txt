@@ -55,6 +55,10 @@ include_directories ("${PROJECT_SOURCE_DIR}/Source/Scheme")
 add_subdirectory (Scheme)
 set (LIBS ${LIBS} Scheme)
 
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Settings/")
+add_subdirectory (Settings)
+set (LIBS ${LIBS} Settings)
+
 if ("${CUDA_ENABLED}")
   cuda_add_executable(fdtd3d main.cpp)
 else ()

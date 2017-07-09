@@ -3,35 +3,10 @@
 
 #include "GridCoordinate3D.h"
 
-#ifdef CXX11_ENABLED
-#define ENUM_CLASS(name, type, ...) \
-  enum class name : type \
-  { \
-    __VA_ARGS__ \
-  };
-#else /* CXX11_ENABLED */
-#define ENUM_CLASS(name, type, ...) \
-  class name \
-  { \
-    public: \
-    \
-    enum Temp { __VA_ARGS__ }; \
-    \
-    name (Temp new_val) : temp (new_val) {} \
-    \
-    operator type () { return temp; } \
-    \
-  private: \
-    Temp temp; \
-  };
-#endif /* !CXX11_ENABLED */
-
 /**
  * Direction in which to get circut elements
- *
- * FIXME: add base type of uint32_t
  */
-ENUM_CLASS(LayoutDirection, uint8_t,
+ENUM_CLASS (LayoutDirection, uint8_t,
   LEFT, /**< left by Ox */
   RIGHT, /**< right by Ox */
   DOWN, /**< left by Oy */
@@ -43,7 +18,7 @@ ENUM_CLASS(LayoutDirection, uint8_t,
 /**
  * Type of electromagnetic field.
  */
-ENUM_CLASS(GridType, uint8_t,
+ENUM_CLASS (GridType, uint8_t,
   EX,
   EY,
   EZ,
