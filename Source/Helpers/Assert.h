@@ -111,4 +111,7 @@ void program_fail ();
 #define STOF(str) atof (str)
 #endif /* !CXX11_ENABLED */
 
+#define EXIT_OK 0x0
+#define EXIT_UNKNOWN_OPTION 0xb
+
 #endif /* ASSERT_H */
