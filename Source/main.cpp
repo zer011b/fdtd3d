@@ -39,13 +39,13 @@ int main (int argc, char** argv)
 
 #ifdef GRID_2D
   GridCoordinate2D overallSize (solverSettings.getSizeX (), solverSettings.getSizeY ());
-  GridCoordinate2D pmlSize (solverSettings.getPmlSizeX (), solverSettings.getPmlSizeY ());
-  GridCoordinate2D tfsfSize (solverSettings.getTfsfSizeX (), solverSettings.getTfsfSizeY ());
+  GridCoordinate2D pmlSize (solverSettings.getPMLSizeX (), solverSettings.getPMLSizeY ());
+  GridCoordinate2D tfsfSize (solverSettings.getTFSFSizeX (), solverSettings.getTFSFSizeY ());
 #endif
 #ifdef GRID_3D
   GridCoordinate3D overallSize (solverSettings.getSizeX (), solverSettings.getSizeY (), solverSettings.getSizeZ ());
-  GridCoordinate3D pmlSize (solverSettings.getPmlSizeX (), solverSettings.getPmlSizeY (), solverSettings.getPmlSizeZ ());
-  GridCoordinate3D tfsfSize (solverSettings.getTfsfSizeX (), solverSettings.getTfsfSizeY (), solverSettings.getTfsfSizeZ ());
+  GridCoordinate3D pmlSize (solverSettings.getPMLSizeX (), solverSettings.getPMLSizeY (), solverSettings.getPMLSizeZ ());
+  GridCoordinate3D tfsfSize (solverSettings.getTFSFSizeX (), solverSettings.getTFSFSizeY (), solverSettings.getTFSFSizeZ ());
 #endif
 
 #if defined (PARALLEL_GRID)
@@ -71,7 +71,7 @@ int main (int argc, char** argv)
                                    solverSettings.getIncidentWaveAngle1 (),
                                    solverSettings.getIncidentWaveAngle2 (),
                                    solverSettings.getIncidentWaveAngle3 (),
-                                   solverSettings.getIsDoubleMaterialPrecision ());
+                                   solverSettings.getDoUseDoubleMaterialPrecision ());
   yeeLayout.Initialize (parallelGridCore);
 #else /* PARALLEL_GRID */
   bool is_parallel_grid = false;
@@ -82,7 +82,7 @@ int main (int argc, char** argv)
                            solverSettings.getIncidentWaveAngle1 (),
                            solverSettings.getIncidentWaveAngle2 (),
                            solverSettings.getIncidentWaveAngle3 (),
-                           solverSettings.getIsDoubleMaterialPrecision ());
+                           solverSettings.getDoUseDoubleMaterialPrecision ());
 #endif /* !PARALLEL_GRID */
 
 #ifdef CUDA_ENABLED
@@ -101,52 +101,52 @@ int main (int argc, char** argv)
 #ifdef GRID_2D
   SchemeTMz scheme (&yeeLayout, overallSize, bufferSize,
                     solverSettings.getNumTimeSteps (),
-                    solverSettings.getIsAmplitudeMode (),
-                    solverSettings.getAmplitudeTimeSteps (),
+                    solverSettings.getDoUseAmplitudeMode (),
+                    solverSettings.getNumAmplitudeSteps (),
                     solverSettings.getDoUsePML (),
                     solverSettings.getDoUseTFSF (),
                     solverSettings.getIncidentWaveAngle2 (),
                     solverSettings.getDoUseMetamaterials (),
-                    solverSettings.getDoDumpRes ());
+                    solverSettings.getDoSaveRes ());
 #endif
 #ifdef GRID_3D
   Scheme3D scheme (&yeeLayout, overallSize, bufferSize,
                    solverSettings.getNumTimeSteps (),
-                   solverSettings.getIsAmplitudeMode (),
-                   solverSettings.getAmplitudeTimeSteps (),
+                   solverSettings.getDoUseAmplitudeMode (),
+                   solverSettings.getNumAmplitudeSteps (),
                    solverSettings.getDoUsePML (),
                    solverSettings.getDoUseTFSF (),
                    solverSettings.getDoUseMetamaterials (),
                    solverSettings.getDoUseNTFF (),
-                   solverSettings.getDoDumpRes ());
+                   solverSettings.getDoSaveRes ());
 #endif
 #else
 #ifdef GRID_2D
   SchemeTMz scheme (&yeeLayout, overallSize,
                     solverSettings.getNumTimeSteps (),
-                    solverSettings.getIsAmplitudeMode (),
-                    solverSettings.getAmplitudeTimeSteps (),
+                    solverSettings.getDoUseAmplitudeMode (),
+                    solverSettings.getNumAmplitudeSteps (),
                     solverSettings.getDoUsePML (),
                     solverSettings.getDoUseTFSF (),
                     solverSettings.getIncidentWaveAngle2 (),
                     solverSettings.getDoUseMetamaterials (),
-                    solverSettings.getDoDumpRes ());
+                    solverSettings.getDoSaveRes ());
 #endif
 #ifdef GRID_3D
   Scheme3D scheme (&yeeLayout, overallSize,
                    solverSettings.getNumTimeSteps (),
-                   solverSettings.getIsAmplitudeMode (),
-                   solverSettings.getAmplitudeTimeSteps (),
+                   solverSettings.getDoUseAmplitudeMode (),
+                   solverSettings.getNumAmplitudeSteps (),
                    solverSettings.getDoUsePML (),
                    solverSettings.getDoUseTFSF (),
                    solverSettings.getDoUseMetamaterials (),
                    solverSettings.getDoUseNTFF (),
-                   solverSettings.getDoDumpRes ());
+                   solverSettings.getDoSaveRes ());
 #endif
 #endif
 
-  scheme.initScheme (solverSettings.getDx (), /* dx */
-                     PhysicsConst::SpeedOfLight / solverSettings.getSourceWavelength ()); /* source frequency */
+  scheme.initScheme (solverSettings.getGridStep (), /* dx */
+                     PhysicsConst::SpeedOfLight / solverSettings.getSourceWaveLength ()); /* source frequency */
 
   scheme.initGrids ();
 
@@ -237,5 +237,5 @@ int main (int argc, char** argv)
   }
 #endif /* PARALLEL_GRID */
 
-  return 0;
+  return EXIT_OK;
 }

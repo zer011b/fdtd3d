@@ -66,12 +66,15 @@ If any of the flags change or some new are added, testing scripts should be upda
 
 # Launch
 
-Example of launch command for 2D build
-
 ```sh
 cd Release/Source
+# show help
 ./fdtd3d --help
 
+# show version of solver
+./fdtd3d --version
+
+# example of launch command for 3D build
 ./fdtd3d --save-res --time-steps 10 --sizex 80 --same-size --use-tfsf --3d --angle-phi 0 --use-pml --dx 0.0005 --wavelength 0.02
 ```
 
