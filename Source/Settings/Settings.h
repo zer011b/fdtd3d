@@ -1,8 +1,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include "FieldValue.h"
 #include "Assert.h"
+#include "FieldValue.h"
 #include "PhysicsConst.h"
 
 #define SOLVER_VERSION "0.2.2"
@@ -51,8 +51,16 @@ private:
   SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
   SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
-#define SETTINGS_ELEM_OPTION(cmdArg, hasArg, argType, description)
+#define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description)
+#define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description)
 #include "Settings.inc"
+
+private:
+
+  int parseArg (int &, int, char **);
+  int setFromCmd (int, int, char **);
+  int loadFromFile (std::string);
+  int saveToFile (std::string);
 
 public:
 
@@ -71,7 +79,8 @@ public:
     SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
     SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
-#define SETTINGS_ELEM_OPTION(cmdArg, hasArg, argType, description)
+#define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description)
+#define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description)
 #include "Settings.inc"
   {
   } /* Settings */
@@ -83,7 +92,7 @@ public:
   {
   } /* ~Settings */
 
-  void setFromCmd (int, char **);
+  void SetupFromCmd (int, char **);
 
 #define SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
   fieldType getterName () \
@@ -98,7 +107,8 @@ public:
   SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
   SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
-#define SETTINGS_ELEM_OPTION(cmdArg, hasArg, argType, description)
+#define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description)
+#define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description)
 #include "Settings.inc"
 
   /**

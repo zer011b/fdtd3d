@@ -25,8 +25,8 @@
 /*
  * Calculation mode
  */
-SETTINGS_ELEM_OPTION("--2d", false, ArgType::TYPE_NONE, "2D mode computations")
-SETTINGS_ELEM_OPTION("--3d", false, ArgType::TYPE_NONE, "3D mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--2d", "2D mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--3d", "3D mode computations")
 SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(logLevel, getLogLevel, LogLevelType, LogLevelType::LOG_LEVEL_NONE, "--log-level", "Log level of fdtd3d (0,1,2,3)")
 
 /*
@@ -35,7 +35,7 @@ SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(logLevel, getLogLevel, LogLevelType, LogLevel
 SETTINGS_ELEM_FIELD_TYPE_INT(sizeX, getSizeX, grid_coord, 100, "--sizex", "Size of calculation area by x coordinate")
 SETTINGS_ELEM_FIELD_TYPE_INT(sizeY, getSizeY, grid_coord, 100, "--sizey", "Size of calculation area by y coordinate")
 SETTINGS_ELEM_FIELD_TYPE_INT(sizeZ, getSizeZ, grid_coord, 100, "--sizez", "Size of calculation area by z coordinate")
-SETTINGS_ELEM_OPTION("--same-size", false, ArgType::TYPE_NONE, "Use size of calculation area by x coordinate for y and z coordinates too")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size", "Use size of calculation area by x coordinate for y and z coordinates too")
 
 /*
  * Size of PML area
@@ -43,7 +43,7 @@ SETTINGS_ELEM_OPTION("--same-size", false, ArgType::TYPE_NONE, "Use size of calc
 SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeX, getPMLSizeX, grid_coord, 10, "--pml-sizex", "Size of PML area by x coordinate. PML of this size will be applied to both left and right borders of area by x coordinate")
 SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeY, getPMLSizeY, grid_coord, 10, "--pml-sizey", "Size of PML area by y coordinate. PML of this size will be applied to both left and right borders of area by y coordinate")
 SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeZ, getPMLSizeZ, grid_coord, 10, "--pml-sizez", "Size of PML area by z coordinate. PML of this size will be applied to both left and right borders of area by z coordinate")
-SETTINGS_ELEM_OPTION("--same-size-pml", false, ArgType::TYPE_NONE, "Use size of PML area by x coordinate for y and z coordinates too")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-pml", "Use size of PML area by x coordinate for y and z coordinates too")
 
 /*
  * Size of tfsf area
@@ -51,7 +51,7 @@ SETTINGS_ELEM_OPTION("--same-size-pml", false, ArgType::TYPE_NONE, "Use size of 
 SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeX, getTFSFSizeX, grid_coord, 20, "--tfsf-sizex", "Size of TF/SF scattered area by x coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by x coordinate")
 SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeY, getTFSFSizeY, grid_coord, 20, "--tfsf-sizey", "Size of TF/SF scattered area by y coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by y coordinate")
 SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeZ, getTFSFSizeZ, grid_coord, 20, "--tfsf-sizez", "Size of TF/SF scattered area by z coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by z coordinate")
-SETTINGS_ELEM_OPTION("--same-size-tfsf", false, ArgType::TYPE_NONE, "Use size of TF/SF scattered area by x coordinate for y and z coordinates too")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-tfsf", "Use size of TF/SF scattered area by x coordinate for y and z coordinates too")
 
 /*
  * Size of ntff area
@@ -59,7 +59,7 @@ SETTINGS_ELEM_OPTION("--same-size-tfsf", false, ArgType::TYPE_NONE, "Use size of
 SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeX, getNTFFSizeX, grid_coord, 15, "--ntff-sizex", "Size of NTFF area by x coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by x coordinate")
 SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeY, getNTFFSizeY, grid_coord, 15, "--ntff-sizey", "Size of NTFF area by y coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by y coordinate")
 SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeZ, getNTFFSizeZ, grid_coord, 15, "--ntff-sizez", "Size of NTFF area by z coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by z coordinate")
-SETTINGS_ELEM_OPTION("--same-size-ntff", false, ArgType::TYPE_NONE, "Use size of NTFF area by x coordinate for y and z coordinates too")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-ntff", "Use size of NTFF area by x coordinate for y and z coordinates too")
 
 /*
  * Time steps
@@ -86,7 +86,7 @@ SETTINGS_ELEM_FIELD_TYPE_STRING(fileWithAvailableTopologies, getFileWithAvailabl
 SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeX, getTopologySizeX, int, 1, "--topology-sizex", "Size by x coordinate of virtual topology")
 SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeY, getTopologySizeY, int, 1, "--topology-sizey", "Size by y coordinate of virtual topology")
 SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeZ, getTopologySizeZ, int, 1, "--topology-sizez", "Size by z coordinate of virtual topology")
-SETTINGS_ELEM_OPTION("--same-size-topology", false, ArgType::TYPE_NONE, "Use size of topology by x coordinate for y and z coordinates too")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-topology", "Use size of topology by x coordinate for y and z coordinates too")
 
 /*
  * Computation mode flags
@@ -114,28 +114,36 @@ SETTINGS_ELEM_FIELD_TYPE_INT(intermediateSaveStep, getIntermediateSaveStep, time
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveScatteredFieldRes, getDoSaveScatteredFieldRes, bool, false, "--save-scattered-field-res", "Save scattered field for result")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveScatteredFieldIntermediate, getDoSaveScatteredFieldIntermediate, bool, false, "--save-scattered--field-interm", "Save scattered field for intermediate")
 
+SETTINGS_ELEM_OPTION_TYPE_STRING("--cmd-from-file", "Load command line from file. Cmd file has the next format:\n"
+                                                    "\t\t<cmd with arg>\n"
+                                                    "\t\t<value>\n"
+                                                    "\t\t<cmd with arg>\n"
+                                                    "\t\t<value>\n"
+                                                    "\t\t<cmd without arg>\n"
+                                                    "\t\t<cmd without arg>\n")
 
 /*
-    else if ("--load-from-file")
+ * TODO: add
+ * --load-from-file
+ * --use-point-source
+ * --gather-full-grid
+ * --save-Ex-only
+ * --save-Ey-only
+ * --save-Ez-only
+ * --save-Hx-only
+ * --save-Hy-only
+ * --save-Hz-only
+ * --save-as-bmp
+ * --save-as-dat
+ * --save-as-txt
+ * --dumper-pallete
+ * --dumper-start-coord
+ * --dumper-end-coord
+ * --dumper-orth-axis
+ */
 
-    else if ("--use-point-source")
-    else if ("--gather-full-grid")
-    else if ("--save-Ex-only")
-    else if ("--save-Ey-only")
-    else if ("--save-Ez-only")
-    else if ("--save-Hx-only")
-    else if ("--save-Hy-only")
-    else if ("--save-Hz-only")
-    else if ("--save-as-bmp")
-    else if ("--save-as-dat")
-    else if ("--save-as-txt")
-    --dumper-pallete
-    --dumper-start-coord
-    --dumper-end-coord
-    --dumper-orth-axis
-*/
-
-#undef SETTINGS_ELEM_OPTION
+#undef SETTINGS_ELEM_OPTION_TYPE_NONE
+#undef SETTINGS_ELEM_OPTION_TYPE_STRING
 #undef SETTINGS_ELEM_FIELD_TYPE_NONE
 #undef SETTINGS_ELEM_FIELD_TYPE_INT
 #undef SETTINGS_ELEM_FIELD_TYPE_FLOAT

@@ -35,7 +35,7 @@ int cudaThreadsZ = 8;
 
 int main (int argc, char** argv)
 {
-  solverSettings.setFromCmd (argc, argv);
+  solverSettings.SetupFromCmd (argc, argv);
 
 #ifdef GRID_2D
   GridCoordinate2D overallSize (solverSettings.getSizeX (), solverSettings.getSizeY ());
