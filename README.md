@@ -76,6 +76,27 @@ cd Release/Source
 
 # example of launch command for 3D build
 ./fdtd3d --save-res --time-steps 10 --sizex 80 --same-size --use-tfsf --3d --angle-phi 0 --use-pml --dx 0.0005 --wavelength 0.02
+
+# example of launch with command line file
+./fdtd3d --cmd-from-file cmd.txt
+
+# with cmd.txt file having the next format
+#
+# --save-res
+# --time-steps
+# 1
+# --sizex
+# 80
+# --same-size
+# --use-tfsf
+# --3d
+# --angle-phi
+# 0
+# --use-pml
+# --dx
+# 0.0005
+# --wavelength
+# 0.02
 ```
 
 # About

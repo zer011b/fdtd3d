@@ -169,7 +169,7 @@ Grid<TCoord>::deleteGrid ()
  */
 template <class TCoord>
 void
-Grid<TCoord>::copyGrid (const Grid<TCoord> &grid) /*< grid to copy */
+Grid<TCoord>::copyGrid (const Grid<TCoord> &grid) /**< grid to copy */
 {
   size = grid.size;
   gridValues.resize (grid.gridValues.size ());
@@ -189,7 +189,7 @@ Grid<TCoord>::copyGrid (const Grid<TCoord> &grid) /*< grid to copy */
  */
 template <class TCoord>
 Grid<TCoord> &
-Grid<TCoord>::operator = (const Grid<TCoord> &grid) /*< grid to assign */
+Grid<TCoord>::operator = (const Grid<TCoord> &grid) /**< grid to assign */
 {
   deleteGrid ();
   copyGrid (grid);

@@ -112,6 +112,8 @@ void program_fail ();
 #endif /* !CXX11_ENABLED */
 
 #define EXIT_OK 0x0
+#define EXIT_BREAK_ARG_PARSING 0x1
+#define EXIT_ERROR 0xa
 #define EXIT_UNKNOWN_OPTION 0xb
 
 #endif /* ASSERT_H */
