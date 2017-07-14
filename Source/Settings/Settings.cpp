@@ -19,7 +19,8 @@ Settings solverSettings;
 int
 Settings::parseArg (int &index, /**< out: current argument index */
                     int argc, /**< total number of indexes */
-                    char **argv) /**< vector of cmd args */
+                    char **argv, /**< vector of cmd args */
+                    bool isCmd) /**< flag, whether argumens are passed through actual command line */
 {
   ASSERT (index >= 0 && index < argc);
 
@@ -32,13 +33,13 @@ Settings::parseArg (int &index, /**< out: current argument index */
 #define SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
     printf ("  %s\n\t%s\n", cmdArg, description);
 #define SETTINGS_ELEM_FIELD_TYPE_INT(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
-    printf ("  %s <int>\n\t%s\n", cmdArg, description);
+    printf ("  %s <int> (default: %d)\n\t%s\n", cmdArg, defaultVal, description);
 #define SETTINGS_ELEM_FIELD_TYPE_FLOAT(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
-    printf ("  %s <float>\n\t%s\n", cmdArg, description);
+    printf ("  %s <float> (default: %f)\n\t%s\n", cmdArg, defaultVal, description);
 #define SETTINGS_ELEM_FIELD_TYPE_STRING(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
-    printf ("  %s <string>\n\t%s\n", cmdArg, description);
+    printf ("  %s <string> (default: %s)\n\t%s\n", cmdArg, defaultVal, description);
 #define SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
-    printf ("  %s <int>\n\t%s\n", cmdArg, description);
+    printf ("  %s <int> (default: 0)\n\t%s\n", cmdArg, description);
 #define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description) \
     printf ("  %s\n\t%s\n", cmdArg, description);
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description) \
@@ -143,6 +144,12 @@ Settings::parseArg (int &index, /**< out: current argument index */
   }
   else if (strcmp (argv[index], "--cmd-from-file") == 0)
   {
+    if (!isCmd)
+    {
+      printf ("Command line files are not allowed in other command line files.\n");
+      return EXIT_ERROR;
+    }
+
     if (argc != 3)
     {
       printf ("Command line files are allowed only without other options.\n");
@@ -151,7 +158,7 @@ Settings::parseArg (int &index, /**< out: current argument index */
 
     ++index;
     ASSERT (index >= 0 && index < argc);
-    int status = loadFromFile (argv[index]);
+    int status = loadCmdFromFile (argv[index]);
 
     if (status == EXIT_ERROR)
     {
@@ -159,6 +166,12 @@ Settings::parseArg (int &index, /**< out: current argument index */
     }
 
     return status;
+  }
+  else if (strcmp (argv[index], "--save-cmd-to-file") == 0)
+  {
+    ++index;
+    ASSERT (index >= 0 && index < argc);
+    int status = saveCmdToFile (argc, argv, argv[index]);
   }
   else
   {
@@ -175,13 +188,13 @@ Settings::parseArg (int &index, /**< out: current argument index */
  * @return exit code
  */
 int
-Settings::setFromCmd (int start_index, /**< index to start arguments parsing */
-                      int argc, /**< number of arguments */
-                      char **argv) /**< arguments */
+Settings::setFromCmd (int argc, /**< number of arguments */
+                      char **argv, /**< arguments */
+                      bool isCmd) /**< flag, whether argumens are passed through actual command line */
 {
-  for (int i = start_index; i < argc; ++i)
+  for (int i = (isCmd ? 1 : 0); i < argc; ++i)
   {
-    int status = parseArg (i, argc, argv);
+    int status = parseArg (i, argc, argv, isCmd);
 
     switch (status)
     {
@@ -211,7 +224,7 @@ Settings::setFromCmd (int start_index, /**< index to start arguments parsing */
  * @return exit code
  */
 int
-Settings::loadFromFile (std::string fileName) /**< name of file to load from */
+Settings::loadCmdFromFile (std::string fileName) /**< name of file to load from */
 {
   printf ("Loading command line from file %s\n", fileName.c_str ());
 
@@ -238,7 +251,7 @@ Settings::loadFromFile (std::string fileName) /**< name of file to load from */
     ++index;
   }
 
-  int status = setFromCmd (0, argc, argv);
+  int status = setFromCmd (argc, argv, false);
 
   for (int i = 0; i < argc; ++i)
   {
@@ -249,13 +262,36 @@ Settings::loadFromFile (std::string fileName) /**< name of file to load from */
   infile.close ();
 
   return status;
-} /* Settings::loadFromFile */
+} /* Settings::loadCmdFromFile */
 
+/**
+ * Save command line arguments to file
+ *
+ * @return exit code
+ */
 int
-Settings::saveToFile (std::string fileName) /**< name of file to save to */
+Settings::saveCmdToFile (int argc, /**< number of arguments */
+                         char **argv, /**< arguments */
+                         std::string fileName) /**< name of file to save to */
 {
+  printf ("Saving command line to file %s\n", fileName.c_str ());
 
-}
+  std::ofstream outfile(fileName);
+
+  for (int i = 1; i < argc; ++i)
+  {
+    if (strcmp (argv[i], "--save-cmd-to-file") == 0)
+    {
+      ++i;
+    }
+    else
+    {
+      outfile << argv[i] << std::endl;
+    }
+  }
+
+  return EXIT_OK;
+} /* Settings::saveCmdToFile */
 
 /**
  * Set settings from command line arguments
@@ -264,7 +300,7 @@ void
 Settings::SetupFromCmd (int argc, /**< number of arguments */
                         char **argv) /**< arguments */
 {
-  int status = setFromCmd (1, argc, argv);
+  int status = setFromCmd (argc, argv, true);
 
   switch (status)
   {

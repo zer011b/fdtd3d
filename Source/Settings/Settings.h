@@ -57,10 +57,10 @@ private:
 
 private:
 
-  int parseArg (int &, int, char **);
-  int setFromCmd (int, int, char **);
-  int loadFromFile (std::string);
-  int saveToFile (std::string);
+  int parseArg (int &, int, char **, bool);
+  int setFromCmd (int, char **, bool);
+  int loadCmdFromFile (std::string);
+  int saveCmdToFile (int, char **, std::string);
 
 public:
 
