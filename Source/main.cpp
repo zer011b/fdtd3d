@@ -68,9 +68,9 @@ int main (int argc, char** argv)
   ParallelYeeGridLayout yeeLayout (overallSize,
                                    pmlSize,
                                    tfsfSize,
-                                   solverSettings.getIncidentWaveAngle1 (),
-                                   solverSettings.getIncidentWaveAngle2 (),
-                                   solverSettings.getIncidentWaveAngle3 (),
+                                   solverSettings.getIncidentWaveAngle1 () * PhysicsConst::Pi / 180.0,
+                                   solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
+                                   solverSettings.getIncidentWaveAngle3 () * PhysicsConst::Pi / 180.0,
                                    solverSettings.getDoUseDoubleMaterialPrecision ());
   yeeLayout.Initialize (parallelGridCore);
 #else /* PARALLEL_GRID */
@@ -79,9 +79,9 @@ int main (int argc, char** argv)
   YeeGridLayout yeeLayout (overallSize,
                            pmlSize,
                            tfsfSize,
-                           solverSettings.getIncidentWaveAngle1 (),
-                           solverSettings.getIncidentWaveAngle2 (),
-                           solverSettings.getIncidentWaveAngle3 (),
+                           solverSettings.getIncidentWaveAngle1 () * PhysicsConst::Pi / 180.0,
+                           solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
+                           solverSettings.getIncidentWaveAngle3 () * PhysicsConst::Pi / 180.0,
                            solverSettings.getDoUseDoubleMaterialPrecision ());
 #endif /* !PARALLEL_GRID */
 
@@ -105,7 +105,7 @@ int main (int argc, char** argv)
                     solverSettings.getNumAmplitudeSteps (),
                     solverSettings.getDoUsePML (),
                     solverSettings.getDoUseTFSF (),
-                    solverSettings.getIncidentWaveAngle2 (),
+                    solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
                     solverSettings.getDoUseMetamaterials (),
                     solverSettings.getDoSaveRes ());
 #endif
@@ -128,7 +128,7 @@ int main (int argc, char** argv)
                     solverSettings.getNumAmplitudeSteps (),
                     solverSettings.getDoUsePML (),
                     solverSettings.getDoUseTFSF (),
-                    solverSettings.getIncidentWaveAngle2 (),
+                    solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
                     solverSettings.getDoUseMetamaterials (),
                     solverSettings.getDoSaveRes ());
 #endif

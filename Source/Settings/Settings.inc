@@ -70,9 +70,9 @@ SETTINGS_ELEM_FIELD_TYPE_INT(numAmplitudeTimeSteps, getNumAmplitudeSteps, time_s
 /*
  * Incident wave angles
  */
-SETTINGS_ELEM_FIELD_TYPE_FLOAT(incidentWaveAngle1, getIncidentWaveAngle1, FPValue, PhysicsConst::Pi / 2, "--angle-teta", "Incident wave angle teta (degrees)")
-SETTINGS_ELEM_FIELD_TYPE_FLOAT(incidentWaveAngle2, getIncidentWaveAngle2, FPValue, 0, "--angle-phi", "Incident wave angle phi (degrees)")
-SETTINGS_ELEM_FIELD_TYPE_FLOAT(incidentWaveAngle3, getIncidentWaveAngle3, FPValue, PhysicsConst::Pi / 2, "--angle-psi", "Incident wave angle psi (degrees)")
+SETTINGS_ELEM_FIELD_TYPE_FLOAT(incidentWaveAngle1, getIncidentWaveAngle1, FPValue, 90.0, "--angle-teta", "Incident wave angle teta (degrees)")
+SETTINGS_ELEM_FIELD_TYPE_FLOAT(incidentWaveAngle2, getIncidentWaveAngle2, FPValue, 0.0, "--angle-phi", "Incident wave angle phi (degrees)")
+SETTINGS_ELEM_FIELD_TYPE_FLOAT(incidentWaveAngle3, getIncidentWaveAngle3, FPValue, 90.0, "--angle-psi", "Incident wave angle psi (degrees)")
 
 /*
  * Concurrency
@@ -120,7 +120,9 @@ SETTINGS_ELEM_OPTION_TYPE_STRING("--cmd-from-file", "Load command line from file
                                                     "\t\t<cmd with arg>\n"
                                                     "\t\t<value>\n"
                                                     "\t\t<cmd without arg>\n"
-                                                    "\t\t<cmd without arg>\n")
+                                                    "\t\t<cmd without arg>")
+
+SETTINGS_ELEM_OPTION_TYPE_STRING("--save-cmd-to-file", "Save command line to file")
 
 /*
  * TODO: add
