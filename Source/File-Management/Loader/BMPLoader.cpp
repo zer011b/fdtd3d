@@ -13,14 +13,12 @@ BMPLoader<GridCoordinate1D>::loadGrid (Grid<GridCoordinate1D> &grid) const
   const GridCoordinate1D& size = grid.getSize ();
   grid_coord sx = size.getX ();
 
-  std::cout << "Loading 1D from BMP image. Size: " << sx << "x1. " << std::endl;
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Loading 1D from BMP image. Size: %ux1x1\n", sx);
 #endif /* PRINT_MESSAGE */
 
   loadFromFile (grid);
 
-#if PRINT_MESSAGE
-  std::cout << "Loaded. " << std::endl;
-#endif /* PRINT_MESSAGE */
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Loaded.\n");
 }
 
 /**
@@ -35,14 +33,12 @@ BMPLoader<GridCoordinate2D>::loadGrid (Grid<GridCoordinate2D> &grid) const
   grid_coord sx = size.getX ();
   grid_coord sy = size.getY ();
 
-  std::cout << "Loading 2D from BMP image. Size: " << sx << "x" << sy << ". " << std::endl;
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Loading 2D from BMP image. Size: %ux%ux1\n", sx, sy)
 #endif /* PRINT_MESSAGE */
 
   loadFromFile (grid);
 
-#if PRINT_MESSAGE
-  std::cout << "Loaded. " << std::endl;
-#endif /* PRINT_MESSAGE */
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Loaded.\n");
 }
 
 /**

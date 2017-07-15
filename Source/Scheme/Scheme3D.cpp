@@ -4,6 +4,7 @@
 #include "DATLoader.h"
 #include "TXTDumper.h"
 #include "Kernels.h"
+#include "Settings.h"
 #include "Scheme3D.h"
 #include "Approximation.h"
 
@@ -1963,8 +1964,10 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 
   time_step stepLimit = startStep + numberTimeSteps;
 
-  for (int t = startStep; t < stepLimit; ++t)
+  for (time_step t = startStep; t < stepLimit; ++t)
   {
+    DPRINTF (LOG_LEVEL_STAGES, "Calculating time step %u...\n", t);
+
     GridCoordinate3D ExStart = Ex.getComputationStart (yeeLayout->getExStartDiff ());
     GridCoordinate3D ExEnd = Ex.getComputationEnd (yeeLayout->getExEndDiff ());
 
@@ -3226,9 +3229,7 @@ Scheme3D::performAmplitudeSteps (time_step startStep)
       is_stable_state = 0;
     }
 
-#if PRINT_MESSAGE
-    printf ("%d amplitude calculation step: max accuracy %f. \n", t, maxAccuracy);
-#endif /* PRINT_MESSAGE */
+    DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy %f. \n", t, maxAccuracy);
 
     /*
      * FIXME: add dump step
@@ -3441,153 +3442,6 @@ Scheme3D::initGrids ()
     }
   }
 
-  BMPDumper<GridCoordinate3D> dumper;
-
-  if (dumpRes)
-  {
-    dumper.init (0, CURRENT, processId, "Eps");
-    dumper.dumpGrid (Eps, GridCoordinate3D (0, 0, 0), Eps.getSize ());
-  }
-
-  for (int i = 0; i < OmegaPE.getSize ().getX (); ++i)
-  {
-    for (int j = 0; j < OmegaPE.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < OmegaPE.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valOmega = new FieldPointValue ();
-
-#ifdef COMPLEX_FIELD_VALUES
-        valOmega->setCurValue (FieldValue (0, 0));
-#else /* COMPLEX_FIELD_VALUES */
-        valOmega->setCurValue (0);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (OmegaPE.getTotalPosition (pos));
-
-        GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (OmegaPE.getTotalSize ());
-
-        // if (posAbs.getX () >= 55 && posAbs.getX () < 60
-        //     && posAbs.getY () >= 55 && posAbs.getY () < 65
-        //     && posAbs.getZ () >= 15 && posAbs.getZ () < 25)
-        // {
-        if (SQR (posAbs.getX () - 57) + SQR (posAbs.getY () - 57) + SQR (posAbs.getZ () - 23) < SQR (8))
-        {
-
-// //         if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
-// //             + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2)
-// //             + (posAbs.getZ () - size.getZ () / 2) * (posAbs.getZ () - size.getZ () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
-// //         {
-#ifdef COMPLEX_FIELD_VALUES
-          valOmega->setCurValue (FieldValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency, 0));
-#else /* COMPLEX_FIELD_VALUES */
-          valOmega->setCurValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency);
-#endif /* !COMPLEX_FIELD_VALUES */
-        }
-
-        OmegaPE.setFieldPointValue (valOmega, pos);
-      }
-    }
-  }
-
-  for (int i = 0; i < OmegaPM.getSize ().getX (); ++i)
-  {
-    for (int j = 0; j < OmegaPM.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < OmegaPM.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valOmega = new FieldPointValue ();
-
-#ifdef COMPLEX_FIELD_VALUES
-        valOmega->setCurValue (FieldValue (0, 0));
-#else /* COMPLEX_FIELD_VALUES */
-        valOmega->setCurValue (0);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (OmegaPM.getTotalPosition (pos));
-
-        GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (OmegaPM.getTotalSize ());
-
-        if (posAbs.getX () >= 55 && posAbs.getX () < 60
-            && posAbs.getY () >= 55 && posAbs.getY () < 65
-            && posAbs.getZ () >= 15 && posAbs.getZ () < 25)
-        {
-//
-// //         if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
-// //             + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2)
-// //             + (posAbs.getZ () - size.getZ () / 2) * (posAbs.getZ () - size.getZ () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
-// //         {
-#ifdef COMPLEX_FIELD_VALUES
-          valOmega->setCurValue (FieldValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency, 0));
-#else /* COMPLEX_FIELD_VALUES */
-          valOmega->setCurValue (sqrtf(2.0) * 2 * PhysicsConst::Pi * sourceFrequency);
-#endif /* !COMPLEX_FIELD_VALUES */
-        }
-
-        OmegaPM.setFieldPointValue (valOmega, pos);
-      }
-    }
-  }
-
-  for (int i = 0; i < GammaE.getSize ().getX (); ++i)
-  {
-    for (int j = 0; j < GammaE.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < GammaE.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valGamma = new FieldPointValue ();
-
-#ifdef COMPLEX_FIELD_VALUES
-        valGamma->setCurValue (FieldValue (0, 0));
-#else /* COMPLEX_FIELD_VALUES */
-        valGamma->setCurValue (0);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        GridCoordinate3D pos (i, j, k);
-
-        GammaE.setFieldPointValue (valGamma, pos);
-      }
-    }
-  }
-
-  for (int i = 0; i < GammaM.getSize ().getX (); ++i)
-  {
-    for (int j = 0; j < GammaM.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < GammaM.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valGamma = new FieldPointValue ();
-
-#ifdef COMPLEX_FIELD_VALUES
-        valGamma->setCurValue (FieldValue (0, 0));
-#else /* COMPLEX_FIELD_VALUES */
-        valGamma->setCurValue (0);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        GridCoordinate3D pos (i, j, k);
-
-        GammaM.setFieldPointValue (valGamma, pos);
-      }
-    }
-  }
-
-  if (dumpRes)
-  {
-    dumper.init (0, CURRENT, processId, "OmegaPE");
-    dumper.dumpGrid (OmegaPE, GridCoordinate3D (0, 0, 0), Eps.getSize ());
-
-    dumper.init (0, CURRENT, processId, "OmegaPM");
-    dumper.dumpGrid (OmegaPM, GridCoordinate3D (0, 0, 0), Eps.getSize ());
-
-    dumper.init (0, CURRENT, processId, "GammaE");
-    dumper.dumpGrid (GammaE, GridCoordinate3D (0, 0, 0), Eps.getSize ());
-
-    dumper.init (0, CURRENT, processId, "GammaM");
-    dumper.dumpGrid (GammaM, GridCoordinate3D (0, 0, 0), Eps.getSize ());
-  }
-
   for (int i = 0; i < Mu.getSize ().getX (); ++i)
   {
     for (int j = 0; j < Mu.getSize ().getY (); ++j)
@@ -3609,409 +3463,318 @@ Scheme3D::initGrids ()
     }
   }
 
-  if (dumpRes)
+  if (useMetamaterials)
   {
+    for (int i = 0; i < OmegaPE.getSize ().getX (); ++i)
+    {
+      for (int j = 0; j < OmegaPE.getSize ().getY (); ++j)
+      {
+        for (int k = 0; k < OmegaPE.getSize ().getZ (); ++k)
+        {
+          FieldPointValue* valOmega = new FieldPointValue ();
+
+#ifdef COMPLEX_FIELD_VALUES
+          valOmega->setCurValue (FieldValue (0, 0));
+#else /* COMPLEX_FIELD_VALUES */
+          valOmega->setCurValue (0);
+#endif /* !COMPLEX_FIELD_VALUES */
+
+          GridCoordinate3D pos (i, j, k);
+
+          OmegaPE.setFieldPointValue (valOmega, pos);
+        }
+      }
+    }
+
+    for (int i = 0; i < OmegaPM.getSize ().getX (); ++i)
+    {
+      for (int j = 0; j < OmegaPM.getSize ().getY (); ++j)
+      {
+        for (int k = 0; k < OmegaPM.getSize ().getZ (); ++k)
+        {
+          FieldPointValue* valOmega = new FieldPointValue ();
+
+#ifdef COMPLEX_FIELD_VALUES
+          valOmega->setCurValue (FieldValue (0, 0));
+#else /* COMPLEX_FIELD_VALUES */
+          valOmega->setCurValue (0);
+#endif /* !COMPLEX_FIELD_VALUES */
+
+          GridCoordinate3D pos (i, j, k);
+
+          OmegaPM.setFieldPointValue (valOmega, pos);
+        }
+      }
+    }
+
+    GammaE.initialize ();
+    GammaM.initialize ();
+  }
+
+  if (usePML)
+  {
+    FPValue eps0 = PhysicsConst::Eps0;
+    FPValue mu0 = PhysicsConst::Mu0;
+
+    GridCoordinate3D PMLSize = yeeLayout->getLeftBorderPML () * (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
+
+    FPValue boundary = PMLSize.getX () * gridStep;
+    uint32_t exponent = 6;
+  	FPValue R_err = 1e-16;
+  	FPValue sigma_max_1 = -log (R_err) * (exponent + 1.0) / (2.0 * sqrt (mu0 / eps0) * boundary);
+  	FPValue boundaryFactor = sigma_max_1 / (gridStep * (pow (boundary, exponent)) * (exponent + 1));
+
+    for (int i = 0; i < SigmaX.getSize ().getX (); ++i)
+    {
+      for (int j = 0; j < SigmaX.getSize ().getY (); ++j)
+      {
+        for (int k = 0; k < SigmaX.getSize ().getZ (); ++k)
+        {
+          FieldPointValue* valSigma = new FieldPointValue ();
+
+          GridCoordinate3D pos (i, j, k);
+          GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (SigmaX.getTotalPosition (pos));
+
+          GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (SigmaX.getTotalSize ());
+
+          /*
+           * FIXME: add layout coordinates for material: sigma, eps, etc.
+           */
+          if (posAbs.getX () < PMLSize.getX ())
+          {
+            grid_coord dist = PMLSize.getX () - posAbs.getX ();
+      			FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+      			FPValue x2 = dist * gridStep;       // lower bounds for point i
+
+            FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));    //   polynomial grading
+
+#ifdef COMPLEX_FIELD_VALUES
+      			valSigma->setCurValue (FieldValue (val, 0));
+#else /* COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (val);
+#endif /* !COMPLEX_FIELD_VALUES */
+          }
+          else if (posAbs.getX () >= size.getX () - PMLSize.getX ())
+          {
+            grid_coord dist = posAbs.getX () - (size.getX () - PMLSize.getX ());
+      			FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+      			FPValue x2 = dist * gridStep;       // lower bounds for point i
+
+      			//std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
+      			FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
+
+#ifdef COMPLEX_FIELD_VALUES
+      			valSigma->setCurValue (FieldValue (val, 0));
+#else /* COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (val);
+#endif /* !COMPLEX_FIELD_VALUES */
+          }
+
+          SigmaX.setFieldPointValue (valSigma, pos);
+        }
+      }
+    }
+
+    for (int i = 0; i < SigmaY.getSize ().getX (); ++i)
+    {
+      for (int j = 0; j < SigmaY.getSize ().getY (); ++j)
+      {
+        for (int k = 0; k < SigmaY.getSize ().getZ (); ++k)
+        {
+          FieldPointValue* valSigma = new FieldPointValue ();
+
+          GridCoordinate3D pos (i, j, k);
+          GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (SigmaY.getTotalPosition (pos));
+
+          GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (SigmaY.getTotalSize ());
+
+          /*
+           * FIXME: add layout coordinates for material: sigma, eps, etc.
+           */
+          if (posAbs.getY () < PMLSize.getY ())
+          {
+            grid_coord dist = PMLSize.getY () - posAbs.getY ();
+            FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+            FPValue x2 = dist * gridStep;       // lower bounds for point i
+
+            FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
+
+#ifdef COMPLEX_FIELD_VALUES
+      			valSigma->setCurValue (FieldValue (val, 0));
+#else /* COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (val);
+#endif /* !COMPLEX_FIELD_VALUES */
+          }
+          else if (posAbs.getY () >= size.getY () - PMLSize.getY ())
+          {
+            grid_coord dist = posAbs.getY () - (size.getY () - PMLSize.getY ());
+            FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+            FPValue x2 = dist * gridStep;       // lower bounds for point i
+
+            //std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
+            FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
+
+#ifdef COMPLEX_FIELD_VALUES
+      			valSigma->setCurValue (FieldValue (val, 0));
+#else /* COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (val);
+#endif /* !COMPLEX_FIELD_VALUES */
+          }
+
+          SigmaY.setFieldPointValue (valSigma, pos);
+        }
+      }
+    }
+
+    for (int i = 0; i < SigmaZ.getSize ().getX (); ++i)
+    {
+      for (int j = 0; j < SigmaZ.getSize ().getY (); ++j)
+      {
+        for (int k = 0; k < SigmaZ.getSize ().getZ (); ++k)
+        {
+          FieldPointValue* valSigma = new FieldPointValue ();
+
+          GridCoordinate3D pos (i, j, k);
+          GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (SigmaZ.getTotalPosition (pos));
+
+          GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (SigmaZ.getTotalSize ());
+
+          /*
+           * FIXME: add layout coordinates for material: sigma, eps, etc.
+           */
+          if (posAbs.getZ () < PMLSize.getZ ())
+          {
+            grid_coord dist = PMLSize.getZ () - posAbs.getZ ();
+            FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+            FPValue x2 = dist * gridStep;       // lower bounds for point i
+
+            FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
+
+#ifdef COMPLEX_FIELD_VALUES
+      			valSigma->setCurValue (FieldValue (val, 0));
+#else /* COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (val);
+#endif /* !COMPLEX_FIELD_VALUES */
+          }
+          else if (posAbs.getZ () >= size.getZ () - PMLSize.getZ ())
+          {
+            grid_coord dist = posAbs.getZ () - (size.getZ () - PMLSize.getZ ());
+            FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+            FPValue x2 = dist * gridStep;       // lower bounds for point i
+
+            //std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
+            FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
+
+#ifdef COMPLEX_FIELD_VALUES
+      			valSigma->setCurValue (FieldValue (val, 0));
+#else /* COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (val);
+#endif /* !COMPLEX_FIELD_VALUES */
+          }
+
+          SigmaZ.setFieldPointValue (valSigma, pos);
+        }
+      }
+    }
+  }
+
+  if (solverSettings.getDoSaveMaterials ())
+  {
+    BMPDumper<GridCoordinate3D> dumper;
+
+    dumper.init (0, CURRENT, processId, "Eps");
+    dumper.dumpGrid (Eps,
+                     GridCoordinate3D (0, 0, Eps.getSize ().getZ () / 2),
+                     GridCoordinate3D (Eps.getSize ().getX (), Eps.getSize ().getY (), Eps.getSize ().getZ () / 2 + 1));
+
     dumper.init (0, CURRENT, processId, "Mu");
-    dumper.dumpGrid (Mu, GridCoordinate3D (0, 0, 0), Eps.getSize ());
-  }
+    dumper.dumpGrid (Mu,
+                     GridCoordinate3D (0, 0, Mu.getSize ().getZ () / 2),
+                     GridCoordinate3D (Mu.getSize ().getX (), Mu.getSize ().getY (), Mu.getSize ().getZ () / 2 + 1));
 
-  FPValue eps0 = PhysicsConst::Eps0;
-  FPValue mu0 = PhysicsConst::Mu0;
-
-  GridCoordinate3D PMLSize = yeeLayout->getLeftBorderPML () * (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
-
-  FPValue boundary = PMLSize.getX () * gridStep;
-  uint32_t exponent = 6;
-	FPValue R_err = 1e-16;
-	FPValue sigma_max_1 = -log (R_err) * (exponent + 1.0) / (2.0 * sqrt (mu0 / eps0) * boundary);
-	FPValue boundaryFactor = sigma_max_1 / (gridStep * (pow (boundary, exponent)) * (exponent + 1));
-
-  for (int i = 0; i < SigmaX.getSize ().getX (); ++i)
-  {
-    for (int j = 0; j < SigmaX.getSize ().getY (); ++j)
+    if (useMetamaterials)
     {
-      for (int k = 0; k < SigmaX.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valSigma = new FieldPointValue ();
+      dumper.init (0, CURRENT, processId, "OmegaPE");
+      dumper.dumpGrid (OmegaPE,
+                       GridCoordinate3D (0, 0, OmegaPE.getSize ().getZ () / 2),
+                       GridCoordinate3D (OmegaPE.getSize ().getX (), OmegaPE.getSize ().getY (), OmegaPE.getSize ().getZ () / 2 + 1));
 
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (SigmaX.getTotalPosition (pos));
+      dumper.init (0, CURRENT, processId, "OmegaPM");
+      dumper.dumpGrid (OmegaPM,
+                       GridCoordinate3D (0, 0, OmegaPM.getSize ().getZ () / 2),
+                       GridCoordinate3D (OmegaPM.getSize ().getX (), OmegaPM.getSize ().getY (), OmegaPM.getSize ().getZ () / 2 + 1));
 
-        GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (SigmaX.getTotalSize ());
+      dumper.init (0, CURRENT, processId, "GammaE");
+      dumper.dumpGrid (GammaE,
+                       GridCoordinate3D (0, 0, GammaE.getSize ().getZ () / 2),
+                       GridCoordinate3D (GammaE.getSize ().getX (), GammaE.getSize ().getY (), GammaE.getSize ().getZ () / 2 + 1));
 
-        /*
-         * FIXME: add layout coordinates for material: sigma, eps, etc.
-         */
-        if (posAbs.getX () < PMLSize.getX ())
-        {
-          grid_coord dist = PMLSize.getX () - posAbs.getX ();
-    			FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-    			FPValue x2 = dist * gridStep;       // lower bounds for point i
+      dumper.init (0, CURRENT, processId, "GammaM");
+      dumper.dumpGrid (GammaM,
+                       GridCoordinate3D (0, 0, GammaM.getSize ().getZ () / 2),
+                       GridCoordinate3D (GammaM.getSize ().getX (), GammaM.getSize ().getY (), GammaM.getSize ().getZ () / 2 + 1));
+    }
 
-          FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));    //   polynomial grading
+    if (usePML)
+    {
+      dumper.init (0, CURRENT, processId, "SigmaX");
+      dumper.dumpGrid (SigmaX,
+                       GridCoordinate3D (0, 0, SigmaX.getSize ().getZ () / 2),
+                       GridCoordinate3D (SigmaX.getSize ().getX (), SigmaX.getSize ().getY (), SigmaX.getSize ().getZ () / 2 + 1));
 
-#ifdef COMPLEX_FIELD_VALUES
-    			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-          valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
-        }
-        else if (posAbs.getX () >= size.getX () - PMLSize.getX ())
-        {
-          grid_coord dist = posAbs.getX () - (size.getX () - PMLSize.getX ());
-    			FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-    			FPValue x2 = dist * gridStep;       // lower bounds for point i
+      dumper.init (0, CURRENT, processId, "SigmaY");
+      dumper.dumpGrid (SigmaY,
+                       GridCoordinate3D (0, 0, SigmaY.getSize ().getZ () / 2),
+                       GridCoordinate3D (SigmaY.getSize ().getX (), SigmaY.getSize ().getY (), SigmaY.getSize ().getZ () / 2 + 1));
 
-    			//std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
-    			FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
-
-#ifdef COMPLEX_FIELD_VALUES
-    			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-          valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
-        }
-
-        SigmaX.setFieldPointValue (valSigma, pos);
-      }
+      dumper.init (0, CURRENT, processId, "SigmaZ");
+      dumper.dumpGrid (SigmaZ,
+                       GridCoordinate3D (0, 0, SigmaZ.getSize ().getZ () / 2),
+                       GridCoordinate3D (SigmaZ.getSize ().getX (), SigmaZ.getSize ().getY (), SigmaZ.getSize ().getZ () / 2 + 1));
     }
   }
 
-  for (int i = 0; i < SigmaY.getSize ().getX (); ++i)
+  Ex.initialize ();
+  Ey.initialize ();
+  Ez.initialize ();
+  Hx.initialize ();
+  Hy.initialize ();
+  Hz.initialize ();
+
+  if (usePML)
   {
-    for (int j = 0; j < SigmaY.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < SigmaY.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valSigma = new FieldPointValue ();
+    Dx.initialize ();
+    Dy.initialize ();
+    Dz.initialize ();
 
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (SigmaY.getTotalPosition (pos));
+    D1x.initialize ();
+    D1y.initialize ();
+    D1z.initialize ();
 
-        GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (SigmaY.getTotalSize ());
+    Bx.initialize ();
+    By.initialize ();
+    Bz.initialize ();
 
-        /*
-         * FIXME: add layout coordinates for material: sigma, eps, etc.
-         */
-        if (posAbs.getY () < PMLSize.getY ())
-        {
-          grid_coord dist = PMLSize.getY () - posAbs.getY ();
-          FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-          FPValue x2 = dist * gridStep;       // lower bounds for point i
-
-          FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
-
-#ifdef COMPLEX_FIELD_VALUES
-    			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-          valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
-        }
-        else if (posAbs.getY () >= size.getY () - PMLSize.getY ())
-        {
-          grid_coord dist = posAbs.getY () - (size.getY () - PMLSize.getY ());
-          FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-          FPValue x2 = dist * gridStep;       // lower bounds for point i
-
-          //std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
-          FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
-
-#ifdef COMPLEX_FIELD_VALUES
-    			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-          valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
-        }
-
-        SigmaY.setFieldPointValue (valSigma, pos);
-      }
-    }
+    B1x.initialize ();
+    B1y.initialize ();
+    B1z.initialize ();
   }
 
-  for (int i = 0; i < SigmaZ.getSize ().getX (); ++i)
+  if (calculateAmplitude)
   {
-    for (int j = 0; j < SigmaZ.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < SigmaZ.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valSigma = new FieldPointValue ();
+    ExAmplitude.initialize ();
+    EyAmplitude.initialize ();
+    EzAmplitude.initialize ();
 
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (SigmaZ.getTotalPosition (pos));
-
-        GridCoordinateFP3D size = yeeLayout->getEpsCoordFP (SigmaZ.getTotalSize ());
-
-        /*
-         * FIXME: add layout coordinates for material: sigma, eps, etc.
-         */
-        if (posAbs.getZ () < PMLSize.getZ ())
-        {
-          grid_coord dist = PMLSize.getZ () - posAbs.getZ ();
-          FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-          FPValue x2 = dist * gridStep;       // lower bounds for point i
-
-          FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
-
-#ifdef COMPLEX_FIELD_VALUES
-    			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-          valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
-        }
-        else if (posAbs.getZ () >= size.getZ () - PMLSize.getZ ())
-        {
-          grid_coord dist = posAbs.getZ () - (size.getZ () - PMLSize.getZ ());
-          FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
-          FPValue x2 = dist * gridStep;       // lower bounds for point i
-
-          //std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
-          FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
-
-#ifdef COMPLEX_FIELD_VALUES
-    			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-          valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
-        }
-
-        SigmaZ.setFieldPointValue (valSigma, pos);
-      }
-    }
-  }
-
-  if (dumpRes)
-  {
-    dumper.init (0, CURRENT, processId, "SigmaX");
-    dumper.dumpGrid (SigmaX, GridCoordinate3D (0, 0, 0), Eps.getSize ());
-    dumper.init (0, CURRENT, processId, "SigmaY");
-    dumper.dumpGrid (SigmaY, GridCoordinate3D (0, 0, 0), Eps.getSize ());
-    dumper.init (0, CURRENT, processId, "SigmaZ");
-    dumper.dumpGrid (SigmaZ, GridCoordinate3D (0, 0, 0), Eps.getSize ());
-  }
-
-  for (int i = 0; i < Ex.getSize ().getX (); ++i)
-  {
-    for (int j = 0; j < Ex.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < Ex.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valEx = new FieldPointValue ();
-
-        FieldPointValue* valDx = new FieldPointValue ();
-
-        FieldPointValue* valD1x = new FieldPointValue ();
-
-        FieldPointValue* valExAmp;
-        if (calculateAmplitude)
-        {
-          valExAmp = new FieldPointValue ();
-        }
-
-        GridCoordinate3D pos (i, j, k);
-
-        Ex.setFieldPointValue (valEx, pos);
-
-        Dx.setFieldPointValue (valDx, pos);
-
-        D1x.setFieldPointValue (valD1x, pos);
-
-        if (calculateAmplitude)
-        {
-          ExAmplitude.setFieldPointValue (valExAmp, pos);
-        }
-      }
-    }
-  }
-
-  for (int i = 0; i < Ey.getSize ().getX (); ++i)
-  {
-    for (int j = 0; j < Ey.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < Ey.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valEy = new FieldPointValue ();
-
-        FieldPointValue* valDy = new FieldPointValue ();
-
-        FieldPointValue* valD1y = new FieldPointValue ();
-
-        FieldPointValue* valEyAmp;
-        if (calculateAmplitude)
-        {
-          valEyAmp = new FieldPointValue ();
-        }
-
-        GridCoordinate3D pos (i, j, k);
-
-        Ey.setFieldPointValue (valEy, pos);
-
-        Dy.setFieldPointValue (valDy, pos);
-
-        D1y.setFieldPointValue (valD1y, pos);
-
-        if (calculateAmplitude)
-        {
-          EyAmplitude.setFieldPointValue (valEyAmp, pos);
-        }
-      }
-    }
-  }
-
-  for (int i = 0; i < Ez.getSize ().getX (); ++i)
-  {
-    for (int j = 0; j < Ez.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < Ez.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valEz = new FieldPointValue ();
-
-        FieldPointValue* valDz = new FieldPointValue ();
-
-        FieldPointValue* valD1z = new FieldPointValue ();
-
-        FieldPointValue* valEzAmp;
-        if (calculateAmplitude)
-        {
-          valEzAmp = new FieldPointValue ();
-        }
-
-        GridCoordinate3D pos (i, j, k);
-
-        Ez.setFieldPointValue (valEz, pos);
-
-        Dz.setFieldPointValue (valDz, pos);
-
-        D1z.setFieldPointValue (valD1z, pos);
-
-        if (calculateAmplitude)
-        {
-          EzAmplitude.setFieldPointValue (valEzAmp, pos);
-        }
-      }
-    }
-  }
-
-  for (int i = 0; i < Hx.getSize ().getX (); ++i)
-  {
-    for (int j = 0; j < Hx.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < Hx.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valHx = new FieldPointValue ();
-
-        FieldPointValue* valBx = new FieldPointValue ();
-
-        FieldPointValue* valB1x = new FieldPointValue ();
-
-        FieldPointValue* valHxAmp;
-        if (calculateAmplitude)
-        {
-          valHxAmp = new FieldPointValue ();
-        }
-
-        GridCoordinate3D pos (i, j, k);
-
-        Hx.setFieldPointValue (valHx, pos);
-
-        Bx.setFieldPointValue (valBx, pos);
-
-        B1x.setFieldPointValue (valB1x, pos);
-
-        if (calculateAmplitude)
-        {
-          HxAmplitude.setFieldPointValue (valHxAmp, pos);
-        }
-      }
-    }
-  }
-
-  for (int i = 0; i < Hy.getSize ().getX (); ++i)
-  {
-    for (int j = 0; j < Hy.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < Hy.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valHy = new FieldPointValue ();
-
-        FieldPointValue* valBy = new FieldPointValue ();
-
-        FieldPointValue* valB1y = new FieldPointValue ();
-
-        FieldPointValue* valHyAmp;
-        if (calculateAmplitude)
-        {
-          valHyAmp = new FieldPointValue ();
-        }
-
-        GridCoordinate3D pos (i, j, k);
-
-        Hy.setFieldPointValue (valHy, pos);
-
-        By.setFieldPointValue (valBy, pos);
-
-        B1y.setFieldPointValue (valB1y, pos);
-
-        if (calculateAmplitude)
-        {
-          HyAmplitude.setFieldPointValue (valHyAmp, pos);
-        }
-      }
-    }
-  }
-
-  for (int i = 0; i < Hz.getSize ().getX (); ++i)
-  {
-    for (int j = 0; j < Hz.getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < Hz.getSize ().getZ (); ++k)
-      {
-        FieldPointValue* valHz = new FieldPointValue ();
-
-        FieldPointValue* valBz = new FieldPointValue ();
-
-        FieldPointValue* valB1z = new FieldPointValue ();
-
-        FieldPointValue* valHzAmp;
-        if (calculateAmplitude)
-        {
-          valHzAmp = new FieldPointValue ();
-        }
-
-        GridCoordinate3D pos (i, j, k);
-
-        Hz.setFieldPointValue (valHz, pos);
-
-        Bz.setFieldPointValue (valBz, pos);
-
-        B1z.setFieldPointValue (valB1z, pos);
-
-        if (calculateAmplitude)
-        {
-          HzAmplitude.setFieldPointValue (valHzAmp, pos);
-        }
-      }
-    }
+    HxAmplitude.initialize ();
+    HyAmplitude.initialize ();
+    HzAmplitude.initialize ();
   }
 
   if (useTFSF)
   {
-    for (grid_coord i = 0; i < EInc.getSize ().getX (); ++i)
-    {
-      FieldPointValue* valE = new FieldPointValue ();
-
-      GridCoordinate1D pos (i);
-
-      EInc.setFieldPointValue (valE, pos);
-    }
-
-    for (grid_coord i = 0; i < HInc.getSize ().getX (); ++i)
-    {
-      FieldPointValue* valH = new FieldPointValue ();
-
-      GridCoordinate1D pos (i);
-
-      HInc.setFieldPointValue (valH, pos);
-    }
+    EInc.initialize ();
+    HInc.initialize ();
   }
 
 #if defined (PARALLEL_GRID)
@@ -4022,9 +3785,12 @@ Scheme3D::initGrids ()
   Eps.share ();
   Mu.share ();
 
-  SigmaX.share ();
-  SigmaY.share ();
-  SigmaZ.share ();
+  if (usePML)
+  {
+    SigmaX.share ();
+    SigmaY.share ();
+    SigmaZ.share ();
+  }
 #endif
 }
 

@@ -10,7 +10,8 @@
 /**
  * Log levels
  */
-ENUM_CLASS (LogLevelType, uint8_t,
+enum LogLevelType
+{
   LOG_LEVEL_0 = 0,
   LOG_LEVEL_NONE = LOG_LEVEL_0,
   LOG_LEVEL_1,
@@ -19,7 +20,7 @@ ENUM_CLASS (LogLevelType, uint8_t,
   LOG_LEVEL_STAGES_AND_DUMP = LOG_LEVEL_2,
   LOG_LEVEL_3,
   LOG_LEVEL_FULL = LOG_LEVEL_3
-);
+};
 
 ENUM_CLASS (ArgType, uint8_t,
   TYPE_NONE,
@@ -121,5 +122,7 @@ public:
     return dimension;
   } /* Settings::getDimension */
 }; /* Settings */
+
+extern Settings solverSettings;
 
 #endif /* !SETTINGS_H */

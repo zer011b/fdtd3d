@@ -128,13 +128,11 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
 
   gridValues.resize (size.calculateTotalCoord ());
 
-#if PRINT_MESSAGE
-  printf ("New grid '%s' for proc: %d (of %d) with raw size: %lu.\n",
-          gridName.data (),
-          parallelGridCore->getProcessId (),
-          parallelGridCore->getTotalProcCount (),
-          gridValues.size ());
-#endif /* PRINT_MESSAGE */
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' for proc: %d (of %d) with raw size: %lu.\n",
+           gridName.data (),
+           parallelGridCore->getProcessId (),
+           parallelGridCore->getTotalProcCount (),
+           gridValues.size ());
 
   initializeStartPosition ();
 } /* ParallelGrid::ParallelGrid */
@@ -1428,12 +1426,10 @@ void
 ParallelGrid::SendRawBuffer (BufferPosition buffer, /**< buffer's position to send (direction) */
                              int processTo) /**< id of computational node to send data to */
 {
-#if PRINT_MESSAGE
-  printf ("\tSend RAW. PID=#%d. Direction TO=%s, size=%lu.\n",
-          parallelGridCore->getProcessId (),
-          BufferPositionNames[buffer],
-          buffersSend[buffer].size ());
-#endif /* PRINT_MESSAGE */
+  DPRINTF (LOG_LEVEL_FULL, "\tSend RAW. PID=#%d. Direction TO=%s, size=%lu.\n",
+           parallelGridCore->getProcessId (),
+           BufferPositionNames[buffer],
+           buffersSend[buffer].size ());
 
   FieldValue* rawBuffer = buffersSend[buffer].data ();
 
@@ -1480,12 +1476,10 @@ void
 ParallelGrid::ReceiveRawBuffer (BufferPosition buffer, /**< buffer's position to receive (direction) */
                                 int processFrom) /**< id of computational node to receive data from */
 {
-#if PRINT_MESSAGE
-  printf ("\t\tReceive RAW. PID=#%d. Direction FROM=%s, size=%lu.\n",
-          parallelGridCore->getProcessId (),
-          BufferPositionNames[buffer],
-          buffersReceive[buffer].size ());
-#endif /* PRINT_MESSAGE */
+  DPRINTF (LOG_LEVEL_FULL, "\t\tReceive RAW. PID=#%d. Direction FROM=%s, size=%lu.\n",
+           parallelGridCore->getProcessId (),
+           BufferPositionNames[buffer],
+           buffersReceive[buffer].size ());
 
   MPI_Status status;
 
@@ -1537,14 +1531,12 @@ ParallelGrid::SendReceiveRawBuffer (BufferPosition bufferSend, /**< buffer's pos
                                     BufferPosition bufferReceive, /**< buffer's position to receive (direction) */
                                     int processFrom) /**< id of computational node to receive data from */
 {
-#if PRINT_MESSAGE
-  printf ("\t\tSend/Receive RAW. PID=#%d. Directions TO=%s FROM=%s. Size TO=%lu FROM=%lu.\n",
-          parallelGridCore->getProcessId (),
-          BufferPositionNames[bufferSend],
-          BufferPositionNames[bufferReceive],
-          buffersSend[bufferSend].size (),
-          buffersReceive[bufferReceive].size ());
-#endif /* PRINT_MESSAGE */
+  DPRINTF (LOG_LEVEL_FULL, "\t\tSend/Receive RAW. PID=#%d. Directions TO=%s FROM=%s. Size TO=%lu FROM=%lu.\n",
+           parallelGridCore->getProcessId (),
+           BufferPositionNames[bufferSend],
+           BufferPositionNames[bufferReceive],
+           buffersSend[bufferSend].size (),
+           buffersReceive[bufferReceive].size ());
 
   MPI_Status status;
 
@@ -1698,16 +1690,14 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
   int processTo = parallelGridCore->getDirections ()[bufferDirection];
   int processFrom = parallelGridCore->getDirections ()[opposite];
 
-#if PRINT_MESSAGE
-  printf ("\tSHARE RAW. PID=#%d. Directions TO(%d)=%s=#%d, FROM(%d)=%s=#%d.\n",
-          parallelGridCore->getProcessId (),
-          doSend,
-          BufferPositionNames[bufferDirection],
-          processTo,
-          doReceive,
-          BufferPositionNames[opposite],
-          processFrom);
-#endif /* PRINT_MESSAGE */
+  DPRINTF (LOG_LEVEL_FULL, "\tSHARE RAW. PID=#%d. Directions TO(%d)=%s=#%d, FROM(%d)=%s=#%d.\n",
+           parallelGridCore->getProcessId (),
+           doSend,
+           BufferPositionNames[bufferDirection],
+           processTo,
+           doReceive,
+           BufferPositionNames[opposite],
+           processFrom);
 
   if (doSend && !doReceive)
   {
@@ -1798,9 +1788,7 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
 void
 ParallelGrid::SendReceive ()
 {
-#if PRINT_MESSAGE
-  printf ("Send/Receive PID=%d\n", parallelGridCore->getProcessId ());
-#endif /* PRINT_MESSAGE */
+  DPRINTF (LOG_LEVEL_FULL, "Send/Receive PID=%d\n", parallelGridCore->getProcessId ());
 
   /*
    * Go through all directions and send/receive.
@@ -2130,28 +2118,26 @@ ParallelGrid::ParallelGridConstructor ()
 
   SendReceiveCoordinatesInit ();
 
-#if PRINT_MESSAGE
 #ifdef GRID_1D
-  printf ("Grid size for #%d process: %lu.\n",
+  DPRINTF (LOG_LEVEL_FULL, "Grid size for #%d process: %lu.\n",
           parallelGridCore->getProcessId (),
           currentSize.getX ());
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
-  printf ("Grid size for #%d process: %lux%lu.\n",
+  DPRINTF (LOG_LEVEL_FULL, "Grid size for #%d process: %lux%lu.\n",
           parallelGridCore->getProcessId (),
           currentSize.getX (),
           currentSize.getY ());
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
-  printf ("Grid size for #%d process: %lux%lux%lu.\n",
+  DPRINTF (LOG_LEVEL_FULL, "Grid size for #%d process: %lux%lux%lu.\n",
           parallelGridCore->getProcessId (),
           currentSize.getX (),
           currentSize.getY (),
           currentSize.getZ ());
 #endif /* GRID_3D */
-#endif /* PRINT_MESSAGE */
 } /* ParallelGrid::ParallelGridConstructor */
 
 /**

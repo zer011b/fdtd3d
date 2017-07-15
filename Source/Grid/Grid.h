@@ -8,6 +8,7 @@
 #include "Assert.h"
 #include "FieldPoint.h"
 #include "GridCoordinate3D.h"
+#include "Settings.h"
 
 /**
  * Type of vector of points in grid.
@@ -91,6 +92,8 @@ public:
   virtual void nextTimeStep ();
 
   const std::string &getName () const;
+
+  void initialize ();
 }; /* Grid */
 
 /*
@@ -114,7 +117,7 @@ Grid<TCoord>::Grid (const TCoord &s, /**< size of grid */
     gridValues[i] = NULLPTR;
   }
 
-  DPRINTF ("New grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
 } /* Grid<TCoord>::Grid */
 
 /**
@@ -126,7 +129,7 @@ Grid<TCoord>::Grid (time_step step, /**< default time step */
   : timeStep (step)
   , gridName (name)
 {
-  DPRINTF ("New grid '%s' without size.\n", gridName.data ());
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' without size.\n", gridName.data ());
 } /* Grid<TCoord>::Grid */
 
 /**
@@ -137,7 +140,7 @@ Grid<TCoord>::Grid (const Grid<TCoord> &grid) /**< grid to copy */
 {
   copyGrid (grid);
 
-  DPRINTF ("New copied grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New copied grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
 } /* Grid<TCoord>::Grid */
 
 /**
@@ -176,11 +179,9 @@ Grid<TCoord>::copyGrid (const Grid<TCoord> &grid) /**< grid to copy */
   timeStep = grid.timeStep;
   gridName = grid.gridName;
 
-  for (VectorFieldPointValues::iterator iter = gridValues.begin ();
-       iter != gridValues.end ();
-       ++iter)
+  for (grid_iter i = 0; i < grid.gridValues.size (); ++i)
   {
-    delete (*iter);
+    gridValues[i] = grid.gridValues[i];
   }
 } /* Grid<TCoord>::copyGrid */
 
@@ -194,7 +195,7 @@ Grid<TCoord>::operator = (const Grid<TCoord> &grid) /**< grid to assign */
   deleteGrid ();
   copyGrid (grid);
 
-  DPRINTF ("Copied grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Copied grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
 
   return *this;
 } /* Grid<TCoord>::operator= */
@@ -413,6 +414,19 @@ const std::string &
 Grid<TCoord>::getName () const
 {
   return gridName;
-} /* gGrid<TCoord>::getName */
+} /* Grid<TCoord>::getName */
+
+/**
+ * Initialize grid field values with default values
+ */
+template <class TCoord>
+void
+Grid<TCoord>::initialize ()
+{
+  for (grid_iter i = 0; i < gridValues.size (); ++i)
+  {
+    gridValues[i] = new FieldPointValue ();
+  }
+} /* Grid<TCoord>::initialize */
 
 #endif /* GRID_H */
