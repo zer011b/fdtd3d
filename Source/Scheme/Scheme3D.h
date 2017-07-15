@@ -157,6 +157,10 @@ public:
 
   void initGrids ();
 
+/*
+ * TODO: do not allocate grids which are not used
+ */
+
 #if defined (PARALLEL_GRID)
   Scheme3D (ParallelYeeGridLayout *layout,
             const GridCoordinate3D& totSize,

@@ -39,7 +39,7 @@ Settings::parseArg (int &index, /**< out: current argument index */
 #define SETTINGS_ELEM_FIELD_TYPE_STRING(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
     printf ("  %s <string> (default: %s)\n\t%s\n", cmdArg, defaultVal, description);
 #define SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
-    printf ("  %s <int> (default: 0)\n\t%s\n", cmdArg, description);
+    printf ("  %s <int> (default: %d)\n\t%s\n", cmdArg, defaultVal, description);
 #define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description) \
     printf ("  %s\n\t%s\n", cmdArg, description);
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description) \
@@ -90,22 +90,22 @@ Settings::parseArg (int &index, /**< out: current argument index */
     { \
       case 0: \
       { \
-        fieldName = LogLevelType::LOG_LEVEL_0; \
+        fieldName = LOG_LEVEL_0; \
         break; \
       } \
       case 1: \
       { \
-        logLevel = LogLevelType::LOG_LEVEL_1; \
+        logLevel = LOG_LEVEL_1; \
         break; \
       } \
       case 2: \
       { \
-        logLevel = LogLevelType::LOG_LEVEL_2; \
+        logLevel = LOG_LEVEL_2; \
         break; \
       } \
       case 3: \
       { \
-        logLevel = LogLevelType::LOG_LEVEL_3; \
+        logLevel = LOG_LEVEL_3; \
         break; \
       } \
       default: \

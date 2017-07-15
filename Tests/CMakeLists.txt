@@ -7,6 +7,9 @@ include_directories ("${PROJECT_SOURCE_DIR}/Source/Physics")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/Kernels")
 set (LIBS ${LIBS} Kernels)
 
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Settings/")
+set (LIBS ${LIBS} Settings)
+
 include_directories ("${PROJECT_SOURCE_DIR}/Source/Coordinate")
 set (LIBS ${LIBS} Coordinate)
 
@@ -18,4 +21,4 @@ set (LIBS ${LIBS} Layout)
 
 add_executable (unit-test-parallel-grid unit-test-parallel-grid.cpp)
 
-target_link_libraries (unit-test-parallel-grid ${LIBS} Helpers)
+target_link_libraries (unit-test-parallel-grid ${LIBS} Helpers Settings)

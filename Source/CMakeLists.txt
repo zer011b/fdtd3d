@@ -16,6 +16,10 @@ include_directories ("${PROJECT_SOURCE_DIR}/Source/Kernels")
 add_subdirectory (Kernels)
 set (LIBS ${LIBS} Kernels)
 
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Settings/")
+add_subdirectory (Settings)
+set (LIBS ${LIBS} Settings)
+
 if ("${CUDA_ENABLED}")
   cuda_include_directories ("${PROJECT_SOURCE_DIR}/Source/Coordinate")
 endif ()
@@ -54,10 +58,6 @@ endif ()
 include_directories ("${PROJECT_SOURCE_DIR}/Source/Scheme")
 add_subdirectory (Scheme)
 set (LIBS ${LIBS} Scheme)
-
-include_directories ("${PROJECT_SOURCE_DIR}/Source/Settings/")
-add_subdirectory (Settings)
-set (LIBS ${LIBS} Settings)
 
 if ("${CUDA_ENABLED}")
   cuda_add_executable(fdtd3d main.cpp)

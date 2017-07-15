@@ -27,7 +27,7 @@
  */
 SETTINGS_ELEM_OPTION_TYPE_NONE("--2d", "2D mode computations")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--3d", "3D mode computations")
-SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(logLevel, getLogLevel, LogLevelType, LogLevelType::LOG_LEVEL_NONE, "--log-level", "Log level of fdtd3d (0,1,2,3)")
+SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(logLevel, getLogLevel, LogLevelType, LOG_LEVEL_NONE, "--log-level", "Log level of fdtd3d (0,1,2,3)")
 
 /*
  * Size of calculation area
@@ -79,6 +79,9 @@ SETTINGS_ELEM_FIELD_TYPE_FLOAT(incidentWaveAngle3, getIncidentWaveAngle3, FPValu
  */
 SETTINGS_ELEM_FIELD_TYPE_INT(bufferSize, getBufferSize, int, 1, "--buffer-size", "Size of buffer for parallel grid")
 SETTINGS_ELEM_FIELD_TYPE_INT(numCudaGPUs, getNumCudaGPUs, int, 1, "--num-cuda-gpus", "Number of GPUs to use in computations")
+SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsX, getNumCudaThreadsX, int, 1, "--num-cuda-threads-x", "Number of GPU threads by x coordinate to use in computations")
+SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsY, getNumCudaThreadsY, int, 1, "--num-cuda-threads-y", "Number of GPU threads by y coordinate to use in computations")
+SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsZ, getNumCudaThreadsZ, int, 1, "--num-cuda-threads-z", "Number of GPU threads by z coordinate to use in computations")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseParallelGrid, getDoUseParallelGrid, bool, false, "--parallel-grid", "Use parallel grid (if fdtd3d is built with it)")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseOptimalVirtualTopology, getDoUseOptimalVirtualTopology, bool, false, "--optimal-topology", "Use optimal topology for parallel grid")
 SETTINGS_ELEM_FIELD_TYPE_STRING(fileWithAvailableTopologies, getFileWithAvailableTopologies, std::string, "nofile", "--available-topologies", "File with available topologies for current architecture")

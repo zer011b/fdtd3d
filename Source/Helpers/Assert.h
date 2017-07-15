@@ -66,10 +66,13 @@ void program_fail ();
  * Debug printf
  */
 #if PRINT_MESSAGE
-#define DPRINTF(...) \
-{ \
-    printf (__VA_ARGS__); \
-}
+#define DPRINTF(logLevel, ...) \
+  { \
+    if (solverSettings.getLogLevel () >= logLevel) \
+    { \
+      printf (__VA_ARGS__); \
+    } \
+  }
 #else /* PRINT_MESSAGE */
 #define DPRINTF(...)
 #endif /* !PRINT_MESSAGE */

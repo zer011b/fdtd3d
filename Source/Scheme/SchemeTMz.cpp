@@ -1785,9 +1785,7 @@ SchemeTMz::performAmplitudeSteps (time_step startStep)
       is_stable_state = 0;
     }
 
-#if PRINT_MESSAGE
-    printf ("%d amplitude calculation step: max accuracy %f. \n", t, maxAccuracy);
-#endif /* PRINT_MESSAGE */
+    DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy %f. \n", t, maxAccuracy);
   }
 
   if (dumpRes)

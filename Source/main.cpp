@@ -19,15 +19,13 @@
 #include "DATDumper.h"
 #include "DATLoader.h"
 
+#include "Settings.h"
 #include "SchemeTMz.h"
 #include "SchemeTEz.h"
 #include "Scheme3D.h"
 
 #include "PhysicsConst.h"
 
-#include "Settings.h"
-
-extern Settings solverSettings;
 
 int cudaThreadsX = 8;
 int cudaThreadsY = 8;
@@ -56,9 +54,7 @@ int main (int argc, char** argv)
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
 
-#if PRINT_MESSAGE
-  printf ("Start process %d of %d\n", rank, numProcs);
-#endif /* PRINT_MESSAGE */
+  DPRINTF (LOG_LEVEL_STAGES, "Start process %d of %d\n", rank, numProcs);
 
   ParallelGridCore parallelGridCore (rank, numProcs, overallSize);
   ParallelGrid::initializeParallelCore (&parallelGridCore);
@@ -93,6 +89,10 @@ int main (int argc, char** argv)
 #else
   cudaInit (solverSettings.getNumCudaGPUs ());
 #endif
+
+  cudaThreadsX = solverSettings.getNumCudaThreadsX ();
+  cudaThreadsY = solverSettings.getNumCudaThreadsY ();
+  cudaThreadsZ = solverSettings.getNumCudaThreadsZ ();
 #endif
 
 #if defined (PARALLEL_GRID)
@@ -158,10 +158,6 @@ int main (int argc, char** argv)
   gettimeofday(&tv2, NULL);
 
 #if defined (PARALLEL_GRID)
-#if PRINT_MESSAGE
-  printf ("Main process %d.\n", rank);
-#endif
-
   MPI_Finalize();
 #endif
 
