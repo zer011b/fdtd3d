@@ -95,10 +95,8 @@ int main (int argc, char** argv)
   cudaThreadsZ = solverSettings.getNumCudaThreadsZ ();
 #endif
 
-#if defined (PARALLEL_GRID)
-  ParallelGridCoordinate bufferSize (solverSettings.getBufSize ());
-
 #ifdef GRID_2D
+#if defined (PARALLEL_GRID)
   SchemeTMz scheme (&yeeLayout, overallSize, bufferSize,
                     solverSettings.getNumTimeSteps (),
                     solverSettings.getDoUseAmplitudeMode (),
@@ -108,20 +106,7 @@ int main (int argc, char** argv)
                     solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
                     solverSettings.getDoUseMetamaterials (),
                     solverSettings.getDoSaveRes ());
-#endif
-#ifdef GRID_3D
-  Scheme3D scheme (&yeeLayout, overallSize, bufferSize,
-                   solverSettings.getNumTimeSteps (),
-                   solverSettings.getDoUseAmplitudeMode (),
-                   solverSettings.getNumAmplitudeSteps (),
-                   solverSettings.getDoUsePML (),
-                   solverSettings.getDoUseTFSF (),
-                   solverSettings.getDoUseMetamaterials (),
-                   solverSettings.getDoUseNTFF (),
-                   solverSettings.getDoSaveRes ());
-#endif
 #else
-#ifdef GRID_2D
   SchemeTMz scheme (&yeeLayout, overallSize,
                     solverSettings.getNumTimeSteps (),
                     solverSettings.getDoUseAmplitudeMode (),
@@ -132,17 +117,10 @@ int main (int argc, char** argv)
                     solverSettings.getDoUseMetamaterials (),
                     solverSettings.getDoSaveRes ());
 #endif
-#ifdef GRID_3D
-  Scheme3D scheme (&yeeLayout, overallSize,
-                   solverSettings.getNumTimeSteps (),
-                   solverSettings.getDoUseAmplitudeMode (),
-                   solverSettings.getNumAmplitudeSteps (),
-                   solverSettings.getDoUsePML (),
-                   solverSettings.getDoUseTFSF (),
-                   solverSettings.getDoUseMetamaterials (),
-                   solverSettings.getDoUseNTFF (),
-                   solverSettings.getDoSaveRes ());
 #endif
+
+#ifdef GRID_3D
+  Scheme3D scheme (&yeeLayout, overallSize, solverSettings.getNumTimeSteps ());
 #endif
 
   scheme.initScheme (solverSettings.getGridStep (), /* dx */

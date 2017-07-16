@@ -33,7 +33,7 @@ make
 Build command for 3D grid:
 
 ```sh
-cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DTIME_STEPS=2 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xyz -DCXX11_ENABLED=ON -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50
+cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=OFF -DTIME_STEPS=2 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=OFF -DPARALLEL_BUFFER_DIMENSION=xyz -DCXX11_ENABLED=ON -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50
 ```
 
 # Testing
@@ -99,6 +99,10 @@ cd Release/Source
 # --wavelength
 # 0.02
 ```
+
+# How to cite
+
+If you would like to publish papers with results somehow obtained by fdtd3d or with any modifications of it, please, contact anyone of the authors.
 
 # About
 
