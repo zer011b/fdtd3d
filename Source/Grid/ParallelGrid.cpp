@@ -2578,24 +2578,41 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
 } /* ParallelGridCore::initBufferOffsets */
 
 /**
- * Gather full grid from all nodes to one non-parallel grid on each node
+ * Allocate and gather full grid from all nodes to one non-parallel grid on each node
  *
  * @full grid from all nodes as one non-parallel grid on each node
+ *
+ * Note: caller has to free returned grid!
  */
 ParallelGridBase
 ParallelGrid::gatherFullGrid () const
 {
-  ParallelGridBase grid (totalSize, ParallelGridBase::timeStep);
+  ParallelGridBase *grid = new ParallelGridBase (totalSize, ParallelGridBase::timeStep, getName ());
 
   /*
    * Fill new grid with values
    */
-  for (grid_iter iter = 0; iter < grid.getSize ().calculateTotalCoord (); ++iter)
+  for (grid_iter iter = 0; iter < grid->getSize ().calculateTotalCoord (); ++iter)
   {
     FieldPointValue *val = new FieldPointValue ();
 
-    grid.setFieldPointValue (val, grid.calculatePositionFromIndex (iter));
+    grid->setFieldPointValue (val, grid->calculatePositionFromIndex (iter));
   }
+
+  return gatherFullGridPlacement (grid);
+} /* ParallelGrid::gatherFullGrid */
+
+/**
+ * Gather full grid from all nodes to one non-parallel grid on each node
+ *
+ * @full grid from all nodes as one non-parallel grid on each node
+ *
+ * Note: caller has to free returned grid!
+ */
+ParallelGridBase
+ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
+{
+  ParallelGridBase *grid = placementGrid;
 
   /*
    * Each computational node broadcasts to all others its data
@@ -2802,7 +2819,7 @@ ParallelGrid::gatherFullGrid () const
           ParallelGridCoordinate pos (i, j, k);
 #endif /* GRID_3D */
 
-          FieldPointValue *val = grid.getFieldPointValue (pos);
+          FieldPointValue *val = grid->getFieldPointValue (pos);
 
           val->setCurValue (current[index]);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)

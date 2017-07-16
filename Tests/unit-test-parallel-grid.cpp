@@ -174,7 +174,7 @@ int main (int argc, char** argv)
 
   grid.share ();
 
-  ParallelGridBase gridTotal = grid.gatherFullGrid ();
+  ParallelGridBase *gridTotal = grid.gatherFullGrid ();
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   for (grid_iter i = 0; i < grid.getSize ().getX (); ++i)
@@ -306,6 +306,8 @@ int main (int argc, char** argv)
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   }
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+
+  delete gridTotal;
 
   MPI_Finalize();
 

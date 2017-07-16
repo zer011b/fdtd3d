@@ -413,7 +413,8 @@ public:
 
   void initBufferOffsets (grid_coord &, grid_coord &, grid_coord &, grid_coord &, grid_coord &, grid_coord &) const;
 
-  Grid<ParallelGridCoordinate> gatherFullGrid () const;
+  ParallelGridBase *gatherFullGrid () const;
+  ParallelGridBase *gatherFullGridPlacement (ParallelGridBase *) const;
 
 public:
 

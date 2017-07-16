@@ -8,56 +8,62 @@
 
 #ifdef GRID_3D
 
-#if defined (PARALLEL_GRID)
-typedef ParallelGrid FieldGrid;
-#else
-typedef Grid<GridCoordinate3D> FieldGrid;
-#endif
-
 class Scheme3D: public Scheme
 {
   YeeGridLayout *yeeLayout;
 
-  FieldGrid Ex;
-  FieldGrid Ey;
-  FieldGrid Ez;
-  FieldGrid Hx;
-  FieldGrid Hy;
-  FieldGrid Hz;
+  Grid<GridCoordinate3D> *Ex;
+  Grid<GridCoordinate3D> *Ey;
+  Grid<GridCoordinate3D> *Ez;
+  Grid<GridCoordinate3D> *Hx;
+  Grid<GridCoordinate3D> *Hy;
+  Grid<GridCoordinate3D> *Hz;
 
-  FieldGrid Dx;
-  FieldGrid Dy;
-  FieldGrid Dz;
-  FieldGrid Bx;
-  FieldGrid By;
-  FieldGrid Bz;
+  Grid<GridCoordinate3D> *Dx;
+  Grid<GridCoordinate3D> *Dy;
+  Grid<GridCoordinate3D> *Dz;
+  Grid<GridCoordinate3D> *Bx;
+  Grid<GridCoordinate3D> *By;
+  Grid<GridCoordinate3D> *Bz;
 
-  FieldGrid D1x;
-  FieldGrid D1y;
-  FieldGrid D1z;
-  FieldGrid B1x;
-  FieldGrid B1y;
-  FieldGrid B1z;
+  Grid<GridCoordinate3D> *D1x;
+  Grid<GridCoordinate3D> *D1y;
+  Grid<GridCoordinate3D> *D1z;
+  Grid<GridCoordinate3D> *B1x;
+  Grid<GridCoordinate3D> *B1y;
+  Grid<GridCoordinate3D> *B1z;
 
-  FieldGrid ExAmplitude;
-  FieldGrid EyAmplitude;
-  FieldGrid EzAmplitude;
-  FieldGrid HxAmplitude;
-  FieldGrid HyAmplitude;
-  FieldGrid HzAmplitude;
+  Grid<GridCoordinate3D> *ExAmplitude;
+  Grid<GridCoordinate3D> *EyAmplitude;
+  Grid<GridCoordinate3D> *EzAmplitude;
+  Grid<GridCoordinate3D> *HxAmplitude;
+  Grid<GridCoordinate3D> *HyAmplitude;
+  Grid<GridCoordinate3D> *HzAmplitude;
 
-  FieldGrid Eps;
-  FieldGrid Mu;
+  Grid<GridCoordinate3D> *Eps;
+  Grid<GridCoordinate3D> *Mu;
 
-  FieldGrid SigmaX;
-  FieldGrid SigmaY;
-  FieldGrid SigmaZ;
+  Grid<GridCoordinate3D> *SigmaX;
+  Grid<GridCoordinate3D> *SigmaY;
+  Grid<GridCoordinate3D> *SigmaZ;
 
-  FieldGrid OmegaPE;
-  FieldGrid GammaE;
+  Grid<GridCoordinate3D> *OmegaPE;
+  Grid<GridCoordinate3D> *GammaE;
 
-  FieldGrid OmegaPM;
-  FieldGrid GammaM;
+  Grid<GridCoordinate3D> *OmegaPM;
+  Grid<GridCoordinate3D> *GammaM;
+
+  Grid<GridCoordinate1D> *EInc;
+  Grid<GridCoordinate1D> *HInc;
+
+  Grid<GridCoordinate3D> *totalEx;
+  Grid<GridCoordinate3D> *totalEy;
+  Grid<GridCoordinate3D> *totalEz;
+  Grid<GridCoordinate3D> *totalHx;
+  Grid<GridCoordinate3D> *totalHy;
+  Grid<GridCoordinate3D> *totalHz;
+
+  bool totalInitialized;
 
   // Wave parameters
   FPValue sourceWaveLength;
@@ -78,23 +84,6 @@ class Scheme3D: public Scheme
   int process;
 
   int numProcs;
-
-  bool calculateAmplitude;
-
-  time_step amplitudeStepLimit;
-
-  bool usePML;
-
-  bool useTFSF;
-
-  Grid<GridCoordinate1D> EInc;
-  Grid<GridCoordinate1D> HInc;
-
-  bool useMetamaterials;
-
-  bool dumpRes;
-
-  bool useNTFF;
 
   GridCoordinate3D leftNTFF;
   GridCoordinate3D rightNTFF;
@@ -147,7 +136,10 @@ private:
   void performPlaneWaveESteps (time_step);
   void performPlaneWaveHSteps (time_step);
 
-  //void makeGridScattered (Grid<GridCoordinate3D> &);
+  void makeGridScattered (Grid<GridCoordinate3D> *, GridType);
+  void gatherFieldsTotal (bool);
+  void saveGrids (time_step);
+  void saveNTFF (bool, time_step);
 
 public:
 
@@ -161,148 +153,11 @@ public:
  * TODO: do not allocate grids which are not used
  */
 
-#if defined (PARALLEL_GRID)
-  Scheme3D (ParallelYeeGridLayout *layout,
-            const GridCoordinate3D& totSize,
-            const GridCoordinate3D& bufSize,
-            time_step tStep,
-            bool calcAmp = false,
-            time_step ampStep = 0,
-            bool doUsePML = false,
-            bool doUseTFSF = false,
-            bool doUseMetamaterials = false,
-            bool doUseNTFF = false,
-            bool doDumpRes = false) :
-    yeeLayout (layout),
-    Ex (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode (), "Ex"),
-    Ey (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode (), "Ey"),
-    Ez (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode (), "Ez"),
-    Hx (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode (), "Hx"),
-    Hy (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode (), "Hy"),
-    Hz (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode (), "Hz"),
-    Dx (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode (), "Dx"),
-    Dy (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode (), "Dy"),
-    Dz (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode (), "Dz"),
-    Bx (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode (), "Bx"),
-    By (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode (), "By"),
-    Bz (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode (), "Bz"),
-    D1x (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode (), "D1x"),
-    D1y (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode (), "D1y"),
-    D1z (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode (), "D1z"),
-    B1x (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode (), "B1x"),
-    B1y (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode (), "B1y"),
-    B1z (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode (), "B1z"),
-    ExAmplitude (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode (), "ExAmp"),
-    EyAmplitude (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode (), "EyAmp"),
-    EzAmplitude (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode (), "EzAmp"),
-    HxAmplitude (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode (), "HxAmp"),
-    HyAmplitude (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode (), "HyAmp"),
-    HzAmplitude (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode (), "HzAmp"),
-    Eps (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "Eps"),
-    Mu (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getMuSizeForCurNode (), layout->getMuCoreSizePerNode (), "Mu"),
-    OmegaPE (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "OmegaPE"),
-    GammaE (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "GammaE"),
-    OmegaPM (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "OmegaPM"),
-    GammaM (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "GammaM"),
-    SigmaX (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "SigmaX"),
-    SigmaY (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "SigmaY"),
-    SigmaZ (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "SigmaZ"),
-    sourceWaveLength (0),
-    sourceFrequency (0),
-    courantNum (0),
-    gridStep (0),
-    gridTimeStep (0),
-    totalStep (tStep),
-    calculateAmplitude (calcAmp),
-    amplitudeStepLimit (ampStep),
-    usePML (doUsePML),
-    useTFSF (doUseTFSF),
-    EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "EInc"),
-    HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc"),
-    useMetamaterials (doUseMetamaterials),
-    dumpRes (doDumpRes),
-    useNTFF (doUseNTFF),
-    leftNTFF (GridCoordinate3D (13, 13, 13)),
-    rightNTFF (layout->getEzSize () - leftNTFF + GridCoordinate3D (1,1,1))
-#else
   Scheme3D (YeeGridLayout *layout,
             const GridCoordinate3D& totSize,
-            time_step tStep,
-            bool calcAmp = false,
-            time_step ampStep = 0,
-            bool doUsePML = false,
-            bool doUseTFSF = false,
-            bool doUseMetamaterials = false,
-            bool doUseNTFF = false,
-            bool doDumpRes = false) :
-    yeeLayout (layout),
-    Ex (layout->getExSize (), 0, "Ex"),
-    Ey (layout->getEySize (), 0, "Ey"),
-    Ez (layout->getEzSize (), 0, "Ez"),
-    Hx (layout->getHxSize (), 0, "Hx"),
-    Hy (layout->getHySize (), 0, "Hy"),
-    Hz (layout->getHzSize (), 0, "Hz"),
-    Dx (layout->getExSize (), 0, "Dx"),
-    Dy (layout->getEySize (), 0, "Dy"),
-    Dz (layout->getEzSize (), 0, "Dz"),
-    Bx (layout->getHxSize (), 0, "Bx"),
-    By (layout->getHySize (), 0, "By"),
-    Bz (layout->getHzSize (), 0, "Bz"),
-    D1x (layout->getExSize (), 0, "D1x"),
-    D1y (layout->getEySize (), 0, "D1y"),
-    D1z (layout->getEzSize (), 0, "D1z"),
-    B1x (layout->getHxSize (), 0, "B1x"),
-    B1y (layout->getHySize (), 0, "B1y"),
-    B1z (layout->getHzSize (), 0, "B1z"),
-    ExAmplitude (layout->getExSize (), 0, "ExAmp"),
-    EyAmplitude (layout->getEySize (), 0, "EyAmp"),
-    EzAmplitude (layout->getEzSize (), 0, "EzAmp"),
-    HxAmplitude (layout->getHxSize (), 0, "HxAmp"),
-    HyAmplitude (layout->getHySize (), 0, "HyAmp"),
-    HzAmplitude (layout->getHzSize (), 0, "HzAmp"),
-    Eps (layout->getEpsSize (), 0, "Eps"),
-    Mu (layout->getEpsSize (), 0, "Mu"),
-    OmegaPE (layout->getEpsSize (), 0, "OmegaPE"),
-    GammaE (layout->getEpsSize (), 0, "GammaE"),
-    OmegaPM (layout->getEpsSize (), 0, "OmegaPM"),
-    GammaM (layout->getEpsSize (), 0, "GammaM"),
-    SigmaX (layout->getEpsSize (), 0, "SigmaX"),
-    SigmaY (layout->getEpsSize (), 0, "SigmaY"),
-    SigmaZ (layout->getEpsSize (), 0, "SigmaZ"),
-    sourceWaveLength (0),
-    sourceFrequency (0),
-    courantNum (0),
-    gridStep (0),
-    gridTimeStep (0),
-    totalStep (tStep),
-    calculateAmplitude (calcAmp),
-    amplitudeStepLimit (ampStep),
-    usePML (doUsePML),
-    useTFSF (doUseTFSF),
-    EInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "EInc"),
-    HInc (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc"),
-    useMetamaterials (doUseMetamaterials),
-    dumpRes (doDumpRes),
-    useNTFF (doUseNTFF),
-    leftNTFF (GridCoordinate3D (13, 13, 13)),
-    rightNTFF (layout->getEzSize () - leftNTFF + GridCoordinate3D (1,1,1))
-#endif
-  {
-    ASSERT (!doUseTFSF
-            || (doUseTFSF && yeeLayout->getSizeTFSF () != GridCoordinate3D (0, 0, 0)));
+            time_step tStep);
 
-    ASSERT (!doUsePML || (doUsePML && (yeeLayout->getSizePML () != GridCoordinate3D (0, 0, 0))));
-
-    ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
-
-#ifdef COMPLEX_FIELD_VALUES
-    ASSERT (!calculateAmplitude);
-#endif /* COMPLEX_FIELD_VALUES */
-  }
-
-  ~Scheme3D ()
-  {
-  }
+  ~Scheme3D ();
 
   struct NPair
   {
@@ -343,8 +198,8 @@ public:
                Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &);
   FPValue Pointing_inc (FPValue angleTeta, FPValue anglePhi);
 
-  FPValue getMaterial (FieldGrid, GridCoordinate3D, GridType, GridType);
-  FPValue getMaterial (FieldGrid, GridType);
+  // FPValue getMaterial (Grid<GridCoordinate3D> &, GridCoordinate3D, GridType, GridType);
+  // FPValue getMaterial (Grid<GridCoordinate3D> &, GridType);
 };
 
 #endif /* GRID_3D */

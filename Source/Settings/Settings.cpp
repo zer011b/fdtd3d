@@ -192,6 +192,12 @@ Settings::setFromCmd (int argc, /**< number of arguments */
                       char **argv, /**< arguments */
                       bool isCmd) /**< flag, whether argumens are passed through actual command line */
 {
+  if (argc == (isCmd ? 1 : 0))
+  {
+    printf ("Help: fdtd3d --help\n");
+    return EXIT_BREAK_ARG_PARSING;
+  }
+
   for (int i = (isCmd ? 1 : 0); i < argc; ++i)
   {
     int status = parseArg (i, argc, argv, isCmd);
@@ -230,7 +236,7 @@ Settings::loadCmdFromFile (std::string fileName) /**< name of file to load from 
 
   std::string cmd;
 
-  std::ifstream infile(fileName);
+  std::ifstream infile (fileName);
 
   int argc = 0;
   while (infile >> cmd)
@@ -276,7 +282,7 @@ Settings::saveCmdToFile (int argc, /**< number of arguments */
 {
   printf ("Saving command line to file %s\n", fileName.c_str ());
 
-  std::ofstream outfile(fileName);
+  std::ofstream outfile (fileName);
 
   for (int i = 1; i < argc; ++i)
   {
@@ -289,6 +295,8 @@ Settings::saveCmdToFile (int argc, /**< number of arguments */
       outfile << argv[i] << std::endl;
     }
   }
+
+  outfile.close ();
 
   return EXIT_OK;
 } /* Settings::saveCmdToFile */
