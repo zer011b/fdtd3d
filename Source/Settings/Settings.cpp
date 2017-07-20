@@ -236,7 +236,8 @@ Settings::loadCmdFromFile (std::string fileName) /**< name of file to load from 
 
   std::string cmd;
 
-  std::ifstream infile (fileName);
+  std::ifstream infile;
+  infile.open (fileName.c_str ());
 
   int argc = 0;
   while (infile >> cmd)
@@ -245,7 +246,7 @@ Settings::loadCmdFromFile (std::string fileName) /**< name of file to load from 
   }
 
   infile.close ();
-  infile.open (fileName);
+  infile.open (fileName.c_str ());
 
   char **argv = new char *[argc];
 
@@ -282,7 +283,8 @@ Settings::saveCmdToFile (int argc, /**< number of arguments */
 {
   printf ("Saving command line to file %s\n", fileName.c_str ());
 
-  std::ofstream outfile (fileName);
+  std::ofstream outfile;
+  outfile.open (fileName.c_str ());
 
   for (int i = 1; i < argc; ++i)
   {

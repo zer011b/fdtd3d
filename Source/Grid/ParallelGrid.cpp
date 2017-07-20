@@ -2580,14 +2580,14 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
 /**
  * Allocate and gather full grid from all nodes to one non-parallel grid on each node
  *
- * @full grid from all nodes as one non-parallel grid on each node
+ * @return full grid from all nodes as one non-parallel grid on each node
  *
  * Note: caller has to free returned grid!
  */
-ParallelGridBase
+ParallelGridBase *
 ParallelGrid::gatherFullGrid () const
 {
-  ParallelGridBase *grid = new ParallelGridBase (totalSize, ParallelGridBase::timeStep, getName ());
+  ParallelGridBase *grid = new ParallelGridBase (totalSize, ParallelGridBase::timeStep, getName ().c_str ());
 
   /*
    * Fill new grid with values
@@ -2605,11 +2605,11 @@ ParallelGrid::gatherFullGrid () const
 /**
  * Gather full grid from all nodes to one non-parallel grid on each node
  *
- * @full grid from all nodes as one non-parallel grid on each node
+ * @return full grid from all nodes as one non-parallel grid on each node
  *
  * Note: caller has to free returned grid!
  */
-ParallelGridBase
+ParallelGridBase *
 ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 {
   ParallelGridBase *grid = placementGrid;

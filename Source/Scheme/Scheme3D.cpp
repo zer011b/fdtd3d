@@ -137,7 +137,7 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
       HInc = new ParallelGrid (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc");
     }
 #else /* PARALLEL_GRID */
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel 3D grid. Recompile it with -DPARALLEL_GRID_DIMENSION=3.\n");
+    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
 #endif /* !PARALLEL_GRID */
   }
   else
@@ -2185,7 +2185,7 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 #ifdef PARALLEL_GRID
     processId = ParallelGrid::getParallelCore ()->getProcessId ();
 #else /* PARALLEL_GRID */
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel 3D grid. Recompile it with -DPARALLEL_GRID_DIMENSION=3.\n");
+    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
 #endif /* !PARALLEL_GRID */
   }
 
@@ -2757,7 +2757,7 @@ Scheme3D::performSteps ()
       ASSERT_MESSAGE ("Parallel amplitude mode is not implemented");
     }
 #else /* PARALLEL_GRID */
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel 3D grid. Recompile it with -DPARALLEL_GRID_DIMENSION=3.\n");
+    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
 #endif /* !PARALLEL_GRID */
   }
 
@@ -3178,7 +3178,7 @@ Scheme3D::initGrids ()
       SigmaZ->share ();
     }
 #else
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel 3D grid. Recompile it with -DPARALLEL_GRID_DIMENSION=3.\n");
+    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
 #endif
   }
 }
@@ -3777,7 +3777,7 @@ Scheme3D::gatherFieldsTotal (bool scattered)
       totalInitialized = true;
     }
 #else
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel 3D grid. Recompile it with -DPARALLEL_GRID_DIMENSION=3.\n");
+    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
 #endif
   }
   else
