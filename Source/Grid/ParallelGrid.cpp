@@ -2845,6 +2845,6 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
   }
 
   return grid;
-} /* ParallelGrid::gatherFullGrid */
+} /* ParallelGrid::gatherFullGridPlacement */
 
 #endif /* PARALLEL_GRID */
