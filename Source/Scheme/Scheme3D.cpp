@@ -332,7 +332,7 @@ Scheme3D::performPlaneWaveHSteps (time_step t)
 
   ASSERT (size > 1);
 
-  FPValue modifier = gridTimeStep / (relPhaseVelocity * PhysicsConst::Eps0 * gridStep);
+  FPValue modifier = gridTimeStep / (relPhaseVelocity * PhysicsConst::Mu0 * gridStep);
 
   for (grid_coord i = 0; i < size - 1; ++i)
   {
@@ -498,7 +498,7 @@ Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate
 
         FieldPointValue* valEx = Ex->getFieldPointValue (pos);
 
-        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::EX, *Eps, GridType::EPS);
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::EX, Eps, GridType::EPS);
 
         GridCoordinate3D posDown = yeeLayout->getExCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getExCircuitElement (pos, LayoutDirection::UP);
@@ -553,7 +553,7 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
 
         FieldPointValue* valDx = Dx->getFieldPointValue (pos);
 
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DX, *SigmaY, GridType::SIGMAY);
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DX, SigmaY, GridType::SIGMAY);
 
         GridCoordinate3D posDown = yeeLayout->getExCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getExCircuitElement (pos, LayoutDirection::UP);
@@ -614,7 +614,7 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
 
           FPValue omegaPE;
           FPValue gammaE;
-          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DX, *Eps, GridType::EPS, *OmegaPE, GridType::OMEGAPE, *GammaE, GridType::GAMMAE, omegaPE, gammaE);
+          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DX, Eps, GridType::EPS, OmegaPE, GridType::OMEGAPE, GammaE, GridType::GAMMAE, omegaPE, gammaE);
 
           /*
            * FIXME: precalculate coefficients
@@ -660,9 +660,9 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
           valDx = Dx->getFieldPointValue (pos);
         }
 
-        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DX, *Eps, GridType::EPS);
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DX, *SigmaX, GridType::SIGMAX);
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DX, *SigmaZ, GridType::SIGMAZ);
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DX, Eps, GridType::EPS);
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DX, SigmaX, GridType::SIGMAX);
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DX, SigmaZ, GridType::SIGMAZ);
 
         FPValue modifier = eps * eps0;
         if (solverSettings.getDoUseMetamaterials ())
@@ -795,7 +795,7 @@ Scheme3D::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate
 
         FieldPointValue* valEy = Ey->getFieldPointValue (pos);
 
-        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::EY, *Eps, GridType::EPS);
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::EY, Eps, GridType::EPS);
 
         GridCoordinate3D posLeft = yeeLayout->getEyCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getEyCircuitElement (pos, LayoutDirection::RIGHT);
@@ -850,7 +850,7 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
 
         FieldPointValue* valDy = Dy->getFieldPointValue (pos);
 
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DY, *SigmaZ, GridType::SIGMAZ);
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DY, SigmaZ, GridType::SIGMAZ);
 
         GridCoordinate3D posLeft = yeeLayout->getEyCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getEyCircuitElement (pos, LayoutDirection::RIGHT);
@@ -911,7 +911,7 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
 
           FPValue omegaPE;
           FPValue gammaE;
-          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DY, *Eps, GridType::EPS, *OmegaPE, GridType::OMEGAPE, *GammaE, GridType::GAMMAE, omegaPE, gammaE);
+          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DY, Eps, GridType::EPS, OmegaPE, GridType::OMEGAPE, GammaE, GridType::GAMMAE, omegaPE, gammaE);
 
           /*
            * FIXME: precalculate coefficients
@@ -957,9 +957,9 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
           valDy = Dy->getFieldPointValue (pos);
         }
 
-        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DY, *Eps, GridType::EPS);
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DY, *SigmaX, GridType::SIGMAX);
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DY, *SigmaY, GridType::SIGMAY);
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DY, Eps, GridType::EPS);
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DY, SigmaX, GridType::SIGMAX);
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DY, SigmaY, GridType::SIGMAY);
 
         FPValue modifier = eps * eps0;
         if (solverSettings.getDoUseMetamaterials ())
@@ -1092,7 +1092,7 @@ Scheme3D::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate
 
         FieldPointValue* valEz = Ez->getFieldPointValue (pos);
 
-        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::EZ, *Eps, GridType::EPS);
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::EZ, Eps, GridType::EPS);
 
         GridCoordinate3D posLeft = yeeLayout->getEzCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getEzCircuitElement (pos, LayoutDirection::RIGHT);
@@ -1146,7 +1146,7 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
 
         FieldPointValue* valDz = Dz->getFieldPointValue (pos);
 
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DZ, *SigmaX, GridType::SIGMAX);
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DZ, SigmaX, GridType::SIGMAX);
 
         GridCoordinate3D posLeft = yeeLayout->getEzCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getEzCircuitElement (pos, LayoutDirection::RIGHT);
@@ -1206,7 +1206,7 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
 
           FPValue omegaPE;
           FPValue gammaE;
-          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DZ, *Eps, GridType::EPS, *OmegaPE, GridType::OMEGAPE, *GammaE, GridType::GAMMAE, omegaPE, gammaE);
+          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DZ, Eps, GridType::EPS, OmegaPE, GridType::OMEGAPE, GammaE, GridType::GAMMAE, omegaPE, gammaE);
 
           /*
            * FIXME: precalculate coefficients
@@ -1251,9 +1251,9 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
           valDz = Dz->getFieldPointValue (pos);
         }
 
-        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DZ, *Eps, GridType::EPS);
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DZ, *SigmaY, GridType::SIGMAY);
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DZ, *SigmaZ, GridType::SIGMAZ);
+        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DZ, Eps, GridType::EPS);
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DZ, SigmaY, GridType::SIGMAY);
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DZ, SigmaZ, GridType::SIGMAZ);
 
         FPValue modifier = eps * eps0;
         if (solverSettings.getDoUseMetamaterials ())
@@ -1390,7 +1390,7 @@ Scheme3D::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinate
 
         FieldPointValue* valHx = Hx->getFieldPointValue (pos);
 
-        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::HX, *Mu, GridType::MU);
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::HX, Mu, GridType::MU);
 
         GridCoordinate3D posDown = yeeLayout->getHxCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getHxCircuitElement (pos, LayoutDirection::UP);
@@ -1446,7 +1446,7 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
 
         FieldPointValue* valBx = Bx->getFieldPointValue (pos);
 
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BX, *SigmaY, GridType::SIGMAY);
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BX, SigmaY, GridType::SIGMAY);
 
         GridCoordinate3D posDown = yeeLayout->getHxCircuitElement (pos, LayoutDirection::DOWN);
         GridCoordinate3D posUp = yeeLayout->getHxCircuitElement (pos, LayoutDirection::UP);
@@ -1504,7 +1504,7 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
 
           FPValue omegaPM;
           FPValue gammaM;
-          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BX, *Mu, GridType::MU, *OmegaPM, GridType::OMEGAPM, *GammaM, GridType::GAMMAM, omegaPM, gammaM);
+          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BX, Mu, GridType::MU, OmegaPM, GridType::OMEGAPM, GammaM, GridType::GAMMAM, omegaPM, gammaM);
 
           /*
            * FIXME: precalculate coefficients
@@ -1550,9 +1550,9 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
           valBx = Bx->getFieldPointValue (pos);
         }
 
-        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BX, *Mu, GridType::MU);
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BX, *SigmaX, GridType::SIGMAX);
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BX, *SigmaZ, GridType::SIGMAZ);
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BX, Mu, GridType::MU);
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BX, SigmaX, GridType::SIGMAX);
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BX, SigmaZ, GridType::SIGMAZ);
 
         FPValue modifier = mu * mu0;
         if (solverSettings.getDoUseMetamaterials ())
@@ -1686,7 +1686,7 @@ Scheme3D::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinate
 
         FieldPointValue* valHy = Hy->getFieldPointValue (pos);
 
-        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::HY, *Mu, GridType::MU);
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::HY, Mu, GridType::MU);
 
         GridCoordinate3D posLeft = yeeLayout->getHyCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getHyCircuitElement (pos, LayoutDirection::RIGHT);
@@ -1742,7 +1742,7 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
 
         FieldPointValue* valBy = By->getFieldPointValue (pos);
 
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BY, *SigmaZ, GridType::SIGMAZ);
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BY, SigmaZ, GridType::SIGMAZ);
 
         GridCoordinate3D posLeft = yeeLayout->getHyCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getHyCircuitElement (pos, LayoutDirection::RIGHT);
@@ -1800,7 +1800,7 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
 
           FPValue omegaPM;
           FPValue gammaM;
-          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BY, *Mu, GridType::MU, *OmegaPM, GridType::OMEGAPM, *GammaM, GridType::GAMMAM, omegaPM, gammaM);
+          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BY, Mu, GridType::MU, OmegaPM, GridType::OMEGAPM, GammaM, GridType::GAMMAM, omegaPM, gammaM);
 
           /*
            * FIXME: precalculate coefficients
@@ -1846,9 +1846,9 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
           valBy = By->getFieldPointValue (pos);
         }
 
-        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BY, *Mu, GridType::MU);
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BY, *SigmaX, GridType::SIGMAX);
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BY, *SigmaY, GridType::SIGMAY);
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BY, Mu, GridType::MU);
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BY, SigmaX, GridType::SIGMAX);
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BY, SigmaY, GridType::SIGMAY);
 
         FPValue modifier = mu * mu0;
         if (solverSettings.getDoUseMetamaterials ())
@@ -1981,7 +1981,7 @@ Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate
 
         FieldPointValue* valHz = Hz->getFieldPointValue (pos);
 
-        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::HZ, *Mu, GridType::MU);
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::HZ, Mu, GridType::MU);
 
         GridCoordinate3D posLeft = yeeLayout->getHzCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getHzCircuitElement (pos, LayoutDirection::RIGHT);
@@ -2037,7 +2037,7 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
 
         FieldPointValue* valBz = Bz->getFieldPointValue (pos);
 
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BZ, *SigmaX, GridType::SIGMAX);
+        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BZ, SigmaX, GridType::SIGMAX);
 
         GridCoordinate3D posLeft = yeeLayout->getHzCircuitElement (pos, LayoutDirection::LEFT);
         GridCoordinate3D posRight = yeeLayout->getHzCircuitElement (pos, LayoutDirection::RIGHT);
@@ -2095,7 +2095,7 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
 
           FPValue omegaPM;
           FPValue gammaM;
-          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BZ, *Mu, GridType::MU, *OmegaPM, GridType::OMEGAPM, *GammaM, GridType::GAMMAM, omegaPM, gammaM);
+          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BZ, Mu, GridType::MU, OmegaPM, GridType::OMEGAPM, GammaM, GridType::GAMMAM, omegaPM, gammaM);
 
           /*
            * FIXME: precalculate coefficients
@@ -2141,9 +2141,9 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
           valBz = Bz->getFieldPointValue (pos);
         }
 
-        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BZ, *Mu, GridType::MU);
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BZ, *SigmaY, GridType::SIGMAY);
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BZ, *SigmaZ, GridType::SIGMAZ);
+        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BZ, Mu, GridType::MU);
+        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BZ, SigmaY, GridType::SIGMAY);
+        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BZ, SigmaZ, GridType::SIGMAZ);
 
         FPValue modifier = mu * mu0;
         if (solverSettings.getDoUseMetamaterials ())
@@ -3208,11 +3208,11 @@ Scheme3D::initGrids ()
 
 Scheme3D::NPair
 Scheme3D::ntffN_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> &curTotalEz,
-                   Grid<GridCoordinate3D> &curTotalHy,
-                   Grid<GridCoordinate3D> &curTotalHz)
+                   Grid<GridCoordinate3D> *curTotalEz,
+                   Grid<GridCoordinate3D> *curTotalHy,
+                   Grid<GridCoordinate3D> *curTotalHz)
 {
-  FPValue diffc = curTotalEz.getSize ().getX () / 2;
+  FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (x0, leftNTFF.getY () + 0.5, leftNTFF.getZ () + 0.5);
   GridCoordinateFP3D coordEnd (x0, rightNTFF.getY () - 0.5, rightNTFF.getZ () - 0.5);
@@ -3240,11 +3240,11 @@ Scheme3D::ntffN_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
       pos3 = pos3 - yeeLayout->getMinHyCoordFP ();
       pos4 = pos4 - yeeLayout->getMinHyCoordFP ();
 
-      FieldValue valHz1 = curTotalHz.getFieldPointValue (convertCoord (pos1))->getCurValue ();// - val1;
-      FieldValue valHz2 = curTotalHz.getFieldPointValue (convertCoord (pos2))->getCurValue ();// - val2;
+      FieldValue valHz1 = curTotalHz->getFieldPointValue (convertCoord (pos1))->getCurValue ();// - val1;
+      FieldValue valHz2 = curTotalHz->getFieldPointValue (convertCoord (pos2))->getCurValue ();// - val2;
 
-      FieldValue valHy1 = curTotalHy.getFieldPointValue (convertCoord (pos3))->getCurValue ();// - val3;
-      FieldValue valHy2 = curTotalHy.getFieldPointValue (convertCoord (pos4))->getCurValue ();// - val4;
+      FieldValue valHy1 = curTotalHy->getFieldPointValue (convertCoord (pos3))->getCurValue ();// - val3;
+      FieldValue valHy2 = curTotalHy->getFieldPointValue (convertCoord (pos4))->getCurValue ();// - val4;
 
       FPValue arg = (x0 - diffc) * sin(angleTeta)*cos(anglePhi) + (coordY - diffc) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffc) * cos (angleTeta);
       arg *= gridStep;
@@ -3265,11 +3265,11 @@ Scheme3D::ntffN_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffN_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> &curTotalEz,
-                   Grid<GridCoordinate3D> &curTotalHx,
-                   Grid<GridCoordinate3D> &curTotalHz)
+                   Grid<GridCoordinate3D> *curTotalEz,
+                   Grid<GridCoordinate3D> *curTotalHx,
+                   Grid<GridCoordinate3D> *curTotalHz)
 {
-  FPValue diffc = curTotalEz.getSize ().getX () / 2;
+  FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, y0, leftNTFF.getZ () + 0.5);
   GridCoordinateFP3D coordEnd (rightNTFF.getX () - 0.5, y0, rightNTFF.getZ () - 0.5);
@@ -3297,11 +3297,11 @@ Scheme3D::ntffN_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
       pos3 = pos3 - yeeLayout->getMinHxCoordFP ();
       pos4 = pos4 - yeeLayout->getMinHxCoordFP ();
 
-      FieldValue valHz1 = curTotalHz.getFieldPointValue (convertCoord (pos1))->getCurValue ();// - val1;
-      FieldValue valHz2 = curTotalHz.getFieldPointValue (convertCoord (pos2))->getCurValue ();// - val2;
+      FieldValue valHz1 = curTotalHz->getFieldPointValue (convertCoord (pos1))->getCurValue ();// - val1;
+      FieldValue valHz2 = curTotalHz->getFieldPointValue (convertCoord (pos2))->getCurValue ();// - val2;
 
-      FieldValue valHx1 = curTotalHx.getFieldPointValue (convertCoord (pos3))->getCurValue ();// - val3;
-      FieldValue valHx2 = curTotalHx.getFieldPointValue (convertCoord (pos4))->getCurValue ();// - val4;
+      FieldValue valHx1 = curTotalHx->getFieldPointValue (convertCoord (pos3))->getCurValue ();// - val3;
+      FieldValue valHx2 = curTotalHx->getFieldPointValue (convertCoord (pos4))->getCurValue ();// - val4;
 
       FPValue arg = (coordX - diffc) * sin(angleTeta)*cos(anglePhi) + (y0 - diffc) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffc) * cos (angleTeta);
       arg *= gridStep;
@@ -3322,11 +3322,11 @@ Scheme3D::ntffN_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffN_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> &curTotalEz,
-                   Grid<GridCoordinate3D> &curTotalHx,
-                   Grid<GridCoordinate3D> &curTotalHy)
+                   Grid<GridCoordinate3D> *curTotalEz,
+                   Grid<GridCoordinate3D> *curTotalHx,
+                   Grid<GridCoordinate3D> *curTotalHy)
 {
-  FPValue diffc = curTotalEz.getSize ().getX () / 2;
+  FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, leftNTFF.getY () + 0.5, z0);
   GridCoordinateFP3D coordEnd (rightNTFF.getX () - 0.5, rightNTFF.getY () - 0.5, z0);
@@ -3354,11 +3354,11 @@ Scheme3D::ntffN_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
       pos3 = pos3 - yeeLayout->getMinHxCoordFP ();
       pos4 = pos4 - yeeLayout->getMinHxCoordFP ();
 
-      FieldValue valHy1 = curTotalHy.getFieldPointValue (convertCoord (pos1))->getCurValue ();// - val1;
-      FieldValue valHy2 = curTotalHy.getFieldPointValue (convertCoord (pos2))->getCurValue ();// - val2;
+      FieldValue valHy1 = curTotalHy->getFieldPointValue (convertCoord (pos1))->getCurValue ();// - val1;
+      FieldValue valHy2 = curTotalHy->getFieldPointValue (convertCoord (pos2))->getCurValue ();// - val2;
 
-      FieldValue valHx1 = curTotalHx.getFieldPointValue (convertCoord (pos3))->getCurValue ();// - val3;
-      FieldValue valHx2 = curTotalHx.getFieldPointValue (convertCoord (pos4))->getCurValue ();// - val4;
+      FieldValue valHx1 = curTotalHx->getFieldPointValue (convertCoord (pos3))->getCurValue ();// - val3;
+      FieldValue valHx2 = curTotalHx->getFieldPointValue (convertCoord (pos4))->getCurValue ();// - val4;
 
       FPValue arg = (coordX - diffc) * sin(angleTeta)*cos(anglePhi) + (coordY - diffc) * sin(angleTeta)*sin(anglePhi) + (z0 - diffc) * cos (angleTeta);
       arg *= gridStep;
@@ -3380,10 +3380,10 @@ Scheme3D::ntffN_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffL_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> &curTotalEy,
-                   Grid<GridCoordinate3D> &curTotalEz)
+                   Grid<GridCoordinate3D> *curTotalEy,
+                   Grid<GridCoordinate3D> *curTotalEz)
 {
-  FPValue diffc = curTotalEz.getSize ().getX () / 2;
+  FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (x0, leftNTFF.getY () + 0.5, leftNTFF.getZ () + 0.5);
   GridCoordinateFP3D coordEnd (x0, rightNTFF.getY () - 0.5, rightNTFF.getZ () - 0.5);
@@ -3411,15 +3411,15 @@ Scheme3D::ntffL_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
       pos3 = pos3 - yeeLayout->getMinEzCoordFP ();
       pos4 = pos4 - yeeLayout->getMinEzCoordFP ();
 
-      FieldValue valEy1 = (curTotalEy.getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEy.getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val1;
-      FieldValue valEy2 = (curTotalEy.getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEy.getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val2;
+      FieldValue valEy1 = (curTotalEy->getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
+                           + curTotalEy->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val1;
+      FieldValue valEy2 = (curTotalEy->getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
+                           + curTotalEy->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val2;
 
-      FieldValue valEz1 = (curTotalEz.getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEz.getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val3;
-      FieldValue valEz2 = (curTotalEz.getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEz.getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val4;
+      FieldValue valEz1 = (curTotalEz->getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
+                           + curTotalEz->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val3;
+      FieldValue valEz2 = (curTotalEz->getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
+                           + curTotalEz->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val4;
 
       FPValue arg = (x0 - diffc) * sin(angleTeta)*cos(anglePhi) + (coordY - diffc) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffc) * cos (angleTeta);
       arg *= gridStep;
@@ -3440,10 +3440,10 @@ Scheme3D::ntffL_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffL_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> &curTotalEx,
-                   Grid<GridCoordinate3D> &curTotalEz)
+                   Grid<GridCoordinate3D> *curTotalEx,
+                   Grid<GridCoordinate3D> *curTotalEz)
 {
-  FPValue diffc = curTotalEz.getSize ().getX () / 2;
+  FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, y0, leftNTFF.getZ () + 0.5);
   GridCoordinateFP3D coordEnd (rightNTFF.getX () - 0.5, y0, rightNTFF.getZ () - 0.5);
@@ -3471,15 +3471,15 @@ Scheme3D::ntffL_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
       pos3 = pos3 - yeeLayout->getMinEzCoordFP ();
       pos4 = pos4 - yeeLayout->getMinEzCoordFP ();
 
-      FieldValue valEx1 = (curTotalEx.getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEx.getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val1;
-      FieldValue valEx2 = (curTotalEx.getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEx.getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val2;
+      FieldValue valEx1 = (curTotalEx->getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
+                           + curTotalEx->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val1;
+      FieldValue valEx2 = (curTotalEx->getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
+                           + curTotalEx->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val2;
 
-      FieldValue valEz1 = (curTotalEz.getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEz.getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val3;
-      FieldValue valEz2 = (curTotalEz.getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEz.getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val4;
+      FieldValue valEz1 = (curTotalEz->getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
+                           + curTotalEz->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val3;
+      FieldValue valEz2 = (curTotalEz->getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
+                           + curTotalEz->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val4;
 
       FPValue arg = (coordX - diffc) * sin(angleTeta)*cos(anglePhi) + (y0 - diffc) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffc) * cos (angleTeta);
       arg *= gridStep;
@@ -3500,11 +3500,11 @@ Scheme3D::ntffL_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffL_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> &curTotalEx,
-                   Grid<GridCoordinate3D> &curTotalEy,
-                   Grid<GridCoordinate3D> &curTotalEz)
+                   Grid<GridCoordinate3D> *curTotalEx,
+                   Grid<GridCoordinate3D> *curTotalEy,
+                   Grid<GridCoordinate3D> *curTotalEz)
 {
-  FPValue diffc = curTotalEz.getSize ().getX () / 2;
+  FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, leftNTFF.getY () + 0.5, z0);
   GridCoordinateFP3D coordEnd (rightNTFF.getX () - 0.5, rightNTFF.getY () - 0.5, z0);
@@ -3532,15 +3532,15 @@ Scheme3D::ntffL_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
       pos3 = pos3 - yeeLayout->getMinEyCoordFP ();
       pos4 = pos4 - yeeLayout->getMinEyCoordFP ();
 
-      FieldValue valEx1 = (curTotalEx.getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEx.getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val1;
-      FieldValue valEx2 = (curTotalEx.getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEx.getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val2;
+      FieldValue valEx1 = (curTotalEx->getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
+                           + curTotalEx->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val1;
+      FieldValue valEx2 = (curTotalEx->getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
+                           + curTotalEx->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val2;
 
-      FieldValue valEy1 = (curTotalEy.getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEy.getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val3;
-      FieldValue valEy2 = (curTotalEy.getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEy.getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val4;
+      FieldValue valEy1 = (curTotalEy->getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
+                           + curTotalEy->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val3;
+      FieldValue valEy2 = (curTotalEy->getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
+                           + curTotalEy->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val4;
 
       FPValue arg = (coordX - diffc) * sin(angleTeta)*cos(anglePhi) + (coordY - diffc) * sin(angleTeta)*sin(anglePhi) + (z0 - diffc) * cos (angleTeta);
       arg *= gridStep;
@@ -3562,10 +3562,10 @@ Scheme3D::ntffL_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffN (FPValue angleTeta, FPValue anglePhi,
-                 Grid<GridCoordinate3D> &curTotalEz,
-                 Grid<GridCoordinate3D> &curTotalHx,
-                 Grid<GridCoordinate3D> &curTotalHy,
-                 Grid<GridCoordinate3D> &curTotalHz)
+                 Grid<GridCoordinate3D> *curTotalEz,
+                 Grid<GridCoordinate3D> *curTotalHx,
+                 Grid<GridCoordinate3D> *curTotalHy,
+                 Grid<GridCoordinate3D> *curTotalHz)
 {
   return ntffN_x (leftNTFF.getX (), angleTeta, anglePhi, curTotalEz, curTotalHy, curTotalHz)
          + ntffN_x (rightNTFF.getX (), angleTeta, anglePhi, curTotalEz, curTotalHy, curTotalHz)
@@ -3577,9 +3577,9 @@ Scheme3D::ntffN (FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffL (FPValue angleTeta, FPValue anglePhi,
-                 Grid<GridCoordinate3D> &curTotalEx,
-                 Grid<GridCoordinate3D> &curTotalEy,
-                 Grid<GridCoordinate3D> &curTotalEz)
+                 Grid<GridCoordinate3D> *curTotalEx,
+                 Grid<GridCoordinate3D> *curTotalEy,
+                 Grid<GridCoordinate3D> *curTotalEz)
 {
   return ntffL_x (leftNTFF.getX (), angleTeta, anglePhi, curTotalEy, curTotalEz)
          + ntffL_x (rightNTFF.getX (), angleTeta, anglePhi, curTotalEy, curTotalEz)
@@ -3591,12 +3591,12 @@ Scheme3D::ntffL (FPValue angleTeta, FPValue anglePhi,
 
 FPValue
 Scheme3D::Pointing_scat (FPValue angleTeta, FPValue anglePhi,
-                         Grid<GridCoordinate3D> &curTotalEx,
-                         Grid<GridCoordinate3D> &curTotalEy,
-                         Grid<GridCoordinate3D> &curTotalEz,
-                         Grid<GridCoordinate3D> &curTotalHx,
-                         Grid<GridCoordinate3D> &curTotalHy,
-                         Grid<GridCoordinate3D> &curTotalHz)
+                         Grid<GridCoordinate3D> *curTotalEx,
+                         Grid<GridCoordinate3D> *curTotalEy,
+                         Grid<GridCoordinate3D> *curTotalEz,
+                         Grid<GridCoordinate3D> *curTotalHx,
+                         Grid<GridCoordinate3D> *curTotalHy,
+                         Grid<GridCoordinate3D> *curTotalHz)
 {
   FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
 
@@ -3932,12 +3932,12 @@ Scheme3D::saveNTFF (bool isReverse, time_step t)
     {
       FPValue val = Pointing_scat (yeeLayout->getIncidentWaveAngle1 (),
                                    angle,
-                                   *totalEx,
-                                   *totalEy,
-                                   *totalEz,
-                                   *totalHx,
-                                   *totalHy,
-                                   *totalHz) / Pointing_inc (yeeLayout->getIncidentWaveAngle1 (), angle);
+                                   totalEx,
+                                   totalEy,
+                                   totalEz,
+                                   totalHx,
+                                   totalHy,
+                                   totalHz) / Pointing_inc (yeeLayout->getIncidentWaveAngle1 (), angle);
 
       outfile << "timestep = "
               << t

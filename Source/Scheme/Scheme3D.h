@@ -149,10 +149,6 @@ public:
 
   void initGrids ();
 
-/*
- * TODO: do not allocate grids which are not used
- */
-
   Scheme3D (YeeGridLayout *layout,
             const GridCoordinate3D& totSize,
             time_step tStep);
@@ -179,27 +175,24 @@ public:
   /*
    * 3D ntff
    */
-  NPair ntffN_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &);
-  NPair ntffN_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &);
-  NPair ntffN_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &);
+  NPair ntffN_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
+  NPair ntffN_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
+  NPair ntffN_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
 
-  NPair ntffL_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &);
-  NPair ntffL_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &);
-  NPair ntffL_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &);
+  NPair ntffL_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
+  NPair ntffL_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
+  NPair ntffL_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
 
   NPair ntffN (FPValue angleTeta, FPValue anglePhi,
-               Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &,
-               Grid<GridCoordinate3D> &);
+               Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *,
+               Grid<GridCoordinate3D> *);
   NPair ntffL (FPValue angleTeta, FPValue anglePhi,
-               Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &);
+               Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
 
   FPValue Pointing_scat (FPValue angleTeta, FPValue anglePhi,
-               Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &,
-               Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &, Grid<GridCoordinate3D> &);
+               Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *,
+               Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
   FPValue Pointing_inc (FPValue angleTeta, FPValue anglePhi);
-
-  // FPValue getMaterial (Grid<GridCoordinate3D> &, GridCoordinate3D, GridType, GridType);
-  // FPValue getMaterial (Grid<GridCoordinate3D> &, GridType);
 };
 
 #endif /* GRID_3D */

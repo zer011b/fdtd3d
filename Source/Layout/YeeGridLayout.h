@@ -481,28 +481,28 @@ public:
   } /* ~YeeGridLayout */
 
   template <class TCoord>
-  FPValue getApproximateMaterial (Grid<TCoord> &, GridCoordinate3D, GridCoordinate3D);
+  FPValue getApproximateMaterial (Grid<TCoord> *, GridCoordinate3D, GridCoordinate3D);
   template <class TCoord>
-  FPValue getApproximateMaterial (Grid<TCoord> &, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
+  FPValue getApproximateMaterial (Grid<TCoord> *, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
   template <class TCoord>
-  FPValue getApproximateMaterial (Grid<TCoord> &, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D,
+  FPValue getApproximateMaterial (Grid<TCoord> *, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D,
                                   GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
   template <class TCoord>
-  FPValue getApproximateMetaMaterial (Grid<TCoord> &, Grid<TCoord> &, Grid<TCoord> &, GridCoordinate3D, GridCoordinate3D,
+  FPValue getApproximateMetaMaterial (Grid<TCoord> *, Grid<TCoord> *, Grid<TCoord> *, GridCoordinate3D, GridCoordinate3D,
                                       FPValue &, FPValue &);
   template <class TCoord>
-  FPValue getApproximateMetaMaterial (Grid<TCoord> &, Grid<TCoord> &, Grid<TCoord> &, GridCoordinate3D, GridCoordinate3D,
+  FPValue getApproximateMetaMaterial (Grid<TCoord> *, Grid<TCoord> *, Grid<TCoord> *, GridCoordinate3D, GridCoordinate3D,
                                       GridCoordinate3D, GridCoordinate3D, FPValue &, FPValue &);
   template <class TCoord>
-  FPValue getApproximateMetaMaterial (Grid<TCoord> &, Grid<TCoord> &, Grid<TCoord> &, GridCoordinate3D, GridCoordinate3D,
+  FPValue getApproximateMetaMaterial (Grid<TCoord> *, Grid<TCoord> *, Grid<TCoord> *, GridCoordinate3D, GridCoordinate3D,
                                       GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D,
                                       GridCoordinate3D, GridCoordinate3D, FPValue &, FPValue &);
 
   template <class TCoord>
-  FPValue getMetaMaterial (GridCoordinate3D &, GridType, Grid<TCoord> &, GridType, Grid<TCoord> &, GridType, Grid<TCoord> &,
+  FPValue getMetaMaterial (GridCoordinate3D &, GridType, Grid<TCoord> *, GridType, Grid<TCoord> *, GridType, Grid<TCoord> *,
                            GridType, FPValue &, FPValue &);
   template <class TCoord>
-  FPValue getMaterial (GridCoordinate3D &, GridType, Grid<TCoord> &, GridType);
+  FPValue getMaterial (GridCoordinate3D &, GridType, Grid<TCoord> *, GridType);
 
   bool getIsDoubleMaterialPrecision () const
   {
@@ -512,12 +512,12 @@ public:
 
 template <class TCoord>
 FPValue
-YeeGridLayout::getApproximateMaterial (Grid<TCoord> &gridMaterial,
+YeeGridLayout::getApproximateMaterial (Grid<TCoord> *gridMaterial,
                                        GridCoordinate3D coord1,
                                        GridCoordinate3D coord2)
 {
-  FieldPointValue* val1 = gridMaterial.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial.getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
 
   return Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                              Approximation::getMaterial (val2));
@@ -525,16 +525,16 @@ YeeGridLayout::getApproximateMaterial (Grid<TCoord> &gridMaterial,
 
 template <class TCoord>
 FPValue
-YeeGridLayout::getApproximateMaterial (Grid<TCoord> &gridMaterial,
+YeeGridLayout::getApproximateMaterial (Grid<TCoord> *gridMaterial,
                                        GridCoordinate3D coord1,
                                        GridCoordinate3D coord2,
                                        GridCoordinate3D coord3,
                                        GridCoordinate3D coord4)
 {
-  FieldPointValue* val1 = gridMaterial.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial.getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue* val3 = gridMaterial.getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue* val4 = gridMaterial.getFieldPointValueByAbsolutePos (coord4);
+  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue* val3 = gridMaterial->getFieldPointValueByAbsolutePos (coord3);
+  FieldPointValue* val4 = gridMaterial->getFieldPointValueByAbsolutePos (coord4);
 
   return Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                              Approximation::getMaterial (val2),
@@ -544,7 +544,7 @@ YeeGridLayout::getApproximateMaterial (Grid<TCoord> &gridMaterial,
 
 template <class TCoord>
 FPValue
-YeeGridLayout::getApproximateMaterial (Grid<TCoord> &gridMaterial,
+YeeGridLayout::getApproximateMaterial (Grid<TCoord> *gridMaterial,
                                        GridCoordinate3D coord1,
                                        GridCoordinate3D coord2,
                                        GridCoordinate3D coord3,
@@ -554,14 +554,14 @@ YeeGridLayout::getApproximateMaterial (Grid<TCoord> &gridMaterial,
                                        GridCoordinate3D coord7,
                                        GridCoordinate3D coord8)
 {
-  FieldPointValue* val1 = gridMaterial.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial.getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue* val3 = gridMaterial.getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue* val4 = gridMaterial.getFieldPointValueByAbsolutePos (coord4);
-  FieldPointValue* val5 = gridMaterial.getFieldPointValueByAbsolutePos (coord5);
-  FieldPointValue* val6 = gridMaterial.getFieldPointValueByAbsolutePos (coord6);
-  FieldPointValue* val7 = gridMaterial.getFieldPointValueByAbsolutePos (coord7);
-  FieldPointValue* val8 = gridMaterial.getFieldPointValueByAbsolutePos (coord8);
+  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue* val3 = gridMaterial->getFieldPointValueByAbsolutePos (coord3);
+  FieldPointValue* val4 = gridMaterial->getFieldPointValueByAbsolutePos (coord4);
+  FieldPointValue* val5 = gridMaterial->getFieldPointValueByAbsolutePos (coord5);
+  FieldPointValue* val6 = gridMaterial->getFieldPointValueByAbsolutePos (coord6);
+  FieldPointValue* val7 = gridMaterial->getFieldPointValueByAbsolutePos (coord7);
+  FieldPointValue* val8 = gridMaterial->getFieldPointValueByAbsolutePos (coord8);
 
   return Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                              Approximation::getMaterial (val2),
@@ -575,25 +575,25 @@ YeeGridLayout::getApproximateMaterial (Grid<TCoord> &gridMaterial,
 
 template <class TCoord>
 FPValue
-YeeGridLayout::getApproximateMetaMaterial (Grid<TCoord> &gridMaterial,
-                                           Grid<TCoord> &gridMaterialOmega,
-                                           Grid<TCoord> &gridMaterialGamma,
+YeeGridLayout::getApproximateMetaMaterial (Grid<TCoord> *gridMaterial,
+                                           Grid<TCoord> *gridMaterialOmega,
+                                           Grid<TCoord> *gridMaterialGamma,
                                            GridCoordinate3D coord1,
                                            GridCoordinate3D coord2,
                                            FPValue &omega,
                                            FPValue &gamma)
 {
-  FieldPointValue* val1 = gridMaterial.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial.getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
 
   FPValue material = Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                                          Approximation::getMaterial (val2));
 
-  FieldPointValue *val3 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val4 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue *val3 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue *val4 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord2);
 
-  FieldPointValue *val5 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val6 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue *val5 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue *val6 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord2);
 
   Approximation::approximateDrudeModel (omega,
                                         gamma,
@@ -609,9 +609,9 @@ YeeGridLayout::getApproximateMetaMaterial (Grid<TCoord> &gridMaterial,
 
 template <class TCoord>
 FPValue
-YeeGridLayout::getApproximateMetaMaterial (Grid<TCoord> &gridMaterial,
-                                           Grid<TCoord> &gridMaterialOmega,
-                                           Grid<TCoord> &gridMaterialGamma,
+YeeGridLayout::getApproximateMetaMaterial (Grid<TCoord> *gridMaterial,
+                                           Grid<TCoord> *gridMaterialOmega,
+                                           Grid<TCoord> *gridMaterialGamma,
                                            GridCoordinate3D coord1,
                                            GridCoordinate3D coord2,
                                            GridCoordinate3D coord3,
@@ -619,25 +619,25 @@ YeeGridLayout::getApproximateMetaMaterial (Grid<TCoord> &gridMaterial,
                                            FPValue &omega,
                                            FPValue &gamma)
 {
-  FieldPointValue* val1 = gridMaterial.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial.getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue* val3 = gridMaterial.getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue* val4 = gridMaterial.getFieldPointValueByAbsolutePos (coord4);
+  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue* val3 = gridMaterial->getFieldPointValueByAbsolutePos (coord3);
+  FieldPointValue* val4 = gridMaterial->getFieldPointValueByAbsolutePos (coord4);
 
   FPValue material = Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                                          Approximation::getMaterial (val2),
                                                          Approximation::getMaterial (val3),
                                                          Approximation::getMaterial (val4));
 
-  FieldPointValue *val5 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val6 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue *val7 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue *val8 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord4);
+  FieldPointValue *val5 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue *val6 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue *val7 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord3);
+  FieldPointValue *val8 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord4);
 
-  FieldPointValue *val9 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val10 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue *val11 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue *val12 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord4);
+  FieldPointValue *val9 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue *val10 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue *val11 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord3);
+  FieldPointValue *val12 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord4);
 
   Approximation::approximateDrudeModel (omega,
                                         gamma,
@@ -659,9 +659,9 @@ YeeGridLayout::getApproximateMetaMaterial (Grid<TCoord> &gridMaterial,
 
 template <class TCoord>
 FPValue
-YeeGridLayout::getApproximateMetaMaterial (Grid<TCoord> &gridMaterial,
-                                           Grid<TCoord> &gridMaterialOmega,
-                                           Grid<TCoord> &gridMaterialGamma,
+YeeGridLayout::getApproximateMetaMaterial (Grid<TCoord> *gridMaterial,
+                                           Grid<TCoord> *gridMaterialOmega,
+                                           Grid<TCoord> *gridMaterialGamma,
                                            GridCoordinate3D coord1,
                                            GridCoordinate3D coord2,
                                            GridCoordinate3D coord3,
@@ -673,14 +673,14 @@ YeeGridLayout::getApproximateMetaMaterial (Grid<TCoord> &gridMaterial,
                                            FPValue &omega,
                                            FPValue &gamma)
 {
-  FieldPointValue* val1 = gridMaterial.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial.getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue* val3 = gridMaterial.getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue* val4 = gridMaterial.getFieldPointValueByAbsolutePos (coord4);
-  FieldPointValue* val5 = gridMaterial.getFieldPointValueByAbsolutePos (coord5);
-  FieldPointValue* val6 = gridMaterial.getFieldPointValueByAbsolutePos (coord6);
-  FieldPointValue* val7 = gridMaterial.getFieldPointValueByAbsolutePos (coord7);
-  FieldPointValue* val8 = gridMaterial.getFieldPointValueByAbsolutePos (coord8);
+  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue* val3 = gridMaterial->getFieldPointValueByAbsolutePos (coord3);
+  FieldPointValue* val4 = gridMaterial->getFieldPointValueByAbsolutePos (coord4);
+  FieldPointValue* val5 = gridMaterial->getFieldPointValueByAbsolutePos (coord5);
+  FieldPointValue* val6 = gridMaterial->getFieldPointValueByAbsolutePos (coord6);
+  FieldPointValue* val7 = gridMaterial->getFieldPointValueByAbsolutePos (coord7);
+  FieldPointValue* val8 = gridMaterial->getFieldPointValueByAbsolutePos (coord8);
 
   FPValue material = Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                                          Approximation::getMaterial (val2),
@@ -691,23 +691,23 @@ YeeGridLayout::getApproximateMetaMaterial (Grid<TCoord> &gridMaterial,
                                                          Approximation::getMaterial (val7),
                                                          Approximation::getMaterial (val8));
 
-  FieldPointValue *val9 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val10 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue *val11 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue *val12 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord4);
-  FieldPointValue *val13 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord5);
-  FieldPointValue *val14 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord6);
-  FieldPointValue *val15 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord7);
-  FieldPointValue *val16 = gridMaterialOmega.getFieldPointValueByAbsolutePos (coord8);
+  FieldPointValue *val9 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue *val10 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue *val11 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord3);
+  FieldPointValue *val12 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord4);
+  FieldPointValue *val13 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord5);
+  FieldPointValue *val14 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord6);
+  FieldPointValue *val15 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord7);
+  FieldPointValue *val16 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord8);
 
-  FieldPointValue *val17 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val18 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue *val19 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue *val20 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord4);
-  FieldPointValue *val21 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord5);
-  FieldPointValue *val22 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord6);
-  FieldPointValue *val23 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord7);
-  FieldPointValue *val24 = gridMaterialGamma.getFieldPointValueByAbsolutePos (coord8);
+  FieldPointValue *val17 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord1);
+  FieldPointValue *val18 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord2);
+  FieldPointValue *val19 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord3);
+  FieldPointValue *val20 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord4);
+  FieldPointValue *val21 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord5);
+  FieldPointValue *val22 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord6);
+  FieldPointValue *val23 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord7);
+  FieldPointValue *val24 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord8);
 
   Approximation::approximateDrudeModel (omega,
                                         gamma,
@@ -743,11 +743,11 @@ template <class TCoord>
 FPValue
 YeeGridLayout::getMetaMaterial (GridCoordinate3D &posAbs,
                                 GridType typeOfField,
-                                Grid<TCoord> &gridMaterial,
+                                Grid<TCoord> *gridMaterial,
                                 GridType typeOfMaterial,
-                                Grid<TCoord> &gridMaterialOmega,
+                                Grid<TCoord> *gridMaterialOmega,
                                 GridType typeOfMaterialOmega,
-                                Grid<TCoord> &gridMaterialGamma,
+                                Grid<TCoord> *gridMaterialGamma,
                                 GridType typeOfMaterialGamma,
                                 FPValue &omega,
                                 FPValue &gamma)
@@ -1006,7 +1006,7 @@ template <class TCoord>
 FPValue
 YeeGridLayout::getMaterial (GridCoordinate3D &posAbs,
                             GridType typeOfField,
-                            Grid<TCoord> &gridMaterial,
+                            Grid<TCoord> *gridMaterial,
                             GridType typeOfMaterial)
 {
   GridCoordinate3D absPos11;
