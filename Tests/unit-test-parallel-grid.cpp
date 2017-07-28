@@ -201,7 +201,7 @@ int main (int argc, char** argv)
         GridCoordinate3D pos (i, j, k);
 #endif /* GRID_3D */
 
-        FieldPointValue *val = gridTotal.getFieldPointValue (pos);
+        FieldPointValue *val = gridTotal->getFieldPointValue (pos);
 
         FPValue fpval;
 
@@ -235,23 +235,23 @@ int main (int argc, char** argv)
 #endif /* !COMPLEX_FIELD_VALUES */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-        grid_coord step = gridTotal.getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
+        grid_coord step = gridTotal->getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
         int process = i / step;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-        grid_coord step = gridTotal.getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
+        grid_coord step = gridTotal->getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
         int process = j / step;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
-        grid_coord step = gridTotal.getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
+        grid_coord step = gridTotal->getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
         int process = k / step;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-        grid_coord stepX = gridTotal.getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
-        grid_coord stepY = gridTotal.getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
+        grid_coord stepX = gridTotal->getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
+        grid_coord stepY = gridTotal->getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
 
         int processI = i / stepX;
         int processJ = j / stepY;
@@ -260,8 +260,8 @@ int main (int argc, char** argv)
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-        grid_coord stepY = gridTotal.getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
-        grid_coord stepZ = gridTotal.getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
+        grid_coord stepY = gridTotal->getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
+        grid_coord stepZ = gridTotal->getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
 
         int processJ = j / stepY;
         int processK = k / stepZ;
@@ -270,8 +270,8 @@ int main (int argc, char** argv)
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-        grid_coord stepX = gridTotal.getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
-        grid_coord stepZ = gridTotal.getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
+        grid_coord stepX = gridTotal->getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
+        grid_coord stepZ = gridTotal->getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
 
         int processI = i / stepX;
         int processK = k / stepZ;
@@ -280,9 +280,9 @@ int main (int argc, char** argv)
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
-        grid_coord stepX = gridTotal.getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
-        grid_coord stepY = gridTotal.getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
-        grid_coord stepZ = gridTotal.getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
+        grid_coord stepX = gridTotal->getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
+        grid_coord stepY = gridTotal->getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
+        grid_coord stepZ = gridTotal->getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
 
         int processI = i / stepX;
         int processJ = j / stepY;
