@@ -3183,29 +3183,6 @@ Scheme3D::initGrids ()
   }
 }
 
-// void
-// Scheme3D::makeGridScattered (Grid<GridCoordinate3D> &grid)
-// {
-//   for (grid_iter i = 0; i < Hz.getSize ().calculateTotalCoord (); ++i)
-//   {
-//     FieldPointValue *val = Hz.getFieldPointValue (i);
-//
-//     GridCoordinate3D pos = Hz.calculatePositionFromIndex (i);
-//     GridCoordinate3D posAbs = Hz.getTotalPosition (pos);
-//     GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (posAbs);
-//
-//     if (realCoord < convertCoord (yeeLayout->getLeftBorderTFSF ())
-//         || realCoord > convertCoord (yeeLayout->getRightBorderTFSF ()))
-//     {
-//       continue;
-//     }
-//
-//     FieldValue incVal = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
-//
-//     val->setCurValue (val->getCurValue () - incVal);
-//   }
-// }
-
 Scheme3D::NPair
 Scheme3D::ntffN_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
                    Grid<GridCoordinate3D> *curTotalEz,
@@ -3782,21 +3759,8 @@ Scheme3D::gatherFieldsTotal (bool scattered)
   }
   else
   {
-    if (scattered)
+    if (totalInitialized)
     {
-      if (!totalInitialized)
-      {
-        totalEx = new Grid<GridCoordinate3D> (yeeLayout->getExSize (), 0, "Ex");
-        totalEy = new Grid<GridCoordinate3D> (yeeLayout->getEySize (), 0, "Ey");
-        totalEz = new Grid<GridCoordinate3D> (yeeLayout->getEzSize (), 0, "Ez");
-
-        totalHx = new Grid<GridCoordinate3D> (yeeLayout->getHxSize (), 0, "Hx");
-        totalHy = new Grid<GridCoordinate3D> (yeeLayout->getHySize (), 0, "Hy");
-        totalHz = new Grid<GridCoordinate3D> (yeeLayout->getHzSize (), 0, "Hz");
-
-        totalInitialized = true;
-      }
-
       *totalEx = *Ex;
       *totalEy = *Ey;
       *totalEz = *Ez;
@@ -3807,13 +3771,36 @@ Scheme3D::gatherFieldsTotal (bool scattered)
     }
     else
     {
-      totalEx = Ex;
-      totalEy = Ey;
-      totalEz = Ez;
+      if (scattered)
+      {
+        totalEx = new Grid<GridCoordinate3D> (yeeLayout->getExSize (), 0, "Ex");
+        totalEy = new Grid<GridCoordinate3D> (yeeLayout->getEySize (), 0, "Ey");
+        totalEz = new Grid<GridCoordinate3D> (yeeLayout->getEzSize (), 0, "Ez");
 
-      totalHx = Hx;
-      totalHy = Hy;
-      totalHz = Hz;
+        totalHx = new Grid<GridCoordinate3D> (yeeLayout->getHxSize (), 0, "Hx");
+        totalHy = new Grid<GridCoordinate3D> (yeeLayout->getHySize (), 0, "Hy");
+        totalHz = new Grid<GridCoordinate3D> (yeeLayout->getHzSize (), 0, "Hz");
+
+        totalInitialized = true;
+
+        *totalEx = *Ex;
+        *totalEy = *Ey;
+        *totalEz = *Ez;
+
+        *totalHx = *Hx;
+        *totalHy = *Hy;
+        *totalHz = *Hz;
+      }
+      else
+      {
+        totalEx = Ex;
+        totalEy = Ey;
+        totalEz = Ez;
+
+        totalHx = Hx;
+        totalHy = Hy;
+        totalHz = Hz;
+      }
     }
   }
 
