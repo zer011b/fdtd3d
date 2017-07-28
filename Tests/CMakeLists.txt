@@ -20,5 +20,7 @@ include_directories ("${PROJECT_SOURCE_DIR}/Source/Layout")
 set (LIBS ${LIBS} Layout)
 
 add_executable (unit-test-parallel-grid unit-test-parallel-grid.cpp)
-
 target_link_libraries (unit-test-parallel-grid ${LIBS} Helpers Settings)
+
+add_executable (unit-test-grid unit-test-grid.cpp)
+target_link_libraries (unit-test-grid ${LIBS} Helpers Settings)

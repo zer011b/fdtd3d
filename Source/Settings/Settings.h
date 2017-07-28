@@ -1,6 +1,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <string>
+
 #include "Assert.h"
 #include "FieldValue.h"
 #include "PhysicsConst.h"

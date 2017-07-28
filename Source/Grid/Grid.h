@@ -181,7 +181,11 @@ Grid<TCoord>::copyGrid (const Grid<TCoord> &grid) /**< grid to copy */
 
   for (grid_iter i = 0; i < grid.gridValues.size (); ++i)
   {
-    gridValues[i] = grid.gridValues[i];
+    if (grid.gridValues[i])
+    {
+      gridValues[i] = new FieldPointValue ();
+      *gridValues[i] = *grid.gridValues[i];
+    }
   }
 } /* Grid<TCoord>::copyGrid */
 
@@ -219,19 +223,13 @@ template <class TCoord>
 void
 Grid<TCoord>::shiftInTime ()
 {
-#ifdef CXX11_ENABLED
-  for (FieldPointValue* i_p : getValues ())
-  {
-    i_p->shiftInTime ();
-  }
-#else /* CXX11_ENABLED */
   for (VectorFieldPointValues::iterator iter = gridValues.begin ();
        iter != gridValues.end ();
        ++iter)
   {
+    ASSERT (*iter != NULLPTR);
     (*iter)->shiftInTime ();
   }
-#endif /* !CXX11_ENABLED */
 } /* Grid<TCoord>::shiftInTime */
 
 /**
