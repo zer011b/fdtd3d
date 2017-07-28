@@ -3895,7 +3895,8 @@ Scheme3D::saveNTFF (bool isReverse, time_step t)
   if (processId == 0)
 #endif
   {
-    std::ofstream outfile (solverSettings.getFileNameNTFF ());
+    std::ofstream outfile;
+    outfile.open (solverSettings.getFileNameNTFF ().c_str ());
     FPValue start;
     FPValue end;
     FPValue step;
