@@ -370,6 +370,11 @@ Scheme3D::performExSteps (time_step t, GridCoordinate3D ExStart, GridCoordinate3
   {
     calculateExStep (t, ExStart, ExEnd);
   }
+
+  if (solverSettings.getDoUsePointSourceEx ())
+  {
+    performPointSourceCalc<GridType, GridType::EX> (t);
+  }
 }
 
 FieldValue
@@ -704,6 +709,11 @@ Scheme3D::performEySteps (time_step t, GridCoordinate3D EyStart, GridCoordinate3
   {
     calculateEyStep (t, EyStart, EyEnd);
   }
+
+  if (solverSettings.getDoUsePointSourceEy ())
+  {
+    performPointSourceCalc<GridType, GridType::EY> (t);
+  }
 }
 
 void
@@ -1000,6 +1010,11 @@ Scheme3D::performEzSteps (time_step t, GridCoordinate3D EzStart, GridCoordinate3
   else
   {
     calculateEzStep (t, EzStart, EzEnd);
+  }
+
+  if (solverSettings.getDoUsePointSourceEz ())
+  {
+    performPointSourceCalc<GridType, GridType::EZ> (t);
   }
 }
 
@@ -1298,6 +1313,11 @@ Scheme3D::performHxSteps (time_step t, GridCoordinate3D HxStart, GridCoordinate3
   {
     calculateHxStep (t, HxStart, HxEnd);
   }
+
+  if (solverSettings.getDoUsePointSourceHx ())
+  {
+    performPointSourceCalc<GridType, GridType::HX> (t);
+  }
 }
 
 void
@@ -1594,6 +1614,11 @@ Scheme3D::performHySteps (time_step t, GridCoordinate3D HyStart, GridCoordinate3
   {
     calculateHyStep (t, HyStart, HyEnd);
   }
+
+  if (solverSettings.getDoUsePointSourceHy ())
+  {
+    performPointSourceCalc<GridType, GridType::HY> (t);
+  }
 }
 
 void
@@ -1889,6 +1914,11 @@ Scheme3D::performHzSteps (time_step t, GridCoordinate3D HzStart, GridCoordinate3
   else
   {
     calculateHzStep (t, HzStart, HzEnd);
+  }
+
+  if (solverSettings.getDoUsePointSourceHz ())
+  {
+    performPointSourceCalc<GridType, GridType::HZ> (t);
   }
 }
 
@@ -2221,39 +2251,6 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
     performExSteps (t, ExStart, ExEnd);
     performEySteps (t, EyStart, EyEnd);
     performEzSteps (t, EzStart, EzEnd);
-
-    if (!solverSettings.getDoUseTFSF ())
-    {
-      DPRINTF (LOG_LEVEL_NONE, "Point wave source is not available.\n");
-
-// #if defined (PARALLEL_GRID)
-//       //if (processId == 0)
-// #endif
-//       {
-//         grid_coord start;
-//         grid_coord end;
-// #ifdef PARALLEL_GRID
-//         start = processId == 0 ? yeeLayout->getLeftBorderPML ().getZ () : 0;
-//         end = processId == ParallelGrid::getParallelCore ()->getTotalProcCount () - 1 ? Ez->getRelativePosition (yeeLayout->getRightBorderPML ()).getZ () : Ez->getCurrentSize ().getZ ();
-// #else /* PARALLEL_GRID */
-//         start = yeeLayout->getLeftBorderPML ().getZ ();
-//         end = yeeLayout->getRightBorderPML ().getZ ();
-// #endif /* !PARALLEL_GRID */
-//         //for (grid_coord k = start; k < end; ++k)
-//         grid_coord k = EzSize.getZ () / 2;
-//         {
-//           GridCoordinate3D pos (EzSize.getX () / 2, EzSize.getY () / 2, k);
-//           FieldPointValue* tmp = Ez->getFieldPointValue (pos);
-//
-//   #ifdef COMPLEX_FIELD_VALUES
-//           tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
-//                                         cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency)));
-//   #else /* COMPLEX_FIELD_VALUES */
-//           tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
-//   #endif /* !COMPLEX_FIELD_VALUES */
-//         }
-//       }
-    }
 
     Ex->nextTimeStep ();
     Ey->nextTimeStep ();

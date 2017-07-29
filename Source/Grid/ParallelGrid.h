@@ -382,6 +382,25 @@ public:
   FieldPointValue *getFieldPointValueOrNullByAbsolutePos (const ParallelGridCoordinate &);
 
   /**
+   * Check whether current node has value for coordinate
+   *
+   * @return true, if current node contains value for coordinate, false otherwise
+   */
+  bool hasValueForCoordinate (const ParallelGridCoordinate &position) /**< coordinate of value to check */
+  {
+    ParallelGridCoordinate posStart = getStartPosition ();
+    ParallelGridCoordinate posEnd = posStart + getSize ();
+
+    if (!(position >= posStart)
+        || !(position < posEnd))
+    {
+      return false;
+    }
+
+    return true;
+  } /* hasValueForCoordinate */
+
+  /**
    * Getter for total size of grid
    *
    * @return total size of grid
