@@ -2328,11 +2328,7 @@ ParallelGrid::getFieldPointValueByAbsolutePos (const ParallelGridCoordinate &abs
 FieldPointValue *
 ParallelGrid::getFieldPointValueOrNullByAbsolutePos (const ParallelGridCoordinate &absPosition) /**< absolute coordinate in grid */
 {
-  ParallelGridCoordinate posStart = getStartPosition ();
-  ParallelGridCoordinate posEnd = posStart + getSize ();
-
-  if (!(absPosition >= posStart)
-      || !(absPosition < posEnd))
+  if (!hasValueForCoordinate (absPosition))
   {
     return NULLPTR;
   }

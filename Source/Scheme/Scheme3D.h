@@ -128,6 +128,8 @@ private:
   void performHySteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performHzSteps (time_step, GridCoordinate3D, GridCoordinate3D);
 
+  template<typename EnumClass, EnumClass EnumVal> void performPointSourceCalc (time_step);
+
   void performNSteps (time_step, time_step);
   void performAmplitudeSteps (time_step);
 
@@ -194,6 +196,69 @@ public:
                Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
   FPValue Pointing_inc (FPValue angleTeta, FPValue anglePhi);
 };
+
+template<typename EnumClass, EnumClass EnumVal>
+void
+Scheme3D::performPointSourceCalc (time_step t)
+{
+  Grid<GridCoordinate3D> *grid = NULLPTR;
+
+  switch (EnumVal)
+  {
+    case GridType::EX:
+    {
+      grid = Ex;
+      break;
+    }
+    case GridType::EY:
+    {
+      grid = Ey;
+      break;
+    }
+    case GridType::EZ:
+    {
+      grid = Ez;
+      break;
+    }
+    case GridType::HX:
+    {
+      grid = Hx;
+      break;
+    }
+    case GridType::HY:
+    {
+      grid = Hy;
+      break;
+    }
+    case GridType::HZ:
+    {
+      grid = Hz;
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  ASSERT (grid);
+
+  GridCoordinate3D pos (solverSettings.getPointSourcePositionX (),
+                        solverSettings.getPointSourcePositionY (),
+                        solverSettings.getPointSourcePositionZ ());
+
+  FieldPointValue* pointVal = grid->getFieldPointValueByAbsolutePos (pos);
+
+  if (pointVal)
+  {
+#ifdef COMPLEX_FIELD_VALUES
+    pointVal->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
+                                       cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency)));
+#else /* COMPLEX_FIELD_VALUES */
+    pointVal->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
+#endif /* !COMPLEX_FIELD_VALUES */
+  }
+}
 
 #endif /* GRID_3D */
 

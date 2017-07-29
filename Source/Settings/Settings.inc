@@ -96,6 +96,7 @@ SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-topology", "Use size of topology by 
  */
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseDoubleMaterialPrecision, getDoUseDoubleMaterialPrecision, bool, false, "--use-double-material-precision", "Use double material precision")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseTFSF, getDoUseTFSF, bool, false, "--use-tfsf", "Use TF/SF")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSource, getDoUsePointSource, bool, false, "--use-point-source", "Use point wave source")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseNTFF, getDoUseNTFF, bool, false, "--use-ntff", "Use NTFF")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePML, getDoUsePML, bool, false, "--use-pml", "Use PML")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseMetamaterials, getDoUseMetamaterials, bool, false, "--use-metamaterials", "Use Metamaterials")
@@ -126,6 +127,19 @@ SETTINGS_ELEM_FIELD_TYPE_INT(intermediateNTFFStep, getIntermediateNTFFStep, time
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveScatteredFieldRes, getDoSaveScatteredFieldRes, bool, false, "--save-scattered-field-res", "Save scattered field for result")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveScatteredFieldIntermediate, getDoSaveScatteredFieldIntermediate, bool, false, "--save-scattered--field-interm", "Save scattered field for intermediate")
 
+/*
+ * Point source
+ */
+SETTINGS_ELEM_FIELD_TYPE_INT(pointSourcePositionX, getPointSourcePositionX, grid_coord, 0, "--point-source-pos-x", "Point source position by Ox axis")
+SETTINGS_ELEM_FIELD_TYPE_INT(pointSourcePositionY, getPointSourcePositionY, grid_coord, 0, "--point-source-pos-y", "Point source position by Oy axis")
+SETTINGS_ELEM_FIELD_TYPE_INT(pointSourcePositionZ, getPointSourcePositionZ, grid_coord, 0, "--point-source-pos-z", "Point source position by Oz axis")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceEx, getDoUsePointSourceEx, bool, false, "--point-source-ex", "Point source Ex")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceEy, getDoUsePointSourceEy, bool, false, "--point-source-ey", "Point source Ey")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceEz, getDoUsePointSourceEz, bool, false, "--point-source-ez", "Point source Ez")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceHx, getDoUsePointSourceHx, bool, false, "--point-source-hx", "Point source Hx")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceHy, getDoUsePointSourceHy, bool, false, "--point-source-hy", "Point source Hy")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceHz, getDoUsePointSourceHz, bool, false, "--point-source-hz", "Point source Hz")
+
 SETTINGS_ELEM_OPTION_TYPE_STRING("--cmd-from-file", "Load command line from file. Cmd file has the next format:\n"
                                                     "\t\t<cmd with arg>\n"
                                                     "\t\t<value>\n"
@@ -139,7 +153,6 @@ SETTINGS_ELEM_OPTION_TYPE_STRING("--save-cmd-to-file", "Save command line to fil
 /*
  * TODO: add
  * --load-from-file
- * --use-point-source
  * --gather-full-grid
  * --save-Ex-only
  * --save-Ey-only
