@@ -30,6 +30,7 @@ ParallelGrid::initializeParallelCore (ParallelGridCore *core) /**< new parallel 
 ParallelGridCore *
 ParallelGrid::getParallelCore ()
 {
+  ASSERT (parallelGridCore);
   return parallelGridCore;
 } /* ParallelGrid::getParallelCore */
 
@@ -42,18 +43,12 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
                             const ParallelGridCoordinate &bufSize, /**< buffer size */
                             time_step step, /**< start time step */
                             ParallelGridCoordinate curSize,  /**< size of grid for current node, received from layout */
-                            ParallelGridCoordinate coreCurSize, /**< size of grid per node which is same for all nodes
-                                                                 *   except the one at the right border
-                                                                 *   (coreSizePerNode == sizeForCurNode for all nodes
-                                                                 *   except theone at the right border) (is received
-                                                                 *   from layout) */
                             const char * name) /**< name of grid */
   : ParallelGridBase (step, name)
   , totalSize (totSize)
   , shareStep (0)
   , bufferSize (ParallelGridCoordinate ())
   , currentSize (curSize)
-  , coreCurrentSize (coreCurSize)
 {
   /*
    * Check that buffer size is equal for all coordinate axes
@@ -134,13 +129,202 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
            parallelGridCore->getTotalProcCount (),
            gridValues.size ());
 
-  initializeStartPosition ();
+  gatherStartPosition ();
 } /* ParallelGrid::ParallelGrid */
+
+/**
+ * Gather start position for all computational nodes
+ */
+void ParallelGrid::gatherStartPosition ()
+{
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP,
+           "Gather start position for '%s' for proc: %d (of %d).\n",
+           gridName.data (),
+           parallelGridCore->getProcessId (),
+           parallelGridCore->getTotalProcCount ());
+
+  ASSERT (sizeof (grid_coord) == sizeof (uint32_t));
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  grid_coord startx = 0;
+  grid_coord endx = 0;
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+  grid_coord starty = 0;
+  grid_coord endy = 0;
+#endif /* GRID_2D || GRID_3D */
+#ifdef GRID_3D
+  grid_coord startz = 0;
+  grid_coord endz = 0;
+#endif /* GRID_3D */
+
+  for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
+  {
+    /*
+     * Receive start position from previous nodes
+     */
+
+    ParallelGridCoordinate startPosition;
+
+    bool hasReceivedX = false;
+    bool hasReceivedY = false;
+    bool hasReceivedZ = false;
+
+    MPI_Status status;
+    int retCode;
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+  defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
+    if (process == ParallelGrid::getParallelCore ()->getProcessId ()
+        &&  ParallelGrid::getParallelCore ()->getHasL ())
+    {
+      retCode = MPI_Recv (&startx,
+                          1,
+                          MPI_UNSIGNED,
+                          ParallelGrid::getParallelCore ()->getDirections ()[LEFT],
+                          0,
+                          MPI_COMM_WORLD,
+                          &status);
+      ASSERT (retCode == MPI_SUCCESS);
+
+      hasReceivedX = true;
+    }
+    else if (ParallelGrid::getParallelCore ()->getHasR ()
+             && ParallelGrid::getParallelCore ()->getDirections ()[RIGHT] == process)
+    {
+      retCode = MPI_Send (&endx,
+                          1,
+                          MPI_UNSIGNED,
+                          ParallelGrid::getParallelCore ()->getDirections ()[RIGHT],
+                          0,
+                          MPI_COMM_WORLD);
+      ASSERT (retCode == MPI_SUCCESS);
+    }
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+  defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
+    if (process == ParallelGrid::getParallelCore ()->getProcessId ()
+        &&  ParallelGrid::getParallelCore ()->getHasD ())
+    {
+      retCode = MPI_Recv (&starty,
+                          1,
+                          MPI_UNSIGNED,
+                          ParallelGrid::getParallelCore ()->getDirections ()[DOWN],
+                          1,
+                          MPI_COMM_WORLD,
+                          &status);
+      ASSERT (retCode == MPI_SUCCESS);
+
+      hasReceivedY = true;
+    }
+    else if (ParallelGrid::getParallelCore ()->getHasU ()
+             && ParallelGrid::getParallelCore ()->getDirections ()[UP] == process)
+    {
+      retCode = MPI_Send (&endy,
+                          1,
+                          MPI_UNSIGNED,
+                          ParallelGrid::getParallelCore ()->getDirections ()[UP],
+                          1,
+                          MPI_COMM_WORLD);
+      ASSERT (retCode == MPI_SUCCESS);
+    }
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+  defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+
+    if (process == ParallelGrid::getParallelCore ()->getProcessId ()
+        && ParallelGrid::getParallelCore ()->getHasB ())
+    {
+      retCode = MPI_Recv (&startz,
+                          1,
+                          MPI_UNSIGNED,
+                          ParallelGrid::getParallelCore ()->getDirections ()[BACK],
+                          2,
+                          MPI_COMM_WORLD,
+                          &status);
+      ASSERT (retCode == MPI_SUCCESS);
+
+      hasReceivedZ = true;
+    }
+    else if (ParallelGrid::getParallelCore ()->getHasF ()
+             && ParallelGrid::getParallelCore ()->getDirections ()[FRONT] == process)
+    {
+      retCode = MPI_Send (&endz,
+                          1,
+                          MPI_UNSIGNED,
+                          ParallelGrid::getParallelCore ()->getDirections ()[FRONT],
+                          2,
+                          MPI_COMM_WORLD);
+      ASSERT (retCode == MPI_SUCCESS);
+    }
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+    {
+      ASSERT (hasReceivedX || hasReceivedY || hasReceivedZ || process == 0);
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+      endx = startx + currentSize.getX ();
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+      endy = starty + currentSize.getY ();
+#endif /* GRID_2D || GRID_3D */
+#if defined (GRID_3D)
+      endz = startz + currentSize.getZ ();
+#endif /* GRID_3D */
+
+#ifdef GRID_1D
+      startPosition = GridCoordinate1D (startx);
+#endif /* GRID_1D */
+#ifdef GRID_2D
+      startPosition = GridCoordinate2D (startx, starty);
+#endif /* GRID_2D */
+#ifdef GRID_3D
+      startPosition = GridCoordinate3D (startx, starty, startz);
+#endif /* GRID_3D */
+
+      initializeStartPosition (startPosition);
+    }
+
+    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+    {
+#ifdef GRID_1D
+      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (%u) for grid '%s' for proc %d (of %d)\n",
+               startx,
+#endif /* GRID_1D */
+#ifdef GRID_2D
+      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (%u,%u) for grid '%s' for proc %d (of %d)\n",
+               startx,
+               starty,
+#endif /* GRID_2D */
+#ifdef GRID_3D
+      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (%u,%u,%u) for grid '%s' for proc %d (of %d)\n",
+               startx,
+               starty,
+               startz,
+#endif /* GRID_3D */
+               gridName.data (),
+               parallelGridCore->getProcessId (),
+               parallelGridCore->getTotalProcCount ());
+    }
+
+    MPI_Barrier (MPI_COMM_WORLD);
+  }
+} /* ParallelGrid::gatherStartPosition */
 
 /**
  * Initialize absolute start position of chunk for current node
  */
-void ParallelGrid::initializeStartPosition ()
+void ParallelGrid::initializeStartPosition (ParallelGridCoordinate chunkStartPos) /**< start position of chunk, that is
+                                                                                   *   assigned to current process,
+                                                                                   *   (except buffers) */
 {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
   defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -152,7 +336,7 @@ void ParallelGrid::initializeStartPosition ()
   }
   else
   {
-    posX = parallelGridCore->getNodeGridX () * coreCurrentSize.getX () - bufferSize.getX ();
+    posX = chunkStartPos.getX () - bufferSize.getX ();
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
         PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -167,7 +351,7 @@ void ParallelGrid::initializeStartPosition ()
   }
   else
   {
-    posY = parallelGridCore->getNodeGridY () * coreCurrentSize.getY () - bufferSize.getY ();
+    posY = chunkStartPos.getY () - bufferSize.getY ();
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
         PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -182,7 +366,7 @@ void ParallelGrid::initializeStartPosition ()
   }
   else
   {
-    posZ = parallelGridCore->getNodeGridZ () * coreCurrentSize.getZ () - bufferSize.getZ ();
+    posZ = chunkStartPos.getZ () - bufferSize.getZ ();
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
         PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -1805,7 +1989,15 @@ ParallelGrid::SendReceive ()
 void
 ParallelGrid::share ()
 {
+#ifdef DYNAMIC_GRID
+  parallelGridCore->StartShareClock ();
+#endif /* DYNAMIC_GRID */
+
   SendReceive ();
+
+#ifdef DYNAMIC_GRID
+  parallelGridCore->StopShareClock ();
+#endif /* DYNAMIC_GRID */
 
   MPI_Barrier (MPI_COMM_WORLD);
 } /* ParallelGrid::share */
@@ -2216,69 +2408,23 @@ ParallelGrid::getStartPosition () const
 ParallelGridCoordinate
 ParallelGrid::getChunkStartPosition () const
 {
-  ParallelGridCoordinate posStart;
+  grid_coord left_coord, right_coord;
+  grid_coord down_coord, up_coord;
+  grid_coord back_coord, front_coord;
 
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  grid_iter posX = parallelGridCore->getNodeGridX () * coreCurrentSize.getX ();
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  grid_iter posY = parallelGridCore->getNodeGridY () * coreCurrentSize.getY ();
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  grid_iter posZ = parallelGridCore->getNodeGridZ () * coreCurrentSize.getZ ();
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+  initBufferOffsets (left_coord, right_coord, down_coord, up_coord, back_coord, front_coord);
 
 #ifdef GRID_1D
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  posStart = ParallelGridCoordinate (posX);
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
+  return posStart + GridCoordinate1D (left_coord);
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  posStart = ParallelGridCoordinate (posX, 0);
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  posStart = ParallelGridCoordinate (0, posY);
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  posStart = ParallelGridCoordinate (posX, posY);
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
+  return posStart + GridCoordinate2D (left_coord, down_coord);
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  posStart = ParallelGridCoordinate (posX, 0, 0);
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  posStart = ParallelGridCoordinate (0, posY, 0);
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
-#ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
-  posStart = ParallelGridCoordinate (0, 0, posZ);
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  posStart = ParallelGridCoordinate (posX, posY, 0);
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  posStart = ParallelGridCoordinate (0, posY, posZ);
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
-#ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  posStart = ParallelGridCoordinate (posX, 0, posZ);
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
-#ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
-  posStart = ParallelGridCoordinate (posX, posY, posZ);
-#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+  return posStart + GridCoordinate3D (left_coord, down_coord, back_coord);
 #endif /* GRID_3D */
-
-  return posStart;
 } /* ParallelGrid::getChunkStartPosition */
 
 /**
@@ -2287,7 +2433,7 @@ ParallelGrid::getChunkStartPosition () const
  * @return total position in grid from relative position for current computational node
  */
 ParallelGridCoordinate
-ParallelGrid::getTotalPosition (ParallelGridCoordinate pos) /**< relative position for current computational node */
+ParallelGrid::getTotalPosition (ParallelGridCoordinate pos) const /**< relative position for current computational node */
 {
   ParallelGridCoordinate posStart = getStartPosition ();
 
@@ -2300,7 +2446,7 @@ ParallelGrid::getTotalPosition (ParallelGridCoordinate pos) /**< relative positi
  * @return relative position for current computational node from total position
  */
 ParallelGridCoordinate
-ParallelGrid::getRelativePosition (ParallelGridCoordinate pos) /**< total position in grid */
+ParallelGrid::getRelativePosition (ParallelGridCoordinate pos) const /**< total position in grid */
 {
   ParallelGridCoordinate posStart = getStartPosition ();
 
@@ -2348,13 +2494,13 @@ ParallelGrid::getComputationStart (ParallelGridCoordinate diffPosStart) const /*
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   grid_iter diffX = diffPosStart.getX ();
-#endif
+#endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
   grid_iter diffY = diffPosStart.getY ();
-#endif
+#endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
   grid_iter diffZ = diffPosStart.getZ ();
-#endif
+#endif /* GRID_3D */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -2385,13 +2531,13 @@ ParallelGrid::getComputationStart (ParallelGridCoordinate diffPosStart) const /*
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   grid_iter px = diffX;
-#endif
+#endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
   grid_iter py = diffY;
-#endif
+#endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
   grid_iter pz = diffZ;
-#endif
+#endif /* GRID_3D */
 
 #ifdef GRID_1D
   return ParallelGridCoordinate (px);
@@ -2414,13 +2560,13 @@ ParallelGrid::getComputationEnd (ParallelGridCoordinate diffPosEnd) const /**< l
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   grid_iter diffX = diffPosEnd.getX ();
-#endif
+#endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
   grid_iter diffY = diffPosEnd.getY ();
-#endif
+#endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
   grid_iter diffZ = diffPosEnd.getZ ();
-#endif
+#endif /* GRID_3D */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -2451,23 +2597,23 @@ ParallelGrid::getComputationEnd (ParallelGridCoordinate diffPosEnd) const /**< l
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   grid_iter px = ParallelGridBase::getSize ().getX () - diffX;
-#endif
+#endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
   grid_iter py = ParallelGridBase::getSize ().getY () - diffY;
-#endif
+#endif /* GRID_2D || GRID_3D */
 #ifdef GRID_3D
   grid_iter pz = ParallelGridBase::getSize ().getZ () - diffZ;
-#endif
+#endif /* GRID_3D */
 
 #ifdef GRID_1D
   return ParallelGridCoordinate (px);
-#endif
+#endif /* GRID_1D */
 #ifdef GRID_2D
   return ParallelGridCoordinate (px, py);
-#endif
+#endif /* GRID_2D */
 #ifdef GRID_3D
   return ParallelGridCoordinate (px, py, pz);
-#endif
+#endif /* GRID_3D */
 } /* ParallelGrid::getComputationEnd */
 
 /**
@@ -2578,7 +2724,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
  *
  * @return full grid from all nodes as one non-parallel grid on each node
  *
- * Note: caller has to free returned grid!
+ * Note: caller has to delete returned grid!
  */
 ParallelGridBase *
 ParallelGrid::gatherFullGrid () const
@@ -2603,7 +2749,7 @@ ParallelGrid::gatherFullGrid () const
  *
  * @return full grid from all nodes as one non-parallel grid on each node
  *
- * Note: caller has to free returned grid!
+ * Note: caller has to delete returned grid!
  */
 ParallelGridBase *
 ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
@@ -2842,5 +2988,127 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 
   return grid;
 } /* ParallelGrid::gatherFullGridPlacement */
+
+#ifdef DYNAMIC_GRID
+
+/**
+ * Resize parallel grid for current process at a new size
+ */
+void
+ParallelGrid::Resize (ParallelGridCoordinate newCurrentNodeSize) /**< new size of chunk assigned to current process */
+{
+  /*
+   * TODO: do not allocate each time
+   */
+  ParallelGridBase *totalGrid = gatherFullGrid ();
+
+  ParallelGridCoordinate oldSize = currentSize;
+
+  currentSize = newCurrentNodeSize;
+
+  ParallelGridConstructor ();
+
+  /*
+   * TODO: do not free/allocate each time
+   */
+  for (grid_iter index = size.calculateTotalCoord (); index < gridValues.size (); ++index)
+  {
+    delete gridValues[index];
+  }
+
+  grid_iter temp = gridValues.size ();
+  gridValues.resize (size.calculateTotalCoord ());
+
+  for (grid_iter index = temp; index < size.calculateTotalCoord (); ++index)
+  {
+    gridValues[index] = new FieldPointValue ();
+  }
+
+  gatherStartPosition ();
+
+  {
+    ParallelGridCoordinate chunkStart = getChunkStartPosition ();
+    ParallelGridCoordinate chunkEnd = chunkStart + getCurrentSize ();
+
+#ifdef GRID_1D
+    ParallelGridCoordinate sizeCoord (chunkEnd.getX () - chunkStart.getX ());
+#endif /* GRID_1D */
+#ifdef GRID_2D
+    ParallelGridCoordinate sizeCoord (chunkEnd.getX () - chunkStart.getX (),
+                                      chunkEnd.getY () - chunkStart.getY ());
+#endif /* GRID_2D */
+#ifdef GRID_3D
+    ParallelGridCoordinate sizeCoord (chunkEnd.getX () - chunkStart.getX (),
+                                      chunkEnd.getY () - chunkStart.getY (),
+                                      chunkEnd.getZ () - chunkStart.getZ ());
+#endif /* GRID_3D */
+
+    grid_coord left_coord, right_coord;
+    grid_coord down_coord, up_coord;
+    grid_coord back_coord, front_coord;
+
+    initBufferOffsets (left_coord, right_coord, down_coord, up_coord, back_coord, front_coord);
+
+    grid_iter index = 0;
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    for (grid_coord i = left_coord; i < left_coord + sizeCoord.getX (); ++i)
+    {
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+      for (grid_coord j = down_coord; j < down_coord + sizeCoord.getY (); ++j)
+      {
+#endif /* GRID_2D || GRID_3D */
+#if defined (GRID_3D)
+        for (grid_coord k = back_coord; k < back_coord + sizeCoord.getZ (); ++k)
+        {
+#endif /* GRID_3D */
+
+#ifdef GRID_1D
+          ParallelGridCoordinate pos (i);
+          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.getX ());
+#endif /* GRID_1D */
+#ifdef GRID_2D
+          ParallelGridCoordinate pos (i, j);
+          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.getX (),
+                                           j - down_coord + chunkStart.getY ());
+#endif /* GRID_2D */
+#ifdef GRID_3D
+          ParallelGridCoordinate pos (i, j, k);
+          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.getX (),
+                                           j - down_coord + chunkStart.getY (),
+                                           k - back_coord + chunkStart.getZ ());
+#endif /* GRID_3D */
+
+          grid_iter coord = calculateIndexFromPosition (pos);
+
+          FieldPointValue *val = gridValues[coord];
+
+          grid_iter coord_total = calculateIndexFromPosition (posTotal, totalSize);
+
+          *val = *totalGrid->getFieldPointValue (coord_total);
+
+#if defined (GRID_3D)
+        }
+#endif /* GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+      }
+#endif /* GRID_2D || GRID_3D */
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    }
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+  }
+
+  delete totalGrid;
+
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Rebalanced grid '%s' for proc: %d (of %d) from raw size: %lu, to raw size %lu. Done\n",
+           gridName.data (),
+           parallelGridCore->getProcessId (),
+           parallelGridCore->getTotalProcCount (),
+           oldSize.calculateTotalCoord (),
+           currentSize.calculateTotalCoord ());
+} /* ParallelGrid::Resize */
+
+#endif /* DYNAMIC_GRID */
 
 #endif /* PARALLEL_GRID */

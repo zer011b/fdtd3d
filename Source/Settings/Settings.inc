@@ -91,6 +91,9 @@ SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeY, getTopologySizeY, int, 1, "--topolog
 SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeZ, getTopologySizeZ, int, 1, "--topology-sizez", "Size by z coordinate of virtual topology")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-topology", "Use size of topology by x coordinate for y and z coordinates too")
 
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseDynamicGrid, getDoUseDynamicGrid, bool, false, "--dynamic-grid", "Use dynamic grid (if fdtd3d is built with it)")
+SETTINGS_ELEM_FIELD_TYPE_INT(rebalanceStep, getRebalanceStep, int, 100, "--rebalance-step", "Rebalance step for dynamic parallel grid")
+
 /*
  * Computation mode flags
  */
@@ -153,7 +156,6 @@ SETTINGS_ELEM_OPTION_TYPE_STRING("--save-cmd-to-file", "Save command line to fil
 /*
  * TODO: add
  * --load-from-file
- * --gather-full-grid
  * --save-Ex-only
  * --save-Ey-only
  * --save-Ez-only

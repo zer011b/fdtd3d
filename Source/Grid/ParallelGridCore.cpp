@@ -2,6 +2,10 @@
 
 #ifdef PARALLEL_GRID
 
+#ifdef DYNAMIC_GRID
+#include <unistd.h>
+#endif /* DYNAMIC_GRID */
+
 /**
  * Initialize vector with opposite directions
  *
@@ -699,23 +703,23 @@ ParallelGridCore::getShare (BufferPosition direction, /**< direction of share op
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 /**
- * Getter for number of nodes in the grid by Ox axis
+ * Get coordinate of process in the nodes' grid by Ox axis
  *
- * @return number of nodes in the grid by Ox axis
+ * @return coordinate of process in the nodes' grid by Ox axis
  */
 int
-ParallelGridCore::getNodeGridX () const
+ParallelGridCore::getNodeGridX (int process) const /**< process id */
 {
   int pidX;
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
 
-  pidX = processId;
+  pidX = process;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
       defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  pidX = processId % nodeGridSizeX;
+  pidX = process % nodeGridSizeX;
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -729,30 +733,30 @@ ParallelGridCore::getNodeGridX () const
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 /**
- * Getter for number of nodes in the grid by Oy axis
+ * Get coordinate of process in the nodes' grid by Oy axis
  *
- * @return number of nodes in the grid by Oy axis
+ * @return coordinate of process in the nodes' grid by Oy axis
  */
 int
-ParallelGridCore::getNodeGridY () const
+ParallelGridCore::getNodeGridY (int process) const /**< process id */
 {
   int pidY;
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
 
-  pidY = processId;
+  pidY = process;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
 
-  pidY = processId / nodeGridSizeX;
+  pidY = process / nodeGridSizeX;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
 
-  pidY = processId % nodeGridSizeY;
+  pidY = process % nodeGridSizeY;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  int pidXY = processId % nodeGridSizeXY;
+  int pidXY = process % nodeGridSizeXY;
   pidY = pidXY / nodeGridSizeX;
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -766,30 +770,30 @@ ParallelGridCore::getNodeGridY () const
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 /**
- * Getter for number of nodes in the grid by Oz axis
+ * Get coordinate of process in the nodes' grid by Oz axis
  *
- * @return number of nodes in the grid by Oz axis
+ * @return coordinate of process in the nodes' grid by Oz axis
  */
 int
-ParallelGridCore::getNodeGridZ () const
+ParallelGridCore::getNodeGridZ (int process) const /**< process id */
 {
   int pidZ;
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
 
-  pidZ = processId;
+  pidZ = process;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
 
-  pidZ = processId / nodeGridSizeY;
+  pidZ = process / nodeGridSizeY;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
-  pidZ = processId / nodeGridSizeX;
+  pidZ = process / nodeGridSizeX;
 
 #elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  pidZ = processId / nodeGridSizeXY;
+  pidZ = process / nodeGridSizeXY;
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
@@ -883,6 +887,148 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
   {
     getShare ((BufferPosition) i, doShare[i]);
   }
+
+#ifdef DYNAMIC_GRID
+  calcClockAll.resize (totalProcCount);
+  shareClockAll.resize (totalProcCount);
+#endif /* DYNAMIC_GRID */
 } /* ParallelGridCore */
+
+#ifdef DYNAMIC_GRID
+/**
+ * Start clock for calculations
+ */
+void
+ParallelGridCore::StartCalcClock ()
+{
+  int status = clock_gettime (CLOCK_MONOTONIC, &calcStart);
+  ASSERT (status == 0);
+} /* ParallelGridCore::StartCalcClock */
+
+/**
+ * Stop clock for calculations
+ */
+void
+ParallelGridCore::StopCalcClock ()
+{
+  int status = clock_gettime (CLOCK_MONOTONIC, &calcStop);
+  ASSERT (status == 0);
+
+  timespec diff;
+  timespec_diff (&calcStart, &calcStop, &diff);
+
+  calcClock.tv_sec += diff.tv_sec;
+  calcClock.tv_nsec += diff.tv_nsec;
+
+  if (calcClock.tv_nsec >= 1000000000)
+  {
+    calcClock.tv_sec += 1;
+    calcClock.tv_nsec -= 1000000000;
+  }
+} /* ParallelGridCore::StopCalcClock */
+
+/**
+ * Start clock for share operations
+ */
+void
+ParallelGridCore::StartShareClock ()
+{
+  int status = clock_gettime (CLOCK_MONOTONIC, &shareStart);
+  ASSERT (status == 0);
+} /* ParallelGridCore::StartShareClock */
+
+/**
+ * Stop clock for share operations
+ */
+void
+ParallelGridCore::StopShareClock ()
+{
+  int status = clock_gettime (CLOCK_MONOTONIC, &shareStop);
+  ASSERT (status == 0);
+
+  timespec diff;
+  timespec_diff (&shareStart, &shareStop, &diff);
+
+  shareClock.tv_sec += diff.tv_sec;
+  shareClock.tv_nsec += diff.tv_nsec;
+} /* ParallelGridCore::StopShareClock */
+
+/**
+ * Calculate difference of two moments in time
+ */
+void
+ParallelGridCore::timespec_diff (struct timespec *start, /**< start moment */
+                                 struct timespec *stop, /**< end moment */
+                                 struct timespec *result) /**< out: difference of two moments in time */
+{
+  if ((stop->tv_nsec - start->tv_nsec) < 0)
+  {
+    result->tv_sec = stop->tv_sec - start->tv_sec - 1;
+    result->tv_nsec = stop->tv_nsec - start->tv_nsec + 1000000000;
+  }
+  else
+  {
+    result->tv_sec = stop->tv_sec - start->tv_sec;
+    result->tv_nsec = stop->tv_nsec - start->tv_nsec;
+  }
+} /* ParallelGridCore::timespec_diff */
+
+/**
+ * Share clock counters with other processes
+ */
+void ParallelGridCore::ShareClocks ()
+{
+  for (int process = 0; process < getTotalProcCount (); ++process)
+  {
+    uint64_t calcClockSec;
+    uint64_t calcClockNSec;
+
+    uint64_t shareClockSec;
+    uint64_t shareClockNSec;
+
+    if (process == getProcessId ())
+    {
+      calcClockSec = (uint64_t) calcClock.tv_sec;
+      calcClockNSec = (uint64_t) calcClock.tv_nsec;
+
+      shareClockSec = (uint64_t) shareClock.tv_sec;
+      shareClockNSec = (uint64_t) shareClock.tv_nsec;
+    }
+
+    MPI_Bcast (&calcClockSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
+    MPI_Bcast (&calcClockNSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
+    MPI_Bcast (&shareClockSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
+    MPI_Bcast (&shareClockNSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
+
+    timespec calc;
+    timespec share;
+
+    calc.tv_sec = calcClockSec;
+    calc.tv_nsec = calcClockNSec;
+
+    share.tv_sec = shareClockSec;
+    share.tv_nsec = shareClockNSec;
+
+    calcClockAll[process] = calc;
+    shareClockAll[process] = share;
+
+    MPI_Barrier (MPI_COMM_WORLD);
+  }
+} /* ParallelGridCore::ShareClocks */
+
+/**
+ * Set clocks to zeros
+ */
+void
+ParallelGridCore::ClearClocks ()
+{
+  calcClock.tv_sec = 0;
+  calcClock.tv_nsec = 0;
+
+  shareClock.tv_sec = 0;
+  shareClock.tv_nsec = 0;
+} /* ParallelGridCore::ClearClocks */
+
+#endif /* DYNAMIC_GRID */
 
 #endif /* PARALLEL_GRID */

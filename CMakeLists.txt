@@ -4,6 +4,7 @@ project (fdtd3d)
 
 option(PRINT_MESSAGE "Print all messages" OFF)
 option(PARALLEL_GRID "Use parallel grid" OFF)
+option(DYNAMIC_GRID "Use dynamic grid" OFF)
 option(CUDA_ENABLED "Cuda support enabled" OFF)
 option(CXX11_ENABLED "C++11 support enabled" OFF)
 option(COMPLEX_FIELD_VALUES "Complex field values" OFF)
@@ -114,6 +115,10 @@ message ("Grid dimension: ${PARALLEL_GRID_DIMENSION}.")
 if ("${PARALLEL_GRID}")
   message ("Parallel grid: ON.")
   add_definitions (-DPARALLEL_GRID="")
+
+  if ("${DYNAMIC_GRID}")
+    add_definitions (-DDYNAMIC_GRID="")
+  endif ()
 
   if ("${PARALLEL_GRID_DIMENSION}" STREQUAL "1")
 

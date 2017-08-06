@@ -1842,7 +1842,7 @@ SchemeTMz::performAmplitudeSteps (time_step startStep)
 
   if (is_stable_state == 0)
   {
-    ASSERT_MESSAGE ("Stable state is not reached. Increase number of steps.\n");
+    ASSERT_MESSAGE ("Stable state is not reached. Increase number of steps.");
   }
 #endif /* !COMPLEX_FIELD_VALUES */
 }

@@ -73,25 +73,21 @@ ParallelYeeGridLayout::CalculateGridSizeForNode (grid_coord &c1, grid_coord &cor
  * Initialize size of grid per node
  */
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**< out: size of grid for node, except
-                                                                              *   the node at the right border which
-                                                                              *   is assigned all the data which is left
-                                                                              *   after equal spread for all nodes.
-                                                                              *   Thus, for all nodes except node at the
-                                                                              *   right border core and returned sizes
-                                                                              *   are the same */
+ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
+  ASSERT (parallelCore);
+  parallelGridCore = parallelCore;
+
   grid_coord c1;
   grid_coord core1;
 
   CalculateGridSizeForNode (c1,
                             core1,
-                            parallelGridCore.getNodeGridSizeX (),
-                            parallelGridCore.getHasR (),
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
                             size.getX ());
 
   sizeForCurNode = GridCoordinate1D (core1);
-  coreSizePerNode = GridCoordinate1D (c1);
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* GRID_1D */
@@ -104,14 +100,11 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
  * Initialize size of grid per node
  */
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**< out: size of grid for node, except
-                                                                              *   the node at the right border which
-                                                                              *   is assigned all the data which is left
-                                                                              *   after equal spread for all nodes.
-                                                                              *   Thus, for all nodes except node at the
-                                                                              *   right border core and returned sizes
-                                                                              *   are the same */
+ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
+  ASSERT (parallelCore);
+  parallelGridCore = parallelCore;
+
   grid_coord c1;
   grid_coord c2;
 
@@ -121,8 +114,8 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
   CalculateGridSizeForNode (c1,
                             core1,
-                            parallelGridCore.getNodeGridSizeX (),
-                            parallelGridCore.getHasR (),
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
                             size.getX ());
   core2 = size.getY ();
   c2 = core2;
@@ -133,13 +126,12 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
   c1 = core1;
   CalculateGridSizeForNode (c2,
                             core2,
-                            parallelGridCore.getNodeGridSizeY (),
-                            parallelGridCore.getHasU (),
+                            parallelGridCore->getNodeGridSizeY (),
+                            parallelGridCore->getHasU (),
                             size.getY ());
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 
   sizeForCurNode = GridCoordinate2D (core1, core2);
-  coreSizePerNode = GridCoordinate2D (c1, c2);
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y */
@@ -150,14 +142,11 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
  * Initialize size of grid per node
  */
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**< out: size of grid for node, except
-                                                                              *   the node at the right border which
-                                                                              *   is assigned all the data which is left
-                                                                              *   after equal spread for all nodes.
-                                                                              *   Thus, for all nodes except node at the
-                                                                              *   right border core and returned sizes
-                                                                              *   are the same */
+ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
+  ASSERT (parallelCore);
+  parallelGridCore = parallelCore;
+
   grid_coord c1;
   grid_coord c2;
 
@@ -166,17 +155,16 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
 
   CalculateGridSizeForNode (c1,
                             core1,
-                            parallelGridCore.getNodeGridSizeX (),
-                            parallelGridCore.getHasR (),
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
                             size.getX (),
                             c2,
                             core2,
-                            parallelGridCore.getNodeGridSizeY (),
-                            parallelGridCore.getHasU (),
+                            parallelGridCore->getNodeGridSizeY (),
+                            parallelGridCore->getHasU (),
                             size.getY ());
 
   sizeForCurNode = GridCoordinate2D (core1, core2);
-  coreSizePerNode = GridCoordinate2D (c1, c2);
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
@@ -193,14 +181,11 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
  * Initialize size of grid per node
  */
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**< out: size of grid for node, except
-                                                                              *   the node at the right border which
-                                                                              *   is assigned all the data which is left
-                                                                              *   after equal spread for all nodes.
-                                                                              *   Thus, for all nodes except node at the
-                                                                              *   right border core and returned sizes
-                                                                              *   are the same */
+ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
+  ASSERT (parallelCore);
+  parallelGridCore = parallelCore;
+
   grid_coord c1;
   grid_coord c2;
   grid_coord c3;
@@ -212,8 +197,8 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
   CalculateGridSizeForNode (c1,
                             core1,
-                            parallelGridCore.getNodeGridSizeX (),
-                            parallelGridCore.getHasR (),
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
                             size.getX ());
   core2 = size.getY ();
   c2 = core2;
@@ -226,8 +211,8 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
   c1 = core1;
   CalculateGridSizeForNode (c2,
                             core2,
-                            parallelGridCore.getNodeGridSizeY (),
-                            parallelGridCore.getHasU (),
+                            parallelGridCore->getNodeGridSizeY (),
+                            parallelGridCore->getHasU (),
                             size.getY ());
   core3 = size.getZ ();
   c3 = core3;
@@ -240,13 +225,12 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
   c2 = core2;
   CalculateGridSizeForNode (c3,
                             core3,
-                            parallelGridCore.getNodeGridSizeZ (),
-                            parallelGridCore.getHasF (),
+                            parallelGridCore->getNodeGridSizeZ (),
+                            parallelGridCore->getHasF (),
                             size.getZ ());
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 
   sizeForCurNode = GridCoordinate3D (core1, core2, core3);
-  coreSizePerNode = GridCoordinate3D (c1, c2, c3);
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_1D_Z */
@@ -259,14 +243,11 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
  * Initialize size of grid per node
  */
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**< out: size of grid for node, except
-                                                                              *   the node at the right border which
-                                                                              *   is assigned all the data which is left
-                                                                              *   after equal spread for all nodes.
-                                                                              *   Thus, for all nodes except node at the
-                                                                              *   right border core and returned sizes
-                                                                              *   are the same */
+ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
+  ASSERT (parallelCore);
+  parallelGridCore = parallelCore;
+
   grid_coord c1;
   grid_coord c2;
   grid_coord c3;
@@ -278,13 +259,13 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
   CalculateGridSizeForNode (c1,
                             core1,
-                            parallelGridCore.getNodeGridSizeX (),
-                            parallelGridCore.getHasR (),
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
                             size.getX (),
                             c2,
                             core2,
-                            parallelGridCore.getNodeGridSizeY (),
-                            parallelGridCore.getHasU (),
+                            parallelGridCore->getNodeGridSizeY (),
+                            parallelGridCore->getHasU (),
                             size.getY ());
   core3 = size.getZ ();
   c3 = core3;
@@ -295,13 +276,13 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
   c1 = core1;
   CalculateGridSizeForNode (c2,
                             core2,
-                            parallelGridCore.getNodeGridSizeY (),
-                            parallelGridCore.getHasU (),
+                            parallelGridCore->getNodeGridSizeY (),
+                            parallelGridCore->getHasU (),
                             size.getY (),
                             c3,
                             core3,
-                            parallelGridCore.getNodeGridSizeZ (),
-                            parallelGridCore.getHasF (),
+                            parallelGridCore->getNodeGridSizeZ (),
+                            parallelGridCore->getHasF (),
                             size.getZ ());
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 
@@ -310,18 +291,17 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
   c2 = core2;
   CalculateGridSizeForNode (c1,
                             core1,
-                            parallelGridCore.getNodeGridSizeX (),
-                            parallelGridCore.getHasR (),
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
                             size.getX (),
                             c3,
                             core3,
-                            parallelGridCore.getNodeGridSizeZ (),
-                            parallelGridCore.getHasF (),
+                            parallelGridCore->getNodeGridSizeZ (),
+                            parallelGridCore->getHasF (),
                             size.getZ ());
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
   sizeForCurNode = GridCoordinate3D (core1, core2, core3);
-  coreSizePerNode = GridCoordinate3D (c1, c2, c3);
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ */
@@ -332,14 +312,11 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
  * Initialize size of grid per node
  */
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**< out: size of grid for node, except
-                                                                              *   the node at the right border which
-                                                                              *   is assigned all the data which is left
-                                                                              *   after equal spread for all nodes.
-                                                                              *   Thus, for all nodes except node at the
-                                                                              *   right border core and returned sizes
-                                                                              *   are the same */
+ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
+  ASSERT (parallelCore);
+  parallelGridCore = parallelCore;
+
   grid_coord c1;
   grid_coord c2;
   grid_coord c3;
@@ -350,22 +327,21 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore &parallelGridCore) /**
 
   CalculateGridSizeForNode (c1,
                             core1,
-                            parallelGridCore.getNodeGridSizeX (),
-                            parallelGridCore.getHasR (),
+                            parallelGridCore->getNodeGridSizeX (),
+                            parallelGridCore->getHasR (),
                             size.getX (),
                             c2,
                             core2,
-                            parallelGridCore.getNodeGridSizeY (),
-                            parallelGridCore.getHasU (),
+                            parallelGridCore->getNodeGridSizeY (),
+                            parallelGridCore->getHasU (),
                             size.getY (),
                             c3,
                             core3,
-                            parallelGridCore.getNodeGridSizeZ (),
-                            parallelGridCore.getHasF (),
+                            parallelGridCore->getNodeGridSizeZ (),
+                            parallelGridCore->getHasF (),
                             size.getZ ());
 
   sizeForCurNode = GridCoordinate3D (core1, core2, core3);
-  coreSizePerNode = GridCoordinate3D (c1, c2, c3);
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -420,52 +396,100 @@ ParallelYeeGridLayout::getHzSizeForCurNode () const
   return getSizeForCurNode ();
 }
 
-ParallelGridCoordinate
-ParallelYeeGridLayout::getEpsCoreSizePerNode () const
-{
-  return getCoreSizePerNode ();
-}
+#ifdef DYNAMIC_GRID
 
-ParallelGridCoordinate
-ParallelYeeGridLayout::getMuCoreSizePerNode () const
+/**
+ * Rebalance total grid size between notes
+ *
+ * @return true if size was changed
+ *         false, otherwise
+ */
+bool ParallelYeeGridLayout::Rebalance (time_step difft) /**< number of time steps elapsed since the last rebalance */
 {
-  return getCoreSizePerNode ();
-}
+  ParallelGridCoordinate newSize = sizeForCurNode;
+  ParallelGridCoordinate oldSize = sizeForCurNode;
 
-ParallelGridCoordinate
-ParallelYeeGridLayout::getExCoreSizePerNode () const
-{
-  return getCoreSizePerNode ();
-}
+  timespec calcClock = parallelGridCore->getCalcClock ();
 
-ParallelGridCoordinate
-ParallelYeeGridLayout::getEyCoreSizePerNode () const
-{
-  return getCoreSizePerNode ();
-}
+  grid_coord minX = 4;
+  grid_coord maxX = size.getX () - minX * (parallelGridCore->getTotalProcCount () - 1);
 
-ParallelGridCoordinate
-ParallelYeeGridLayout::getEzCoreSizePerNode () const
-{
-  return getCoreSizePerNode ();
-}
+  FPValue timesec = (FPValue) calcClock.tv_sec + ((FPValue) calcClock.tv_nsec) / 1000000000;
+  FPValue speedCur = (difft * oldSize.calculateTotalCoord ()) / timesec;
 
-ParallelGridCoordinate
-ParallelYeeGridLayout::getHxCoreSizePerNode () const
-{
-  return getCoreSizePerNode ();
-}
+  std::vector<FPValue> speed (parallelGridCore->getTotalProcCount ());
+  FPValue sumSpeed = 0;
 
-ParallelGridCoordinate
-ParallelYeeGridLayout::getHyCoreSizePerNode () const
-{
-  return getCoreSizePerNode ();
-}
+  for (int process = 0; process < parallelGridCore->getTotalProcCount (); ++process)
+  {
+    FPValue speedP;
 
-ParallelGridCoordinate
-ParallelYeeGridLayout::getHzCoreSizePerNode () const
-{
-  return getCoreSizePerNode ();
-}
+    if (process == parallelGridCore->getProcessId ())
+    {
+      speedP = speedCur;
+    }
+
+    MPI_Bcast (&speedP, 1, MPI_DOUBLE, process, MPI_COMM_WORLD);
+
+    speed[process] = speedP;
+    sumSpeed += speed[process];
+
+    MPI_Barrier (MPI_COMM_WORLD);
+  }
+
+  grid_coord x = ((FPValue)size.getX ()) * speedCur / (sumSpeed);
+
+  if (x < minX)
+  {
+    x = minX;
+  }
+  else if (x > maxX)
+  {
+    x = maxX;
+  }
+
+  // printf ("#%d x=%d speed=%f time=%lu.%lu totalX=%f difft=%u sumSpeed=%f\n",
+  //         parallelGridCore->getProcessId (),
+  //         x,
+  //         speed[parallelGridCore->getProcessId ()],
+  //         calcClock.tv_sec,
+  //         calcClock.tv_nsec,
+  //         (FPValue)size.getX (),
+  //         difft,
+  //         sumSpeed);
+
+  newSize.setX (x);
+
+  if (parallelGridCore->getProcessId () == 0)
+  {
+    /*
+     * Add all the remaining to the 0 process
+     */
+    grid_coord sumX = 0;
+    for (int process = 0; process < parallelGridCore->getTotalProcCount (); ++process)
+    {
+      grid_coord x_n = ((FPValue)size.getX ()) * speed[process] / (sumSpeed);
+      if (x_n < minX)
+      {
+        x_n = minX;
+      }
+      else if (x_n > maxX)
+      {
+        x_n = maxX;
+      }
+      sumX += x_n;
+    }
+
+    newSize.setX (x + size.getX () - sumX);
+
+    // printf ("!!! %d %lu %u\n", sumX, newSize.getX (), x);
+  }
+
+  sizeForCurNode = newSize;
+
+  return sizeForCurNode != oldSize;
+} /* ParallelYeeGridLayout::Rebalance */
+
+#endif /* DYNAMIC_GRID */
 
 #endif /* PARALLEL_GRID */

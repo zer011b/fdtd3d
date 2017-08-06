@@ -128,7 +128,7 @@ private:
   void performHySteps (time_step, GridCoordinate3D, GridCoordinate3D);
   void performHzSteps (time_step, GridCoordinate3D, GridCoordinate3D);
 
-  template<typename EnumClass, EnumClass EnumVal> void performPointSourceCalc (time_step);
+  template<uint8_t EnumVal> void performPointSourceCalc (time_step);
 
   void performNSteps (time_step, time_step);
   void performAmplitudeSteps (time_step);
@@ -142,6 +142,8 @@ private:
   void gatherFieldsTotal (bool);
   void saveGrids (time_step);
   void saveNTFF (bool, time_step);
+
+  void additionalUpdateOfGrids (time_step, time_step &);
 
 public:
 
@@ -197,7 +199,7 @@ public:
   FPValue Pointing_inc (FPValue angleTeta, FPValue anglePhi);
 };
 
-template<typename EnumClass, EnumClass EnumVal>
+template<uint8_t EnumVal>
 void
 Scheme3D::performPointSourceCalc (time_step t)
 {
@@ -205,32 +207,32 @@ Scheme3D::performPointSourceCalc (time_step t)
 
   switch (EnumVal)
   {
-    case GridType::EX:
+    case (static_cast<uint8_t> (GridType::EX)):
     {
       grid = Ex;
       break;
     }
-    case GridType::EY:
+    case (static_cast<uint8_t> (GridType::EY)):
     {
       grid = Ey;
       break;
     }
-    case GridType::EZ:
+    case (static_cast<uint8_t> (GridType::EZ)):
     {
       grid = Ez;
       break;
     }
-    case GridType::HX:
+    case (static_cast<uint8_t> (GridType::HX)):
     {
       grid = Hx;
       break;
     }
-    case GridType::HY:
+    case (static_cast<uint8_t> (GridType::HY)):
     {
       grid = Hy;
       break;
     }
-    case GridType::HZ:
+    case (static_cast<uint8_t> (GridType::HZ)):
     {
       grid = Hz;
       break;

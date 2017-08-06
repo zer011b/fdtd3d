@@ -80,64 +80,65 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
   if (solverSettings.getDoUseParallelGrid ())
   {
 #if defined (PARALLEL_GRID)
-    GridCoordinate3D bufSize (solverSettings.getBufferSize ());
+    GridCoordinate3D bufSize (solverSettings.getBufferSize (),
+                              solverSettings.getBufferSize (),
+                              solverSettings.getBufferSize ());
 
-    Eps = new ParallelGrid (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "Eps");
-    Mu = new ParallelGrid (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getMuSizeForCurNode (), layout->getMuCoreSizePerNode (), "Mu");
+    ParallelYeeGridLayout *parallelYeeLayout = (ParallelYeeGridLayout *) (layout);
 
-    Ex = new ParallelGrid (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode (), "Ex");
-    Ey = new ParallelGrid (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode (), "Ey");
-    Ez = new ParallelGrid (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode (), "Ez");
-    Hx = new ParallelGrid (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode (), "Hx");
-    Hy = new ParallelGrid (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode (), "Hy");
-    Hz = new ParallelGrid (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode (), "Hz");
+    Eps = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "Eps");
+    Mu = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getMuSizeForCurNode (), "Mu");
+
+    Ex = new ParallelGrid (parallelYeeLayout->getExSize (), bufSize, 0, parallelYeeLayout->getExSizeForCurNode (), "Ex");
+    Ey = new ParallelGrid (parallelYeeLayout->getEySize (), bufSize, 0, parallelYeeLayout->getEySizeForCurNode (), "Ey");
+    Ez = new ParallelGrid (parallelYeeLayout->getEzSize (), bufSize, 0, parallelYeeLayout->getEzSizeForCurNode (), "Ez");
+    Hx = new ParallelGrid (parallelYeeLayout->getHxSize (), bufSize, 0, parallelYeeLayout->getHxSizeForCurNode (), "Hx");
+    Hy = new ParallelGrid (parallelYeeLayout->getHySize (), bufSize, 0, parallelYeeLayout->getHySizeForCurNode (), "Hy");
+    Hz = new ParallelGrid (parallelYeeLayout->getHzSize (), bufSize, 0, parallelYeeLayout->getHzSizeForCurNode (), "Hz");
 
     if (solverSettings.getDoUsePML ())
     {
-      Dx = new ParallelGrid (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode (), "Dx");
-      Dy = new ParallelGrid (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode (), "Dy");
-      Dz = new ParallelGrid (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode (), "Dz");
-      Bx = new ParallelGrid (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode (), "Bx");
-      By = new ParallelGrid (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode (), "By");
-      Bz = new ParallelGrid (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode (), "Bz");
+      Dx = new ParallelGrid (parallelYeeLayout->getExSize (), bufSize, 0, parallelYeeLayout->getExSizeForCurNode (), "Dx");
+      Dy = new ParallelGrid (parallelYeeLayout->getEySize (), bufSize, 0, parallelYeeLayout->getEySizeForCurNode (), "Dy");
+      Dz = new ParallelGrid (parallelYeeLayout->getEzSize (), bufSize, 0, parallelYeeLayout->getEzSizeForCurNode (), "Dz");
+      Bx = new ParallelGrid (parallelYeeLayout->getHxSize (), bufSize, 0, parallelYeeLayout->getHxSizeForCurNode (), "Bx");
+      By = new ParallelGrid (parallelYeeLayout->getHySize (), bufSize, 0, parallelYeeLayout->getHySizeForCurNode (), "By");
+      Bz = new ParallelGrid (parallelYeeLayout->getHzSize (), bufSize, 0, parallelYeeLayout->getHzSizeForCurNode (), "Bz");
 
-      D1x = new ParallelGrid (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode (), "D1x");
-      D1y = new ParallelGrid (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode (), "D1y");
-      D1z = new ParallelGrid (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode (), "D1z");
-      B1x = new ParallelGrid (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode (), "B1x");
-      B1y = new ParallelGrid (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode (), "B1y");
-      B1z = new ParallelGrid (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode (), "B1z");
+      if (solverSettings.getDoUseMetamaterials ())
+      {
+        D1x = new ParallelGrid (parallelYeeLayout->getExSize (), bufSize, 0, parallelYeeLayout->getExSizeForCurNode (), "D1x");
+        D1y = new ParallelGrid (parallelYeeLayout->getEySize (), bufSize, 0, parallelYeeLayout->getEySizeForCurNode (), "D1y");
+        D1z = new ParallelGrid (parallelYeeLayout->getEzSize (), bufSize, 0, parallelYeeLayout->getEzSizeForCurNode (), "D1z");
+        B1x = new ParallelGrid (parallelYeeLayout->getHxSize (), bufSize, 0, parallelYeeLayout->getHxSizeForCurNode (), "B1x");
+        B1y = new ParallelGrid (parallelYeeLayout->getHySize (), bufSize, 0, parallelYeeLayout->getHySizeForCurNode (), "B1y");
+        B1z = new ParallelGrid (parallelYeeLayout->getHzSize (), bufSize, 0, parallelYeeLayout->getHzSizeForCurNode (), "B1z");
+      }
 
-      SigmaX = new ParallelGrid (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "SigmaX");
-      SigmaY = new ParallelGrid (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "SigmaY");
-      SigmaZ = new ParallelGrid (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "SigmaZ");
+      SigmaX = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "SigmaX");
+      SigmaY = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "SigmaY");
+      SigmaZ = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "SigmaZ");
     }
 
     if (solverSettings.getDoUseAmplitudeMode ())
     {
-      ExAmplitude = new ParallelGrid (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode (), "ExAmp");
-      EyAmplitude = new ParallelGrid (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode (), "EyAmp");
-      EzAmplitude = new ParallelGrid (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), layout->getEzCoreSizePerNode (), "EzAmp");
-      HxAmplitude = new ParallelGrid (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), layout->getHxCoreSizePerNode (), "HxAmp");
-      HyAmplitude = new ParallelGrid (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), layout->getHyCoreSizePerNode (), "HyAmp");
-      HzAmplitude = new ParallelGrid (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode (), "HzAmp");
+      ExAmplitude = new ParallelGrid (parallelYeeLayout->getExSize (), bufSize, 0, parallelYeeLayout->getExSizeForCurNode (), "ExAmp");
+      EyAmplitude = new ParallelGrid (parallelYeeLayout->getEySize (), bufSize, 0, parallelYeeLayout->getEySizeForCurNode (), "EyAmp");
+      EzAmplitude = new ParallelGrid (parallelYeeLayout->getEzSize (), bufSize, 0, parallelYeeLayout->getEzSizeForCurNode (), "EzAmp");
+      HxAmplitude = new ParallelGrid (parallelYeeLayout->getHxSize (), bufSize, 0, parallelYeeLayout->getHxSizeForCurNode (), "HxAmp");
+      HyAmplitude = new ParallelGrid (parallelYeeLayout->getHySize (), bufSize, 0, parallelYeeLayout->getHySizeForCurNode (), "HyAmp");
+      HzAmplitude = new ParallelGrid (parallelYeeLayout->getHzSize (), bufSize, 0, parallelYeeLayout->getHzSizeForCurNode (), "HzAmp");
     }
 
     if (solverSettings.getDoUseMetamaterials ())
     {
-      OmegaPE = new ParallelGrid (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "OmegaPE");
-      GammaE = new ParallelGrid (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "GammaE");
-      OmegaPM = new ParallelGrid (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "OmegaPM");
-      GammaM = new ParallelGrid (layout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode (), "GammaM");
-    }
-
-    if (solverSettings.getDoUseTFSF ())
-    {
-      EInc = new ParallelGrid (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "EInc");
-      HInc = new ParallelGrid (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc");
+      OmegaPE = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "OmegaPE");
+      GammaE = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "GammaE");
+      OmegaPM = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "OmegaPM");
+      GammaM = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "GammaM");
     }
 #else /* PARALLEL_GRID */
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif /* !PARALLEL_GRID */
   }
   else
@@ -161,12 +162,15 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
       By = new Grid<GridCoordinate3D> (layout->getHySize (), 0, "By");
       Bz = new Grid<GridCoordinate3D> (layout->getHzSize (), 0, "Bz");
 
-      D1x = new Grid<GridCoordinate3D> (layout->getExSize (), 0, "D1x");
-      D1y = new Grid<GridCoordinate3D> (layout->getEySize (), 0, "D1y");
-      D1z = new Grid<GridCoordinate3D> (layout->getEzSize (), 0, "D1z");
-      B1x = new Grid<GridCoordinate3D> (layout->getHxSize (), 0, "B1x");
-      B1y = new Grid<GridCoordinate3D> (layout->getHySize (), 0, "B1y");
-      B1z = new Grid<GridCoordinate3D> (layout->getHzSize (), 0, "B1z");
+      if (solverSettings.getDoUseMetamaterials ())
+      {
+        D1x = new Grid<GridCoordinate3D> (layout->getExSize (), 0, "D1x");
+        D1y = new Grid<GridCoordinate3D> (layout->getEySize (), 0, "D1y");
+        D1z = new Grid<GridCoordinate3D> (layout->getEzSize (), 0, "D1z");
+        B1x = new Grid<GridCoordinate3D> (layout->getHxSize (), 0, "B1x");
+        B1y = new Grid<GridCoordinate3D> (layout->getHySize (), 0, "B1y");
+        B1z = new Grid<GridCoordinate3D> (layout->getHzSize (), 0, "B1z");
+      }
 
       SigmaX = new Grid<GridCoordinate3D> (layout->getEpsSize (), 0, "SigmaX");
       SigmaY = new Grid<GridCoordinate3D> (layout->getEpsSize (), 0, "SigmaY");
@@ -190,12 +194,12 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
       OmegaPM = new Grid<GridCoordinate3D> (layout->getEpsSize (), 0, "OmegaPM");
       GammaM = new Grid<GridCoordinate3D> (layout->getEpsSize (), 0, "GammaM");
     }
+  }
 
-    if (solverSettings.getDoUseTFSF ())
-    {
-      EInc = new Grid<GridCoordinate1D> (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "EInc");
-      HInc = new Grid<GridCoordinate1D> (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc");
-    }
+  if (solverSettings.getDoUseTFSF ())
+  {
+    EInc = new Grid<GridCoordinate1D> (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "EInc");
+    HInc = new Grid<GridCoordinate1D> (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc");
   }
 
   ASSERT (!solverSettings.getDoUseTFSF ()
@@ -235,13 +239,16 @@ Scheme3D::~Scheme3D ()
     delete By;
     delete Bz;
 
-    delete D1x;
-    delete D1y;
-    delete D1z;
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      delete D1x;
+      delete D1y;
+      delete D1z;
 
-    delete B1x;
-    delete B1y;
-    delete B1z;
+      delete B1x;
+      delete B1y;
+      delete B1z;
+    }
 
     delete SigmaX;
     delete SigmaY;
@@ -373,7 +380,7 @@ Scheme3D::performExSteps (time_step t, GridCoordinate3D ExStart, GridCoordinate3
 
   if (solverSettings.getDoUsePointSourceEx ())
   {
-    performPointSourceCalc<GridType, GridType::EX> (t);
+    performPointSourceCalc<static_cast<uint8_t> (GridType::EX)> (t);
   }
 }
 
@@ -712,7 +719,7 @@ Scheme3D::performEySteps (time_step t, GridCoordinate3D EyStart, GridCoordinate3
 
   if (solverSettings.getDoUsePointSourceEy ())
   {
-    performPointSourceCalc<GridType, GridType::EY> (t);
+    performPointSourceCalc<static_cast<uint8_t> (GridType::EY)> (t);
   }
 }
 
@@ -1014,7 +1021,7 @@ Scheme3D::performEzSteps (time_step t, GridCoordinate3D EzStart, GridCoordinate3
 
   if (solverSettings.getDoUsePointSourceEz ())
   {
-    performPointSourceCalc<GridType, GridType::EZ> (t);
+    performPointSourceCalc<static_cast<uint8_t> (GridType::EZ)> (t);
   }
 }
 
@@ -1316,7 +1323,7 @@ Scheme3D::performHxSteps (time_step t, GridCoordinate3D HxStart, GridCoordinate3
 
   if (solverSettings.getDoUsePointSourceHx ())
   {
-    performPointSourceCalc<GridType, GridType::HX> (t);
+    performPointSourceCalc<static_cast<uint8_t> (GridType::HX)> (t);
   }
 }
 
@@ -1617,7 +1624,7 @@ Scheme3D::performHySteps (time_step t, GridCoordinate3D HyStart, GridCoordinate3
 
   if (solverSettings.getDoUsePointSourceHy ())
   {
-    performPointSourceCalc<GridType, GridType::HY> (t);
+    performPointSourceCalc<static_cast<uint8_t> (GridType::HY)> (t);
   }
 }
 
@@ -1918,7 +1925,7 @@ Scheme3D::performHzSteps (time_step t, GridCoordinate3D HzStart, GridCoordinate3
 
   if (solverSettings.getDoUsePointSourceHz ())
   {
-    performPointSourceCalc<GridType, GridType::HZ> (t);
+    performPointSourceCalc<static_cast<uint8_t> (GridType::HZ)> (t);
   }
 }
 
@@ -2204,26 +2211,32 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
 void
 Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 {
+  time_step diffT = solverSettings.getRebalanceStep ();
+
   int processId = 0;
 
   time_step stepLimit = startStep + numberTimeSteps;
-
-  DPRINTF (LOG_LEVEL_STAGES, "Performing computations for [%u,%u] time steps.\n", startStep, stepLimit);
 
   if (solverSettings.getDoUseParallelGrid ())
   {
 #ifdef PARALLEL_GRID
     processId = ParallelGrid::getParallelCore ()->getProcessId ();
 #else /* PARALLEL_GRID */
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif /* !PARALLEL_GRID */
   }
 
-  //GridCoordinate3D EzSize = Ez->getSize ();
+  if (processId == 0)
+  {
+    DPRINTF (LOG_LEVEL_STAGES, "Performing computations for [%u,%u] time steps.\n", startStep, stepLimit);
+  }
 
   for (time_step t = startStep; t < stepLimit; ++t)
   {
-    DPRINTF (LOG_LEVEL_STAGES, "Calculating time step %u...\n", t);
+    if (processId == 0)
+    {
+      DPRINTF (LOG_LEVEL_STAGES, "Calculating time step %u...\n", t);
+    }
 
     GridCoordinate3D ExStart = Ex->getComputationStart (yeeLayout->getExStartDiff ());
     GridCoordinate3D ExEnd = Ex->getComputationEnd (yeeLayout->getExEndDiff ());
@@ -2243,6 +2256,15 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
     GridCoordinate3D HzStart = Hz->getComputationStart (yeeLayout->getHzStartDiff ());
     GridCoordinate3D HzEnd = Hz->getComputationEnd (yeeLayout->getHzEndDiff ());
 
+    if (solverSettings.getDoUseParallelGrid () && solverSettings.getDoUseDynamicGrid ())
+    {
+#if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
+      ParallelGrid::getParallelCore ()->StartCalcClock ();
+#else
+      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+    }
+
     if (solverSettings.getDoUseTFSF ())
     {
       performPlaneWaveESteps (t);
@@ -2251,6 +2273,15 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
     performExSteps (t, ExStart, ExEnd);
     performEySteps (t, EyStart, EyEnd);
     performEzSteps (t, EzStart, EzEnd);
+
+    if (solverSettings.getDoUseParallelGrid () && solverSettings.getDoUseDynamicGrid ())
+    {
+#if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
+      ParallelGrid::getParallelCore ()->StopCalcClock ();
+#else
+      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+    }
 
     Ex->nextTimeStep ();
     Ey->nextTimeStep ();
@@ -2270,6 +2301,15 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
       D1z->nextTimeStep ();
     }
 
+    if (solverSettings.getDoUseParallelGrid () && solverSettings.getDoUseDynamicGrid ())
+    {
+#if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
+      ParallelGrid::getParallelCore ()->StartCalcClock ();
+#else
+      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+    }
+
     if (solverSettings.getDoUseTFSF ())
     {
       performPlaneWaveHSteps (t);
@@ -2278,6 +2318,15 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
     performHxSteps (t, HxStart, HxEnd);
     performHySteps (t, HyStart, HyEnd);
     performHzSteps (t, HzStart, HzEnd);
+
+    if (solverSettings.getDoUseParallelGrid () && solverSettings.getDoUseDynamicGrid ())
+    {
+#if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
+      ParallelGrid::getParallelCore ()->StopCalcClock ();
+#else
+      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+    }
 
     Hx->nextTimeStep ();
     Hy->nextTimeStep ();
@@ -2310,6 +2359,8 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
       gatherFieldsTotal (solverSettings.getDoCalcScatteredNTFF ());
       saveNTFF (solverSettings.getDoCalcReverseNTFF (), t);
     }
+
+    additionalUpdateOfGrids (t, diffT);
   }
 
   if (solverSettings.getDoSaveRes ())
@@ -2326,11 +2377,18 @@ Scheme3D::performAmplitudeSteps (time_step startStep)
   UNREACHABLE;
 #else /* COMPLEX_FIELD_VALUES */
 
-#ifdef PARALLEL_GRID
-  int processId = ParallelGrid::getParallelCore ()->getProcessId ();
-#else /* PARALLEL_GRID */
+  ASSERT_MESSAGE ("Temporary unsupported");
+
   int processId = 0;
+
+  if (solverSettings.getDoUseParallelGrid ())
+  {
+#ifdef PARALLEL_GRID
+    processId = ParallelGrid::getParallelCore ()->getProcessId ();
+#else /* PARALLEL_GRID */
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif /* !PARALLEL_GRID */
+  }
 
   int is_stable_state = 0;
 
@@ -2370,27 +2428,6 @@ Scheme3D::performAmplitudeSteps (time_step startStep)
     performExSteps (t, ExStart, ExEnd);
     performEySteps (t, EyStart, EyEnd);
     performEzSteps (t, EzStart, EzEnd);
-
-//     if (!solverSettings.getDoUseTFSF ())
-//     {
-// // #if defined (PARALLEL_GRID)
-// //       if (processId == 0)
-// // #endif
-// //       {
-// //         for (grid_coord k = yeeLayout->getLeftBorderPML ().getZ (); k < yeeLayout->getRightBorderPML ().getZ (); ++k)
-// //         {
-// //           GridCoordinate3D pos (EzSize.getX () / 8, EzSize.getY () / 2, k);
-// //           FieldPointValue* tmp = Ez->getFieldPointValue (pos);
-// //
-// //   #ifdef COMPLEX_FIELD_VALUES
-// //           tmp->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
-// //                                         cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency)));
-// //   #else /* COMPLEX_FIELD_VALUES */
-// //           tmp->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
-// //   #endif /* !COMPLEX_FIELD_VALUES */
-// //         }
-// //       }
-//     }
 
     for (int i = ExStart.getX (); i < ExEnd.getX (); ++i)
     {
@@ -2605,62 +2642,11 @@ Scheme3D::performAmplitudeSteps (time_step startStep)
     }
 
     DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy %f. \n", t, maxAccuracy);
-
-    /*
-     * FIXME: add dump step
-     */
-    // if (t % 100 == 0)
-    // {
-    //   if (dumpRes)
-    //   {
-    //     BMPDumper<GridCoordinate3D> dumperEz;
-    //     dumperEz.init (t, CURRENT, processId, "2D-TMz-in-time-Ez");
-    //     dumperEz.dumpGrid (Ez);
-    //
-    //     BMPDumper<GridCoordinate3D> dumperHx;
-    //     dumperHx.init (t, CURRENT, processId, "2D-TMz-in-time-Hx");
-    //     dumperHx.dumpGrid (Hx);
-    //
-    //     BMPDumper<GridCoordinate3D> dumperHy;
-    //     dumperHy.init (t, CURRENT, processId, "2D-TMz-in-time-Hy");
-    //     dumperHy.dumpGrid (Hy);
-    //   }
-    // }
-  }
-
-  if (solverSettings.getDoSaveRes ())
-  {
-    /*
-     * FIXME: leave only one dumper
-     */
-    // BMPDumper<GridCoordinate3D> dumperEx;
-    // dumperEx.init (t, CURRENT, processId, "3D-amplitude-Ex");
-    // dumperEx.dumpGrid (ExAmplitude);
-    //
-    // BMPDumper<GridCoordinate3D> dumperEy;
-    // dumperEy.init (t, CURRENT, processId, "3D-amplitude-Ey");
-    // dumperEy.dumpGrid (EyAmplitude);
-    //
-    // BMPDumper<GridCoordinate3D> dumperEz;
-    // dumperEz.init (t, CURRENT, processId, "3D-amplitude-Ez");
-    // dumperEz.dumpGrid (EzAmplitude);
-    //
-    // BMPDumper<GridCoordinate3D> dumperHx;
-    // dumperHx.init (t, CURRENT, processId, "3D-amplitude-Hx");
-    // dumperHx.dumpGrid (HxAmplitude);
-    //
-    // BMPDumper<GridCoordinate3D> dumperHy;
-    // dumperHy.init (t, CURRENT, processId, "3D-amplitude-Hy");
-    // dumperHy.dumpGrid (HyAmplitude);
-    //
-    // BMPDumper<GridCoordinate3D> dumperHz;
-    // dumperHz.init (t, CURRENT, processId, "3D-amplitude-Hz");
-    // dumperHz.dumpGrid (HzAmplitude);
   }
 
   if (is_stable_state == 0)
   {
-    ASSERT_MESSAGE ("Stable state is not reached. Increase number of steps.\n");
+    ASSERT_MESSAGE ("Stable state is not reached. Increase number of steps.");
   }
 
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -2713,11 +2699,16 @@ Scheme3D::performSteps ()
 {
 #if defined (CUDA_ENABLED)
 
-#ifdef PARALLEL_GRID
-  int processId = ParallelGrid::getParallelCore ()->getProcessId ();
-#else /* PARALLEL_GRID */
   int processId = 0;
+
+  if (solverSettings.getDoUseParallelGrid ())
+  {
+#ifdef PARALLEL_GRID
+    processId = ParallelGrid::getParallelCore ()->getProcessId ();
+#else /* PARALLEL_GRID */
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif /* !PARALLEL_GRID */
+  }
 
   if (solverSettings.getDoUsePML ()
       || solverSettings.getDoUseTFSF ()
@@ -2754,7 +2745,7 @@ Scheme3D::performSteps ()
       ASSERT_MESSAGE ("Parallel amplitude mode is not implemented");
     }
 #else /* PARALLEL_GRID */
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif /* !PARALLEL_GRID */
   }
 
@@ -2788,11 +2779,16 @@ Scheme3D::initScheme (FPValue dx, FPValue sourceFreq)
 void
 Scheme3D::initGrids ()
 {
-#ifdef PARALLEL_GRID
-  int processId = ParallelGrid::getParallelCore ()->getProcessId ();
-#else /* PARALLEL_GRID */
   int processId = 0;
+
+  if (solverSettings.getDoUseParallelGrid ())
+  {
+#ifdef PARALLEL_GRID
+    processId = ParallelGrid::getParallelCore ()->getProcessId ();
+#else /* PARALLEL_GRID */
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif /* !PARALLEL_GRID */
+  }
 
   for (int i = 0; i < Eps->getSize ().getX (); ++i)
   {
@@ -3130,17 +3126,20 @@ Scheme3D::initGrids ()
     Dy->initialize ();
     Dz->initialize ();
 
-    D1x->initialize ();
-    D1y->initialize ();
-    D1z->initialize ();
-
     Bx->initialize ();
     By->initialize ();
     Bz->initialize ();
 
-    B1x->initialize ();
-    B1y->initialize ();
-    B1z->initialize ();
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      D1x->initialize ();
+      D1y->initialize ();
+      D1z->initialize ();
+
+      B1x->initialize ();
+      B1y->initialize ();
+      B1z->initialize ();
+    }
   }
 
   if (solverSettings.getDoUseAmplitudeMode ())
@@ -3165,17 +3164,17 @@ Scheme3D::initGrids ()
 #if defined (PARALLEL_GRID)
     MPI_Barrier (MPI_COMM_WORLD);
 
-    Eps->share ();
-    Mu->share ();
+    ((ParallelGrid *) Eps)->share ();
+    ((ParallelGrid *) Mu)->share ();
 
     if (solverSettings.getDoUsePML ())
     {
-      SigmaX->share ();
-      SigmaY->share ();
-      SigmaZ->share ();
+      ((ParallelGrid *) SigmaX)->share ();
+      ((ParallelGrid *) SigmaY)->share ();
+      ((ParallelGrid *) SigmaZ)->share ();
     }
 #else
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
   }
 }
@@ -3730,28 +3729,28 @@ Scheme3D::gatherFieldsTotal (bool scattered)
 #ifdef PARALLEL_GRID
     if (totalInitialized)
     {
-      totalEx = Ex->gatherFullGridPlacement (totalEx);
-      totalEy = Ey->gatherFullGridPlacement (totalEy);
-      totalEz = Ez->gatherFullGridPlacement (totalEz);
+      totalEx = ((ParallelGrid *) Ex)->gatherFullGridPlacement (totalEx);
+      totalEy = ((ParallelGrid *) Ey)->gatherFullGridPlacement (totalEy);
+      totalEz = ((ParallelGrid *) Ez)->gatherFullGridPlacement (totalEz);
 
-      totalHx = Hx->gatherFullGridPlacement (totalHx);
-      totalHy = Hy->gatherFullGridPlacement (totalHy);
-      totalHz = Hz->gatherFullGridPlacement (totalHz);
+      totalHx = ((ParallelGrid *) Hx)->gatherFullGridPlacement (totalHx);
+      totalHy = ((ParallelGrid *) Hy)->gatherFullGridPlacement (totalHy);
+      totalHz = ((ParallelGrid *) Hz)->gatherFullGridPlacement (totalHz);
     }
     else
     {
-      totalEx = Ex->gatherFullGrid ();
-      totalEy = Ey->gatherFullGrid ();
-      totalEz = Ez->gatherFullGrid ();
+      totalEx = ((ParallelGrid *) Ex)->gatherFullGrid ();
+      totalEy = ((ParallelGrid *) Ey)->gatherFullGrid ();
+      totalEz = ((ParallelGrid *) Ez)->gatherFullGrid ();
 
-      totalHx = Hx->gatherFullGrid ();
-      totalHy = Hy->gatherFullGrid ();
-      totalHz = Hz->gatherFullGrid ();
+      totalHx = ((ParallelGrid *) Hx)->gatherFullGrid ();
+      totalHy = ((ParallelGrid *) Hy)->gatherFullGrid ();
+      totalHz = ((ParallelGrid *) Hz)->gatherFullGrid ();
 
       totalInitialized = true;
     }
 #else
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
   }
   else
@@ -3816,11 +3815,7 @@ Scheme3D::gatherFieldsTotal (bool scattered)
 void
 Scheme3D::saveGrids (time_step t)
 {
-#ifdef PARALLEL_GRID
-  int processId = ParallelGrid::getParallelCore ()->getProcessId ();
-#else /* PARALLEL_GRID */
   int processId = 0;
-#endif /* !PARALLEL_GRID */
 
   GridCoordinate3D startEx (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinExCoordFP ().getX ()) + 1,
                             grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinExCoordFP ().getY ()) + 1,
@@ -3889,6 +3884,8 @@ void
 Scheme3D::saveNTFF (bool isReverse, time_step t)
 {
 #ifdef PARALLEL_GRID
+  int processId = ParallelGrid::getParallelCore ()->getProcessId ();
+
   if (processId == 0)
 #endif
   {
@@ -3941,4 +3938,92 @@ Scheme3D::saveNTFF (bool isReverse, time_step t)
   }
 }
 
-#endif /* GRID_2D */
+void Scheme3D::additionalUpdateOfGrids (time_step t, time_step &diffT)
+{
+  if (solverSettings.getDoUseParallelGrid () && solverSettings.getDoUseDynamicGrid ())
+  {
+#if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
+    //if (false && t % solverSettings.getRebalanceStep () == 0)
+    if (t % diffT == 0 && t > 0)
+    {
+      if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
+      {
+        DPRINTF (LOG_LEVEL_STAGES, "Try rebalance on step %u, steps elapsed after previous %u\n", t, diffT);
+      }
+      ParallelGrid::getParallelCore ()->ShareClocks ();
+
+      ParallelYeeGridLayout *parallelYeeLayout = (ParallelYeeGridLayout *) yeeLayout;
+
+      if (parallelYeeLayout->Rebalance (diffT))
+      {
+        DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Rebalancing for process %d!\n", ParallelGrid::getParallelCore ()->getProcessId ());
+
+        ((ParallelGrid *) Eps)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+        ((ParallelGrid *) Mu)->Resize (parallelYeeLayout->getMuSizeForCurNode ());
+
+        ((ParallelGrid *) Ex)->Resize (parallelYeeLayout->getExSizeForCurNode ());
+        ((ParallelGrid *) Ey)->Resize (parallelYeeLayout->getEySizeForCurNode ());
+        ((ParallelGrid *) Ez)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
+
+        ((ParallelGrid *) Hx)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
+        ((ParallelGrid *) Hy)->Resize (parallelYeeLayout->getHySizeForCurNode ());
+        ((ParallelGrid *) Hz)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
+
+        if (solverSettings.getDoUsePML ())
+        {
+          ((ParallelGrid *) Dx)->Resize (parallelYeeLayout->getExSizeForCurNode ());
+          ((ParallelGrid *) Dy)->Resize (parallelYeeLayout->getEySizeForCurNode ());
+          ((ParallelGrid *) Dz)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
+
+          ((ParallelGrid *) Bx)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
+          ((ParallelGrid *) By)->Resize (parallelYeeLayout->getHySizeForCurNode ());
+          ((ParallelGrid *) Bz)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
+
+          if (solverSettings.getDoUseMetamaterials ())
+          {
+            ((ParallelGrid *) D1x)->Resize (parallelYeeLayout->getExSizeForCurNode ());
+            ((ParallelGrid *) D1y)->Resize (parallelYeeLayout->getEySizeForCurNode ());
+            ((ParallelGrid *) D1z)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
+
+            ((ParallelGrid *) B1x)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
+            ((ParallelGrid *) B1y)->Resize (parallelYeeLayout->getHySizeForCurNode ());
+            ((ParallelGrid *) B1z)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
+          }
+
+          ((ParallelGrid *) SigmaX)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+          ((ParallelGrid *) SigmaY)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+          ((ParallelGrid *) SigmaZ)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+        }
+
+        if (solverSettings.getDoUseAmplitudeMode ())
+        {
+          ((ParallelGrid *) ExAmplitude)->Resize (parallelYeeLayout->getExSizeForCurNode ());
+          ((ParallelGrid *) EyAmplitude)->Resize (parallelYeeLayout->getEySizeForCurNode ());
+          ((ParallelGrid *) EzAmplitude)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
+
+          ((ParallelGrid *) HxAmplitude)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
+          ((ParallelGrid *) HyAmplitude)->Resize (parallelYeeLayout->getHySizeForCurNode ());
+          ((ParallelGrid *) HzAmplitude)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
+        }
+
+        if (solverSettings.getDoUseMetamaterials ())
+        {
+          ((ParallelGrid *) OmegaPE)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+          ((ParallelGrid *) GammaE)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+          ((ParallelGrid *) OmegaPM)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+          ((ParallelGrid *) GammaM)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+        }
+
+        ParallelGrid::getParallelCore ()->ClearClocks ();
+
+        //diffT += 1;
+        //diffT *= 2;
+      }
+    }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+  }
+}
+
+#endif /* GRID_3D */

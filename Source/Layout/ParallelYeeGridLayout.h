@@ -14,10 +14,7 @@ class ParallelYeeGridLayout: public YeeGridLayout
 private:
 
   ParallelGridCoordinate sizeForCurNode; /**< size of grid for current node */
-
-  ParallelGridCoordinate coreSizePerNode; /**< size of grid per node which is same for all nodes except the one at the
-                                           *   right border (coreSizePerNode == sizeForCurNode for all nodes except the
-                                           *   one at the right border) */
+  const ParallelGridCore *parallelGridCore; /**< parallel grid core */
 
 private:
 
@@ -54,16 +51,6 @@ public:
   virtual ParallelGridCoordinate getHySizeForCurNode () const;
   virtual ParallelGridCoordinate getHzSizeForCurNode () const;
 
-  virtual ParallelGridCoordinate getEpsCoreSizePerNode () const;
-  virtual ParallelGridCoordinate getMuCoreSizePerNode () const;
-
-  virtual ParallelGridCoordinate getExCoreSizePerNode () const;
-  virtual ParallelGridCoordinate getEyCoreSizePerNode () const;
-  virtual ParallelGridCoordinate getEzCoreSizePerNode () const;
-  virtual ParallelGridCoordinate getHxCoreSizePerNode () const;
-  virtual ParallelGridCoordinate getHyCoreSizePerNode () const;
-  virtual ParallelGridCoordinate getHzCoreSizePerNode () const;
-
   /**
    * Get size of grid for current node
    *
@@ -74,18 +61,7 @@ public:
     return sizeForCurNode;
   } /* getSizeForCurNode */
 
-  /**
-   * Get size of grid per node which is same for all nodes except the one at the right border
-   * (coreSizePerNode == sizeForCurNode for all nodes except the one at the right border)
-   *
-   * @return size of grid per node
-   */
-  ParallelGridCoordinate getCoreSizePerNode () const
-  {
-    return coreSizePerNode;
-  } /* getCoreSizePerNode */
-
-  void Initialize (const ParallelGridCore &);
+  void Initialize (const ParallelGridCore *);
 
   /**
    * Constructor of Parallel Yee grid
@@ -110,6 +86,10 @@ public:
   virtual ~ParallelYeeGridLayout ()
   {
   } /* ~ParallelYeeGridLayout */
+
+#ifdef DYNAMIC_GRID
+  bool Rebalance (time_step);
+#endif /* DYNAMIC_GRID */
 }; /* ParallelYeeGridLayout */
 
 #endif /* PARALLEL_GRID */
