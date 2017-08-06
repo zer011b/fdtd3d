@@ -9,7 +9,9 @@ class GridCoordinate1DTemplate;
 template<class TcoordType>
 GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType>& rhs);
 
-// Coordinate in the grid.
+/**
+ * 1-dimensional coordinate in the grid
+ */
 template<class TcoordType>
 class GridCoordinate1DTemplate
 {
@@ -102,6 +104,11 @@ public:
   }
 
   friend GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST (::operator* <TcoordType>) (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType>& rhs);
+
+  void print () const
+  {
+    printf ("Coord (%lu).\n", getX ());
+  }
 };
 
 template<class TcoordType>

@@ -55,17 +55,17 @@ int main (int argc, char** argv)
   MPI_Comm_size (MPI_COMM_WORLD, &numProcs);
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  DPRINTF ("X: PID %d of %d, grid size x: %lu\n", rank, numProcs, gridSizeX);
+  DPRINTF (LOG_LEVEL_STAGES, "X: PID %d of %d, grid size x: %lu\n", rank, numProcs, gridSizeX);
   ASSERT (gridSizeX % numProcs == 0);
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 
 #if defined (GRID_2D) || defined (GRID_3D)
-  DPRINTF ("Y: PID %d of %d, grid size y: %lu\n", rank, numProcs, gridSizeY);
+  DPRINTF (LOG_LEVEL_STAGES, "Y: PID %d of %d, grid size y: %lu\n", rank, numProcs, gridSizeY);
   ASSERT (gridSizeY % numProcs == 0);
 #endif /* GRID_2D || GRID_3D */
 
 #if defined (GRID_3D)
-  DPRINTF ("Z: PID %d of %d, grid size x: %lu\n", rank, numProcs, gridSizeZ);
+  DPRINTF (LOG_LEVEL_STAGES, "Z: PID %d of %d, grid size x: %lu\n", rank, numProcs, gridSizeZ);
   ASSERT (gridSizeZ % numProcs == 0);
 #endif /* GRID_3D */
 
@@ -98,9 +98,9 @@ int main (int argc, char** argv)
   bool isDoubleMaterialPrecision = false;
 
   ParallelYeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, PhysicsConst::Pi / 2, 0, 0, isDoubleMaterialPrecision);
-  yeeLayout.Initialize (parallelGridCore);
+  yeeLayout.Initialize (&parallelGridCore);
 
-  ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode (), yeeLayout.getCoreSizePerNode ());
+  ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode ());
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   for (grid_iter i = 0; i < grid.getSize ().getX (); ++i)

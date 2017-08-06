@@ -51,6 +51,10 @@ int main (int argc, char** argv)
 
   YeeGridLayout *yeeLayout = NULLPTR;
 
+#ifdef PARALLEL_GRID
+  ParallelGridCore *parallelGridCore = NULLPTR;
+#endif
+
   if (solverSettings.getDoUseParallelGrid ())
   {
 #if defined (PARALLEL_GRID)
@@ -59,8 +63,8 @@ int main (int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
 
-    ParallelGridCore parallelGridCore (rank, numProcs, overallSize);
-    ParallelGrid::initializeParallelCore (&parallelGridCore);
+    parallelGridCore = new ParallelGridCore (rank, numProcs, overallSize);
+    ParallelGrid::initializeParallelCore (parallelGridCore);
 
     DPRINTF (LOG_LEVEL_STAGES, "Start process %d of %d\n", rank, numProcs);
 
@@ -71,9 +75,9 @@ int main (int argc, char** argv)
                                            solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
                                            solverSettings.getIncidentWaveAngle3 () * PhysicsConst::Pi / 180.0,
                                            solverSettings.getDoUseDoubleMaterialPrecision ());
-    yeeLayout->Initialize (parallelGridCore);
+    ((ParallelYeeGridLayout *) yeeLayout)->Initialize (parallelGridCore);
 #else
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
   }
   else
@@ -95,7 +99,7 @@ int main (int argc, char** argv)
 #if defined (PARALLEL_GRID)
     cudaInit (rank % solverSettings.getNumCudaGPUs ());
 #else
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
   }
   else
@@ -122,7 +126,7 @@ int main (int argc, char** argv)
                       solverSettings.getDoUseMetamaterials (),
                       solverSettings.getDoSaveRes ());
 #else
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
   }
   else
@@ -158,9 +162,11 @@ int main (int argc, char** argv)
   if (solverSettings.getDoUseParallelGrid ())
   {
 #if defined (PARALLEL_GRID)
+    delete parallelGridCore;
+
     MPI_Finalize();
 #else
-    DPRINTF (LOG_LEVEL_NONE, "Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.\n");
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
   }
 
@@ -226,7 +232,7 @@ int main (int argc, char** argv)
     printf ("Parallel grid scheme: XYZ\n");
 #endif
 
-    printf ("Buffer size: %d\n", solverSettings.getBufSize ());
+    printf ("Buffer size: %d\n", solverSettings.getBufferSize ());
 #endif
   }
 

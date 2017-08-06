@@ -5,8 +5,6 @@
 
 #ifdef PARALLEL_GRID
 
-#include <mpi.h>
-
 /**
  * Type of buffer of values
  */
@@ -258,11 +256,6 @@ private:
   ParallelGridCoordinate currentSize;
 
   /**
-   * Size of grid per node which is used for all buffers except at right border ones (see ParallelGrid)
-   */
-  ParallelGridCoordinate coreCurrentSize;
-
-  /**
    * Absolute start position of chunk of current node
    */
   ParallelGridCoordinate posStart;
@@ -353,7 +346,8 @@ private:
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
-  void initializeStartPosition ();
+  void initializeStartPosition (ParallelGridCoordinate);
+  void gatherStartPosition ();
 
 public:
 
@@ -361,8 +355,9 @@ public:
                 const ParallelGridCoordinate &,
                 time_step,
                 ParallelGridCoordinate,
-                ParallelGridCoordinate,
                 const char * = "unnamed");
+
+  virtual ~ParallelGrid () {}
 
   virtual void nextTimeStep () CXX11_OVERRIDE;
 
@@ -370,15 +365,15 @@ public:
   void zeroShareStep ();
   void share ();
 
-  virtual ParallelGridCoordinate getComputationEnd (ParallelGridCoordinate) const CXX11_OVERRIDE;
   virtual ParallelGridCoordinate getComputationStart (ParallelGridCoordinate) const CXX11_OVERRIDE;
+  virtual ParallelGridCoordinate getComputationEnd (ParallelGridCoordinate) const CXX11_OVERRIDE;
 
   ParallelGridCoordinate getStartPosition () const;
   ParallelGridCoordinate getChunkStartPosition () const;
-  ParallelGridCoordinate getTotalPosition (ParallelGridCoordinate);
-  ParallelGridCoordinate getRelativePosition (ParallelGridCoordinate);
+  virtual ParallelGridCoordinate getTotalPosition (ParallelGridCoordinate) const CXX11_OVERRIDE;
+  virtual ParallelGridCoordinate getRelativePosition (ParallelGridCoordinate) const CXX11_OVERRIDE;
 
-  FieldPointValue *getFieldPointValueByAbsolutePos (const ParallelGridCoordinate &);
+  virtual FieldPointValue *getFieldPointValueByAbsolutePos (const ParallelGridCoordinate &) CXX11_OVERRIDE;
   FieldPointValue *getFieldPointValueOrNullByAbsolutePos (const ParallelGridCoordinate &);
 
   /**
@@ -405,7 +400,7 @@ public:
    *
    * @return total size of grid
    */
-  ParallelGridCoordinate getTotalSize () const
+  virtual ParallelGridCoordinate getTotalSize () const CXX11_OVERRIDE
   {
     return totalSize;
   } /* getTotalSize */
@@ -434,6 +429,10 @@ public:
 
   ParallelGridBase *gatherFullGrid () const;
   ParallelGridBase *gatherFullGridPlacement (ParallelGridBase *) const;
+
+#ifdef DYNAMIC_GRID
+  void Resize (ParallelGridCoordinate);
+#endif /* DYNAMIC_GRID */
 
 public:
 

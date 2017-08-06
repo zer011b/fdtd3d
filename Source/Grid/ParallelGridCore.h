@@ -5,6 +5,8 @@
 
 #ifdef PARALLEL_GRID
 
+#include <mpi.h>
+
 /**
  * Base grid of parallel grid and parallel grid coordinate
  */
@@ -174,6 +176,48 @@ private:
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
+#ifdef DYNAMIC_GRID
+  /**
+   * Clock counter for calculations of current process
+   */
+  timespec calcClock;
+
+  /**
+   * Clock counter for share operations of current process
+   */
+  timespec shareClock;
+
+  /**
+   * Clock counter for start of calculations of current process
+   */
+  timespec calcStart;
+
+  /**
+   * Clock counter for stop of calculations of current process
+   */
+  timespec calcStop;
+
+  /**
+   * Clock counter for start of share operations of current process
+   */
+  timespec shareStart;
+
+  /**
+   * Clock counter for stop of share operations of current process
+   */
+  timespec shareStop;
+
+  /**
+   * Clock counters for calculations for all processes
+   */
+  std::vector<timespec> calcClockAll;
+
+  /**
+   * Clock counters for share operations for all processes
+   */
+  std::vector<timespec> shareClockAll;
+#endif /* DYNAMIC_GRID */
+
 private:
 
   void initOppositeDirections ();
@@ -188,6 +232,10 @@ private:
   void ParallelGridCoreConstructor (ParallelGridCoordinate);
   void InitBufferFlags ();
   void InitDirections ();
+
+#ifdef DYNAMIC_GRID
+  void timespec_diff (struct timespec *, struct timespec *, struct timespec *);
+#endif /* DYNAMIC_GRID */
 
 public:
 
@@ -291,8 +339,16 @@ public:
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-
-  int getNodeGridX () const;
+  /**
+   * Get coordinate of process in the nodes' grid by Ox axis for current process
+   *
+   * @return coordinate of process in the nodes' grid by Ox axis for current process
+   */
+  int getNodeGridX () const
+  {
+    return getNodeGridX (processId);
+  }
+  int getNodeGridX (int) const;
 
   /**
    * Getter for flag whether computational node has left neighbour
@@ -319,8 +375,16 @@ public:
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-
-  int getNodeGridY () const;
+  /**
+   * Get coordinate of process in the nodes' grid by Oy axis for current process
+   *
+   * @return coordinate of process in the nodes' grid by Oy axis for current process
+   */
+  int getNodeGridY () const
+  {
+    return getNodeGridY (processId);
+  }
+  int getNodeGridY (int) const;
 
   /**
    * Getter for flag whether computational node has down neighbour
@@ -347,8 +411,16 @@ public:
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-
-  int getNodeGridZ () const;
+  /**
+   * Get coordinate of process in the nodes' grid by Oz axis for current process
+   *
+   * @return coordinate of process in the nodes' grid by Oz axis for current process
+   */
+  int getNodeGridZ () const
+  {
+    return getNodeGridZ (processId);
+  }
+  int getNodeGridZ (int) const;
 
   /**
    * Getter for flag whether computational node has back neighbour
@@ -439,7 +511,42 @@ public:
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
+#ifdef DYNAMIC_GRID
 
+  void StartCalcClock ();
+  void StopCalcClock ();
+
+  void StartShareClock ();
+  void StopShareClock ();
+
+  void ShareClocks ();
+  void ClearClocks ();
+
+  /**
+   * Getter for calculations clock
+   *
+   * @return calculations clock
+   */
+  timespec getCalcClock () const
+  {
+    return calcClock;
+  } /* getCalcClock */
+
+  /**
+   * Getter for share clock
+   *
+   * @return share clock
+   */
+  timespec getShareClock () const
+  {
+    return shareClock;
+  } /* getShareClock */
+
+#endif /* DYNAMIC_GRID */
+
+  /*
+   * TODO: move out of ParallelGridCore
+   */
   /**
    * Find greatest common divider of two integer numbers
    *

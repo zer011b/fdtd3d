@@ -70,22 +70,22 @@ public:
   Grid (const TCoord& s, time_step step, const char * = "unnamed");
   Grid (time_step step, const char * = "unnamed");
   Grid (const Grid &grid);
-  ~Grid ();
+  virtual ~Grid ();
 
   Grid<TCoord> & operator = (const Grid<TCoord> &grid);
 
   const TCoord &getSize () const;
-  TCoord getTotalPosition (TCoord) const;
-  TCoord getTotalSize () const;
-  TCoord getRelativePosition (TCoord) const;
+  virtual TCoord getTotalPosition (TCoord) const;
+  virtual TCoord getTotalSize () const;
+  virtual TCoord getRelativePosition (TCoord) const;
 
   virtual TCoord getComputationStart (TCoord) const;
   virtual TCoord getComputationEnd (TCoord) const;
   TCoord calculatePositionFromIndex (grid_iter) const;
 
   void setFieldPointValue (FieldPointValue *, const TCoord &);
-  virtual FieldPointValue *getFieldPointValue (const TCoord &);
-  virtual FieldPointValue *getFieldPointValue (grid_iter);
+  FieldPointValue *getFieldPointValue (const TCoord &);
+  FieldPointValue *getFieldPointValue (grid_iter);
 
   virtual FieldPointValue *getFieldPointValueByAbsolutePos (const TCoord &);
 
@@ -144,7 +144,7 @@ Grid<TCoord>::Grid (const Grid<TCoord> &grid) /**< grid to copy */
 } /* Grid<TCoord>::Grid */
 
 /**
- * Destructor of grid. Should free all field point values
+ * Destructor of grid. Should delete all field point values
  */
 template <class TCoord>
 Grid<TCoord>::~Grid ()
@@ -375,7 +375,7 @@ template <class TCoord>
 TCoord
 Grid<TCoord>::getTotalPosition (TCoord pos) const /**< position in grid */
 {
-  return TCoord () + pos;
+  return pos;
 } /* Grid<TCoord>::getTotalPosition */
 
 /**
@@ -399,7 +399,7 @@ template <class TCoord>
 TCoord
 Grid<TCoord>::getRelativePosition (TCoord pos) const /**< position in grid */
 {
-  return pos - TCoord ();
+  return pos;
 } /* gGrid<TCoord>::getRelativePosition */
 
 /**
