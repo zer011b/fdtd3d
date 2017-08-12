@@ -1,31 +1,20 @@
-sudo: false
+sudo: true
 language: cpp
 os: linux
 addons:
   apt:
     sources:
-    # add PPAs with more up-to-date toolchains
-    - ubuntu-toolchain-r-test
-    # ppa for cmake
-    - george-edison55-precise-backports
     packages:
-    # install toolchains
-    - gcc-5
-    - g++-5
-    - cmake
-    - cmake-data
-    # mpi libs (some may be unneeded)
-    - mpich2
-    - libmpich-mpd1.0-dev
-    - libmpich-mpd1.0gf
-    - libmpich1.0-dev
-    - libmpich1.0gf
-    - libmpich2-3
-    - libmpich2-dev
-    - mpich-bin
+    - build-essential
+    - mpich
+    - libmpich-dev
 install: true
 git:
   depth: 3
 script:
   - DIR=`pwd`
-  - ./Tools/build-and-run-unit-tests.sh $DIR g++-5 gcc-5 true
+  - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+  - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+  - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+  - ./Tools/build-and-run-unit-tests.sh $DIR mpicxx mpicc true
+dist: trusty
