@@ -242,13 +242,6 @@ if ("${PARALLEL_GRID}")
 
   include_directories (${MPI_INCLUDE_PATH})
   set (LIBS ${LIBS} ${MPI_LIBRARIES})
-  if (MPI_COMPILE_FLAGS)
-    set (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${MPI_COMPILE_FLAGS})
-  endif ()
-
-  #if (MPI_LINK_FLAGS)
-  #  set (LINK_FLAGS ${LINK_FLAGS} ${MPI_LINK_FLAGS})
-  #endif ()
 endif()
 
 message ("Compile flags: ${CMAKE_CXX_FLAGS}")
