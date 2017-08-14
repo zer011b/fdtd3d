@@ -76,6 +76,26 @@ function build
             if [[ res -ne 0 ]]; then
               exit 1
             fi
+
+            if [[ "$PARALLEL_BUFFER" = "x" ]]; then
+              mpirun -n 8 ./Tests/unit-test-parallel-grid
+            elif [[ "$PARALLEL_BUFFER" = "y" ]]; then
+              mpirun -n 8 ./Tests/unit-test-parallel-grid
+            elif [[ "$PARALLEL_BUFFER" = "xy" ]]; then
+              mpirun -n 64 ./Tests/unit-test-parallel-grid
+            elif [[ "$PARALLEL_BUFFER" = "yz" ]]; then
+              mpirun -n 64 ./Tests/unit-test-parallel-grid
+            elif [[ "$PARALLEL_BUFFER" = "xz" ]]; then
+              mpirun -n 64 ./Tests/unit-test-parallel-grid
+            elif [[ "$PARALLEL_BUFFER" = "xyz" ]]; then
+              mpirun -n 64 ./Tests/unit-test-parallel-grid
+            fi
+
+            res=$(echo $?)
+
+            if [[ res -ne 0 ]]; then
+              exit 1
+            fi
           done
         done
       done
