@@ -71,15 +71,15 @@ int main (int argc, char** argv)
 #endif /* PRINT_MESSAGE */
 
 #ifdef GRID_1D
-  GridCoordinate1D overallSize (gridSizeX);
-  GridCoordinate1D pmlSize (10);
-  GridCoordinate1D tfsfSize (20);
+  GridCoordinate3D overallSize (gridSizeX);
+  GridCoordinate3D pmlSize (10);
+  GridCoordinate3D tfsfSize (20);
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
-  GridCoordinate2D overallSize (gridSizeX, gridSizeY);
-  GridCoordinate2D pmlSize (10, 10);
-  GridCoordinate2D tfsfSize (20, 20);
+  GridCoordinate3D overallSize (gridSizeX, gridSizeY);
+  GridCoordinate3D pmlSize (10, 10);
+  GridCoordinate3D tfsfSize (20, 20);
 #endif /* GRID_2D */
 
 #ifdef GRID_3D

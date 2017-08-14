@@ -90,13 +90,13 @@ public:
     return GridCoordinate1DTemplate (- getX ());
   }
 
-  GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator* (FPValue rhs) const
+  GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator* (TcoordType rhs) const
   {
     return GridCoordinate1DTemplate (getX () * rhs);
   }
 
   template<class TCoord>
-  friend GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator* (FPValue lhs, const GridCoordinate1DTemplate<TCoord>& rhs)
+  friend GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator* (TCoord lhs, const GridCoordinate1DTemplate<TCoord>& rhs)
   {
     return GridCoordinate1DTemplate<TCoord> (lhs * rhs.getX ());
   }
