@@ -3446,7 +3446,7 @@ Scheme3D::initGrids ()
   if (dumpRes)
   {
     dumper.init (0, CURRENT, processId, "Eps");
-    dumper.dumpGrid (Eps, GridCoordinate3D (0), Eps.getSize ());
+    dumper.dumpGrid (Eps, GridCoordinate3D (0, 0, 0), Eps.getSize ());
   }
 
   for (int i = 0; i < OmegaPE.getSize ().getX (); ++i)
@@ -3614,16 +3614,16 @@ Scheme3D::initGrids ()
   if (dumpRes)
   {
     dumper.init (0, CURRENT, processId, "OmegaPE");
-    dumper.dumpGrid (OmegaPE, GridCoordinate3D (0), Eps.getSize ());
+    dumper.dumpGrid (OmegaPE, GridCoordinate3D (0, 0, 0), Eps.getSize ());
 
     dumper.init (0, CURRENT, processId, "OmegaPM");
-    dumper.dumpGrid (OmegaPM, GridCoordinate3D (0), Eps.getSize ());
+    dumper.dumpGrid (OmegaPM, GridCoordinate3D (0, 0, 0), Eps.getSize ());
 
     dumper.init (0, CURRENT, processId, "GammaE");
-    dumper.dumpGrid (GammaE, GridCoordinate3D (0), Eps.getSize ());
+    dumper.dumpGrid (GammaE, GridCoordinate3D (0, 0, 0), Eps.getSize ());
 
     dumper.init (0, CURRENT, processId, "GammaM");
-    dumper.dumpGrid (GammaM, GridCoordinate3D (0), Eps.getSize ());
+    dumper.dumpGrid (GammaM, GridCoordinate3D (0, 0, 0), Eps.getSize ());
   }
 
   for (int i = 0; i < Mu.getSize ().getX (); ++i)
@@ -3650,7 +3650,7 @@ Scheme3D::initGrids ()
   if (dumpRes)
   {
     dumper.init (0, CURRENT, processId, "Mu");
-    dumper.dumpGrid (Mu, GridCoordinate3D (0), Eps.getSize ());
+    dumper.dumpGrid (Mu, GridCoordinate3D (0, 0, 0), Eps.getSize ());
   }
 
   FPValue eps0 = PhysicsConst::Eps0;
@@ -3820,11 +3820,11 @@ Scheme3D::initGrids ()
   if (dumpRes)
   {
     dumper.init (0, CURRENT, processId, "SigmaX");
-    dumper.dumpGrid (SigmaX, GridCoordinate3D (0), Eps.getSize ());
+    dumper.dumpGrid (SigmaX, GridCoordinate3D (0, 0, 0), Eps.getSize ());
     dumper.init (0, CURRENT, processId, "SigmaY");
-    dumper.dumpGrid (SigmaY, GridCoordinate3D (0), Eps.getSize ());
+    dumper.dumpGrid (SigmaY, GridCoordinate3D (0, 0, 0), Eps.getSize ());
     dumper.init (0, CURRENT, processId, "SigmaZ");
-    dumper.dumpGrid (SigmaZ, GridCoordinate3D (0), Eps.getSize ());
+    dumper.dumpGrid (SigmaZ, GridCoordinate3D (0, 0, 0), Eps.getSize ());
   }
 
   for (int i = 0; i < Ex.getSize ().getX (); ++i)

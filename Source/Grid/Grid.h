@@ -278,7 +278,7 @@ template <class TCoord>
 TCoord
 Grid<TCoord>::getComputationStart (TCoord diffPosStart) const
 {
-  return TCoord (0) + diffPosStart;
+  return TCoord () + diffPosStart;
 } /* Grid<TCoord>::getComputationStart */
 
 /**
@@ -376,7 +376,7 @@ template <class TCoord>
 TCoord
 Grid<TCoord>::getTotalPosition (TCoord pos) const /**< position in grid */
 {
-  return TCoord (0) + pos;
+  return TCoord () + pos;
 } /* Grid<TCoord>::getTotalPosition */
 
 /**

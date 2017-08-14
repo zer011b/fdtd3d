@@ -3,6 +3,12 @@
 
 #include "FieldValue.h"
 
+template<class TcoordType>
+class GridCoordinate1DTemplate;
+
+template<class TcoordType>
+GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType>& rhs);
+
 // Coordinate in the grid.
 template<class TcoordType>
 class GridCoordinate1DTemplate
@@ -90,17 +96,19 @@ public:
     return GridCoordinate1DTemplate (- getX ());
   }
 
-  GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator* (FPValue rhs) const
+  GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator* (TcoordType rhs) const
   {
     return GridCoordinate1DTemplate (getX () * rhs);
   }
 
-  template<class TCoord>
-  friend GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator* (FPValue lhs, const GridCoordinate1DTemplate<TCoord>& rhs)
-  {
-    return GridCoordinate1DTemplate<TCoord> (lhs * rhs.getX ());
-  }
+  friend GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST (::operator* <TcoordType>) (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType>& rhs);
 };
+
+template<class TcoordType>
+GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType>& rhs)
+{
+  return GridCoordinate1DTemplate<TcoordType> (lhs * rhs.getX ());
+}
 
 typedef GridCoordinate1DTemplate<grid_iter> GridCoordinate1D;
 typedef GridCoordinate1DTemplate<FPValue> GridCoordinateFP1D;

@@ -34,15 +34,15 @@ const FPValue prevPrevMult = prevMult * prevMult;
 int main (int argc, char** argv)
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  int gridSizeX = 32;
+  grid_iter gridSizeX = 32;
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 
 #if defined (GRID_2D) || defined (GRID_3D)
-  int gridSizeY = 32;
+  grid_iter gridSizeY = 32;
 #endif /* GRID_2D || GRID_3D */
 
 #if defined (GRID_3D)
-  int gridSizeZ = 32;
+  grid_iter gridSizeZ = 32;
 #endif /* GRID_3D */
 
   int bufSize = 2;
@@ -71,15 +71,15 @@ int main (int argc, char** argv)
 #endif /* PRINT_MESSAGE */
 
 #ifdef GRID_1D
-  GridCoordinate1D overallSize (gridSizeX);
-  GridCoordinate1D pmlSize (10);
-  GridCoordinate1D tfsfSize (20);
+  GridCoordinate3D overallSize (gridSizeX, 0, 0);
+  GridCoordinate3D pmlSize (10, 0, 0);
+  GridCoordinate3D tfsfSize (20, 0, 0);
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
-  GridCoordinate2D overallSize (gridSizeX, gridSizeY);
-  GridCoordinate2D pmlSize (10, 10);
-  GridCoordinate2D tfsfSize (20, 20);
+  GridCoordinate3D overallSize (gridSizeX, gridSizeY, 0);
+  GridCoordinate3D pmlSize (10, 10, 0);
+  GridCoordinate3D tfsfSize (20, 20, 0);
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
@@ -101,15 +101,15 @@ int main (int argc, char** argv)
   ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode (), yeeLayout.getCoreSizePerNode ());
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  for (int i = 0; i < grid.getSize ().getX (); ++i)
+  for (grid_iter i = 0; i < grid.getSize ().getX (); ++i)
   {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-    for (int j = 0; j < grid.getSize ().getY (); ++j)
+    for (grid_iter j = 0; j < grid.getSize ().getY (); ++j)
     {
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-      for (int k = 0; k < grid.getSize ().getZ (); ++k)
+      for (grid_iter k = 0; k < grid.getSize ().getZ (); ++k)
       {
 #endif /* GRID_3D */
         FieldPointValue* val = new FieldPointValue ();
@@ -175,15 +175,15 @@ int main (int argc, char** argv)
   ParallelGridBase gridTotal = grid.gatherFullGrid ();
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  for (int i = 0; i < grid.getSize ().getX (); ++i)
+  for (grid_iter i = 0; i < grid.getSize ().getX (); ++i)
   {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-    for (int j = 0; j < grid.getSize ().getY (); ++j)
+    for (grid_iter j = 0; j < grid.getSize ().getY (); ++j)
     {
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-      for (int k = 0; k < grid.getSize ().getZ (); ++k)
+      for (grid_iter k = 0; k < grid.getSize ().getZ (); ++k)
       {
 #endif /* GRID_3D */
 
