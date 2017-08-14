@@ -347,7 +347,7 @@ Approximation::approximateSphere_1 (GridCoordinateFP3D midPos,
     }
 
     temp1 ()
-    : first (0), second (0)
+    : first (0.0, 0.0, 0.0), second (0.0, 0.0, 0.0)
     {
     }
   };

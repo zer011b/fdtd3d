@@ -51,7 +51,7 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
   : ParallelGridBase (step, name)
   , totalSize (totSize)
   , shareStep (0)
-  , bufferSize (ParallelGridCoordinate (0))
+  , bufferSize (ParallelGridCoordinate ())
   , currentSize (curSize)
   , coreCurrentSize (coreCurSize)
 {

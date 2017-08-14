@@ -774,17 +774,17 @@ YeeGridLayout::getMetaMaterial (GridCoordinate3D &posAbs,
        */
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 0, 0);
-        absPos12 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 1, 0);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 0, 0);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 1, 0);
 
-        absPos21 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 0, 0);
-        absPos22 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 1, 0);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 0, 0);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 1, 0);
 
-        absPos31 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 0, 1);
-        absPos32 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 1, 1);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 0, 1);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 1, 1);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 0, 1);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 1, 1);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 0, 1);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 1, 1);
       }
       else
       {
@@ -804,17 +804,17 @@ YeeGridLayout::getMetaMaterial (GridCoordinate3D &posAbs,
        */
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 1, 0);
-        absPos12 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 1, 0);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 1, 0);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 1, 0);
 
-        absPos21 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 0, 0);
-        absPos22 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 0, 0);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 0, 0);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 0, 0);
 
-        absPos31 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 1, 1);
-        absPos32 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 1, 1);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 1, 1);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 1, 1);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 0, 1);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 0, 1);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 0, 1);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 0, 1);
       }
       else
       {
@@ -831,17 +831,17 @@ YeeGridLayout::getMetaMaterial (GridCoordinate3D &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 0, 1);
-        absPos12 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 1, 1);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 0, 1);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 1, 1);
 
-        absPos21 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 0, 1);
-        absPos22 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 1, 1);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 0, 1);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 1, 1);
 
-        absPos31 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 0, 0);
-        absPos32 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 1, 0);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 0, 0);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 1, 0);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 0, 0);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 1, 0);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 0, 0);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 1, 0);
       }
       else
       {
@@ -858,17 +858,17 @@ YeeGridLayout::getMetaMaterial (GridCoordinate3D &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5)) + GridCoordinate3D (0, 1, 1);
-        absPos12 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5)) + GridCoordinate3D (1, 1, 1);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5)) + GridCoordinate3D (0, 1, 1);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5)) + GridCoordinate3D (1, 1, 1);
 
-        absPos21 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5)) + GridCoordinate3D (0, 1, 0);
-        absPos22 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5)) + GridCoordinate3D (1, 1, 0);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5)) + GridCoordinate3D (0, 1, 0);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5)) + GridCoordinate3D (1, 1, 0);
 
-        absPos31 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5)) + GridCoordinate3D (0, 0, 1);
-        absPos32 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5)) + GridCoordinate3D (1, 0, 1);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5)) + GridCoordinate3D (0, 0, 1);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5)) + GridCoordinate3D (1, 0, 1);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5)) + GridCoordinate3D (0, 0, 0);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5)) + GridCoordinate3D (1, 0, 0);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5)) + GridCoordinate3D (0, 0, 0);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5)) + GridCoordinate3D (1, 0, 0);
       }
       else
       {
@@ -887,17 +887,17 @@ YeeGridLayout::getMetaMaterial (GridCoordinate3D &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5)) + GridCoordinate3D (1, 0, 1);
-        absPos12 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5)) + GridCoordinate3D (1, 1, 1);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5)) + GridCoordinate3D (1, 0, 1);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5)) + GridCoordinate3D (1, 1, 1);
 
-        absPos21 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5)) + GridCoordinate3D (1, 0, 0);
-        absPos22 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5)) + GridCoordinate3D (1, 1, 0);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5)) + GridCoordinate3D (1, 0, 0);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5)) + GridCoordinate3D (1, 1, 0);
 
-        absPos31 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5)) + GridCoordinate3D (0, 0, 1);
-        absPos32 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5)) + GridCoordinate3D (0, 1, 1);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5)) + GridCoordinate3D (0, 0, 1);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5)) + GridCoordinate3D (0, 1, 1);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5)) + GridCoordinate3D (0, 0, 0);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5)) + GridCoordinate3D (0, 1, 0);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5)) + GridCoordinate3D (0, 0, 0);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5)) + GridCoordinate3D (0, 1, 0);
       }
       else
       {
@@ -916,17 +916,17 @@ YeeGridLayout::getMetaMaterial (GridCoordinate3D &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0)) + GridCoordinate3D (1, 1, 0);
-        absPos12 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0)) + GridCoordinate3D (1, 1, 1);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0)) + GridCoordinate3D (1, 1, 0);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0)) + GridCoordinate3D (1, 1, 1);
 
-        absPos21 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0)) + GridCoordinate3D (1, 0, 0);
-        absPos22 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0)) + GridCoordinate3D (1, 0, 1);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0)) + GridCoordinate3D (1, 0, 0);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0)) + GridCoordinate3D (1, 0, 1);
 
-        absPos31 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0)) + GridCoordinate3D (0, 1, 0);
-        absPos32 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0)) + GridCoordinate3D (0, 1, 1);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0)) + GridCoordinate3D (0, 1, 0);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0)) + GridCoordinate3D (0, 1, 1);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0)) + GridCoordinate3D (0, 0, 0);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0)) + GridCoordinate3D (0, 0, 1);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0)) + GridCoordinate3D (0, 0, 0);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0)) + GridCoordinate3D (0, 0, 1);
       }
       else
       {
@@ -1031,17 +1031,17 @@ YeeGridLayout::getMaterial (GridCoordinate3D &posAbs,
        */
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 0, 0);
-        absPos12 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 1, 0);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 0, 0);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 1, 0);
 
-        absPos21 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 0, 0);
-        absPos22 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 1, 0);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 0, 0);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 1, 0);
 
-        absPos31 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 0, 1);
-        absPos32 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 1, 1);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 0, 1);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (1, 1, 1);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 0, 1);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 1, 1);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 0, 1);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0)) + GridCoordinate3D (0, 1, 1);
       }
       else
       {
@@ -1061,17 +1061,17 @@ YeeGridLayout::getMaterial (GridCoordinate3D &posAbs,
        */
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 1, 0);
-        absPos12 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 1, 0);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 1, 0);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 1, 0);
 
-        absPos21 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 0, 0);
-        absPos22 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 0, 0);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 0, 0);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 0, 0);
 
-        absPos31 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 1, 1);
-        absPos32 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 1, 1);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 1, 1);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 1, 1);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 0, 1);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 0, 1);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (0, 0, 1);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0)) + GridCoordinate3D (1, 0, 1);
       }
       else
       {
@@ -1088,17 +1088,17 @@ YeeGridLayout::getMaterial (GridCoordinate3D &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 0, 1);
-        absPos12 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 1, 1);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 0, 1);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 1, 1);
 
-        absPos21 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 0, 1);
-        absPos22 = 2 * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 1, 1);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 0, 1);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord - GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 1, 1);
 
-        absPos31 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 0, 0);
-        absPos32 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 1, 0);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 0, 0);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (0, 1, 0);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 0, 0);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 1, 0);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 0, 0);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0, 0.5)) + GridCoordinate3D (1, 1, 0);
       }
       else
       {
@@ -1115,17 +1115,17 @@ YeeGridLayout::getMaterial (GridCoordinate3D &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5)) + GridCoordinate3D (0, 1, 1);
-        absPos12 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5)) + GridCoordinate3D (1, 1, 1);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5)) + GridCoordinate3D (0, 1, 1);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, -0.5)) + GridCoordinate3D (1, 1, 1);
 
-        absPos21 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5)) + GridCoordinate3D (0, 1, 0);
-        absPos22 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5)) + GridCoordinate3D (1, 1, 0);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5)) + GridCoordinate3D (0, 1, 0);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, -0.5, 0.5)) + GridCoordinate3D (1, 1, 0);
 
-        absPos31 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5)) + GridCoordinate3D (0, 0, 1);
-        absPos32 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5)) + GridCoordinate3D (1, 0, 1);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5)) + GridCoordinate3D (0, 0, 1);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, -0.5)) + GridCoordinate3D (1, 0, 1);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5)) + GridCoordinate3D (0, 0, 0);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5)) + GridCoordinate3D (1, 0, 0);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5)) + GridCoordinate3D (0, 0, 0);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0, 0.5, 0.5)) + GridCoordinate3D (1, 0, 0);
       }
       else
       {
@@ -1144,17 +1144,17 @@ YeeGridLayout::getMaterial (GridCoordinate3D &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5)) + GridCoordinate3D (1, 0, 1);
-        absPos12 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5)) + GridCoordinate3D (1, 1, 1);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5)) + GridCoordinate3D (1, 0, 1);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, -0.5)) + GridCoordinate3D (1, 1, 1);
 
-        absPos21 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5)) + GridCoordinate3D (1, 0, 0);
-        absPos22 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5)) + GridCoordinate3D (1, 1, 0);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5)) + GridCoordinate3D (1, 0, 0);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0, 0.5)) + GridCoordinate3D (1, 1, 0);
 
-        absPos31 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5)) + GridCoordinate3D (0, 0, 1);
-        absPos32 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5)) + GridCoordinate3D (0, 1, 1);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5)) + GridCoordinate3D (0, 0, 1);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, -0.5)) + GridCoordinate3D (0, 1, 1);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5)) + GridCoordinate3D (0, 0, 0);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5)) + GridCoordinate3D (0, 1, 0);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5)) + GridCoordinate3D (0, 0, 0);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0, 0.5)) + GridCoordinate3D (0, 1, 0);
       }
       else
       {
@@ -1173,17 +1173,17 @@ YeeGridLayout::getMaterial (GridCoordinate3D &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0)) + GridCoordinate3D (1, 1, 0);
-        absPos12 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0)) + GridCoordinate3D (1, 1, 1);
+        absPos11 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0)) + GridCoordinate3D (1, 1, 0);
+        absPos12 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, -0.5, 0)) + GridCoordinate3D (1, 1, 1);
 
-        absPos21 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0)) + GridCoordinate3D (1, 0, 0);
-        absPos22 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0)) + GridCoordinate3D (1, 0, 1);
+        absPos21 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0)) + GridCoordinate3D (1, 0, 0);
+        absPos22 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (-0.5, 0.5, 0)) + GridCoordinate3D (1, 0, 1);
 
-        absPos31 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0)) + GridCoordinate3D (0, 1, 0);
-        absPos32 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0)) + GridCoordinate3D (0, 1, 1);
+        absPos31 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0)) + GridCoordinate3D (0, 1, 0);
+        absPos32 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, -0.5, 0)) + GridCoordinate3D (0, 1, 1);
 
-        absPos41 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0)) + GridCoordinate3D (0, 0, 0);
-        absPos42 = 2 * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0)) + GridCoordinate3D (0, 0, 1);
+        absPos41 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0)) + GridCoordinate3D (0, 0, 0);
+        absPos42 = grid_iter (2) * getEpsCoord (realCoord + GridCoordinateFP3D (0.5, 0.5, 0)) + GridCoordinate3D (0, 0, 1);
       }
       else
       {

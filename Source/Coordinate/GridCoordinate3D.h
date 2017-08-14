@@ -3,6 +3,12 @@
 
 #include "GridCoordinate2D.h"
 
+template<class TcoordType>
+class GridCoordinate3DTemplate;
+
+template<class TcoordType>
+GridCoordinate3DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType lhs, const GridCoordinate3DTemplate<TcoordType>& rhs);
+
 // Coordinate in the grid.
 template<class TcoordType>
 class GridCoordinate3DTemplate: public GridCoordinate2DTemplate<TcoordType>
@@ -17,18 +23,8 @@ public:
   explicit CUDA_DEVICE CUDA_HOST GridCoordinate3DTemplate (const TcoordType& cx, const TcoordType& cy, const TcoordType& cz)
     : GridCoordinate2DTemplate<TcoordType> (cx, cy), z (cz) {}
 
-  // Constructor for case when grid has the same dimension for all axes.
-  explicit CUDA_DEVICE CUDA_HOST GridCoordinate3DTemplate (const TcoordType& cxyz)
-    : GridCoordinate2DTemplate<TcoordType> (cxyz), z (cxyz) {}
-
   CUDA_DEVICE CUDA_HOST GridCoordinate3DTemplate (const GridCoordinate3DTemplate& pos)
     : GridCoordinate2DTemplate<TcoordType> (pos.getX (), pos.getY ()), z (pos.getZ ()) {}
-
-  CUDA_DEVICE CUDA_HOST GridCoordinate3DTemplate (const GridCoordinate1DTemplate<TcoordType>& pos)
-    : GridCoordinate2DTemplate<TcoordType> (pos), z (0) {}
-
-  CUDA_DEVICE CUDA_HOST GridCoordinate3DTemplate (const GridCoordinate2DTemplate<TcoordType>& pos)
-    : GridCoordinate2DTemplate<TcoordType> (pos), z (0) {}
 
   CUDA_DEVICE CUDA_HOST ~GridCoordinate3DTemplate () {}
 
@@ -158,21 +154,23 @@ public:
     return GridCoordinate3DTemplate (- x, - y, - getZ ());
   }
 
-  GridCoordinate3DTemplate CUDA_DEVICE CUDA_HOST operator* (FPValue rhs) const
+  GridCoordinate3DTemplate CUDA_DEVICE CUDA_HOST operator* (TcoordType rhs) const
   {
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
     TcoordType y = GridCoordinate2DTemplate<TcoordType>::getY ();
     return GridCoordinate3DTemplate (x * rhs, y * rhs, getZ () * rhs);
   }
 
-  template<class TCoord>
-  friend GridCoordinate3DTemplate CUDA_DEVICE CUDA_HOST operator* (FPValue lhs, const GridCoordinate3DTemplate<TCoord>& rhs)
-  {
-    TCoord x = rhs.GridCoordinate1DTemplate<TCoord>::getX ();
-    TCoord y = rhs.GridCoordinate2DTemplate<TCoord>::getY ();
-    return GridCoordinate3DTemplate<TCoord> (lhs * x, lhs * y, lhs * rhs.getZ ());
-  }
+  friend GridCoordinate3DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST (::operator* <TcoordType>) (TcoordType lhs, const GridCoordinate3DTemplate<TcoordType>& rhs);
 };
+
+template<class TcoordType>
+GridCoordinate3DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType lhs, const GridCoordinate3DTemplate<TcoordType>& rhs)
+{
+  TcoordType x = rhs.GridCoordinate1DTemplate<TcoordType>::getX ();
+  TcoordType y = rhs.GridCoordinate2DTemplate<TcoordType>::getY ();
+  return GridCoordinate3DTemplate<TcoordType> (lhs * x, lhs * y, lhs * rhs.getZ ());
+}
 
 typedef GridCoordinate3DTemplate<grid_iter> GridCoordinate3D;
 typedef GridCoordinate3DTemplate<FPValue> GridCoordinateFP3D;
