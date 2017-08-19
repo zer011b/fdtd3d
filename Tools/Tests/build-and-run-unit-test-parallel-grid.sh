@@ -34,7 +34,7 @@ function build
               -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
               -DTIME_STEPS=${TIME_STEPS} \
               -DPARALLEL_GRID_DIMENSION=${PARALLEL_GRID_DIM} \
-              -DPRINT_MESSAGE=OFF \
+              -DPRINT_MESSAGE=ON \
               -DPARALLEL_GRID=ON \
               -DPARALLEL_BUFFER_DIMENSION=${PARALLEL_BUFFER} \
               -DCXX11_ENABLED=${CXX11_ENABLED} \
@@ -58,17 +58,17 @@ function build
             fi
 
             if [[ "$PARALLEL_BUFFER" = "x" ]]; then
-              mpirun -n 4 ./Tests/unit-test-parallel-grid
+              mpirun -n 2 ./Tests/unit-test-parallel-grid
             elif [[ "$PARALLEL_BUFFER" = "y" ]]; then
-              mpirun -n 4 ./Tests/unit-test-parallel-grid
+              mpirun -n 2 ./Tests/unit-test-parallel-grid
+            elif [[ "$PARALLEL_BUFFER" = "z" ]]; then
+              mpirun -n 2 ./Tests/unit-test-parallel-grid
             elif [[ "$PARALLEL_BUFFER" = "xy" ]]; then
-              mpirun -n 16 ./Tests/unit-test-parallel-grid
+              mpirun -n 4 ./Tests/unit-test-parallel-grid
             elif [[ "$PARALLEL_BUFFER" = "yz" ]]; then
-              mpirun -n 16 ./Tests/unit-test-parallel-grid
+              mpirun -n 4 ./Tests/unit-test-parallel-grid
             elif [[ "$PARALLEL_BUFFER" = "xz" ]]; then
-              mpirun -n 16 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "xyz" ]]; then
-              mpirun -n 8 ./Tests/unit-test-parallel-grid
+              mpirun -n 4 ./Tests/unit-test-parallel-grid
             fi
 
             res=$(echo $?)
@@ -78,17 +78,19 @@ function build
             fi
 
             if [[ "$PARALLEL_BUFFER" = "x" ]]; then
-              mpirun -n 8 ./Tests/unit-test-parallel-grid
+              mpirun -n 4 ./Tests/unit-test-parallel-grid
             elif [[ "$PARALLEL_BUFFER" = "y" ]]; then
-              mpirun -n 8 ./Tests/unit-test-parallel-grid
+              mpirun -n 4 ./Tests/unit-test-parallel-grid
+            elif [[ "$PARALLEL_BUFFER" = "z" ]]; then
+              mpirun -n 4 ./Tests/unit-test-parallel-grid
             elif [[ "$PARALLEL_BUFFER" = "xy" ]]; then
-              mpirun -n 64 ./Tests/unit-test-parallel-grid
+              mpirun -n 16 ./Tests/unit-test-parallel-grid
             elif [[ "$PARALLEL_BUFFER" = "yz" ]]; then
-              mpirun -n 64 ./Tests/unit-test-parallel-grid
+              mpirun -n 16 ./Tests/unit-test-parallel-grid
             elif [[ "$PARALLEL_BUFFER" = "xz" ]]; then
-              mpirun -n 64 ./Tests/unit-test-parallel-grid
+              mpirun -n 16 ./Tests/unit-test-parallel-grid
             elif [[ "$PARALLEL_BUFFER" = "xyz" ]]; then
-              mpirun -n 64 ./Tests/unit-test-parallel-grid
+              mpirun -n 8 ./Tests/unit-test-parallel-grid
             fi
 
             res=$(echo $?)
@@ -109,7 +111,7 @@ build 1 "$array1D"
 array2D="x y xy"
 build 2 "$array2D"
 
-array3D="x y xy yz xz xyz"
+array3D="x y z xy yz xz xyz"
 build 3 "$array3D"
 
 exit 0

@@ -55,14 +55,17 @@ int main (int argc, char** argv)
   MPI_Comm_size (MPI_COMM_WORLD, &numProcs);
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  DPRINTF ("X: PID %d of %d, grid size x: %lu\n", rank, numProcs, gridSizeX);
   ASSERT (gridSizeX % numProcs == 0);
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 
 #if defined (GRID_2D) || defined (GRID_3D)
+  DPRINTF ("Y: PID %d of %d, grid size y: %lu\n", rank, numProcs, gridSizeY);
   ASSERT (gridSizeY % numProcs == 0);
 #endif /* GRID_2D || GRID_3D */
 
 #if defined (GRID_3D)
+  DPRINTF ("Z: PID %d of %d, grid size x: %lu\n", rank, numProcs, gridSizeZ);
   ASSERT (gridSizeZ % numProcs == 0);
 #endif /* GRID_3D */
 
