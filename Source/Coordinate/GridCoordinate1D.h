@@ -91,14 +91,14 @@ public:
     return getX () <= rhs.getX ();
   }
 
-  GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator- () const
+  GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator- () const
   {
-    return GridCoordinate1DTemplate (- getX ());
+    return GridCoordinate1DTemplate<TcoordType> (- getX ());
   }
 
-  GridCoordinate1DTemplate CUDA_DEVICE CUDA_HOST operator* (TcoordType rhs) const
+  GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType rhs) const
   {
-    return GridCoordinate1DTemplate (getX () * rhs);
+    return GridCoordinate1DTemplate<TcoordType> (getX () * rhs);
   }
 
   friend GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST (::operator* <TcoordType>) (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType>& rhs);
@@ -112,5 +112,8 @@ GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType
 
 typedef GridCoordinate1DTemplate<grid_iter> GridCoordinate1D;
 typedef GridCoordinate1DTemplate<FPValue> GridCoordinateFP1D;
+
+GridCoordinate1D CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinateFP1D coord);
+GridCoordinateFP1D CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinate1D coord);
 
 #endif /* GRID_COORDINATE_1D_H */
