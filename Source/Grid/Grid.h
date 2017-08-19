@@ -400,7 +400,7 @@ template <class TCoord>
 TCoord
 Grid<TCoord>::getRelativePosition (TCoord pos) const /**< position in grid */
 {
-  return pos - TCoord (0);
+  return pos - TCoord ();
 } /* gGrid<TCoord>::getRelativePosition */
 
 /**

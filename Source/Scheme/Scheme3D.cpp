@@ -3546,25 +3546,6 @@ Scheme3D::initGrids ()
 #endif /* !COMPLEX_FIELD_VALUES */
 
         GridCoordinate3D pos (i, j, k);
-      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout->getEpsCoordFP (Eps.getTotalPosition (pos)));
-      //
-      // GridCoordinateFP2D size = shrinkCoord (yeeLayout->getEpsCoordFP (Eps.getTotalSize ()));
-
-      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout->getEpsCoordFP (GammaE.getTotalPosition (pos)));
-      //
-      // GridCoordinateFP2D size = shrinkCoord (yeeLayout->getEpsCoordFP (GammaE.getTotalSize ()));
-      //
-      // if (posAbs.getX () >= size.getX () / 2 - 20 && posAbs.getX () < size.getX () / 2 + 20
-      //     && posAbs.getY () >= 50 && posAbs.getY () < size.getY () - 50)
-      // {
-      //   valGamma->setCurValue (1);
-      // }
-
-      // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
-      //     + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
-      // {
-      //   valGamma->setCurValue (1);
-      // }
 
         GammaE.setFieldPointValue (valGamma, pos);
       }
@@ -3586,25 +3567,6 @@ Scheme3D::initGrids ()
 #endif /* !COMPLEX_FIELD_VALUES */
 
         GridCoordinate3D pos (i, j, k);
-      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout->getEpsCoordFP (Eps.getTotalPosition (pos)));
-      //
-      // GridCoordinateFP2D size = shrinkCoord (yeeLayout->getEpsCoordFP (Eps.getTotalSize ()));
-
-      // GridCoordinateFP2D posAbs = shrinkCoord (yeeLayout->getEpsCoordFP (GammaE.getTotalPosition (pos)));
-      //
-      // GridCoordinateFP2D size = shrinkCoord (yeeLayout->getEpsCoordFP (GammaE.getTotalSize ()));
-      //
-      // if (posAbs.getX () >= size.getX () / 2 - 20 && posAbs.getX () < size.getX () / 2 + 20
-      //     && posAbs.getY () >= 50 && posAbs.getY () < size.getY () - 50)
-      // {
-      //   valGamma->setCurValue (1);
-      // }
-
-      // if ((posAbs.getX () - size.getX () / 2) * (posAbs.getX () - size.getX () / 2)
-      //     + (posAbs.getY () - size.getY () / 2) * (posAbs.getY () - size.getY () / 2) < (size.getX ()*1.5/7.0) * (size.getX ()*1.5/7.0))
-      // {
-      //   valGamma->setCurValue (1);
-      // }
 
         GammaM.setFieldPointValue (valGamma, pos);
       }

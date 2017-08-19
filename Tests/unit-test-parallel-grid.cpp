@@ -74,26 +74,27 @@ int main (int argc, char** argv)
   GridCoordinate3D overallSize (gridSizeX, 0, 0);
   GridCoordinate3D pmlSize (10, 0, 0);
   GridCoordinate3D tfsfSize (20, 0, 0);
+  GridCoordinate3D bufferSize (bufSize, 0, 0);
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, 0);
   GridCoordinate3D pmlSize (10, 10, 0);
   GridCoordinate3D tfsfSize (20, 20, 0);
+  GridCoordinate3D bufferSize (bufSize, bufSize, 0);
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
   GridCoordinate3D pmlSize (10, 10, 10);
   GridCoordinate3D tfsfSize (20, 20, 20);
+  GridCoordinate3D bufferSize (bufSize, bufSize, bufSize);
 #endif /* GRID_3D */
 
   ParallelGridCore parallelGridCore (rank, numProcs, overallSize);
   ParallelGrid::initializeParallelCore (&parallelGridCore);
 
   bool isDoubleMaterialPrecision = false;
-
-  ParallelGridCoordinate bufferSize (bufSize);
 
   ParallelYeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, PhysicsConst::Pi / 2, 0, 0, isDoubleMaterialPrecision);
   yeeLayout.Initialize (parallelGridCore);
