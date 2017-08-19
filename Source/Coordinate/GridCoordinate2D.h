@@ -140,7 +140,7 @@ GridCoordinate2DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType
 }
 
 template<class TcoordType>
-GridCoordinate2DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST expand (GridCoordinate1DTemplate<TcoordType> &coord)
+GridCoordinate2DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST expand (const GridCoordinate1DTemplate<TcoordType> &coord)
 {
   TcoordType x = coord.GridCoordinate1DTemplate<TcoordType>::getX ();
   return GridCoordinate2DTemplate<TcoordType> (x, 0);

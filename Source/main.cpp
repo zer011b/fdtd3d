@@ -38,9 +38,9 @@ int main (int argc, char** argv)
   solverSettings.SetupFromCmd (argc, argv);
 
 #ifdef GRID_2D
-  GridCoordinate3D overallSize (solverSettings.getSizeX (), solverSettings.getSizeY ());
-  GridCoordinate3D pmlSize (solverSettings.getPMLSizeX (), solverSettings.getPMLSizeY ());
-  GridCoordinate3D tfsfSize (solverSettings.getTFSFSizeX (), solverSettings.getTFSFSizeY ());
+  GridCoordinate3D overallSize (solverSettings.getSizeX (), solverSettings.getSizeY (), 0);
+  GridCoordinate3D pmlSize (solverSettings.getPMLSizeX (), solverSettings.getPMLSizeY (), 0);
+  GridCoordinate3D tfsfSize (solverSettings.getTFSFSizeX (), solverSettings.getTFSFSizeY (), 0);
 #endif
 #ifdef GRID_3D
   GridCoordinate3D overallSize (solverSettings.getSizeX (), solverSettings.getSizeY (), solverSettings.getSizeZ ());

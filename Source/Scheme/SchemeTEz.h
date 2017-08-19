@@ -125,20 +125,20 @@ public:
              FPValue angleIncWave = 0.0,
              bool doDumpRes = false) :
     yeeLayout (layout),
-    Ex (shrinkCoord (layout->getExSize ()), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode ()),
-    Ey (shrinkCoord (layout->getEySize ()), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode ()),
-    Hz (shrinkCoord (layout->getHzSize ()), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode ()),
-    Dx (shrinkCoord (layout->getExSize ()), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode ()),
-    Dy (shrinkCoord (layout->getEySize ()), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode ()),
-    Bz (shrinkCoord (layout->getHzSize ()), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode ()),
-    ExAmplitude (shrinkCoord (layout->getExSize ()), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode ()),
-    EyAmplitude (shrinkCoord (layout->getEySize ()), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode ()),
-    HzAmplitude (shrinkCoord (layout->getHzSize ()), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode ()),
-    Eps (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
-    Mu (shrinkCoord (layout->getMuSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getMuSizeForCurNode (), layout->getMuCoreSizePerNode ()),
-    SigmaX (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
-    SigmaY (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
-    SigmaZ (shrinkCoord (layout->getEpsSize ()), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
+    Ex (layout->getExSize ().shrink (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode ()),
+    Ey (layout->getEySize ().shrink (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode ()),
+    Hz (layout->getHzSize ().shrink (), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode ()),
+    Dx (layout->getExSize ().shrink (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode ()),
+    Dy (layout->getEySize ().shrink (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode ()),
+    Bz (layout->getHzSize ().shrink (), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode ()),
+    ExAmplitude (layout->getExSize ().shrink (), bufSize, 0, layout->getExSizeForCurNode (), layout->getExCoreSizePerNode ()),
+    EyAmplitude (layout->getEySize ().shrink (), bufSize, 0, layout->getEySizeForCurNode (), layout->getEyCoreSizePerNode ()),
+    HzAmplitude (layout->getHzSize ().shrink (), bufSize, 0, layout->getHzSizeForCurNode (), layout->getHzCoreSizePerNode ()),
+    Eps (layout->getEpsSize ().shrink (), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
+    Mu (layout->getMuSize ().shrink (), bufSize + GridCoordinate2D (1, 1), 0, layout->getMuSizeForCurNode (), layout->getMuCoreSizePerNode ()),
+    SigmaX (layout->getEpsSize ().shrink (), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
+    SigmaY (layout->getEpsSize ().shrink (), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
+    SigmaZ (layout->getEpsSize ().shrink (), bufSize + GridCoordinate2D (1, 1), 0, layout->getEpsSizeForCurNode (), layout->getEpsCoreSizePerNode ()),
     sourceWaveLength (0),
     sourceFrequency (0),
     courantNum (0),
@@ -164,20 +164,20 @@ public:
              FPValue angleIncWave = 0.0,
              bool doDumpRes = false) :
     yeeLayout (layout),
-    Ex (shrinkCoord (layout->getExSize ()), 0),
-    Ey (shrinkCoord (layout->getEySize ()), 0),
-    Hz (shrinkCoord (layout->getHzSize ()), 0),
-    Dx (shrinkCoord (layout->getExSize ()), 0),
-    Dy (shrinkCoord (layout->getEySize ()), 0),
-    Bz (shrinkCoord (layout->getHzSize ()), 0),
-    ExAmplitude (shrinkCoord (layout->getExSize ()), 0),
-    EyAmplitude (shrinkCoord (layout->getEySize ()), 0),
-    HzAmplitude (shrinkCoord (layout->getHzSize ()), 0),
-    Eps (shrinkCoord (layout->getEpsSize ()), 0),
-    Mu (shrinkCoord (layout->getMuSize ()), 0),
-    SigmaX (shrinkCoord (layout->getEpsSize ()), 0),
-    SigmaY (shrinkCoord (layout->getEpsSize ()), 0),
-    SigmaZ (shrinkCoord (layout->getEpsSize ()), 0),
+    Ex (layout->getExSize ().shrink (), 0),
+    Ey (layout->getEySize ().shrink (), 0),
+    Hz (layout->getHzSize ().shrink (), 0),
+    Dx (layout->getExSize ().shrink (), 0),
+    Dy (layout->getEySize ().shrink (), 0),
+    Bz (layout->getHzSize ().shrink (), 0),
+    ExAmplitude (layout->getExSize ().shrink (), 0),
+    EyAmplitude (layout->getEySize ().shrink (), 0),
+    HzAmplitude (layout->getHzSize ().shrink (), 0),
+    Eps (layout->getEpsSize ().shrink (), 0),
+    Mu (layout->getMuSize ().shrink (), 0),
+    SigmaX (layout->getEpsSize ().shrink (), 0),
+    SigmaY (layout->getEpsSize ().shrink (), 0),
+    SigmaZ (layout->getEpsSize ().shrink (), 0),
     sourceWaveLength (0),
     sourceFrequency (0),
     courantNum (0),
@@ -199,9 +199,9 @@ public:
                 && (yeeLayout->getIncidentWaveAngle1 () == PhysicsConst::Pi / 2
                     && (incidentWaveAngle == PhysicsConst::Pi / 4 || incidentWaveAngle == 0)
                     && yeeLayout->getIncidentWaveAngle3 () == 0)
-                && shrinkCoord (yeeLayout->getSizeTFSF ()) != GridCoordinate2D (0, 0)));
+                && yeeLayout->getSizeTFSF ().shrink () != GridCoordinate2D (0, 0)));
 
-    ASSERT (!doUsePML || (doUsePML && (shrinkCoord (yeeLayout->getSizePML ()) != GridCoordinate2D (0, 0))));
+    ASSERT (!doUsePML || (doUsePML && (yeeLayout->getSizePML ().shrink () != GridCoordinate2D (0, 0))));
 
     ASSERT (!calculateAmplitude || calculateAmplitude && amplitudeStepLimit != 0);
 
