@@ -111,19 +111,25 @@ public:
     return x <= rhs_x && getY () <= rhs.getY ();
   }
 
-  GridCoordinate2DTemplate CUDA_DEVICE CUDA_HOST operator- () const
+  GridCoordinate2DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator- () const
   {
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
-    return GridCoordinate2DTemplate (- x, - getY ());
+    return GridCoordinate2DTemplate<TcoordType> (- x, - getY ());
   }
 
-  GridCoordinate2DTemplate CUDA_DEVICE CUDA_HOST operator* (TcoordType rhs) const
+  GridCoordinate2DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType rhs) const
   {
     TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
-    return GridCoordinate2DTemplate (x * rhs, getY () * rhs);
+    return GridCoordinate2DTemplate<TcoordType> (x * rhs, getY () * rhs);
   }
 
   friend GridCoordinate2DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST (::operator* <TcoordType>) (TcoordType lhs, const GridCoordinate2DTemplate<TcoordType>& rhs);
+
+  GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST shrink () const
+  {
+    TcoordType x = GridCoordinate1DTemplate<TcoordType>::getX ();
+    return GridCoordinate1DTemplate<TcoordType> (x);
+  }
 };
 
 template<class TcoordType>
@@ -133,7 +139,17 @@ GridCoordinate2DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType
   return GridCoordinate2DTemplate<TcoordType> (lhs * x, lhs * rhs.getY ());
 }
 
+template<class TcoordType>
+GridCoordinate2DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST expand (GridCoordinate1DTemplate<TcoordType> &coord)
+{
+  TcoordType x = coord.GridCoordinate1DTemplate<TcoordType>::getX ();
+  return GridCoordinate2DTemplate<TcoordType> (x, 0);
+}
+
 typedef GridCoordinate2DTemplate<grid_iter> GridCoordinate2D;
 typedef GridCoordinate2DTemplate<FPValue> GridCoordinateFP2D;
+
+GridCoordinate2D CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinateFP2D coord);
+GridCoordinateFP2D CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinate2D coord);
 
 #endif /* GRID_COORDINATE_2D_H */
