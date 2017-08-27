@@ -88,6 +88,8 @@ class Scheme3D: public Scheme
   GridCoordinate3D leftNTFF;
   GridCoordinate3D rightNTFF;
 
+  Dumper<GridCoordinate3D> *dumper;
+
 private:
 
   void calculateExStep (time_step, GridCoordinate3D, GridCoordinate3D);

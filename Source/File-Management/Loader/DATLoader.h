@@ -14,12 +14,12 @@ template <class TCoord>
 class DATLoader: public Loader<TCoord>
 {
   // Load grid from file for specific layer.
-  void loadFromFile (Grid<TCoord> &grid, GridFileType type) const;
+  void loadFromFile (Grid<TCoord> *grid, GridFileType type) const;
 
 public:
 
   // Virtual method for grid loading.
-  virtual void loadGrid (Grid<TCoord> &grid) const CXX11_OVERRIDE;
+  virtual void loadGrid (Grid<TCoord> *grid) const CXX11_OVERRIDE;
 };
 
 /**
@@ -31,40 +31,28 @@ public:
  */
 template <class TCoord>
 void
-DATLoader<TCoord>::loadFromFile (Grid<TCoord> &grid, GridFileType type) const
+DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid, GridFileType type) const
 {
   std::ifstream file;
   switch (type)
   {
     case CURRENT:
     {
-#ifdef CXX11_ENABLED
-      std::string cur_dat = GridFileManager::cur + std::string (".dat");
-#else
       std::string cur_dat = this->GridFileManager::cur + std::string (".dat");
-#endif
       file.open (cur_dat.c_str (), std::ios::in | std::ios::binary);
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-#ifdef CXX11_ENABLED
-      std::string prev_dat = GridFileManager::prev + std::string (".dat");
-#else
       std::string prev_dat = this->GridFileManager::prev + std::string (".dat");
-#endif
       file.open (prev_dat.c_str (), std::ios::in | std::ios::binary);
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-#ifdef CXX11_ENABLED
-      std::string prevPrev_dat = GridFileManager::prevPrev + std::string (".dat");
-#else
       std::string prevPrev_dat = this->GridFileManager::prevPrev + std::string (".dat");
-#endif
       file.open (prevPrev_dat.c_str (), std::ios::in | std::ios::binary);
       break;
     }
@@ -81,11 +69,11 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> &grid, GridFileType type) const
   char* memblock = new char [sizeof (FieldValue)];
 
   // Go through all values and write to file.
-  grid_iter end = grid.getSize().calculateTotalCoord ();
+  grid_iter end = grid->getSize().calculateTotalCoord ();
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    FieldPointValue* current = grid.getFieldPointValue (iter);
+    FieldPointValue* current = grid->getFieldPointValue (iter);
     ASSERT (current);
 
     switch (type)
@@ -93,6 +81,8 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> &grid, GridFileType type) const
       case CURRENT:
       {
         file.read (memblock, sizeof (FieldValue));
+        ASSERT (file.rdstate() & std::ifstream::failbit == 0);
+
         current->setCurValue (*((FieldValue*) memblock));
         break;
       }
@@ -100,6 +90,8 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> &grid, GridFileType type) const
       case PREVIOUS:
       {
         file.read (memblock, sizeof (FieldValue));
+        ASSERT (file.rdstate() & std::ifstream::failbit == 0);
+
         current->setPrevValue (*((FieldValue*) memblock));
         break;
       }
@@ -107,6 +99,8 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> &grid, GridFileType type) const
       case PREVIOUS2:
       {
         file.read (memblock, sizeof (FieldValue));
+        ASSERT (file.rdstate() & std::ifstream::failbit == 0);
+
         current->setPrevPrevValue (*((FieldValue*) memblock));
         break;
       }
@@ -119,6 +113,8 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> &grid, GridFileType type) const
     }
   }
 
+  ASSERT (file.eof());
+
   delete[] memblock;
 
   file.close();
@@ -129,27 +125,19 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> &grid, GridFileType type) const
  */
 template <class TCoord>
 void
-DATLoader<TCoord>::loadGrid (Grid<TCoord> &grid) const
+DATLoader<TCoord>::loadGrid (Grid<TCoord> *grid) const
 {
-  const TCoord& size = grid.getSize ();
+  const TCoord& size = grid->getSize ();
   std::cout << "Load grid from binary. Size: " << size.calculateTotalCoord () << ". " << std::endl;
 
   loadFromFile (grid, CURRENT);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-#ifdef CXX11_ENABLED
-  if (GridFileManager::type == ALL)
-#else
   if (this->GridFileManager::type == ALL)
-#endif
   {
     loadFromFile (grid, PREVIOUS);
   }
 #if defined (TWO_TIME_STEPS)
-#ifdef CXX11_ENABLED
-  if (GridFileManager::type == ALL)
-#else
   if (this->GridFileManager::type == ALL)
-#endif
   {
     loadFromFile (grid, PREVIOUS2);
   }

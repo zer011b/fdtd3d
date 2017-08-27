@@ -23,17 +23,22 @@ class BMPLoader: public Loader<TCoord>
 private:
 
   // Load grid from file for specific layer.
-  void loadFromFile (Grid<TCoord> &grid, GridFileType load_type) const;
+  void loadFromFile (Grid<TCoord> *grid, GridFileType load_type) const;
 
   // Load grid from file for all layers.
-  void loadFromFile (Grid<TCoord> &grid) const;
+  void loadFromFile (Grid<TCoord> *grid) const;
 
 public:
 
   virtual ~BMPLoader () {}
 
   // Virtual method for grid loading.
-  virtual void loadGrid (Grid<TCoord> &grid) const CXX11_OVERRIDE;
+  virtual void loadGrid (Grid<TCoord> *grid) const CXX11_OVERRIDE;
+
+  void initializeHelper (PaletteType colorPalette, OrthogonalAxis orthAxis)
+  {
+    BMPhelper.initialize (colorPalette, orthAxis);
+  }
 
   // Setter and getter for maximum positive value.
   void setMaxValuePos (FieldPointValue& value)
@@ -65,24 +70,16 @@ public:
  */
 template <class TCoord>
 void
-BMPLoader<TCoord>::loadFromFile (Grid<TCoord> &grid) const
+BMPLoader<TCoord>::loadFromFile (Grid<TCoord> *grid) const
 {
   loadFromFile (grid, CURRENT);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-#ifdef CXX11_ENABLED
-  if (GridFileManager::type == ALL)
-#else
   if (this->GridFileManager::type == ALL)
-#endif
   {
     loadFromFile (grid, PREVIOUS);
   }
 #if defined (TWO_TIME_STEPS)
-#ifdef CXX11_ENABLED
-  if (GridFileManager::type == ALL)
-#else
   if (this->GridFileManager::type == ALL)
-#endif
   {
     loadFromFile (grid, PREVIOUS2);
   }

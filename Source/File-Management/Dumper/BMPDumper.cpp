@@ -7,15 +7,15 @@
  */
 template<>
 void
-BMPDumper<GridCoordinate1D>::dumpGrid (Grid<GridCoordinate1D> &grid,
+BMPDumper<GridCoordinate1D>::dumpGrid (Grid<GridCoordinate1D> *grid,
                                        GridCoordinate1D startCoord,
                                        GridCoordinate1D endCoord) const
 {
 #if PRINT_MESSAGE
-  const GridCoordinate1D& size = grid.getSize ();
+  const GridCoordinate1D& size = grid->getSize ();
 
   grid_coord sx = size.getX ();
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 1D Grid <%s> to BMP image. Size: %ux1x1\n", grid.getName ().c_str (), sx);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 1D Grid <%s> to BMP image. Size: %ux1x1\n", grid->getName ().c_str (), sx);
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);
@@ -28,17 +28,17 @@ BMPDumper<GridCoordinate1D>::dumpGrid (Grid<GridCoordinate1D> &grid,
  */
 template<>
 void
-BMPDumper<GridCoordinate2D>::dumpGrid (Grid<GridCoordinate2D> &grid,
+BMPDumper<GridCoordinate2D>::dumpGrid (Grid<GridCoordinate2D> *grid,
                                        GridCoordinate2D startCoord,
                                        GridCoordinate2D endCoord) const
 {
 #if PRINT_MESSAGE
-  const GridCoordinate2D& size = grid.getSize ();
+  const GridCoordinate2D& size = grid->getSize ();
 
   grid_coord sx = size.getX ();
   grid_coord sy = size.getY ();
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 2D Grid <%s> to BMP image. Size: %ux%ux1\n", grid.getName ().c_str (), sx, sy);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 2D Grid <%s> to BMP image. Size: %ux%ux1\n", grid->getName ().c_str (), sx, sy);
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);
@@ -51,19 +51,19 @@ BMPDumper<GridCoordinate2D>::dumpGrid (Grid<GridCoordinate2D> &grid,
  */
 template<>
 void
-BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> &grid,
+BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> *grid,
                                        GridCoordinate3D startCoord,
                                        GridCoordinate3D endCoord) const
 {
 //  ASSERT_MESSAGE ("3D Dumper is not implemented.")
 #if PRINT_MESSAGE
-  const GridCoordinate3D& size = grid.getSize ();
+  const GridCoordinate3D& size = grid->getSize ();
 
   grid_coord sx = size.getX ();
   grid_coord sy = size.getY ();
   grid_coord sz = size.getZ ();
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 2D Grid <%s> to BMP image. Size: %ux%ux%u\n", grid.getName ().c_str (), sx, sy, sz);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 2D Grid <%s> to BMP image. Size: %ux%ux%u\n", grid->getName ().c_str (), sx, sy, sz);
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);
@@ -76,9 +76,9 @@ BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> &grid,
  */
 template<>
 void
-BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFileType dump_type, GridCoordinate1D startCoord, GridCoordinate1D endCoord) const
+BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFileType dump_type, GridCoordinate1D startCoord, GridCoordinate1D endCoord) const
 {
-  const GridCoordinate1D& size = grid.getSize ();
+  const GridCoordinate1D& size = grid->getSize ();
   grid_coord sx = size.getX ();
   grid_coord sy = 1;
 
@@ -97,7 +97,7 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
   imageMod.SetBitDepth (24);
 #endif /* COMPLEX_FIELD_VALUES */
 
-  const FieldPointValue* value0 = grid.getFieldPointValue (startCoord);
+  const FieldPointValue* value0 = grid->getFieldPointValue (startCoord);
   ASSERT (value0);
 
   FPValue maxPosRe = 0;
@@ -165,7 +165,7 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
   // Go through all values and calculate max/min.
   for (grid_coord i = startCoord.getX (); i < endCoord.getX (); ++i)
   {
-    const FieldPointValue* current = grid.getFieldPointValue (GridCoordinate1D (i));
+    const FieldPointValue* current = grid->getFieldPointValue (GridCoordinate1D (i));
 
     ASSERT (current);
 
@@ -276,7 +276,7 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
   {
     // Get current point value.
     GridCoordinate1D coord (i);
-    const FieldPointValue* current = grid.getFieldPointValue (coord);
+    const FieldPointValue* current = grid->getFieldPointValue (coord);
     ASSERT (current);
 
     // Pixel coordinate.
@@ -425,9 +425,9 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> &grid, GridFile
  */
 template<>
 void
-BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFileType dump_type, GridCoordinate2D startCoord, GridCoordinate2D endCoord) const
+BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFileType dump_type, GridCoordinate2D startCoord, GridCoordinate2D endCoord) const
 {
-  const GridCoordinate2D& size = grid.getSize ();
+  const GridCoordinate2D& size = grid->getSize ();
   grid_coord sx = size.getX ();
   grid_coord sy = size.getY ();;
 
@@ -446,7 +446,7 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
   imageMod.SetBitDepth (24);
 #endif /* COMPLEX_FIELD_VALUES */
 
-  const FieldPointValue* value0 = grid.getFieldPointValue (startCoord);
+  const FieldPointValue* value0 = grid->getFieldPointValue (startCoord);
   ASSERT (value0);
 
   FPValue maxPosRe = 0;
@@ -516,7 +516,7 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
   {
     for (grid_coord j = startCoord.getY (); j < endCoord.getY (); ++j)
     {
-      const FieldPointValue* current = grid.getFieldPointValue (GridCoordinate2D (i, j));
+      const FieldPointValue* current = grid->getFieldPointValue (GridCoordinate2D (i, j));
 
       ASSERT (current);
 
@@ -631,7 +631,7 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
       GridCoordinate2D coord (i, j);
 
       // Get current point value.
-      const FieldPointValue* current = grid.getFieldPointValue (coord);
+      const FieldPointValue* current = grid->getFieldPointValue (coord);
       ASSERT (current);
 
       // Pixel coordinate.
@@ -781,16 +781,16 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> &grid, GridFile
  */
 template<>
 void
-BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFileType dump_type, GridCoordinate3D startCoord, GridCoordinate3D endCoord) const
+BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFileType dump_type, GridCoordinate3D startCoord, GridCoordinate3D endCoord) const
 {
 //  ASSERT_MESSAGE ("3D Dumper is not implemented.")
 
-  const GridCoordinate3D& size = grid.getSize ();
+  const GridCoordinate3D& size = grid->getSize ();
   grid_coord sx = size.getX ();
   grid_coord sy = size.getY ();
   grid_coord sz = size.getZ ();
 
-  const FieldPointValue* value0 = grid.getFieldPointValue (startCoord);
+  const FieldPointValue* value0 = grid->getFieldPointValue (startCoord);
   ASSERT (value0);
 
   FPValue maxPosRe = 0;
@@ -862,7 +862,7 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
     {
       for (grid_coord k = startCoord.getZ (); k < endCoord.getZ (); ++k)
       {
-        const FieldPointValue* current = grid.getFieldPointValue (GridCoordinate3D (i, j, k));
+        const FieldPointValue* current = grid->getFieldPointValue (GridCoordinate3D (i, j, k));
 
         ASSERT (current);
 
@@ -1058,7 +1058,7 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> &grid, GridFile
         }
 
         // Get current point value.
-        const FieldPointValue* current = grid.getFieldPointValue (pos);
+        const FieldPointValue* current = grid->getFieldPointValue (pos);
         ASSERT (current);
 
         // Get pixel for image.

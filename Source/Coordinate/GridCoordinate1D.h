@@ -2,6 +2,7 @@
 #define GRID_COORDINATE_1D_H
 
 #include "FieldValue.h"
+#include "Settings.h"
 
 template<class TcoordType>
 class GridCoordinate1DTemplate;

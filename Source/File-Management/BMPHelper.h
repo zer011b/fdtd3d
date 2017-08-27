@@ -3,74 +3,19 @@
 
 #include "EasyBMP.h"
 #include "FieldPoint.h"
+#include "Assert.h"
+#include "Settings.h"
 
-#ifdef CXX11_ENABLED
-
-enum class PaletteType: uint32_t
-{
+ENUM_CLASS (PaletteType, uint8_t,
   PALETTE_BLUE_GREEN_RED,
   PALETTE_GRAY
-};
+);
 
-enum class OrthogonalAxis: uint32_t
-{
+ENUM_CLASS (OrthogonalAxis, uint8_t,
   X,
   Y,
   Z
-};
-
-#else /* CXX11_ENABLED */
-
-class PaletteType
-{
-public:
-  enum PaletteTypeEnum
-  {
-    PALETTE_BLUE_GREEN_RED,
-    PALETTE_GRAY
-  };
-
-  PaletteType (PaletteTypeEnum new_type)
-    : paletteType (new_type)
-  {
-  }
-
-  operator int ()
-  {
-    return paletteType;
-  }
-
-private:
-
-  PaletteTypeEnum paletteType;
-};
-
-class OrthogonalAxis
-{
-public:
-  enum OrthogonalAxisEnum
-  {
-    X,
-    Y,
-    Z
-  };
-
-  OrthogonalAxis (OrthogonalAxisEnum new_axis)
-    : orthogonalAxis (new_axis)
-  {
-  }
-
-  operator int ()
-  {
-    return orthogonalAxis;
-  }
-
-private:
-
-  OrthogonalAxisEnum orthogonalAxis;
-};
-
-#endif /* !CXX11_ENABLED */
+);
 
 /**
  * Class to statically include in BMPLoader and BMPDumper.
@@ -99,11 +44,20 @@ private:
 
 public:
 
+  BMPHelper () {}
+
   BMPHelper (PaletteType colorPalette,
              OrthogonalAxis orthAxis)
     : palette (colorPalette)
   , orthogonalAxis (orthAxis)
   {
+  }
+
+  void initialize (PaletteType colorPalette,
+                   OrthogonalAxis orthAxis)
+  {
+    palette = colorPalette;
+    orthogonalAxis = orthAxis;
   }
 
   // Return value with values according to colors of pixel.

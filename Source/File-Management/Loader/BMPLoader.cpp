@@ -7,10 +7,10 @@
  */
 template<>
 void
-BMPLoader<GridCoordinate1D>::loadGrid (Grid<GridCoordinate1D> &grid) const
+BMPLoader<GridCoordinate1D>::loadGrid (Grid<GridCoordinate1D> *grid) const
 {
 #if PRINT_MESSAGE
-  const GridCoordinate1D& size = grid.getSize ();
+  const GridCoordinate1D& size = grid->getSize ();
   grid_coord sx = size.getX ();
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Loading 1D from BMP image. Size: %ux1x1\n", sx);
@@ -26,10 +26,10 @@ BMPLoader<GridCoordinate1D>::loadGrid (Grid<GridCoordinate1D> &grid) const
  */
 template<>
 void
-BMPLoader<GridCoordinate2D>::loadGrid (Grid<GridCoordinate2D> &grid) const
+BMPLoader<GridCoordinate2D>::loadGrid (Grid<GridCoordinate2D> *grid) const
 {
 #if PRINT_MESSAGE
-  const GridCoordinate2D& size = grid.getSize ();
+  const GridCoordinate2D& size = grid->getSize ();
   grid_coord sx = size.getX ();
   grid_coord sy = size.getY ();
 
@@ -46,7 +46,7 @@ BMPLoader<GridCoordinate2D>::loadGrid (Grid<GridCoordinate2D> &grid) const
  */
 template<>
 void
-BMPLoader<GridCoordinate3D>::loadGrid (Grid<GridCoordinate3D> &grid) const
+BMPLoader<GridCoordinate3D>::loadGrid (Grid<GridCoordinate3D> *grid) const
 {
   ASSERT_MESSAGE ("3D loader is not implemented.")
 }
@@ -56,9 +56,9 @@ BMPLoader<GridCoordinate3D>::loadGrid (Grid<GridCoordinate3D> &grid) const
  */
 template<>
 void
-BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> &grid, GridFileType load_type) const
+BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid, GridFileType load_type) const
 {
-  const GridCoordinate1D& size = grid.getSize ();
+  const GridCoordinate1D& size = grid->getSize ();
   grid_coord sx = size.getX ();
   grid_coord sy = 1;
 
@@ -166,15 +166,15 @@ BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> &grid, GridFil
   }
 
   // Go through all values and set them.
-  grid_iter end = grid.getSize().calculateTotalCoord ();
+  grid_iter end = grid->getSize().calculateTotalCoord ();
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    FieldPointValue* current = grid.getFieldPointValue (iter);
+    FieldPointValue* current = grid->getFieldPointValue (iter);
     ASSERT (current);
 
     // Calculate its position from index in array.
-    GridCoordinate1D coord = grid.calculatePositionFromIndex (iter);
+    GridCoordinate1D coord = grid->calculatePositionFromIndex (iter);
 
     // Pixel coordinate.
     grid_iter px = coord.getX ();
@@ -240,9 +240,9 @@ BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> &grid, GridFil
  */
 template<>
 void
-BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> &grid, GridFileType load_type) const
+BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid, GridFileType load_type) const
 {
-  const GridCoordinate2D& size = grid.getSize ();
+  const GridCoordinate2D& size = grid->getSize ();
   grid_coord sx = size.getX ();
   grid_coord sy = size.getY ();
 
@@ -350,15 +350,15 @@ BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> &grid, GridFil
   }
 
   // Go through all values and set them.
-  grid_iter end = grid.getSize().calculateTotalCoord ();
+  grid_iter end = grid->getSize().calculateTotalCoord ();
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    FieldPointValue* current = grid.getFieldPointValue (iter);
+    FieldPointValue* current = grid->getFieldPointValue (iter);
     ASSERT (current);
 
     // Calculate its position from index in array.
-    GridCoordinate2D coord = grid.calculatePositionFromIndex (iter);
+    GridCoordinate2D coord = grid->calculatePositionFromIndex (iter);
 
     // Pixel coordinate.
     grid_iter px = coord.getX ();
@@ -424,7 +424,7 @@ BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> &grid, GridFil
  */
 template<>
 void
-BMPLoader<GridCoordinate3D>::loadFromFile (Grid<GridCoordinate3D> &grid, GridFileType load_type) const
+BMPLoader<GridCoordinate3D>::loadFromFile (Grid<GridCoordinate3D> *grid, GridFileType load_type) const
 {
   ASSERT_MESSAGE ("3D loader is not implemented.")
 }

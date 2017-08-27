@@ -76,6 +76,7 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
   , totalStep (tStep)
   , leftNTFF (GridCoordinate3D (solverSettings.getNTFFSizeX (), solverSettings.getNTFFSizeY (), solverSettings.getNTFFSizeZ ()))
   , rightNTFF (layout->getEzSize () - leftNTFF + GridCoordinate3D (1,1,1))
+  , dumper (NULLPTR)
 {
   if (solverSettings.getDoUseParallelGrid ())
   {
@@ -214,6 +215,66 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
 #ifdef COMPLEX_FIELD_VALUES
   ASSERT (!solverSettings.getDoUseAmplitudeMode ());
 #endif /* COMPLEX_FIELD_VALUES */
+
+  if (solverSettings.getDoSaveAsBMP ())
+  {
+    dumper = new BMPDumper<GridCoordinate3D> ();
+
+    PaletteType palette;
+    OrthogonalAxis orthogonalAxis;
+
+    if (solverSettings.getDoUsePaletteGray ())
+    {
+      palette = PaletteType::PALETTE_GRAY;
+    }
+    else if (solverSettings.getDoUsePaletteRGB ())
+    {
+      palette = PaletteType::PALETTE_BLUE_GREEN_RED;
+    }
+    else
+    {
+      UNREACHABLE;
+    }
+
+    if (solverSettings.getDoUseOrthAxisX ())
+    {
+      orthogonalAxis = OrthogonalAxis::X;
+    }
+    else if (solverSettings.getDoUseOrthAxisY ())
+    {
+      orthogonalAxis = OrthogonalAxis::Y;
+    }
+    else if (solverSettings.getDoUseOrthAxisZ ())
+    {
+      orthogonalAxis = OrthogonalAxis::Z;
+    }
+    else
+    {
+      UNREACHABLE;
+    }
+
+    ((BMPDumper<GridCoordinate3D> *) dumper)->initializeHelper (palette, orthogonalAxis);
+  }
+  else if (solverSettings.getDoSaveAsDAT ())
+  {
+    dumper = new DATDumper<GridCoordinate3D> ();
+  }
+  else if (solverSettings.getDoSaveAsTXT ())
+  {
+    dumper = new TXTDumper<GridCoordinate3D> ();
+  }
+  else
+  {
+    UNREACHABLE;
+  }
+
+  if (!dumper)
+  {
+    /*
+     * Default dumper is .dat
+     */
+    dumper = new DATDumper<GridCoordinate3D> ();
+  }
 }
 
 Scheme3D::~Scheme3D ()
@@ -289,6 +350,8 @@ Scheme3D::~Scheme3D ()
     delete totalHy;
     delete totalHz;
   }
+
+  delete dumper;
 }
 
 void
@@ -3059,57 +3122,55 @@ Scheme3D::initGrids ()
 
   if (solverSettings.getDoSaveMaterials ())
   {
-    BMPDumper<GridCoordinate3D> dumper;
+    dumper->init (0, CURRENT, processId, "Eps");
+    dumper->dumpGrid (Eps,
+                      GridCoordinate3D (0, 0, Eps->getSize ().getZ () / 2),
+                      GridCoordinate3D (Eps->getSize ().getX (), Eps->getSize ().getY (), Eps->getSize ().getZ () / 2 + 1));
 
-    dumper.init (0, CURRENT, processId, "Eps");
-    dumper.dumpGrid (*Eps,
-                     GridCoordinate3D (0, 0, Eps->getSize ().getZ () / 2),
-                     GridCoordinate3D (Eps->getSize ().getX (), Eps->getSize ().getY (), Eps->getSize ().getZ () / 2 + 1));
-
-    dumper.init (0, CURRENT, processId, "Mu");
-    dumper.dumpGrid (*Mu,
-                     GridCoordinate3D (0, 0, Mu->getSize ().getZ () / 2),
-                     GridCoordinate3D (Mu->getSize ().getX (), Mu->getSize ().getY (), Mu->getSize ().getZ () / 2 + 1));
+    dumper->init (0, CURRENT, processId, "Mu");
+    dumper->dumpGrid (Mu,
+                      GridCoordinate3D (0, 0, Mu->getSize ().getZ () / 2),
+                      GridCoordinate3D (Mu->getSize ().getX (), Mu->getSize ().getY (), Mu->getSize ().getZ () / 2 + 1));
 
     if (solverSettings.getDoUseMetamaterials ())
     {
-      dumper.init (0, CURRENT, processId, "OmegaPE");
-      dumper.dumpGrid (*OmegaPE,
-                       GridCoordinate3D (0, 0, OmegaPE->getSize ().getZ () / 2),
-                       GridCoordinate3D (OmegaPE->getSize ().getX (), OmegaPE->getSize ().getY (), OmegaPE->getSize ().getZ () / 2 + 1));
+      dumper->init (0, CURRENT, processId, "OmegaPE");
+      dumper->dumpGrid (OmegaPE,
+                        GridCoordinate3D (0, 0, OmegaPE->getSize ().getZ () / 2),
+                        GridCoordinate3D (OmegaPE->getSize ().getX (), OmegaPE->getSize ().getY (), OmegaPE->getSize ().getZ () / 2 + 1));
 
-      dumper.init (0, CURRENT, processId, "OmegaPM");
-      dumper.dumpGrid (*OmegaPM,
-                       GridCoordinate3D (0, 0, OmegaPM->getSize ().getZ () / 2),
-                       GridCoordinate3D (OmegaPM->getSize ().getX (), OmegaPM->getSize ().getY (), OmegaPM->getSize ().getZ () / 2 + 1));
+      dumper->init (0, CURRENT, processId, "OmegaPM");
+      dumper->dumpGrid (OmegaPM,
+                        GridCoordinate3D (0, 0, OmegaPM->getSize ().getZ () / 2),
+                        GridCoordinate3D (OmegaPM->getSize ().getX (), OmegaPM->getSize ().getY (), OmegaPM->getSize ().getZ () / 2 + 1));
 
-      dumper.init (0, CURRENT, processId, "GammaE");
-      dumper.dumpGrid (*GammaE,
-                       GridCoordinate3D (0, 0, GammaE->getSize ().getZ () / 2),
-                       GridCoordinate3D (GammaE->getSize ().getX (), GammaE->getSize ().getY (), GammaE->getSize ().getZ () / 2 + 1));
+      dumper->init (0, CURRENT, processId, "GammaE");
+      dumper->dumpGrid (GammaE,
+                        GridCoordinate3D (0, 0, GammaE->getSize ().getZ () / 2),
+                        GridCoordinate3D (GammaE->getSize ().getX (), GammaE->getSize ().getY (), GammaE->getSize ().getZ () / 2 + 1));
 
-      dumper.init (0, CURRENT, processId, "GammaM");
-      dumper.dumpGrid (*GammaM,
-                       GridCoordinate3D (0, 0, GammaM->getSize ().getZ () / 2),
-                       GridCoordinate3D (GammaM->getSize ().getX (), GammaM->getSize ().getY (), GammaM->getSize ().getZ () / 2 + 1));
+      dumper->init (0, CURRENT, processId, "GammaM");
+      dumper->dumpGrid (GammaM,
+                        GridCoordinate3D (0, 0, GammaM->getSize ().getZ () / 2),
+                        GridCoordinate3D (GammaM->getSize ().getX (), GammaM->getSize ().getY (), GammaM->getSize ().getZ () / 2 + 1));
     }
 
     if (solverSettings.getDoUsePML ())
     {
-      dumper.init (0, CURRENT, processId, "SigmaX");
-      dumper.dumpGrid (*SigmaX,
-                       GridCoordinate3D (0, 0, SigmaX->getSize ().getZ () / 2),
-                       GridCoordinate3D (SigmaX->getSize ().getX (), SigmaX->getSize ().getY (), SigmaX->getSize ().getZ () / 2 + 1));
+      dumper->init (0, CURRENT, processId, "SigmaX");
+      dumper->dumpGrid (SigmaX,
+                        GridCoordinate3D (0, 0, SigmaX->getSize ().getZ () / 2),
+                        GridCoordinate3D (SigmaX->getSize ().getX (), SigmaX->getSize ().getY (), SigmaX->getSize ().getZ () / 2 + 1));
 
-      dumper.init (0, CURRENT, processId, "SigmaY");
-      dumper.dumpGrid (*SigmaY,
-                       GridCoordinate3D (0, 0, SigmaY->getSize ().getZ () / 2),
-                       GridCoordinate3D (SigmaY->getSize ().getX (), SigmaY->getSize ().getY (), SigmaY->getSize ().getZ () / 2 + 1));
+      dumper->init (0, CURRENT, processId, "SigmaY");
+      dumper->dumpGrid (SigmaY,
+                        GridCoordinate3D (0, 0, SigmaY->getSize ().getZ () / 2),
+                        GridCoordinate3D (SigmaY->getSize ().getX (), SigmaY->getSize ().getY (), SigmaY->getSize ().getZ () / 2 + 1));
 
-      dumper.init (0, CURRENT, processId, "SigmaZ");
-      dumper.dumpGrid (*SigmaZ,
-                       GridCoordinate3D (0, 0, SigmaZ->getSize ().getZ () / 2),
-                       GridCoordinate3D (SigmaZ->getSize ().getX (), SigmaZ->getSize ().getY (), SigmaZ->getSize ().getZ () / 2 + 1));
+      dumper->init (0, CURRENT, processId, "SigmaZ");
+      dumper->dumpGrid (SigmaZ,
+                        GridCoordinate3D (0, 0, SigmaZ->getSize ().getZ () / 2),
+                        GridCoordinate3D (SigmaZ->getSize ().getX (), SigmaZ->getSize ().getY (), SigmaZ->getSize ().getZ () / 2 + 1));
     }
   }
 
@@ -3859,25 +3920,23 @@ Scheme3D::saveGrids (time_step t)
                           grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinHzCoordFP ().getY ()),
                           Hz->getSize ().getZ () / 2);
 
-  BMPDumper<GridCoordinate3D> dumper;
+  dumper->init (t, CURRENT, processId, "3D-in-time-Ex");
+  dumper->dumpGrid (totalEx, startEx, endEx);
 
-  dumper.init (t, CURRENT, processId, "3D-in-time-Ex");
-  dumper.dumpGrid (*totalEx, startEx, endEx);
+  dumper->init (t, CURRENT, processId, "3D-in-time-Ey");
+  dumper->dumpGrid (totalEy, startEy, endEy);
 
-  dumper.init (t, CURRENT, processId, "3D-in-time-Ey");
-  dumper.dumpGrid (*totalEy, startEy, endEy);
+  dumper->init (t, CURRENT, processId, "3D-in-time-Ez");
+  dumper->dumpGrid (totalEz, startEz, endEz);
 
-  dumper.init (t, CURRENT, processId, "3D-in-time-Ez");
-  dumper.dumpGrid (*totalEz, startEz, endEz);
+  dumper->init (t, CURRENT, processId, "3D-in-time-Hx");
+  dumper->dumpGrid (totalHx, startHx, endHx);
 
-  dumper.init (t, CURRENT, processId, "3D-in-time-Hx");
-  dumper.dumpGrid (*totalHx, startHx, endHx);
+  dumper->init (t, CURRENT, processId, "3D-in-time-Hy");
+  dumper->dumpGrid (totalHy, startHy, endHy);
 
-  dumper.init (t, CURRENT, processId, "3D-in-time-Hy");
-  dumper.dumpGrid (*totalHy, startHy, endHy);
-
-  dumper.init (t, CURRENT, processId, "3D-in-time-Hz");
-  dumper.dumpGrid (*totalHz, startHz, endHz);
+  dumper->init (t, CURRENT, processId, "3D-in-time-Hz");
+  dumper->dumpGrid (totalHz, startHz, endHz);
 }
 
 void
