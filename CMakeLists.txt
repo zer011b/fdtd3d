@@ -49,8 +49,10 @@ endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   message ("Build type: ${CMAKE_BUILD_TYPE}.")
+  add_definitions (-DDEBUG_BUILD="")
 elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
   message ("Build type: ${CMAKE_BUILD_TYPE}.")
+  add_definitions (-DRELEASE_BUILD="")
 endif ()
 
 message ("C++ compiler: ${CMAKE_CXX_COMPILER}.")

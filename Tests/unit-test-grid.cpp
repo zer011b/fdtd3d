@@ -8,8 +8,7 @@
 #include "GridCoordinate3D.h"
 #include "YeeGridLayout.h"
 
-#ifdef CXX11_ENABLED
-#else /* CXX11_ENABLED */
+#ifndef CXX11_ENABLED
 #include "cstdlib"
 #endif /* !CXX11_ENABLED */
 

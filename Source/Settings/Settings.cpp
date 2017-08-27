@@ -4,8 +4,7 @@
 #include <fstream>
 #include <cstring>
 
-#ifdef CXX11_ENABLED
-#else
+#ifndef CXX11_ENABLED
 #include <stdlib.h>
 #endif
 

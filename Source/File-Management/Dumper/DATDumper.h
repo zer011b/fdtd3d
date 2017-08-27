@@ -14,12 +14,12 @@ template <class TCoord>
 class DATDumper: public Dumper<TCoord>
 {
   // Save grid to file for specific layer.
-  void writeToFile (Grid<TCoord> &grid, GridFileType type, TCoord, TCoord) const;
+  void writeToFile (Grid<TCoord> *grid, GridFileType type, TCoord, TCoord) const;
 
 public:
 
   // Virtual method for grid saving.
-  virtual void dumpGrid (Grid<TCoord> &grid, TCoord, TCoord) const CXX11_OVERRIDE;
+  virtual void dumpGrid (Grid<TCoord> *grid, TCoord, TCoord) const CXX11_OVERRIDE;
 };
 
 /**
@@ -31,7 +31,7 @@ public:
  */
 template <class TCoord>
 void
-DATDumper<TCoord>::writeToFile (Grid<TCoord> &grid, GridFileType type, TCoord startCoord, TCoord endCoord) const
+DATDumper<TCoord>::writeToFile (Grid<TCoord> *grid, GridFileType type, TCoord startCoord, TCoord endCoord) const
 {
   /**
    * FIXME: use startCoord and endCoord
@@ -41,33 +41,21 @@ DATDumper<TCoord>::writeToFile (Grid<TCoord> &grid, GridFileType type, TCoord st
   {
     case CURRENT:
     {
-#ifdef CXX11_ENABLED
-      std::string cur_dat = GridFileManager::cur + std::string (".dat");
-#else
       std::string cur_dat = this->GridFileManager::cur + std::string (".dat");
-#endif
       file.open (cur_dat.c_str (), std::ios::out | std::ios::binary);
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-#ifdef CXX11_ENABLED
-      std::string prev_dat = GridFileManager::prev + std::string (".dat");
-#else
       std::string prev_dat = this->GridFileManager::prev + std::string (".dat");
-#endif
       file.open (prev_dat.c_str (), std::ios::out | std::ios::binary);
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-#ifdef CXX11_ENABLED
-      std::string prevPrev_dat = GridFileManager::prevPrev + std::string (".dat");
-#else
       std::string prevPrev_dat = this->GridFileManager::prevPrev + std::string (".dat");
-#endif
       file.open (prevPrev_dat.c_str (), std::ios::out | std::ios::binary);
       break;
     }
@@ -82,11 +70,11 @@ DATDumper<TCoord>::writeToFile (Grid<TCoord> &grid, GridFileType type, TCoord st
   ASSERT (file.is_open());
 
   // Go through all values and write to file.
-  grid_iter end = grid.getSize().calculateTotalCoord ();
+  grid_iter end = grid->getSize().calculateTotalCoord ();
   for (grid_iter iter = 0; iter < end; ++iter)
   {
     // Get current point value.
-    const FieldPointValue* current = grid.getFieldPointValue (iter);
+    const FieldPointValue* current = grid->getFieldPointValue (iter);
     ASSERT (current);
 
     switch (type)
@@ -125,30 +113,22 @@ DATDumper<TCoord>::writeToFile (Grid<TCoord> &grid, GridFileType type, TCoord st
  */
 template <class TCoord>
 void
-DATDumper<TCoord>::dumpGrid (Grid<TCoord> &grid, TCoord startCoord, TCoord endCoord) const
+DATDumper<TCoord>::dumpGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord) const
 {
   /**
    * FIXME: use startCoord and endCoord
    */
-  const TCoord& size = grid.getSize ();
-  std::cout << "Saving grid to binary. Size: " << size.calculateTotalCoord () << ". " << std::endl;
+  const TCoord& size = grid->getSize ();
+  std::cout << "Saving grid '" << grid->getName () << "' to binary. Size: " << size.calculateTotalCoord () << ". " << std::endl;
 
   writeToFile (grid, CURRENT, startCoord, endCoord);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-#ifdef CXX11_ENABLED
-  if (GridFileManager::type == ALL)
-#else
   if (this->GridFileManager::type == ALL)
-#endif
   {
     writeToFile (grid, PREVIOUS, startCoord, endCoord);
   }
 #if defined (TWO_TIME_STEPS)
-#ifdef CXX11_ENABLED
-  if (GridFileManager::type == ALL)
-#else
   if (this->GridFileManager::type == ALL)
-#endif
   {
     writeToFile (grid, PREVIOUS2, startCoord, endCoord);
   }

@@ -20,7 +20,7 @@ public:
   virtual ~Loader () {}
 
   // Pure virtual method for grid loading.
-  virtual void loadGrid (Grid<TCoord> &grid) const = 0;
+  virtual void loadGrid (Grid<TCoord> *grid) const = 0;
 };
 
 #endif /* LOADER_H */

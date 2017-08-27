@@ -14,12 +14,12 @@ template <class TCoord>
 class TXTDumper: public Dumper<TCoord>
 {
   // Save grid to file for specific layer.
-  void writeToFile (Grid<TCoord> &grid, GridFileType type, TCoord, TCoord) const;
+  void writeToFile (Grid<TCoord> *grid, GridFileType type, TCoord, TCoord) const;
 
 public:
 
   // Virtual method for grid saving.
-  virtual void dumpGrid (Grid<TCoord> &grid, TCoord, TCoord) const CXX11_OVERRIDE;
+  virtual void dumpGrid (Grid<TCoord> *grid, TCoord, TCoord) const CXX11_OVERRIDE;
 };
 
 /**
@@ -31,30 +31,22 @@ public:
  */
 template <class TCoord>
 void
-TXTDumper<TCoord>::dumpGrid (Grid<TCoord> &grid, TCoord startCoord, TCoord endCoord) const
+TXTDumper<TCoord>::dumpGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord) const
 {
   /**
    * FIXME: use startCoord and endCoord
    */
-  const TCoord& size = grid.getSize ();
-  std::cout << "Saving grid to text. Size: " << size.calculateTotalCoord () << ". " << std::endl;
+  const TCoord& size = grid->getSize ();
+  std::cout << "Saving grid '" << grid->getName () << "' to text. Size: " << size.calculateTotalCoord () << ". " << std::endl;
 
   writeToFile (grid, CURRENT, startCoord, endCoord);
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-#ifdef CXX11_ENABLED
-  if (GridFileManager::type == ALL)
-#else
   if (this->GridFileManager::type == ALL)
-#endif
   {
     writeToFile (grid, PREVIOUS, startCoord, endCoord);
   }
 #if defined (TWO_TIME_STEPS)
-#ifdef CXX11_ENABLED
-  if (GridFileManager::type == ALL)
-#else
   if (this->GridFileManager::type == ALL)
-#endif
   {
     writeToFile (grid, PREVIOUS2, startCoord, endCoord);
   }
