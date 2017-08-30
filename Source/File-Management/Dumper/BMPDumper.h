@@ -7,6 +7,9 @@
 /**
  * Grid saver to BMP files.
  * Template class with coordinate parameter.
+ *
+ * NOTE: ".bmp" dumper/loader can't reproduce field values precisely.
+ *       Consequent dump to and load from ".bmp" file of grid will change grid values.
  */
 /*
  * FIXME: get rid of duplicate code for dump of 3d, 2d and 1d grids

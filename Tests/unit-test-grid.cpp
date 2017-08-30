@@ -6,7 +6,7 @@
 
 #include "Assert.h"
 #include "GridCoordinate3D.h"
-#include "YeeGridLayout.h"
+#include "Grid.h"
 
 #ifndef CXX11_ENABLED
 #include "cstdlib"
@@ -19,20 +19,8 @@ int main (int argc, char** argv)
   int gridSizeZ = 32;
 
   GridCoordinate1D overallSize1D (gridSizeX);
-  GridCoordinate1D pmlSize1D (10);
-  GridCoordinate1D tfsfSize1D (20);
-
   GridCoordinate2D overallSize2D (gridSizeX, gridSizeY);
-  GridCoordinate2D pmlSize2D (10, 10);
-  GridCoordinate2D tfsfSize2D (20, 20);
-
   GridCoordinate3D overallSize3D (gridSizeX, gridSizeY, gridSizeZ);
-  GridCoordinate3D pmlSize3D (10, 10, 10);
-  GridCoordinate3D tfsfSize3D (20, 20, 20);
-
-  bool isDoubleMaterialPrecision = false;
-
-  YeeGridLayout yeeLayout (overallSize3D, pmlSize3D, tfsfSize3D, PhysicsConst::Pi / 2, 0, 0, isDoubleMaterialPrecision);
 
   {
     Grid<GridCoordinate1D> grid1D (overallSize1D, 0);

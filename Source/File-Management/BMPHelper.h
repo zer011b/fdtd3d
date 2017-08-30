@@ -29,6 +29,11 @@ private:
 
   OrthogonalAxis orthogonalAxis;
 
+public:
+
+  static int bitDepth;
+  static int numColors;
+
 private:
 
   FPValue getValueFromPixelBlueGreenRed (const RGBApixel& pixel, const FPValue& maxNeg,
@@ -43,8 +48,6 @@ private:
                                    const FPValue& max);
 
 public:
-
-  BMPHelper () {}
 
   BMPHelper (PaletteType colorPalette,
              OrthogonalAxis orthAxis)

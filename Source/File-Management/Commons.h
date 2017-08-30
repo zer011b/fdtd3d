@@ -23,6 +23,14 @@ enum GridFileType
   ALL
 };
 
+enum FileType
+{
+  FILE_TYPE_BMP,
+  FILE_TYPE_DAT,
+  FILE_TYPE_TXT,
+  FILE_TYPE_COUNT
+};
+
 /**
  * Base class for all dumpers/loaders.
  */
@@ -98,6 +106,22 @@ public:
   {
     type = newType;
   }
+
+  void setFileNames (const std::string &current, const std::string &previous, const std::string &prevPrevious)
+  {
+    cur.clear ();
+    cur = current;
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+    prev.clear ();
+    prev = previous;
+#if defined (TWO_TIME_STEPS)
+    prevPrev.clear ();
+    prevPrev = prevPrevious;
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+  }
+
+  static FileType getFileType (const std::string &);
 };
 
 #endif /* COMMONS_H */

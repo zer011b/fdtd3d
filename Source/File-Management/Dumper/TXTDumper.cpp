@@ -1,3 +1,6 @@
+#include <iomanip>
+#include <limits>
+
 #include "TXTDumper.h"
 
 /**
@@ -42,6 +45,7 @@ TXTDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
   }
 
   ASSERT (file.is_open());
+  file << std::setprecision(std::numeric_limits<double>::digits10);
 
   // Go through all values and write to file.
   for (grid_coord i = 0; i < grid->getSize ().getX (); ++i)
@@ -92,8 +96,6 @@ TXTDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
         UNREACHABLE;
       }
     }
-
-    file << std::endl;
   }
 
   file.close();
@@ -138,6 +140,7 @@ TXTDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
   }
 
   ASSERT (file.is_open());
+  file << std::setprecision(std::numeric_limits<double>::digits10);
 
   // Go through all values and write to file.
   for (grid_coord i = 0; i < grid->getSize ().getX (); ++i)
@@ -191,8 +194,6 @@ TXTDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
         }
       }
     }
-
-    file << std::endl;
   }
 
   file.close();
@@ -237,6 +238,7 @@ TXTDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
   }
 
   ASSERT (file.is_open());
+  file << std::setprecision(std::numeric_limits<double>::digits10);
 
   // Go through all values and write to file.
   for (grid_coord i = 0; i < grid->getSize ().getX (); ++i)
@@ -293,8 +295,6 @@ TXTDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
         }
       }
     }
-
-    file << std::endl;
   }
 
   file.close();

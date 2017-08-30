@@ -123,20 +123,59 @@ SETTINGS_ELEM_FIELD_TYPE_FLOAT(sourceWaveLength, getSourceWaveLength, FPValue, 0
  * Dump flags
  */
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveRes, getDoSaveRes, bool, false, "--save-res", "Save results to files")
+// SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAllRes, getDoSaveAllRes, bool, false, "--save-all-res", "Save all results to files")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveMaterials, getDoSaveMaterials, bool, false, "--save-materials", "Save materials to files")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveIntermediateRes, getDoSaveIntermediateRes, bool, false, "--save-interm-res", "Save intermediate results to files")
+// SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAllIntermediateRes, getDoSaveAllIntermediateRes, bool, false, "--save-all-interm-res", "Save all intermediate results to files")
 SETTINGS_ELEM_FIELD_TYPE_INT(intermediateSaveStep, getIntermediateSaveStep, time_step, 100, "--interm-save-step", "Save step for intermediate save")
 SETTINGS_ELEM_FIELD_TYPE_INT(intermediateNTFFStep, getIntermediateNTFFStep, time_step, 100, "--interm-ntff-step", "Save step for intermediate ntff")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveScatteredFieldRes, getDoSaveScatteredFieldRes, bool, false, "--save-scattered-field-res", "Save scattered field for result")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveScatteredFieldIntermediate, getDoSaveScatteredFieldIntermediate, bool, false, "--save-scattered--field-interm", "Save scattered field for intermediate")
-SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAsBMP, getDoSaveAsBMP, bool, false, "--save-as-bmp", "Save results to .bmp file")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAsBMP, getDoSaveAsBMP, bool, false, "--save-as-bmp", "Save results to .bmp files")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAsDAT, getDoSaveAsDAT, bool, false, "--save-as-dat", "Save results to .dat files")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAsTXT, getDoSaveAsTXT, bool, false, "--save-as-txt", "Save results to .txt files")
+
+/*
+ * Load flags
+ */
+SETTINGS_ELEM_FIELD_TYPE_STRING(epsFileName, getEpsFileName, std::string, "", "--load-eps-from-file", "File name to load Eps from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(muFileName, getMuFileName, std::string, "", "--load-mu-from-file", "File name to load Mu from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(omegaPEFileName, getOmegaPEFileName, std::string, "", "--load-omegape-from-file", "File name to load OmegaPE from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(omegaPMFileName, getOmegaPMFileName, std::string, "", "--load-omegapm-from-file", "File name to load OmegaPM from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(gammaEFileName, getGammaEFileName, std::string, "", "--load-gammae-from-file", "File name to load GammaE from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(gammaMFileName, getGammaMFileName, std::string, "", "--load-gammam-from-file", "File name to load GammaM from")
+
+/*
+SETTINGS_ELEM_FIELD_TYPE_STRING(exFileName, getExFileName, std::string, "", "--load-ex-from-file", "File name to load Ex from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(eyFileName, getEyFileName, std::string, "", "--load-ey-from-file", "File name to load Ey from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(ezFileName, getEzFileName, std::string, "", "--load-ez-from-file", "File name to load Ez from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(hxFileName, getHxFileName, std::string, "", "--load-hx-from-file", "File name to load Hx from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(hyFileName, getHyFileName, std::string, "", "--load-hy-from-file", "File name to load Hy from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(hzFileName, getHzFileName, std::string, "", "--load-hz-from-file", "File name to load Hz from")
+
+SETTINGS_ELEM_FIELD_TYPE_STRING(dxFileName, getDxFileName, std::string, "", "--load-dx-from-file", "File name to load Dx from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(dyFileName, getDyFileName, std::string, "", "--load-dy-from-file", "File name to load Dy from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(dzFileName, getDzFileName, std::string, "", "--load-dz-from-file", "File name to load Dz from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(bxFileName, getbxFileName, std::string, "", "--load-bx-from-file", "File name to load Bx from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(byFileName, getbyFileName, std::string, "", "--load-by-from-file", "File name to load By from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(bzFileName, getbzFileName, std::string, "", "--load-bz-from-file", "File name to load Bz from")
+
+SETTINGS_ELEM_FIELD_TYPE_STRING(d1xFileName, getD1xFileName, std::string, "", "--load-d1x-from-file", "File name to load D1x from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(d1yFileName, getD1yFileName, std::string, "", "--load-d1y-from-file", "File name to load D1y from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(d1zFileName, getD1zFileName, std::string, "", "--load-d1z-from-file", "File name to load D1z from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(b1xFileName, getB1xFileName, std::string, "", "--load-b1x-from-file", "File name to load B1x from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(b1yFileName, getB1yFileName, std::string, "", "--load-b1y-from-file", "File name to load B1y from")
+SETTINGS_ELEM_FIELD_TYPE_STRING(b1zFileName, getB1zFileName, std::string, "", "--load-b1z-from-file", "File name to load B1z from")
+*/
+
+/*
+ * BMP flags
+ */
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePaletteGray, getDoUsePaletteGray, bool, false, "--palette-gray", "Use gray palette for .bmp dump")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePaletteRGB, getDoUsePaletteRGB, bool, false, "--palette-rgb", "Use RGB palette for .bmp dump")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseOrthAxisX, getDoUseOrthAxisX, bool, false, "--orth-axis-x", "Use Ox orthogonal axis for .bmp dump")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseOrthAxisY, getDoUseOrthAxisY, bool, false, "--orth-axis-y", "Use Oy orthogonal axis for .bmp dump")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseOrthAxisZ, getDoUseOrthAxisZ, bool, false, "--orth-axis-z", "Use Oz orthogonal axis for .bmp dump")
-SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAsDAT, getDoSaveAsDAT, bool, false, "--save-as-dat", "Save results to .dat file")
-SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAsTXT, getDoSaveAsTXT, bool, false, "--save-as-txt", "Save results to .txt file")
 
 /*
  * Point source

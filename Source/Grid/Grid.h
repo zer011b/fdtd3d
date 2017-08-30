@@ -94,6 +94,7 @@ public:
   const std::string &getName () const;
 
   void initialize ();
+  void initialize (FieldValue);
 }; /* Grid */
 
 /*
@@ -424,6 +425,20 @@ Grid<TCoord>::initialize ()
   for (grid_iter i = 0; i < gridValues.size (); ++i)
   {
     gridValues[i] = new FieldPointValue ();
+  }
+} /* Grid<TCoord>::initialize */
+
+/**
+ * Initialize grid field values with default values
+ */
+template <class TCoord>
+void
+Grid<TCoord>::initialize (FieldValue cur)
+{
+  for (grid_iter i = 0; i < gridValues.size (); ++i)
+  {
+    gridValues[i] = new FieldPointValue ();
+    gridValues[i]->setCurValue (cur);
   }
 } /* Grid<TCoord>::initialize */
 

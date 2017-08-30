@@ -69,6 +69,23 @@ public:
 
   // Replace previous value with current and so on.
   void shiftInTime ();
+
+  bool operator == (FieldPointValue &rhs)
+  {
+    bool is_same = true;
+
+    is_same &= currentValue == rhs.currentValue;
+
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+    is_same &= previousValue == rhs.previousValue;
+
+#ifdef TWO_TIME_STEPS
+    is_same &= previousPreviousValue == rhs.previousPreviousValue;
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+
+    return is_same;
+  }
 };
 
 #endif /* FIELD_POINT_H */

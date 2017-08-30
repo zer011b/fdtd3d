@@ -21,6 +21,7 @@ function build
   for VALUE_TYPE in f d ld; do
     for TIME_STEPS in 1 2; do
       for COMPLEX_FIELD_VALUES in ON OFF; do
+
         if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
           continue
         fi
@@ -45,7 +46,7 @@ function build
           exit 1
         fi
 
-        make unit-test-grid
+        make unit-test-dumpers-loaders
 
         res=$(echo $?)
 
@@ -53,7 +54,7 @@ function build
           exit 1
         fi
 
-        ./Tests/unit-test-grid
+        ./Tests/unit-test-dumpers-loaders
 
         res=$(echo $?)
 

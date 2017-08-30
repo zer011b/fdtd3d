@@ -17,6 +17,8 @@ set(CUDA_ARCH_SM_TYPE "sm_20" CACHE STRING "Defines cuda gpu arch")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORCE_INLINES")
 
+add_definitions (-DSOLVER_VERSION="0.2.3")
+
 if ("${CUDA_ENABLED}")
   find_package(CUDA QUIET REQUIRED)
 endif ()
