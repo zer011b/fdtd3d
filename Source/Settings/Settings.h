@@ -7,8 +7,6 @@
 #include "FieldValue.h"
 #include "PhysicsConst.h"
 
-#define SOLVER_VERSION "0.2.2"
-
 /**
  * Log levels
  */

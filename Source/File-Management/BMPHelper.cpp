@@ -1,6 +1,9 @@
 #include "Assert.h"
 #include "BMPHelper.h"
 
+int BMPHelper::bitDepth = 24;
+int BMPHelper::numColors = 256;
+
 /**
  * Return value according to colors of pixel.
  * Blue-Green-Red scheme.
@@ -21,11 +24,11 @@ BMPHelper::getValueFromPixelBlueGreenRed (const RGBApixel& pixel, const FPValue&
   }
   else if (pixel.Blue == 0)
   {
-    retval = (((FPValue) pixel.Red) / 255 + 1) * max_2;
+    retval = (((FPValue) pixel.Red) / BMPHelper::numColors + 1) * max_2;
   }
   else if (pixel.Red == 0)
   {
-    retval = (((FPValue) pixel.Green) / 255) * max_2;
+    retval = (((FPValue) pixel.Green) / BMPHelper::numColors) * max_2;
   }
   else
   {
@@ -49,7 +52,7 @@ BMPHelper::getValueFromPixelGray (const RGBApixel& pixel, const FPValue& maxNeg,
   ASSERT (pixel.Red == pixel.Green
           && pixel.Red == pixel.Blue);
 
-  FPValue retval = ((FPValue) pixel.Red) / 255 * max;
+  FPValue retval = ((FPValue) pixel.Red) / BMPHelper::numColors * max;
 
   return retval;
 }
@@ -71,8 +74,8 @@ BMPHelper::getPixelFromValueBlueGreenRed (const FPValue& val, const FPValue& max
   {
     value -= max_2;
     FPValue tmp = value / max_2;
-    pixel.Red = tmp * 255;
-    pixel.Green = (1.0 - tmp) * 255;
+    pixel.Red = tmp * BMPHelper::numColors;
+    pixel.Green = (1.0 - tmp) * BMPHelper::numColors;
     pixel.Blue = 0.0;
   }
   else
@@ -88,8 +91,8 @@ BMPHelper::getPixelFromValueBlueGreenRed (const FPValue& val, const FPValue& max
     }
 
     pixel.Red = 0.0;
-    pixel.Green = tmp * 255;
-    pixel.Blue = (1.0 - tmp) * 255;
+    pixel.Green = tmp * BMPHelper::numColors;
+    pixel.Blue = (1.0 - tmp) * BMPHelper::numColors;
   }
 
   return pixel;
@@ -107,9 +110,9 @@ BMPHelper::getPixelFromValueGray (const FPValue& val, const FPValue& maxNeg,
   pixel.Alpha = 1.0;
 
   FPValue value = val - maxNeg;
-  pixel.Red = value / max * 255;
-  pixel.Green = value / max * 255;
-  pixel.Blue = value / max * 255;
+  pixel.Red = value / max * BMPHelper::numColors;
+  pixel.Green = value / max * BMPHelper::numColors;
+  pixel.Blue = value / max * BMPHelper::numColors;
 
   return pixel;
 }

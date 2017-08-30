@@ -12,6 +12,8 @@ CXX_COMPILER=$3
 # C compiler
 C_COMPILER=$4
 
+CXX11_ENABLED=$5
+
 cd ${BUILD_DIR}
 
 function build
@@ -22,83 +24,81 @@ function build
   for VALUE_TYPE in f d ld; do
     for TIME_STEPS in 1 2; do
       for COMPLEX_FIELD_VALUES in ON OFF; do
-        for CXX11_ENABLED in ON OFF; do
-          for PARALLEL_BUFFER in `echo $LIST_OF_BUFFERS`; do
+        for PARALLEL_BUFFER in `echo $LIST_OF_BUFFERS`; do
 
-            if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
-              continue
-            fi
+          if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
+            continue
+          fi
 
-            cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=Release \
-              -DVALUE_TYPE=${VALUE_TYPE} \
-              -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
-              -DTIME_STEPS=${TIME_STEPS} \
-              -DPARALLEL_GRID_DIMENSION=${PARALLEL_GRID_DIM} \
-              -DPRINT_MESSAGE=ON \
-              -DPARALLEL_GRID=ON \
-              -DPARALLEL_BUFFER_DIMENSION=${PARALLEL_BUFFER} \
-              -DCXX11_ENABLED=${CXX11_ENABLED} \
-              -DCUDA_ENABLED=OFF \
-              -DCUDA_ARCH_SM_TYPE=sm_50 \
-              -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-              -DCMAKE_C_COMPILER=${C_COMPILER}
+          cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=Release \
+            -DVALUE_TYPE=${VALUE_TYPE} \
+            -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
+            -DTIME_STEPS=${TIME_STEPS} \
+            -DPARALLEL_GRID_DIMENSION=${PARALLEL_GRID_DIM} \
+            -DPRINT_MESSAGE=ON \
+            -DPARALLEL_GRID=ON \
+            -DPARALLEL_BUFFER_DIMENSION=${PARALLEL_BUFFER} \
+            -DCXX11_ENABLED=${CXX11_ENABLED} \
+            -DCUDA_ENABLED=OFF \
+            -DCUDA_ARCH_SM_TYPE=sm_50 \
+            -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
+            -DCMAKE_C_COMPILER=${C_COMPILER}
 
-            res=$(echo $?)
+          res=$(echo $?)
 
-            if [[ res -ne 0 ]]; then
-              exit 1
-            fi
+          if [[ res -ne 0 ]]; then
+            exit 1
+          fi
 
-            make unit-test-parallel-grid
+          make unit-test-parallel-grid
 
-            res=$(echo $?)
+          res=$(echo $?)
 
-            if [[ res -ne 0 ]]; then
-              exit 1
-            fi
+          if [[ res -ne 0 ]]; then
+            exit 1
+          fi
 
-            if [[ "$PARALLEL_BUFFER" = "x" ]]; then
-              mpirun -n 2 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "y" ]]; then
-              mpirun -n 2 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "z" ]]; then
-              mpirun -n 2 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "xy" ]]; then
-              mpirun -n 4 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "yz" ]]; then
-              mpirun -n 4 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "xz" ]]; then
-              mpirun -n 4 ./Tests/unit-test-parallel-grid
-            fi
+          if [[ "$PARALLEL_BUFFER" = "x" ]]; then
+            mpirun -n 2 ./Tests/unit-test-parallel-grid
+          elif [[ "$PARALLEL_BUFFER" = "y" ]]; then
+            mpirun -n 2 ./Tests/unit-test-parallel-grid
+          elif [[ "$PARALLEL_BUFFER" = "z" ]]; then
+            mpirun -n 2 ./Tests/unit-test-parallel-grid
+          elif [[ "$PARALLEL_BUFFER" = "xy" ]]; then
+            mpirun -n 4 ./Tests/unit-test-parallel-grid
+          elif [[ "$PARALLEL_BUFFER" = "yz" ]]; then
+            mpirun -n 4 ./Tests/unit-test-parallel-grid
+          elif [[ "$PARALLEL_BUFFER" = "xz" ]]; then
+            mpirun -n 4 ./Tests/unit-test-parallel-grid
+          fi
 
-            res=$(echo $?)
+          res=$(echo $?)
 
-            if [[ res -ne 0 ]]; then
-              exit 1
-            fi
+          if [[ res -ne 0 ]]; then
+            exit 1
+          fi
 
-            if [[ "$PARALLEL_BUFFER" = "x" ]]; then
-              mpirun -n 4 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "y" ]]; then
-              mpirun -n 4 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "z" ]]; then
-              mpirun -n 4 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "xy" ]]; then
-              mpirun -n 16 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "yz" ]]; then
-              mpirun -n 16 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "xz" ]]; then
-              mpirun -n 16 ./Tests/unit-test-parallel-grid
-            elif [[ "$PARALLEL_BUFFER" = "xyz" ]]; then
-              mpirun -n 8 ./Tests/unit-test-parallel-grid
-            fi
+          if [[ "$PARALLEL_BUFFER" = "x" ]]; then
+            mpirun -n 4 ./Tests/unit-test-parallel-grid
+          elif [[ "$PARALLEL_BUFFER" = "y" ]]; then
+            mpirun -n 4 ./Tests/unit-test-parallel-grid
+          elif [[ "$PARALLEL_BUFFER" = "z" ]]; then
+            mpirun -n 4 ./Tests/unit-test-parallel-grid
+          elif [[ "$PARALLEL_BUFFER" = "xy" ]]; then
+            mpirun -n 16 ./Tests/unit-test-parallel-grid
+          elif [[ "$PARALLEL_BUFFER" = "yz" ]]; then
+            mpirun -n 16 ./Tests/unit-test-parallel-grid
+          elif [[ "$PARALLEL_BUFFER" = "xz" ]]; then
+            mpirun -n 16 ./Tests/unit-test-parallel-grid
+          elif [[ "$PARALLEL_BUFFER" = "xyz" ]]; then
+            mpirun -n 8 ./Tests/unit-test-parallel-grid
+          fi
 
-            res=$(echo $?)
+          res=$(echo $?)
 
-            if [[ res -ne 0 ]]; then
-              exit 1
-            fi
-          done
+          if [[ res -ne 0 ]]; then
+            exit 1
+          fi
         done
       done
     done

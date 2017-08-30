@@ -6,14 +6,17 @@
  */
 #ifdef FLOAT_VALUES
 typedef float FPValue;
+#define PRINTF_MODIFIER "%f"
 #endif /* FLOAT_VALUES */
 
 #ifdef DOUBLE_VALUES
 typedef double FPValue;
+#define PRINTF_MODIFIER "%f"
 #endif /* DOUBLE_VALUES */
 
 #ifdef LONG_DOUBLE_VALUES
 typedef long double FPValue;
+#define PRINTF_MODIFIER "%Lf"
 #endif /* LONG_DOUBLE_VALUES */
 
 /**

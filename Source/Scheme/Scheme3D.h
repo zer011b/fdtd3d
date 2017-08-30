@@ -88,7 +88,8 @@ class Scheme3D: public Scheme
   GridCoordinate3D leftNTFF;
   GridCoordinate3D rightNTFF;
 
-  Dumper<GridCoordinate3D> *dumper;
+  Dumper<GridCoordinate3D> *dumper[FILE_TYPE_COUNT];
+  Loader<GridCoordinate3D> *loader[FILE_TYPE_COUNT];
 
 private:
 

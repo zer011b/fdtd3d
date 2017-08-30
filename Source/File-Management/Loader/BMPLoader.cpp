@@ -1,4 +1,7 @@
 #include <iostream>
+#include <iomanip>
+#include <limits>
+#include <fstream>
 
 #include "BMPLoader.h"
 
@@ -65,44 +68,96 @@ BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid, GridFil
   // Create image for values and max/min values.
   BMP imageRe;
   imageRe.SetSize (sx, sy);
-  imageRe.SetBitDepth (24);
+  imageRe.SetBitDepth (BMPHelper::bitDepth);
 
 #ifdef COMPLEX_FIELD_VALUES
   BMP imageIm;
   imageIm.SetSize (sx, sy);
-  imageIm.SetBitDepth (24);
+  imageIm.SetBitDepth (BMPHelper::bitDepth);
 #endif /* COMPLEX_FIELD_VALUES */
 
   FPValue maxRe = 0;
+  FPValue maxPosRe = 0;
   FPValue maxNegRe = 0;
+  std::ifstream fileMaxRe;
 
 #ifdef COMPLEX_FIELD_VALUES
   FPValue maxIm = 0;
+  FPValue maxPosIm = 0;
   FPValue maxNegIm = 0;
+  std::ifstream fileMaxIm;
 #endif /* COMPLEX_FIELD_VALUES */
 
   switch (load_type)
   {
     case CURRENT:
     {
-#ifdef COMPLEX_FIELD_VALUES
-      maxRe = maxValuePos.getCurValue ().real () - maxValueNeg.getCurValue ().real ();
-      maxNegRe = maxValueNeg.getCurValue ().real ();
+      std::string cur_txt = cur + std::string ("-Re") + std::string (".bmp") + std::string (".txt");
+      fileMaxRe.open (cur_txt.c_str (), std::ios::in);
 
+#ifdef COMPLEX_FIELD_VALUES
+      cur_txt = cur + std::string ("-Im") + std::string (".bmp") + std::string (".txt");
+      fileMaxIm.open (cur_txt.c_str (), std::ios::in);
+#endif /* COMPLEX_FIELD_VALUES */
+
+      break;
+    }
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+    case PREVIOUS:
+    {
+      std::string prev_txt =  prev + std::string ("-Re") + std::string (".bmp") + std::string (".txt");
+      fileMaxRe.open (prev_txt.c_str (), std::ios::in);
+
+#ifdef COMPLEX_FIELD_VALUES
+      prev_txt = prev + std::string ("-Im") + std::string (".bmp") + std::string (".txt");
+      fileMaxIm.open (prev_txt.c_str (), std::ios::in);
+#endif /* COMPLEX_FIELD_VALUES */
+
+      break;
+    }
+#if defined (TWO_TIME_STEPS)
+    case PREVIOUS2:
+    {
+      std::string prevPrev_txt = prevPrev + std::string ("-Mod") + std::string (".bmp") + std::string (".txt");
+      fileMaxRe.open (prevPrev_txt.c_str (), std::ios::in);
+
+#ifdef COMPLEX_FIELD_VALUES
+      prevPrev_txt = prevPrev + std::string ("-Mod") + std::string (".bmp") + std::string (".txt");
+      fileMaxIm.open (prevPrev_txt.c_str (), std::ios::in);
+#endif /* COMPLEX_FIELD_VALUES */
+
+      break;
+    }
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  ASSERT (fileMaxRe.is_open());
+  fileMaxRe >> std::setprecision(std::numeric_limits<double>::digits10) >> maxPosRe >> maxNegRe;
+  fileMaxRe.close();
+
+  maxRe = maxPosRe - maxNegRe;
+#ifdef COMPLEX_FIELD_VALUES
+  ASSERT (fileMaxIm.is_open());
+  fileMaxIm >> std::setprecision(std::numeric_limits<double>::digits10) >> maxPosIm >> maxNegIm;
+  fileMaxIm.close();
+
+  maxIm = maxPosIm - maxNegIm;
+#endif
+
+  switch (load_type)
+  {
+    case CURRENT:
+    {
       std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
       imageRe.ReadFromFile (cur_bmp_re.c_str());
-
-      maxIm = maxValuePos.getCurValue ().imag () - maxValueNeg.getCurValue ().imag ();
-      maxNegIm = maxValueNeg.getCurValue ().imag ();
-
+#ifdef COMPLEX_FIELD_VALUES
       std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.ReadFromFile (cur_bmp_im.c_str());
-#else /* COMPLEX_FIELD_VALUES */
-      maxRe = maxValuePos.getCurValue () - maxValueNeg.getCurValue ();
-      maxNegRe = maxValueNeg.getCurValue ();
-
-      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
-      imageRe.ReadFromFile (cur_bmp_re.c_str());
 #endif /* !COMPLEX_FIELD_VALUES */
 
       break;
@@ -110,24 +165,11 @@ BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid, GridFil
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-#ifdef COMPLEX_FIELD_VALUES
-      maxRe = maxValuePos.getPrevValue ().real () - maxValueNeg.getPrevValue ().real ();
-      maxNegRe = maxValueNeg.getPrevValue ().real ();
-
       std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
       imageRe.ReadFromFile (cur_bmp_re.c_str());
-
-      maxIm = maxValuePos.getPrevValue ().imag () - maxValueNeg.getPrevValue ().imag ();
-      maxNegIm = maxValueNeg.getPrevValue ().imag ();
-
+#ifdef COMPLEX_FIELD_VALUES
       std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.ReadFromFile (cur_bmp_im.c_str());
-#else /* COMPLEX_FIELD_VALUES */
-      maxRe = maxValuePos.getPrevValue () - maxValueNeg.getPrevValue ();
-      maxNegRe = maxValueNeg.getPrevValue ();
-
-      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
-      imageRe.ReadFromFile (cur_bmp_re.c_str());
 #endif /* !COMPLEX_FIELD_VALUES */
 
       break;
@@ -135,24 +177,11 @@ BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid, GridFil
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-#ifdef COMPLEX_FIELD_VALUES
-      maxRe = maxValuePos.getPrevPrevValue ().real () - maxValueNeg.getPrevPrevValue ().real ();
-      maxNegRe = maxValueNeg.getPrevPrevValue ().real ();
-
       std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
       imageRe.ReadFromFile (cur_bmp_re.c_str());
-
-      maxIm = maxValuePos.getPrevPrevValue ().imag () - maxValueNeg.getPrevPrevValue ().imag ();
-      maxNegIm = maxValueNeg.getPrevPrevValue ().imag ();
-
+#ifdef COMPLEX_FIELD_VALUES
       std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.ReadFromFile (cur_bmp_im.c_str());
-#else /* COMPLEX_FIELD_VALUES */
-      maxRe = maxValuePos.getPrevPrevValue () - maxValueNeg.getPrevPrevValue ();
-      maxNegRe = maxValueNeg.getPrevPrevValue ();
-
-      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
-      imageRe.ReadFromFile (cur_bmp_re.c_str());
 #endif /* !COMPLEX_FIELD_VALUES */
 
       break;
@@ -249,44 +278,96 @@ BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid, GridFil
   // Create image for values and max/min values.
   BMP imageRe;
   imageRe.SetSize (sx, sy);
-  imageRe.SetBitDepth (24);
+  imageRe.SetBitDepth (BMPHelper::bitDepth);
 
 #ifdef COMPLEX_FIELD_VALUES
   BMP imageIm;
   imageIm.SetSize (sx, sy);
-  imageIm.SetBitDepth (24);
+  imageIm.SetBitDepth (BMPHelper::bitDepth);
 #endif /* COMPLEX_FIELD_VALUES */
 
   FPValue maxRe = 0;
+  FPValue maxPosRe = 0;
   FPValue maxNegRe = 0;
+  std::ifstream fileMaxRe;
 
-#ifdef COMPLEX_FIELD_VALUES
+  #ifdef COMPLEX_FIELD_VALUES
   FPValue maxIm = 0;
+  FPValue maxPosIm = 0;
   FPValue maxNegIm = 0;
-#endif /* COMPLEX_FIELD_VALUES */
+  std::ifstream fileMaxIm;
+  #endif /* COMPLEX_FIELD_VALUES */
 
   switch (load_type)
   {
     case CURRENT:
     {
-#ifdef COMPLEX_FIELD_VALUES
-      maxRe = maxValuePos.getCurValue ().real () - maxValueNeg.getCurValue ().real ();
-      maxNegRe = maxValueNeg.getCurValue ().real ();
+      std::string cur_txt = cur + std::string ("-Re") + std::string (".bmp") + std::string (".txt");
+      fileMaxRe.open (cur_txt.c_str (), std::ios::in);
 
+#ifdef COMPLEX_FIELD_VALUES
+      cur_txt = cur + std::string ("-Im") + std::string (".bmp") + std::string (".txt");
+      fileMaxIm.open (cur_txt.c_str (), std::ios::in);
+#endif /* COMPLEX_FIELD_VALUES */
+
+      break;
+    }
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+    case PREVIOUS:
+    {
+      std::string prev_txt =  prev + std::string ("-Re") + std::string (".bmp") + std::string (".txt");
+      fileMaxRe.open (prev_txt.c_str (), std::ios::in);
+
+#ifdef COMPLEX_FIELD_VALUES
+      prev_txt = prev + std::string ("-Im") + std::string (".bmp") + std::string (".txt");
+      fileMaxIm.open (prev_txt.c_str (), std::ios::in);
+#endif /* COMPLEX_FIELD_VALUES */
+
+      break;
+    }
+#if defined (TWO_TIME_STEPS)
+    case PREVIOUS2:
+    {
+      std::string prevPrev_txt = prevPrev + std::string ("-Mod") + std::string (".bmp") + std::string (".txt");
+      fileMaxRe.open (prevPrev_txt.c_str (), std::ios::in);
+
+#ifdef COMPLEX_FIELD_VALUES
+      prevPrev_txt = prevPrev + std::string ("-Mod") + std::string (".bmp") + std::string (".txt");
+      fileMaxIm.open (prevPrev_txt.c_str (), std::ios::in);
+#endif /* COMPLEX_FIELD_VALUES */
+
+      break;
+    }
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  ASSERT (fileMaxRe.is_open());
+  fileMaxRe >> std::setprecision(std::numeric_limits<double>::digits10) >> maxPosRe >> maxNegRe;
+  fileMaxRe.close();
+
+  maxRe = maxPosRe - maxNegRe;
+  #ifdef COMPLEX_FIELD_VALUES
+  ASSERT (fileMaxIm.is_open());
+  fileMaxIm >> std::setprecision(std::numeric_limits<double>::digits10) >> maxPosIm >> maxNegIm;
+  fileMaxIm.close();
+
+  maxIm = maxPosIm - maxNegIm;
+  #endif
+
+  switch (load_type)
+  {
+    case CURRENT:
+    {
       std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
       imageRe.ReadFromFile (cur_bmp_re.c_str());
-
-      maxIm = maxValuePos.getCurValue ().imag () - maxValueNeg.getCurValue ().imag ();
-      maxNegIm = maxValueNeg.getCurValue ().imag ();
-
+#ifdef COMPLEX_FIELD_VALUES
       std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.ReadFromFile (cur_bmp_im.c_str());
-#else /* COMPLEX_FIELD_VALUES */
-      maxRe = maxValuePos.getCurValue () - maxValueNeg.getCurValue ();
-      maxNegRe = maxValueNeg.getCurValue ();
-
-      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
-      imageRe.ReadFromFile (cur_bmp_re.c_str());
 #endif /* !COMPLEX_FIELD_VALUES */
 
       break;
@@ -294,24 +375,11 @@ BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid, GridFil
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-#ifdef COMPLEX_FIELD_VALUES
-      maxRe = maxValuePos.getPrevValue ().real () - maxValueNeg.getPrevValue ().real ();
-      maxNegRe = maxValueNeg.getPrevValue ().real ();
-
       std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
       imageRe.ReadFromFile (cur_bmp_re.c_str());
-
-      maxIm = maxValuePos.getPrevValue ().imag () - maxValueNeg.getPrevValue ().imag ();
-      maxNegIm = maxValueNeg.getPrevValue ().imag ();
-
+#ifdef COMPLEX_FIELD_VALUES
       std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.ReadFromFile (cur_bmp_im.c_str());
-#else /* COMPLEX_FIELD_VALUES */
-      maxRe = maxValuePos.getPrevValue () - maxValueNeg.getPrevValue ();
-      maxNegRe = maxValueNeg.getPrevValue ();
-
-      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
-      imageRe.ReadFromFile (cur_bmp_re.c_str());
 #endif /* !COMPLEX_FIELD_VALUES */
 
       break;
@@ -319,24 +387,11 @@ BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid, GridFil
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-#ifdef COMPLEX_FIELD_VALUES
-      maxRe = maxValuePos.getPrevPrevValue ().real () - maxValueNeg.getPrevPrevValue ().real ();
-      maxNegRe = maxValueNeg.getPrevPrevValue ().real ();
-
       std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
       imageRe.ReadFromFile (cur_bmp_re.c_str());
-
-      maxIm = maxValuePos.getPrevPrevValue ().imag () - maxValueNeg.getPrevPrevValue ().imag ();
-      maxNegIm = maxValueNeg.getPrevPrevValue ().imag ();
-
+#ifdef COMPLEX_FIELD_VALUES
       std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.ReadFromFile (cur_bmp_im.c_str());
-#else /* COMPLEX_FIELD_VALUES */
-      maxRe = maxValuePos.getPrevPrevValue () - maxValueNeg.getPrevPrevValue ();
-      maxNegRe = maxValueNeg.getPrevPrevValue ();
-
-      std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
-      imageRe.ReadFromFile (cur_bmp_re.c_str());
 #endif /* !COMPLEX_FIELD_VALUES */
 
       break;

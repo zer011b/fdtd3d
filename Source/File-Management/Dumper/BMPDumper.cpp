@@ -1,4 +1,7 @@
 #include <iostream>
+#include <iomanip>
+#include <limits>
+#include <fstream>
 
 #include "BMPDumper.h"
 
@@ -85,16 +88,16 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
   // Create image for current values and max/min values.
   BMP imageRe;
   imageRe.SetSize (sx, sy);
-  imageRe.SetBitDepth (24);
+  imageRe.SetBitDepth (BMPHelper::bitDepth);
 
 #ifdef COMPLEX_FIELD_VALUES
   BMP imageIm;
   imageIm.SetSize (sx, sy);
-  imageIm.SetBitDepth (24);
+  imageIm.SetBitDepth (BMPHelper::bitDepth);
 
   BMP imageMod;
   imageMod.SetSize (sx, sy);
-  imageMod.SetBitDepth (24);
+  imageMod.SetBitDepth (BMPHelper::bitDepth);
 #endif /* COMPLEX_FIELD_VALUES */
 
   const FieldPointValue* value0 = grid->getFieldPointValue (startCoord);
@@ -102,13 +105,16 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
 
   FPValue maxPosRe = 0;
   FPValue maxNegRe = 0;
+  std::ofstream fileMaxRe;
 
 #ifdef COMPLEX_FIELD_VALUES
   FPValue maxPosIm = 0;
   FPValue maxNegIm = 0;
+  std::ofstream fileMaxIm;
 
   FPValue maxPosMod = 0;
   FPValue maxNegMod = 0;
+  std::ofstream fileMaxMod;
 #endif /* COMPLEX_FIELD_VALUES */
 
   switch (dump_type)
@@ -261,14 +267,14 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg %f, maxRe pos %f, maxRe %f\n", maxNegRe, maxPosRe, maxRe);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " PRINTF_MODIFIER ", maxRe pos " PRINTF_MODIFIER ", maxRe " PRINTF_MODIFIER "\n", maxNegRe, maxPosRe, maxRe);
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg %f, maxIm pos %f, maxIm %f\n", maxNegIm, maxPosIm, maxIm);
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg %f, maxMod pos %f, maxMod %f\n", maxNegMod, maxPosMod, maxMod);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " PRINTF_MODIFIER ", maxIm pos " PRINTF_MODIFIER ", maxIm " PRINTF_MODIFIER "\n", maxNegIm, maxPosIm, maxIm);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " PRINTF_MODIFIER ", maxMod pos " PRINTF_MODIFIER ", maxMod " PRINTF_MODIFIER "\n", maxNegMod, maxPosMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
@@ -369,12 +375,21 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
       std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
       imageRe.WriteToFile (cur_bmp_re.c_str ());
 
+      std::string cur_txt = cur_bmp_re + std::string (".txt");
+      fileMaxRe.open (cur_txt.c_str (), std::ios::out);
+
 #ifdef COMPLEX_FIELD_VALUES
       std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (cur_bmp_im.c_str ());
 
+      cur_txt = cur_bmp_im + std::string (".txt");
+      fileMaxIm.open (cur_txt.c_str (), std::ios::out);
+
       std::string cur_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
       imageMod.WriteToFile (cur_bmp_mod.c_str ());
+
+      cur_txt = cur_bmp_mod + std::string (".txt");
+      fileMaxMod.open (cur_txt.c_str (), std::ios::out);
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -382,15 +397,24 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      std::string prev_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      std::string prev_bmp_re = prev + std::string ("-Re") + std::string (".bmp");
       imageRe.WriteToFile (prev_bmp_re.c_str ());
 
+      std::string prev_txt = prev_bmp_re + std::string (".txt");
+      fileMaxRe.open (prev_txt.c_str (), std::ios::out);
+
 #ifdef COMPLEX_FIELD_VALUES
-      std::string prev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      std::string prev_bmp_im = prev + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (prev_bmp_im.c_str ());
 
-      std::string prev_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
+      prev_txt = prev_bmp_im + std::string (".txt");
+      fileMaxIm.open (prev_txt.c_str (), std::ios::out);
+
+      std::string prev_bmp_mod = prev + std::string ("-Mod") + std::string (".bmp");
       imageMod.WriteToFile (prev_bmp_mod.c_str ());
+
+      prev_txt = prev_bmp_mod + std::string (".txt");
+      fileMaxMod.open (prev_txt.c_str (), std::ios::out);
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -398,15 +422,24 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      std::string prevPrev_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      std::string prevPrev_bmp_re = prevPrev + std::string ("-Re") + std::string (".bmp");
       imageRe.WriteToFile (prevPrev_bmp_re.c_str ());
 
+      std::string prevPrev_txt = prevPrev_bmp_re + std::string (".txt");
+      fileMaxRe.open (prevPrev_txt.c_str (), std::ios::out);
+
 #ifdef COMPLEX_FIELD_VALUES
-      std::string prevPrev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      std::string prevPrev_bmp_im = prevPrev + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (prevPrev_bmp_im.c_str ());
 
-      std::string prevPrev_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
+      prevPrev_txt = prevPrev_bmp_im + std::string (".txt");
+      fileMaxIm.open (prevPrev_txt.c_str (), std::ios::out);
+
+      std::string prevPrev_bmp_mod = prevPrev + std::string ("-Mod") + std::string (".bmp");
       imageMod.WriteToFile (prevPrev_bmp_mod.c_str ());
+
+      prevPrev_txt = prevPrev_bmp_mod + std::string (".txt");
+      fileMaxMod.open (prevPrev_txt.c_str (), std::ios::out);
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -418,6 +451,19 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
       UNREACHABLE;
     }
   }
+
+  ASSERT (fileMaxRe.is_open());
+  fileMaxRe << std::setprecision(std::numeric_limits<double>::digits10) << maxPosRe << " " << maxNegRe;
+  fileMaxRe.close();
+#ifdef COMPLEX_FIELD_VALUES
+  ASSERT (fileMaxIm.is_open());
+  fileMaxIm << std::setprecision(std::numeric_limits<double>::digits10) << maxPosIm << " " << maxNegIm;
+  fileMaxIm.close();
+
+  ASSERT (fileMaxMod.is_open());
+  fileMaxMod << std::setprecision(std::numeric_limits<double>::digits10) << maxPosMod << " " << maxNegMod;
+  fileMaxMod.close();
+#endif
 }
 
 /**
@@ -434,16 +480,16 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
   // Create image for current values and max/min values.
   BMP imageRe;
   imageRe.SetSize (sx, sy);
-  imageRe.SetBitDepth (24);
+  imageRe.SetBitDepth (BMPHelper::bitDepth);
 
 #ifdef COMPLEX_FIELD_VALUES
   BMP imageIm;
   imageIm.SetSize (sx, sy);
-  imageIm.SetBitDepth (24);
+  imageIm.SetBitDepth (BMPHelper::bitDepth);
 
   BMP imageMod;
   imageMod.SetSize (sx, sy);
-  imageMod.SetBitDepth (24);
+  imageMod.SetBitDepth (BMPHelper::bitDepth);
 #endif /* COMPLEX_FIELD_VALUES */
 
   const FieldPointValue* value0 = grid->getFieldPointValue (startCoord);
@@ -451,13 +497,16 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
 
   FPValue maxPosRe = 0;
   FPValue maxNegRe = 0;
+  std::ofstream fileMaxRe;
 
 #ifdef COMPLEX_FIELD_VALUES
   FPValue maxPosIm = 0;
   FPValue maxNegIm = 0;
+  std::ofstream fileMaxIm;
 
   FPValue maxPosMod = 0;
   FPValue maxNegMod = 0;
+  std::ofstream fileMaxMod;
 #endif /* COMPLEX_FIELD_VALUES */
 
   switch (dump_type)
@@ -613,14 +662,14 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg %f, maxRe pos %f, maxRe %f\n", maxNegRe, maxPosRe, maxRe);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " PRINTF_MODIFIER ", maxRe pos " PRINTF_MODIFIER ", maxRe " PRINTF_MODIFIER "\n", maxNegRe, maxPosRe, maxRe);
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg %f, maxIm pos %f, maxIm %f\n", maxNegIm, maxPosIm, maxIm);
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg %f, maxMod pos %f, maxMod %f\n", maxNegMod, maxPosMod, maxMod);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " PRINTF_MODIFIER ", maxIm pos " PRINTF_MODIFIER ", maxIm " PRINTF_MODIFIER "\n", maxNegIm, maxPosIm, maxIm);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " PRINTF_MODIFIER ", maxMod pos " PRINTF_MODIFIER ", maxMod " PRINTF_MODIFIER "\n", maxNegMod, maxPosMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
@@ -725,12 +774,21 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
       std::string cur_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
       imageRe.WriteToFile (cur_bmp_re.c_str ());
 
+      std::string cur_txt = cur_bmp_re + std::string (".txt");
+      fileMaxRe.open (cur_txt.c_str (), std::ios::out);
+
 #ifdef COMPLEX_FIELD_VALUES
       std::string cur_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (cur_bmp_im.c_str ());
 
+      cur_txt = cur_bmp_im + std::string (".txt");
+      fileMaxIm.open (cur_txt.c_str (), std::ios::out);
+
       std::string cur_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
       imageMod.WriteToFile (cur_bmp_mod.c_str ());
+
+      cur_txt = cur_bmp_mod + std::string (".txt");
+      fileMaxMod.open (cur_txt.c_str (), std::ios::out);
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -738,15 +796,24 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      std::string prev_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      std::string prev_bmp_re = prev + std::string ("-Re") + std::string (".bmp");
       imageRe.WriteToFile (prev_bmp_re.c_str ());
 
+      std::string prev_txt = prev_bmp_re + std::string (".txt");
+      fileMaxRe.open (prev_txt.c_str (), std::ios::out);
+
 #ifdef COMPLEX_FIELD_VALUES
-      std::string prev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      std::string prev_bmp_im = prev + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (prev_bmp_im.c_str ());
 
-      std::string prev_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
+      prev_txt = prev_bmp_im + std::string (".txt");
+      fileMaxIm.open (prev_txt.c_str (), std::ios::out);
+
+      std::string prev_bmp_mod = prev + std::string ("-Mod") + std::string (".bmp");
       imageMod.WriteToFile (prev_bmp_mod.c_str ());
+
+      prev_txt = prev_bmp_mod + std::string (".txt");
+      fileMaxMod.open (prev_txt.c_str (), std::ios::out);
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -754,15 +821,24 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      std::string prevPrev_bmp_re = cur + std::string ("-Re") + std::string (".bmp");
+      std::string prevPrev_bmp_re = prevPrev + std::string ("-Re") + std::string (".bmp");
       imageRe.WriteToFile (prevPrev_bmp_re.c_str ());
 
+      std::string prevPrev_txt = prevPrev_bmp_re + std::string (".txt");
+      fileMaxRe.open (prevPrev_txt.c_str (), std::ios::out);
+
 #ifdef COMPLEX_FIELD_VALUES
-      std::string prevPrev_bmp_im = cur + std::string ("-Im") + std::string (".bmp");
+      std::string prevPrev_bmp_im = prevPrev + std::string ("-Im") + std::string (".bmp");
       imageIm.WriteToFile (prevPrev_bmp_im.c_str ());
 
-      std::string prevPrev_bmp_mod = cur + std::string ("-Mod") + std::string (".bmp");
+      prevPrev_txt = prevPrev_bmp_im + std::string (".txt");
+      fileMaxIm.open (prevPrev_txt.c_str (), std::ios::out);
+
+      std::string prevPrev_bmp_mod = prevPrev + std::string ("-Mod") + std::string (".bmp");
       imageMod.WriteToFile (prevPrev_bmp_mod.c_str ());
+
+      prevPrev_txt = prevPrev_bmp_mod + std::string (".txt");
+      fileMaxMod.open (prevPrev_txt.c_str (), std::ios::out);
 #endif /* COMPLEX_FIELD_VALUES */
 
       break;
@@ -774,6 +850,19 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
       UNREACHABLE;
     }
   }
+
+  ASSERT (fileMaxRe.is_open());
+  fileMaxRe << std::setprecision(std::numeric_limits<double>::digits10) << maxPosRe << " " << maxNegRe;
+  fileMaxRe.close();
+#ifdef COMPLEX_FIELD_VALUES
+  ASSERT (fileMaxIm.is_open());
+  fileMaxIm << std::setprecision(std::numeric_limits<double>::digits10) << maxPosIm << " " << maxNegIm;
+  fileMaxIm.close();
+
+  ASSERT (fileMaxMod.is_open());
+  fileMaxMod << std::setprecision(std::numeric_limits<double>::digits10) << maxPosMod << " " << maxNegMod;
+  fileMaxMod.close();
+#endif
 }
 
 /**
@@ -795,13 +884,16 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
 
   FPValue maxPosRe = 0;
   FPValue maxNegRe = 0;
+  std::ofstream fileMaxRe;
 
 #ifdef COMPLEX_FIELD_VALUES
   FPValue maxPosIm = 0;
   FPValue maxNegIm = 0;
+  std::ofstream fileMaxIm;
 
   FPValue maxPosMod = 0;
   FPValue maxNegMod = 0;
+  std::ofstream fileMaxMod;
 #endif /* COMPLEX_FIELD_VALUES */
 
   switch (dump_type)
@@ -960,14 +1052,14 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg %f, maxRe pos %f, maxRe %f\n", maxNegRe, maxPosRe, maxRe);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " PRINTF_MODIFIER ", maxRe pos " PRINTF_MODIFIER ", maxRe " PRINTF_MODIFIER "\n", maxNegRe, maxPosRe, maxRe);
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg %f, maxIm pos %f, maxIm %f\n", maxNegIm, maxPosIm, maxIm);
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg %f, maxMod pos %f, maxMod %f\n", maxNegMod, maxPosMod, maxMod);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " PRINTF_MODIFIER ", maxIm pos " PRINTF_MODIFIER ", maxIm " PRINTF_MODIFIER "\n", maxNegIm, maxPosIm, maxIm);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " PRINTF_MODIFIER ", maxMod pos " PRINTF_MODIFIER ", maxMod " PRINTF_MODIFIER "\n", maxNegMod, maxPosMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
   grid_coord coordStart1, coordEnd1;
@@ -1026,16 +1118,16 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
   {
     BMP imageRe;
     imageRe.SetSize (size2, size3);
-    imageRe.SetBitDepth (24);
+    imageRe.SetBitDepth (BMPHelper::bitDepth);
 
 #ifdef COMPLEX_FIELD_VALUES
     BMP imageIm;
     imageIm.SetSize (size2, size3);
-    imageIm.SetBitDepth (24);
+    imageIm.SetBitDepth (BMPHelper::bitDepth);
 
     BMP imageMod;
     imageMod.SetSize (size2, size3);
-    imageMod.SetBitDepth (24);
+    imageMod.SetBitDepth (BMPHelper::bitDepth);
 #endif /* COMPLEX_FIELD_VALUES */
 
     for (grid_iter coord2 = coordStart2; coord2 < coordEnd2; ++coord2)
@@ -1198,4 +1290,74 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
       }
     }
   }
+
+  switch (dump_type)
+  {
+    case CURRENT:
+    {
+      std::string cur_txt = cur + std::string ("-Re") + std::string (".bmp") + std::string (".txt");
+      fileMaxRe.open (cur_txt.c_str (), std::ios::out);
+
+#ifdef COMPLEX_FIELD_VALUES
+      cur_txt = cur + std::string ("-Im") + std::string (".bmp") + std::string (".txt");
+      fileMaxIm.open (cur_txt.c_str (), std::ios::out);
+
+      cur_txt = cur + std::string ("-Mod") + std::string (".bmp") + std::string (".txt");
+      fileMaxMod.open (cur_txt.c_str (), std::ios::out);
+#endif /* COMPLEX_FIELD_VALUES */
+
+      break;
+    }
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+    case PREVIOUS:
+    {
+      std::string prev_txt =  prev + std::string ("-Re") + std::string (".bmp") + std::string (".txt");
+      fileMaxRe.open (prev_txt.c_str (), std::ios::out);
+
+#ifdef COMPLEX_FIELD_VALUES
+      prev_txt = prev + std::string ("-Im") + std::string (".bmp") + std::string (".txt");
+      fileMaxIm.open (prev_txt.c_str (), std::ios::out);
+
+      prev_txt = prev + std::string ("-Mod") + std::string (".bmp") + std::string (".txt");
+      fileMaxMod.open (prev_txt.c_str (), std::ios::out);
+#endif /* COMPLEX_FIELD_VALUES */
+
+      break;
+    }
+#if defined (TWO_TIME_STEPS)
+    case PREVIOUS2:
+    {
+      std::string prevPrev_txt = prevPrev + std::string ("-Mod") + std::string (".bmp") + std::string (".txt");
+      fileMaxRe.open (prevPrev_txt.c_str (), std::ios::out);
+
+#ifdef COMPLEX_FIELD_VALUES
+      prevPrev_txt = prevPrev + std::string ("-Mod") + std::string (".bmp") + std::string (".txt");
+      fileMaxIm.open (prevPrev_txt.c_str (), std::ios::out);
+
+      prevPrev_txt = prevPrev + std::string ("-Mod") + std::string (".bmp") + std::string (".txt");
+      fileMaxMod.open (prevPrev_txt.c_str (), std::ios::out);
+#endif /* COMPLEX_FIELD_VALUES */
+
+      break;
+    }
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  ASSERT (fileMaxRe.is_open());
+  fileMaxRe << std::setprecision(std::numeric_limits<double>::digits10) << maxPosRe << " " << maxNegRe;
+  fileMaxRe.close();
+#ifdef COMPLEX_FIELD_VALUES
+  ASSERT (fileMaxIm.is_open());
+  fileMaxIm << std::setprecision(std::numeric_limits<double>::digits10) << maxPosIm << " " << maxNegIm;
+  fileMaxIm.close();
+
+  ASSERT (fileMaxMod.is_open());
+  fileMaxMod << std::setprecision(std::numeric_limits<double>::digits10) << maxPosMod << " " << maxNegMod;
+  fileMaxMod.close();
+#endif
 }

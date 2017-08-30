@@ -81,7 +81,7 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid, GridFileType type) const
       case CURRENT:
       {
         file.read (memblock, sizeof (FieldValue));
-        ASSERT (file.rdstate() & std::ifstream::failbit == 0);
+        ASSERT ((file.rdstate() & std::ifstream::failbit) == 0);
 
         current->setCurValue (*((FieldValue*) memblock));
         break;
@@ -90,7 +90,7 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid, GridFileType type) const
       case PREVIOUS:
       {
         file.read (memblock, sizeof (FieldValue));
-        ASSERT (file.rdstate() & std::ifstream::failbit == 0);
+        ASSERT ((file.rdstate() & std::ifstream::failbit) == 0);
 
         current->setPrevValue (*((FieldValue*) memblock));
         break;
@@ -99,7 +99,7 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid, GridFileType type) const
       case PREVIOUS2:
       {
         file.read (memblock, sizeof (FieldValue));
-        ASSERT (file.rdstate() & std::ifstream::failbit == 0);
+        ASSERT ((file.rdstate() & std::ifstream::failbit) == 0);
 
         current->setPrevPrevValue (*((FieldValue*) memblock));
         break;
@@ -113,7 +113,8 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid, GridFileType type) const
     }
   }
 
-  ASSERT (file.eof());
+  // peek next character from file, which should set eof flags
+  ASSERT ((file.peek (), file.eof()));
 
   delete[] memblock;
 

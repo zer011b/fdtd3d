@@ -58,6 +58,27 @@ else
   echo "Unit test unit-test-grid successful"
 fi
 
+# ==== Dumpers/Loaders unit test ====
+
+rm -rf ${BUILD_DIR}
+mkdir -p ${BUILD_DIR}
+
+if [[ $IS_TRAVIS_CI_BUILD -eq "true" ]]; then
+  ${HOME_DIR}/Tools/Tests/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} ${CXX_COMPILER} ${C_COMPILER}
+else
+  touch ${BUILD_DIR}/build.log
+  ${HOME_DIR}/Tools/Tests/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} ${CXX_COMPILER} ${C_COMPILER} &> ${BUILD_DIR}/build.log
+fi
+
+res=$(echo $?)
+
+if [[ res -ne 0 ]]; then
+  echo "Unit test unit-test-dumpers-loaders failed. See log at ${BUILD_DIR}/build.log"
+  total_res=$((1))
+else
+  echo "Unit test unit-test-dumpers-loaders successful"
+fi
+
 # ==== ====
 
 if [[ total_res -ne 0 ]]; then

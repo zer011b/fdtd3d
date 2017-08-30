@@ -3,6 +3,7 @@
 #include "DATDumper.h"
 #include "DATLoader.h"
 #include "TXTDumper.h"
+#include "TXTLoader.h"
 #include "Kernels.h"
 #include "Settings.h"
 #include "Scheme3D.h"
@@ -76,7 +77,6 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
   , totalStep (tStep)
   , leftNTFF (GridCoordinate3D (solverSettings.getNTFFSizeX (), solverSettings.getNTFFSizeY (), solverSettings.getNTFFSizeZ ()))
   , rightNTFF (layout->getEzSize () - leftNTFF + GridCoordinate3D (1,1,1))
-  , dumper (NULLPTR)
 {
   if (solverSettings.getDoUseParallelGrid ())
   {
@@ -218,7 +218,7 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
 
   if (solverSettings.getDoSaveAsBMP ())
   {
-    dumper = new BMPDumper<GridCoordinate3D> ();
+    dumper[FILE_TYPE_BMP] = new BMPDumper<GridCoordinate3D> ();
 
     PaletteType palette;
     OrthogonalAxis orthogonalAxis;
@@ -253,27 +253,74 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
       UNREACHABLE;
     }
 
-    ((BMPDumper<GridCoordinate3D> *) dumper)->initializeHelper (palette, orthogonalAxis);
-  }
-  else if (solverSettings.getDoSaveAsDAT ())
-  {
-    dumper = new DATDumper<GridCoordinate3D> ();
-  }
-  else if (solverSettings.getDoSaveAsTXT ())
-  {
-    dumper = new TXTDumper<GridCoordinate3D> ();
+    ((BMPDumper<GridCoordinate3D> *) dumper[FILE_TYPE_BMP])->initializeHelper (palette, orthogonalAxis);
   }
   else
   {
-    UNREACHABLE;
+    dumper[FILE_TYPE_BMP] = NULLPTR;
   }
 
-  if (!dumper)
+  if (solverSettings.getDoSaveAsDAT ())
   {
-    /*
-     * Default dumper is .dat
-     */
-    dumper = new DATDumper<GridCoordinate3D> ();
+    dumper[FILE_TYPE_DAT] = new DATDumper<GridCoordinate3D> ();
+  }
+  else
+  {
+    dumper[FILE_TYPE_DAT] = NULLPTR;
+  }
+
+  if (solverSettings.getDoSaveAsTXT ())
+  {
+    dumper[FILE_TYPE_TXT] = new TXTDumper<GridCoordinate3D> ();
+  }
+  else
+  {
+    dumper[FILE_TYPE_TXT] = NULLPTR;
+  }
+
+  {
+    loader[FILE_TYPE_BMP] = new BMPLoader<GridCoordinate3D> ();
+
+    PaletteType palette;
+    OrthogonalAxis orthogonalAxis;
+
+    if (solverSettings.getDoUsePaletteGray ())
+    {
+      palette = PaletteType::PALETTE_GRAY;
+    }
+    else if (solverSettings.getDoUsePaletteRGB ())
+    {
+      palette = PaletteType::PALETTE_BLUE_GREEN_RED;
+    }
+    else
+    {
+      UNREACHABLE;
+    }
+
+    if (solverSettings.getDoUseOrthAxisX ())
+    {
+      orthogonalAxis = OrthogonalAxis::X;
+    }
+    else if (solverSettings.getDoUseOrthAxisY ())
+    {
+      orthogonalAxis = OrthogonalAxis::Y;
+    }
+    else if (solverSettings.getDoUseOrthAxisZ ())
+    {
+      orthogonalAxis = OrthogonalAxis::Z;
+    }
+    else
+    {
+      UNREACHABLE;
+    }
+
+    ((BMPLoader<GridCoordinate3D> *) loader[FILE_TYPE_BMP])->initializeHelper (palette, orthogonalAxis);
+  }
+  {
+    loader[FILE_TYPE_DAT] = new DATLoader<GridCoordinate3D> ();
+  }
+  {
+    loader[FILE_TYPE_TXT] = new TXTLoader<GridCoordinate3D> ();
   }
 }
 
@@ -351,7 +398,13 @@ Scheme3D::~Scheme3D ()
     delete totalHz;
   }
 
-  delete dumper;
+  delete dumper[FILE_TYPE_BMP];
+  delete dumper[FILE_TYPE_DAT];
+  delete dumper[FILE_TYPE_TXT];
+
+  delete loader[FILE_TYPE_BMP];
+  delete loader[FILE_TYPE_DAT];
+  delete loader[FILE_TYPE_TXT];
 }
 
 void
@@ -2704,7 +2757,7 @@ Scheme3D::performAmplitudeSteps (time_step startStep)
       is_stable_state = 0;
     }
 
-    DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy %f. \n", t, maxAccuracy);
+    DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy " PRINTF_MODIFIER ". \n", t, maxAccuracy);
   }
 
   if (is_stable_state == 0)
@@ -2853,104 +2906,118 @@ Scheme3D::initGrids ()
 #endif /* !PARALLEL_GRID */
   }
 
-  for (int i = 0; i < Eps->getSize ().getX (); ++i)
+  if (solverSettings.getEpsFileName ().empty ())
   {
-    for (int j = 0; j < Eps->getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < Eps->getSize ().getZ (); ++k)
-      {
-        FieldPointValue* eps = new FieldPointValue ();
-
 #ifdef COMPLEX_FIELD_VALUES
-        eps->setCurValue (FieldValue (1, 0));
+    Eps->initialize (FieldValue (1, 0));
 #else /* COMPLEX_FIELD_VALUES */
-        eps->setCurValue (1);
+    Eps->initialize (FieldValue (1));
 #endif /* !COMPLEX_FIELD_VALUES */
-
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (Eps->getTotalPosition (pos));
-
-#ifdef COMPLEX_FIELD_VALUES
-        FieldValue epsVal (2, 0);
-#else /* COMPLEX_FIELD_VALUES */
-        FieldValue epsVal (2);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
-        eps->setCurValue (Approximation::approximateSphere (posAbs, GridCoordinateFP3D (40.5, 40.5, 40.5) * modifier, 20 * modifier, epsVal));
-
-        Eps->setFieldPointValue (eps, pos);
-      }
-    }
+  }
+  else
+  {
+    FileType type = GridFileManager::getFileType (solverSettings.getEpsFileName ());
+    loader[type]->init (0, CURRENT, processId, "");
+    loader[type]->setFileNames (solverSettings.getEpsFileName (), "", "");
+    loader[type]->loadGrid (Eps);
   }
 
-  for (int i = 0; i < Mu->getSize ().getX (); ++i)
+//   for (int i = 0; i < Eps->getSize ().getX (); ++i)
+//   {
+//     for (int j = 0; j < Eps->getSize ().getY (); ++j)
+//     {
+//       for (int k = 0; k < Eps->getSize ().getZ (); ++k)
+//       {
+//         FieldPointValue* eps = new FieldPointValue ();
+//
+// #ifdef COMPLEX_FIELD_VALUES
+//         eps->setCurValue (FieldValue (1, 0));
+// #else /* COMPLEX_FIELD_VALUES */
+//         eps->setCurValue (1);
+// #endif /* !COMPLEX_FIELD_VALUES */
+//
+//         GridCoordinate3D pos (i, j, k);
+//         GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (Eps->getTotalPosition (pos));
+//
+// #ifdef COMPLEX_FIELD_VALUES
+//         FieldValue epsVal (2, 0);
+// #else /* COMPLEX_FIELD_VALUES */
+//         FieldValue epsVal (2);
+// #endif /* !COMPLEX_FIELD_VALUES */
+//
+//         FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
+//         eps->setCurValue (Approximation::approximateSphere (posAbs, GridCoordinateFP3D (40.5, 40.5, 40.5) * modifier, 20 * modifier, epsVal));
+//
+//         Eps->setFieldPointValue (eps, pos);
+//       }
+//     }
+//   }
+
+  if (solverSettings.getMuFileName ().empty ())
   {
-    for (int j = 0; j < Mu->getSize ().getY (); ++j)
-    {
-      for (int k = 0; k < Mu->getSize ().getZ (); ++k)
-      {
-        FieldPointValue* mu = new FieldPointValue ();
-
 #ifdef COMPLEX_FIELD_VALUES
-        mu->setCurValue (FieldValue (1, 0));
+    Mu->initialize (FieldValue (1, 0));
 #else /* COMPLEX_FIELD_VALUES */
-        mu->setCurValue (1);
+    Mu->initialize (FieldValue (1));
 #endif /* !COMPLEX_FIELD_VALUES */
-
-        GridCoordinate3D pos (i, j, k);
-
-        Mu->setFieldPointValue (mu, pos);
-      }
-    }
+  }
+  else
+  {
+    FileType type = GridFileManager::getFileType (solverSettings.getMuFileName ());
+    loader[type]->init (0, CURRENT, processId, "");
+    loader[type]->setFileNames (solverSettings.getMuFileName (), "", "");
+    loader[type]->loadGrid (Mu);
   }
 
   if (solverSettings.getDoUseMetamaterials ())
   {
-    for (int i = 0; i < OmegaPE->getSize ().getX (); ++i)
+    if (solverSettings.getOmegaPEFileName ().empty ())
     {
-      for (int j = 0; j < OmegaPE->getSize ().getY (); ++j)
-      {
-        for (int k = 0; k < OmegaPE->getSize ().getZ (); ++k)
-        {
-          FieldPointValue* valOmega = new FieldPointValue ();
-
-#ifdef COMPLEX_FIELD_VALUES
-          valOmega->setCurValue (FieldValue (0, 0));
-#else /* COMPLEX_FIELD_VALUES */
-          valOmega->setCurValue (0);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-          GridCoordinate3D pos (i, j, k);
-
-          OmegaPE->setFieldPointValue (valOmega, pos);
-        }
-      }
+      OmegaPE->initialize ();
+    }
+    else
+    {
+      FileType type = GridFileManager::getFileType (solverSettings.getOmegaPEFileName ());
+      loader[type]->init (0, CURRENT, processId, "");
+      loader[type]->setFileNames (solverSettings.getOmegaPEFileName (), "", "");
+      loader[type]->loadGrid (OmegaPE);
     }
 
-    for (int i = 0; i < OmegaPM->getSize ().getX (); ++i)
+    if (solverSettings.getOmegaPMFileName ().empty ())
     {
-      for (int j = 0; j < OmegaPM->getSize ().getY (); ++j)
-      {
-        for (int k = 0; k < OmegaPM->getSize ().getZ (); ++k)
-        {
-          FieldPointValue* valOmega = new FieldPointValue ();
-
-#ifdef COMPLEX_FIELD_VALUES
-          valOmega->setCurValue (FieldValue (0, 0));
-#else /* COMPLEX_FIELD_VALUES */
-          valOmega->setCurValue (0);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-          GridCoordinate3D pos (i, j, k);
-
-          OmegaPM->setFieldPointValue (valOmega, pos);
-        }
-      }
+      OmegaPM->initialize ();
+    }
+    else
+    {
+      FileType type = GridFileManager::getFileType (solverSettings.getOmegaPMFileName ());
+      loader[type]->init (0, CURRENT, processId, "");
+      loader[type]->setFileNames (solverSettings.getOmegaPMFileName (), "", "");
+      loader[type]->loadGrid (OmegaPM);
     }
 
-    GammaE->initialize ();
-    GammaM->initialize ();
+    if (solverSettings.getGammaEFileName ().empty ())
+    {
+      GammaE->initialize ();
+    }
+    else
+    {
+      FileType type = GridFileManager::getFileType (solverSettings.getGammaEFileName ());
+      loader[type]->init (0, CURRENT, processId, "");
+      loader[type]->setFileNames (solverSettings.getGammaEFileName (), "", "");
+      loader[type]->loadGrid (GammaE);
+    }
+
+    if (solverSettings.getGammaMFileName ().empty ())
+    {
+      GammaM->initialize ();
+    }
+    else
+    {
+      FileType type = GridFileManager::getFileType (solverSettings.getGammaMFileName ());
+      loader[type]->init (0, CURRENT, processId, "");
+      loader[type]->setFileNames (solverSettings.getGammaMFileName (), "", "");
+      loader[type]->loadGrid (GammaM);
+    }
   }
 
   if (solverSettings.getDoUsePML ())
@@ -3120,57 +3187,65 @@ Scheme3D::initGrids ()
     }
   }
 
-  if (solverSettings.getDoSaveMaterials ())
+  for (int type = FILE_TYPE_BMP; type < FILE_TYPE_COUNT; ++type)
   {
-    dumper->init (0, CURRENT, processId, "Eps");
-    dumper->dumpGrid (Eps,
-                      GridCoordinate3D (0, 0, Eps->getSize ().getZ () / 2),
-                      GridCoordinate3D (Eps->getSize ().getX (), Eps->getSize ().getY (), Eps->getSize ().getZ () / 2 + 1));
-
-    dumper->init (0, CURRENT, processId, "Mu");
-    dumper->dumpGrid (Mu,
-                      GridCoordinate3D (0, 0, Mu->getSize ().getZ () / 2),
-                      GridCoordinate3D (Mu->getSize ().getX (), Mu->getSize ().getY (), Mu->getSize ().getZ () / 2 + 1));
-
-    if (solverSettings.getDoUseMetamaterials ())
+    if (!dumper[type])
     {
-      dumper->init (0, CURRENT, processId, "OmegaPE");
-      dumper->dumpGrid (OmegaPE,
-                        GridCoordinate3D (0, 0, OmegaPE->getSize ().getZ () / 2),
-                        GridCoordinate3D (OmegaPE->getSize ().getX (), OmegaPE->getSize ().getY (), OmegaPE->getSize ().getZ () / 2 + 1));
-
-      dumper->init (0, CURRENT, processId, "OmegaPM");
-      dumper->dumpGrid (OmegaPM,
-                        GridCoordinate3D (0, 0, OmegaPM->getSize ().getZ () / 2),
-                        GridCoordinate3D (OmegaPM->getSize ().getX (), OmegaPM->getSize ().getY (), OmegaPM->getSize ().getZ () / 2 + 1));
-
-      dumper->init (0, CURRENT, processId, "GammaE");
-      dumper->dumpGrid (GammaE,
-                        GridCoordinate3D (0, 0, GammaE->getSize ().getZ () / 2),
-                        GridCoordinate3D (GammaE->getSize ().getX (), GammaE->getSize ().getY (), GammaE->getSize ().getZ () / 2 + 1));
-
-      dumper->init (0, CURRENT, processId, "GammaM");
-      dumper->dumpGrid (GammaM,
-                        GridCoordinate3D (0, 0, GammaM->getSize ().getZ () / 2),
-                        GridCoordinate3D (GammaM->getSize ().getX (), GammaM->getSize ().getY (), GammaM->getSize ().getZ () / 2 + 1));
+      continue;
     }
 
-    if (solverSettings.getDoUsePML ())
+    if (solverSettings.getDoSaveMaterials ())
     {
-      dumper->init (0, CURRENT, processId, "SigmaX");
-      dumper->dumpGrid (SigmaX,
-                        GridCoordinate3D (0, 0, SigmaX->getSize ().getZ () / 2),
-                        GridCoordinate3D (SigmaX->getSize ().getX (), SigmaX->getSize ().getY (), SigmaX->getSize ().getZ () / 2 + 1));
+      dumper[type]->init (0, CURRENT, processId, "Eps");
+      dumper[type]->dumpGrid (Eps,
+                              GridCoordinate3D (0, 0, Eps->getSize ().getZ () / 2),
+                              GridCoordinate3D (Eps->getSize ().getX (), Eps->getSize ().getY (), Eps->getSize ().getZ () / 2 + 1));
 
-      dumper->init (0, CURRENT, processId, "SigmaY");
-      dumper->dumpGrid (SigmaY,
-                        GridCoordinate3D (0, 0, SigmaY->getSize ().getZ () / 2),
-                        GridCoordinate3D (SigmaY->getSize ().getX (), SigmaY->getSize ().getY (), SigmaY->getSize ().getZ () / 2 + 1));
+      dumper[type]->init (0, CURRENT, processId, "Mu");
+      dumper[type]->dumpGrid (Mu,
+                              GridCoordinate3D (0, 0, Mu->getSize ().getZ () / 2),
+                              GridCoordinate3D (Mu->getSize ().getX (), Mu->getSize ().getY (), Mu->getSize ().getZ () / 2 + 1));
 
-      dumper->init (0, CURRENT, processId, "SigmaZ");
-      dumper->dumpGrid (SigmaZ,
-                        GridCoordinate3D (0, 0, SigmaZ->getSize ().getZ () / 2),
-                        GridCoordinate3D (SigmaZ->getSize ().getX (), SigmaZ->getSize ().getY (), SigmaZ->getSize ().getZ () / 2 + 1));
+      if (solverSettings.getDoUseMetamaterials ())
+      {
+        dumper[type]->init (0, CURRENT, processId, "OmegaPE");
+        dumper[type]->dumpGrid (OmegaPE,
+                                GridCoordinate3D (0, 0, OmegaPE->getSize ().getZ () / 2),
+                                GridCoordinate3D (OmegaPE->getSize ().getX (), OmegaPE->getSize ().getY (), OmegaPE->getSize ().getZ () / 2 + 1));
+
+        dumper[type]->init (0, CURRENT, processId, "OmegaPM");
+        dumper[type]->dumpGrid (OmegaPM,
+                                GridCoordinate3D (0, 0, OmegaPM->getSize ().getZ () / 2),
+                                GridCoordinate3D (OmegaPM->getSize ().getX (), OmegaPM->getSize ().getY (), OmegaPM->getSize ().getZ () / 2 + 1));
+
+        dumper[type]->init (0, CURRENT, processId, "GammaE");
+        dumper[type]->dumpGrid (GammaE,
+                                GridCoordinate3D (0, 0, GammaE->getSize ().getZ () / 2),
+                                GridCoordinate3D (GammaE->getSize ().getX (), GammaE->getSize ().getY (), GammaE->getSize ().getZ () / 2 + 1));
+
+        dumper[type]->init (0, CURRENT, processId, "GammaM");
+        dumper[type]->dumpGrid (GammaM,
+                                GridCoordinate3D (0, 0, GammaM->getSize ().getZ () / 2),
+                                GridCoordinate3D (GammaM->getSize ().getX (), GammaM->getSize ().getY (), GammaM->getSize ().getZ () / 2 + 1));
+      }
+
+      if (solverSettings.getDoUsePML ())
+      {
+        dumper[type]->init (0, CURRENT, processId, "SigmaX");
+        dumper[type]->dumpGrid (SigmaX,
+                                GridCoordinate3D (0, 0, SigmaX->getSize ().getZ () / 2),
+                                GridCoordinate3D (SigmaX->getSize ().getX (), SigmaX->getSize ().getY (), SigmaX->getSize ().getZ () / 2 + 1));
+
+        dumper[type]->init (0, CURRENT, processId, "SigmaY");
+        dumper[type]->dumpGrid (SigmaY,
+                                GridCoordinate3D (0, 0, SigmaY->getSize ().getZ () / 2),
+                                GridCoordinate3D (SigmaY->getSize ().getX (), SigmaY->getSize ().getY (), SigmaY->getSize ().getZ () / 2 + 1));
+
+        dumper[type]->init (0, CURRENT, processId, "SigmaZ");
+        dumper[type]->dumpGrid (SigmaZ,
+                                GridCoordinate3D (0, 0, SigmaZ->getSize ().getZ () / 2),
+                                GridCoordinate3D (SigmaZ->getSize ().getX (), SigmaZ->getSize ().getY (), SigmaZ->getSize ().getZ () / 2 + 1));
+      }
     }
   }
 
@@ -3920,23 +3995,31 @@ Scheme3D::saveGrids (time_step t)
                           grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinHzCoordFP ().getY ()),
                           Hz->getSize ().getZ () / 2);
 
-  dumper->init (t, CURRENT, processId, "3D-in-time-Ex");
-  dumper->dumpGrid (totalEx, startEx, endEx);
+  for (int type = FILE_TYPE_BMP; type < FILE_TYPE_COUNT; ++type)
+  {
+    if (!dumper[type])
+    {
+      continue;
+    }
 
-  dumper->init (t, CURRENT, processId, "3D-in-time-Ey");
-  dumper->dumpGrid (totalEy, startEy, endEy);
+    dumper[type]->init (t, CURRENT, processId, "3D-in-time-Ex");
+    dumper[type]->dumpGrid (totalEx, startEx, endEx);
 
-  dumper->init (t, CURRENT, processId, "3D-in-time-Ez");
-  dumper->dumpGrid (totalEz, startEz, endEz);
+    dumper[type]->init (t, CURRENT, processId, "3D-in-time-Ey");
+    dumper[type]->dumpGrid (totalEy, startEy, endEy);
 
-  dumper->init (t, CURRENT, processId, "3D-in-time-Hx");
-  dumper->dumpGrid (totalHx, startHx, endHx);
+    dumper[type]->init (t, CURRENT, processId, "3D-in-time-Ez");
+    dumper[type]->dumpGrid (totalEz, startEz, endEz);
 
-  dumper->init (t, CURRENT, processId, "3D-in-time-Hy");
-  dumper->dumpGrid (totalHy, startHy, endHy);
+    dumper[type]->init (t, CURRENT, processId, "3D-in-time-Hx");
+    dumper[type]->dumpGrid (totalHx, startHx, endHx);
 
-  dumper->init (t, CURRENT, processId, "3D-in-time-Hz");
-  dumper->dumpGrid (totalHz, startHz, endHz);
+    dumper[type]->init (t, CURRENT, processId, "3D-in-time-Hy");
+    dumper[type]->dumpGrid (totalHy, startHy, endHy);
+
+    dumper[type]->init (t, CURRENT, processId, "3D-in-time-Hz");
+    dumper[type]->dumpGrid (totalHz, startHz, endHz);
+  }
 }
 
 void

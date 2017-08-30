@@ -7,16 +7,13 @@
 /**
  * Grid loader from BMP files.
  * Template class with coordinate parameter.
+ *
+ * NOTE: ".bmp" dumper/loader can't reproduce field values precisely.
+ *       Consequent dump to and load from ".bmp" file of grid will change grid values.
  */
 template <class TCoord>
 class BMPLoader: public Loader<TCoord>
 {
-  // Maximum positive value in grid.
-  FieldPointValue maxValuePos;
-
-  // Maximum negative value in grid.
-  FieldPointValue maxValueNeg;
-
   // Helper class for usage with BMP files.
   static BMPHelper BMPhelper;
 
@@ -38,26 +35,6 @@ public:
   void initializeHelper (PaletteType colorPalette, OrthogonalAxis orthAxis)
   {
     BMPhelper.initialize (colorPalette, orthAxis);
-  }
-
-  // Setter and getter for maximum positive value.
-  void setMaxValuePos (FieldPointValue& value)
-  {
-    maxValuePos = value;
-  }
-  const FieldPointValue& getMaxValuePos () const
-  {
-    return maxValuePos;
-  }
-
-  // Setter and getter for maximum negative value.
-  void setMaxValueNeg (FieldPointValue& value)
-  {
-    maxValueNeg = value;
-  }
-  const FieldPointValue& getMaxValueNeg () const
-  {
-    return maxValueNeg;
   }
 };
 

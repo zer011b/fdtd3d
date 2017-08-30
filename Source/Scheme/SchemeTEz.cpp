@@ -1141,7 +1141,7 @@ SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps)
 
         norm = sqrt (norm);
 
-        printf ("Norm at step %u: %f\n", t, norm);
+        printf ("Norm at step %u: " PRINTF_MODIFIER "\n", t, norm);
       }
     }
 #endif /* COMPLEX_FIELD_VALUES */
@@ -1186,7 +1186,7 @@ SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps)
 
     norm = sqrt (norm);
 
-    printf ("Norm at step %u: %f\n", stepLimit, norm);
+    printf ("Norm at step %u: " PRINTF_MODIFIER "\n", stepLimit, norm);
   }
 #endif /* COMPLEX_FIELD_VALUES */
 }
@@ -1346,7 +1346,7 @@ SchemeTEz::performAmplitudeSteps (time_step startStep)
       is_stable_state = 0;
     }
 
-    DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy %f. \n", t, maxAccuracy);
+    DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy " PRINTF_MODIFIER ". \n", t, maxAccuracy);
   }
 
   if (dumpRes)
@@ -1365,7 +1365,7 @@ SchemeTEz::performAmplitudeSteps (time_step startStep)
         {
           FieldPointValue* tmp = HzAmplitude.getFieldPointValue (pos);
 
-          printf ("%u: %f\n", i, tmp->getCurValue ());
+          printf ("%u: " PRINTF_MODIFIER "\n", i, tmp->getCurValue ());
         }
       }
     }
