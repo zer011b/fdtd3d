@@ -17,21 +17,33 @@ TXTLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid, GridFil
   {
     case CURRENT:
     {
-      std::string cur_txt = this->GridFileManager::cur + std::string (".txt");
+      std::string cur_txt = this->GridFileManager::cur;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        cur_txt += std::string (".txt");
+      }
       file.open (cur_txt.c_str (), std::ios::in);
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      std::string prev_txt = this->GridFileManager::prev + std::string (".txt");
+      std::string prev_txt = this->GridFileManager::prev;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        prev_txt += std::string (".txt");
+      }
       file.open (prev_txt.c_str (), std::ios::in);
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      std::string prevPrev_txt = this->GridFileManager::prevPrev + std::string (".txt");
+      std::string prevPrev_txt = this->GridFileManager::prevPrev;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        prevPrev_txt += std::string (".txt");
+      }
       file.open (prevPrev_txt.c_str (), std::ios::in);
       break;
     }
@@ -138,21 +150,33 @@ TXTLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid, GridFil
   {
     case CURRENT:
     {
-      std::string cur_txt = this->GridFileManager::cur + std::string (".txt");
+      std::string cur_txt = this->GridFileManager::cur;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        cur_txt += std::string (".txt");
+      }
       file.open (cur_txt.c_str (), std::ios::in);
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      std::string prev_txt = this->GridFileManager::prev + std::string (".txt");
+      std::string prev_txt = this->GridFileManager::prev;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        prev_txt += std::string (".txt");
+      }
       file.open (prev_txt.c_str (), std::ios::in);
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      std::string prevPrev_txt = this->GridFileManager::prevPrev + std::string (".txt");
+      std::string prevPrev_txt = this->GridFileManager::prevPrev;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        prevPrev_txt += std::string (".txt");
+      }
       file.open (prevPrev_txt.c_str (), std::ios::in);
       break;
     }
@@ -263,21 +287,33 @@ TXTLoader<GridCoordinate3D>::loadFromFile (Grid<GridCoordinate3D> *grid, GridFil
   {
     case CURRENT:
     {
-      std::string cur_txt = this->GridFileManager::cur + std::string (".txt");
+      std::string cur_txt = this->GridFileManager::cur;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        cur_txt += std::string (".txt");
+      }
       file.open (cur_txt.c_str (), std::ios::in);
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      std::string prev_txt = this->GridFileManager::prev + std::string (".txt");
+      std::string prev_txt = this->GridFileManager::prev;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        prev_txt += std::string (".txt");
+      }
       file.open (prev_txt.c_str (), std::ios::in);
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      std::string prevPrev_txt = this->GridFileManager::prevPrev + std::string (".txt");
+      std::string prevPrev_txt = this->GridFileManager::prevPrev;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        prevPrev_txt += std::string (".txt");
+      }
       file.open (prevPrev_txt.c_str (), std::ios::in);
       break;
     }

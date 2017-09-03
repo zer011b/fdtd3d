@@ -2,7 +2,7 @@
 #include "BMPHelper.h"
 
 int BMPHelper::bitDepth = 24;
-int BMPHelper::numColors = 256;
+int BMPHelper::numColors = 255;
 
 /**
  * Return value according to colors of pixel.

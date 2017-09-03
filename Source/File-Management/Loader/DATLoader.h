@@ -38,21 +38,33 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid, GridFileType type) const
   {
     case CURRENT:
     {
-      std::string cur_dat = this->GridFileManager::cur + std::string (".dat");
+      std::string cur_dat = this->GridFileManager::cur;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        cur_dat += std::string (".dat");
+      }
       file.open (cur_dat.c_str (), std::ios::in | std::ios::binary);
       break;
     }
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     case PREVIOUS:
     {
-      std::string prev_dat = this->GridFileManager::prev + std::string (".dat");
+      std::string prev_dat = this->GridFileManager::prev;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        prev_dat += std::string (".dat");
+      }
       file.open (prev_dat.c_str (), std::ios::in | std::ios::binary);
       break;
     }
 #if defined (TWO_TIME_STEPS)
     case PREVIOUS2:
     {
-      std::string prevPrev_dat = this->GridFileManager::prevPrev + std::string (".dat");
+      std::string prevPrev_dat = this->GridFileManager::prevPrev;
+      if (!this->GridFileManager::manualFileNames)
+      {
+        prevPrev_dat += std::string (".dat");
+      }
       file.open (prevPrev_dat.c_str (), std::ios::in | std::ios::binary);
       break;
     }

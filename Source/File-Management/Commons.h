@@ -38,6 +38,8 @@ class GridFileManager
 {
 protected:
 
+  bool manualFileNames;
+
   // Time step number (used in file naming).
   grid_iter step;
 
@@ -76,7 +78,13 @@ protected:
   }
 
   // Protected constructor to disallow instantiation.
-  GridFileManager () : step (0), type (ALL) {}
+  GridFileManager ()
+    : manualFileNames (false)
+  , step (0)
+  , type (CURRENT)
+  , processId (0)
+  {
+  }
 
 public:
 
@@ -85,12 +93,37 @@ public:
   // Initialize dumper with time step number and save/load type.
   void init (const grid_iter& timeStep, GridFileType newType, int process, const char *name)
   {
+    manualFileNames = false;
     step = timeStep;
     type = newType;
     processId = process;
     customName = std::string (name);
 
     setFileNames ();
+  }
+
+  void initManual (const grid_iter& timeStep,
+                   GridFileType newType,
+                   int process,
+                   const std::string &current,
+                   const std::string &previous,
+                   const std::string &prevPrevious)
+  {
+    manualFileNames = true;
+    step = timeStep;
+    type = newType;
+    processId = process;
+
+    cur.clear ();
+    cur = current;
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+    prev.clear ();
+    prev = previous;
+#if defined (TWO_TIME_STEPS)
+    prevPrev.clear ();
+    prevPrev = prevPrevious;
+#endif /* TWO_TIME_STEPS */
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
   }
 
   // Set time step.
@@ -105,20 +138,6 @@ public:
   void setGridFileType (GridFileType newType)
   {
     type = newType;
-  }
-
-  void setFileNames (const std::string &current, const std::string &previous, const std::string &prevPrevious)
-  {
-    cur.clear ();
-    cur = current;
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    prev.clear ();
-    prev = previous;
-#if defined (TWO_TIME_STEPS)
-    prevPrev.clear ();
-    prevPrev = prevPrevious;
-#endif /* TWO_TIME_STEPS */
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
   }
 
   static FileType getFileType (const std::string &);
