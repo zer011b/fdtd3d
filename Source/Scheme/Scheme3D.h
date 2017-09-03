@@ -65,6 +65,13 @@ class Scheme3D: public Scheme
 
   bool totalInitialized;
 
+  Grid<GridCoordinate3D> *totalEps;
+  Grid<GridCoordinate3D> *totalMu;
+  Grid<GridCoordinate3D> *totalOmegaPE;
+  Grid<GridCoordinate3D> *totalOmegaPM;
+  Grid<GridCoordinate3D> *totalGammaE;
+  Grid<GridCoordinate3D> *totalGammaM;
+
   // Wave parameters
   FPValue sourceWaveLength;
   FPValue sourceFrequency;
