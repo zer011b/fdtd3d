@@ -10,7 +10,7 @@ For additional info on current project development status and future plans check
 
 Build is done using cmake. Also there are build and run scripts you could find useful.
 
-## Release Build
+## Build
 
 ```sh
 mkdir Release
@@ -19,30 +19,20 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 make
 ```
 
-## Debug Build
-
-```sh
-mkdir Debug
-cd Debug
-cmake .. -DCMAKE_BUILD_TYPE=Debug
-make
-```
-
 ## Additional Example
 
-Build command for 3D grid:
+Build command for 3D grid in detail:
 
 ```sh
-cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=OFF -DTIME_STEPS=2 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=OFF -DPARALLEL_BUFFER_DIMENSION=xyz -DCXX11_ENABLED=ON -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50
+cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=OFF -DTIME_STEPS=2 \
+-DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=ON -DPARALLEL_GRID=OFF -DPARALLEL_BUFFER_DIMENSION=xyz \
+-DCXX11_ENABLED=ON -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50
 ```
 
 # Testing
 
-To start unit tests do next
-
-```sh
-./Tools/build-and-run-unit-tests.sh <home_dir_of_the_project> <cxx_compiler> <c_compiler> false
-```
+Testing is performed using Travis CI. Open pull request with your changes and it will be automatically tested.
+For details, see .travis.yml.
 
 # Build Flags
 
@@ -75,14 +65,16 @@ cd Release/Source
 ./fdtd3d --version
 
 # example of launch command for 3D build
-./fdtd3d --save-res --time-steps 10 --sizex 80 --same-size --use-tfsf --3d \
-         --angle-phi 0 --use-pml --dx 0.0005 --wavelength 0.02 --save-cmd-to-file cmd.txt
+./fdtd3d --load-eps-from-file /tmp/eps.txt --save-res --time-steps 10 --sizex 80 --same-size --use-tfsf \
+         --3d --angle-phi 0 --use-pml --dx 0.0005 --wavelength 0.02 --save-cmd-to-file cmd.txt
 
-# example of launch with command line file
+# example of the same launch with command line file
 ./fdtd3d --cmd-from-file cmd.txt
 
-# with cmd.txt file having the next format
+# cmd.txt file has the next format
 #
+# --load-eps-from-file
+# /tmp/eps.txt
 # --save-res
 # --time-steps
 # 1
