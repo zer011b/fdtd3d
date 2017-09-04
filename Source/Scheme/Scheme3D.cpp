@@ -3023,28 +3023,37 @@ Scheme3D::initGrids ()
             GridCoordinate3D posAbs = Eps->getTotalPosition (pos);
             FieldPointValue *val = Eps->getFieldPointValue (pos);
             *val = *totalEps->getFieldPointValue (posAbs);
-  //         FieldPointValue* eps = new FieldPointValue ();
-  //
-  // #ifdef COMPLEX_FIELD_VALUES
-  //         eps->setCurValue (FieldValue (1, 0));
-  // #else /* COMPLEX_FIELD_VALUES */
-  //         eps->setCurValue (1);
-  // #endif /* !COMPLEX_FIELD_VALUES */
-  //
-  //         GridCoordinate3D pos (i, j, k);
-  // //         GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (Eps->getTotalPosition (pos));
-  // //
-  // // #ifdef COMPLEX_FIELD_VALUES
-  // //         FieldValue epsVal (2, 0);
-  // // #else /* COMPLEX_FIELD_VALUES */
-  // //         FieldValue epsVal (2);
-  // // #endif /* !COMPLEX_FIELD_VALUES */
-  // //
-  // //         FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
-  // //         eps->setCurValue (Approximation::approximateSphere (posAbs, GridCoordinateFP3D (40.5, 40.5, 40.5) * modifier, 20 * modifier, epsVal));
-  // //
-  // //         Eps->setFieldPointValue (eps, pos);
           }
+        }
+      }
+    }
+  }
+
+  if (solverSettings.getEpsSphere () != 1)
+  {
+    for (int i = 0; i < Eps->getSize ().getX (); ++i)
+    {
+      for (int j = 0; j < Eps->getSize ().getY (); ++j)
+      {
+        for (int k = 0; k < Eps->getSize ().getZ (); ++k)
+        {
+          GridCoordinate3D pos (i, j, k);
+          GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (Eps->getTotalPosition (pos));
+          FieldPointValue *val = Eps->getFieldPointValue (pos);
+
+#ifdef COMPLEX_FIELD_VALUES
+          FieldValue epsVal (solverSettings.getEpsSphere (), 0);
+#else /* COMPLEX_FIELD_VALUES */
+          FieldValue epsVal (solverSettings.getEpsSphere ());
+#endif /* !COMPLEX_FIELD_VALUES */
+
+          FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
+          GridCoordinateFP3D center (solverSettings.getEpsSphereCenterX (),
+                                     solverSettings.getEpsSphereCenterY (),
+                                     solverSettings.getEpsSphereCenterZ ());
+          val->setCurValue (Approximation::approximateSphere (posAbs,
+                                                              center * modifier + GridCoordinateFP3D (0.5, 0.5, 0.5),
+                                                              solverSettings.getEpsSphereRadius () * modifier, epsVal));
         }
       }
     }

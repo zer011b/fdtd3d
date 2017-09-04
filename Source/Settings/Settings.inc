@@ -145,6 +145,12 @@ SETTINGS_ELEM_FIELD_TYPE_STRING(omegaPMFileName, getOmegaPMFileName, std::string
 SETTINGS_ELEM_FIELD_TYPE_STRING(gammaEFileName, getGammaEFileName, std::string, "", "--load-gammae-from-file", "File name to load GammaE from")
 SETTINGS_ELEM_FIELD_TYPE_STRING(gammaMFileName, getGammaMFileName, std::string, "", "--load-gammam-from-file", "File name to load GammaM from")
 
+SETTINGS_ELEM_FIELD_TYPE_INT(epsSphere, getEpsSphere, int, 1, "--eps-sphere", "Permittivity of Eps material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterX, getEpsSphereCenterX, int, 0, "--eps-sphere-center-x", "Center position by x coordinate of Eps material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterY, getEpsSphereCenterY, int, 0, "--eps-sphere-center-y", "Center position by y coordinate of Eps material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterZ, getEpsSphereCenterZ, int, 0, "--eps-sphere-center-z", "Center position by z coordinate of Eps material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereRadius, getEpsSphereRadius, int, 0, "--eps-sphere-radius", "Radius of Eps material sphere")
+
 /*
 SETTINGS_ELEM_FIELD_TYPE_STRING(exFileName, getExFileName, std::string, "", "--load-ex-from-file", "File name to load Ex from")
 SETTINGS_ELEM_FIELD_TYPE_STRING(eyFileName, getEyFileName, std::string, "", "--load-ey-from-file", "File name to load Ey from")
