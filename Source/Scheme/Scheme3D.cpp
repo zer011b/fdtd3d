@@ -93,8 +93,8 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
 
     ParallelYeeGridLayout *parallelYeeLayout = (ParallelYeeGridLayout *) (layout);
 
-    Eps = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "Eps");
-    Mu = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getMuSizeForCurNode (), "Mu");
+    Eps = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize, 0, parallelYeeLayout->getEpsSizeForCurNode (), "Eps");
+    Mu = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize, 0, parallelYeeLayout->getMuSizeForCurNode (), "Mu");
 
     Ex = new ParallelGrid (parallelYeeLayout->getExSize (), bufSize, 0, parallelYeeLayout->getExSizeForCurNode (), "Ex");
     Ey = new ParallelGrid (parallelYeeLayout->getEySize (), bufSize, 0, parallelYeeLayout->getEySizeForCurNode (), "Ey");
@@ -122,9 +122,9 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
         B1z = new ParallelGrid (parallelYeeLayout->getHzSize (), bufSize, 0, parallelYeeLayout->getHzSizeForCurNode (), "B1z");
       }
 
-      SigmaX = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "SigmaX");
-      SigmaY = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "SigmaY");
-      SigmaZ = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "SigmaZ");
+      SigmaX = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize, 0, parallelYeeLayout->getEpsSizeForCurNode (), "SigmaX");
+      SigmaY = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize, 0, parallelYeeLayout->getEpsSizeForCurNode (), "SigmaY");
+      SigmaZ = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize, 0, parallelYeeLayout->getEpsSizeForCurNode (), "SigmaZ");
     }
 
     if (solverSettings.getDoUseAmplitudeMode ())
@@ -139,10 +139,10 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
 
     if (solverSettings.getDoUseMetamaterials ())
     {
-      OmegaPE = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "OmegaPE");
-      GammaE = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "GammaE");
-      OmegaPM = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "OmegaPM");
-      GammaM = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize + GridCoordinate3D (1, 1, 1), 0, parallelYeeLayout->getEpsSizeForCurNode (), "GammaM");
+      OmegaPE = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize, 0, parallelYeeLayout->getEpsSizeForCurNode (), "OmegaPE");
+      GammaE = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize, 0, parallelYeeLayout->getEpsSizeForCurNode (), "GammaE");
+      OmegaPM = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize, 0, parallelYeeLayout->getEpsSizeForCurNode (), "OmegaPM");
+      GammaM = new ParallelGrid (parallelYeeLayout->getEpsSize (), bufSize, 0, parallelYeeLayout->getEpsSizeForCurNode (), "GammaM");
     }
 
     if (!solverSettings.getEpsFileName ().empty () || solverSettings.getDoSaveMaterials ())
