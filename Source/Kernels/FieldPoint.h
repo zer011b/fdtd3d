@@ -25,23 +25,11 @@ public:
 
   // Constructor for all cases.
   FieldPointValue (
-#ifdef COMPLEX_FIELD_VALUES
-    const FieldValue& curVal = FieldValue (0, 0)
-#else /* COMPLEX_FIELD_VALUES */
-    const FieldValue& curVal = 0
-#endif /* !COMPLEX_FIELD_VALUES */
+    const FieldValue& curVal = getFieldValueRealOnly (0.0)
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-#ifdef COMPLEX_FIELD_VALUES
-    , const FieldValue& prevVal = FieldValue (0, 0)
-#else /* COMPLEX_FIELD_VALUES */
-    , const FieldValue& prevVal = 0
-#endif /* !COMPLEX_FIELD_VALUES */
+    , const FieldValue& prevVal = getFieldValueRealOnly (0.0)
 #ifdef TWO_TIME_STEPS
-#ifdef COMPLEX_FIELD_VALUES
-    , const FieldValue& prevPrevVal = FieldValue (0, 0)
-#else /* COMPLEX_FIELD_VALUES */
-    , const FieldValue& prevPrevVal = 0
-#endif /* !COMPLEX_FIELD_VALUES */
+    , const FieldValue& prevPrevVal = getFieldValueRealOnly (0.0)
 #endif /* TWO_TIME_STEPS */
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
   );
