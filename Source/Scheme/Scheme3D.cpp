@@ -500,7 +500,7 @@ Scheme3D::performPlaneWaveESteps (time_step t)
   valE->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
 #endif /* !COMPLEX_FIELD_VALUES */
 
-  ASSERT (EInc->getFieldPointValue (GridCoordinate1D (size - 1))->getCurValue () == 0.0);
+  ASSERT (EInc->getFieldPointValue (GridCoordinate1D (size - 1))->getCurValue () == getFieldValueRealOnly (0.0));
 
   EInc->nextTimeStep ();
 }
@@ -531,7 +531,7 @@ Scheme3D::performPlaneWaveHSteps (time_step t)
     valH->setCurValue (val);
   }
 
-  ASSERT (HInc->getFieldPointValue (GridCoordinate1D (size - 2))->getCurValue () == 0.0);
+  ASSERT (HInc->getFieldPointValue (GridCoordinate1D (size - 2))->getCurValue () == getFieldValueRealOnly (0.0));
 
   HInc->nextTimeStep ();
 }
@@ -785,6 +785,7 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
 
   if (solverSettings.getDoUseMetamaterials ())
   {
+#ifdef TWO_TIME_STEPS
     for (int i = ExStart.getX (); i < ExEnd.getX (); ++i)
     {
       for (int j = ExStart.getY (); j < ExEnd.getY (); ++j)
@@ -821,6 +822,9 @@ Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordin
         }
       }
     }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
+#endif
   }
 
   for (int i = ExStart.getX (); i < ExEnd.getX (); ++i)
@@ -1087,6 +1091,7 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
 
   if (solverSettings.getDoUseMetamaterials ())
   {
+#ifdef TWO_TIME_STEPS
     for (int i = EyStart.getX (); i < EyEnd.getX (); ++i)
     {
       for (int j = EyStart.getY (); j < EyEnd.getY (); ++j)
@@ -1123,6 +1128,9 @@ Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordin
         }
       }
     }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
+#endif
   }
 
   for (int i = EyStart.getX (); i < EyEnd.getX (); ++i)
@@ -1387,6 +1395,7 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
 
   if (solverSettings.getDoUseMetamaterials ())
   {
+#ifdef TWO_TIME_STEPS
     for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
     {
       for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
@@ -1423,6 +1432,9 @@ Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordin
         }
       }
     }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
+#endif
   }
 
   for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
@@ -1690,6 +1702,7 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
 
   if (solverSettings.getDoUseMetamaterials ())
   {
+#ifdef TWO_TIME_STEPS
     for (int i = HxStart.getX (); i < HxEnd.getX (); ++i)
     {
       for (int j = HxStart.getY (); j < HxEnd.getY (); ++j)
@@ -1726,6 +1739,9 @@ Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordin
         }
       }
     }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
+#endif
   }
 
   for (int i = HxStart.getX (); i < HxEnd.getX (); ++i)
@@ -1991,6 +2007,7 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
 
   if (solverSettings.getDoUseMetamaterials ())
   {
+#ifdef TWO_TIME_STEPS
     for (int i = HyStart.getX (); i < HyEnd.getX (); ++i)
     {
       for (int j = HyStart.getY (); j < HyEnd.getY (); ++j)
@@ -2027,6 +2044,9 @@ Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordin
         }
       }
     }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
+#endif
   }
 
   for (int i = HyStart.getX (); i < HyEnd.getX (); ++i)
@@ -2291,6 +2311,7 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
 
   if (solverSettings.getDoUseMetamaterials ())
   {
+#ifdef TWO_TIME_STEPS
     for (int i = HzStart.getX (); i < HzEnd.getX (); ++i)
     {
       for (int j = HzStart.getY (); j < HzEnd.getY (); ++j)
@@ -2327,6 +2348,9 @@ Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordin
         }
       }
     }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
+#endif
   }
 
   for (int i = HzStart.getX (); i < HzEnd.getX (); ++i)
@@ -2999,11 +3023,7 @@ Scheme3D::initGrids ()
 #endif /* !PARALLEL_GRID */
   }
 
-#ifdef COMPLEX_FIELD_VALUES
-  Eps->initialize (FieldValue (1, 0));
-#else /* COMPLEX_FIELD_VALUES */
-  Eps->initialize (FieldValue (1));
-#endif /* !COMPLEX_FIELD_VALUES */
+  Eps->initialize (getFieldValueRealOnly (1.0));
 
   if (!solverSettings.getEpsFileName ().empty ())
   {
@@ -3041,11 +3061,7 @@ Scheme3D::initGrids ()
           GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (Eps->getTotalPosition (pos));
           FieldPointValue *val = Eps->getFieldPointValue (pos);
 
-#ifdef COMPLEX_FIELD_VALUES
-          FieldValue epsVal (solverSettings.getEpsSphere (), 0);
-#else /* COMPLEX_FIELD_VALUES */
-          FieldValue epsVal (solverSettings.getEpsSphere ());
-#endif /* !COMPLEX_FIELD_VALUES */
+          FieldValue epsVal = getFieldValueRealOnly (solverSettings.getEpsSphere ());
 
           FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
           GridCoordinateFP3D center (solverSettings.getEpsSphereCenterX (),
@@ -3059,11 +3075,7 @@ Scheme3D::initGrids ()
     }
   }
 
-#ifdef COMPLEX_FIELD_VALUES
-  Mu->initialize (FieldValue (1, 0));
-#else /* COMPLEX_FIELD_VALUES */
-  Mu->initialize (FieldValue (1));
-#endif /* !COMPLEX_FIELD_VALUES */
+  Mu->initialize (getFieldValueRealOnly (1.0));
 
   if (!solverSettings.getMuFileName ().empty ())
   {
@@ -3233,11 +3245,7 @@ Scheme3D::initGrids ()
 
             FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));    //   polynomial grading
 
-#ifdef COMPLEX_FIELD_VALUES
-      			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-            valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (getFieldValueRealOnly (val));
           }
           else if (posAbs.getX () >= size.getX () - PMLSize.getX ())
           {
@@ -3248,11 +3256,7 @@ Scheme3D::initGrids ()
       			//std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
       			FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
 
-#ifdef COMPLEX_FIELD_VALUES
-      			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-            valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (getFieldValueRealOnly (val));
           }
 
           SigmaX->setFieldPointValue (valSigma, pos);
@@ -3284,11 +3288,7 @@ Scheme3D::initGrids ()
 
             FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
 
-#ifdef COMPLEX_FIELD_VALUES
-      			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-            valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (getFieldValueRealOnly (val));
           }
           else if (posAbs.getY () >= size.getY () - PMLSize.getY ())
           {
@@ -3299,11 +3299,7 @@ Scheme3D::initGrids ()
             //std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
             FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
 
-#ifdef COMPLEX_FIELD_VALUES
-      			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-            valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (getFieldValueRealOnly (val));
           }
 
           SigmaY->setFieldPointValue (valSigma, pos);
@@ -3335,11 +3331,7 @@ Scheme3D::initGrids ()
 
             FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
 
-#ifdef COMPLEX_FIELD_VALUES
-      			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-            valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (getFieldValueRealOnly (val));
           }
           else if (posAbs.getZ () >= size.getZ () - PMLSize.getZ ())
           {
@@ -3350,11 +3342,7 @@ Scheme3D::initGrids ()
             //std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
             FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
 
-#ifdef COMPLEX_FIELD_VALUES
-      			valSigma->setCurValue (FieldValue (val, 0));
-#else /* COMPLEX_FIELD_VALUES */
-            valSigma->setCurValue (val);
-#endif /* !COMPLEX_FIELD_VALUES */
+            valSigma->setCurValue (getFieldValueRealOnly (val));
           }
 
           SigmaZ->setFieldPointValue (valSigma, pos);
@@ -3518,6 +3506,7 @@ Scheme3D::ntffN_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
                    Grid<GridCoordinate3D> *curTotalHy,
                    Grid<GridCoordinate3D> *curTotalHz)
 {
+#ifdef COMPLEX_FIELD_VALUES
   FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (x0, leftNTFF.getY () + 0.5, leftNTFF.getZ () + 0.5);
@@ -3559,14 +3548,17 @@ Scheme3D::ntffN_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valHz1 + valHz2)/2.0 * cos (angleTeta) * sin (anglePhi)
-                                  + (valHy1 + valHy2)/2.0 * sin (angleTeta)) * exponent;
+      sum_teta += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valHz1 + valHz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
+                                  + (valHy1 + valHy2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
 
-      sum_phi += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valHz1 + valHz2)/2.0 * cos (anglePhi)) * exponent;
+      sum_phi += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valHz1 + valHz2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
     }
   }
 
   return Scheme3D::NPair (sum_teta, sum_phi);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+#endif
 }
 
 Scheme3D::NPair
@@ -3575,6 +3567,7 @@ Scheme3D::ntffN_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
                    Grid<GridCoordinate3D> *curTotalHx,
                    Grid<GridCoordinate3D> *curTotalHz)
 {
+#ifdef COMPLEX_FIELD_VALUES
   FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, y0, leftNTFF.getZ () + 0.5);
@@ -3616,14 +3609,17 @@ Scheme3D::ntffN_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (y0==rightNTFF.getY ()?1:-1) * ((valHz1 + valHz2)/2.0 * cos (angleTeta) * cos (anglePhi)
-                                  + (valHx1 + valHx2)/2.0 * sin (angleTeta)) * exponent;
+      sum_teta += SQR (gridStep) * (y0==rightNTFF.getY ()?1:-1) * ((valHz1 + valHz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                                  + (valHx1 + valHx2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
 
-      sum_phi += SQR (gridStep) * (-1) * (y0==rightNTFF.getY ()?1:-1) * ((valHz1 + valHz2)/2.0 * sin (anglePhi)) * exponent;
+      sum_phi += SQR (gridStep) * (-1) * (y0==rightNTFF.getY ()?1:-1) * ((valHz1 + valHz2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent;
     }
   }
 
   return Scheme3D::NPair (sum_teta, sum_phi);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+#endif
 }
 
 Scheme3D::NPair
@@ -3632,6 +3628,7 @@ Scheme3D::ntffN_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
                    Grid<GridCoordinate3D> *curTotalHx,
                    Grid<GridCoordinate3D> *curTotalHy)
 {
+#ifdef COMPLEX_FIELD_VALUES
   FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, leftNTFF.getY () + 0.5, z0);
@@ -3673,15 +3670,18 @@ Scheme3D::ntffN_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * (-(valHy1 + valHy2)/2.0 * cos (angleTeta) * cos (anglePhi)
-                                  + (valHx1 + valHx2)/2.0 * cos (angleTeta) * sin (anglePhi)) * exponent;
+      sum_teta += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * (-(valHy1 + valHy2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                                  + (valHx1 + valHx2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent;
 
-      sum_phi += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * ((valHy1 + valHy2)/2.0 * sin (anglePhi)
-                                                + (valHx1 + valHx2)/2.0 * cos (anglePhi)) * exponent;
+      sum_phi += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * ((valHy1 + valHy2)/FPValue(2.0) * FPValue (sin (anglePhi))
+                                                + (valHx1 + valHx2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
     }
   }
 
   return Scheme3D::NPair (sum_teta, sum_phi);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+#endif
 }
 
 Scheme3D::NPair
@@ -3689,6 +3689,7 @@ Scheme3D::ntffL_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
                    Grid<GridCoordinate3D> *curTotalEy,
                    Grid<GridCoordinate3D> *curTotalEz)
 {
+#ifdef COMPLEX_FIELD_VALUES
   FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (x0, leftNTFF.getY () + 0.5, leftNTFF.getZ () + 0.5);
@@ -3718,14 +3719,14 @@ Scheme3D::ntffL_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
       pos4 = pos4 - yeeLayout->getMinEzCoordFP ();
 
       FieldValue valEy1 = (curTotalEy->getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEy->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val1;
+                           + curTotalEy->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / FPValue(2.0);// - val1;
       FieldValue valEy2 = (curTotalEy->getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEy->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val2;
+                           + curTotalEy->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / FPValue(2.0);// - val2;
 
       FieldValue valEz1 = (curTotalEz->getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEz->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val3;
+                           + curTotalEz->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / FPValue(2.0);// - val3;
       FieldValue valEz2 = (curTotalEz->getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEz->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / 2.0;// - val4;
+                           + curTotalEz->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / FPValue(2.0);// - val4;
 
       FPValue arg = (x0 - diffc) * sin(angleTeta)*cos(anglePhi) + (coordY - diffc) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffc) * cos (angleTeta);
       arg *= gridStep;
@@ -3734,14 +3735,17 @@ Scheme3D::ntffL_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valEz1 + valEz2)/2.0 * cos (angleTeta) * sin (anglePhi)
-                                  + (valEy1 + valEy2)/2.0 * sin (angleTeta)) * exponent;
+      sum_teta += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valEz1 + valEz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
+                                  + (valEy1 + valEy2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
 
-      sum_phi += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valEz1 + valEz2)/2.0 * cos (anglePhi)) * exponent;
+      sum_phi += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valEz1 + valEz2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
     }
   }
 
   return Scheme3D::NPair (sum_teta, sum_phi);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+#endif
 }
 
 Scheme3D::NPair
@@ -3749,6 +3753,7 @@ Scheme3D::ntffL_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
                    Grid<GridCoordinate3D> *curTotalEx,
                    Grid<GridCoordinate3D> *curTotalEz)
 {
+#ifdef COMPLEX_FIELD_VALUES
   FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, y0, leftNTFF.getZ () + 0.5);
@@ -3778,14 +3783,14 @@ Scheme3D::ntffL_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
       pos4 = pos4 - yeeLayout->getMinEzCoordFP ();
 
       FieldValue valEx1 = (curTotalEx->getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEx->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val1;
+                           + curTotalEx->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / FPValue(2.0);// - val1;
       FieldValue valEx2 = (curTotalEx->getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEx->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val2;
+                           + curTotalEx->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / FPValue(2.0);// - val2;
 
       FieldValue valEz1 = (curTotalEz->getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEz->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val3;
+                           + curTotalEz->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / FPValue(2.0);// - val3;
       FieldValue valEz2 = (curTotalEz->getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEz->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / 2.0;// - val4;
+                           + curTotalEz->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / FPValue(2.0);// - val4;
 
       FPValue arg = (coordX - diffc) * sin(angleTeta)*cos(anglePhi) + (y0 - diffc) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffc) * cos (angleTeta);
       arg *= gridStep;
@@ -3794,14 +3799,17 @@ Scheme3D::ntffL_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (y0==rightNTFF.getY ()?1:-1) * ((valEz1 + valEz2)/2.0 * cos (angleTeta) * cos (anglePhi)
-                                  + (valEx1 + valEx2)/2.0 * sin (angleTeta)) * exponent;
+      sum_teta += SQR (gridStep) * (y0==rightNTFF.getY ()?1:-1) * ((valEz1 + valEz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                                  + (valEx1 + valEx2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
 
-      sum_phi += SQR (gridStep) * (-1) * (y0==rightNTFF.getY ()?1:-1) * ((valEz1 + valEz2)/2.0 * sin (anglePhi)) * exponent;
+      sum_phi += SQR (gridStep) * (-1) * (y0==rightNTFF.getY ()?1:-1) * ((valEz1 + valEz2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent;
     }
   }
 
   return Scheme3D::NPair (sum_teta, sum_phi);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+#endif
 }
 
 Scheme3D::NPair
@@ -3810,6 +3818,7 @@ Scheme3D::ntffL_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
                    Grid<GridCoordinate3D> *curTotalEy,
                    Grid<GridCoordinate3D> *curTotalEz)
 {
+#ifdef COMPLEX_FIELD_VALUES
   FPValue diffc = curTotalEz->getSize ().getX () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, leftNTFF.getY () + 0.5, z0);
@@ -3839,14 +3848,14 @@ Scheme3D::ntffL_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
       pos4 = pos4 - yeeLayout->getMinEyCoordFP ();
 
       FieldValue valEx1 = (curTotalEx->getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEx->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val1;
+                           + curTotalEx->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / FPValue(2.0);// - val1;
       FieldValue valEx2 = (curTotalEx->getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEx->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val2;
+                           + curTotalEx->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / FPValue(2.0);// - val2;
 
       FieldValue valEy1 = (curTotalEy->getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEy->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val3;
+                           + curTotalEy->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / FPValue(2.0);// - val3;
       FieldValue valEy2 = (curTotalEy->getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEy->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / 2.0;// - val4;
+                           + curTotalEy->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / FPValue(2.0);// - val4;
 
       FPValue arg = (coordX - diffc) * sin(angleTeta)*cos(anglePhi) + (coordY - diffc) * sin(angleTeta)*sin(anglePhi) + (z0 - diffc) * cos (angleTeta);
       arg *= gridStep;
@@ -3855,15 +3864,18 @@ Scheme3D::ntffL_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * (-(valEy1 + valEy2)/2.0 * cos (angleTeta) * cos (anglePhi)
-                                  + (valEx1 + valEx2)/2.0 * cos (angleTeta) * sin (anglePhi)) * exponent;
+      sum_teta += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * (-(valEy1 + valEy2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                                  + (valEx1 + valEx2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent;
 
-      sum_phi += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * ((valEy1 + valEy2)/2.0 * sin (anglePhi)
-                                                + (valEx1 + valEx2)/2.0 * cos (anglePhi)) * exponent;
+      sum_phi += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * ((valEy1 + valEy2)/FPValue(2.0) * FPValue (sin (anglePhi))
+                                                + (valEx1 + valEx2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
     }
   }
 
   return Scheme3D::NPair (sum_teta, sum_phi);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+#endif
 }
 
 Scheme3D::NPair
@@ -3904,6 +3916,7 @@ Scheme3D::Pointing_scat (FPValue angleTeta, FPValue anglePhi,
                          Grid<GridCoordinate3D> *curTotalHy,
                          Grid<GridCoordinate3D> *curTotalHz)
 {
+#ifdef COMPLEX_FIELD_VALUES
   FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
 
   NPair N = ntffN (angleTeta, anglePhi, curTotalEz, curTotalHx, curTotalHy, curTotalHz);
@@ -3918,6 +3931,9 @@ Scheme3D::Pointing_scat (FPValue angleTeta, FPValue anglePhi,
   FPValue second_abs2 = SQR (second.real ()) + SQR (second.imag ());
 
   return SQR(k) / (8 * PhysicsConst::Pi * n0) * (first_abs2 + second_abs2);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+#endif
 }
 
 FPValue
@@ -3925,7 +3941,7 @@ Scheme3D::Pointing_inc (FPValue angleTeta, FPValue anglePhi)
 {
   // GridCoordinateFP3D coord (Ez.getSize ().getX () / 2, Ez.getSize ().getY () / 2, Ez.getSize ().getZ () / 2);
   //
-  // FieldValue val = approximateIncidentWaveE (coord) * approximateIncidentWaveH (coord) / 2.0;
+  // FieldValue val = approximateIncidentWaveE (coord) * approximateIncidentWaveH (coord) / FPValue(2.0);
   //
   // return val.real ();
   return sqrt (PhysicsConst::Eps0 / PhysicsConst::Mu0);

@@ -71,4 +71,7 @@ typedef uint32_t time_step;
  */
 #define SQR(x) ((x) * (x))
 
+extern FieldValue getFieldValueRealOnly (FPValue);
+extern FPValue getRealOnlyFromFieldValue (const FieldValue &);
+
 #endif /* FIELD_VALUES_H */

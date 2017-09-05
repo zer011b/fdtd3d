@@ -219,11 +219,7 @@ Approximation::approximateDrudeModel (FPValue &omega,
 FPValue
 Approximation::getMaterial (const FieldPointValue *val)
 {
-#ifdef COMPLEX_FIELD_VALUES
-  return val->getCurValue ().real ();
-#else /* COMPLEX_FIELD_VALUES */
-  return val->getCurValue ();
-#endif /* !COMPLEX_FIELD_VALUES */
+  return getRealOnlyFromFieldValue (val->getCurValue ());
 }
 
 FPValue
@@ -310,11 +306,7 @@ Approximation::approximateSphere (GridCoordinateFP3D midPos,
 
   FPValue diff = d - radius;
 
-#ifdef COMPLEX_FIELD_VALUES
-  FieldValue eps_vacuum (1, 0);
-#else /* COMPLEX_FIELD_VALUES */
-  FieldValue eps_vacuum (1);
-#endif /* !COMPLEX_FIELD_VALUES */
+  FieldValue eps_vacuum = getFieldValueRealOnly (1.0);
 
   if (diff < -0.5)
   {
@@ -560,11 +552,7 @@ Approximation::approximateSphere_1 (GridCoordinateFP3D midPos,
 
   ASSERT (index == 3 || index == 0);
 
-#ifdef COMPLEX_FIELD_VALUES
-  FieldValue eps_vacuum (1, 0);
-#else /* COMPLEX_FIELD_VALUES */
-  FieldValue eps_vacuum (1);
-#endif /* !COMPLEX_FIELD_VALUES */
+  FieldValue eps_vacuum = getFieldValueRealOnly (1.0);
 
   if (index == 3)
   {
