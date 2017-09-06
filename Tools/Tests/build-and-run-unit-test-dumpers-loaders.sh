@@ -14,6 +14,7 @@ C_COMPILER=$4
 
 CXX11_ENABLED=$5
 
+mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
 function build

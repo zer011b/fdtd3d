@@ -20,6 +20,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORCE_INLINES")
 add_definitions (-DSOLVER_VERSION="0.2.3")
 
 if ("${CUDA_ENABLED}")
+  message(FATAL_ERROR "Cuda builds are temporarily disabled")
   find_package(CUDA QUIET REQUIRED)
 endif ()
 

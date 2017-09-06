@@ -262,8 +262,8 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
   {
     dumper[FILE_TYPE_BMP] = new BMPDumper<GridCoordinate3D> ();
 
-    PaletteType palette;
-    OrthogonalAxis orthogonalAxis;
+    PaletteType palette = PaletteType::PALETTE_GRAY;
+    OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
 
     if (solverSettings.getDoUsePaletteGray ())
     {
@@ -323,8 +323,8 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
   {
     loader[FILE_TYPE_BMP] = new BMPLoader<GridCoordinate3D> ();
 
-    PaletteType palette;
-    OrthogonalAxis orthogonalAxis;
+    PaletteType palette = PaletteType::PALETTE_GRAY;
+    OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
 
     if (solverSettings.getDoUsePaletteGray ())
     {

@@ -16,6 +16,7 @@ CXX11_ENABLED=$5
 
 COMPLEX_FIELD_VALUES=$6
 
+mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
 function build
