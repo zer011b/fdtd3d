@@ -14,6 +14,13 @@ C_COMPILER=$4
 
 BUILD_MODE=$5
 
+CXX11_ENABLED=$6
+
+COMPLEX_FIELD_VALUES=$7
+
+PRINT_MESSAGE=$8
+
+mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
 function build
@@ -24,44 +31,38 @@ function build
 
   for VALUE_TYPE in f d ld; do
     for TIME_STEPS in 1 2; do
-      for COMPLEX_FIELD_VALUES in ON OFF; do
-        for CXX11_ENABLED in ON OFF; do
-          for PRINT_MESSAGE in ON OFF; do
-            for PARALLEL_BUFFER in `echo $LIST_OF_BUFFERS`; do
-              if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
-                continue
-              fi
+      for PARALLEL_BUFFER in `echo $LIST_OF_BUFFERS`; do
+        if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
+          continue
+        fi
 
-              cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=${BUILD_MODE} \
-                -DVALUE_TYPE=${VALUE_TYPE} \
-                -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
-                -DTIME_STEPS=${TIME_STEPS} \
-                -DPARALLEL_GRID_DIMENSION=${PARALLEL_GRID_DIM} \
-                -DPRINT_MESSAGE=${PRINT_MESSAGE} \
-                -DPARALLEL_GRID=${PARALLEL_GRID_MODE} \
-                -DPARALLEL_BUFFER_DIMENSION=${PARALLEL_BUFFER} \
-                -DCXX11_ENABLED=${CXX11_ENABLED} \
-                -DCUDA_ENABLED=OFF \
-                -DCUDA_ARCH_SM_TYPE=sm_50 \
-                -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-                -DCMAKE_C_COMPILER=${C_COMPILER}
+        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=${BUILD_MODE} \
+          -DVALUE_TYPE=${VALUE_TYPE} \
+          -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
+          -DTIME_STEPS=${TIME_STEPS} \
+          -DPARALLEL_GRID_DIMENSION=${PARALLEL_GRID_DIM} \
+          -DPRINT_MESSAGE=${PRINT_MESSAGE} \
+          -DPARALLEL_GRID=${PARALLEL_GRID_MODE} \
+          -DPARALLEL_BUFFER_DIMENSION=${PARALLEL_BUFFER} \
+          -DCXX11_ENABLED=${CXX11_ENABLED} \
+          -DCUDA_ENABLED=OFF \
+          -DCUDA_ARCH_SM_TYPE=sm_50 \
+          -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
+          -DCMAKE_C_COMPILER=${C_COMPILER}
 
-              res=$(echo $?)
+        res=$(echo $?)
 
-              if [[ res -ne 0 ]]; then
-                exit 1
-              fi
+        if [[ res -ne 0 ]]; then
+          exit 1
+        fi
 
-              make fdtd3d
+        make fdtd3d
 
-              res=$(echo $?)
+        res=$(echo $?)
 
-              if [[ res -ne 0 ]]; then
-                exit 1
-              fi
-            done
-          done
-        done
+        if [[ res -ne 0 ]]; then
+          exit 1
+        fi
       done
     done
   done

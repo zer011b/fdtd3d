@@ -22,14 +22,6 @@ enum LogLevelType
   LOG_LEVEL_FULL = LOG_LEVEL_3
 };
 
-ENUM_CLASS (ArgType, uint8_t,
-  TYPE_NONE,
-  TYPE_INT,
-  TYPE_FLOAT,
-  TYPE_STRING,
-  TYPE_LOG_LEVEL
-);
-
 /**
  * Settings for solver
  */

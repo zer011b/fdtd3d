@@ -25,7 +25,7 @@
 /*
  * Calculation mode
  */
-SETTINGS_ELEM_OPTION_TYPE_NONE("--2d", "2D mode computations")
+// SETTINGS_ELEM_OPTION_TYPE_NONE("--2d", "2D mode computations")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--3d", "3D mode computations")
 SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(logLevel, getLogLevel, LogLevelType, LOG_LEVEL_NONE, "--log-level", "Log level of fdtd3d (0,1,2,3)")
 
