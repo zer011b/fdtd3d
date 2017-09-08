@@ -130,27 +130,27 @@ public:
    */
   virtual GridCoordinate3D getExStartDiff () const CXX11_OVERRIDE_FINAL
   {
-    return minExCoord + GridCoordinate3D (0, 1, 1);
+    return minExCoord + GridCoordinate3D (1, 1, 1);
   }
   virtual GridCoordinate3D getEyStartDiff () const CXX11_OVERRIDE_FINAL
   {
-    return minEyCoord + GridCoordinate3D (1, 0, 1);
+    return minEyCoord + GridCoordinate3D (1, 1, 1);
   }
   virtual GridCoordinate3D getEzStartDiff () const CXX11_OVERRIDE_FINAL
   {
-    return minEzCoord + GridCoordinate3D (1, 1, 0);
+    return minEzCoord + GridCoordinate3D (1, 1, 1);
   }
   virtual GridCoordinate3D getHxStartDiff () const CXX11_OVERRIDE_FINAL
   {
-    return minHxCoord + GridCoordinate3D (1, 0, 0);
+    return minHxCoord + GridCoordinate3D (1, 1, 1);
   }
   virtual GridCoordinate3D getHyStartDiff () const CXX11_OVERRIDE_FINAL
   {
-    return minHyCoord + GridCoordinate3D (0, 1, 0);
+    return minHyCoord + GridCoordinate3D (1, 1, 1);
   }
   virtual GridCoordinate3D getHzStartDiff () const CXX11_OVERRIDE_FINAL
   {
-    return minHzCoord + GridCoordinate3D (0, 0, 1);
+    return minHzCoord + GridCoordinate3D (1, 1, 1);
   }
 
   /*
@@ -158,27 +158,27 @@ public:
    */
   virtual GridCoordinate3D getExEndDiff () const CXX11_OVERRIDE_FINAL
   {
-    return - minExCoord + GridCoordinate3D (1, 0, 0);
+    return - minExCoord + GridCoordinate3D (1, 1, 1);
   }
   virtual GridCoordinate3D getEyEndDiff () const CXX11_OVERRIDE_FINAL
   {
-    return - minEyCoord + GridCoordinate3D (0, 1, 0);
+    return - minEyCoord + GridCoordinate3D (1, 1, 1);
   }
   virtual GridCoordinate3D getEzEndDiff () const CXX11_OVERRIDE_FINAL
   {
-    return  - minEzCoord + GridCoordinate3D (0, 0, 1);
+    return  - minEzCoord + GridCoordinate3D (1, 1, 1);
   }
   virtual GridCoordinate3D getHxEndDiff () const CXX11_OVERRIDE_FINAL
   {
-    return - minHxCoord + GridCoordinate3D (0, 1, 1);
+    return - minHxCoord + GridCoordinate3D (1, 1, 1);
   }
   virtual GridCoordinate3D getHyEndDiff () const CXX11_OVERRIDE_FINAL
   {
-    return - minHyCoord + GridCoordinate3D (1, 0, 1);
+    return - minHyCoord + GridCoordinate3D (1, 1, 1);
   }
   virtual GridCoordinate3D getHzEndDiff () const CXX11_OVERRIDE_FINAL
   {
-    return - minHzCoord + GridCoordinate3D (1, 1, 0);
+    return - minHzCoord + GridCoordinate3D (1, 1, 1);
   }
 
   /*

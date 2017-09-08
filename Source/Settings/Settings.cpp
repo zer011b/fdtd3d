@@ -43,7 +43,7 @@ Settings::parseArg (int &index, /**< out: current argument index */
     printf ("  %s\n\t%s\n", cmdArg, description);
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description) \
     printf ("  %s <string>\n\t%s\n", cmdArg, description);
-#include "Settings.inc"
+#include "Settings.inc.h"
 
     return EXIT_BREAK_ARG_PARSING;
   }
@@ -115,7 +115,7 @@ Settings::parseArg (int &index, /**< out: current argument index */
   }
 #define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description)
-#include "Settings.inc"
+#include "Settings.inc.h"
 
   else if (strcmp (argv[index], "--same-size") == 0)
   {

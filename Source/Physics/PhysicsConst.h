@@ -6,11 +6,11 @@
 
 namespace PhysicsConst
 {
-  const CUDA_DEVICE FPValue SpeedOfLight = 2.99792458e+8;
-  const CUDA_DEVICE FPValue Eps0 = 0.0000000000088541878176203892;
-  const CUDA_DEVICE FPValue Mu0 = 0.0000012566370614359173;
-  const CUDA_DEVICE FPValue accuracy = 0.001;
   const CUDA_DEVICE FPValue Pi = M_PI;
+  const CUDA_DEVICE FPValue SpeedOfLight = 299792458;
+  const CUDA_DEVICE FPValue Mu0 = 4 * Pi * 0.0000001;
+  const CUDA_DEVICE FPValue Eps0 = 1 / (Mu0 * SQR (SpeedOfLight));
+  const CUDA_DEVICE FPValue accuracy = 0.001;
 };
 
 #endif /* PHYSICS_CONSTANTS_H */
