@@ -260,8 +260,6 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
 
   if (solverSettings.getDoSaveAsBMP ())
   {
-    dumper[FILE_TYPE_BMP] = new BMPDumper<GridCoordinate3D> ();
-
     PaletteType palette = PaletteType::PALETTE_GRAY;
     OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
 
@@ -295,74 +293,89 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
       UNREACHABLE;
     }
 
+    dumper[FILE_TYPE_BMP] = new BMPDumper<GridCoordinate3D> ();
     ((BMPDumper<GridCoordinate3D> *) dumper[FILE_TYPE_BMP])->initializeHelper (palette, orthogonalAxis);
+
+    dumper1D[FILE_TYPE_BMP] = new BMPDumper<GridCoordinate1D> ();
+    ((BMPDumper<GridCoordinate1D> *) dumper1D[FILE_TYPE_BMP])->initializeHelper (palette, orthogonalAxis);
   }
   else
   {
     dumper[FILE_TYPE_BMP] = NULLPTR;
+    dumper1D[FILE_TYPE_BMP] = NULLPTR;
   }
 
   if (solverSettings.getDoSaveAsDAT ())
   {
     dumper[FILE_TYPE_DAT] = new DATDumper<GridCoordinate3D> ();
+    dumper1D[FILE_TYPE_DAT] = new DATDumper<GridCoordinate1D> ();
   }
   else
   {
     dumper[FILE_TYPE_DAT] = NULLPTR;
+    dumper1D[FILE_TYPE_DAT] = NULLPTR;
   }
 
   if (solverSettings.getDoSaveAsTXT ())
   {
     dumper[FILE_TYPE_TXT] = new TXTDumper<GridCoordinate3D> ();
+    dumper1D[FILE_TYPE_TXT] = new TXTDumper<GridCoordinate1D> ();
   }
   else
   {
     dumper[FILE_TYPE_TXT] = NULLPTR;
+    dumper1D[FILE_TYPE_TXT] = NULLPTR;
   }
 
+  if (!solverSettings.getEpsFileName ().empty ()
+      || !solverSettings.getMuFileName ().empty ()
+      || !solverSettings.getOmegaPEFileName ().empty ()
+      || !solverSettings.getOmegaPMFileName ().empty ()
+      || !solverSettings.getGammaEFileName ().empty ()
+      || !solverSettings.getGammaMFileName ().empty ())
   {
-    loader[FILE_TYPE_BMP] = new BMPLoader<GridCoordinate3D> ();
+    {
+      loader[FILE_TYPE_BMP] = new BMPLoader<GridCoordinate3D> ();
 
-    PaletteType palette = PaletteType::PALETTE_GRAY;
-    OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
+      PaletteType palette = PaletteType::PALETTE_GRAY;
+      OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
 
-    if (solverSettings.getDoUsePaletteGray ())
-    {
-      palette = PaletteType::PALETTE_GRAY;
-    }
-    else if (solverSettings.getDoUsePaletteRGB ())
-    {
-      palette = PaletteType::PALETTE_BLUE_GREEN_RED;
-    }
-    else
-    {
-      UNREACHABLE;
-    }
+      if (solverSettings.getDoUsePaletteGray ())
+      {
+        palette = PaletteType::PALETTE_GRAY;
+      }
+      else if (solverSettings.getDoUsePaletteRGB ())
+      {
+        palette = PaletteType::PALETTE_BLUE_GREEN_RED;
+      }
 
-    if (solverSettings.getDoUseOrthAxisX ())
-    {
-      orthogonalAxis = OrthogonalAxis::X;
-    }
-    else if (solverSettings.getDoUseOrthAxisY ())
-    {
-      orthogonalAxis = OrthogonalAxis::Y;
-    }
-    else if (solverSettings.getDoUseOrthAxisZ ())
-    {
-      orthogonalAxis = OrthogonalAxis::Z;
-    }
-    else
-    {
-      UNREACHABLE;
-    }
+      if (solverSettings.getDoUseOrthAxisX ())
+      {
+        orthogonalAxis = OrthogonalAxis::X;
+      }
+      else if (solverSettings.getDoUseOrthAxisY ())
+      {
+        orthogonalAxis = OrthogonalAxis::Y;
+      }
+      else if (solverSettings.getDoUseOrthAxisZ ())
+      {
+        orthogonalAxis = OrthogonalAxis::Z;
+      }
 
-    ((BMPLoader<GridCoordinate3D> *) loader[FILE_TYPE_BMP])->initializeHelper (palette, orthogonalAxis);
+      ((BMPLoader<GridCoordinate3D> *) loader[FILE_TYPE_BMP])->initializeHelper (palette, orthogonalAxis);
+    }
+    {
+      loader[FILE_TYPE_DAT] = new DATLoader<GridCoordinate3D> ();
+    }
+    {
+      loader[FILE_TYPE_TXT] = new TXTLoader<GridCoordinate3D> ();
+    }
   }
+  else
   {
-    loader[FILE_TYPE_DAT] = new DATLoader<GridCoordinate3D> ();
-  }
-  {
-    loader[FILE_TYPE_TXT] = new TXTLoader<GridCoordinate3D> ();
+    loader[FILE_TYPE_BMP] = NULLPTR;
+    loader[FILE_TYPE_DAT] = NULLPTR;
+    loader[FILE_TYPE_TXT] = NULLPTR;
   }
 }
 
@@ -4232,6 +4245,16 @@ Scheme3D::saveGrids (time_step t)
 
     dumper[type]->init (t, CURRENT, processId, "3D-in-time-Hz");
     dumper[type]->dumpGrid (totalHz, startHz, endHz);
+
+    if (solverSettings.getDoSaveTFSFEInc ()
+        || solverSettings.getDoSaveTFSFHInc ())
+    {
+      dumper1D[type]->init (t, CURRENT, processId, "EInc");
+      dumper1D[type]->dumpGrid (EInc, GridCoordinate1D (0), EInc->getSize ());
+
+      dumper1D[type]->init (t, CURRENT, processId, "HInc");
+      dumper1D[type]->dumpGrid (HInc, GridCoordinate1D (0), HInc->getSize ());
+    }
   }
 }
 

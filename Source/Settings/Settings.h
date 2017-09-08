@@ -46,7 +46,7 @@ private:
   SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description)
-#include "Settings.inc"
+#include "Settings.inc.h"
 
 private:
 
@@ -74,7 +74,7 @@ public:
     SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description)
-#include "Settings.inc"
+#include "Settings.inc.h"
   {
   } /* Settings */
 
@@ -102,7 +102,7 @@ public:
   SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description)
-#include "Settings.inc"
+#include "Settings.inc.h"
 
   /**
    * Get number of dimensions

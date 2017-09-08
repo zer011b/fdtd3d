@@ -98,6 +98,8 @@ class Scheme3D: public Scheme
   Dumper<GridCoordinate3D> *dumper[FILE_TYPE_COUNT];
   Loader<GridCoordinate3D> *loader[FILE_TYPE_COUNT];
 
+  Dumper<GridCoordinate1D> *dumper1D[FILE_TYPE_COUNT];
+
 private:
 
   void calculateExStep (time_step, GridCoordinate3D, GridCoordinate3D);
