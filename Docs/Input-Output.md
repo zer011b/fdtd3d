@@ -30,6 +30,12 @@ Example for 3D mode: `current[300]_rank-0_3D-in-time-Ez40-Mod.bmp`.
 
 Also, for each .bmp image additional .txt file is saved with maximum and minimum values.
 
+### Additional parameters
+
+- `--palette-gray` or `--palette-rgb` for different color schemes
+- [WIP] `--orth-axis-x`, or `--orth-axis-y`, or `--orth-axis-z` for orthogonal axis. (default is `--orth-axis-z`)
+- [WIP] start and end coordinates to save or load
+
 ## Binary mode
 
 In addition, to perform save to `.dat` binary files add `--save-as-dat` command line argument.
@@ -38,6 +44,10 @@ File names are similar to .bmp, except that there is no `Type` and field name do
 
 Example for 3D mode: `current[300]_rank-0_3D-in-time-Ez.dat`.
 
+### Format
+
+This file is binary and grid values are saved as is.
+
 ## Plain text mode
 
 In addition, to perform save to `.txt` plain text files add `--save-as-txt` command line argument.
@@ -45,6 +55,15 @@ In addition, to perform save to `.txt` plain text files add `--save-as-txt` comm
 File names are same as for .dat.
 
 Example for 3D mode: `current[300]_rank-0_3D-in-time-Ez.txt`.
+
+### Format
+Single line in file has the next format
+
+```
+xcoord ycoord zcoord re-value im-value
+```
+
+where x,y,z coords are coordinates of the point in grid, value is the value of the component in that point. im-value is absent in non-complex value builds, y and z coords are absent for 1D mode, z coord is missing for 2D mode.
 
 # Input
 
