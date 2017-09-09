@@ -92,6 +92,8 @@ cd Release/Source
 # 0.02
 ```
 
+See [Input & Output](Docs/Input-Output.md) for details about load and save of files.
+
 # How to cite
 
 If you would like to publish papers with results somehow obtained by fdtd3d or with any modifications of it, please, contact anyone of the authors.
