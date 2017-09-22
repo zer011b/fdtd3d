@@ -261,7 +261,7 @@ Scheme3D::performPointSourceCalc (time_step t)
                         solverSettings.getPointSourcePositionY (),
                         solverSettings.getPointSourcePositionZ ());
 
-  FieldPointValue* pointVal = grid->getFieldPointValueByAbsolutePos (pos);
+  FieldPointValue* pointVal = grid->getFieldPointValueOrNullByAbsolutePos (pos);
 
   if (pointVal)
   {

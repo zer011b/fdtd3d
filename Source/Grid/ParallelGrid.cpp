@@ -3113,6 +3113,8 @@ ParallelGrid::Resize (ParallelGridCoordinate newCurrentNodeSize) /**< new size o
            parallelGridCore->getTotalProcCount (),
            oldSize.calculateTotalCoord (),
            currentSize.calculateTotalCoord ());
+
+  share ();
 } /* ParallelGrid::Resize */
 
 #endif /* DYNAMIC_GRID */

@@ -88,6 +88,7 @@ public:
   FieldPointValue *getFieldPointValue (grid_iter);
 
   virtual FieldPointValue *getFieldPointValueByAbsolutePos (const TCoord &);
+  virtual FieldPointValue *getFieldPointValueOrNullByAbsolutePos (const TCoord &);
 
   virtual void nextTimeStep ();
 
@@ -356,6 +357,18 @@ Grid<TCoord>::getFieldPointValueByAbsolutePos (const TCoord &relPosition) /**< r
 {
   return getFieldPointValue (relPosition);
 } /* Grid<TCoord>::getFieldPointValueByAbsolutePos */
+
+/**
+ * Get field point value at relative coordinate in grid or null
+ *
+ * @return field point value or null
+ */
+template <class TCoord>
+FieldPointValue *
+Grid<TCoord>::getFieldPointValueOrNullByAbsolutePos (const TCoord &relPosition) /**< relative coordinate in grid */
+{
+  return getFieldPointValue (relPosition);
+} /* Grid<TCoord>::getFieldPointValueOrNullByAbsolutePos */
 
 /**
  * Switch to next time step
