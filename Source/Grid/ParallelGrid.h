@@ -374,7 +374,7 @@ public:
   virtual ParallelGridCoordinate getRelativePosition (ParallelGridCoordinate) const CXX11_OVERRIDE;
 
   virtual FieldPointValue *getFieldPointValueByAbsolutePos (const ParallelGridCoordinate &) CXX11_OVERRIDE;
-  FieldPointValue *getFieldPointValueOrNullByAbsolutePos (const ParallelGridCoordinate &);
+  virtual FieldPointValue *getFieldPointValueOrNullByAbsolutePos (const ParallelGridCoordinate &);
 
   /**
    * Check whether current node has value for coordinate
