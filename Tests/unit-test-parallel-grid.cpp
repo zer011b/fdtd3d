@@ -91,7 +91,7 @@ int main (int argc, char** argv)
   GridCoordinate3D bufferSize (bufSize, bufSize, bufSize);
 #endif /* GRID_3D */
 
-  ParallelGridCore parallelGridCore (rank, numProcs, overallSize);
+  ParallelGridCore parallelGridCore (rank, numProcs, overallSize, false, GridCoordinate3D(0, 0, 0));
   ParallelGrid::initializeParallelCore (&parallelGridCore);
 
   bool isDoubleMaterialPrecision = false;

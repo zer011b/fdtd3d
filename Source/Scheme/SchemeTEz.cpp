@@ -1762,7 +1762,7 @@ SchemeTEz::initGrids ()
   }
 
 #if defined (PARALLEL_GRID)
-  MPI_Barrier (MPI_COMM_WORLD);
+  MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
 #endif
 
 #if defined (PARALLEL_GRID)

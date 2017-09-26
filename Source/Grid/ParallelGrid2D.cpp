@@ -13,18 +13,33 @@ void
 ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid */
 {
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  nodeGridSizeX = totalProcCount;
+  if (!doUseManualTopology)
+  {
+    nodeGridSizeX = totalProcCount;
+  }
+  else
+  {
+    nodeGridSizeX = topologySize.getX ();
+  }
   nodeGridSizeY = 1;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
+  if (!doUseManualTopology)
+  {
+    nodeGridSizeY = totalProcCount;
+  }
+  else
+  {
+    nodeGridSizeY = topologySize.getY ();
+  }
   nodeGridSizeX = 1;
-  nodeGridSizeY = totalProcCount;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 
   if (getProcessId () == 0)
   {
-    printf ("Nodes' grid: %dx%d.\n",
+    printf ("Nodes' grid (%s): %dx%d.\n",
+            doUseManualTopology ? "manual" : "optimal",
             nodeGridSizeX,
             nodeGridSizeY);
   }
@@ -45,17 +60,24 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
     ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
   }
 
-  int left;
-  initOptimal (size.getX (), size.getY (), nodeGridSizeX, nodeGridSizeY, left);
+  if (!doUseManualTopology)
+  {
+    initOptimal (size.getX (), size.getY (), nodeGridSizeX, nodeGridSizeY);
+  }
+  else
+  {
+    nodeGridSizeX = topologySize.getX ();
+    nodeGridSizeY = topologySize.getY ();
+  }
 
   nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
 
   if (getProcessId () == 0)
   {
-    printf ("Nodes' grid: %dx%d. %d node(s) unused.\n",
+    printf ("Nodes' grid (%s): %dx%d.\n",
+            doUseManualTopology ? "manual" : "optimal",
             nodeGridSizeX,
-            nodeGridSizeY,
-            left);
+            nodeGridSizeY);
   }
 } /* ParallelGridCore::NodeGridInit */
 

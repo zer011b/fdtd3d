@@ -218,6 +218,22 @@ private:
   std::vector<timespec> shareClockAll;
 #endif /* DYNAMIC_GRID */
 
+  /**
+   * Flag whether to use manual virtual topology or not
+   */
+  bool doUseManualTopology;
+
+  /**
+   * Virtual topology size, which was specified manually (not used in case of optimal virtual topology)
+   */
+  GridCoordinate3D topologySize;
+
+  /**
+   * Communicator for all processes, used in computations
+   * (could differ from MPI_COMM_WORLD on the processes, which are not used in computations)
+   */
+  MPI_Comm communicator;
+
 private:
 
   void initOppositeDirections ();
@@ -239,7 +255,17 @@ private:
 
 public:
 
-  ParallelGridCore (int, int, ParallelGridCoordinate);
+  ParallelGridCore (int, int, ParallelGridCoordinate, bool, GridCoordinate3D);
+
+  /**
+   * Getter for communicator for all processes, used in computations
+   *
+   * @return communicator for all processes, used in computations
+   */
+  MPI_Comm getCommunicator () const
+  {
+    return communicator;
+  } /* getCommunicator */
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
 
@@ -499,15 +525,13 @@ public:
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
-  void FindProportionForNodeGrid (int &, int &, int &, FPValue);
-  void initOptimal (grid_coord, grid_coord, int &, int &, int &);
+  void initOptimal (grid_coord, grid_coord, int &, int &);
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
-  void FindProportionForNodeGrid (int &, int &, int &, int &, FPValue, FPValue);
-  void initOptimal (grid_coord, grid_coord, grid_coord, int &, int &, int &, int &);
+  void initOptimal (grid_coord, grid_coord, grid_coord, int &, int &, int &);
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 

@@ -851,10 +851,14 @@ ParallelGridCore::ParallelGridCoreConstructor (ParallelGridCoordinate size) /**<
  */
 ParallelGridCore::ParallelGridCore (int process, /**< id of computational node */
                                     int totalProc, /**< total number of computational nodes */
-                                    ParallelGridCoordinate size) /**< size of grid (not used
+                                    ParallelGridCoordinate size, /**< size of grid (not used
                                                                   *   for 1D buffer dimensions) */
+                                    bool useManualTopology, /**< flag whether to use manual virtual topology */
+                                    GridCoordinate3D topology) /**< topology size, specified manually */
   : processId (process)
   , totalProcCount (totalProc)
+  , doUseManualTopology (useManualTopology)
+  , topologySize (topology)
 {
   /*
    * Set default values for flags whether computational node has neighbours
@@ -887,6 +891,21 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
   {
     getShare ((BufferPosition) i, doShare[i]);
   }
+
+#ifdef GRID_1D
+  totalProcCount = nodeGridSizeX;
+#endif
+#ifdef GRID_2D
+  totalProcCount = nodeGridSizeX * nodeGridSizeY;
+#endif
+#ifdef GRID_3D
+  totalProcCount = nodeGridSizeX * nodeGridSizeY * nodeGridSizeZ;
+#endif
+
+  ASSERT (totalProcCount > 1);
+
+  int retCode = MPI_Comm_split (MPI_COMM_WORLD, process < totalProcCount ? 0 : MPI_UNDEFINED, process, &communicator);
+  ASSERT (retCode == MPI_SUCCESS);
 
 #ifdef DYNAMIC_GRID
   calcClockAll.resize (totalProcCount);
@@ -995,10 +1014,10 @@ void ParallelGridCore::ShareClocks ()
       shareClockNSec = (uint64_t) shareClock.tv_nsec;
     }
 
-    MPI_Bcast (&calcClockSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
-    MPI_Bcast (&calcClockNSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
-    MPI_Bcast (&shareClockSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
-    MPI_Bcast (&shareClockNSec, 1, MPI_LONG_LONG, process, MPI_COMM_WORLD);
+    MPI_Bcast (&calcClockSec, 1, MPI_LONG_LONG, process, communicator);
+    MPI_Bcast (&calcClockNSec, 1, MPI_LONG_LONG, process, communicator);
+    MPI_Bcast (&shareClockSec, 1, MPI_LONG_LONG, process, communicator);
+    MPI_Bcast (&shareClockNSec, 1, MPI_LONG_LONG, process, communicator);
 
     timespec calc;
     timespec share;
@@ -1012,7 +1031,7 @@ void ParallelGridCore::ShareClocks ()
     calcClockAll[process] = calc;
     shareClockAll[process] = share;
 
-    MPI_Barrier (MPI_COMM_WORLD);
+    MPI_Barrier (communicator);
   }
 } /* ParallelGridCore::ShareClocks */
 

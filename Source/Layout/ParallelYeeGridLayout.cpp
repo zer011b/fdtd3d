@@ -429,12 +429,12 @@ bool ParallelYeeGridLayout::Rebalance (time_step difft) /**< number of time step
       speedP = speedCur;
     }
 
-    MPI_Bcast (&speedP, 1, MPI_DOUBLE, process, MPI_COMM_WORLD);
+    MPI_Bcast (&speedP, 1, MPI_DOUBLE, process, parallelGridCore->getCommunicator ());
 
     speed[process] = speedP;
     sumSpeed += speed[process];
 
-    MPI_Barrier (MPI_COMM_WORLD);
+    MPI_Barrier (parallelGridCore->getCommunicator ());
   }
 
   grid_coord x = ((FPValue)size.getX ()) * speedCur / (sumSpeed);

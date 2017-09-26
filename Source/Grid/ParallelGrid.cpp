@@ -184,7 +184,7 @@ void ParallelGrid::gatherStartPosition ()
                           MPI_UNSIGNED,
                           ParallelGrid::getParallelCore ()->getDirections ()[LEFT],
                           0,
-                          MPI_COMM_WORLD,
+                          ParallelGrid::getParallelCore ()->getCommunicator (),
                           &status);
       ASSERT (retCode == MPI_SUCCESS);
 
@@ -198,7 +198,7 @@ void ParallelGrid::gatherStartPosition ()
                           MPI_UNSIGNED,
                           ParallelGrid::getParallelCore ()->getDirections ()[RIGHT],
                           0,
-                          MPI_COMM_WORLD);
+                          ParallelGrid::getParallelCore ()->getCommunicator ());
       ASSERT (retCode == MPI_SUCCESS);
     }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
@@ -215,7 +215,7 @@ void ParallelGrid::gatherStartPosition ()
                           MPI_UNSIGNED,
                           ParallelGrid::getParallelCore ()->getDirections ()[DOWN],
                           1,
-                          MPI_COMM_WORLD,
+                          ParallelGrid::getParallelCore ()->getCommunicator (),
                           &status);
       ASSERT (retCode == MPI_SUCCESS);
 
@@ -229,7 +229,7 @@ void ParallelGrid::gatherStartPosition ()
                           MPI_UNSIGNED,
                           ParallelGrid::getParallelCore ()->getDirections ()[UP],
                           1,
-                          MPI_COMM_WORLD);
+                          ParallelGrid::getParallelCore ()->getCommunicator ());
       ASSERT (retCode == MPI_SUCCESS);
     }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
@@ -246,7 +246,7 @@ void ParallelGrid::gatherStartPosition ()
                           MPI_UNSIGNED,
                           ParallelGrid::getParallelCore ()->getDirections ()[BACK],
                           2,
-                          MPI_COMM_WORLD,
+                          ParallelGrid::getParallelCore ()->getCommunicator (),
                           &status);
       ASSERT (retCode == MPI_SUCCESS);
 
@@ -260,7 +260,7 @@ void ParallelGrid::gatherStartPosition ()
                           MPI_UNSIGNED,
                           ParallelGrid::getParallelCore ()->getDirections ()[FRONT],
                           2,
-                          MPI_COMM_WORLD);
+                          ParallelGrid::getParallelCore ()->getCommunicator ());
       ASSERT (retCode == MPI_SUCCESS);
     }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
@@ -321,7 +321,7 @@ void ParallelGrid::gatherStartPosition ()
 #endif /* GRID_3D */
     }
 
-    MPI_Barrier (MPI_COMM_WORLD);
+    MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
   }
 } /* ParallelGrid::gatherStartPosition */
 
@@ -1654,7 +1654,7 @@ ParallelGrid::SendRawBuffer (BufferPosition buffer, /**< buffer's position to se
                           datatype,
                           processTo,
                           parallelGridCore->getProcessId (),
-                          MPI_COMM_WORLD);
+                          ParallelGrid::getParallelCore ()->getCommunicator ());
 
   ASSERT (retCode == MPI_SUCCESS);
 } /* ParallelGrid::SendRawBuffer */
@@ -1706,7 +1706,7 @@ ParallelGrid::ReceiveRawBuffer (BufferPosition buffer, /**< buffer's position to
                           datatype,
                           processFrom,
                           processFrom,
-                          MPI_COMM_WORLD,
+                          ParallelGrid::getParallelCore ()->getCommunicator (),
                           &status);
 
   ASSERT (retCode == MPI_SUCCESS);
@@ -1769,7 +1769,7 @@ ParallelGrid::SendReceiveRawBuffer (BufferPosition bufferSend, /**< buffer's pos
                               datatype,
                               processFrom,
                               processFrom,
-                              MPI_COMM_WORLD,
+                              ParallelGrid::getParallelCore ()->getCommunicator (),
                               &status);
 
   ASSERT (retCode == MPI_SUCCESS);
@@ -2005,7 +2005,7 @@ ParallelGrid::share ()
   parallelGridCore->StopShareClock ();
 #endif /* DYNAMIC_GRID */
 
-  MPI_Barrier (MPI_COMM_WORLD);
+  MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
 } /* ParallelGrid::share */
 
 /**
@@ -2784,8 +2784,8 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
       endX = chunkEnd.getX ();
     }
 
-    MPI_Bcast (&startX, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
-    MPI_Bcast (&endX, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
+    MPI_Bcast (&startX, 1, MPI_UNSIGNED, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+    MPI_Bcast (&endX, 1, MPI_UNSIGNED, process, ParallelGrid::getParallelCore ()->getCommunicator ());
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -2798,8 +2798,8 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
       endY = chunkEnd.getY ();
     }
 
-    MPI_Bcast (&startY, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
-    MPI_Bcast (&endY, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
+    MPI_Bcast (&startY, 1, MPI_UNSIGNED, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+    MPI_Bcast (&endY, 1, MPI_UNSIGNED, process, ParallelGrid::getParallelCore ()->getCommunicator ());
 #endif /* GRID_2D || GRID_3D */
 
 #if defined (GRID_3D)
@@ -2812,8 +2812,8 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
       endZ = chunkEnd.getZ ();
     }
 
-    MPI_Bcast (&startZ, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
-    MPI_Bcast (&endZ, 1, MPI_UNSIGNED, process, MPI_COMM_WORLD);
+    MPI_Bcast (&startZ, 1, MPI_UNSIGNED, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+    MPI_Bcast (&endZ, 1, MPI_UNSIGNED, process, ParallelGrid::getParallelCore ()->getCommunicator ());
 #endif /* GRID_3D */
 
 #ifdef GRID_1D
@@ -2928,14 +2928,14 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
      * Broadcast data
      */
 
-    MPI_Bcast (current.data (), current.size (), datatype, process, MPI_COMM_WORLD);
+    MPI_Bcast (current.data (), current.size (), datatype, process, ParallelGrid::getParallelCore ()->getCommunicator ());
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    MPI_Bcast (previous.data (), previous.size (), datatype, process, MPI_COMM_WORLD);
+    MPI_Bcast (previous.data (), previous.size (), datatype, process, ParallelGrid::getParallelCore ()->getCommunicator ());
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 
 #if defined (TWO_TIME_STEPS)
-    MPI_Bcast (previousPrev.data (), previousPrev.size (), datatype, process, MPI_COMM_WORLD);
+    MPI_Bcast (previousPrev.data (), previousPrev.size (), datatype, process, ParallelGrid::getParallelCore ()->getCommunicator ());
 #endif /* TWO_TIME_STEPS */
 
     grid_iter index = 0;
@@ -2989,7 +2989,7 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
     }
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 
-    MPI_Barrier (MPI_COMM_WORLD);
+    MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
   }
 
   return grid;

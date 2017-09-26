@@ -3496,7 +3496,7 @@ Scheme3D::initGrids ()
   if (solverSettings.getDoUseParallelGrid ())
   {
 #if defined (PARALLEL_GRID)
-    MPI_Barrier (MPI_COMM_WORLD);
+    MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
 
     ((ParallelGrid *) Eps)->share ();
     ((ParallelGrid *) Mu)->share ();

@@ -9,58 +9,6 @@
     || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
 /**
- * Find proportion for computational nodes grid
- */
-void
-ParallelGridCore::FindProportionForNodeGrid (int &nodeGridSize1, /**< out: first axis nodes grid size */
-                                             int &nodeGridSize2, /**< out: second axis nodes grid size */
-                                             int &left, /**< out: number of left unused computational nodes */
-                                             FPValue alpha) /**< preferred proportion between second and first axis */
-{
-  /*
-   * Bad case, too many nodes left unused. Let's change proportion.
-   */
-
-  int min_left = left;
-  int min_size1 = nodeGridSize1;
-  int min_size2 = nodeGridSize2;
-  FPValue min_alpha = ((FPValue) min_size2) / ((FPValue) min_size1);
-
-  for (int size1 = 2; size1 <= totalProcCount / 2; ++size1)
-  {
-    int size2 = totalProcCount / size1;
-    int left_new = totalProcCount - (size1 * size2);
-
-    if (left_new < min_left)
-    {
-      min_left = left_new;
-      min_size1 = size1;
-      min_size2 = size2;
-      min_alpha = ((FPValue) size2) / ((FPValue) size1);
-    }
-    else if (left_new == min_left)
-    {
-      FPValue new_alpha = ((FPValue) size2) / ((FPValue) size1);
-
-      FPValue diff_alpha = fabs (new_alpha - alpha);
-      FPValue diff_alpha_min = fabs (min_alpha - alpha);
-
-      if (diff_alpha < diff_alpha_min)
-      {
-        min_left = left_new;
-        min_size1 = size1;
-        min_size2 = size2;
-        min_alpha = ((FPValue) size2) / ((FPValue) size1);
-      }
-    }
-  }
-
-  nodeGridSize1 = min_size1;
-  nodeGridSize2 = min_size2;
-  left = min_left;
-} /* ParallelGridCore::FindProportionForNodeGrid */
-
-/**
  * Helper struct for pairs
  */
 struct Pair
@@ -86,8 +34,7 @@ void
 ParallelGridCore::initOptimal (grid_coord size1, /**< grid size by first axis */
                                grid_coord size2, /**< grid size by second axis */
                                int &nodeGridSize1, /**< out: first axis nodes grid size */
-                               int &nodeGridSize2, /**< out: second axis nodes grid size */
-                               int &left) /**< out: number of left unused computational nodes */
+                               int &nodeGridSize2) /**< out: second axis nodes grid size */
 {
   /*
    * Find allowed pairs of node grid sizes
@@ -155,8 +102,6 @@ ParallelGridCore::initOptimal (grid_coord size1, /**< grid size by first axis */
   }
 
 #undef func
-
-  left = 0;
 } /* ParallelGridCore::initOptimal */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ) ||

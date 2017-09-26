@@ -49,33 +49,50 @@ int main (int argc, char** argv)
   int rank = 0;
   int numProcs = 1;
 
+  struct timeval tv1, tv2;
+
   YeeGridLayout *yeeLayout = NULLPTR;
 
 #ifdef PARALLEL_GRID
   ParallelGridCore *parallelGridCore = NULLPTR;
+  bool skipProcess = false;
 #endif
 
   if (solverSettings.getDoUseParallelGrid ())
   {
 #if defined (PARALLEL_GRID)
+    GridCoordinate3D topology (solverSettings.getTopologySizeX (),
+                               solverSettings.getTopologySizeY (),
+                               solverSettings.getTopologySizeZ ());
+
     MPI_Init(&argc, &argv);
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
 
-    parallelGridCore = new ParallelGridCore (rank, numProcs, overallSize);
+    parallelGridCore = new ParallelGridCore (rank, numProcs, overallSize,
+                                             solverSettings.getDoUseManualVirtualTopology (),
+                                             topology);
     ParallelGrid::initializeParallelCore (parallelGridCore);
 
-    DPRINTF (LOG_LEVEL_STAGES, "Start process %d of %d\n", rank, numProcs);
+    if (rank >= parallelGridCore->getTotalProcCount ())
+    {
+      skipProcess = true;
+    }
 
-    yeeLayout = new ParallelYeeGridLayout (overallSize,
-                                           pmlSize,
-                                           tfsfSize,
-                                           solverSettings.getIncidentWaveAngle1 () * PhysicsConst::Pi / 180.0,
-                                           solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
-                                           solverSettings.getIncidentWaveAngle3 () * PhysicsConst::Pi / 180.0,
-                                           solverSettings.getDoUseDoubleMaterialPrecision ());
-    ((ParallelYeeGridLayout *) yeeLayout)->Initialize (parallelGridCore);
+    if (!skipProcess)
+    {
+      DPRINTF (LOG_LEVEL_STAGES, "Start process %d of %d (using %d)\n", rank, numProcs, parallelGridCore->getTotalProcCount ());
+
+      yeeLayout = new ParallelYeeGridLayout (overallSize,
+                                             pmlSize,
+                                             tfsfSize,
+                                             solverSettings.getIncidentWaveAngle1 () * PhysicsConst::Pi / 180.0,
+                                             solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
+                                             solverSettings.getIncidentWaveAngle3 () * PhysicsConst::Pi / 180.0,
+                                             solverSettings.getDoUseDoubleMaterialPrecision ());
+      ((ParallelYeeGridLayout *) yeeLayout)->Initialize (parallelGridCore);
+    }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
@@ -91,80 +108,56 @@ int main (int argc, char** argv)
                                    solverSettings.getDoUseDoubleMaterialPrecision ());
   }
 
+#if defined (PARALLEL_GRID)
+  if (!skipProcess)
+#endif
+  {
 #ifdef CUDA_ENABLED
-  cudaInfo ();
+    cudaInfo ();
 
-  if (solverSettings.getDoUseParallelGrid ())
-  {
+    if (solverSettings.getDoUseParallelGrid ())
+    {
 #if defined (PARALLEL_GRID)
-    cudaInit (rank % solverSettings.getNumCudaGPUs ());
+      cudaInit (rank % solverSettings.getNumCudaGPUs ());
 #else
-    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
-  }
-  else
-  {
-    cudaInit (solverSettings.getNumCudaGPUs ());
-  }
+    }
+    else
+    {
+      cudaInit (solverSettings.getNumCudaGPUs ());
+    }
 
-  cudaThreadsX = solverSettings.getNumCudaThreadsX ();
-  cudaThreadsY = solverSettings.getNumCudaThreadsY ();
-  cudaThreadsZ = solverSettings.getNumCudaThreadsZ ();
-#endif
-
-#ifdef GRID_2D
-  if (solverSettings.getDoUseParallelGrid ())
-  {
-#if defined (PARALLEL_GRID)
-    SchemeTMz scheme (yeeLayout, overallSize, bufferSize,
-                      solverSettings.getNumTimeSteps (),
-                      solverSettings.getDoUseAmplitudeMode (),
-                      solverSettings.getNumAmplitudeSteps (),
-                      solverSettings.getDoUsePML (),
-                      solverSettings.getDoUseTFSF (),
-                      solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
-                      solverSettings.getDoUseMetamaterials (),
-                      solverSettings.getDoSaveRes ());
-#else
-    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
-#endif
-  }
-  else
-  {
-    SchemeTMz scheme (yeeLayout, overallSize,
-                      solverSettings.getNumTimeSteps (),
-                      solverSettings.getDoUseAmplitudeMode (),
-                      solverSettings.getNumAmplitudeSteps (),
-                      solverSettings.getDoUsePML (),
-                      solverSettings.getDoUseTFSF (),
-                      solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
-                      solverSettings.getDoUseMetamaterials (),
-                      solverSettings.getDoSaveRes ());
-  }
+    cudaThreadsX = solverSettings.getNumCudaThreadsX ();
+    cudaThreadsY = solverSettings.getNumCudaThreadsY ();
+    cudaThreadsZ = solverSettings.getNumCudaThreadsZ ();
 #endif
 
 #ifdef GRID_3D
-  Scheme3D scheme (yeeLayout, overallSize, solverSettings.getNumTimeSteps ());
+    Scheme3D scheme (yeeLayout, overallSize, solverSettings.getNumTimeSteps ());
+
+    scheme.initScheme (solverSettings.getGridStep (), /* dx */
+                       PhysicsConst::SpeedOfLight / solverSettings.getSourceWaveLength ()); /* source frequency */
+
+    scheme.initGrids ();
+
+    gettimeofday(&tv1, NULL);
+
+    scheme.performSteps ();
+
+    gettimeofday(&tv2, NULL);
 #endif
+  }
 
-  scheme.initScheme (solverSettings.getGridStep (), /* dx */
-                     PhysicsConst::SpeedOfLight / solverSettings.getSourceWaveLength ()); /* source frequency */
-
-  scheme.initGrids ();
-
-  struct timeval tv1, tv2;
-  gettimeofday(&tv1, NULL);
-
-  scheme.performSteps ();
-
-  gettimeofday(&tv2, NULL);
+  delete yeeLayout;
 
   if (solverSettings.getDoUseParallelGrid ())
   {
 #if defined (PARALLEL_GRID)
     delete parallelGridCore;
 
-    MPI_Finalize();
+    MPI_Barrier (MPI_COMM_WORLD);
+    MPI_Finalize ();
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
