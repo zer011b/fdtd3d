@@ -12,11 +12,19 @@
 void
 ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid */
 {
-  nodeGridSizeX = totalProcCount;
+  if (!doUseManualTopology)
+  {
+    nodeGridSizeX = totalProcCount;
+  }
+  else
+  {
+    nodeGridSizeX = topologySize.getX ();
+  }
 
   if (getProcessId () == 0)
   {
-    printf ("Nodes' grid: %d.\n",
+    printf ("Nodes' grid (%s): %d.\n",
+            doUseManualTopology ? "manual" : "optimal",
             nodeGridSizeX);
   }
 } /* ParallelGridCore::NodeGridInit */

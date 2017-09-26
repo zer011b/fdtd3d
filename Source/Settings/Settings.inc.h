@@ -83,7 +83,7 @@ SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsX, getNumCudaThreadsX, int, 1, "--num
 SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsY, getNumCudaThreadsY, int, 1, "--num-cuda-threads-y", "Number of GPU threads by y coordinate to use in computations")
 SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsZ, getNumCudaThreadsZ, int, 1, "--num-cuda-threads-z", "Number of GPU threads by z coordinate to use in computations")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseParallelGrid, getDoUseParallelGrid, bool, false, "--parallel-grid", "Use parallel grid (if fdtd3d is built with it)")
-SETTINGS_ELEM_FIELD_TYPE_NONE(doUseOptimalVirtualTopology, getDoUseOptimalVirtualTopology, bool, false, "--optimal-topology", "Use optimal topology for parallel grid")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseManualVirtualTopology, getDoUseManualVirtualTopology, bool, false, "--manual-topology", "Use manual topology for parallel grid")
 SETTINGS_ELEM_FIELD_TYPE_STRING(fileWithAvailableTopologies, getFileWithAvailableTopologies, std::string, "", "--available-topologies", "File with available topologies for current architecture")
 
 SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeX, getTopologySizeX, int, 1, "--topology-sizex", "Size by x coordinate of virtual topology")
