@@ -203,6 +203,8 @@ SETTINGS_ELEM_OPTION_TYPE_STRING("--cmd-from-file", "Load command line from file
                                                     "\t\t<cmd with arg>\n"
                                                     "\t\t<value>\n"
                                                     "\t\t<cmd without arg>\n"
+                                                    "\t\t// <comment>\n"
+                                                    "\t\t# <comment>\n"
                                                     "\t\t<cmd without arg>")
 
 SETTINGS_ELEM_OPTION_TYPE_STRING("--save-cmd-to-file", "Save command line to file")

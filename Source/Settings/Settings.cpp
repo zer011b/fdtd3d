@@ -3,6 +3,7 @@
 #include <string.h>
 #include <fstream>
 #include <cstring>
+#include <sstream>
 
 #ifndef CXX11_ENABLED
 #include <stdlib.h>
@@ -233,15 +234,41 @@ Settings::loadCmdFromFile (std::string fileName) /**< name of file to load from 
 {
   printf ("Loading command line from file %s\n", fileName.c_str ());
 
-  std::string cmd;
-
   std::ifstream infile;
   infile.open (fileName.c_str ());
 
+  std::string line;
+  std::string cmd;
   int argc = 0;
-  while (infile >> cmd)
+  while (std::getline (infile, line))
   {
-    ++argc;
+    if (line.empty())
+    {
+      continue;
+    }
+    else if (line.length () >= 2
+             && line[0] == '/'
+             && line[1] == '/')
+    {
+      /*
+       * comment
+       */
+      continue;
+    }
+    else if (line.length () >= 1
+             && line[0] == '#')
+    {
+      /*
+       * comment
+       */
+      continue;
+    }
+
+    std::stringstream ss (line);
+    while (ss >> cmd)
+    {
+      ++argc;
+    }
   }
 
   infile.close ();
@@ -250,11 +277,37 @@ Settings::loadCmdFromFile (std::string fileName) /**< name of file to load from 
   char **argv = new char *[argc];
 
   int index = 0;
-  while (infile >> cmd)
+  while (std::getline (infile, line))
   {
-    argv[index] = new char[cmd.length ()];
-    strcpy (argv[index], cmd.c_str ());
-    ++index;
+    if (line.empty())
+    {
+      continue;
+    }
+    else if (line.length () >= 2
+             && line[0] == '/'
+             && line[1] == '/')
+    {
+      /*
+       * comment
+       */
+      continue;
+    }
+    else if (line.length () >= 1
+             && line[0] == '#')
+    {
+      /*
+       * comment
+       */
+      continue;
+    }
+
+    std::stringstream ss (line);
+    while (ss >> cmd)
+    {
+      argv[index] = new char[cmd.length ()];
+      strcpy (argv[index], cmd.c_str ());
+      ++index;
+    }
   }
 
   int status = setFromCmd (argc, argv, false);
