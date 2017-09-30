@@ -12,36 +12,78 @@
 void
 ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid */
 {
+  int nodeGridSizeXOptimal;
+  int nodeGridSizeYOptimal;
+
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
+  nodeGridSizeXOptimal = totalProcCount;
+  nodeGridSizeYOptimal = 1;
+
   if (!doUseManualTopology)
   {
-    nodeGridSizeX = totalProcCount;
+    nodeGridSizeX = nodeGridSizeXOptimal;
   }
   else
   {
     nodeGridSizeX = topologySize.getX ();
   }
   nodeGridSizeY = 1;
+
+  if (nodeGridSizeX <= 1)
+  {
+    ASSERT_MESSAGE ("2D-X virtual topology could be used only with number of processes > 1 by Ox axis. "
+                    "Use without parallel grid");
+  }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
+  nodeGridSizeXOptimal = 1;
+  nodeGridSizeYOptimal = totalProcCount;
+
   if (!doUseManualTopology)
   {
-    nodeGridSizeY = totalProcCount;
+    nodeGridSizeY = nodeGridSizeYOptimal;
   }
   else
   {
     nodeGridSizeY = topologySize.getY ();
   }
   nodeGridSizeX = 1;
+
+  if (nodeGridSizeY <= 1)
+  {
+    ASSERT_MESSAGE ("2D-Y virtual topology could be used only with number of processes > 1 by Oy axis. "
+                    "Use without parallel grid");
+  }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 
   if (getProcessId () == 0)
   {
     printf ("Nodes' grid (%s): %dx%d.\n",
-            doUseManualTopology ? "manual" : "optimal",
+            doUseManualTopology ? "MANUAL" : "OPTIMAL",
             nodeGridSizeX,
             nodeGridSizeY);
+
+    printf ("===================================================================================================\n");
+
+    if (doUseManualTopology)
+    {
+      printf ("NOTE: you use MANUAL virtual topology (%dx%d). Consider using OPTIMAL virtual topology (%dx%d). \n",
+              nodeGridSizeX, nodeGridSizeY, nodeGridSizeXOptimal, nodeGridSizeYOptimal);
+    }
+    else
+    {
+      printf ("NOTE: you use OPTIMAL virtual topology (%dx%d).\n",
+              nodeGridSizeXOptimal, nodeGridSizeYOptimal);
+    }
+
+    printf ("OPTIMAL virtual topology has some requirements in order for it to be optimal:\n"
+            "  - all computational nodes have the same performance\n"
+            "  - all neighbouring computational nodes have the same share time\n"
+            "  - virtual topology matches physical topology\n"
+            "In other words, OPTIMAL virtual topology is optimal only for homogeneous architectures.\n"
+            "Make sure all these requirements are met, otherwise, OPTIMAL virtual topology could be non-optimal.\n"
+            "===================================================================================================\n");
   }
 } /* ParallelGridCore::NodeGridInit */
 
@@ -60,9 +102,14 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
     ASSERT_MESSAGE ("Unsupported number of nodes for 2D parallel buffers. Use 1D ones.");
   }
 
+  int nodeGridSizeXOptimal;
+  int nodeGridSizeYOptimal;
+  initOptimal (size.getX (), size.getY (), nodeGridSizeXOptimal, nodeGridSizeYOptimal);
+
   if (!doUseManualTopology)
   {
-    initOptimal (size.getX (), size.getY (), nodeGridSizeX, nodeGridSizeY);
+    nodeGridSizeX = nodeGridSizeXOptimal;
+    nodeGridSizeY = nodeGridSizeYOptimal;
   }
   else
   {
@@ -72,12 +119,40 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
 
   nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;
 
+  if (nodeGridSizeX <= 1 || nodeGridSizeY <= 1)
+  {
+    ASSERT_MESSAGE ("2D-XY virtual topology could be used only with number of processes > 1 by Ox and Oy axis. "
+                    "Recompile with `-DPARALLEL_BUFFER_DIMENSION=x`, or `-DPARALLEL_BUFFER_DIMENSION=y`, or "
+                    "use without parallel grid");
+  }
+
   if (getProcessId () == 0)
   {
     printf ("Nodes' grid (%s): %dx%d.\n",
-            doUseManualTopology ? "manual" : "optimal",
+            doUseManualTopology ? "MANUAL" : "OPTIMAL",
             nodeGridSizeX,
             nodeGridSizeY);
+
+    printf ("===================================================================================================\n");
+
+    if (doUseManualTopology)
+    {
+      printf ("NOTE: you use MANUAL virtual topology (%dx%d). Consider using OPTIMAL virtual topology (%dx%d). \n",
+              nodeGridSizeX, nodeGridSizeY, nodeGridSizeXOptimal, nodeGridSizeYOptimal);
+    }
+    else
+    {
+      printf ("NOTE: you use OPTIMAL virtual topology (%dx%d).\n",
+              nodeGridSizeXOptimal, nodeGridSizeYOptimal);
+    }
+
+    printf ("OPTIMAL virtual topology has some requirements in order for it to be optimal:\n"
+            "  - all computational nodes have the same performance\n"
+            "  - all neighbouring computational nodes have the same share time\n"
+            "  - virtual topology matches physical topology\n"
+            "In other words, OPTIMAL virtual topology is optimal only for homogeneous architectures.\n"
+            "Make sure all these requirements are met, otherwise, OPTIMAL virtual topology could be non-optimal.\n"
+            "===================================================================================================\n");
   }
 } /* ParallelGridCore::NodeGridInit */
 
