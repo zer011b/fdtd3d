@@ -84,7 +84,6 @@ SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsY, getNumCudaThreadsY, int, 1, "--num
 SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsZ, getNumCudaThreadsZ, int, 1, "--num-cuda-threads-z", "Number of GPU threads by z coordinate to use in computations")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseParallelGrid, getDoUseParallelGrid, bool, false, "--parallel-grid", "Use parallel grid (if fdtd3d is built with it)")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseManualVirtualTopology, getDoUseManualVirtualTopology, bool, false, "--manual-topology", "Use manual topology for parallel grid")
-SETTINGS_ELEM_FIELD_TYPE_STRING(fileWithAvailableTopologies, getFileWithAvailableTopologies, std::string, "", "--available-topologies", "File with available topologies for current architecture")
 
 SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeX, getTopologySizeX, int, 1, "--topology-sizex", "Size by x coordinate of virtual topology")
 SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeY, getTopologySizeY, int, 1, "--topology-sizey", "Size by y coordinate of virtual topology")
@@ -135,6 +134,15 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAsDAT, getDoSaveAsDAT, bool, false, "--save-
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAsTXT, getDoSaveAsTXT, bool, false, "--save-as-txt", "Save results to .txt files")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveTFSFEInc, getDoSaveTFSFEInc, bool, false, "--save-tfsf-e-incident", "Save TF/SF EInc")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveTFSFHInc, getDoSaveTFSFHInc, bool, false, "--save-tfsf-h-incident", "Save TF/SF HInc")
+
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseManualStartEndDumpCoord, getDoUseManualStartEndDumpCoord, bool, false, "--manual-save-coords", "Use manual save start and end coordinates")
+SETTINGS_ELEM_FIELD_TYPE_INT(saveStartCoordX, getSaveStartCoordX, int, 0, "--save-start-coord-x", "Start x coordinate to save from")
+SETTINGS_ELEM_FIELD_TYPE_INT(saveStartCoordY, getSaveStartCoordY, int, 0, "--save-start-coord-y", "Start y coordinate to save from")
+SETTINGS_ELEM_FIELD_TYPE_INT(saveStartCoordZ, getSaveStartCoordZ, int, 0, "--save-start-coord-z", "Start z coordinate to save from")
+SETTINGS_ELEM_FIELD_TYPE_INT(saveEndCoordX, getSaveEndCoordX, int, 0, "--save-end-coord-x", "End x coordinate to save from")
+SETTINGS_ELEM_FIELD_TYPE_INT(saveEndCoordY, getSaveEndCoordY, int, 0, "--save-end-coord-y", "End y coordinate to save from")
+SETTINGS_ELEM_FIELD_TYPE_INT(saveEndCoordZ, getSaveEndCoordZ, int, 0, "--save-end-coord-z", "End z coordinate to save from")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveWithoutPML, getDoSaveWithoutPML, bool, false, "--save-no-pml", "Save without PML")
 
 /*
  * Load flags
@@ -208,24 +216,6 @@ SETTINGS_ELEM_OPTION_TYPE_STRING("--cmd-from-file", "Load command line from file
                                                     "\t\t<cmd without arg>")
 
 SETTINGS_ELEM_OPTION_TYPE_STRING("--save-cmd-to-file", "Save command line to file")
-
-/*
- * TODO: add
- * --load-from-file
- * --save-Ex-only
- * --save-Ey-only
- * --save-Ez-only
- * --save-Hx-only
- * --save-Hy-only
- * --save-Hz-only
- * --save-as-bmp
- * --save-as-dat
- * --save-as-txt
- * --dumper-pallete
- * --dumper-start-coord
- * --dumper-end-coord
- * --dumper-orth-axis
- */
 
 #undef SETTINGS_ELEM_OPTION_TYPE_NONE
 #undef SETTINGS_ELEM_OPTION_TYPE_STRING
