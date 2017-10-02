@@ -271,10 +271,6 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
     {
       palette = PaletteType::PALETTE_BLUE_GREEN_RED;
     }
-    else
-    {
-      UNREACHABLE;
-    }
 
     if (solverSettings.getDoUseOrthAxisX ())
     {
@@ -287,10 +283,6 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
     else if (solverSettings.getDoUseOrthAxisZ ())
     {
       orthogonalAxis = OrthogonalAxis::Z;
-    }
-    else
-    {
-      UNREACHABLE;
     }
 
     dumper[FILE_TYPE_BMP] = new BMPDumper<GridCoordinate3D> ();
@@ -3395,35 +3387,35 @@ Scheme3D::initGrids ()
       {
         dumper[type]->init (0, CURRENT, processId, "Eps");
         dumper[type]->dumpGrid (totalEps,
-                                GridCoordinate3D (0, 0, totalEps->getSize ().getZ () / 2),
-                                GridCoordinate3D (totalEps->getSize ().getX (), totalEps->getSize ().getY (), totalEps->getSize ().getZ () / 2 + 1));
+                                getStartCoord (GridType::EPS, totalEps->getSize ()),
+                                getEndCoord (GridType::EPS, totalEps->getSize ()));
 
         dumper[type]->init (0, CURRENT, processId, "Mu");
         dumper[type]->dumpGrid (totalMu,
-                                GridCoordinate3D (0, 0, totalMu->getSize ().getZ () / 2),
-                                GridCoordinate3D (totalMu->getSize ().getX (), totalMu->getSize ().getY (), totalMu->getSize ().getZ () / 2 + 1));
+                                getStartCoord (GridType::MU, totalMu->getSize ()),
+                                getEndCoord (GridType::MU, totalMu->getSize ()));
 
         if (solverSettings.getDoUseMetamaterials ())
         {
           dumper[type]->init (0, CURRENT, processId, "OmegaPE");
           dumper[type]->dumpGrid (totalOmegaPE,
-                                  GridCoordinate3D (0, 0, totalOmegaPE->getSize ().getZ () / 2),
-                                  GridCoordinate3D (totalOmegaPE->getSize ().getX (), totalOmegaPE->getSize ().getY (), totalOmegaPE->getSize ().getZ () / 2 + 1));
+                                  getStartCoord (GridType::OMEGAPE, totalOmegaPE->getSize ()),
+                                  getEndCoord (GridType::OMEGAPE, totalOmegaPE->getSize ()));
 
           dumper[type]->init (0, CURRENT, processId, "OmegaPM");
           dumper[type]->dumpGrid (totalOmegaPM,
-                                  GridCoordinate3D (0, 0, totalOmegaPM->getSize ().getZ () / 2),
-                                  GridCoordinate3D (totalOmegaPM->getSize ().getX (), totalOmegaPM->getSize ().getY (), totalOmegaPM->getSize ().getZ () / 2 + 1));
+                                  getStartCoord (GridType::OMEGAPM, totalOmegaPM->getSize ()),
+                                  getEndCoord (GridType::OMEGAPM, totalOmegaPM->getSize ()));
 
           dumper[type]->init (0, CURRENT, processId, "GammaE");
           dumper[type]->dumpGrid (totalGammaE,
-                                  GridCoordinate3D (0, 0, totalGammaE->getSize ().getZ () / 2),
-                                  GridCoordinate3D (totalGammaE->getSize ().getX (), totalGammaE->getSize ().getY (), totalGammaE->getSize ().getZ () / 2 + 1));
+                                  getStartCoord (GridType::GAMMAE, totalGammaE->getSize ()),
+                                  getEndCoord (GridType::GAMMAE, totalGammaE->getSize ()));
 
           dumper[type]->init (0, CURRENT, processId, "GammaM");
           dumper[type]->dumpGrid (totalGammaM,
-                                  GridCoordinate3D (0, 0, totalGammaM->getSize ().getZ () / 2),
-                                  GridCoordinate3D (totalGammaM->getSize ().getX (), totalGammaM->getSize ().getY (), totalGammaM->getSize ().getZ () / 2 + 1));
+                                  getStartCoord (GridType::GAMMAM, totalGammaM->getSize ()),
+                                  getEndCoord (GridType::GAMMAM, totalGammaM->getSize ()));
         }
         //
         // if (solverSettings.getDoUsePML ())
@@ -4179,47 +4171,51 @@ Scheme3D::saveGrids (time_step t)
 {
   int processId = 0;
 
-  GridCoordinate3D startEx (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinExCoordFP ().getX ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinExCoordFP ().getY ()) + 1,
-                            Ex->getSize ().getZ () / 2);
-  GridCoordinate3D endEx (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinExCoordFP ().getX ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinExCoordFP ().getY ()),
-                          Ex->getSize ().getZ () / 2 + 1);
+  GridCoordinate3D startEx;
+  GridCoordinate3D endEx;
+  GridCoordinate3D startEy;
+  GridCoordinate3D endEy;
+  GridCoordinate3D startEz;
+  GridCoordinate3D endEz;
+  GridCoordinate3D startHx;
+  GridCoordinate3D endHx;
+  GridCoordinate3D startHy;
+  GridCoordinate3D endHy;
+  GridCoordinate3D startHz;
+  GridCoordinate3D endHz;
 
-  GridCoordinate3D startEy (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinEyCoordFP ().getX ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinEyCoordFP ().getY ()) + 1,
-                            Ey->getSize ().getZ () / 2);
-  GridCoordinate3D endEy (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinEyCoordFP ().getX ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinEyCoordFP ().getY ()),
-                          Ey->getSize ().getZ () / 2 + 1);
+  if (solverSettings.getDoUseManualStartEndDumpCoord ())
+  {
+    GridCoordinate3D start (solverSettings.getSaveStartCoordX (),
+                            solverSettings.getSaveStartCoordY (),
+                            solverSettings.getSaveStartCoordZ ());
+    GridCoordinate3D end (solverSettings.getSaveEndCoordX (),
+                          solverSettings.getSaveEndCoordY (),
+                          solverSettings.getSaveEndCoordZ ());
 
-  GridCoordinate3D startEz (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinEzCoordFP ().getX ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinEzCoordFP ().getY ()) + 1,
-                            Ez->getSize ().getZ () / 2);
-  GridCoordinate3D endEz (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinEzCoordFP ().getX ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinEzCoordFP ().getY ()),
-                          Ez->getSize ().getZ () / 2 + 1);
+    startEx = startEy = startEz = startHx = startHy = startHz = start;
+    endEx = endEy = endEz = endHx = endHy = endHz = end;
+  }
+  else
+  {
+    startEx = getStartCoord (GridType::EX, Ex->getTotalSize ());
+    endEx = getEndCoord (GridType::EX, Ex->getTotalSize ());
 
-  GridCoordinate3D startHx (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinHxCoordFP ().getX ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinHxCoordFP ().getY ()) + 1,
-                            Hx->getSize ().getZ () / 2);
-  GridCoordinate3D endHx (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinHxCoordFP ().getX ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinHxCoordFP ().getY ()),
-                          Hx->getSize ().getZ () / 2 + 1);
+    startEy = getStartCoord (GridType::EY, Ey->getTotalSize ());
+    endEy = getEndCoord (GridType::EY, Ey->getTotalSize ());
 
-  GridCoordinate3D startHy (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinHyCoordFP ().getX ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinHyCoordFP ().getY ()) + 1,
-                            Hy->getSize ().getZ () / 2);
-  GridCoordinate3D endHy (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinHyCoordFP ().getX ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinHyCoordFP ().getY ()),
-                          Hy->getSize ().getZ () / 2 + 1);
+    startEz = getStartCoord (GridType::EZ, Ez->getTotalSize ());
+    endEz = getEndCoord (GridType::EZ, Ez->getTotalSize ());
 
-  GridCoordinate3D startHz (grid_coord (yeeLayout->getLeftBorderPML ().getX () - yeeLayout->getMinHzCoordFP ().getX ()) + 1,
-                            grid_coord (yeeLayout->getLeftBorderPML ().getY () - yeeLayout->getMinHzCoordFP ().getY ()) + 1,
-                            Hz->getSize ().getZ () / 2);
-  GridCoordinate3D endHz (grid_coord (yeeLayout->getRightBorderPML ().getX () - yeeLayout->getMinHzCoordFP ().getX ()),
-                          grid_coord (yeeLayout->getRightBorderPML ().getY () - yeeLayout->getMinHzCoordFP ().getY ()),
-                          Hz->getSize ().getZ () / 2);
+    startHx = getStartCoord (GridType::HX, Hx->getTotalSize ());
+    endHx = getEndCoord (GridType::HX, Hx->getTotalSize ());
+
+    startHy = getStartCoord (GridType::HY, Hy->getTotalSize ());
+    endHy = getEndCoord (GridType::HY, Hy->getTotalSize ());
+
+    startHz = getStartCoord (GridType::HZ, Hz->getTotalSize ());
+    endHz = getEndCoord (GridType::HZ, Hz->getTotalSize ());
+  }
 
   for (int type = FILE_TYPE_BMP; type < FILE_TYPE_COUNT; ++type)
   {
@@ -4401,6 +4397,168 @@ void Scheme3D::additionalUpdateOfGrids (time_step t, time_step &diffT)
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
+  }
+}
+
+GridCoordinate3D
+Scheme3D::getStartCoord (GridType gridType, GridCoordinate3D size)
+{
+  GridCoordinate3D start (0, 0, 0);
+  if (solverSettings.getDoSaveWithoutPML ()
+      && solverSettings.getDoUsePML ())
+  {
+    GridCoordinate3D leftBorder = yeeLayout->getLeftBorderPML ();
+    GridCoordinateFP3D min;
+
+    switch (gridType)
+    {
+      case GridType::EX:
+      {
+        min = yeeLayout->getMinExCoordFP ();
+        break;
+      }
+      case GridType::EY:
+      {
+        min = yeeLayout->getMinEyCoordFP ();
+        break;
+      }
+      case GridType::EZ:
+      {
+        min = yeeLayout->getMinEzCoordFP ();
+        break;
+      }
+      case GridType::HX:
+      {
+        min = yeeLayout->getMinHxCoordFP ();
+        break;
+      }
+      case GridType::HY:
+      {
+        min = yeeLayout->getMinHyCoordFP ();
+        break;
+      }
+      case GridType::HZ:
+      {
+        min = yeeLayout->getMinHzCoordFP ();
+        break;
+      }
+      default:
+      {
+        // do nothing
+      }
+    }
+
+    start.setX (grid_coord (leftBorder.getX () - min.getX ()) + 1);
+    start.setY (grid_coord (leftBorder.getY () - min.getY ()) + 1);
+    start.setZ (grid_coord (leftBorder.getZ () - min.getZ ()) + 1);
+  }
+
+  OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
+  if (solverSettings.getDoUseOrthAxisX ())
+  {
+    orthogonalAxis = OrthogonalAxis::X;
+  }
+  else if (solverSettings.getDoUseOrthAxisY ())
+  {
+    orthogonalAxis = OrthogonalAxis::Y;
+  }
+  else if (solverSettings.getDoUseOrthAxisZ ())
+  {
+    orthogonalAxis = OrthogonalAxis::Z;
+  }
+
+  if (orthogonalAxis == OrthogonalAxis::Z)
+  {
+    return GridCoordinate3D (start.getX (), start.getY (), size.getZ () / 2);
+  }
+  else if (orthogonalAxis == OrthogonalAxis::Y)
+  {
+    return GridCoordinate3D (start.getX (), size.getY () / 2, start.getZ ());
+  }
+  else if (orthogonalAxis == OrthogonalAxis::X)
+  {
+    return GridCoordinate3D (size.getX () / 2, start.getY (), start.getZ ());
+  }
+}
+
+GridCoordinate3D
+Scheme3D::getEndCoord (GridType gridType, GridCoordinate3D size)
+{
+  GridCoordinate3D end = size;
+  if (solverSettings.getDoSaveWithoutPML ()
+      && solverSettings.getDoUsePML ())
+  {
+    GridCoordinate3D rightBorder = yeeLayout->getRightBorderPML ();
+    GridCoordinateFP3D min;
+
+    switch (gridType)
+    {
+      case GridType::EX:
+      {
+        min = yeeLayout->getMinExCoordFP ();
+        break;
+      }
+      case GridType::EY:
+      {
+        min = yeeLayout->getMinEyCoordFP ();
+        break;
+      }
+      case GridType::EZ:
+      {
+        min = yeeLayout->getMinEzCoordFP ();
+        break;
+      }
+      case GridType::HX:
+      {
+        min = yeeLayout->getMinHxCoordFP ();
+        break;
+      }
+      case GridType::HY:
+      {
+        min = yeeLayout->getMinHyCoordFP ();
+        break;
+      }
+      case GridType::HZ:
+      {
+        min = yeeLayout->getMinHzCoordFP ();
+        break;
+      }
+      default:
+      {
+        // do nothing
+      }
+    }
+
+    end.setX (grid_coord (rightBorder.getX () - min.getX ()));
+    end.setY (grid_coord (rightBorder.getY () - min.getY ()));
+    end.setZ (grid_coord (rightBorder.getZ () - min.getZ ()));
+  }
+
+  OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
+  if (solverSettings.getDoUseOrthAxisX ())
+  {
+    orthogonalAxis = OrthogonalAxis::X;
+  }
+  else if (solverSettings.getDoUseOrthAxisY ())
+  {
+    orthogonalAxis = OrthogonalAxis::Y;
+  }
+  else if (solverSettings.getDoUseOrthAxisZ ())
+  {
+    orthogonalAxis = OrthogonalAxis::Z;
+  }
+
+  if (orthogonalAxis == OrthogonalAxis::Z)
+  {
+    return GridCoordinate3D (end.getX (), end.getY (), size.getZ () / 2 + 1);
+  }
+  else if (orthogonalAxis == OrthogonalAxis::Y)
+  {
+    return GridCoordinate3D (end.getX (), size.getY () / 2 + 1, end.getZ ());
+  }
+  else if (orthogonalAxis == OrthogonalAxis::X)
+  {
+    return GridCoordinate3D (size.getX () / 2 + 1, end.getY (), end.getZ ());
   }
 }
 
