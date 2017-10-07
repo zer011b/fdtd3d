@@ -351,13 +351,13 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
 ParallelGridCoordinate
 ParallelYeeGridLayout::getEpsSizeForCurNode () const
 {
-  return getSizeForCurNode ();
+  return isDoubleMaterialPrecision ? getSizeForCurNode () * 2: getSizeForCurNode ();
 }
 
 ParallelGridCoordinate
 ParallelYeeGridLayout::getMuSizeForCurNode () const
 {
-  return getSizeForCurNode ();
+  return isDoubleMaterialPrecision ? getSizeForCurNode () * 2: getSizeForCurNode ();
 }
 
 ParallelGridCoordinate
