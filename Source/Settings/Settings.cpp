@@ -304,7 +304,7 @@ Settings::loadCmdFromFile (std::string fileName) /**< name of file to load from 
     std::stringstream ss (line);
     while (ss >> cmd)
     {
-      argv[index] = new char[cmd.length ()];
+      argv[index] = new char[cmd.length () + 1];
       strcpy (argv[index], cmd.c_str ());
       ++index;
     }
