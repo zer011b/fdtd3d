@@ -297,10 +297,10 @@ Approximation::phaseVelocityIncidentWave2D (FPValue delta,
 }
 
 FieldValue
-Approximation::approximateSphere (GridCoordinateFP3D midPos,
-                                  GridCoordinateFP3D center,
-                                  FPValue radius,
-                                  FieldValue eps)
+Approximation::approximateSphereFast (GridCoordinateFP3D midPos,
+                                      GridCoordinateFP3D center,
+                                      FPValue radius,
+                                      FieldValue eps)
 {
   FPValue d = sqrt (SQR (midPos.getX () - center.getX ()) + SQR (midPos.getY () - center.getY ()) + SQR (midPos.getZ () - center.getZ ()));
 
@@ -323,375 +323,60 @@ Approximation::approximateSphere (GridCoordinateFP3D midPos,
 }
 
 FieldValue
-Approximation::approximateSphere_1 (GridCoordinateFP3D midPos,
-                                    GridCoordinateFP3D center,
-                                    FPValue radius,
-                                    FieldValue eps)
+Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
+                                          GridCoordinateFP3D center,
+                                          FPValue radius,
+                                          FieldValue eps)
 {
-  struct temp1
+  GridCoordinateFP3D start (midPos.getX () - 0.5, midPos.getY () - 0.5, midPos.getZ () - 0.5);
+  GridCoordinateFP3D end (midPos.getX () + 0.5, midPos.getY () + 0.5, midPos.getZ () + 0.5);
+
+  int numSteps = 100;
+  FPValue step = 1.0 / numSteps;
+  FPValue elemS = step * step;
+  FPValue volume = 0;
+  for (int i = 0; i < numSteps; ++i)
   {
-    GridCoordinateFP3D first;
-    GridCoordinateFP3D second;
-
-    temp1 (GridCoordinateFP3D f, GridCoordinateFP3D s)
-    : first (f), second (s)
+    for (int j = 0; j < numSteps; ++j)
     {
-    }
+      GridCoordinateFP3D pos (start.getX () + i * step, start.getY () + j * step, 0.0);
+      FPValue temp = SQR (radius) - SQR (pos.getX () - center.getX ()) - SQR (pos.getY () - center.getY ());
 
-    temp1 ()
-    : first (0.0, 0.0, 0.0), second (0.0, 0.0, 0.0)
-    {
-    }
-  };
-
-  GridCoordinateFP3D points[8];
-  points[0] = GridCoordinateFP3D (midPos.getX () - 0.5, midPos.getY () - 0.5, midPos.getZ () - 0.5);
-  points[1] = GridCoordinateFP3D (midPos.getX () + 0.5, midPos.getY () - 0.5, midPos.getZ () - 0.5);
-  points[2] = GridCoordinateFP3D (midPos.getX () + 0.5, midPos.getY () + 0.5, midPos.getZ () - 0.5);
-  points[3] = GridCoordinateFP3D (midPos.getX () - 0.5, midPos.getY () + 0.5, midPos.getZ () - 0.5);
-
-  points[4] = GridCoordinateFP3D (midPos.getX () - 0.5, midPos.getY () - 0.5, midPos.getZ () + 0.5);
-  points[5] = GridCoordinateFP3D (midPos.getX () + 0.5, midPos.getY () - 0.5, midPos.getZ () + 0.5);
-  points[6] = GridCoordinateFP3D (midPos.getX () + 0.5, midPos.getY () + 0.5, midPos.getZ () + 0.5);
-  points[7] = GridCoordinateFP3D (midPos.getX () - 0.5, midPos.getY () + 0.5, midPos.getZ () + 0.5);
-
-  temp1 edges[12];
-  edges[0] = temp1 (points[0], points[1]);
-  edges[1] = temp1 (points[1], points[2]);
-  edges[2] = temp1 (points[3], points[2]);
-  edges[3] = temp1 (points[0], points[3]);
-
-  edges[4] = temp1 (points[4], points[5]);
-  edges[5] = temp1 (points[5], points[6]);
-  edges[6] = temp1 (points[7], points[6]);
-  edges[7] = temp1 (points[4], points[7]);
-
-  edges[8] = temp1 (points[0], points[4]);
-  edges[9] = temp1 (points[1], points[5]);
-  edges[10] = temp1 (points[2], points[6]);
-  edges[11] = temp1 (points[3], points[7]);
-
-  FPValue x0 = center.getX ();
-  FPValue y0 = center.getY ();
-  FPValue z0 = center.getZ ();
-
-  GridCoordinateFP3D plane_points[3];
-
-  uint32_t index = 0;
-
-  for (uint32_t i = 0; i < 12 && index < 3; ++i)
-  {
-    FPValue func1 = SQR (edges[i].first.getX () - center.getX ())
-                    + SQR (edges[i].first.getY () - center.getY ())
-                    + SQR (edges[i].first.getZ () - center.getZ ())
-                    - radius * radius;
-
-    FPValue func2 = SQR (edges[i].second.getX () - center.getX ())
-                    + SQR (edges[i].second.getY () - center.getY ())
-                    + SQR (edges[i].second.getZ () - center.getZ ())
-                    - radius * radius;
-
-    if (func1 * func2 < 0)
-    {
-      // sphere crosses this plane
-
-      FPValue x1 = edges[i].first.getX ();
-      FPValue y1 = edges[i].first.getY ();
-      FPValue z1 = edges[i].first.getZ ();
-
-      FPValue x2 = edges[i].second.getX ();
-      FPValue y2 = edges[i].second.getY ();
-      FPValue z2 = edges[i].second.getZ ();
-
-      FPValue a = x2 - x1;
-      FPValue b = y2 - y1;
-      FPValue c = z2 - z1;
-
-      FPValue p = y1 - y0;
-      FPValue q = z1 - z0;
-
-      if (a == 0)
+      if (temp < 0)
       {
-        // printf ("%f %f %f\n", midPos.getX (), midPos.getY (), midPos.getZ ());
-        // printf ("%f %f %f\n", center.getX (), center.getY (), center.getZ ());
-        // printf ()
-        // ASSERT(false);
-
-        if (b == 0)
-        {
-          FPValue q = SQR (x1 - x0) + SQR (y1 - y0);
-          FPValue p = z0 - z1;
-          FPValue discr_div_4 = SQR (radius) - q;
-
-          ASSERT (discr_div_4 >= 0);
-
-          if (discr_div_4 == 0)
-          {
-            FPValue alpha = p;
-            if (z1 + alpha >= z1 && z1 + alpha <= z2)
-            {
-              // printf ("$9\n");
-              plane_points[index++] = GridCoordinateFP3D (x1, y1, z1 + alpha);
-            }
-          }
-          else
-          {
-            FPValue alpha1 = p + sqrt (discr_div_4);
-            FPValue alpha2 = p - sqrt (discr_div_4);
-
-            if (z1 + alpha1 >= z1 && z1 + alpha1 <= z2)
-            {
-              // printf ("$8\n");
-              plane_points[index++] = GridCoordinateFP3D (x1, y1, z1 + alpha1);
-            }
-            else if (z1 + alpha2 >= z1 && z1 + alpha2 <= z2)
-            {
-              // printf ("$7\n");
-              plane_points[index++] = GridCoordinateFP3D (x1, y1, z1 + alpha2);
-            }
-          }
-        }
-        else
-        {
-          FPValue q = SQR (x1 - x0);
-          FPValue k = c / b;
-
-          FPValue p = - k * y1 + z1 - z0;
-          FPValue l = 1 + SQR (k);
-          FPValue h = k * p - y0;
-          FPValue u = q + SQR (y0) + SQR (p) - SQR (radius);
-
-          FPValue discr_div_4 = SQR (h) - l * u;
-
-          ASSERT (discr_div_4 >= 0);
-
-          if (discr_div_4 == 0)
-          {
-            FPValue y = - h / l;
-            FPValue z = k * (y - y1) + z1;
-
-            if (y >= y1 && y <= y2)
-            {
-              // printf ("$6\n");
-              plane_points[index++] = GridCoordinateFP3D (x1, y, z);
-            }
-          }
-          else
-          {
-            FPValue y = (- h + sqrt (discr_div_4)) / l;
-            FPValue z = k * (y - y1) + z1;
-
-            FPValue yy = (- h - sqrt (discr_div_4)) / l;
-            FPValue zz = k * (yy - y1) + z1;
-
-            if (y >= y1 && y <= y2)
-            {
-              // printf ("$5\n");
-              plane_points[index++] = GridCoordinateFP3D (x1, y, z);
-            }
-            else if (yy >= y1 && yy <= y2)
-            {
-              // printf ("$4\n");
-              plane_points[index++] = GridCoordinateFP3D (x1, yy, zz);
-            }
-          }
-        }
+        pos.setZ (0.0);
       }
       else
       {
-        FPValue k = b / a;
-        FPValue l = c / a;
-
-        FPValue d = - k * x1 + p;
-        FPValue h = - l * x1 + q;
-
-        FPValue discr_div_4 = SQR (radius) * (1 + SQR (k) + SQR (l)) - SQR (k * x0 + d) - SQR (l * x0 + h) - SQR (d * l - h * k);
-
-        ASSERT (discr_div_4 >= 0);
-
-        if (discr_div_4 == 0)
+        if (midPos.getZ () > center.getZ ())
         {
-          FPValue x = - (k * d + l * h - x0) / (1 + SQR (k) + SQR (l));
-          FPValue y = k * (x - x1) + y1;
-          FPValue z = l * (x - x1) + z1;
-
-          if (x >= x1 && x <= x2)
-          {
-            // printf ("$3\n");
-            plane_points[index++] = GridCoordinateFP3D (x, y, z);
-          }
+          pos.setZ (center.getZ () + sqrt (temp));
         }
         else
         {
-          FPValue x = (- (k * d + l * h - x0) + sqrt(discr_div_4)) / (1 + SQR (k) + SQR (l));
-          FPValue y = k * (x - x1) + y1;
-          FPValue z = l * (x - x1) + z1;
+          pos.setZ (center.getZ () - sqrt (temp));
+        }
 
-          FPValue xx = (- (k * d + l * h - x0) - sqrt(discr_div_4)) / (1 + SQR (k) + SQR (l));
-          FPValue yy = k * (xx - x1) + y1;
-          FPValue zz = l * (xx - x1) + z1;
-
-          if (x >= x1 && x <= x2)
-          {
-            // printf ("$1\n");
-            plane_points[index++] = GridCoordinateFP3D (x, y, z);
-          }
-          else if (xx >= x1 && xx <= x2)
-          {
-            // printf ("$2\n");
-            plane_points[index++] = GridCoordinateFP3D (xx, yy, zz);
-          }
+        if (pos.getZ () < start.getZ ())
+        {
+          pos.setZ (1.0);
+        }
+        else if (pos.getZ () > end.getZ ())
+        {
+          pos.setZ (0.0);
+        }
+        else
+        {
+          pos.setZ (pos.getZ () - start.getZ ());
         }
       }
+      volume += pos.getZ () * elemS;
     }
   }
 
-  // printf ("%u\n", index);
-  // printf ("%f %f %f\n", plane_points[0].getX (), plane_points[0].getY (), plane_points[0].getZ ());
-  // printf ("%f %f %f\n", midPos.getX (), midPos.getY (), midPos.getZ ());
-
-  ASSERT (index == 3 || index == 0);
+  ASSERT (volume <= 1.0);
 
   FieldValue eps_vacuum = getFieldValueRealOnly (1.0);
 
-  if (index == 3)
-  {
-    FPValue _x0 = plane_points[0].getX ();
-    FPValue _y0 = plane_points[0].getY ();
-    FPValue _z0 = plane_points[0].getZ ();
-
-    FPValue _x1 = plane_points[1].getX ();
-    FPValue _y1 = plane_points[1].getY ();
-    FPValue _z1 = plane_points[1].getZ ();
-
-    FPValue _x2 = plane_points[2].getX ();
-    FPValue _y2 = plane_points[2].getY ();
-    FPValue _z2 = plane_points[2].getZ ();
-
-    FPValue A = (_y1 - _y0) * (_z2 - _z0) - (_y2 - _y0) * (_z1 - _z0);
-    FPValue B = - (_x1 - _x0) * (_z2 - _z0) + (_x2 - _x0) * (_z1 - _z0);
-    FPValue C = (_x1 - _x0) * (_y2 - _y0) - (_x2 - _x0) * (_y1 - _y0);
-    FPValue D = - (_x0 * A + _y0 * B + _z0 * C);
-
-    FPValue part_volume = 0;
-
-    FPValue startx0 = points[0].getX ();
-    FPValue starty0 = points[0].getY ();
-    FPValue startz0 = points[0].getZ ();
-
-    FPValue endy0 = points[7].getY ();
-    FPValue endz0 = points[7].getZ ();
-
-    if (C == 0)
-    {
-      if (B == 0)
-      {
-        part_volume = (_x0 - startx0) * 1 * 1;
-
-        if (startx0 < x0)
-        {
-          part_volume = 1 - part_volume;
-        }
-      }
-      else
-      {
-        FPValue A1 = - A / B;
-        FPValue B1 = - D / B;
-
-        FPValue N = 1000;
-        FPValue step = 1.0 / N;
-        for (uint32_t step_i = 0; step_i < N; ++step_i)
-        {
-          FPValue yval = A1 * (step_i * step + startx0) + B1;
-
-          if (yval < starty0)
-          {
-            yval = starty0;
-          }
-          else if (yval > endy0)
-          {
-            yval = endy0;
-          }
-
-          part_volume += yval * step;
-        }
-
-        part_volume -= starty0 * 1;
-
-        if (starty0 < y0)
-        {
-          part_volume = 1 - part_volume;
-        }
-      }
-    }
-    else
-    {
-      FPValue A1 = - A / C;
-      FPValue B1 = - B / C;
-      FPValue C1 = - D / C;
-
-      //============================
-      // Volume
-      //============================
-
-      //FPValue part_volume = C1 * 1 * 1 + A1 * (SQR (points[0].getX() + 1) - SQR (points[0].getX()))/2 * 1 + B1 * (SQR (points[0].getY() + 1) - SQR (points[0].getY()))/2 * 1;
-      {
-        FPValue N = 1000;
-        FPValue step = 1.0 / N;
-        for (uint32_t step_i = 0; step_i < N; ++step_i)
-        {
-          for (uint32_t step_j = 0; step_j < N; ++step_j)
-          {
-            FPValue zval = A1 * (step_i * step + startx0) + B1 * (step_j * step + starty0) + C1;
-
-            if (zval < startz0)
-            {
-              zval = startz0;
-            }
-            else if (zval > endz0)
-            {
-              zval = endz0;
-            }
-
-            part_volume += zval * step * step;
-          }
-        }
-
-        part_volume -= startz0 * 1 * 1;
-
-        if (startz0 < z0)
-        {
-          part_volume = 1 - part_volume;
-        }
-      }
-    }
-
-    FPValue full_volume = 1;
-
-    FPValue distance0 = sqrt (SQR (points[0].getX() - x0) + SQR (points[0].getY() - y0) + SQR (points[0].getZ() - z0));
-
-    FPValue diff = part_volume / full_volume;
-
-    // if (distance0 > radius)
-    // {
-    //   diff = 1 - diff;
-    // }
-
-    return diff * eps + (1 - diff) * eps_vacuum;
-  }
-  else
-  {
-    FPValue d = sqrt (SQR (midPos.getX () - center.getX ()) + SQR (midPos.getY () - center.getY ()) + SQR (midPos.getZ () - center.getZ ()));
-
-    if (d < radius)
-    {
-      return eps;
-    }
-    else
-    {
-      ASSERT (d > radius);
-
-      return eps_vacuum;
-    }
-  }
+  return volume * eps + (1 - volume) * eps_vacuum;
 }

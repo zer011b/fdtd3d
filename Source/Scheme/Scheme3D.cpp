@@ -3072,9 +3072,10 @@ Scheme3D::initGrids ()
           GridCoordinateFP3D center (solverSettings.getEpsSphereCenterX (),
                                      solverSettings.getEpsSphereCenterY (),
                                      solverSettings.getEpsSphereCenterZ ());
-          val->setCurValue (Approximation::approximateSphere (posAbs,
-                                                              center * modifier + GridCoordinateFP3D (0.5, 0.5, 0.5),
-                                                              solverSettings.getEpsSphereRadius () * modifier, epsVal));
+          val->setCurValue (Approximation::approximateSphereAccurate (posAbs,
+                                                                      center * modifier + GridCoordinateFP3D (0.5, 0.5, 0.5),
+                                                                      solverSettings.getEpsSphereRadius () * modifier,
+                                                                      epsVal));
         }
       }
     }
