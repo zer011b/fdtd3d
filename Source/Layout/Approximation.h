@@ -28,8 +28,8 @@ public:
   static FPValue phaseVelocityIncidentWave3D (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
   static FPValue phaseVelocityIncidentWave2D (FPValue, FPValue, FPValue, FPValue, FPValue);
 
-  static FieldValue approximateSphere (GridCoordinateFP3D, GridCoordinateFP3D, FPValue, FieldValue);
-  static FieldValue approximateSphere_1 (GridCoordinateFP3D, GridCoordinateFP3D, FPValue, FieldValue);
+  static FieldValue approximateSphereFast (GridCoordinateFP3D, GridCoordinateFP3D, FPValue, FieldValue);
+  static FieldValue approximateSphereAccurate (GridCoordinateFP3D, GridCoordinateFP3D, FPValue, FieldValue);
 };
 
 #endif /* APPROXIMATION_H */
