@@ -467,6 +467,10 @@ Scheme3D::~Scheme3D ()
   delete loader[FILE_TYPE_BMP];
   delete loader[FILE_TYPE_DAT];
   delete loader[FILE_TYPE_TXT];
+
+  delete dumper1D[FILE_TYPE_BMP];
+  delete dumper1D[FILE_TYPE_DAT];
+  delete dumper1D[FILE_TYPE_TXT];
 }
 
 void
