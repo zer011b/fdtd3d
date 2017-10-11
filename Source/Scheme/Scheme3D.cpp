@@ -2562,7 +2562,6 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
     if (solverSettings.getDoUseNTFF ()
         && t % solverSettings.getIntermediateNTFFStep () == 0)
     {
-      gatherFieldsTotal (solverSettings.getDoCalcScatteredNTFF ());
       saveNTFF (solverSettings.getDoCalcReverseNTFF (), t);
     }
 
@@ -3512,12 +3511,14 @@ Scheme3D::initGrids ()
 
 Scheme3D::NPair
 Scheme3D::ntffN_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> *curTotalEz,
-                   Grid<GridCoordinate3D> *curTotalHy,
-                   Grid<GridCoordinate3D> *curTotalHz)
+                   Grid<GridCoordinate3D> *curEz,
+                   Grid<GridCoordinate3D> *curHy,
+                   Grid<GridCoordinate3D> *curHz)
 {
 #ifdef COMPLEX_FIELD_VALUES
-  FPValue diffc = curTotalEz->getSize ().getX () / 2;
+  FPValue diffx0 = curEz->getTotalSize ().getX () / 2;
+  FPValue diffy0 = curEz->getTotalSize ().getY () / 2;
+  FPValue diffz0 = curEz->getTotalSize ().getZ () / 2;
 
   GridCoordinateFP3D coordStart (x0, leftNTFF.getY () + 0.5, leftNTFF.getZ () + 0.5);
   GridCoordinateFP3D coordEnd (x0, rightNTFF.getY () - 0.5, rightNTFF.getZ () - 0.5);
@@ -3534,34 +3535,59 @@ Scheme3D::ntffN_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
       GridCoordinateFP3D pos3 (x0, coordY, coordZ - 0.5);
       GridCoordinateFP3D pos4 (x0, coordY, coordZ + 0.5);
 
-      // FieldValue val1 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (pos1));
-      // FieldValue val2 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (pos2));
-      // FieldValue val3 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (pos3));
-      // FieldValue val4 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (pos4));
-
       pos1 = pos1 - yeeLayout->getMinHzCoordFP ();
       pos2 = pos2 - yeeLayout->getMinHzCoordFP ();
 
       pos3 = pos3 - yeeLayout->getMinHyCoordFP ();
       pos4 = pos4 - yeeLayout->getMinHyCoordFP ();
 
-      FieldValue valHz1 = curTotalHz->getFieldPointValue (convertCoord (pos1))->getCurValue ();// - val1;
-      FieldValue valHz2 = curTotalHz->getFieldPointValue (convertCoord (pos2))->getCurValue ();// - val2;
+      GridCoordinate3D pos11 = convertCoord (pos1);
+      GridCoordinate3D pos21 = convertCoord (pos2);
+      GridCoordinate3D pos31 = convertCoord (pos3);
+      GridCoordinate3D pos41 = convertCoord (pos4);
 
-      FieldValue valHy1 = curTotalHy->getFieldPointValue (convertCoord (pos3))->getCurValue ();// - val3;
-      FieldValue valHy2 = curTotalHy->getFieldPointValue (convertCoord (pos4))->getCurValue ();// - val4;
+      FieldPointValue *valHz1 = curHz->getFieldPointValueOrNullByAbsolutePos (pos11);
+      FieldPointValue *valHz2 = curHz->getFieldPointValueOrNullByAbsolutePos (pos21);
 
-      FPValue arg = (x0 - diffc) * sin(angleTeta)*cos(anglePhi) + (coordY - diffc) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffc) * cos (angleTeta);
+      FieldPointValue *valHy1 = curHy->getFieldPointValueOrNullByAbsolutePos (pos31);
+      FieldPointValue *valHy2 = curHy->getFieldPointValueOrNullByAbsolutePos (pos41);
+
+#ifdef PARALLEL_GRID
+      if (valHz1 == NULL || ((ParallelGrid*) curHz)->isBufferLeftPosition (pos11)
+          || valHz2 == NULL || ((ParallelGrid*) curHz)->isBufferLeftPosition (pos21)
+          || valHy1 == NULL || ((ParallelGrid*) curHy)->isBufferLeftPosition (pos31)
+          || valHy2 == NULL || ((ParallelGrid*) curHy)->isBufferLeftPosition (pos41))
+      {
+        continue;
+      }
+#endif
+
+      ASSERT (valHz1 != NULL && valHz2 != NULL && valHy1 != NULL && valHy2 != NULL);
+
+      FieldValue Hz1 = valHz1->getCurValue ();
+      FieldValue Hz2 = valHz2->getCurValue ();
+      FieldValue Hy1 = valHy1->getCurValue ();
+      FieldValue Hy2 = valHy2->getCurValue ();
+
+      if (solverSettings.getDoCalcScatteredNTFF ())
+      {
+        Hz1 -= yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (pos1));
+        Hz2 -= yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (pos2));
+        Hy1 -= yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (pos3));
+        Hy2 -= yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (pos4));
+      }
+
+      FPValue arg = (x0 - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
       arg *= gridStep;
 
       FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valHz1 + valHz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
-                                  + (valHy1 + valHy2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
+      sum_teta += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
+                                  + (Hy1 + Hy2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
 
-      sum_phi += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valHz1 + valHz2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
+      sum_phi += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
     }
   }
 
@@ -3573,12 +3599,14 @@ Scheme3D::ntffN_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffN_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> *curTotalEz,
-                   Grid<GridCoordinate3D> *curTotalHx,
-                   Grid<GridCoordinate3D> *curTotalHz)
+                   Grid<GridCoordinate3D> *curEz,
+                   Grid<GridCoordinate3D> *curHx,
+                   Grid<GridCoordinate3D> *curHz)
 {
 #ifdef COMPLEX_FIELD_VALUES
-  FPValue diffc = curTotalEz->getSize ().getX () / 2;
+  FPValue diffx0 = curEz->getTotalSize ().getX () / 2;
+  FPValue diffy0 = curEz->getTotalSize ().getY () / 2;
+  FPValue diffz0 = curEz->getTotalSize ().getZ () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, y0, leftNTFF.getZ () + 0.5);
   GridCoordinateFP3D coordEnd (rightNTFF.getX () - 0.5, y0, rightNTFF.getZ () - 0.5);
@@ -3595,34 +3623,59 @@ Scheme3D::ntffN_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
       GridCoordinateFP3D pos3 (coordX, y0, coordZ - 0.5);
       GridCoordinateFP3D pos4 (coordX, y0, coordZ + 0.5);
 
-      // FieldValue val1 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (pos1));
-      // FieldValue val2 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (pos2));
-      // FieldValue val3 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (pos3));
-      // FieldValue val4 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (pos4));
-
       pos1 = pos1 - yeeLayout->getMinHzCoordFP ();
       pos2 = pos2 - yeeLayout->getMinHzCoordFP ();
 
       pos3 = pos3 - yeeLayout->getMinHxCoordFP ();
       pos4 = pos4 - yeeLayout->getMinHxCoordFP ();
 
-      FieldValue valHz1 = curTotalHz->getFieldPointValue (convertCoord (pos1))->getCurValue ();// - val1;
-      FieldValue valHz2 = curTotalHz->getFieldPointValue (convertCoord (pos2))->getCurValue ();// - val2;
+      GridCoordinate3D pos11 = convertCoord (pos1);
+      GridCoordinate3D pos21 = convertCoord (pos2);
+      GridCoordinate3D pos31 = convertCoord (pos3);
+      GridCoordinate3D pos41 = convertCoord (pos4);
 
-      FieldValue valHx1 = curTotalHx->getFieldPointValue (convertCoord (pos3))->getCurValue ();// - val3;
-      FieldValue valHx2 = curTotalHx->getFieldPointValue (convertCoord (pos4))->getCurValue ();// - val4;
+      FieldPointValue *valHz1 = curHz->getFieldPointValueOrNullByAbsolutePos (pos11);
+      FieldPointValue *valHz2 = curHz->getFieldPointValueOrNullByAbsolutePos (pos21);
 
-      FPValue arg = (coordX - diffc) * sin(angleTeta)*cos(anglePhi) + (y0 - diffc) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffc) * cos (angleTeta);
+      FieldPointValue *valHx1 = curHx->getFieldPointValueOrNullByAbsolutePos (pos31);
+      FieldPointValue *valHx2 = curHx->getFieldPointValueOrNullByAbsolutePos (pos41);
+
+#ifdef PARALLEL_GRID
+      if (valHz1 == NULL || ((ParallelGrid*) curHz)->isBufferLeftPosition (pos11)
+          || valHz2 == NULL || ((ParallelGrid*) curHz)->isBufferLeftPosition (pos21)
+          || valHx1 == NULL || ((ParallelGrid*) curHx)->isBufferLeftPosition (pos31)
+          || valHx2 == NULL || ((ParallelGrid*) curHx)->isBufferLeftPosition (pos41))
+      {
+        continue;
+      }
+#endif
+
+      ASSERT (valHz1 != NULL && valHz2 != NULL && valHx1 != NULL && valHx2 != NULL);
+
+      FieldValue Hz1 = valHz1->getCurValue ();
+      FieldValue Hz2 = valHz2->getCurValue ();
+      FieldValue Hx1 = valHx1->getCurValue ();
+      FieldValue Hx2 = valHx2->getCurValue ();
+
+      if (solverSettings.getDoCalcScatteredNTFF ())
+      {
+        Hz1 -= yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (pos1));
+        Hz2 -= yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (pos2));
+        Hx1 -= yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (pos3));
+        Hx2 -= yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (pos4));
+      }
+
+      FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (y0 - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
       arg *= gridStep;
 
       FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (y0==rightNTFF.getY ()?1:-1) * ((valHz1 + valHz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                                  + (valHx1 + valHx2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
+      sum_teta += SQR (gridStep) * (y0==rightNTFF.getY ()?1:-1) * ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                                  + (Hx1 + Hx2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
 
-      sum_phi += SQR (gridStep) * (-1) * (y0==rightNTFF.getY ()?1:-1) * ((valHz1 + valHz2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent;
+      sum_phi += SQR (gridStep) * (-1) * (y0==rightNTFF.getY ()?1:-1) * ((Hz1 + Hz2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent;
     }
   }
 
@@ -3634,12 +3687,14 @@ Scheme3D::ntffN_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffN_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> *curTotalEz,
-                   Grid<GridCoordinate3D> *curTotalHx,
-                   Grid<GridCoordinate3D> *curTotalHy)
+                   Grid<GridCoordinate3D> *curEz,
+                   Grid<GridCoordinate3D> *curHx,
+                   Grid<GridCoordinate3D> *curHy)
 {
 #ifdef COMPLEX_FIELD_VALUES
-  FPValue diffc = curTotalEz->getSize ().getX () / 2;
+  FPValue diffx0 = curEz->getTotalSize ().getX () / 2;
+  FPValue diffy0 = curEz->getTotalSize ().getY () / 2;
+  FPValue diffz0 = curEz->getTotalSize ().getZ () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, leftNTFF.getY () + 0.5, z0);
   GridCoordinateFP3D coordEnd (rightNTFF.getX () - 0.5, rightNTFF.getY () - 0.5, z0);
@@ -3656,35 +3711,60 @@ Scheme3D::ntffN_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
       GridCoordinateFP3D pos3 (coordX, coordY - 0.5, z0);
       GridCoordinateFP3D pos4 (coordX, coordY + 0.5, z0);
 
-      // FieldValue val1 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (pos1));
-      // FieldValue val2 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (pos2));
-      // FieldValue val3 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (pos3));
-      // FieldValue val4 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (pos4));
-
       pos1 = pos1 - yeeLayout->getMinHyCoordFP ();
       pos2 = pos2 - yeeLayout->getMinHyCoordFP ();
 
       pos3 = pos3 - yeeLayout->getMinHxCoordFP ();
       pos4 = pos4 - yeeLayout->getMinHxCoordFP ();
 
-      FieldValue valHy1 = curTotalHy->getFieldPointValue (convertCoord (pos1))->getCurValue ();// - val1;
-      FieldValue valHy2 = curTotalHy->getFieldPointValue (convertCoord (pos2))->getCurValue ();// - val2;
+      GridCoordinate3D pos11 = convertCoord (pos1);
+      GridCoordinate3D pos21 = convertCoord (pos2);
+      GridCoordinate3D pos31 = convertCoord (pos3);
+      GridCoordinate3D pos41 = convertCoord (pos4);
 
-      FieldValue valHx1 = curTotalHx->getFieldPointValue (convertCoord (pos3))->getCurValue ();// - val3;
-      FieldValue valHx2 = curTotalHx->getFieldPointValue (convertCoord (pos4))->getCurValue ();// - val4;
+      FieldPointValue *valHy1 = curHy->getFieldPointValueOrNullByAbsolutePos (pos11);
+      FieldPointValue *valHy2 = curHy->getFieldPointValueOrNullByAbsolutePos (pos21);
 
-      FPValue arg = (coordX - diffc) * sin(angleTeta)*cos(anglePhi) + (coordY - diffc) * sin(angleTeta)*sin(anglePhi) + (z0 - diffc) * cos (angleTeta);
+      FieldPointValue *valHx1 = curHx->getFieldPointValueOrNullByAbsolutePos (pos31);
+      FieldPointValue *valHx2 = curHx->getFieldPointValueOrNullByAbsolutePos (pos41);
+
+#ifdef PARALLEL_GRID
+      if (valHy1 == NULL || ((ParallelGrid*) curHy)->isBufferLeftPosition (pos11)
+          || valHy2 == NULL || ((ParallelGrid*) curHy)->isBufferLeftPosition (pos21)
+          || valHx1 == NULL || ((ParallelGrid*) curHx)->isBufferLeftPosition (pos31)
+          || valHx2 == NULL || ((ParallelGrid*) curHx)->isBufferLeftPosition (pos41))
+      {
+        continue;
+      }
+#endif
+
+      ASSERT (valHy1 != NULL && valHy2 != NULL && valHx1 != NULL && valHx2 != NULL);
+
+      FieldValue Hy1 = valHy1->getCurValue ();
+      FieldValue Hy2 = valHy2->getCurValue ();
+      FieldValue Hx1 = valHx1->getCurValue ();
+      FieldValue Hx2 = valHx2->getCurValue ();
+
+      if (solverSettings.getDoCalcScatteredNTFF ())
+      {
+        Hy1 -= yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (pos1));
+        Hy2 -= yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (pos2));
+        Hx1 -= yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (pos3));
+        Hx2 -= yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (pos4));
+      }
+
+      FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (z0 - diffz0) * cos (angleTeta);
       arg *= gridStep;
 
       FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * (-(valHy1 + valHy2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                                  + (valHx1 + valHx2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent;
+      sum_teta += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * (-(Hy1 + Hy2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                                  + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent;
 
-      sum_phi += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * ((valHy1 + valHy2)/FPValue(2.0) * FPValue (sin (anglePhi))
-                                                + (valHx1 + valHx2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
+      sum_phi += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * ((Hy1 + Hy2)/FPValue(2.0) * FPValue (sin (anglePhi))
+                                                + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
     }
   }
 
@@ -3696,11 +3776,13 @@ Scheme3D::ntffN_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffL_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> *curTotalEy,
-                   Grid<GridCoordinate3D> *curTotalEz)
+                   Grid<GridCoordinate3D> *curEy,
+                   Grid<GridCoordinate3D> *curEz)
 {
 #ifdef COMPLEX_FIELD_VALUES
-  FPValue diffc = curTotalEz->getSize ().getX () / 2;
+  FPValue diffx0 = curEz->getTotalSize ().getX () / 2;
+  FPValue diffy0 = curEz->getTotalSize ().getY () / 2;
+  FPValue diffz0 = curEz->getTotalSize ().getZ () / 2;
 
   GridCoordinateFP3D coordStart (x0, leftNTFF.getY () + 0.5, leftNTFF.getZ () + 0.5);
   GridCoordinateFP3D coordEnd (x0, rightNTFF.getY () - 0.5, rightNTFF.getZ () - 0.5);
@@ -3717,38 +3799,73 @@ Scheme3D::ntffL_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
       GridCoordinateFP3D pos3 (x0, coordY, coordZ - 0.5);
       GridCoordinateFP3D pos4 (x0, coordY, coordZ + 0.5);
 
-      // FieldValue val1 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (pos1));
-      // FieldValue val2 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (pos2));
-      // FieldValue val3 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (pos3));
-      // FieldValue val4 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (pos4));
-
       pos1 = pos1 - yeeLayout->getMinEyCoordFP ();
       pos2 = pos2 - yeeLayout->getMinEyCoordFP ();
 
       pos3 = pos3 - yeeLayout->getMinEzCoordFP ();
       pos4 = pos4 - yeeLayout->getMinEzCoordFP ();
 
-      FieldValue valEy1 = (curTotalEy->getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEy->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / FPValue(2.0);// - val1;
-      FieldValue valEy2 = (curTotalEy->getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEy->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / FPValue(2.0);// - val2;
+      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0.5,0,0));
+      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0.5,0,0));
+      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0.5,0,0));
+      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0.5,0,0));
 
-      FieldValue valEz1 = (curTotalEz->getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEz->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / FPValue(2.0);// - val3;
-      FieldValue valEz2 = (curTotalEz->getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0.5,0,0)))->getCurValue ()
-                           + curTotalEz->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0.5,0,0)))->getCurValue ()) / FPValue(2.0);// - val4;
+      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0.5,0,0));
+      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0.5,0,0));
+      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0.5,0,0));
+      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0.5,0,0));
 
-      FPValue arg = (x0 - diffc) * sin(angleTeta)*cos(anglePhi) + (coordY - diffc) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffc) * cos (angleTeta);
+      FieldPointValue *valEy11 = curEy->getFieldPointValueOrNullByAbsolutePos (pos11);
+      FieldPointValue *valEy12 = curEy->getFieldPointValueOrNullByAbsolutePos (pos12);
+      FieldPointValue *valEy21 = curEy->getFieldPointValueOrNullByAbsolutePos (pos21);
+      FieldPointValue *valEy22 = curEy->getFieldPointValueOrNullByAbsolutePos (pos22);
+
+      FieldPointValue *valEz11 = curEz->getFieldPointValueOrNullByAbsolutePos (pos31);
+      FieldPointValue *valEz12 = curEz->getFieldPointValueOrNullByAbsolutePos (pos32);
+      FieldPointValue *valEz21 = curEz->getFieldPointValueOrNullByAbsolutePos (pos41);
+      FieldPointValue *valEz22 = curEz->getFieldPointValueOrNullByAbsolutePos (pos42);
+
+#ifdef PARALLEL_GRID
+      if (valEy11 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos11)
+          || valEy12 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos11)
+          || valEy21 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos21)
+          || valEy22 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos22)
+          || valEz11 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos31)
+          || valEz12 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos32)
+          || valEz21 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos41)
+          || valEz22 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos42))
+      {
+        continue;
+      }
+#endif
+
+      ASSERT (valEy11 != NULL && valEy12 != NULL && valEy21 != NULL && valEy22 != NULL
+              && valEz11 != NULL && valEz12 != NULL && valEz21 != NULL && valEz22 != NULL);
+
+      FieldValue Ey1 = (valEy11->getCurValue () + valEy12->getCurValue ()) / FPValue(2.0);
+      FieldValue Ey2 = (valEy21->getCurValue () + valEy22->getCurValue ()) / FPValue(2.0);
+      FieldValue Ez1 = (valEz11->getCurValue () + valEz12->getCurValue ()) / FPValue(2.0);
+      FieldValue Ez2 = (valEz21->getCurValue () + valEz22->getCurValue ()) / FPValue(2.0);
+
+      if (solverSettings.getDoCalcScatteredNTFF ())
+      {
+        Ey1 -= yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (pos1));
+        Ey2 -= yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (pos2));
+        Ez1 -= yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (pos3));
+        Ez2 -= yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (pos4));
+      }
+
+      FPValue arg = (x0 - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
       arg *= gridStep;
 
       FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valEz1 + valEz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
-                                  + (valEy1 + valEy2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
+      sum_teta += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
+                                  + (Ey1 + Ey2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
 
-      sum_phi += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((valEz1 + valEz2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
+      sum_phi += SQR (gridStep) * (-1) * (x0==rightNTFF.getX ()?1:-1) * ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
     }
   }
 
@@ -3760,11 +3877,13 @@ Scheme3D::ntffL_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffL_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> *curTotalEx,
-                   Grid<GridCoordinate3D> *curTotalEz)
+                   Grid<GridCoordinate3D> *curEx,
+                   Grid<GridCoordinate3D> *curEz)
 {
 #ifdef COMPLEX_FIELD_VALUES
-  FPValue diffc = curTotalEz->getSize ().getX () / 2;
+  FPValue diffx0 = curEz->getTotalSize ().getX () / 2;
+  FPValue diffy0 = curEz->getTotalSize ().getY () / 2;
+  FPValue diffz0 = curEz->getTotalSize ().getZ () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, y0, leftNTFF.getZ () + 0.5);
   GridCoordinateFP3D coordEnd (rightNTFF.getX () - 0.5, y0, rightNTFF.getZ () - 0.5);
@@ -3781,38 +3900,73 @@ Scheme3D::ntffL_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
       GridCoordinateFP3D pos3 (coordX, y0, coordZ - 0.5);
       GridCoordinateFP3D pos4 (coordX, y0, coordZ + 0.5);
 
-      // FieldValue val1 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (pos1));
-      // FieldValue val2 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (pos2));
-      // FieldValue val3 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (pos3));
-      // FieldValue val4 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (pos4));
-
       pos1 = pos1 - yeeLayout->getMinExCoordFP ();
       pos2 = pos2 - yeeLayout->getMinExCoordFP ();
 
       pos3 = pos3 - yeeLayout->getMinEzCoordFP ();
       pos4 = pos4 - yeeLayout->getMinEzCoordFP ();
 
-      FieldValue valEx1 = (curTotalEx->getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEx->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / FPValue(2.0);// - val1;
-      FieldValue valEx2 = (curTotalEx->getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEx->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / FPValue(2.0);// - val2;
+      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0,0.5,0));
+      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0,0.5,0));
+      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0,0.5,0));
+      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0,0.5,0));
 
-      FieldValue valEz1 = (curTotalEz->getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEz->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / FPValue(2.0);// - val3;
-      FieldValue valEz2 = (curTotalEz->getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0,0.5,0)))->getCurValue ()
-                           + curTotalEz->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0,0.5,0)))->getCurValue ()) / FPValue(2.0);// - val4;
+      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0,0.5,0));
+      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0,0.5,0));
+      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0,0.5,0));
+      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0,0.5,0));
 
-      FPValue arg = (coordX - diffc) * sin(angleTeta)*cos(anglePhi) + (y0 - diffc) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffc) * cos (angleTeta);
+      FieldPointValue *valEx11 = curEx->getFieldPointValueOrNullByAbsolutePos (pos11);
+      FieldPointValue *valEx12 = curEx->getFieldPointValueOrNullByAbsolutePos (pos12);
+      FieldPointValue *valEx21 = curEx->getFieldPointValueOrNullByAbsolutePos (pos21);
+      FieldPointValue *valEx22 = curEx->getFieldPointValueOrNullByAbsolutePos (pos22);
+
+      FieldPointValue *valEz11 = curEz->getFieldPointValueOrNullByAbsolutePos (pos31);
+      FieldPointValue *valEz12 = curEz->getFieldPointValueOrNullByAbsolutePos (pos32);
+      FieldPointValue *valEz21 = curEz->getFieldPointValueOrNullByAbsolutePos (pos41);
+      FieldPointValue *valEz22 = curEz->getFieldPointValueOrNullByAbsolutePos (pos42);
+
+#ifdef PARALLEL_GRID
+      if (valEx11 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos11)
+          || valEx12 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos12)
+          || valEx21 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos21)
+          || valEx22 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos22)
+          || valEz11 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos31)
+          || valEz12 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos32)
+          || valEz21 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos41)
+          || valEz22 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos42))
+      {
+        continue;
+      }
+#endif
+
+      ASSERT (valEx11 != NULL && valEx12 != NULL && valEx21 != NULL && valEx22 != NULL
+              && valEz11 != NULL && valEz12 != NULL && valEz21 != NULL && valEz22 != NULL);
+
+      FieldValue Ex1 = (valEx11->getCurValue () + valEx12->getCurValue ()) / FPValue(2.0);
+      FieldValue Ex2 = (valEx21->getCurValue () + valEx22->getCurValue ()) / FPValue(2.0);
+      FieldValue Ez1 = (valEz11->getCurValue () + valEz12->getCurValue ()) / FPValue(2.0);
+      FieldValue Ez2 = (valEz21->getCurValue () + valEz22->getCurValue ()) / FPValue(2.0);
+
+      if (solverSettings.getDoCalcScatteredNTFF ())
+      {
+        Ex1 -= yeeLayout->getExFromIncidentE (approximateIncidentWaveE (pos1));
+        Ex2 -= yeeLayout->getExFromIncidentE (approximateIncidentWaveE (pos2));
+        Ez1 -= yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (pos3));
+        Ez2 -= yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (pos4));
+      }
+
+      FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (y0 - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
       arg *= gridStep;
 
       FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (y0==rightNTFF.getY ()?1:-1) * ((valEz1 + valEz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                                  + (valEx1 + valEx2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
+      sum_teta += SQR (gridStep) * (y0==rightNTFF.getY ()?1:-1) * ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                                  + (Ex1 + Ex2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
 
-      sum_phi += SQR (gridStep) * (-1) * (y0==rightNTFF.getY ()?1:-1) * ((valEz1 + valEz2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent;
+      sum_phi += SQR (gridStep) * (-1) * (y0==rightNTFF.getY ()?1:-1) * ((Ez1 + Ez2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent;
     }
   }
 
@@ -3824,12 +3978,14 @@ Scheme3D::ntffL_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffL_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
-                   Grid<GridCoordinate3D> *curTotalEx,
-                   Grid<GridCoordinate3D> *curTotalEy,
-                   Grid<GridCoordinate3D> *curTotalEz)
+                   Grid<GridCoordinate3D> *curEx,
+                   Grid<GridCoordinate3D> *curEy,
+                   Grid<GridCoordinate3D> *curEz)
 {
 #ifdef COMPLEX_FIELD_VALUES
-  FPValue diffc = curTotalEz->getSize ().getX () / 2;
+  FPValue diffx0 = curEz->getTotalSize ().getX () / 2;
+  FPValue diffy0 = curEz->getTotalSize ().getY () / 2;
+  FPValue diffz0 = curEz->getTotalSize ().getZ () / 2;
 
   GridCoordinateFP3D coordStart (leftNTFF.getX () + 0.5, leftNTFF.getY () + 0.5, z0);
   GridCoordinateFP3D coordEnd (rightNTFF.getX () - 0.5, rightNTFF.getY () - 0.5, z0);
@@ -3846,39 +4002,74 @@ Scheme3D::ntffL_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
       GridCoordinateFP3D pos3 (coordX, coordY - 0.5, z0);
       GridCoordinateFP3D pos4 (coordX, coordY + 0.5, z0);
 
-      // FieldValue val1 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (pos1));
-      // FieldValue val2 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (pos2));
-      // FieldValue val3 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (pos3));
-      // FieldValue val4 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (pos4));
-
       pos1 = pos1 - yeeLayout->getMinExCoordFP ();
       pos2 = pos2 - yeeLayout->getMinExCoordFP ();
 
       pos3 = pos3 - yeeLayout->getMinEyCoordFP ();
       pos4 = pos4 - yeeLayout->getMinEyCoordFP ();
 
-      FieldValue valEx1 = (curTotalEx->getFieldPointValue (convertCoord (pos1-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEx->getFieldPointValue (convertCoord (pos1+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / FPValue(2.0);// - val1;
-      FieldValue valEx2 = (curTotalEx->getFieldPointValue (convertCoord (pos2-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEx->getFieldPointValue (convertCoord (pos2+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / FPValue(2.0);// - val2;
+      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0,0,0.5));
+      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0,0,0.5));
+      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0,0,0.5));
+      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0,0,0.5));
 
-      FieldValue valEy1 = (curTotalEy->getFieldPointValue (convertCoord (pos3-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEy->getFieldPointValue (convertCoord (pos3+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / FPValue(2.0);// - val3;
-      FieldValue valEy2 = (curTotalEy->getFieldPointValue (convertCoord (pos4-GridCoordinateFP3D(0,0,0.5)))->getCurValue ()
-                           + curTotalEy->getFieldPointValue (convertCoord (pos4+GridCoordinateFP3D(0,0,0.5)))->getCurValue ()) / FPValue(2.0);// - val4;
+      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0,0,0.5));
+      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0,0,0.5));
+      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0,0,0.5));
+      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0,0,0.5));
 
-      FPValue arg = (coordX - diffc) * sin(angleTeta)*cos(anglePhi) + (coordY - diffc) * sin(angleTeta)*sin(anglePhi) + (z0 - diffc) * cos (angleTeta);
+      FieldPointValue *valEx11 = curEx->getFieldPointValueOrNullByAbsolutePos (pos11);
+      FieldPointValue *valEx12 = curEx->getFieldPointValueOrNullByAbsolutePos (pos12);
+      FieldPointValue *valEx21 = curEx->getFieldPointValueOrNullByAbsolutePos (pos21);
+      FieldPointValue *valEx22 = curEx->getFieldPointValueOrNullByAbsolutePos (pos22);
+
+      FieldPointValue *valEy11 = curEy->getFieldPointValueOrNullByAbsolutePos (pos31);
+      FieldPointValue *valEy12 = curEy->getFieldPointValueOrNullByAbsolutePos (pos32);
+      FieldPointValue *valEy21 = curEy->getFieldPointValueOrNullByAbsolutePos (pos41);
+      FieldPointValue *valEy22 = curEy->getFieldPointValueOrNullByAbsolutePos (pos42);
+
+#ifdef PARALLEL_GRID
+      if (valEx11 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos11)
+          || valEx12 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos12)
+          || valEx21 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos21)
+          || valEx22 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos22)
+          || valEy11 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos31)
+          || valEy12 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos32)
+          || valEy21 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos41)
+          || valEy22 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos42))
+      {
+        continue;
+      }
+#endif
+
+      ASSERT (valEx11 != NULL && valEx12 != NULL && valEx21 != NULL && valEx22 != NULL
+              && valEy11 != NULL && valEy12 != NULL && valEy21 != NULL && valEy22 != NULL);
+
+      FieldValue Ex1 = (valEx11->getCurValue () + valEx12->getCurValue ()) / FPValue(2.0);
+      FieldValue Ex2 = (valEx21->getCurValue () + valEx22->getCurValue ()) / FPValue(2.0);
+      FieldValue Ey1 = (valEy11->getCurValue () + valEy12->getCurValue ()) / FPValue(2.0);
+      FieldValue Ey2 = (valEy21->getCurValue () + valEy22->getCurValue ()) / FPValue(2.0);
+
+      if (solverSettings.getDoCalcScatteredNTFF ())
+      {
+        Ex1 -= yeeLayout->getExFromIncidentE (approximateIncidentWaveE (pos1));
+        Ex2 -= yeeLayout->getExFromIncidentE (approximateIncidentWaveE (pos2));
+        Ey1 -= yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (pos3));
+        Ey2 -= yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (pos4));
+      }
+
+      FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (z0 - diffz0) * cos (angleTeta);
       arg *= gridStep;
 
       FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * (-(valEy1 + valEy2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                                  + (valEx1 + valEx2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent;
+      sum_teta += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * (-(Ey1 + Ey2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                                  + (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent;
 
-      sum_phi += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * ((valEy1 + valEy2)/FPValue(2.0) * FPValue (sin (anglePhi))
-                                                + (valEx1 + valEx2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
+      sum_phi += SQR (gridStep) * (z0==rightNTFF.getZ ()?1:-1) * ((Ey1 + Ey2)/FPValue(2.0) * FPValue (sin (anglePhi))
+                                                + (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
     }
   }
 
@@ -3890,57 +4081,122 @@ Scheme3D::ntffL_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
 
 Scheme3D::NPair
 Scheme3D::ntffN (FPValue angleTeta, FPValue anglePhi,
-                 Grid<GridCoordinate3D> *curTotalEz,
-                 Grid<GridCoordinate3D> *curTotalHx,
-                 Grid<GridCoordinate3D> *curTotalHy,
-                 Grid<GridCoordinate3D> *curTotalHz)
+                 Grid<GridCoordinate3D> *curEz,
+                 Grid<GridCoordinate3D> *curHx,
+                 Grid<GridCoordinate3D> *curHy,
+                 Grid<GridCoordinate3D> *curHz)
 {
-  return ntffN_x (leftNTFF.getX (), angleTeta, anglePhi, curTotalEz, curTotalHy, curTotalHz)
-         + ntffN_x (rightNTFF.getX (), angleTeta, anglePhi, curTotalEz, curTotalHy, curTotalHz)
-         + ntffN_y (leftNTFF.getY (), angleTeta, anglePhi, curTotalEz, curTotalHx, curTotalHz)
-         + ntffN_y (rightNTFF.getY (), angleTeta, anglePhi, curTotalEz, curTotalHx, curTotalHz)
-         + ntffN_z (leftNTFF.getZ (), angleTeta, anglePhi, curTotalEz, curTotalHx, curTotalHy)
-         + ntffN_z (rightNTFF.getZ (), angleTeta, anglePhi, curTotalEz, curTotalHx, curTotalHy);
+  return ntffN_x (leftNTFF.getX (), angleTeta, anglePhi, curEz, curHy, curHz)
+         + ntffN_x (rightNTFF.getX (), angleTeta, anglePhi, curEz, curHy, curHz)
+         + ntffN_y (leftNTFF.getY (), angleTeta, anglePhi, curEz, curHx, curHz)
+         + ntffN_y (rightNTFF.getY (), angleTeta, anglePhi, curEz, curHx, curHz)
+         + ntffN_z (leftNTFF.getZ (), angleTeta, anglePhi, curEz, curHx, curHy)
+         + ntffN_z (rightNTFF.getZ (), angleTeta, anglePhi, curEz, curHx, curHy);
 }
 
 Scheme3D::NPair
 Scheme3D::ntffL (FPValue angleTeta, FPValue anglePhi,
-                 Grid<GridCoordinate3D> *curTotalEx,
-                 Grid<GridCoordinate3D> *curTotalEy,
-                 Grid<GridCoordinate3D> *curTotalEz)
+                 Grid<GridCoordinate3D> *curEx,
+                 Grid<GridCoordinate3D> *curEy,
+                 Grid<GridCoordinate3D> *curEz)
 {
-  return ntffL_x (leftNTFF.getX (), angleTeta, anglePhi, curTotalEy, curTotalEz)
-         + ntffL_x (rightNTFF.getX (), angleTeta, anglePhi, curTotalEy, curTotalEz)
-         + ntffL_y (leftNTFF.getY (), angleTeta, anglePhi, curTotalEx, curTotalEz)
-         + ntffL_y (rightNTFF.getY (), angleTeta, anglePhi, curTotalEx, curTotalEz)
-         + ntffL_z (leftNTFF.getZ (), angleTeta, anglePhi, curTotalEx, curTotalEy, curTotalEz)
-         + ntffL_z (rightNTFF.getZ (), angleTeta, anglePhi, curTotalEx, curTotalEy, curTotalEz);
+  return ntffL_x (leftNTFF.getX (), angleTeta, anglePhi, curEy, curEz)
+         + ntffL_x (rightNTFF.getX (), angleTeta, anglePhi, curEy, curEz)
+         + ntffL_y (leftNTFF.getY (), angleTeta, anglePhi, curEx, curEz)
+         + ntffL_y (rightNTFF.getY (), angleTeta, anglePhi, curEx, curEz)
+         + ntffL_z (leftNTFF.getZ (), angleTeta, anglePhi, curEx, curEy, curEz)
+         + ntffL_z (rightNTFF.getZ (), angleTeta, anglePhi, curEx, curEy, curEz);
 }
 
 FPValue
 Scheme3D::Pointing_scat (FPValue angleTeta, FPValue anglePhi,
-                         Grid<GridCoordinate3D> *curTotalEx,
-                         Grid<GridCoordinate3D> *curTotalEy,
-                         Grid<GridCoordinate3D> *curTotalEz,
-                         Grid<GridCoordinate3D> *curTotalHx,
-                         Grid<GridCoordinate3D> *curTotalHy,
-                         Grid<GridCoordinate3D> *curTotalHz)
+                         Grid<GridCoordinate3D> *curEx,
+                         Grid<GridCoordinate3D> *curEy,
+                         Grid<GridCoordinate3D> *curEz,
+                         Grid<GridCoordinate3D> *curHx,
+                         Grid<GridCoordinate3D> *curHy,
+                         Grid<GridCoordinate3D> *curHz)
 {
 #ifdef COMPLEX_FIELD_VALUES
   FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
 
-  NPair N = ntffN (angleTeta, anglePhi, curTotalEz, curTotalHx, curTotalHy, curTotalHz);
-  NPair L = ntffL (angleTeta, anglePhi, curTotalEx, curTotalEy, curTotalEz);
+  NPair N = ntffN (angleTeta, anglePhi, curEz, curHx, curHy, curHz);
+  NPair L = ntffL (angleTeta, anglePhi, curEx, curEy, curEz);
 
-  FPValue n0 = sqrt (PhysicsConst::Mu0 / PhysicsConst::Eps0);
+  int processId = 0;
 
-  FieldValue first = -L.nPhi + n0 * N.nTeta;
-  FieldValue second = -L.nTeta - n0 * N.nPhi;
+  if (solverSettings.getDoUseParallelGrid ())
+  {
+#ifdef PARALLEL_GRID
+    processId = ParallelGrid::getParallelCore ()->getProcessId ();
 
-  FPValue first_abs2 = SQR (first.real ()) + SQR (first.imag ());
-  FPValue second_abs2 = SQR (second.real ()) + SQR (second.imag ());
+    FieldValue tmpArray[4];
+    FieldValue tmpArrayRes[4];
+    const int count = 4;
 
-  return SQR(k) / (8 * PhysicsConst::Pi * n0) * (first_abs2 + second_abs2);
+    tmpArray[0] = N.nTeta;
+    tmpArray[1] = N.nPhi;
+    tmpArray[2] = L.nTeta;
+    tmpArray[3] = L.nPhi;
+
+    MPI_Datatype datatype;
+
+#ifdef FLOAT_VALUES
+#ifdef COMPLEX_FIELD_VALUES
+    datatype = MPI_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+    datatype = MPI_FLOAT;
+#endif /* !COMPLEX_FIELD_VALUES */
+#endif /* FLOAT_VALUES */
+
+#ifdef DOUBLE_VALUES
+#ifdef COMPLEX_FIELD_VALUES
+    datatype = MPI_DOUBLE_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+    datatype = MPI_DOUBLE;
+#endif /* !COMPLEX_FIELD_VALUES */
+#endif /* DOUBLE_VALUES */
+
+#ifdef LONG_DOUBLE_VALUES
+#ifdef COMPLEX_FIELD_VALUES
+    datatype = MPI_LONG_DOUBLE_COMPLEX;
+#else /* COMPLEX_FIELD_VALUES */
+    datatype = MPI_LONG_DOUBLE;
+#endif /* !COMPLEX_FIELD_VALUES */
+#endif /* LONG_DOUBLE_VALUES */
+
+    // gather all sum_teta and sum_phi on 0 node
+    MPI_Reduce (tmpArray, tmpArrayRes, count, datatype, MPI_SUM, 0, ParallelGrid::getParallelCore ()->getCommunicator ());
+
+    if (processId == 0)
+    {
+      N.nTeta = FieldValue (tmpArrayRes[0]);
+      N.nPhi = FieldValue (tmpArrayRes[1]);
+
+      L.nTeta = FieldValue (tmpArrayRes[2]);
+      L.nPhi = FieldValue (tmpArrayRes[3]);
+    }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+  }
+
+  if (processId == 0)
+  {
+    FPValue n0 = sqrt (PhysicsConst::Mu0 / PhysicsConst::Eps0);
+
+    FieldValue first = -L.nPhi + n0 * N.nTeta;
+    FieldValue second = -L.nTeta - n0 * N.nPhi;
+
+    FPValue first_abs2 = SQR (first.real ()) + SQR (first.imag ());
+    FPValue second_abs2 = SQR (second.real ()) + SQR (second.imag ());
+
+    return SQR(k) / (8 * PhysicsConst::Pi * n0) * (first_abs2 + second_abs2);
+  }
+  else
+  {
+    return 0.0;
+  }
 #else
   ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
 #endif
@@ -4262,45 +4518,67 @@ Scheme3D::saveGrids (time_step t)
 void
 Scheme3D::saveNTFF (bool isReverse, time_step t)
 {
+  int processId = 0;
+
+  if (solverSettings.getDoUseParallelGrid ())
+  {
 #ifdef PARALLEL_GRID
-  int processId = ParallelGrid::getParallelCore ()->getProcessId ();
+    processId = ParallelGrid::getParallelCore ()->getProcessId ();
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+  }
+
+  std::ofstream outfile;
+  std::ostream *outs;
+  const char *strName;
+  FPValue start;
+  FPValue end;
+  FPValue step;
+
+  if (isReverse)
+  {
+    strName = "Reverse diagram";
+    start = yeeLayout->getIncidentWaveAngle2 ();
+    end = yeeLayout->getIncidentWaveAngle2 ();
+    step = 1.0;
+  }
+  else
+  {
+    strName = "Forward diagram";
+    start = 0.0;
+    end = 2 * PhysicsConst::Pi + PhysicsConst::Pi / 180;
+    step = PhysicsConst::Pi * solverSettings.getAngleStepNTFF () / 180;
+  }
 
   if (processId == 0)
-#endif
   {
-    std::ofstream outfile;
-    outfile.open (solverSettings.getFileNameNTFF ().c_str ());
-    FPValue start;
-    FPValue end;
-    FPValue step;
-
-    if (isReverse)
+    if (solverSettings.getDoSaveNTFFToStdout ())
     {
-      outfile << "Reverse diagram" << std::endl << std::endl;
-      start = yeeLayout->getIncidentWaveAngle2 ();
-      end = yeeLayout->getIncidentWaveAngle2 ();
-      step = 1.0;
+      outs = &std::cout;
     }
     else
     {
-      outfile << "Forward diagram" << std::endl << std::endl;
-      start = 0.0;
-      end = 2 * PhysicsConst::Pi + PhysicsConst::Pi / 180;
-      step = PhysicsConst::Pi * solverSettings.getAngleStepNTFF () / 180;
+      outfile.open (solverSettings.getFileNameNTFF ().c_str ());
+      outs = &outfile;
     }
+    (*outs) << strName << std::endl << std::endl;
+  }
 
-    for (FPValue angle = start; angle <= end; angle += step)
+  for (FPValue angle = start; angle <= end; angle += step)
+  {
+    FPValue val = Pointing_scat (yeeLayout->getIncidentWaveAngle1 (),
+                                 angle,
+                                 Ex,
+                                 Ey,
+                                 Ez,
+                                 Hx,
+                                 Hy,
+                                 Hz) / Pointing_inc (yeeLayout->getIncidentWaveAngle1 (), angle);
+
+    if (processId == 0)
     {
-      FPValue val = Pointing_scat (yeeLayout->getIncidentWaveAngle1 (),
-                                   angle,
-                                   totalEx,
-                                   totalEy,
-                                   totalEz,
-                                   totalHx,
-                                   totalHy,
-                                   totalHz) / Pointing_inc (yeeLayout->getIncidentWaveAngle1 (), angle);
-
-      outfile << "timestep = "
+      (*outs) << "timestep = "
               << t
               << ", incident wave angle=("
               << yeeLayout->getIncidentWaveAngle1 () << ","
@@ -4312,8 +4590,14 @@ Scheme3D::saveNTFF (bool isReverse, time_step t)
               << val
               << std::endl;
     }
+  }
 
-    outfile.close ();
+  if (processId == 0)
+  {
+    if (!solverSettings.getDoSaveNTFFToStdout ())
+    {
+      outfile.close ();
+    }
   }
 }
 

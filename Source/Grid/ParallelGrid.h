@@ -434,6 +434,9 @@ public:
   void Resize (ParallelGridCoordinate);
 #endif /* DYNAMIC_GRID */
 
+  bool isBufferLeftPosition (ParallelGridCoordinate);
+  bool isBufferRightPosition (ParallelGridCoordinate);
+
 public:
 
   static void initializeParallelCore (ParallelGridCore *);
