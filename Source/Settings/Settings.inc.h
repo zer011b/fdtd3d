@@ -108,8 +108,10 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doUseAmplitudeMode, getDoUseAmplitudeMode, bool, f
  */
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCalcReverseNTFF, getDoCalcReverseNTFF, bool, false, "--ntff-reverse", "Calculate NTFF reverse diagram")
 SETTINGS_ELEM_FIELD_TYPE_STRING(fileNameNTFF, getFileNameNTFF, std::string, "ntff-res.txt", "--ntff-filename", "File to save ntff result")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveNTFFToStdout, getDoSaveNTFFToStdout, bool, false, "--ntff-to-stdout", "Save NTFF for standard output")
 SETTINGS_ELEM_FIELD_TYPE_FLOAT(angleStepNTFF, getAngleStepNTFF, FPValue, 10.0, "--ntff-step-angle", "NTFF angle step")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCalcScatteredNTFF, getDoCalcScatteredNTFF, bool, false, "--ntff-scattered", "Calculate NTFF for scattered fields")
+SETTINGS_ELEM_FIELD_TYPE_INT(intermediateNTFFStep, getIntermediateNTFFStep, time_step, 100, "--interm-ntff-step", "Save step for intermediate ntff")
 
 /*
  * Physics
@@ -126,7 +128,6 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveMaterials, getDoSaveMaterials, bool, false, 
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveIntermediateRes, getDoSaveIntermediateRes, bool, false, "--save-interm-res", "Save intermediate results to files")
 // SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAllIntermediateRes, getDoSaveAllIntermediateRes, bool, false, "--save-all-interm-res", "Save all intermediate results to files")
 SETTINGS_ELEM_FIELD_TYPE_INT(intermediateSaveStep, getIntermediateSaveStep, time_step, 100, "--interm-save-step", "Save step for intermediate save")
-SETTINGS_ELEM_FIELD_TYPE_INT(intermediateNTFFStep, getIntermediateNTFFStep, time_step, 100, "--interm-ntff-step", "Save step for intermediate ntff")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveScatteredFieldRes, getDoSaveScatteredFieldRes, bool, false, "--save-scattered-field-res", "Save scattered field for result")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveScatteredFieldIntermediate, getDoSaveScatteredFieldIntermediate, bool, false, "--save-scattered--field-interm", "Save scattered field for intermediate")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAsBMP, getDoSaveAsBMP, bool, false, "--save-as-bmp", "Save results to .bmp files")

@@ -3119,4 +3119,46 @@ ParallelGrid::Resize (ParallelGridCoordinate newCurrentNodeSize) /**< new size o
 
 #endif /* DYNAMIC_GRID */
 
+/**
+ * Check whether position corresponds to left buffer or not
+ *
+ * @return true, if position is in left buffer, false, otherwise
+ */
+bool
+ParallelGrid::isBufferLeftPosition (ParallelGridCoordinate pos) /**< position to check */
+{
+  ASSERT (pos < totalSize);
+  ParallelGridCoordinate chunkStart = getChunkStartPosition ();
+
+  if (pos >= chunkStart)
+  {
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+} /* ParallelGrid::isBufferLeftPosition */
+
+/**
+ * Check whether position corresponds to right buffer or not
+ *
+ * @return true, if position is in right buffer, false, otherwise
+ */
+bool
+ParallelGrid::isBufferRightPosition (ParallelGridCoordinate pos) /**< position to check */
+{
+  ASSERT (pos < totalSize);
+  ParallelGridCoordinate chunkEnd = getChunkStartPosition () + currentSize;
+
+  if (pos < chunkEnd)
+  {
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+} /* ParallelGrid::isBufferRightPosition */
+
 #endif /* PARALLEL_GRID */
