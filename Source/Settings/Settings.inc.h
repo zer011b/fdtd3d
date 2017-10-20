@@ -118,6 +118,7 @@ SETTINGS_ELEM_FIELD_TYPE_INT(intermediateNTFFStep, getIntermediateNTFFStep, time
  */
 SETTINGS_ELEM_FIELD_TYPE_FLOAT(gridStep, getGridStep, FPValue, 0.0005, "--dx", "Grid step (meters)")
 SETTINGS_ELEM_FIELD_TYPE_FLOAT(sourceWaveLength, getSourceWaveLength, FPValue, 0.02, "--wavelength", "Wave length of source (meters)")
+SETTINGS_ELEM_FIELD_TYPE_FLOAT(courantNum, getCourantNum, FPValue, 0.5, "--courant-factor", "Courant stability factor")
 
 /*
  * Dump flags

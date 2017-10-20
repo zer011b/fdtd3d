@@ -502,11 +502,12 @@ Scheme3D::performPlaneWaveESteps (time_step t)
   GridCoordinate1D pos (0);
   FieldPointValue *valE = EInc->getFieldPointValue (pos);
 
+  FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
+
 #ifdef COMPLEX_FIELD_VALUES
-  valE->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
-                                 cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency)));
+  valE->setCurValue (FieldValue (sin (arg), cos (arg)));
 #else /* COMPLEX_FIELD_VALUES */
-  valE->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
+  valE->setCurValue (sin (arg));
 #endif /* !COMPLEX_FIELD_VALUES */
 
   ASSERT (EInc->getFieldPointValue (GridCoordinate1D (size - 1))->getCurValue () == getFieldValueRealOnly (0.0));
@@ -2560,7 +2561,7 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
     }
 
     if (solverSettings.getDoUseNTFF ()
-        && t % solverSettings.getIntermediateNTFFStep () == 0)
+        && t > 0 && t % solverSettings.getIntermediateNTFFStep () == 0)
     {
       saveNTFF (solverSettings.getDoCalcReverseNTFF (), t);
     }
@@ -2965,13 +2966,13 @@ Scheme3D::performSteps ()
 }
 
 void
-Scheme3D::initScheme (FPValue dx, FPValue sourceFreq)
+Scheme3D::initScheme (FPValue dx, FPValue sourceWaveLen)
 {
-  sourceFrequency = sourceFreq;
-  sourceWaveLength = PhysicsConst::SpeedOfLight / sourceFrequency;
+  sourceWaveLength = sourceWaveLen;
+  sourceFrequency = PhysicsConst::SpeedOfLight / sourceWaveLength;
 
   gridStep = dx;
-  courantNum = 1.0 / 2.0;
+  courantNum = solverSettings.getCourantNum ();
   gridTimeStep = gridStep * courantNum / PhysicsConst::SpeedOfLight;
 
   FPValue N_lambda = sourceWaveLength / gridStep;
@@ -4506,6 +4507,11 @@ Scheme3D::saveGrids (time_step t)
     if (solverSettings.getDoSaveTFSFEInc ()
         || solverSettings.getDoSaveTFSFHInc ())
     {
+      if (!dumper1D[type])
+      {
+        continue;
+      }
+
       dumper1D[type]->init (t, CURRENT, processId, "EInc");
       dumper1D[type]->dumpGrid (EInc, GridCoordinate1D (0), EInc->getSize ());
 
