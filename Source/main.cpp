@@ -137,7 +137,7 @@ int main (int argc, char** argv)
     Scheme3D scheme (yeeLayout, overallSize, solverSettings.getNumTimeSteps ());
 
     scheme.initScheme (solverSettings.getGridStep (), /* dx */
-                       PhysicsConst::SpeedOfLight / solverSettings.getSourceWaveLength ()); /* source frequency */
+                       solverSettings.getSourceWaveLength ()); /* source wave length */
 
     scheme.initGrids ();
 
