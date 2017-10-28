@@ -138,7 +138,7 @@ int main (int argc, char** argv)
 
     scheme.initScheme (solverSettings.getGridStep (), /* dx */
                        solverSettings.getSourceWaveLength ()); /* source wave length */
-
+    scheme.initCallBacks ();
     scheme.initGrids ();
 
     gettimeofday(&tv1, NULL);

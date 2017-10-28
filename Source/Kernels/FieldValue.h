@@ -71,6 +71,11 @@ typedef uint32_t time_step;
  */
 #define SQR(x) ((x) * (x))
 
+/**
+ * Macro for cube
+ */
+#define CUBE(x) (SQR(x) * (x))
+
 extern FieldValue getFieldValueRealOnly (FPValue);
 extern FPValue getRealOnlyFromFieldValue (const FieldValue &);
 

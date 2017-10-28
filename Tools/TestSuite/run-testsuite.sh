@@ -12,28 +12,28 @@ function check_res ()
 }
 
 CUR_DIR=`pwd`
-SOURCE_DIR=$CUR_DIR/../..
+SOURCE_DIR=$CUR_DIR
 
 echo "==== Test suite: RUN ===="
 
 test_num=$((1))
-test_count=$(ls $CUR_DIR/suite | wc -l)
+test_count=$(ls $CUR_DIR/Tools/TestSuite/suite | wc -l)
 
 echo "Test suite size: $test_count"
 echo "========================="
 echo ""
 
-for testdir in `ls $CUR_DIR/suite`; do
+for testdir in `ls $CUR_DIR/Tools/TestSuite/suite`; do
   percent_before=$(echo $test_num $test_count | awk '{val=100.0*($1-1)/$2; print val}')
 
   echo "$test_num. Testing <$testdir> ($percent_before%):"
 
   # build test
-  $CUR_DIR/suite/$testdir/build.sh $CUR_DIR $SOURCE_DIR
+  $CUR_DIR/Tools/TestSuite/suite/$testdir/build.sh $CUR_DIR/Tools/TestSuite $SOURCE_DIR
   check_res
 
   # run test
-  $CUR_DIR/suite/$testdir/run.sh $CUR_DIR $SOURCE_DIR
+  $CUR_DIR/Tools/TestSuite/suite/$testdir/run.sh $CUR_DIR/Tools/TestSuite $SOURCE_DIR
   check_res
 
   echo "OK!"
