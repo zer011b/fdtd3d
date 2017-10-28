@@ -5,6 +5,7 @@
 #include "PhysicsConst.h"
 #include "Scheme.h"
 #include "ParallelYeeGridLayout.h"
+#include "CallBack.h"
 
 #ifdef GRID_3D
 
@@ -100,6 +101,38 @@ class Scheme3D: public Scheme
 
   Dumper<GridCoordinate1D> *dumper1D[FILE_TYPE_COUNT];
 
+  SourceCallBack ExBorder;
+  SourceCallBack ExInitial;
+
+  SourceCallBack EyBorder;
+  SourceCallBack EyInitial;
+
+  SourceCallBack EzBorder;
+  SourceCallBack EzInitial;
+
+  SourceCallBack HxBorder;
+  SourceCallBack HxInitial;
+
+  SourceCallBack HyBorder;
+  SourceCallBack HyInitial;
+
+  SourceCallBack HzBorder;
+  SourceCallBack HzInitial;
+
+  SourceCallBack Jx;
+  SourceCallBack Jy;
+  SourceCallBack Jz;
+  SourceCallBack Mx;
+  SourceCallBack My;
+  SourceCallBack Mz;
+
+  SourceCallBack ExExact;
+  SourceCallBack EyExact;
+  SourceCallBack EzExact;
+  SourceCallBack HxExact;
+  SourceCallBack HyExact;
+  SourceCallBack HzExact;
+
 private:
 
   void calculateExStep (time_step, GridCoordinate3D, GridCoordinate3D);
@@ -165,7 +198,7 @@ public:
   virtual void performSteps () CXX11_OVERRIDE;
 
   void initScheme (FPValue, FPValue);
-
+  void initCallBacks ();
   void initGrids ();
 
   Scheme3D (YeeGridLayout *layout,

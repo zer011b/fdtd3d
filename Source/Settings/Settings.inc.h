@@ -104,6 +104,21 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doUseMetamaterials, getDoUseMetamaterials, bool, f
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseAmplitudeMode, getDoUseAmplitudeMode, bool, false, "--use-amp-mode", "Use amplitude mode")
 
 /*
+ * Test border conditions and initial values
+ */
+// SETTINGS_ELEM_FIELD_TYPE_NONE(doUseExp1BorderCondition, getDoUseExp1BorderCondition, bool, false, "--use-exp1-border-condition", "Exp 1 border conditions")
+// SETTINGS_ELEM_FIELD_TYPE_NONE(doUseExp1StartValues, getDoUseExp1StartValues, bool, false, "--use-exp1-start-values", "Exp 1 start values")
+
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom1BorderCondition, getDoUsePolinom1BorderCondition, bool, false, "--use-polinom1-border-condition", "Polinom 1 border conditions")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom1StartValues, getDoUsePolinom1StartValues, bool, false, "--use-polinom1-start-values", "Polinom 1 start values")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom1RightSide, getDoUsePolinom1RightSide, bool, false, "--use-polinom1-right-side", "Polinom 1 right side")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculatePolinom1DiffNorm, getDoCalculatePolinom1DiffNorm, bool, false, "--calc-polinom1-diff-norm", "Calculate test norm of difference with exact solution: polinom1")
+
+// SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom2BorderCondition, getDoUsePolinom2BorderCondition, bool, false, "--use-polinom2-border-condition", "Polinom 2 border conditions")
+// SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom2StartValues, getDoUsePolinom2StartValues, bool, false, "--use-polinom2-start-values", "Polinom 2 start values")
+// SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom2RightSide, getDoUsePolinom2RightSide, bool, false, "--use-polinom2-right-side", "Polinom 2 right side")
+
+/*
  * NTFF
  */
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCalcReverseNTFF, getDoCalcReverseNTFF, bool, false, "--ntff-reverse", "Calculate NTFF reverse diagram")

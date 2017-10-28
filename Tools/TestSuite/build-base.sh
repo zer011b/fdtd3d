@@ -14,6 +14,7 @@ cd $BUILD_DIR
 eval $BUILD_SCRIPT &>/dev/null
 
 if [ $? -ne 0 ]; then
+  echo "Build failed"
   exit 1
 fi
 

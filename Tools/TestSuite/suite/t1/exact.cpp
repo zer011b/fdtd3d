@@ -4,7 +4,7 @@
 
 int main (int argc, char **argv)
 {
-  if (argc != 5)
+  if (argc != 6)
   {
     return 1;
   }
@@ -13,9 +13,9 @@ int main (int argc, char **argv)
   double dx = atof (argv[2]);
   double i = atof (argv[3]);
   double n = atof (argv[4]);
+  double S = atof (argv[5]);
 
   double c = 299792458.0;
-  double S = 1.0;
   double dt = dx * S / c;
   double f = c / lambda;
   double omega = 2 * M_PI * f;

@@ -4,13 +4,13 @@ BASE_DIR=$1
 SOURCE_DIR=$2
 
 accuracy_exact="0.000001"
+accuracy_exact_mod="0.0000000000001"
 
 function launch ()
 {
   size="$1"
   timesteps="$2"
   dx="$3"
-  pos="$4"
 
   lambda="0.02"
   length=$(echo $timesteps | awk '{print $1 - 10}')
@@ -26,7 +26,7 @@ function launch ()
     i=$(echo $line_num | awk '{print $1 - 1}')
     n=$(echo $timesteps | awk '{print $1 - 1}')
 
-    exact=$(./exact $lambda $dx $i $n)
+    exact=$(./exact $lambda $dx $i $n 1.0)
 
     exact_val_re=$(echo $exact | awk '{printf "%.17g", $1}')
     exact_val_im=$(echo $exact | awk '{printf "%.17g", $2}')
@@ -47,10 +47,10 @@ function launch ()
 
     is_correct=$(echo $exact_val_re $exact_val_im $exact_val_mod \
                       $numerical_val_re $numerical_val_im $numerical_val_mod \
-                      $accuracy_exact \
+                      $accuracy_exact $accuracy_exact_mod \
                  | awk 'function abs(v) {return v < 0 ? -v : v}
                         {
-                          if (abs($1 - $4) > $7 || abs($2 - $5) > $7 || abs($3 - $6) > $7 || abs($3 - 1.0) > $7)
+                          if (abs($1 - $4) > $7 || abs($2 - $5) > $7 || abs($3 - $6) > $8 || abs($3 - 1.0) > $8)
                           {
                             print 0;
                           }
@@ -60,7 +60,8 @@ function launch ()
                           }
                         }')
     if [ "$is_correct" != "1" ]; then
-      echo "Line $line_num failed"
+      echo "Line $line_num failed: exact($exact_val_re, $exact_val_im, $exact_val_mod), " \
+           "numerical($numerical_val_re, $numerical_val_im, $numerical_val_mod)"
       retval=$((2))
       break
     fi
@@ -78,12 +79,12 @@ cd $TEST_DIR
 size="10"
 retval=$((0))
 
-launch $size 501 0.0004 41
+launch $size 501 0.0004
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-launch $size 1001 0.0002 81
+launch $size 1001 0.0002
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
