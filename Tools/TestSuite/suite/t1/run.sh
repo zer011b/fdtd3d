@@ -89,8 +89,6 @@ if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-rm fdtd3d exact
-
 cd $CUR_DIR
 
 exit $retval

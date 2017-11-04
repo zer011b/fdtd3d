@@ -28,6 +28,7 @@
 #define calculateHz_3D_Precalc(oldHz, Ex1, Ex2, Ey1, Ey2, Mz_delta, Da, Db) \
   ((Da) * (oldHz) + (Db) * ((Ex1) - (Ex2) - (Ey1) + (Ey2) + Mz_delta))
 
+// TODO: update 2D kernels or unify
 /* 2D Kernels with precalculated coefficients */
 #define calculateEx_2D_TEz_Precalc(oldEx, Hz1, Hz2, Ca, Cb) \
   calculateEx_3D_Precalc(oldEx, Hz1, Hz2, FPValue(0.0), FPValue(0.0), Ca, Cb)
@@ -60,6 +61,7 @@
 #define calculateHz_3D(oldHz, Ex1, Ex2, Ey1, Ey2, Mz, dt, dx, mu) \
   calculateHz_3D_Precalc(oldHz, Ex1, Ex2, Ey1, Ey2, (Mz)*(dx), FPValue(1.0), (dt) / ((mu) * (dx)))
 
+// TODO: update 2D kernels or unify
 /* 2D Kernels */
 #define calculateEx_2D_TEz(oldEx, Hz1, Hz2, dt, dx, eps) \
   calculateEx_3D(oldEx, Hz1, Hz2, FPValue(0.0), FPValue(0.0), dt, dx, eps)
