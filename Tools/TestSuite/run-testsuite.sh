@@ -36,6 +36,10 @@ for testdir in `ls $CUR_DIR/Tools/TestSuite/suite`; do
   $CUR_DIR/Tools/TestSuite/suite/$testdir/run.sh $CUR_DIR/Tools/TestSuite $SOURCE_DIR
   check_res
 
+  # cleanup
+  $CUR_DIR/Tools/TestSuite/suite/$testdir/cleanup.sh $CUR_DIR/Tools/TestSuite $SOURCE_DIR
+  check_res
+
   echo "OK!"
   echo ""
   test_num=$((test_num + 1))

@@ -3,6 +3,8 @@
 BASE_DIR=$1
 SOURCE_DIR=$2
 
+accuracy_percent="0.00001"
+
 function launch ()
 {
   size="$1"
@@ -11,8 +13,20 @@ function launch ()
 
   lambda="0.02"
 
+  retval=$((0))
+
   ./fdtd3d --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
-    --log-level 0 --use-test-border-condition --use-test-start-values --calc-test-diff-norm &> /tmp/$size.$dx.txt
+    --log-level 0 --use-polinom1-border-condition --use-polinom1-start-values \
+    --use-polinom1-right-side --calc-polinom1-diff-norm &> /tmp/$size.$dx.txt
+
+  max_diff=$(cat /tmp/$size.$dx.txt | grep "DIFF NORM" | awk '{if (max < $14) {max = $14}} END{printf "%.20f", max}')
+  is_ok=$(echo $max_diff $accuracy_percent | awk '{if ($1 > $2) {print 0} else {print 1}}')
+  if [ "$is_ok" != "1" ]; then
+    echo "Failed $size $dx"
+    retval=$((1))
+  fi
+
+  return $retval
 }
 
 CUR_DIR=`pwd`
@@ -22,39 +36,20 @@ cd $TEST_DIR
 retval=$((0))
 
 size1="20"
-dx1="0.0004"
+dx1="0.001"
 
 size2="40"
-dx2="0.0002"
+dx2="0.0005"
 
-launch $size1 51 $dx1
+launch $size1 101 $dx1
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-launch $size2 101 $dx2
+launch $size2 201 $dx2
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
-
-# compare norm
-
-length=$(echo $size1 | awk '{print $1 - 1}')
-for timestep in `seq 1 1 $length`; do
-  timestep1=$(echo $timestep | awk '{print $1}')
-  normRe_1=$(cat /tmp/$size1.$dx1.txt | grep "TEST: $timestep1 " | awk '{print $3}')
-  normIm_1=$(cat /tmp/$size1.$dx1.txt | grep "TEST: $timestep1 " | awk '{print $4}')
-  normMod_1=$(cat /tmp/$size1.$dx1.txt | grep "TEST: $timestep1 " | awk '{print $5}')
-
-  timestep2=$(echo $timestep | awk '{print $1 * 2}')
-  normRe_2=$(cat /tmp/$size2.$dx2.txt | grep "TEST: $timestep2 " | awk '{print $3}')
-  normIm_2=$(cat /tmp/$size2.$dx2.txt | grep "TEST: $timestep2 " | awk '{print $4}')
-  normMod_2=$(cat /tmp/$size2.$dx2.txt | grep "TEST: $timestep2 " | awk '{print $5}')
-
-  echo "$normRe_1 vs $normRe_2 | $normMod_1 vs $normMod_2"
-done
-
-#rm fdtd3d exact
 
 cd $CUR_DIR
 

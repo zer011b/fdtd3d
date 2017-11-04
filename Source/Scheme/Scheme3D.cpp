@@ -860,11 +860,11 @@ Scheme3D::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinate
     normRe = sqrt (normRe / Ex->getSize ().calculateTotalCoord ());
     normIm = sqrt (normIm / Ex->getSize ().calculateTotalCoord ());
     normMod = sqrt (normMod / Ex->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Ex. Timestep %u. Value = (%.20f, %.20f) = (%.20f %%,%.20f %%), module = %.20f = (%.20f %%)\n",
-      t, normRe, normIm, normRe / maxRe, normIm / maxIm, normMod, normMod / maxMod);
+    printf ("-> DIFF NORM Ex. Timestep %u. Value = ( %.20f , %.20f ) = ( %.20f %% , %.20f %% ), module = %.20f = ( %.20f %% )\n",
+      t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
 #else
     norm = sqrt (norm / Ex->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Ex. Timestep %u. Value = (%.20f) = (%.20f %%)\n", t, norm, norm / max);
+    printf ("-> DIFF NORM Ex. Timestep %u. Value = ( %.20f ) = ( %.20f %% )\n", t, norm, norm * 100.0 / max);
 #endif
   }
 }
@@ -1286,11 +1286,11 @@ Scheme3D::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinate
     normRe = sqrt (normRe / Ey->getSize ().calculateTotalCoord ());
     normIm = sqrt (normIm / Ey->getSize ().calculateTotalCoord ());
     normMod = sqrt (normMod / Ey->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Ey. Timestep %u. Value = (%.20f, %.20f) = (%.20f %%,%.20f %%), module = %.20f = (%.20f %%)\n",
-      t, normRe, normIm, normRe / maxRe, normIm / maxIm, normMod, normMod / maxMod);
+    printf ("-> DIFF NORM Ey. Timestep %u. Value = ( %.20f , %.20f ) = ( %.20f %% , %.20f %% ), module = %.20f = ( %.20f %% )\n",
+      t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
 #else
     norm = sqrt (norm / Ey->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Ey. Timestep %u. Value = (%.20f) = (%.20f %%)\n", t, norm, norm / max);
+    printf ("-> DIFF NORM Ey. Timestep %u. Value = ( %.20f ) = ( %.20f %% )\n", t, norm, norm * 100.0 / max);
 #endif
   }
 }
@@ -1711,11 +1711,11 @@ Scheme3D::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinate
     normRe = sqrt (normRe / Ez->getSize ().calculateTotalCoord ());
     normIm = sqrt (normIm / Ez->getSize ().calculateTotalCoord ());
     normMod = sqrt (normMod / Ez->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Ez. Timestep %u. Value = (%.20f, %.20f) = (%.20f %%,%.20f %%), module = %.20f = (%.20f %%)\n",
-      t, normRe, normIm, normRe / maxRe, normIm / maxIm, normMod, normMod / maxMod);
+    printf ("-> DIFF NORM Ez. Timestep %u. Value = ( %.20f , %.20f ) = ( %.20f %% , %.20f %% ), module = %.20f = ( %.20f %% )\n",
+      t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
 #else
     norm = sqrt (norm / Ez->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Ez. Timestep %u. Value = (%.20f) = (%.20f %%)\n", t, norm, norm / max);
+    printf ("-> DIFF NORM Ez. Timestep %u. Value = ( %.20f ) = ( %.20f %% )\n", t, norm, norm * 100.0 / max);
 #endif
   }
 }
@@ -2139,11 +2139,11 @@ Scheme3D::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinate
     normRe = sqrt (normRe / Hx->getSize ().calculateTotalCoord ());
     normIm = sqrt (normIm / Hx->getSize ().calculateTotalCoord ());
     normMod = sqrt (normMod / Hx->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Hx. Timestep %u. Value = (%.20f, %.20f) = (%.20f %%,%.20f %%), module = %.20f = (%.20f %%)\n",
-      t, normRe, normIm, normRe / maxRe, normIm / maxIm, normMod, normMod / maxMod);
+    printf ("-> DIFF NORM Hx. Timestep %u. Value = ( %.20f , %.20f ) = ( %.20f %% , %.20f %% ), module = %.20f = ( %.20f %% )\n",
+      t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
 #else
     norm = sqrt (norm / Hx->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Hx. Timestep %u. Value = (%.20f) = (%.20f %%)\n", t, norm, norm / max);
+    printf ("-> DIFF NORM Hx. Timestep %u. Value = ( %.20f ) = ( %.20f %% )\n", t, norm, norm * 100.0 / max);
 #endif
   }
 }
@@ -2564,11 +2564,11 @@ Scheme3D::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinate
     normRe = sqrt (normRe / Hy->getSize ().calculateTotalCoord ());
     normIm = sqrt (normIm / Hy->getSize ().calculateTotalCoord ());
     normMod = sqrt (normMod / Hy->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Hy. Timestep %u. Value = (%.20f, %.20f) = (%.20f %%,%.20f %%), module = %.20f = (%.20f %%)\n",
-      t, normRe, normIm, normRe / maxRe, normIm / maxIm, normMod, normMod / maxMod);
+    printf ("-> DIFF NORM Hy. Timestep %u. Value = ( %.20f , %.20f ) = ( %.20f %% , %.20f %% ), module = %.20f = ( %.20f %% )\n",
+      t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
 #else
     norm = sqrt (norm / Hy->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Hy. Timestep %u. Value = (%.20f) = (%.20f %%)\n", t, norm, norm / max);
+    printf ("-> DIFF NORM Hy. Timestep %u. Value = ( %.20f ) = ( %.20f %% )\n", t, norm, norm * 100.0 / max);
 #endif
   }
 }
@@ -2988,11 +2988,11 @@ Scheme3D::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinate
     normRe = sqrt (normRe / Hz->getSize ().calculateTotalCoord ());
     normIm = sqrt (normIm / Hz->getSize ().calculateTotalCoord ());
     normMod = sqrt (normMod / Hz->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Hz. Timestep %u. Value = (%.20f, %.20f) = (%.20f %%,%.20f %%), module = %.20f = (%.20f %%)\n",
-      t, normRe, normIm, normRe / maxRe, normIm / maxIm, normMod, normMod / maxMod);
+    printf ("-> DIFF NORM Hz. Timestep %u. Value = ( %.20f , %.20f ) = ( %.20f %% , %.20f %% ), module = %.20f = ( %.20f %% )\n",
+      t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
 #else
     norm = sqrt (norm / Hz->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM Hz. Timestep %u. Value = (%.20f) = (%.20f %%)\n", t, norm, norm / max);
+    printf ("-> DIFF NORM Hz. Timestep %u. Value = ( %.20f ) = ( %.20f %% )\n", t, norm, norm * 100.0 / max);
 #endif
   }
 }
@@ -3729,6 +3729,7 @@ Scheme3D::initScheme (FPValue dx, FPValue sourceWaveLen)
 void
 Scheme3D::initCallBacks ()
 {
+#ifndef COMPLEX_FIELD_VALUES
   if (solverSettings.getDoUsePolinom1BorderCondition ())
   {
     EzBorder = CallBack::polinom1_ez;
@@ -3752,6 +3753,7 @@ Scheme3D::initCallBacks ()
     EzExact = CallBack::polinom1_ez;
     HyExact = CallBack::polinom1_hy;
   }
+#endif
 }
 
 void
