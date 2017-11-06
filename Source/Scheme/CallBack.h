@@ -14,6 +14,20 @@ public:
   static FieldValue polinom1_hy (GridCoordinateFP3D, FPValue);
   static FieldValue polinom1_jz (GridCoordinateFP3D, FPValue);
   static FieldValue polinom1_my (GridCoordinateFP3D, FPValue);
+
+  static FieldValue polinom2_ex (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom2_ey (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom2_ez (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom2_hx (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom2_hy (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom2_hz (GridCoordinateFP3D, FPValue);
+
+  static FieldValue polinom2_jx (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom2_jy (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom2_jz (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom2_mx (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom2_my (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom2_mz (GridCoordinateFP3D, FPValue);
 };
 
 #endif /* CALLBACK_H */

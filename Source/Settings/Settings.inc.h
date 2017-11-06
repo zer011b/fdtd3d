@@ -114,9 +114,10 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom1StartValues, getDoUsePolinom1StartVal
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom1RightSide, getDoUsePolinom1RightSide, bool, false, "--use-polinom1-right-side", "Polinom 1 right side")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculatePolinom1DiffNorm, getDoCalculatePolinom1DiffNorm, bool, false, "--calc-polinom1-diff-norm", "Calculate test norm of difference with exact solution: polinom1")
 
-// SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom2BorderCondition, getDoUsePolinom2BorderCondition, bool, false, "--use-polinom2-border-condition", "Polinom 2 border conditions")
-// SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom2StartValues, getDoUsePolinom2StartValues, bool, false, "--use-polinom2-start-values", "Polinom 2 start values")
-// SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom2RightSide, getDoUsePolinom2RightSide, bool, false, "--use-polinom2-right-side", "Polinom 2 right side")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom2BorderCondition, getDoUsePolinom2BorderCondition, bool, false, "--use-polinom2-border-condition", "Polinom 2 border conditions")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom2StartValues, getDoUsePolinom2StartValues, bool, false, "--use-polinom2-start-values", "Polinom 2 start values")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom2RightSide, getDoUsePolinom2RightSide, bool, false, "--use-polinom2-right-side", "Polinom 2 right side")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculatePolinom2DiffNorm, getDoCalculatePolinom2DiffNorm, bool, false, "--calc-polinom2-diff-norm", "Calculate test norm of difference with exact solution: polinom2")
 
 /*
  * NTFF

@@ -1,12 +1,15 @@
 # Description
 
-This is test with comparison of exact solution with numerical one (should have second order accuracy).
+This is test with comparison of exact solution with numerical one.
 
 # Exact solution
 
 ```
-Ez = x^2 * t
-Hy = eps0 * x^2 * t
+Ez = c^2 * x^2 * t
+Hy = c^2 * eps0 * x^2 * t
+
+Jz = eps0 * (- 2 * x * t +x^2)
+Mz = - 2 * x * t + x^2 * eps0 * mu0
 ```
 
 # Numerical solution
