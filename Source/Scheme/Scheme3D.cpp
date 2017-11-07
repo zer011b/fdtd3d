@@ -3745,6 +3745,11 @@ Scheme3D::initCallBacks ()
     HyBorder = CallBack::polinom2_hy;
     HzBorder = CallBack::polinom2_hz;
   }
+  else if (solverSettings.getDoUsePolinom3BorderCondition ())
+  {
+    EzBorder = CallBack::polinom3_ez;
+    HyBorder = CallBack::polinom3_hy;
+  }
 
   if (solverSettings.getDoUsePolinom1StartValues ())
   {
@@ -3760,6 +3765,11 @@ Scheme3D::initCallBacks ()
     HxInitial = CallBack::polinom2_hx;
     HyInitial = CallBack::polinom2_hy;
     HzInitial = CallBack::polinom2_hz;
+  }
+  else if (solverSettings.getDoUsePolinom3StartValues ())
+  {
+    EzInitial = CallBack::polinom3_ez;
+    HyInitial = CallBack::polinom3_hy;
   }
 
   if (solverSettings.getDoUsePolinom1RightSide ())
@@ -3777,6 +3787,11 @@ Scheme3D::initCallBacks ()
     My = CallBack::polinom2_my;
     Mz = CallBack::polinom2_mz;
   }
+  else if (solverSettings.getDoUsePolinom3RightSide ())
+  {
+    Jz = CallBack::polinom3_jz;
+    My = CallBack::polinom3_my;
+  }
 
   if (solverSettings.getDoCalculatePolinom1DiffNorm ())
   {
@@ -3792,6 +3807,11 @@ Scheme3D::initCallBacks ()
     HxExact = CallBack::polinom2_hx;
     HyExact = CallBack::polinom2_hy;
     HzExact = CallBack::polinom2_hz;
+  }
+  else if (solverSettings.getDoCalculatePolinom3DiffNorm ())
+  {
+    EzExact = CallBack::polinom3_ez;
+    HyExact = CallBack::polinom3_hy;
   }
 #endif
 }
