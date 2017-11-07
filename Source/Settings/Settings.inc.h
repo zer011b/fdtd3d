@@ -119,6 +119,11 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom2StartValues, getDoUsePolinom2StartVal
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom2RightSide, getDoUsePolinom2RightSide, bool, false, "--use-polinom2-right-side", "Polinom 2 right side")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculatePolinom2DiffNorm, getDoCalculatePolinom2DiffNorm, bool, false, "--calc-polinom2-diff-norm", "Calculate test norm of difference with exact solution: polinom2")
 
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom3BorderCondition, getDoUsePolinom3BorderCondition, bool, false, "--use-polinom3-border-condition", "Polinom 3 border conditions")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom3StartValues, getDoUsePolinom3StartValues, bool, false, "--use-polinom3-start-values", "Polinom 3 start values")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePolinom3RightSide, getDoUsePolinom3RightSide, bool, false, "--use-polinom3-right-side", "Polinom 3 right side")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculatePolinom3DiffNorm, getDoCalculatePolinom3DiffNorm, bool, false, "--calc-polinom3-diff-norm", "Calculate test norm of difference with exact solution: polinom3")
+
 /*
  * NTFF
  */

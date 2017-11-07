@@ -28,6 +28,11 @@ public:
   static FieldValue polinom2_mx (GridCoordinateFP3D, FPValue);
   static FieldValue polinom2_my (GridCoordinateFP3D, FPValue);
   static FieldValue polinom2_mz (GridCoordinateFP3D, FPValue);
+
+  static FieldValue polinom3_ez (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom3_hy (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom3_jz (GridCoordinateFP3D, FPValue);
+  static FieldValue polinom3_my (GridCoordinateFP3D, FPValue);
 };
 
 #endif /* CALLBACK_H */

@@ -87,4 +87,25 @@ FieldValue CallBack::polinom2_mz (GridCoordinateFP3D coord, FPValue t)
     + PhysicsConst::Eps0 * PhysicsConst::Mu0 * (SQR (coord.getX ()) + SQR (coord.getY ())));
 }
 
+FieldValue CallBack::polinom3_ez (GridCoordinateFP3D coord, FPValue t)
+{
+  return SQR (PhysicsConst::SpeedOfLight) * SQR (coord.getX () * t);
+}
+
+FieldValue CallBack::polinom3_hy (GridCoordinateFP3D coord, FPValue t)
+{
+  return PhysicsConst::Eps0 * polinom3_ez (coord, t);
+}
+
+FieldValue CallBack::polinom3_jz (GridCoordinateFP3D coord, FPValue t)
+{
+  return SQR (PhysicsConst::SpeedOfLight) * 2 * PhysicsConst::Eps0 * coord.getX () * t * (coord.getX () - t);
+}
+
+FieldValue CallBack::polinom3_my (GridCoordinateFP3D coord, FPValue t)
+{
+  return SQR (PhysicsConst::SpeedOfLight) * 2 * coord.getX () * t
+    * (PhysicsConst::Eps0 * PhysicsConst::Mu0 * coord.getX () - t);
+}
+
 #endif /* COMPLEX_FIELD_VALUES */
