@@ -7,26 +7,26 @@ accuracy_percent="0.00001"
 
 function launch ()
 {
-  size="$1"
-  timesteps="$2"
-  dx="$3"
+  local size="$1"
+  local timesteps="$2"
+  local dx="$3"
 
-  lambda="0.02"
+  local lambda="0.02"
 
-  retval=$((0))
+  local ret=$((0))
 
   ./fdtd3d --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
     --log-level 0 --use-polinom3-border-condition --use-polinom3-start-values \
     --use-polinom3-right-side --calc-polinom3-diff-norm &> /tmp/$size.$dx.txt
 
-  max_diff=$(cat /tmp/$size.$dx.txt | grep "DIFF NORM" | awk '{if (max < $14) {max = $14}} END{printf "%.20f", max}')
-  is_ok=$(echo $max_diff $accuracy_percent | awk '{if ($1 > $2) {print 0} else {print 1}}')
+  local max_diff=$(cat /tmp/$size.$dx.txt | grep "DIFF NORM" | awk '{if (max < $14) {max = $14}} END{printf "%.20f", max}')
+  local is_ok=$(echo $max_diff $accuracy_percent | awk '{if ($1 > $2) {print 0} else {print 1}}')
   if [ "$is_ok" != "1" ]; then
     echo "Failed $size $dx"
-    retval=$((1))
+    ret=$((1))
   fi
 
-  return $retval
+  return $ret
 }
 
 CUR_DIR=`pwd`

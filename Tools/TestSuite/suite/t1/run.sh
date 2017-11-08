@@ -8,40 +8,40 @@ accuracy_exact_mod="0.0000000000001"
 
 function launch ()
 {
-  size="$1"
-  timesteps="$2"
-  dx="$3"
+  local size="$1"
+  local timesteps="$2"
+  local dx="$3"
 
-  lambda="0.02"
-  length=$(echo $timesteps | awk '{print $1 - 10}')
+  local lambda="0.02"
+  local length=$(echo $timesteps | awk '{print $1 - 10}')
 
   ./fdtd3d --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
     --log-level 0 --save-res --save-tfsf-e-incident --save-as-txt --use-tfsf --tfsf-sizex 2 --same-size-tfsf \
     --courant-factor 1.0 &>/dev/null
 
-  retval=$((0))
+  local ret=$((0))
 
   for line_num in `seq 1 1 $length`; do
     # exact value
-    i=$(echo $line_num | awk '{print $1 - 1}')
-    n=$(echo $timesteps | awk '{print $1 - 1}')
+    local i=$(echo $line_num | awk '{print $1 - 1}')
+    local n=$(echo $timesteps | awk '{print $1 - 1}')
 
-    exact=$(./exact $lambda $dx $i $n 1.0)
+    local exact=$(./exact $lambda $dx $i $n 1.0)
 
-    exact_val_re=$(echo $exact | awk '{printf "%.17g", $1}')
-    exact_val_im=$(echo $exact | awk '{printf "%.17g", $2}')
-    exact_val_mod=$(echo $exact | awk '{printf "%.17g", $3}')
+    local exact_val_re=$(echo $exact | awk '{printf "%.17g", $1}')
+    local exact_val_im=$(echo $exact | awk '{printf "%.17g", $2}')
+    local exact_val_mod=$(echo $exact | awk '{printf "%.17g", $3}')
 
     # numerical value
-    line=$(sed "${line_num}q;d" current\[$timesteps\]_rank-0_EInc.txt)
-    index=$(echo $line | awk '{printf "%.17g", $1}')
-    numerical_val_re=$(echo $line | awk '{printf "%.17g", $2}')
-    numerical_val_im=$(echo $line | awk '{printf "%.17g", $3}')
-    numerical_val_mod=$(echo $numerical_val_re $numerical_val_im | awk '{printf "%.17g", sqrt($1 * $1 + $2 * $2)}')
+    local line=$(sed "${line_num}q;d" current\[$timesteps\]_rank-0_EInc.txt)
+    local index=$(echo $line | awk '{printf "%.17g", $1}')
+    local numerical_val_re=$(echo $line | awk '{printf "%.17g", $2}')
+    local numerical_val_im=$(echo $line | awk '{printf "%.17g", $3}')
+    local numerical_val_mod=$(echo $numerical_val_re $numerical_val_im | awk '{printf "%.17g", sqrt($1 * $1 + $2 * $2)}')
 
     if [ $i -ne $index ]; then
       echo "Incorrect output from fdtd3d"
-      retval=$((1))
+      ret=$((1))
       break
     fi
 
@@ -62,14 +62,14 @@ function launch ()
     if [ "$is_correct" != "1" ]; then
       echo "Line $line_num failed: exact($exact_val_re, $exact_val_im, $exact_val_mod), " \
            "numerical($numerical_val_re, $numerical_val_im, $numerical_val_mod)"
-      retval=$((2))
+      ret=$((2))
       break
     fi
   done
 
   rm current\[*
 
-  return $retval
+  return $ret
 }
 
 CUR_DIR=`pwd`
