@@ -33,6 +33,9 @@ public:
   static FieldValue polinom3_hy (GridCoordinateFP3D, FPValue);
   static FieldValue polinom3_jz (GridCoordinateFP3D, FPValue);
   static FieldValue polinom3_my (GridCoordinateFP3D, FPValue);
+
+  static FieldValue sin1_ez (GridCoordinateFP3D, FPValue);
+  static FieldValue sin1_hy (GridCoordinateFP3D, FPValue);
 };
 
 #endif /* CALLBACK_H */

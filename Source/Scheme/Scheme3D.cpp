@@ -3750,6 +3750,11 @@ Scheme3D::initCallBacks ()
     EzBorder = CallBack::polinom3_ez;
     HyBorder = CallBack::polinom3_hy;
   }
+  else if (solverSettings.getDoUseSin1BorderCondition ())
+  {
+    EzBorder = CallBack::sin1_ez;
+    HyBorder = CallBack::sin1_hy;
+  }
 
   if (solverSettings.getDoUsePolinom1StartValues ())
   {
@@ -3770,6 +3775,11 @@ Scheme3D::initCallBacks ()
   {
     EzInitial = CallBack::polinom3_ez;
     HyInitial = CallBack::polinom3_hy;
+  }
+  else if (solverSettings.getDoUseSin1StartValues ())
+  {
+    EzInitial = CallBack::sin1_ez;
+    HyInitial = CallBack::sin1_hy;
   }
 
   if (solverSettings.getDoUsePolinom1RightSide ())
@@ -3812,6 +3822,11 @@ Scheme3D::initCallBacks ()
   {
     EzExact = CallBack::polinom3_ez;
     HyExact = CallBack::polinom3_hy;
+  }
+  else if (solverSettings.getDoCalculateSin1DiffNorm ())
+  {
+    EzExact = CallBack::sin1_ez;
+    HyExact = CallBack::sin1_hy;
   }
 #endif
 }

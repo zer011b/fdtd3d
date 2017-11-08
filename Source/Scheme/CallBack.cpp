@@ -1,5 +1,8 @@
 #include "CallBack.h"
 #include "PhysicsConst.h"
+#include "Settings.h"
+
+#include <cmath>
 
 #ifndef COMPLEX_FIELD_VALUES
 
@@ -106,6 +109,20 @@ FieldValue CallBack::polinom3_my (GridCoordinateFP3D coord, FPValue t)
 {
   return SQR (PhysicsConst::SpeedOfLight) * 2 * coord.getX () * t
     * (PhysicsConst::Eps0 * PhysicsConst::Mu0 * coord.getX () - t);
+}
+
+FieldValue CallBack::sin1_ez (GridCoordinateFP3D coord, FPValue t)
+{
+  return SQR (PhysicsConst::SpeedOfLight)
+         * sin (2 * PhysicsConst::Pi * (PhysicsConst::SpeedOfLight / solverSettings.getSourceWaveLength ()) * t
+                - 2 * PhysicsConst::Pi / solverSettings.getSourceWaveLength () * coord.getX ());
+}
+
+FieldValue CallBack::sin1_hy (GridCoordinateFP3D coord, FPValue t)
+{
+  return -1 * SQR (PhysicsConst::SpeedOfLight) / (PhysicsConst::Mu0 * PhysicsConst::SpeedOfLight)
+         * sin (2 * PhysicsConst::Pi * (PhysicsConst::SpeedOfLight / solverSettings.getSourceWaveLength ()) * t
+                - 2 * PhysicsConst::Pi / solverSettings.getSourceWaveLength () * coord.getX ());
 }
 
 #endif /* COMPLEX_FIELD_VALUES */
