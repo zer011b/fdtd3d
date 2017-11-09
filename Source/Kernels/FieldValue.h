@@ -6,17 +6,17 @@
  */
 #ifdef FLOAT_VALUES
 typedef float FPValue;
-#define PRINTF_MODIFIER "%f"
+#define FP_MOD "%f"
 #endif /* FLOAT_VALUES */
 
 #ifdef DOUBLE_VALUES
 typedef double FPValue;
-#define PRINTF_MODIFIER "%f"
+#define FP_MOD "%f"
 #endif /* DOUBLE_VALUES */
 
 #ifdef LONG_DOUBLE_VALUES
 typedef long double FPValue;
-#define PRINTF_MODIFIER "%Lf"
+#define FP_MOD "%Lf"
 #endif /* LONG_DOUBLE_VALUES */
 
 /**
@@ -31,12 +31,14 @@ typedef FPValue FieldValue;
 
 #ifdef CXX11_ENABLED
 #include <cstdint>
+#include <cinttypes>
 #define CXX11_OVERRIDE override
 #define CXX11_FINAL final
 #define CXX11_OVERRIDE_FINAL CXX11_OVERRIDE CXX11_FINAL
 #define NULLPTR nullptr
 #else /* CXX11_ENABLED */
 #include <stdint.h>
+#include <inttypes.h>
 #define CXX11_OVERRIDE
 #define CXX11_FINAL
 #define CXX11_OVERRIDE_FINAL
@@ -54,12 +56,17 @@ typedef FPValue FieldValue;
 /**
  * Type of one-dimensional coordinate.
  */
-typedef uint32_t grid_coord;
-
-/**
- * Type of iterator through one-dimensional array
- */
-typedef uint64_t grid_iter;
+#ifndef LARGE_COORDINATES
+typedef int32_t grid_coord;
+#define COORD_MOD "%" PRId32
+#define MPI_COORD MPI_INT
+//#define MAX_COORD (2048*1048576) // 2^31, coord should be less than this
+#else /* !LARGE_COORDINATES */
+typedef int64_t grid_coord;
+#define COORD_MOD "%" PRId64
+#define MPI_COORD MPI_LONG_LONG_INT
+//#define MAX_COORD (8*1048576*1048576*1048576) // 2^63, coord should be less than this
+#endif /* LARGE_COORDINATES */
 
 /**
  * Type of timestep

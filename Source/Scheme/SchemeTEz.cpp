@@ -179,7 +179,7 @@ SchemeTEz::calculateExStep (time_step t, GridCoordinate3D ExStart, GridCoordinat
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -273,7 +273,7 @@ SchemeTEz::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordi
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -443,7 +443,7 @@ SchemeTEz::calculateEyStep (time_step t, GridCoordinate3D EyStart, GridCoordinat
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -537,7 +537,7 @@ SchemeTEz::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordi
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -732,7 +732,7 @@ SchemeTEz::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinat
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -754,7 +754,7 @@ SchemeTEz::calculateHzStep (time_step t, GridCoordinate3D HzStart, GridCoordinat
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -886,7 +886,7 @@ SchemeTEz::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordi
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -908,7 +908,7 @@ SchemeTEz::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordi
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -1122,9 +1122,9 @@ SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps)
       {
         FPValue norm = 0;
 
-        for (grid_iter i = 0; i < Hz.getSize ().getX (); ++i)
+        for (grid_coord i = 0; i < Hz.getSize ().getX (); ++i)
         {
-          for (grid_iter j = 0; j < Hz.getSize ().getY (); ++j)
+          for (grid_coord j = 0; j < Hz.getSize ().getY (); ++j)
           {
             GridCoordinate2D pos (i, j);
 
@@ -1141,7 +1141,7 @@ SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps)
 
         norm = sqrt (norm);
 
-        printf ("Norm at step %u: " PRINTF_MODIFIER "\n", t, norm);
+        printf ("Norm at step %u: " FP_MOD "\n", t, norm);
       }
     }
 #endif /* COMPLEX_FIELD_VALUES */
@@ -1167,9 +1167,9 @@ SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps)
   {
     FPValue norm = 0;
 
-    for (grid_iter i = 0; i < Hz.getSize ().getX (); ++i)
+    for (grid_coord i = 0; i < Hz.getSize ().getX (); ++i)
     {
-      for (grid_iter j = 0; j < Hz.getSize ().getY (); ++j)
+      for (grid_coord j = 0; j < Hz.getSize ().getY (); ++j)
       {
         GridCoordinate2D pos (i, j);
 
@@ -1186,7 +1186,7 @@ SchemeTEz::performNSteps (time_step startStep, time_step numberTimeSteps)
 
     norm = sqrt (norm);
 
-    printf ("Norm at step %u: " PRINTF_MODIFIER "\n", stepLimit, norm);
+    printf ("Norm at step %u: " FP_MOD "\n", stepLimit, norm);
   }
 #endif /* COMPLEX_FIELD_VALUES */
 }
@@ -1346,7 +1346,7 @@ SchemeTEz::performAmplitudeSteps (time_step startStep)
       is_stable_state = 0;
     }
 
-    DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy " PRINTF_MODIFIER ". \n", t, maxAccuracy);
+    DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy " FP_MOD ". \n", t, maxAccuracy);
   }
 
   if (dumpRes)
@@ -1365,7 +1365,7 @@ SchemeTEz::performAmplitudeSteps (time_step startStep)
         {
           FieldPointValue* tmp = HzAmplitude.getFieldPointValue (pos);
 
-          printf ("%u: " PRINTF_MODIFIER "\n", i, tmp->getCurValue ());
+          printf ("%u: " FP_MOD "\n", i, tmp->getCurValue ());
         }
       }
     }

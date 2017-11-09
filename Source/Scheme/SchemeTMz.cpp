@@ -113,7 +113,7 @@ SchemeTMz::approximateIncidentWave (GridCoordinateFP2D realCoord, FPValue dDiff,
   FPValue x = realCoord.getX () - zeroCoordFP.getX ();
   FPValue y = realCoord.getY () - zeroCoordFP.getY ();
   FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - dDiff;
-  FPValue coordD1 = (FPValue) ((grid_iter) d);
+  FPValue coordD1 = (FPValue) ((grid_coord) d);
   FPValue coordD2 = coordD1 + 1;
   FPValue proportionD2 = d - coordD1;
   FPValue proportionD1 = 1 - proportionD2;
@@ -234,7 +234,7 @@ SchemeTMz::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinat
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -256,7 +256,7 @@ SchemeTMz::calculateEzStep (time_step t, GridCoordinate3D EzStart, GridCoordinat
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -379,7 +379,7 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -401,7 +401,7 @@ SchemeTMz::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordi
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle) - 0.5;
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -643,7 +643,7 @@ SchemeTMz::calculateHxStep (time_step t, GridCoordinate3D HxStart, GridCoordinat
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -738,7 +738,7 @@ SchemeTMz::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordi
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -1012,7 +1012,7 @@ SchemeTMz::calculateHyStep (time_step t, GridCoordinate3D HyStart, GridCoordinat
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -1107,7 +1107,7 @@ SchemeTMz::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordi
           FPValue x = realCoord.getX () - zeroCoordFP.getX ();
           FPValue y = realCoord.getY () - zeroCoordFP.getY ();
           FPValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          FPValue coordD1 = (FPValue) ((grid_iter) d);
+          FPValue coordD1 = (FPValue) ((grid_coord) d);
           FPValue coordD2 = coordD1 + 1;
           FPValue proportionD2 = d - coordD1;
           FPValue proportionD1 = 1 - proportionD2;
@@ -1691,7 +1691,7 @@ SchemeTMz::performAmplitudeSteps (time_step startStep)
           //   FieldValue x = realCoord.getX () - zeroCoordFP.getX ();
           //   FieldValue y = realCoord.getY () - zeroCoordFP.getY ();
           //   FieldValue d = x * cos (incidentWaveAngle) + y * sin (incidentWaveAngle);
-          //   FieldValue coordD1 = (FieldValue) ((grid_iter) d);
+          //   FieldValue coordD1 = (FieldValue) ((grid_coord) d);
           //   FieldValue coordD2 = coordD1 + 1;
           //   FieldValue proportionD2 = d - coordD1;
           //   FieldValue proportionD1 = 1 - proportionD2;

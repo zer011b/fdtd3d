@@ -33,15 +33,15 @@ const FPValue prevPrevMult = prevMult * prevMult;
 int main (int argc, char** argv)
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_iter gridSizeX = 32;
+  grid_coord gridSizeX = 32;
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 
 #if defined (GRID_2D) || defined (GRID_3D)
-  grid_iter gridSizeY = 32;
+  grid_coord gridSizeY = 32;
 #endif /* GRID_2D || GRID_3D */
 
 #if defined (GRID_3D)
-  grid_iter gridSizeZ = 32;
+  grid_coord gridSizeZ = 32;
 #endif /* GRID_3D */
 
   int bufSize = 2;
@@ -54,17 +54,17 @@ int main (int argc, char** argv)
   MPI_Comm_size (MPI_COMM_WORLD, &numProcs);
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  DPRINTF (LOG_LEVEL_STAGES, "X: PID %d of %d, grid size x: %lu\n", rank, numProcs, gridSizeX);
+  DPRINTF (LOG_LEVEL_STAGES, "X: PID %d of %d, grid size x: " COORD_MOD "\n", rank, numProcs, gridSizeX);
   ASSERT (gridSizeX % numProcs == 0);
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 
 #if defined (GRID_2D) || defined (GRID_3D)
-  DPRINTF (LOG_LEVEL_STAGES, "Y: PID %d of %d, grid size y: %lu\n", rank, numProcs, gridSizeY);
+  DPRINTF (LOG_LEVEL_STAGES, "Y: PID %d of %d, grid size y: " COORD_MOD "\n", rank, numProcs, gridSizeY);
   ASSERT (gridSizeY % numProcs == 0);
 #endif /* GRID_2D || GRID_3D */
 
 #if defined (GRID_3D)
-  DPRINTF (LOG_LEVEL_STAGES, "Z: PID %d of %d, grid size x: %lu\n", rank, numProcs, gridSizeZ);
+  DPRINTF (LOG_LEVEL_STAGES, "Z: PID %d of %d, grid size x: " COORD_MOD "\n", rank, numProcs, gridSizeZ);
   ASSERT (gridSizeZ % numProcs == 0);
 #endif /* GRID_3D */
 
@@ -102,15 +102,15 @@ int main (int argc, char** argv)
   ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode ());
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  for (grid_iter i = 0; i < grid.getSize ().getX (); ++i)
+  for (grid_coord i = 0; i < grid.getSize ().getX (); ++i)
   {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-    for (grid_iter j = 0; j < grid.getSize ().getY (); ++j)
+    for (grid_coord j = 0; j < grid.getSize ().getY (); ++j)
     {
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-      for (grid_iter k = 0; k < grid.getSize ().getZ (); ++k)
+      for (grid_coord k = 0; k < grid.getSize ().getZ (); ++k)
       {
 #endif /* GRID_3D */
         FieldPointValue* val = new FieldPointValue ();
@@ -176,15 +176,15 @@ int main (int argc, char** argv)
   ParallelGridBase *gridTotal = grid.gatherFullGrid ();
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  for (grid_iter i = 0; i < grid.getSize ().getX (); ++i)
+  for (grid_coord i = 0; i < grid.getSize ().getX (); ++i)
   {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-    for (grid_iter j = 0; j < grid.getSize ().getY (); ++j)
+    for (grid_coord j = 0; j < grid.getSize ().getY (); ++j)
     {
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-      for (grid_iter k = 0; k < grid.getSize ().getZ (); ++k)
+      for (grid_coord k = 0; k < grid.getSize ().getZ (); ++k)
       {
 #endif /* GRID_3D */
 

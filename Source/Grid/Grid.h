@@ -50,7 +50,7 @@ protected:
 protected:
 
   static bool isLegitIndex (const TCoord &, const TCoord &);
-  static grid_iter calculateIndexFromPosition (const TCoord &, const TCoord &);
+  static grid_coord calculateIndexFromPosition (const TCoord &, const TCoord &);
 
 private:
 
@@ -63,7 +63,7 @@ private:
 protected:
 
   bool isLegitIndex (const TCoord &) const;
-  grid_iter calculateIndexFromPosition (const TCoord &) const;
+  grid_coord calculateIndexFromPosition (const TCoord &) const;
 
 public:
 
@@ -81,11 +81,11 @@ public:
 
   virtual TCoord getComputationStart (TCoord) const;
   virtual TCoord getComputationEnd (TCoord) const;
-  TCoord calculatePositionFromIndex (grid_iter) const;
+  TCoord calculatePositionFromIndex (grid_coord) const;
 
   void setFieldPointValue (FieldPointValue *, const TCoord &);
   FieldPointValue *getFieldPointValue (const TCoord &);
-  FieldPointValue *getFieldPointValue (grid_iter);
+  FieldPointValue *getFieldPointValue (grid_coord);
 
   virtual FieldPointValue *getFieldPointValueByAbsolutePos (const TCoord &);
   virtual FieldPointValue *getFieldPointValueOrNullByAbsolutePos (const TCoord &);
@@ -181,7 +181,7 @@ Grid<TCoord>::copyGrid (const Grid<TCoord> &grid) /**< grid to copy */
   timeStep = grid.timeStep;
   gridName = grid.gridName;
 
-  for (grid_iter i = 0; i < grid.gridValues.size (); ++i)
+  for (grid_coord i = 0; i < grid.gridValues.size (); ++i)
   {
     if (grid.gridValues[i])
     {
@@ -252,7 +252,7 @@ Grid<TCoord>::isLegitIndex (const TCoord& position) const /**< coordinate in gri
  * @return one-dimensional coordinate from N-dimensional position
  */
 template <class TCoord>
-grid_iter
+grid_coord
 Grid<TCoord>::calculateIndexFromPosition (const TCoord& position) const /**< coordinate in grid */
 {
   return calculateIndexFromPosition (position, size);
@@ -305,7 +305,7 @@ Grid<TCoord>::setFieldPointValue (FieldPointValue *value, /**< field point value
   ASSERT (isLegitIndex (position));
   ASSERT (value);
 
-  grid_iter coord = calculateIndexFromPosition (position);
+  grid_coord coord = calculateIndexFromPosition (position);
 
   delete gridValues[coord];
 
@@ -323,7 +323,7 @@ Grid<TCoord>::getFieldPointValue (const TCoord &position) /**< coordinate in gri
 {
   ASSERT (isLegitIndex (position));
 
-  grid_iter coord = calculateIndexFromPosition (position);
+  grid_coord coord = calculateIndexFromPosition (position);
 
   return getFieldPointValue (coord);
 } /* Grid<TCoord>::getFieldPointValue */
@@ -335,7 +335,7 @@ Grid<TCoord>::getFieldPointValue (const TCoord &position) /**< coordinate in gri
  */
 template <class TCoord>
 FieldPointValue *
-Grid<TCoord>::getFieldPointValue (grid_iter coord) /**< index in grid */
+Grid<TCoord>::getFieldPointValue (grid_coord coord) /**< index in grid */
 {
   ASSERT (coord >= 0 && coord < size.calculateTotalCoord ());
 
@@ -435,7 +435,7 @@ template <class TCoord>
 void
 Grid<TCoord>::initialize ()
 {
-  for (grid_iter i = 0; i < gridValues.size (); ++i)
+  for (grid_coord i = 0; i < gridValues.size (); ++i)
   {
     gridValues[i] = new FieldPointValue ();
   }
@@ -448,7 +448,7 @@ template <class TCoord>
 void
 Grid<TCoord>::initialize (FieldValue cur)
 {
-  for (grid_iter i = 0; i < gridValues.size (); ++i)
+  for (grid_coord i = 0; i < gridValues.size (); ++i)
   {
     gridValues[i] = new FieldPointValue ();
     gridValues[i]->setCurValue (cur);

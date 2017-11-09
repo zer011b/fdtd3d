@@ -8,6 +8,7 @@ option(DYNAMIC_GRID "Use dynamic grid" OFF)
 option(CUDA_ENABLED "Cuda support enabled" OFF)
 option(CXX11_ENABLED "C++11 support enabled" OFF)
 option(COMPLEX_FIELD_VALUES "Complex field values" OFF)
+option(LARGE_COORDINATES "Use int64 for grid coordinates" OFF)
 
 set(VALUE_TYPE "d" CACHE STRING "Defines type of values")
 set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
@@ -52,10 +53,12 @@ endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   message ("Build type: ${CMAKE_BUILD_TYPE}.")
-  add_definitions (-DDEBUG_BUILD="")
+  add_definitions (-DENABLE_ASSERTS="")
 elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
   message ("Build type: ${CMAKE_BUILD_TYPE}.")
-  add_definitions (-DRELEASE_BUILD="")
+elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "ReleaseWithAsserts")
+  message ("Build type: ${CMAKE_BUILD_TYPE}.")
+  add_definitions (-DENABLE_ASSERTS="")
 endif ()
 
 message ("C++ compiler: ${CMAKE_CXX_COMPILER}.")
@@ -83,6 +86,10 @@ if ("${COMPLEX_FIELD_VALUES}")
   add_definitions (-DCOMPLEX_FIELD_VALUES="")
 else ()
   message ("Real field values.")
+endif ()
+
+if ("${LARGE_COORDINATES}")
+  add_definitions (-DLARGE_COORDINATES="")
 endif ()
 
 if ("${PRINT_MESSAGE}")
@@ -215,12 +222,11 @@ if ("${CXX11_ENABLED}")
   set (BUILD_FLAGS "${BUILD_FLAGS} -std=c++11")
 endif ()
 
-#if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-#  set (BUILD_FLAGS "${BUILD_FLAGS} -flto -fno-fat-lto-objects")
-#endif ()
-
-#set (BUILD_FLAGS "${BUILD_FLAGS} -fno-stack-protector")
-#set (BUILD_FLAGS "${BUILD_FLAGS} -fno-exceptions -fno-rtti")
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+  #set (BUILD_FLAGS "${BUILD_FLAGS} -flto -fno-fat-lto-objects")
+  #set (BUILD_FLAGS "${BUILD_FLAGS} -fno-stack-protector")
+  #set (BUILD_FLAGS "${BUILD_FLAGS} -fno-exceptions -fno-rtti")
+endif ()
 
 #-pedantic -pedantic-errors
 
@@ -233,7 +239,11 @@ set (WARNING_FLAGS "")
 #set (WARNING_FLAGS "${WARNING_FLAGS} -Wmissing-declarations")
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-  set (BUILD_FLAGS "${BUILD_FLAGS} -O2")
+  set (BUILD_FLAGS "${BUILD_FLAGS} -O3")
+endif ()
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "ReleaseWithAsserts")
+  set (BUILD_FLAGS "${BUILD_FLAGS} -O1")
 endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")

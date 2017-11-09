@@ -16,7 +16,8 @@ BMPLoader<GridCoordinate1D>::loadGrid (Grid<GridCoordinate1D> *grid) const
   const GridCoordinate1D& size = grid->getSize ();
   grid_coord sx = size.getX ();
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Loading 1D from BMP image. Size: %ux1x1\n", sx);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Loading 1D from BMP image. Size: " COORD_MOD "x1x1\n",
+    sx);
 #endif /* PRINT_MESSAGE */
 
   loadFromFile (grid);
@@ -36,7 +37,8 @@ BMPLoader<GridCoordinate2D>::loadGrid (Grid<GridCoordinate2D> *grid) const
   grid_coord sx = size.getX ();
   grid_coord sy = size.getY ();
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Loading 2D from BMP image. Size: %ux%ux1\n", sx, sy)
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Loading 2D from BMP image. Size: " COORD_MOD "x" COORD_MOD "x1\n",
+    sx, sy)
 #endif /* PRINT_MESSAGE */
 
   loadFromFile (grid);
@@ -195,8 +197,8 @@ BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid, GridFil
   }
 
   // Go through all values and set them.
-  grid_iter end = grid->getSize().calculateTotalCoord ();
-  for (grid_iter iter = 0; iter < end; ++iter)
+  grid_coord end = grid->getSize().calculateTotalCoord ();
+  for (grid_coord iter = 0; iter < end; ++iter)
   {
     // Get current point value.
     FieldPointValue* current = grid->getFieldPointValue (iter);
@@ -206,8 +208,8 @@ BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid, GridFil
     GridCoordinate1D coord = grid->calculatePositionFromIndex (iter);
 
     // Pixel coordinate.
-    grid_iter px = coord.getX ();
-    grid_iter py = 0;
+    grid_coord px = coord.getX ();
+    grid_coord py = 0;
 
     RGBApixel pixelRe = imageRe.GetPixel(px, py);
 
@@ -405,8 +407,8 @@ BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid, GridFil
   }
 
   // Go through all values and set them.
-  grid_iter end = grid->getSize().calculateTotalCoord ();
-  for (grid_iter iter = 0; iter < end; ++iter)
+  grid_coord end = grid->getSize().calculateTotalCoord ();
+  for (grid_coord iter = 0; iter < end; ++iter)
   {
     // Get current point value.
     FieldPointValue* current = grid->getFieldPointValue (iter);
@@ -416,8 +418,8 @@ BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid, GridFil
     GridCoordinate2D coord = grid->calculatePositionFromIndex (iter);
 
     // Pixel coordinate.
-    grid_iter px = coord.getX ();
-    grid_iter py = coord.getY ();
+    grid_coord px = coord.getX ();
+    grid_coord py = coord.getY ();
 
     RGBApixel pixelRe = imageRe.GetPixel(px, py);
 

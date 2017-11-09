@@ -60,11 +60,11 @@ static void checkIsTheSame (Grid<GridCoordinate1D> *grid1D,
                             Grid<GridCoordinate2D> *grid2D,
                             Grid<GridCoordinate3D> *grid3D)
 {
-  for (grid_iter i = 0; i < gridSizeX; ++i)
+  for (grid_coord i = 0; i < gridSizeX; ++i)
   {
-    for (grid_iter j = 0; j < gridSizeY; ++j)
+    for (grid_coord j = 0; j < gridSizeY; ++j)
     {
-      for (grid_iter k = 0; k < gridSizeZ; ++k)
+      for (grid_coord k = 0; k < gridSizeZ; ++k)
       {
         FieldPointValue val_old;
         GridCoordinate3D pos (i, j, k);
@@ -203,11 +203,11 @@ int main (int argc, char** argv)
   Grid<GridCoordinate2D> grid2D (overallSize2D, 0);
   Grid<GridCoordinate3D> grid3D (overallSize3D, 0);
 
-  for (grid_iter i = 0; i < gridSizeX; ++i)
+  for (grid_coord i = 0; i < gridSizeX; ++i)
   {
-    for (grid_iter j = 0; j < gridSizeY; ++j)
+    for (grid_coord j = 0; j < gridSizeY; ++j)
     {
-      for (grid_iter k = 0; k < gridSizeZ; ++k)
+      for (grid_coord k = 0; k < gridSizeZ; ++k)
       {
         FieldPointValue* val = new FieldPointValue ();
         GridCoordinate3D pos (i, j, k);

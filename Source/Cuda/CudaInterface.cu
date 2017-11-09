@@ -54,17 +54,17 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
   GridCoordinate2D EpsSizeCoord = Eps.getSize ();
   GridCoordinate2D MuSizeCoord = Mu.getSize ();
 
-  grid_iter sizeEz = EzSizeCoord.calculateTotalCoord();
-  grid_iter sizeHx = HxSizeCoord.calculateTotalCoord();
-  grid_iter sizeHy = HySizeCoord.calculateTotalCoord();
-  grid_iter sizeEps = EpsSizeCoord.calculateTotalCoord();
-  grid_iter sizeMu = MuSizeCoord.calculateTotalCoord();
+  grid_coord sizeEz = EzSizeCoord.calculateTotalCoord();
+  grid_coord sizeHx = HxSizeCoord.calculateTotalCoord();
+  grid_coord sizeHy = HySizeCoord.calculateTotalCoord();
+  grid_coord sizeEps = EpsSizeCoord.calculateTotalCoord();
+  grid_coord sizeMu = MuSizeCoord.calculateTotalCoord();
 
-  grid_iter sizeEzRaw = (grid_iter) sizeEz * sizeof (FieldValue);
-  grid_iter sizeHxRaw = (grid_iter) sizeHx * sizeof (FieldValue);
-  grid_iter sizeHyRaw = (grid_iter) sizeHy * sizeof (FieldValue);
-  grid_iter sizeEpsRaw = (grid_iter) sizeEps * sizeof (FieldValue);
-  grid_iter sizeMuRaw = (grid_iter) sizeMu * sizeof (FieldValue);
+  grid_coord sizeEzRaw = (grid_coord) sizeEz * sizeof (FieldValue);
+  grid_coord sizeHxRaw = (grid_coord) sizeHx * sizeof (FieldValue);
+  grid_coord sizeHyRaw = (grid_coord) sizeHy * sizeof (FieldValue);
+  grid_coord sizeEpsRaw = (grid_coord) sizeEps * sizeof (FieldValue);
+  grid_coord sizeMuRaw = (grid_coord) sizeMu * sizeof (FieldValue);
 
   FieldValue *tmp_Ez = new FieldValue [sizeEz];
   FieldValue *tmp_Hx = new FieldValue [sizeHx];
@@ -114,34 +114,34 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
 
   while (t < totalStep)
   {
-    for (grid_iter i = 0; i < sizeEz; ++i)
+    for (grid_coord i = 0; i < sizeEz; ++i)
     {
       FieldPointValue* valEz = Ez.getFieldPointValue (i);
       tmp_Ez[i] = valEz->getCurValue ();
       tmp_Ez_prev[i] = valEz->getPrevValue ();
     }
 
-    for (grid_iter i = 0; i < sizeHx; ++i)
+    for (grid_coord i = 0; i < sizeHx; ++i)
     {
       FieldPointValue* valHx = Hx.getFieldPointValue (i);
       tmp_Hx[i] = valHx->getCurValue ();
       tmp_Hx_prev[i] = valHx->getPrevValue ();
     }
 
-    for (grid_iter i = 0; i < sizeHy; ++i)
+    for (grid_coord i = 0; i < sizeHy; ++i)
     {
       FieldPointValue* valHy = Hy.getFieldPointValue (i);
       tmp_Hy[i] = valHy->getCurValue ();
       tmp_Hy_prev[i] = valHy->getPrevValue ();
     }
 
-    for (grid_iter i = 0; i < sizeEps; ++i)
+    for (grid_coord i = 0; i < sizeEps; ++i)
     {
       FieldPointValue *valEps = Eps.getFieldPointValue (i);
       tmp_eps[i] = valEps->getCurValue ();
     }
 
-    for (grid_iter i = 0; i < sizeMu; ++i)
+    for (grid_coord i = 0; i < sizeMu; ++i)
     {
       FieldPointValue *valMu = Mu.getFieldPointValue (i);
       tmp_mu[i] = valMu->getCurValue ();
@@ -279,21 +279,21 @@ void cudaExecute2DTMzSteps (CudaExitStatus *retval,
     cudaCheckErrorCmd (cudaMemcpy (tmp_eps, eps_cuda, sizeEpsRaw, cudaMemcpyDeviceToHost));
     cudaCheckErrorCmd (cudaMemcpy (tmp_mu, mu_cuda, sizeMuRaw, cudaMemcpyDeviceToHost));
 
-    for (grid_iter i = 0; i < sizeEz; ++i)
+    for (grid_coord i = 0; i < sizeEz; ++i)
     {
       FieldPointValue* valEz = Ez.getFieldPointValue (i);
       valEz->setCurValue (tmp_Ez[i]);
       valEz->setPrevValue (tmp_Ez_prev[i]);
     }
 
-    for (grid_iter i = 0; i < sizeHx; ++i)
+    for (grid_coord i = 0; i < sizeHx; ++i)
     {
       FieldPointValue* valHx = Hx.getFieldPointValue (i);
       valHx->setCurValue (tmp_Hx[i]);
       valHx->setPrevValue (tmp_Hx_prev[i]);
     }
 
-    for (grid_iter i = 0; i < sizeHy; ++i)
+    for (grid_coord i = 0; i < sizeHy; ++i)
     {
       FieldPointValue* valHy = Hy.getFieldPointValue (i);
       valHy->setCurValue (tmp_Hy[i]);
@@ -396,23 +396,23 @@ void cudaExecute3DSteps (CudaExitStatus *retval,
   GridCoordinate3D EpsSizeCoord = Eps.getSize ();
   GridCoordinate3D MuSizeCoord = Mu.getSize ();
 
-  grid_iter sizeEx = ExSizeCoord.calculateTotalCoord();
-  grid_iter sizeEy = EySizeCoord.calculateTotalCoord();
-  grid_iter sizeEz = EzSizeCoord.calculateTotalCoord();
-  grid_iter sizeHx = HxSizeCoord.calculateTotalCoord();
-  grid_iter sizeHy = HySizeCoord.calculateTotalCoord();
-  grid_iter sizeHz = HzSizeCoord.calculateTotalCoord();
-  grid_iter sizeEps = EpsSizeCoord.calculateTotalCoord();
-  grid_iter sizeMu = MuSizeCoord.calculateTotalCoord();
+  grid_coord sizeEx = ExSizeCoord.calculateTotalCoord();
+  grid_coord sizeEy = EySizeCoord.calculateTotalCoord();
+  grid_coord sizeEz = EzSizeCoord.calculateTotalCoord();
+  grid_coord sizeHx = HxSizeCoord.calculateTotalCoord();
+  grid_coord sizeHy = HySizeCoord.calculateTotalCoord();
+  grid_coord sizeHz = HzSizeCoord.calculateTotalCoord();
+  grid_coord sizeEps = EpsSizeCoord.calculateTotalCoord();
+  grid_coord sizeMu = MuSizeCoord.calculateTotalCoord();
 
-  grid_iter sizeExRaw = (grid_iter) sizeEx * sizeof (FieldValue);
-  grid_iter sizeEyRaw = (grid_iter) sizeEy * sizeof (FieldValue);
-  grid_iter sizeEzRaw = (grid_iter) sizeEz * sizeof (FieldValue);
-  grid_iter sizeHxRaw = (grid_iter) sizeHx * sizeof (FieldValue);
-  grid_iter sizeHyRaw = (grid_iter) sizeHy * sizeof (FieldValue);
-  grid_iter sizeHzRaw = (grid_iter) sizeHz * sizeof (FieldValue);
-  grid_iter sizeEpsRaw = (grid_iter) sizeEps * sizeof (FieldValue);
-  grid_iter sizeMuRaw = (grid_iter) sizeMu * sizeof (FieldValue);
+  grid_coord sizeExRaw = (grid_coord) sizeEx * sizeof (FieldValue);
+  grid_coord sizeEyRaw = (grid_coord) sizeEy * sizeof (FieldValue);
+  grid_coord sizeEzRaw = (grid_coord) sizeEz * sizeof (FieldValue);
+  grid_coord sizeHxRaw = (grid_coord) sizeHx * sizeof (FieldValue);
+  grid_coord sizeHyRaw = (grid_coord) sizeHy * sizeof (FieldValue);
+  grid_coord sizeHzRaw = (grid_coord) sizeHz * sizeof (FieldValue);
+  grid_coord sizeEpsRaw = (grid_coord) sizeEps * sizeof (FieldValue);
+  grid_coord sizeMuRaw = (grid_coord) sizeMu * sizeof (FieldValue);
 
   FieldValue *tmp_Ex = new FieldValue [sizeEx];
   FieldValue *tmp_Ey = new FieldValue [sizeEy];
@@ -489,55 +489,55 @@ void cudaExecute3DSteps (CudaExitStatus *retval,
 
   while (t < totalStep)
   {
-    for (grid_iter i = 0; i < sizeEx; ++i)
+    for (grid_coord i = 0; i < sizeEx; ++i)
     {
       FieldPointValue* valEx = Ex.getFieldPointValue (i);
       tmp_Ex[i] = valEx->getCurValue ();
       tmp_Ex_prev[i] = valEx->getPrevValue ();
     }
 
-    for (grid_iter i = 0; i < sizeEy; ++i)
+    for (grid_coord i = 0; i < sizeEy; ++i)
     {
       FieldPointValue* valEy = Ey.getFieldPointValue (i);
       tmp_Ey[i] = valEy->getCurValue ();
       tmp_Ey_prev[i] = valEy->getPrevValue ();
     }
 
-    for (grid_iter i = 0; i < sizeEz; ++i)
+    for (grid_coord i = 0; i < sizeEz; ++i)
     {
       FieldPointValue* valEz = Ez.getFieldPointValue (i);
       tmp_Ez[i] = valEz->getCurValue ();
       tmp_Ez_prev[i] = valEz->getPrevValue ();
     }
 
-    for (grid_iter i = 0; i < sizeHx; ++i)
+    for (grid_coord i = 0; i < sizeHx; ++i)
     {
       FieldPointValue* valHx = Hx.getFieldPointValue (i);
       tmp_Hx[i] = valHx->getCurValue ();
       tmp_Hx_prev[i] = valHx->getPrevValue ();
     }
 
-    for (grid_iter i = 0; i < sizeHy; ++i)
+    for (grid_coord i = 0; i < sizeHy; ++i)
     {
       FieldPointValue* valHy = Hy.getFieldPointValue (i);
       tmp_Hy[i] = valHy->getCurValue ();
       tmp_Hy_prev[i] = valHy->getPrevValue ();
     }
 
-    for (grid_iter i = 0; i < sizeHz; ++i)
+    for (grid_coord i = 0; i < sizeHz; ++i)
     {
       FieldPointValue* valHz = Hz.getFieldPointValue (i);
       tmp_Hz[i] = valHz->getCurValue ();
       tmp_Hz_prev[i] = valHz->getPrevValue ();
     }
 
-    for (grid_iter i = 0; i < sizeEps; ++i)
+    for (grid_coord i = 0; i < sizeEps; ++i)
     {
       FieldPointValue *valEps = Eps.getFieldPointValue (i);
       tmp_eps[i] = valEps->getCurValue ();
     }
 
-    for (grid_iter i = 0; i < sizeMu; ++i)
+    for (grid_coord i = 0; i < sizeMu; ++i)
     {
       FieldPointValue *valMu = Mu.getFieldPointValue (i);
       tmp_mu[i] = valMu->getCurValue ();
@@ -830,42 +830,42 @@ void cudaExecute3DSteps (CudaExitStatus *retval,
     cudaCheckErrorCmd (cudaMemcpy (tmp_eps, eps_cuda, sizeEpsRaw, cudaMemcpyDeviceToHost));
     cudaCheckErrorCmd (cudaMemcpy (tmp_mu, mu_cuda, sizeMuRaw, cudaMemcpyDeviceToHost));
 
-    for (grid_iter i = 0; i < sizeEx; ++i)
+    for (grid_coord i = 0; i < sizeEx; ++i)
     {
       FieldPointValue* valEx = Ex.getFieldPointValue (i);
       valEx->setCurValue (tmp_Ex[i]);
       valEx->setPrevValue (tmp_Ex_prev[i]);
     }
 
-    for (grid_iter i = 0; i < sizeEy; ++i)
+    for (grid_coord i = 0; i < sizeEy; ++i)
     {
       FieldPointValue* valEy = Ey.getFieldPointValue (i);
       valEy->setCurValue (tmp_Ey[i]);
       valEy->setPrevValue (tmp_Ey_prev[i]);
     }
 
-    for (grid_iter i = 0; i < sizeEz; ++i)
+    for (grid_coord i = 0; i < sizeEz; ++i)
     {
       FieldPointValue* valEz = Ez.getFieldPointValue (i);
       valEz->setCurValue (tmp_Ez[i]);
       valEz->setPrevValue (tmp_Ez_prev[i]);
     }
 
-    for (grid_iter i = 0; i < sizeHx; ++i)
+    for (grid_coord i = 0; i < sizeHx; ++i)
     {
       FieldPointValue* valHx = Hx.getFieldPointValue (i);
       valHx->setCurValue (tmp_Hx[i]);
       valHx->setPrevValue (tmp_Hx_prev[i]);
     }
 
-    for (grid_iter i = 0; i < sizeHy; ++i)
+    for (grid_coord i = 0; i < sizeHy; ++i)
     {
       FieldPointValue* valHy = Hy.getFieldPointValue (i);
       valHy->setCurValue (tmp_Hy[i]);
       valHy->setPrevValue (tmp_Hy_prev[i]);
     }
 
-    for (grid_iter i = 0; i < sizeHz; ++i)
+    for (grid_coord i = 0; i < sizeHz; ++i)
     {
       FieldPointValue* valHz = Hz.getFieldPointValue (i);
       valHz->setCurValue (tmp_Hz[i]);

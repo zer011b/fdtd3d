@@ -129,6 +129,120 @@ jobs:
 
     - stage: build
       env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=OFF
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - HOME_DIR=`pwd`
+      - BUILD_DIR="${HOME_DIR}/Build"
+      - mkdir ${BUILD_DIR}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=ON
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - HOME_DIR=`pwd`
+      - BUILD_DIR="${HOME_DIR}/Build"
+      - mkdir ${BUILD_DIR}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=OFF
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=OFF
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - HOME_DIR=`pwd`
+      - BUILD_DIR="${HOME_DIR}/Build"
+      - mkdir ${BUILD_DIR}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - HOME_DIR=`pwd`
+      - BUILD_DIR="${HOME_DIR}/Build"
+      - mkdir ${BUILD_DIR}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=ON
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - HOME_DIR=`pwd`
+      - BUILD_DIR="${HOME_DIR}/Build"
+      - mkdir ${BUILD_DIR}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=ON
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=ON
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - HOME_DIR=`pwd`
+      - BUILD_DIR="${HOME_DIR}/Build"
+      - mkdir ${BUILD_DIR}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=OFF
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=ON
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - HOME_DIR=`pwd`
+      - BUILD_DIR="${HOME_DIR}/Build"
+      - mkdir ${BUILD_DIR}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=ON
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - HOME_DIR=`pwd`
+      - BUILD_DIR="${HOME_DIR}/Build"
+      - mkdir ${BUILD_DIR}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+
+    - stage: build
+      env:
         - BUILD_MODE=Debug
         - CXX11=ON
         - COMPLEX_VALUES=ON

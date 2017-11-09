@@ -24,15 +24,21 @@ public:
 
   // Constructor for all cases.
   explicit CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate (const TcoordType& cx = 0)
-    : x (cx) {}
+    : x (cx)
+  {
+    ASSERT (x >= 0);
+  }
 
   CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate (const GridCoordinate1DTemplate& coord)
-    : x (coord.getX ()) {}
+    : x (coord.getX ())
+  {
+    ASSERT (x >= 0);
+  }
 
   CUDA_DEVICE CUDA_HOST ~GridCoordinate1DTemplate () {};
 
   // Calculate total-dimensional coordinate.
-  grid_iter CUDA_DEVICE CUDA_HOST calculateTotalCoord () const
+  grid_coord CUDA_DEVICE CUDA_HOST calculateTotalCoord () const
   {
     return x;
   }
@@ -47,6 +53,7 @@ public:
   void CUDA_DEVICE CUDA_HOST setX (const TcoordType& new_x)
   {
     x = new_x;
+    ASSERT (x >= 0);
   }
 
   TcoordType CUDA_DEVICE CUDA_HOST getMax () const
@@ -94,11 +101,6 @@ public:
     return getX () <= rhs.getX ();
   }
 
-  GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator- () const
-  {
-    return GridCoordinate1DTemplate<TcoordType> (- getX ());
-  }
-
   GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType rhs) const
   {
     return GridCoordinate1DTemplate<TcoordType> (getX () * rhs);
@@ -108,7 +110,7 @@ public:
 
   void print () const
   {
-    printf ("Coord (%lu).\n", getX ());
+    printf ("Coord (" COORD_MOD ").\n", getX ());
   }
 };
 
@@ -118,7 +120,7 @@ GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType
   return GridCoordinate1DTemplate<TcoordType> (lhs * rhs.getX ());
 }
 
-typedef GridCoordinate1DTemplate<grid_iter> GridCoordinate1D;
+typedef GridCoordinate1DTemplate<grid_coord> GridCoordinate1D;
 typedef GridCoordinate1DTemplate<FPValue> GridCoordinateFP1D;
 
 GridCoordinate1D CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinateFP1D coord);

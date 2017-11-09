@@ -81,8 +81,6 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
   , gridStep (0)
   , gridTimeStep (0)
   , totalStep (tStep)
-  , leftNTFF (GridCoordinate3D (solverSettings.getNTFFSizeX (), solverSettings.getNTFFSizeY (), solverSettings.getNTFFSizeZ ()))
-  , rightNTFF (layout->getEzSize () - leftNTFF + GridCoordinate3D (1,1,1))
   , ExBorder (NULLPTR)
   , ExInitial (NULLPTR)
   , EyBorder (NULLPTR)
@@ -108,6 +106,12 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
   , HyExact (NULLPTR)
   , HzExact (NULLPTR)
 {
+  if (solverSettings.getDoUseNTFF ())
+  {
+    leftNTFF = GridCoordinate3D (solverSettings.getNTFFSizeX (), solverSettings.getNTFFSizeY (), solverSettings.getNTFFSizeZ ());
+    rightNTFF = layout->getEzSize () - leftNTFF + GridCoordinate3D (1,1,1);
+  }
+
   if (solverSettings.getDoUseParallelGrid ())
   {
 #if defined (PARALLEL_GRID)
@@ -265,8 +269,8 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
 
   if (solverSettings.getDoUseTFSF ())
   {
-    EInc = new Grid<GridCoordinate1D> (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "EInc");
-    HInc = new Grid<GridCoordinate1D> (GridCoordinate1D ((grid_coord) 100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc");
+    EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "EInc");
+    HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc");
   }
 
   ASSERT (!solverSettings.getDoUseTFSF ()
@@ -602,7 +606,7 @@ Scheme3D::approximateIncidentWave (GridCoordinateFP3D realCoord, FPValue dDiff, 
   FPValue d = x * sin (yeeLayout->getIncidentWaveAngle1 ()) * cos (yeeLayout->getIncidentWaveAngle2 ())
               + y * sin (yeeLayout->getIncidentWaveAngle1 ()) * sin (yeeLayout->getIncidentWaveAngle2 ())
               + z * cos (yeeLayout->getIncidentWaveAngle1 ()) - dDiff;
-  FPValue coordD1 = (FPValue) ((grid_iter) d);
+  FPValue coordD1 = (FPValue) ((grid_coord) d);
   FPValue coordD2 = coordD1 + 1;
   FPValue proportionD2 = d - coordD1;
   FPValue proportionD1 = 1 - proportionD2;
@@ -3591,7 +3595,7 @@ Scheme3D::performAmplitudeSteps (time_step startStep)
       is_stable_state = 0;
     }
 
-    DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy " PRINTF_MODIFIER ". \n", t, maxAccuracy);
+    DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy " FP_MOD ". \n", t, maxAccuracy);
   }
 
   if (is_stable_state == 0)
@@ -5170,7 +5174,7 @@ Scheme3D::Pointing_inc (FPValue angleTeta, FPValue anglePhi)
 void
 Scheme3D::makeGridScattered (Grid<GridCoordinate3D> *grid, GridType gridType)
 {
-  for (grid_iter i = 0; i < grid->getSize ().calculateTotalCoord (); ++i)
+  for (grid_coord i = 0; i < grid->getSize ().calculateTotalCoord (); ++i)
   {
     FieldPointValue *val = grid->getFieldPointValue (i);
 
@@ -5696,9 +5700,9 @@ Scheme3D::getStartCoord (GridType gridType, GridCoordinate3D size)
       }
     }
 
-    start.setX (grid_coord (leftBorder.getX () - min.getX ()) + 1);
-    start.setY (grid_coord (leftBorder.getY () - min.getY ()) + 1);
-    start.setZ (grid_coord (leftBorder.getZ () - min.getZ ()) + 1);
+    start.setX (leftBorder.getX () - min.getX () + 1);
+    start.setY (leftBorder.getY () - min.getY () + 1);
+    start.setZ (leftBorder.getZ () - min.getZ () + 1);
   }
 
   OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
@@ -5777,9 +5781,9 @@ Scheme3D::getEndCoord (GridType gridType, GridCoordinate3D size)
       }
     }
 
-    end.setX (grid_coord (rightBorder.getX () - min.getX ()));
-    end.setY (grid_coord (rightBorder.getY () - min.getY ()));
-    end.setZ (grid_coord (rightBorder.getZ () - min.getZ ()));
+    end.setX (rightBorder.getX () - min.getX ());
+    end.setY (rightBorder.getY () - min.getY ());
+    end.setZ (rightBorder.getZ () - min.getZ ());
   }
 
   OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;

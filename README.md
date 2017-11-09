@@ -39,7 +39,7 @@ For details, see .travis.yml.
 Solver incorporates following features which could be set up during build.
 
 ```c_cpp
-CMAKE_BUILD_TYPE - build type (Debug or Release)
+CMAKE_BUILD_TYPE - build type (Debug, ReleaseWithAsserts, Release)
 VALUE_TYPE - use float (f), double (d) or long double (ld) floating point values
 COMPLEX_FIELD_VALUES - use complex values or not (ON of OFF)
 TIME_STEPS - number of steps in time (1 or 2)
@@ -50,6 +50,7 @@ PARALLEL_BUFFER_DIMENSION - dimension of parallel buffers, i.e. actual coordinat
 CXX11_ENABLED - allow support of C++11 (ON or OFF)
 CUDA_ENABLED - enable support of GPU (ON or OFF)
 CUDA_ARCH_SM_TYPE - sm type for GPU
+LARGE_COORDINATES - whether to use int64 for grid coordinates or int32 (ON or OFF)
 ```
 
 If any of the flags change or some new are added, testing scripts should be updated.
