@@ -82,8 +82,8 @@ DATDumper<TCoord>::writeToFile (Grid<TCoord> *grid, GridFileType type, TCoord st
   ASSERT (file.is_open());
 
   // Go through all values and write to file.
-  grid_iter end = grid->getSize().calculateTotalCoord ();
-  for (grid_iter iter = 0; iter < end; ++iter)
+  grid_coord end = grid->getSize().calculateTotalCoord ();
+  for (grid_coord iter = 0; iter < end; ++iter)
   {
     // Get current point value.
     const FieldPointValue* current = grid->getFieldPointValue (iter);

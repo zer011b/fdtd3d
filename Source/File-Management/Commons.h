@@ -41,7 +41,7 @@ protected:
   bool manualFileNames;
 
   // Time step number (used in file naming).
-  grid_iter step;
+  time_step step;
 
   // Save/load type.
   GridFileType type;
@@ -91,7 +91,7 @@ public:
   virtual ~GridFileManager () {}
 
   // Initialize dumper with time step number and save/load type.
-  void init (const grid_iter& timeStep, GridFileType newType, int process, const char *name)
+  void init (const time_step& timeStep, GridFileType newType, int process, const char *name)
   {
     manualFileNames = false;
     step = timeStep;
@@ -102,7 +102,7 @@ public:
     setFileNames ();
   }
 
-  void initManual (const grid_iter& timeStep,
+  void initManual (const time_step& timeStep,
                    GridFileType newType,
                    int process,
                    const std::string &current,
@@ -127,7 +127,7 @@ public:
   }
 
   // Set time step.
-  void setStep (const grid_iter& timeStep)
+  void setStep (const time_step& timeStep)
   {
     step = timeStep;
 

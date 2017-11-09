@@ -6,7 +6,7 @@
 /*
  * This function is used to exit and debugging purposes.
  */
-void program_fail ();
+extern void program_fail ();
 
 /*
  * Printf used for logging
@@ -23,6 +23,7 @@ void program_fail ();
 #define DPRINTF(...)
 #endif /* !PRINT_MESSAGE */
 
+#ifdef ENABLE_ASSERTS
 /*
  * Indicates program point, which should not be reached.
  */
@@ -45,6 +46,20 @@ void program_fail ();
  * Conditional assert with default message.
  */
 #define ASSERT(x) \
+{ \
+  if (!(x)) \
+  { \
+    DPRINTF (LOG_LEVEL_NONE, "Assert at %s:%d.\n", __FILE__, __LINE__); \
+    program_fail (); \
+  } \
+}
+#else /* ENABLE_ASSERTS */
+#define UNREACHABLE
+#define ASSERT_MESSAGE(x)
+#define ASSERT(x)
+#endif /* !ENABLE_ASSERTS */
+
+#define ALWAYS_ASSERT(x) \
 { \
   if (!(x)) \
   { \

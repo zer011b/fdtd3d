@@ -27,7 +27,7 @@ function build
           continue
         fi
 
-        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=Release \
+        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=ReleaseWithAsserts \
           -DVALUE_TYPE=${VALUE_TYPE} \
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
           -DTIME_STEPS=${TIME_STEPS} \

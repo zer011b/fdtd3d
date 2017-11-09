@@ -18,7 +18,8 @@ BMPDumper<GridCoordinate1D>::dumpGrid (Grid<GridCoordinate1D> *grid,
   const GridCoordinate1D& size = grid->getSize ();
 
   grid_coord sx = size.getX ();
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 1D Grid <%s> to BMP image. Size: %ux1x1\n", grid->getName ().c_str (), sx);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 1D Grid <%s> to BMP image. Size: " COORD_MOD "x1x1\n",
+    grid->getName ().c_str (), sx);
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);
@@ -41,7 +42,8 @@ BMPDumper<GridCoordinate2D>::dumpGrid (Grid<GridCoordinate2D> *grid,
   grid_coord sx = size.getX ();
   grid_coord sy = size.getY ();
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 2D Grid <%s> to BMP image. Size: %ux%ux1\n", grid->getName ().c_str (), sx, sy);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 2D Grid <%s> to BMP image. Size: " COORD_MOD "x" COORD_MOD "x1\n",
+    grid->getName ().c_str (), sx, sy);
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);
@@ -58,7 +60,6 @@ BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> *grid,
                                        GridCoordinate3D startCoord,
                                        GridCoordinate3D endCoord) const
 {
-//  ASSERT_MESSAGE ("3D Dumper is not implemented.")
 #if PRINT_MESSAGE
   const GridCoordinate3D& size = grid->getSize ();
 
@@ -66,7 +67,8 @@ BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> *grid,
   grid_coord sy = size.getY ();
   grid_coord sz = size.getZ ();
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 2D Grid <%s> to BMP image. Size: %ux%ux%u\n", grid->getName ().c_str (), sx, sy, sz);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 3D Grid <%s> to BMP image. Size: " COORD_MOD "x" COORD_MOD "x" COORD_MOD "\n",
+    grid->getName ().c_str (), sx, sy, sz);
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);
@@ -267,14 +269,14 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " PRINTF_MODIFIER ", maxRe pos " PRINTF_MODIFIER ", maxRe " PRINTF_MODIFIER "\n", maxNegRe, maxPosRe, maxRe);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " FP_MOD ", maxRe pos " FP_MOD ", maxRe " FP_MOD "\n", maxNegRe, maxPosRe, maxRe);
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " PRINTF_MODIFIER ", maxIm pos " PRINTF_MODIFIER ", maxIm " PRINTF_MODIFIER "\n", maxNegIm, maxPosIm, maxIm);
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " PRINTF_MODIFIER ", maxMod pos " PRINTF_MODIFIER ", maxMod " PRINTF_MODIFIER "\n", maxNegMod, maxPosMod, maxMod);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " FP_MOD ", maxIm pos " FP_MOD ", maxIm " FP_MOD "\n", maxNegIm, maxPosIm, maxIm);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " FP_MOD ", maxMod pos " FP_MOD ", maxMod " FP_MOD "\n", maxNegMod, maxPosMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
@@ -286,8 +288,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
     ASSERT (current);
 
     // Pixel coordinate.
-    grid_iter px = coord.getX ();
-    grid_iter py = 0;
+    grid_coord px = coord.getX ();
+    grid_coord py = 0;
 
     // Get pixel for image.
     FPValue valueRe = 0;
@@ -662,14 +664,14 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " PRINTF_MODIFIER ", maxRe pos " PRINTF_MODIFIER ", maxRe " PRINTF_MODIFIER "\n", maxNegRe, maxPosRe, maxRe);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " FP_MOD ", maxRe pos " FP_MOD ", maxRe " FP_MOD "\n", maxNegRe, maxPosRe, maxRe);
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " PRINTF_MODIFIER ", maxIm pos " PRINTF_MODIFIER ", maxIm " PRINTF_MODIFIER "\n", maxNegIm, maxPosIm, maxIm);
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " PRINTF_MODIFIER ", maxMod pos " PRINTF_MODIFIER ", maxMod " PRINTF_MODIFIER "\n", maxNegMod, maxPosMod, maxMod);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " FP_MOD ", maxIm pos " FP_MOD ", maxIm " FP_MOD "\n", maxNegIm, maxPosIm, maxIm);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " FP_MOD ", maxMod pos " FP_MOD ", maxMod " FP_MOD "\n", maxNegMod, maxPosMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
@@ -684,8 +686,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
       ASSERT (current);
 
       // Pixel coordinate.
-      grid_iter px = coord.getX ();
-      grid_iter py = coord.getY ();;
+      grid_coord px = coord.getX ();
+      grid_coord py = coord.getY ();;
 
       // Get pixel for image.
       FPValue valueRe = 0;
@@ -1052,14 +1054,14 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
   // Set max (diff between max positive and max negative).
   const FPValue maxRe = maxPosRe - maxNegRe;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " PRINTF_MODIFIER ", maxRe pos " PRINTF_MODIFIER ", maxRe " PRINTF_MODIFIER "\n", maxNegRe, maxPosRe, maxRe);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " FP_MOD ", maxRe pos " FP_MOD ", maxRe " FP_MOD "\n", maxNegRe, maxPosRe, maxRe);
 #ifdef COMPLEX_FIELD_VALUES
   const FPValue maxIm = maxPosIm - maxNegIm;
 
   const FPValue maxMod = maxPosMod - maxNegMod;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " PRINTF_MODIFIER ", maxIm pos " PRINTF_MODIFIER ", maxIm " PRINTF_MODIFIER "\n", maxNegIm, maxPosIm, maxIm);
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " PRINTF_MODIFIER ", maxMod pos " PRINTF_MODIFIER ", maxMod " PRINTF_MODIFIER "\n", maxNegMod, maxPosMod, maxMod);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " FP_MOD ", maxIm pos " FP_MOD ", maxIm " FP_MOD "\n", maxNegIm, maxPosIm, maxIm);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " FP_MOD ", maxMod pos " FP_MOD ", maxMod " FP_MOD "\n", maxNegMod, maxPosMod, maxMod);
 #endif /* COMPLEX_FIELD_VALUES */
 
   grid_coord coordStart1, coordEnd1;
@@ -1130,9 +1132,9 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
     imageMod.SetBitDepth (BMPHelper::bitDepth);
 #endif /* COMPLEX_FIELD_VALUES */
 
-    for (grid_iter coord2 = coordStart2; coord2 < coordEnd2; ++coord2)
+    for (grid_coord coord2 = coordStart2; coord2 < coordEnd2; ++coord2)
     {
-      for (grid_iter coord3 = coordStart3; coord3 < coordEnd3; ++coord3)
+      for (grid_coord coord3 = coordStart3; coord3 < coordEnd3; ++coord3)
       {
         GridCoordinate3D pos;
 
