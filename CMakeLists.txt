@@ -26,7 +26,7 @@ if ("${CUDA_ENABLED}")
 endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
-  set (CMAKE_BUILD_TYPE "Debug")
+  set (CMAKE_BUILD_TYPE "ReleaseWithAsserts")
 endif ()
 
 if ("${PARALLEL_GRID}")
