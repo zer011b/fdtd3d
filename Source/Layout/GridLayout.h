@@ -19,6 +19,7 @@ ENUM_CLASS (LayoutDirection, uint8_t,
  * Type of electromagnetic field.
  */
 ENUM_CLASS (GridType, uint8_t,
+  NONE,
   EX,
   EY,
   EZ,
