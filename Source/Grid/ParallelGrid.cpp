@@ -30,7 +30,7 @@ ParallelGrid::initializeParallelCore (ParallelGridCore *core) /**< new parallel 
 ParallelGridCore *
 ParallelGrid::getParallelCore ()
 {
-  ASSERT (parallelGridCore);
+  ASSERT (parallelGridCore != NULLPTR);
   return parallelGridCore;
 } /* ParallelGrid::getParallelCore */
 
