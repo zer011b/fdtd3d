@@ -461,5 +461,45 @@ jobs:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
       - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - travis_wait 40 ./Tools/TestSuite/run-testsuite.sh
+      - export CUR_DIR=`pwd`
+      - $CUR_DIR/Tools/TestSuite/suite/t1/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t1/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tools/TestSuite/suite/t1/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+    - stage: test-suite
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - export CUR_DIR=`pwd`
+      - $CUR_DIR/Tools/TestSuite/suite/t2/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t2/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tools/TestSuite/suite/t2/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+    - stage: test-suite
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - export CUR_DIR=`pwd`
+      - $CUR_DIR/Tools/TestSuite/suite/t3/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t3/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tools/TestSuite/suite/t3/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+    - stage: test-suite
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - export CUR_DIR=`pwd`
+      - $CUR_DIR/Tools/TestSuite/suite/t4/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t4/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tools/TestSuite/suite/t4/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+    - stage: test-suite
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - export CUR_DIR=`pwd`
+      - $CUR_DIR/Tools/TestSuite/suite/t5/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t5/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tools/TestSuite/suite/t5/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+
 dist: trusty
