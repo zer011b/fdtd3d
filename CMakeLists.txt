@@ -223,7 +223,7 @@ if ("${CXX11_ENABLED}")
 endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-  #set (BUILD_FLAGS "${BUILD_FLAGS} -flto -fno-fat-lto-objects")
+  #set (BUILD_FLAGS "${BUILD_FLAGS} -flto -fno-fat-lto-objects -Wlto-type-mismatch")
   #set (BUILD_FLAGS "${BUILD_FLAGS} -fno-stack-protector")
   #set (BUILD_FLAGS "${BUILD_FLAGS} -fno-exceptions -fno-rtti")
 endif ()
@@ -231,6 +231,14 @@ endif ()
 #-pedantic -pedantic-errors
 
 set (WARNING_FLAGS "")
+set (WARNING_FLAGS "${WARNING_FLAGS} -Wctor-dtor-privacy -Wdelete-non-virtual-dtor -Wliteral-suffix")
+set (WARNING_FLAGS "${WARNING_FLAGS} -Wclass-memaccess -Wnon-virtual-dtor -Wregister -Wreorder")
+set (WARNING_FLAGS "${WARNING_FLAGS} -Woverloaded-virtual -Wsign-promo -Wmultiple-inheritance Wvirtual-inheritance")
+
+set (WARNING_FLAGS "${WARNING_FLAGS} -Wstrict-null-sentinel -Wold-style-cast")
+
+# effective c++ (not true for all standard libs)
+set (WARNING_FLAGS "${WARNING_FLAGS} -Weffc++")
 #set (WARNING_FLAGS "${WARNING_FLAGS} -Wfatal-errors")
 #set (WARNING_FLAGS "${WARNING_FLAGS} -Wall -Wextra")
 #set (WARNING_FLAGS "${WARNING_FLAGS} -Wformat=2 -Wformat-security -Wuninitialized")
