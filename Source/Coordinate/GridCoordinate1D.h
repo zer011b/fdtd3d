@@ -4,16 +4,22 @@
 #include "FieldValue.h"
 #include "Settings.h"
 
-template<class TcoordType>
+template<class TcoordType, bool doSignChecks>
 class GridCoordinate1DTemplate;
 
-template<class TcoordType>
-GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType>& rhs);
+template<class TcoordType, bool doSignChecks>
+GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator* (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs);
+
+template<class TcoordType, bool doSignChecks>
+GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator+ (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
+
+template<class TcoordType, bool doSignChecks>
+GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator- (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
 
 /**
  * 1-dimensional coordinate in the grid
  */
-template<class TcoordType>
+template<class TcoordType, bool doSignChecks>
 class GridCoordinate1DTemplate
 {
 protected:
@@ -26,19 +32,25 @@ public:
   explicit CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate (const TcoordType& cx = 0)
     : x (cx)
   {
-    ASSERT (x >= 0);
+    if (doSignChecks)
+    {
+      ASSERT (x >= 0);
+    }
   }
 
   CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate (const GridCoordinate1DTemplate& coord)
     : x (coord.getX ())
   {
-    ASSERT (x >= 0);
+    if (doSignChecks)
+    {
+      ASSERT (x >= 0);
+    }
   }
 
   CUDA_DEVICE CUDA_HOST ~GridCoordinate1DTemplate () {};
 
   // Calculate total-dimensional coordinate.
-  grid_coord CUDA_DEVICE CUDA_HOST calculateTotalCoord () const
+  TcoordType CUDA_DEVICE CUDA_HOST calculateTotalCoord () const
   {
     return x;
   }
@@ -53,7 +65,10 @@ public:
   void CUDA_DEVICE CUDA_HOST setX (const TcoordType& new_x)
   {
     x = new_x;
-    ASSERT (x >= 0);
+    if (doSignChecks)
+    {
+      ASSERT (x >= 0);
+    }
   }
 
   TcoordType CUDA_DEVICE CUDA_HOST getMax () const
@@ -101,12 +116,14 @@ public:
     return getX () <= rhs.getX ();
   }
 
-  GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType rhs) const
+  GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator* (TcoordType rhs) const
   {
-    return GridCoordinate1DTemplate<TcoordType> (getX () * rhs);
+    return GridCoordinate1DTemplate<TcoordType, doSignChecks> (getX () * rhs);
   }
 
-  friend GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST (::operator* <TcoordType>) (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType>& rhs);
+  friend GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST (::operator* <TcoordType, doSignChecks>) (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs);
+  friend GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST (::operator+ <TcoordType, doSignChecks>) (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
+  friend GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST (::operator- <TcoordType, doSignChecks>) (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
 
   void print () const
   {
@@ -114,16 +131,41 @@ public:
   }
 };
 
-template<class TcoordType>
-GridCoordinate1DTemplate<TcoordType> CUDA_DEVICE CUDA_HOST operator* (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType>& rhs)
+template<class TcoordType, bool doSignChecks>
+GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator* (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs)
 {
-  return GridCoordinate1DTemplate<TcoordType> (lhs * rhs.getX ());
+  return GridCoordinate1DTemplate<TcoordType, doSignChecks> (lhs * rhs.getX ());
 }
 
-typedef GridCoordinate1DTemplate<grid_coord> GridCoordinate1D;
-typedef GridCoordinate1DTemplate<FPValue> GridCoordinateFP1D;
+template<class TcoordType, bool doSignChecks>
+GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator+ (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs)
+{
+  return GridCoordinate1DTemplate<TcoordType, doSignChecks> (lhs.getX () + rhs.getX ());
+}
 
-GridCoordinate1D CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinateFP1D coord);
-GridCoordinateFP1D CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinate1D coord);
+template<class TcoordType, bool doSignChecks>
+GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator- (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs)
+{
+  return GridCoordinate1DTemplate<TcoordType, doSignChecks> (lhs.getX () - rhs.getX ());
+}
+
+typedef GridCoordinate1DTemplate<grid_coord, true> GridCoordinate1D;
+typedef GridCoordinate1DTemplate<grid_coord, false> GridCoordinateSigned1D;
+typedef GridCoordinate1DTemplate<FPValue, true> GridCoordinateFP1D;
+typedef GridCoordinate1DTemplate<FPValue, false> GridCoordinateSignedFP1D;
+
+template<bool doSignChecks>
+GridCoordinate1DTemplate<grid_coord, doSignChecks> CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinate1DTemplate<FPValue, doSignChecks> coord)
+{
+  ASSERT (((grid_coord) coord.getX ()) == coord.getX ());
+
+  return GridCoordinate1DTemplate<grid_coord, doSignChecks> ((grid_coord) coord.getX ());
+}
+
+template<bool doSignChecks>
+GridCoordinate1DTemplate<FPValue, doSignChecks> CUDA_DEVICE CUDA_HOST convertCoord (GridCoordinate1DTemplate<grid_coord, doSignChecks> coord)
+{
+  return GridCoordinate1DTemplate<FPValue, doSignChecks> (coord.getX ());
+}
 
 #endif /* GRID_COORDINATE_1D_H */
