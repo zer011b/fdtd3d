@@ -135,7 +135,7 @@ class Scheme3D: public Scheme
 
 private:
 
-  template <uint8_t grid_coord>
+  template <uint8_t grid_coord, bool usePML, bool useMetamaterials>
   void calculateFieldStep (time_step, GridCoordinate3D, GridCoordinate3D);
 
   void calculateExStepPML (time_step, GridCoordinate3D, GridCoordinate3D);
@@ -246,20 +246,25 @@ public:
                Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
   FPValue Pointing_inc (FPValue angleTeta, FPValue anglePhi);
 
-  FieldValue calcFieldPrecalc (FieldValue prev, FieldValue oppositeField12, FieldValue oppositeField11,
-                               FieldValue oppositeField22, FieldValue oppositeField21, FieldValue prevRightSide,
-                               FPValue Ca, FPValue Cb, FPValue delta)
+  FieldValue calcField (FieldValue prev, FieldValue oppositeField12, FieldValue oppositeField11,
+                        FieldValue oppositeField22, FieldValue oppositeField21, FieldValue prevRightSide,
+                        FPValue Ca, FPValue Cb, FPValue delta)
   {
     FieldValue tmp = oppositeField12 - oppositeField11 - oppositeField22 + oppositeField21 + prevRightSide * delta;
     return Ca * prev + Cb * tmp;
   }
 
-  FieldValue calcField (FieldValue prev, FieldValue oppositeField12, FieldValue oppositeField11,
-                        FieldValue oppositeField22, FieldValue oppositeField21, FieldValue prevRightSide,
-                        FPValue dt, FPValue delta, FPValue material)
+  FieldValue calcFieldDrude (FieldValue curDOrB, FieldValue prevDOrB, FieldValue prevPrevDOrB,
+                             FieldValue prevEOrH, FieldValue prevPrevEOrH,
+                             FPValue b0, FPValue b1, FPValue b2, FPValue a1, FPValue a2)
   {
-    return calcFieldPrecalc (prev, oppositeField12, oppositeField11, oppositeField22, oppositeField21, prevRightSide,
-                             FPValue (1.0), dt / (material * delta), delta);
+    return b0 * curDOrB + b1 * prevDOrB + b2 * prevPrevDOrB - a1 * prevEOrH - a2 * prevPrevEOrH;
+  }
+
+  FieldValue calcFieldFromDOrB (FieldValue prevEOrH, FieldValue curDOrB, FieldValue prevDOrB,
+                                FPValue Ca, FPValue Cb, FPValue Cc)
+  {
+    return Ca * prevEOrH + Cb * curDOrB - Cc * prevDOrB;
   }
 };
 
@@ -403,18 +408,47 @@ Scheme3D::performPointSourceCalc (time_step t)
 //   }
 // }
 
-template<uint8_t grid_type>
+template<uint8_t grid_type, bool usePML, bool useMetamaterials>
 void
 Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinate3D end)
 {
+  // TODO: add metamaterials without pml
+  if (!usePML && useMetamaterials)
+  {
+    UNREACHABLE;
+  }
+
+  FPValue eps0 = PhysicsConst::Eps0;
+
   Grid<GridCoordinate3D> *grid = NULLPTR;
   GridType gridType = GridType::NONE;
 
   Grid<GridCoordinate3D> *materialGrid = NULLPTR;
   GridType materialGridType = GridType::NONE;
 
+  Grid<GridCoordinate3D> *materialGrid1 = NULLPTR;
+  GridType materialGridType1 = GridType::NONE;
+
+  Grid<GridCoordinate3D> *materialGrid2 = NULLPTR;
+  GridType materialGridType2 = GridType::NONE;
+
+  Grid<GridCoordinate3D> *materialGrid3 = NULLPTR;
+  GridType materialGridType3 = GridType::NONE;
+
+  Grid<GridCoordinate3D> *materialGrid4 = NULLPTR;
+  GridType materialGridType4 = GridType::NONE;
+
+  Grid<GridCoordinate3D> *materialGrid5 = NULLPTR;
+  GridType materialGridType5 = GridType::NONE;
+
   Grid<GridCoordinate3D> *oppositeGrid1 = NULLPTR;
   Grid<GridCoordinate3D> *oppositeGrid2 = NULLPTR;
+
+  Grid<GridCoordinate3D> *gridPML1 = NULLPTR;
+  GridType gridPMLType1 = GridType::NONE;
+
+  Grid<GridCoordinate3D> *gridPML2 = NULLPTR;
+  GridType gridPMLType2 = GridType::NONE;
 
   SourceCallBack rightSideFunc = NULLPTR;
   SourceCallBack borderFunc = NULLPTR;
@@ -441,6 +475,39 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
       rightSideFunc = Jx;
       borderFunc = ExBorder;
       exactFunc = ExExact;
+
+      if (usePML)
+      {
+        grid = Dx;
+        gridType = GridType::DX;
+
+        gridPML1 = D1x;
+        gridPMLType1 = GridType::DX;
+
+        gridPML2 = Ex;
+        gridPMLType2 = GridType::EX;
+
+        materialGrid = SigmaY;
+        materialGridType = GridType::SIGMAY;
+
+        materialGrid1 = Eps;
+        materialGridType1 = GridType::EPS;
+
+        materialGrid4 = SigmaX;
+        materialGridType4 = GridType::SIGMAX;
+
+        materialGrid5 = SigmaZ;
+        materialGridType5 = GridType::SIGMAZ;
+
+        if (useMetamaterials)
+        {
+          materialGrid2 = OmegaPE;
+          materialGridType2 = GridType::OMEGAPE;
+
+          materialGrid3 = GammaE;
+          materialGridType3 = GridType::GAMMAE;
+        }
+      }
       break;
     }
     case (static_cast<uint8_t> (GridType::EY)):
@@ -458,6 +525,39 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
       rightSideFunc = Jy;
       borderFunc = EyBorder;
       exactFunc = EyExact;
+
+      if (usePML)
+      {
+        grid = Dy;
+        gridType = GridType::DY;
+
+        gridPML1 = D1y;
+        gridPMLType1 = GridType::DY;
+
+        gridPML2 = Ey;
+        gridPMLType2 = GridType::EY;
+
+        materialGrid = SigmaZ;
+        materialGridType = GridType::SIGMAZ;
+
+        materialGrid1 = Eps;
+        materialGridType1 = GridType::EPS;
+
+        materialGrid4 = SigmaY;
+        materialGridType4 = GridType::SIGMAY;
+
+        materialGrid5 = SigmaX;
+        materialGridType5 = GridType::SIGMAX;
+
+        if (useMetamaterials)
+        {
+          materialGrid2 = OmegaPE;
+          materialGridType2 = GridType::OMEGAPE;
+
+          materialGrid3 = GammaE;
+          materialGridType3 = GridType::GAMMAE;
+        }
+      }
       break;
     }
     case (static_cast<uint8_t> (GridType::EZ)):
@@ -475,6 +575,39 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
       rightSideFunc = Jz;
       borderFunc = EzBorder;
       exactFunc = EzExact;
+
+      if (usePML)
+      {
+        grid = Dz;
+        gridType = GridType::DZ;
+
+        gridPML1 = D1z;
+        gridPMLType1 = GridType::DZ;
+
+        gridPML2 = Ez;
+        gridPMLType2 = GridType::EZ;
+
+        materialGrid = SigmaX;
+        materialGridType = GridType::SIGMAX;
+
+        materialGrid1 = Eps;
+        materialGridType1 = GridType::EPS;
+
+        materialGrid4 = SigmaZ;
+        materialGridType4 = GridType::SIGMAZ;
+
+        materialGrid5 = SigmaY;
+        materialGridType5 = GridType::SIGMAY;
+
+        if (useMetamaterials)
+        {
+          materialGrid2 = OmegaPE;
+          materialGridType2 = GridType::OMEGAPE;
+
+          materialGrid3 = GammaE;
+          materialGridType3 = GridType::GAMMAE;
+        }
+      }
       break;
     }
     case (static_cast<uint8_t> (GridType::HX)):
@@ -492,6 +625,39 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
       rightSideFunc = Mx;
       borderFunc = HxBorder;
       exactFunc = HxExact;
+
+      if (usePML)
+      {
+        grid = Bx;
+        gridType = GridType::BX;
+
+        gridPML1 = B1x;
+        gridPMLType1 = GridType::BX;
+
+        gridPML2 = Hx;
+        gridPMLType2 = GridType::HX;
+
+        materialGrid = SigmaY;
+        materialGridType = GridType::SIGMAY;
+
+        materialGrid1 = Mu;
+        materialGridType1 = GridType::MU;
+
+        materialGrid4 = SigmaX;
+        materialGridType4 = GridType::SIGMAX;
+
+        materialGrid5 = SigmaZ;
+        materialGridType5 = GridType::SIGMAZ;
+
+        if (useMetamaterials)
+        {
+          materialGrid2 = OmegaPM;
+          materialGridType2 = GridType::OMEGAPM;
+
+          materialGrid3 = GammaM;
+          materialGridType3 = GridType::GAMMAM;
+        }
+      }
       break;
     }
     case (static_cast<uint8_t> (GridType::HY)):
@@ -509,6 +675,39 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
       rightSideFunc = My;
       borderFunc = HyBorder;
       exactFunc = HyExact;
+
+      if (usePML)
+      {
+        grid = By;
+        gridType = GridType::BY;
+
+        gridPML1 = B1y;
+        gridPMLType1 = GridType::BY;
+
+        gridPML2 = Hy;
+        gridPMLType2 = GridType::HY;
+
+        materialGrid = SigmaZ;
+        materialGridType = GridType::SIGMAZ;
+
+        materialGrid1 = Mu;
+        materialGridType1 = GridType::MU;
+
+        materialGrid4 = SigmaY;
+        materialGridType4 = GridType::SIGMAY;
+
+        materialGrid5 = SigmaX;
+        materialGridType5 = GridType::SIGMAX;
+
+        if (useMetamaterials)
+        {
+          materialGrid2 = OmegaPM;
+          materialGridType2 = GridType::OMEGAPM;
+
+          materialGrid3 = GammaM;
+          materialGridType3 = GridType::GAMMAM;
+        }
+      }
       break;
     }
     case (static_cast<uint8_t> (GridType::HZ)):
@@ -525,6 +724,39 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
       rightSideFunc = Mz;
       borderFunc = HzBorder;
       exactFunc = HzExact;
+
+      if (usePML)
+      {
+        grid = Bz;
+        gridType = GridType::BZ;
+
+        gridPML1 = B1z;
+        gridPMLType1 = GridType::BZ;
+
+        gridPML2 = Hz;
+        gridPMLType2 = GridType::HZ;
+
+        materialGrid = SigmaX;
+        materialGridType = GridType::SIGMAX;
+
+        materialGrid1 = Mu;
+        materialGridType1 = GridType::MU;
+
+        materialGrid4 = SigmaZ;
+        materialGridType4 = GridType::SIGMAZ;
+
+        materialGrid5 = SigmaY;
+        materialGridType5 = GridType::SIGMAY;
+
+        if (useMetamaterials)
+        {
+          materialGrid2 = OmegaPM;
+          materialGridType2 = GridType::OMEGAPM;
+
+          materialGrid3 = GammaM;
+          materialGridType3 = GridType::GAMMAM;
+        }
+      }
       break;
     }
     default:
@@ -545,7 +777,7 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
           // TODO: add getTotalPositionDiff here, which will be called before loop
           GridCoordinate3D posAbs = grid->getTotalPosition (pos);
           // TODO: [possible] move 1D gridValues to 3D gridValues array
-          FieldPointValue* valField = grid->getFieldPointValue (pos);
+          FieldPointValue *valField = grid->getFieldPointValue (pos);
 
           FPValue material = yeeLayout->getMaterial (posAbs, gridType, materialGrid, materialGridType);
 
@@ -557,22 +789,30 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
           GridCoordinateFP3D coordFP;
           FPValue timestep;
 
+          FPValue k_mod;
+          FPValue Ca;
+          FPValue Cb;
+
           // TODO: add circuitElementDiff here, which will be called before loop
           // TODO: add coordFPDiff here, which will be called before loop
-          switch (gridType)
+          switch (grid_type)
           {
-            case GridType::EX:
+            case (static_cast<uint8_t> (GridType::EX)):
             {
               pos11 = yeeLayout->getExCircuitElement (pos, LayoutDirection::DOWN);
               pos12 = yeeLayout->getExCircuitElement (pos, LayoutDirection::UP);
               pos21 = yeeLayout->getExCircuitElement (pos, LayoutDirection::BACK);
               pos22 = yeeLayout->getExCircuitElement (pos, LayoutDirection::FRONT);
 
+              // TODO: do not invoke in case no right side
               coordFP = yeeLayout->getExCoordFP (posAbs);
               timestep = t;
+
+              FPValue k_y = 1;
+              k_mod = k_y;
               break;
             }
-            case GridType::EY:
+            case (static_cast<uint8_t> (GridType::EY)):
             {
               pos11 = yeeLayout->getEyCircuitElement (pos, LayoutDirection::BACK);
               pos12 = yeeLayout->getEyCircuitElement (pos, LayoutDirection::FRONT);
@@ -581,9 +821,12 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
 
               coordFP = yeeLayout->getEyCoordFP (posAbs);
               timestep = t;
+
+              FPValue k_z = 1;
+              k_mod = k_z;
               break;
             }
-            case GridType::EZ:
+            case (static_cast<uint8_t> (GridType::EZ)):
             {
               pos11 = yeeLayout->getEzCircuitElement (pos, LayoutDirection::LEFT);
               pos12 = yeeLayout->getEzCircuitElement (pos, LayoutDirection::RIGHT);
@@ -592,9 +835,12 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
 
               coordFP = yeeLayout->getEzCoordFP (posAbs);
               timestep = t;
+
+              FPValue k_x = 1;
+              k_mod = k_x;
               break;
             }
-            case GridType::HX:
+            case (static_cast<uint8_t> (GridType::HX)):
             {
               pos11 = yeeLayout->getHxCircuitElement (pos, LayoutDirection::BACK);
               pos12 = yeeLayout->getHxCircuitElement (pos, LayoutDirection::FRONT);
@@ -603,9 +849,12 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
 
               coordFP = yeeLayout->getHxCoordFP (posAbs);
               timestep = t + 0.5;
+
+              FPValue k_y = 1;
+              k_mod = k_y;
               break;
             }
-            case GridType::HY:
+            case (static_cast<uint8_t> (GridType::HY)):
             {
               pos11 = yeeLayout->getHyCircuitElement (pos, LayoutDirection::LEFT);
               pos12 = yeeLayout->getHyCircuitElement (pos, LayoutDirection::RIGHT);
@@ -614,9 +863,12 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
 
               coordFP = yeeLayout->getHyCoordFP (posAbs);
               timestep = t + 0.5;
+
+              FPValue k_z = 1;
+              k_mod = k_z;
               break;
             }
-            case GridType::HZ:
+            case (static_cast<uint8_t> (GridType::HZ)):
             {
               pos11 = yeeLayout->getHzCircuitElement (pos, LayoutDirection::DOWN);
               pos12 = yeeLayout->getHzCircuitElement (pos, LayoutDirection::UP);
@@ -625,6 +877,9 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
 
               coordFP = yeeLayout->getHzCoordFP (posAbs);
               timestep = t + 0.5;
+
+              FPValue k_x = 1;
+              k_mod = k_x;
               break;
             }
             default:
@@ -633,11 +888,22 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
             }
           }
 
-          FieldPointValue* val11 = oppositeGrid1->getFieldPointValue (pos11);
-          FieldPointValue* val12 = oppositeGrid1->getFieldPointValue (pos12);
+          if (usePML)
+          {
+            Ca = (2 * eps0 * k_mod - material * gridTimeStep) / (2 * eps0 * k_mod + material * gridTimeStep);
+            Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_mod + material * gridTimeStep);
+          }
+          else
+          {
+            Ca = 1.0;
+            Cb = gridTimeStep / (material * materialModifier * gridStep);
+          }
 
-          FieldPointValue* val21 = oppositeGrid2->getFieldPointValue (pos21);
-          FieldPointValue* val22 = oppositeGrid2->getFieldPointValue (pos22);
+          FieldPointValue *val11 = oppositeGrid1->getFieldPointValue (pos11);
+          FieldPointValue *val12 = oppositeGrid1->getFieldPointValue (pos12);
+
+          FieldPointValue *val21 = oppositeGrid2->getFieldPointValue (pos21);
+          FieldPointValue *val22 = oppositeGrid2->getFieldPointValue (pos22);
 
           // TODO: separate previous grid and current
           FieldValue prev11 = val11->getPrevValue ();
@@ -650,34 +916,34 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
           {
             // TODO: unify
             // calculateTFSF<grid_type> (posAbs, prev12, prev11, prev22, prev21, pos12, pos11, pos22, pos21);
-            switch (gridType)
+            switch (grid_type)
             {
-              case GridType::EX:
+              case (static_cast<uint8_t> (GridType::EX)):
               {
                 calculateExTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
                 break;
               }
-              case GridType::EY:
+              case (static_cast<uint8_t> (GridType::EY)):
               {
                 calculateEyTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
                 break;
               }
-              case GridType::EZ:
+              case (static_cast<uint8_t> (GridType::EZ)):
               {
                 calculateEzTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
                 break;
               }
-              case GridType::HX:
+              case (static_cast<uint8_t> (GridType::HX)):
               {
                 calculateHxTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
                 break;
               }
-              case GridType::HY:
+              case (static_cast<uint8_t> (GridType::HY)):
               {
                 calculateHyTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
                 break;
               }
-              case GridType::HZ:
+              case (static_cast<uint8_t> (GridType::HZ)):
               {
                 calculateHzTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
                 break;
@@ -695,18 +961,124 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
             prevRightSide = rightSideFunc (coordFP * gridStep, timestep * gridTimeStep);
           }
 
-          // TODO: add Ca, Cb
+          // TODO: precalculate Ca,Cb
           FieldValue val = calcField (valField->getPrevValue (),
                                       prev12,
                                       prev11,
                                       prev22,
                                       prev21,
                                       prevRightSide,
-                                      gridTimeStep,
-                                      gridStep,
-                                      material * materialModifier);
+                                      Ca,
+                                      Cb,
+                                      gridStep);
 
           valField->setCurValue (val);
+        }
+      }
+    }
+
+    if (usePML)
+    {
+      if (useMetamaterials)
+      {
+#ifdef TWO_TIME_STEPS
+        for (int i = start.getX (); i < end.getX (); ++i)
+        {
+          for (int j = start.getY (); j < end.getY (); ++j)
+          {
+            for (int k = start.getZ (); k < end.getZ (); ++k)
+            {
+              GridCoordinate3D pos (i, j, k);
+              GridCoordinate3D posAbs = grid->getTotalPosition (pos);
+              FieldPointValue *valField = grid->getFieldPointValue (pos);
+              FieldPointValue *valField1 = gridPML1->getFieldPointValue (pos);
+
+              FPValue material1;
+              FPValue material2;
+              FPValue material = yeeLayout->getMetaMaterial (posAbs, gridType,
+                                                             materialGrid1, materialGridType1,
+                                                             materialGrid2, materialGridType2,
+                                                             materialGrid3, materialGridType3,
+                                                             material1, material2);
+
+              /*
+               * FIXME: precalculate coefficients
+               */
+              FPValue A = 4*materialModifier*material + 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1);
+              FPValue a1 = (4 + 2*gridTimeStep*material2) / A;
+              FPValue a2 = -8 / A;
+              FPValue a3 = (4 - 2*gridTimeStep*material2) / A;
+              FPValue a4 = (2*materialModifier*SQR(gridTimeStep*material1) - 8*materialModifier*material) / A;
+              FPValue a5 = (4*materialModifier*material - 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1)) / A;
+
+              FieldValue val = calcFieldDrude (valField->getCurValue (),
+                                               valField->getPrevValue (),
+                                               valField->getPrevPrevValue (),
+                                               valField1->getPrevValue (),
+                                               valField1->getPrevPrevValue (),
+                                               a1,
+                                               a2,
+                                               a3,
+                                               a4,
+                                               a5);
+
+              valField1->setCurValue (val);
+            }
+          }
+        }
+#else
+        ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
+#endif
+      }
+
+      for (int i = start.getX (); i < end.getX (); ++i)
+      {
+        for (int j = start.getY (); j < end.getY (); ++j)
+        {
+          for (int k = start.getZ (); k < end.getZ (); ++k)
+          {
+            GridCoordinate3D pos (i, j, k);
+            GridCoordinate3D posAbs = gridPML2->getTotalPosition (pos);
+
+            FieldPointValue *valField = gridPML2->getFieldPointValue (pos);
+
+            FieldPointValue *valField1;
+
+            if (useMetamaterials)
+            {
+              valField1 = gridPML1->getFieldPointValue (pos);
+            }
+            else
+            {
+              valField1 = grid->getFieldPointValue (pos);
+            }
+
+            FPValue material1 = yeeLayout->getMaterial (posAbs, gridPMLType1, materialGrid1, materialGridType1);
+            FPValue material4 = yeeLayout->getMaterial (posAbs, gridPMLType1, materialGrid4, materialGridType4);
+            FPValue material5 = yeeLayout->getMaterial (posAbs, gridPMLType1, materialGrid5, materialGridType5);
+
+            FPValue modifier = material1 * materialModifier;
+            if (useMetamaterials)
+            {
+              modifier = 1;
+            }
+
+            FPValue k_mod1 = 1;
+            FPValue k_mod2 = 1;
+
+            FPValue Ca = (2 * eps0 * k_mod2 - material5 * gridTimeStep) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
+            FPValue Cb = ((2 * eps0 * k_mod1 + material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
+            FPValue Cc = ((2 * eps0 * k_mod1 - material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
+
+            FieldValue val = calcFieldFromDOrB (valField->getPrevValue (),
+                                                valField1->getCurValue (),
+                                                valField1->getPrevValue (),
+                                                Ca,
+                                                Cb,
+                                                Cc);
+
+            valField->setCurValue (val);
+          }
         }
       }
     }
@@ -732,39 +1104,39 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
 
           GridCoordinateFP3D realCoord;
           FPValue timestep;
-          switch (gridType)
+          switch (grid_type)
           {
-            case GridType::EX:
+            case (static_cast<uint8_t> (GridType::EX)):
             {
               realCoord = yeeLayout->getExCoordFP (posAbs);
               timestep = t + 0.5;
               break;
             }
-            case GridType::EY:
+            case (static_cast<uint8_t> (GridType::EY)):
             {
               realCoord = yeeLayout->getEyCoordFP (posAbs);
               timestep = t + 0.5;
               break;
             }
-            case GridType::EZ:
+            case (static_cast<uint8_t> (GridType::EZ)):
             {
               realCoord = yeeLayout->getEzCoordFP (posAbs);
               timestep = t + 0.5;
               break;
             }
-            case GridType::HX:
+            case (static_cast<uint8_t> (GridType::HX)):
             {
               realCoord = yeeLayout->getHxCoordFP (posAbs);
               timestep = t + 1.0;
               break;
             }
-            case GridType::HY:
+            case (static_cast<uint8_t> (GridType::HY)):
             {
               realCoord = yeeLayout->getHyCoordFP (posAbs);
               timestep = t + 1.0;
               break;
             }
-            case GridType::HZ:
+            case (static_cast<uint8_t> (GridType::HZ)):
             {
               realCoord = yeeLayout->getHzCoordFP (posAbs);
               timestep = t + 1.0;
@@ -808,39 +1180,39 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
 
           GridCoordinateFP3D realCoord;
           FPValue timestep;
-          switch (gridType)
+          switch (grid_type)
           {
-            case GridType::EX:
+            case (static_cast<uint8_t> (GridType::EX)):
             {
               realCoord = yeeLayout->getExCoordFP (posAbs);
               timestep = t + 0.5;
               break;
             }
-            case GridType::EY:
+            case (static_cast<uint8_t> (GridType::EY)):
             {
               realCoord = yeeLayout->getEyCoordFP (posAbs);
               timestep = t + 0.5;
               break;
             }
-            case GridType::EZ:
+            case (static_cast<uint8_t> (GridType::EZ)):
             {
               realCoord = yeeLayout->getEzCoordFP (posAbs);
               timestep = t + 0.5;
               break;
             }
-            case GridType::HX:
+            case (static_cast<uint8_t> (GridType::HX)):
             {
               realCoord = yeeLayout->getHxCoordFP (posAbs);
               timestep = t + 1.0;
               break;
             }
-            case GridType::HY:
+            case (static_cast<uint8_t> (GridType::HY)):
             {
               realCoord = yeeLayout->getHyCoordFP (posAbs);
               timestep = t + 1.0;
               break;
             }
-            case GridType::HZ:
+            case (static_cast<uint8_t> (GridType::HZ)):
             {
               realCoord = yeeLayout->getHzCoordFP (posAbs);
               timestep = t + 1.0;

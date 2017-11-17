@@ -582,11 +582,25 @@ Scheme3D::performExSteps (time_step t, GridCoordinate3D ExStart, GridCoordinate3
    */
   if (solverSettings.getDoUsePML ())
   {
-    calculateExStepPML (t, ExStart, ExEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EX), true, true> (t, ExStart, ExEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EX), true, false> (t, ExStart, ExEnd);
+    }
   }
   else
   {
-    calculateFieldStep<static_cast<uint8_t> (GridType::EX)> (t, ExStart, ExEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EX), false, true> (t, ExStart, ExEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EX), false, false> (t, ExStart, ExEnd);
+    }
   }
 
   if (solverSettings.getDoUsePointSourceEx ())
@@ -709,170 +723,6 @@ Scheme3D::calculateExTFSF (GridCoordinate3D posAbs,
 }
 
 void
-Scheme3D::calculateExStepPML (time_step t, GridCoordinate3D ExStart, GridCoordinate3D ExEnd)
-{
-  FPValue eps0 = PhysicsConst::Eps0;
-
-  for (int i = ExStart.getX (); i < ExEnd.getX (); ++i)
-  {
-    for (int j = ExStart.getY (); j < ExEnd.getY (); ++j)
-    {
-      for (int k = ExStart.getZ (); k < ExEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Dx->getTotalPosition (pos);
-
-        FieldPointValue* valDx = Dx->getFieldPointValue (pos);
-
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DX, SigmaY, GridType::SIGMAY);
-
-        GridCoordinate3D posDown = yeeLayout->getExCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout->getExCircuitElement (pos, LayoutDirection::UP);
-        GridCoordinate3D posBack = yeeLayout->getExCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout->getExCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valHz1 = Hz->getFieldPointValue (posUp);
-        FieldPointValue* valHz2 = Hz->getFieldPointValue (posDown);
-
-        FieldPointValue* valHy1 = Hy->getFieldPointValue (posFront);
-        FieldPointValue* valHy2 = Hy->getFieldPointValue (posBack);
-
-        FieldValue prevHz1 = valHz1->getPrevValue ();
-        FieldValue prevHz2 = valHz2->getPrevValue ();
-
-        FieldValue prevHy1 = valHy1->getPrevValue ();
-        FieldValue prevHy2 = valHy2->getPrevValue ();
-
-        if (solverSettings.getDoUseTFSF ())
-        {
-          calculateExTFSF (posAbs, prevHz1, prevHz2, prevHy1, prevHy2, posDown, posUp, posBack, posFront);
-        }
-
-        FieldValue prevJx = 0;
-        if (Jx != NULLPTR)
-        {
-          prevJx = Jx (yeeLayout->getExCoordFP (posAbs) * gridStep, t * gridTimeStep);
-        }
-
-        /*
-         * FIXME: precalculate coefficients
-         */
-        FPValue k_y = 1;
-
-        FPValue Ca = (2 * eps0 * k_y - sigmaY * gridTimeStep) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-        FPValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-
-        FieldValue val = calculateEx_3D_Precalc (valDx->getPrevValue (),
-                                                 prevHz1,
-                                                 prevHz2,
-                                                 prevHy1,
-                                                 prevHy2,
-                                                 prevJx * gridStep,
-                                                 Ca,
-                                                 Cb);
-
-        valDx->setCurValue (val);
-      }
-    }
-  }
-
-  if (solverSettings.getDoUseMetamaterials ())
-  {
-#ifdef TWO_TIME_STEPS
-    for (int i = ExStart.getX (); i < ExEnd.getX (); ++i)
-    {
-      for (int j = ExStart.getY (); j < ExEnd.getY (); ++j)
-      {
-        for (int k = ExStart.getZ (); k < ExEnd.getZ (); ++k)
-        {
-          GridCoordinate3D pos (i, j, k);
-          GridCoordinate3D posAbs = Dx->getTotalPosition (pos);
-
-          FieldPointValue* valD1x = D1x->getFieldPointValue (pos);
-          FieldPointValue* valDx = Dx->getFieldPointValue (pos);
-
-          FPValue omegaPE;
-          FPValue gammaE;
-          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DX, Eps, GridType::EPS, OmegaPE, GridType::OMEGAPE, GammaE, GridType::GAMMAE, omegaPE, gammaE);
-
-          /*
-           * FIXME: precalculate coefficients
-           */
-          FPValue A = 4*eps0*eps + 2*gridTimeStep*eps0*eps*gammaE + eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE;
-
-          FieldValue val = calculateDrudeE (valDx->getCurValue (),
-                                            valDx->getPrevValue (),
-                                            valDx->getPrevPrevValue (),
-                                            valD1x->getPrevValue (),
-                                            valD1x->getPrevPrevValue (),
-                                            (4 + 2*gridTimeStep*gammaE) / A,
-                                            -8 / A,
-                                            (4 - 2*gridTimeStep*gammaE) / A,
-                                            (2*eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE - 8*eps0*eps) / A,
-                                            (4*eps0*eps - 2*gridTimeStep*eps0*eps*gammaE + eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE) / A);
-
-          valD1x->setCurValue (val);
-        }
-      }
-    }
-#else
-    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
-#endif
-  }
-
-  for (int i = ExStart.getX (); i < ExEnd.getX (); ++i)
-  {
-    for (int j = ExStart.getY (); j < ExEnd.getY (); ++j)
-    {
-      for (int k = ExStart.getZ (); k < ExEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Ex->getTotalPosition (pos);
-
-        FieldPointValue* valEx = Ex->getFieldPointValue (pos);
-
-        FieldPointValue* valDx;
-
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          valDx = D1x->getFieldPointValue (pos);
-        }
-        else
-        {
-          valDx = Dx->getFieldPointValue (pos);
-        }
-
-        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DX, Eps, GridType::EPS);
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DX, SigmaX, GridType::SIGMAX);
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DX, SigmaZ, GridType::SIGMAZ);
-
-        FPValue modifier = eps * eps0;
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          modifier = 1;
-        }
-
-        FPValue k_x = 1;
-        FPValue k_z = 1;
-
-        FPValue Ca = (2 * eps0 * k_z - sigmaZ * gridTimeStep) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-        FPValue Cb = ((2 * eps0 * k_x + sigmaX * gridTimeStep) / (modifier)) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-        FPValue Cc = ((2 * eps0 * k_x - sigmaX * gridTimeStep) / (modifier)) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-
-        FieldValue val = calculateEx_from_Dx_Precalc (valEx->getPrevValue (),
-                                                      valDx->getCurValue (),
-                                                      valDx->getPrevValue (),
-                                                      Ca,
-                                                      Cb,
-                                                      Cc);
-
-        valEx->setCurValue (val);
-      }
-    }
-  }
-}
-
-void
 Scheme3D::performEySteps (time_step t, GridCoordinate3D EyStart, GridCoordinate3D EyEnd)
 {
   /*
@@ -880,11 +730,25 @@ Scheme3D::performEySteps (time_step t, GridCoordinate3D EyStart, GridCoordinate3
    */
   if (solverSettings.getDoUsePML ())
   {
-    calculateEyStepPML (t, EyStart, EyEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EY), true, true> (t, EyStart, EyEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EY), true, false> (t, EyStart, EyEnd);
+    }
   }
   else
   {
-    calculateFieldStep<static_cast<uint8_t> (GridType::EY)> (t, EyStart, EyEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EY), false, true> (t, EyStart, EyEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EY), false, false> (t, EyStart, EyEnd);
+    }
   }
 
   if (solverSettings.getDoUsePointSourceEy ())
@@ -970,170 +834,6 @@ Scheme3D::calculateEyTFSF (GridCoordinate3D posAbs,
 }
 
 void
-Scheme3D::calculateEyStepPML (time_step t, GridCoordinate3D EyStart, GridCoordinate3D EyEnd)
-{
-  FPValue eps0 = PhysicsConst::Eps0;
-
-  for (int i = EyStart.getX (); i < EyEnd.getX (); ++i)
-  {
-    for (int j = EyStart.getY (); j < EyEnd.getY (); ++j)
-    {
-      for (int k = EyStart.getZ (); k < EyEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Dy->getTotalPosition (pos);
-
-        FieldPointValue* valDy = Dy->getFieldPointValue (pos);
-
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DY, SigmaZ, GridType::SIGMAZ);
-
-        GridCoordinate3D posLeft = yeeLayout->getEyCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout->getEyCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posBack = yeeLayout->getEyCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout->getEyCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valHz1 = Hz->getFieldPointValue (posRight);
-        FieldPointValue* valHz2 = Hz->getFieldPointValue (posLeft);
-
-        FieldPointValue* valHx1 = Hx->getFieldPointValue (posFront);
-        FieldPointValue* valHx2 = Hx->getFieldPointValue (posBack);
-
-        FieldValue prevHz1 = valHz1->getPrevValue ();
-        FieldValue prevHz2 = valHz2->getPrevValue ();
-
-        FieldValue prevHx1 = valHx1->getPrevValue ();
-        FieldValue prevHx2 = valHx2->getPrevValue ();
-
-        if (solverSettings.getDoUseTFSF ())
-        {
-          calculateEyTFSF (posAbs, prevHx1, prevHx2, prevHz1, prevHz2, posBack, posFront, posLeft, posRight);
-        }
-
-        FieldValue prevJy = 0;
-        if (Jy != NULLPTR)
-        {
-          prevJy = Jy (yeeLayout->getEyCoordFP (posAbs) * gridStep, t * gridTimeStep);
-        }
-
-        /*
-         * FIXME: precalculate coefficients
-         */
-        FPValue k_z = 1;
-
-        FPValue Ca = (2 * eps0 * k_z - sigmaZ * gridTimeStep) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-        FPValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-
-        FieldValue val = calculateEy_3D_Precalc (valDy->getPrevValue (),
-                                                 prevHx1,
-                                                 prevHx2,
-                                                 prevHz1,
-                                                 prevHz2,
-                                                 prevJy * gridStep,
-                                                 Ca,
-                                                 Cb);
-
-        valDy->setCurValue (val);
-      }
-    }
-  }
-
-  if (solverSettings.getDoUseMetamaterials ())
-  {
-#ifdef TWO_TIME_STEPS
-    for (int i = EyStart.getX (); i < EyEnd.getX (); ++i)
-    {
-      for (int j = EyStart.getY (); j < EyEnd.getY (); ++j)
-      {
-        for (int k = EyStart.getZ (); k < EyEnd.getZ (); ++k)
-        {
-          GridCoordinate3D pos (i, j, k);
-          GridCoordinate3D posAbs = Dy->getTotalPosition (pos);
-
-          FieldPointValue* valD1y = D1y->getFieldPointValue (pos);
-          FieldPointValue* valDy = Dy->getFieldPointValue (pos);
-
-          FPValue omegaPE;
-          FPValue gammaE;
-          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DY, Eps, GridType::EPS, OmegaPE, GridType::OMEGAPE, GammaE, GridType::GAMMAE, omegaPE, gammaE);
-
-          /*
-           * FIXME: precalculate coefficients
-           */
-          FPValue A = 4*eps0*eps + 2*gridTimeStep*eps0*eps*gammaE + eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE;
-
-          FieldValue val = calculateDrudeE (valDy->getCurValue (),
-                                            valDy->getPrevValue (),
-                                            valDy->getPrevPrevValue (),
-                                            valD1y->getPrevValue (),
-                                            valD1y->getPrevPrevValue (),
-                                            (4 + 2*gridTimeStep*gammaE) / A,
-                                            -8 / A,
-                                            (4 - 2*gridTimeStep*gammaE) / A,
-                                            (2*eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE - 8*eps0*eps) / A,
-                                            (4*eps0*eps - 2*gridTimeStep*eps0*eps*gammaE + eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE) / A);
-
-          valD1y->setCurValue (val);
-        }
-      }
-    }
-#else
-    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
-#endif
-  }
-
-  for (int i = EyStart.getX (); i < EyEnd.getX (); ++i)
-  {
-    for (int j = EyStart.getY (); j < EyEnd.getY (); ++j)
-    {
-      for (int k = EyStart.getZ (); k < EyEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Ey->getTotalPosition (pos);
-
-        FieldPointValue* valEy = Ey->getFieldPointValue (pos);
-
-        FieldPointValue* valDy;
-
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          valDy = D1y->getFieldPointValue (pos);
-        }
-        else
-        {
-          valDy = Dy->getFieldPointValue (pos);
-        }
-
-        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DY, Eps, GridType::EPS);
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DY, SigmaX, GridType::SIGMAX);
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DY, SigmaY, GridType::SIGMAY);
-
-        FPValue modifier = eps * eps0;
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          modifier = 1;
-        }
-
-        FPValue k_x = 1;
-        FPValue k_y = 1;
-
-        FPValue Ca = (2 * eps0 * k_x - sigmaX * gridTimeStep) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-        FPValue Cb = ((2 * eps0 * k_y + sigmaY * gridTimeStep) / (modifier)) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-        FPValue Cc = ((2 * eps0 * k_y - sigmaY * gridTimeStep) / (modifier)) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-
-        FieldValue val = calculateEy_from_Dy_Precalc (valEy->getPrevValue (),
-                                                      valDy->getCurValue (),
-                                                      valDy->getPrevValue (),
-                                                      Ca,
-                                                      Cb,
-                                                      Cc);
-
-        valEy->setCurValue (val);
-      }
-    }
-  }
-}
-
-void
 Scheme3D::performEzSteps (time_step t, GridCoordinate3D EzStart, GridCoordinate3D EzEnd)
 {
   /*
@@ -1141,11 +841,25 @@ Scheme3D::performEzSteps (time_step t, GridCoordinate3D EzStart, GridCoordinate3
    */
   if (solverSettings.getDoUsePML ())
   {
-    calculateEzStepPML (t, EzStart, EzEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EZ), true, true> (t, EzStart, EzEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EZ), true, false> (t, EzStart, EzEnd);
+    }
   }
   else
   {
-    calculateFieldStep<static_cast<uint8_t> (GridType::EZ)> (t, EzStart, EzEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EZ), false, true> (t, EzStart, EzEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::EZ), false, false> (t, EzStart, EzEnd);
+    }
   }
 
   if (solverSettings.getDoUsePointSourceEz ())
@@ -1231,171 +945,6 @@ Scheme3D::calculateEzTFSF (GridCoordinate3D posAbs,
 }
 
 void
-Scheme3D::calculateEzStepPML (time_step t, GridCoordinate3D EzStart, GridCoordinate3D EzEnd)
-{
-  FPValue eps0 = PhysicsConst::Eps0;
-
-  for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
-  {
-    for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
-    {
-      for (int k = EzStart.getZ (); k < EzEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Ez->getTotalPosition (pos);
-
-        FieldPointValue* valDz = Dz->getFieldPointValue (pos);
-
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::DZ, SigmaX, GridType::SIGMAX);
-
-        GridCoordinate3D posLeft = yeeLayout->getEzCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout->getEzCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posDown = yeeLayout->getEzCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout->getEzCircuitElement (pos, LayoutDirection::UP);
-
-        FieldPointValue* valHy1 = Hy->getFieldPointValue (posRight);
-        FieldPointValue* valHy2 = Hy->getFieldPointValue (posLeft);
-
-        FieldPointValue* valHx1 = Hx->getFieldPointValue (posUp);
-        FieldPointValue* valHx2 = Hx->getFieldPointValue (posDown);
-
-        FieldValue prevHx1 = valHx1->getPrevValue ();
-        FieldValue prevHx2 = valHx2->getPrevValue ();
-        FieldValue prevHy1 = valHy1->getPrevValue ();
-        FieldValue prevHy2 = valHy2->getPrevValue ();
-
-        if (solverSettings.getDoUseTFSF ())
-        {
-          calculateEzTFSF (posAbs, prevHy1, prevHy2, prevHx1, prevHx2, posLeft, posRight, posDown, posUp);
-        }
-
-        FieldValue prevJz = 0;
-        if (Jz != NULLPTR)
-        {
-          prevJz = Jz (yeeLayout->getEzCoordFP (posAbs) * gridStep, t * gridTimeStep);
-        }
-
-        /*
-         * FIXME: precalculate coefficients
-         */
-        FPValue k_x = 1;
-
-        FPValue Ca = (2 * eps0 * k_x - sigmaX * gridTimeStep) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-        FPValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-
-        FieldValue val = calculateEz_3D_Precalc (valDz->getPrevValue (),
-                                                 prevHy1,
-                                                 prevHy2,
-                                                 prevHx1,
-                                                 prevHx2,
-                                                 prevJz * gridStep,
-                                                 Ca,
-                                                 Cb);
-
-        valDz->setCurValue (val);
-      }
-    }
-  }
-
-  if (solverSettings.getDoUseMetamaterials ())
-  {
-#ifdef TWO_TIME_STEPS
-    for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
-    {
-      for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
-      {
-        for (int k = EzStart.getZ (); k < EzEnd.getZ (); ++k)
-        {
-          GridCoordinate3D pos (i, j, k);
-          GridCoordinate3D posAbs = Ez->getTotalPosition (pos);
-
-          FieldPointValue* valD1z = D1z->getFieldPointValue (pos);
-          FieldPointValue* valDz = Dz->getFieldPointValue (pos);
-
-          FPValue omegaPE;
-          FPValue gammaE;
-          FPValue eps = yeeLayout->getMetaMaterial (posAbs, GridType::DZ, Eps, GridType::EPS, OmegaPE, GridType::OMEGAPE, GammaE, GridType::GAMMAE, omegaPE, gammaE);
-
-          /*
-           * FIXME: precalculate coefficients
-           */
-          FPValue A = 4*eps0*eps + 2*gridTimeStep*eps0*eps*gammaE + eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE;
-
-          FieldValue val = calculateDrudeE (valDz->getCurValue (),
-                                            valDz->getPrevValue (),
-                                            valDz->getPrevPrevValue (),
-                                            valD1z->getPrevValue (),
-                                            valD1z->getPrevPrevValue (),
-                                            (4 + 2*gridTimeStep*gammaE) / A,
-                                            -8 / A,
-                                            (4 - 2*gridTimeStep*gammaE) / A,
-                                            (2*eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE - 8*eps0*eps) / A,
-                                            (4*eps0*eps - 2*gridTimeStep*eps0*eps*gammaE + eps0*gridTimeStep*gridTimeStep*omegaPE*omegaPE) / A);
-
-          valD1z->setCurValue (val);
-        }
-      }
-    }
-#else
-    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
-#endif
-  }
-
-  for (int i = EzStart.getX (); i < EzEnd.getX (); ++i)
-  {
-    for (int j = EzStart.getY (); j < EzEnd.getY (); ++j)
-    {
-      for (int k = EzStart.getZ (); k < EzEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Ez->getTotalPosition (pos);
-
-        FieldPointValue* valEz = Ez->getFieldPointValue (pos);
-        FieldPointValue* valDz;
-
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          valDz = D1z->getFieldPointValue (pos);
-        }
-        else
-        {
-          valDz = Dz->getFieldPointValue (pos);
-        }
-
-        FPValue eps = yeeLayout->getMaterial (posAbs, GridType::DZ, Eps, GridType::EPS);
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::DZ, SigmaY, GridType::SIGMAY);
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::DZ, SigmaZ, GridType::SIGMAZ);
-
-        FPValue modifier = eps * eps0;
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          modifier = 1;
-        }
-
-        /*
-         * FIXME: precalculate coefficients
-         */
-        FPValue k_y = 1;
-        FPValue k_z = 1;
-
-        FPValue Ca = (2 * eps0 * k_y - sigmaY * gridTimeStep) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-        FPValue Cb = ((2 * eps0 * k_z + sigmaZ * gridTimeStep) / (modifier)) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-        FPValue Cc = ((2 * eps0 * k_z - sigmaZ * gridTimeStep) / (modifier)) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-
-        FieldValue val = calculateEz_from_Dz_Precalc (valEz->getPrevValue (),
-                                                      valDz->getCurValue (),
-                                                      valDz->getPrevValue (),
-                                                      Ca,
-                                                      Cb,
-                                                      Cc);
-
-        valEz->setCurValue (val);
-      }
-    }
-  }
-}
-
-void
 Scheme3D::performHxSteps (time_step t, GridCoordinate3D HxStart, GridCoordinate3D HxEnd)
 {
   /*
@@ -1403,11 +952,25 @@ Scheme3D::performHxSteps (time_step t, GridCoordinate3D HxStart, GridCoordinate3
    */
   if (solverSettings.getDoUsePML ())
   {
-    calculateHxStepPML (t, HxStart, HxEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HX), true, true> (t, HxStart, HxEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HX), true, false> (t, HxStart, HxEnd);
+    }
   }
   else
   {
-    calculateFieldStep<static_cast<uint8_t> (GridType::HX)> (t, HxStart, HxEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HX), false, true> (t, HxStart, HxEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HX), false, false> (t, HxStart, HxEnd);
+    }
   }
 
   if (solverSettings.getDoUsePointSourceHx ())
@@ -1493,168 +1056,6 @@ Scheme3D::calculateHxTFSF (GridCoordinate3D posAbs,
 }
 
 void
-Scheme3D::calculateHxStepPML (time_step t, GridCoordinate3D HxStart, GridCoordinate3D HxEnd)
-{
-  FPValue eps0 = PhysicsConst::Eps0;
-  FPValue mu0 = PhysicsConst::Mu0;
-
-  for (int i = HxStart.getX (); i < HxEnd.getX (); ++i)
-  {
-    for (int j = HxStart.getY (); j < HxEnd.getY (); ++j)
-    {
-      for (int k = HxStart.getZ (); k < HxEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Hx->getTotalPosition (pos);
-
-        FieldPointValue* valBx = Bx->getFieldPointValue (pos);
-
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BX, SigmaY, GridType::SIGMAY);
-
-        GridCoordinate3D posDown = yeeLayout->getHxCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout->getHxCircuitElement (pos, LayoutDirection::UP);
-        GridCoordinate3D posBack = yeeLayout->getHxCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout->getHxCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valEz1 = Ez->getFieldPointValue (posUp);
-        FieldPointValue* valEz2 = Ez->getFieldPointValue (posDown);
-
-        FieldPointValue* valEy1 = Ey->getFieldPointValue (posFront);
-        FieldPointValue* valEy2 = Ey->getFieldPointValue (posBack);
-
-        FieldValue prevEz1 = valEz1->getPrevValue ();
-        FieldValue prevEz2 = valEz2->getPrevValue ();
-
-        FieldValue prevEy1 = valEy1->getPrevValue ();
-        FieldValue prevEy2 = valEy2->getPrevValue ();
-
-        if (solverSettings.getDoUseTFSF ())
-        {
-          calculateHxTFSF (posAbs, prevEy1, prevEy2, prevEz1, prevEz2, posBack, posFront, posDown, posUp);
-        }
-
-        FieldValue prevMx = 0;
-        if (Mx != NULLPTR)
-        {
-          prevMx = Mx (yeeLayout->getHxCoordFP (posAbs) * gridStep, (t + 0.5) * gridTimeStep);
-        }
-
-        FPValue k_y = 1;
-
-        FPValue Ca = (2 * eps0 * k_y - sigmaY * gridTimeStep) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-        FPValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-
-        FieldValue val = calculateHx_3D_Precalc (valBx->getPrevValue (),
-                                                 prevEy1,
-                                                 prevEy2,
-                                                 prevEz1,
-                                                 prevEz2,
-                                                 prevMx * gridStep,
-                                                 Ca,
-                                                 Cb);
-
-        valBx->setCurValue (val);
-      }
-    }
-  }
-
-  if (solverSettings.getDoUseMetamaterials ())
-  {
-#ifdef TWO_TIME_STEPS
-    for (int i = HxStart.getX (); i < HxEnd.getX (); ++i)
-    {
-      for (int j = HxStart.getY (); j < HxEnd.getY (); ++j)
-      {
-        for (int k = HxStart.getZ (); k < HxEnd.getZ (); ++k)
-        {
-          GridCoordinate3D pos (i, j, k);
-          GridCoordinate3D posAbs = Hx->getTotalPosition (pos);
-
-          FieldPointValue* valB1x = B1x->getFieldPointValue (pos);
-          FieldPointValue* valBx = Bx->getFieldPointValue (pos);
-
-          FPValue omegaPM;
-          FPValue gammaM;
-          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BX, Mu, GridType::MU, OmegaPM, GridType::OMEGAPM, GammaM, GridType::GAMMAM, omegaPM, gammaM);
-
-          /*
-           * FIXME: precalculate coefficients
-           */
-          FPValue C = 4*mu0*mu + 2*gridTimeStep*mu0*mu*gammaM + mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM;
-
-          FieldValue val = calculateDrudeH (valBx->getCurValue (),
-                                            valBx->getPrevValue (),
-                                            valBx->getPrevPrevValue (),
-                                            valB1x->getPrevValue (),
-                                            valB1x->getPrevPrevValue (),
-                                            (4 + 2*gridTimeStep*gammaM) / C,
-                                            -8 / C,
-                                            (4 - 2*gridTimeStep*gammaM) / C,
-                                            (2*mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM - 8*mu0*mu) / C,
-                                            (4*mu0*mu - 2*gridTimeStep*mu0*mu*gammaM + mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM) / C);
-
-          valB1x->setCurValue (val);
-        }
-      }
-    }
-#else
-    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
-#endif
-  }
-
-  for (int i = HxStart.getX (); i < HxEnd.getX (); ++i)
-  {
-    for (int j = HxStart.getY (); j < HxEnd.getY (); ++j)
-    {
-      for (int k = HxStart.getZ (); k < HxEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Hx->getTotalPosition (pos);
-
-        FieldPointValue* valHx = Hx->getFieldPointValue (pos);
-
-        FieldPointValue* valBx;
-
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          valBx = B1x->getFieldPointValue (pos);
-        }
-        else
-        {
-          valBx = Bx->getFieldPointValue (pos);
-        }
-
-        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BX, Mu, GridType::MU);
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BX, SigmaX, GridType::SIGMAX);
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BX, SigmaZ, GridType::SIGMAZ);
-
-        FPValue modifier = mu * mu0;
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          modifier = 1;
-        }
-
-        FPValue k_x = 1;
-        FPValue k_z = 1;
-
-        FPValue Ca = (2 * eps0 * k_z - sigmaZ * gridTimeStep) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-        FPValue Cb = ((2 * eps0 * k_x + sigmaX * gridTimeStep) / (modifier)) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-        FPValue Cc = ((2 * eps0 * k_x - sigmaX * gridTimeStep) / (modifier)) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-
-        FieldValue val = calculateHx_from_Bx_Precalc (valHx->getPrevValue (),
-                                                      valBx->getCurValue (),
-                                                      valBx->getPrevValue (),
-                                                      Ca,
-                                                      Cb,
-                                                      Cc);
-
-        valHx->setCurValue (val);
-      }
-    }
-  }
-}
-
-void
 Scheme3D::performHySteps (time_step t, GridCoordinate3D HyStart, GridCoordinate3D HyEnd)
 {
   /*
@@ -1662,11 +1063,25 @@ Scheme3D::performHySteps (time_step t, GridCoordinate3D HyStart, GridCoordinate3
    */
   if (solverSettings.getDoUsePML ())
   {
-    calculateHyStepPML (t, HyStart, HyEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HY), true, true> (t, HyStart, HyEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HY), true, false> (t, HyStart, HyEnd);
+    }
   }
   else
   {
-    calculateFieldStep<static_cast<uint8_t> (GridType::HY)> (t, HyStart, HyEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HY), false, true> (t, HyStart, HyEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HY), false, false> (t, HyStart, HyEnd);
+    }
   }
 
   if (solverSettings.getDoUsePointSourceHy ())
@@ -1752,168 +1167,6 @@ Scheme3D::calculateHyTFSF (GridCoordinate3D posAbs,
 }
 
 void
-Scheme3D::calculateHyStepPML (time_step t, GridCoordinate3D HyStart, GridCoordinate3D HyEnd)
-{
-  FPValue eps0 = PhysicsConst::Eps0;
-  FPValue mu0 = PhysicsConst::Mu0;
-
-  for (int i = HyStart.getX (); i < HyEnd.getX (); ++i)
-  {
-    for (int j = HyStart.getY (); j < HyEnd.getY (); ++j)
-    {
-      for (int k = HyStart.getZ (); k < HyEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Hy->getTotalPosition (pos);
-
-        FieldPointValue* valBy = By->getFieldPointValue (pos);
-
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BY, SigmaZ, GridType::SIGMAZ);
-
-        GridCoordinate3D posLeft = yeeLayout->getHyCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout->getHyCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posBack = yeeLayout->getHyCircuitElement (pos, LayoutDirection::BACK);
-        GridCoordinate3D posFront = yeeLayout->getHyCircuitElement (pos, LayoutDirection::FRONT);
-
-        FieldPointValue* valEz1 = Ez->getFieldPointValue (posRight);
-        FieldPointValue* valEz2 = Ez->getFieldPointValue (posLeft);
-
-        FieldPointValue* valEx1 = Ex->getFieldPointValue (posFront);
-        FieldPointValue* valEx2 = Ex->getFieldPointValue (posBack);
-
-        FieldValue prevEz1 = valEz1->getPrevValue ();
-        FieldValue prevEz2 = valEz2->getPrevValue ();
-
-        FieldValue prevEx1 = valEx1->getPrevValue ();
-        FieldValue prevEx2 = valEx2->getPrevValue ();
-
-        if (solverSettings.getDoUseTFSF ())
-        {
-          calculateHyTFSF (posAbs, prevEz1, prevEz2, prevEx1, prevEx2, posLeft, posRight, posBack, posFront);
-        }
-
-        FieldValue prevMy = 0;
-        if (My != NULLPTR)
-        {
-          prevMy = My (yeeLayout->getHyCoordFP (posAbs) * gridStep, (t + 0.5) * gridTimeStep);
-        }
-
-        FPValue k_z = 1;
-
-        FPValue Ca = (2 * eps0 * k_z - sigmaZ * gridTimeStep) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-        FPValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_z + sigmaZ * gridTimeStep);
-
-        FieldValue val = calculateHy_3D_Precalc (valBy->getPrevValue (),
-                                                 prevEz1,
-                                                 prevEz2,
-                                                 prevEx1,
-                                                 prevEx2,
-                                                 prevMy * gridStep,
-                                                 Ca,
-                                                 Cb);
-
-        valBy->setCurValue (val);
-      }
-    }
-  }
-
-  if (solverSettings.getDoUseMetamaterials ())
-  {
-#ifdef TWO_TIME_STEPS
-    for (int i = HyStart.getX (); i < HyEnd.getX (); ++i)
-    {
-      for (int j = HyStart.getY (); j < HyEnd.getY (); ++j)
-      {
-        for (int k = HyStart.getZ (); k < HyEnd.getZ (); ++k)
-        {
-          GridCoordinate3D pos (i, j, k);
-          GridCoordinate3D posAbs = Hy->getTotalPosition (pos);
-
-          FieldPointValue* valB1y = B1y->getFieldPointValue (pos);
-          FieldPointValue* valBy = By->getFieldPointValue (pos);
-
-          FPValue omegaPM;
-          FPValue gammaM;
-          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BY, Mu, GridType::MU, OmegaPM, GridType::OMEGAPM, GammaM, GridType::GAMMAM, omegaPM, gammaM);
-
-          /*
-           * FIXME: precalculate coefficients
-           */
-          FPValue C = 4*mu0*mu + 2*gridTimeStep*mu0*mu*gammaM + mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM;
-
-          FieldValue val = calculateDrudeH (valBy->getCurValue (),
-                                            valBy->getPrevValue (),
-                                            valBy->getPrevPrevValue (),
-                                            valB1y->getPrevValue (),
-                                            valB1y->getPrevPrevValue (),
-                                            (4 + 2*gridTimeStep*gammaM) / C,
-                                            -8 / C,
-                                            (4 - 2*gridTimeStep*gammaM) / C,
-                                            (2*mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM - 8*mu0*mu) / C,
-                                            (4*mu0*mu - 2*gridTimeStep*mu0*mu*gammaM + mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM) / C);
-
-          valB1y->setCurValue (val);
-        }
-      }
-    }
-#else
-    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
-#endif
-  }
-
-  for (int i = HyStart.getX (); i < HyEnd.getX (); ++i)
-  {
-    for (int j = HyStart.getY (); j < HyEnd.getY (); ++j)
-    {
-      for (int k = HyStart.getZ (); k < HyEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Hy->getTotalPosition (pos);
-
-        FieldPointValue* valHy = Hy->getFieldPointValue (pos);
-
-        FieldPointValue* valBy;
-
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          valBy = B1y->getFieldPointValue (pos);
-        }
-        else
-        {
-          valBy = By->getFieldPointValue (pos);
-        }
-
-        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BY, Mu, GridType::MU);
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BY, SigmaX, GridType::SIGMAX);
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BY, SigmaY, GridType::SIGMAY);
-
-        FPValue modifier = mu * mu0;
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          modifier = 1;
-        }
-
-        FPValue k_x = 1;
-        FPValue k_y = 1;
-
-        FPValue Ca = (2 * eps0 * k_x - sigmaX * gridTimeStep) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-        FPValue Cb = ((2 * eps0 * k_y + sigmaY * gridTimeStep) / (modifier)) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-        FPValue Cc = ((2 * eps0 * k_y - sigmaY * gridTimeStep) / (modifier)) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-
-        FieldValue val = calculateHy_from_By_Precalc (valHy->getPrevValue (),
-                                                      valBy->getCurValue (),
-                                                      valBy->getPrevValue (),
-                                                      Ca,
-                                                      Cb,
-                                                      Cc);
-
-        valHy->setCurValue (val);
-      }
-    }
-  }
-}
-
-void
 Scheme3D::performHzSteps (time_step t, GridCoordinate3D HzStart, GridCoordinate3D HzEnd)
 {
   /*
@@ -1921,11 +1174,25 @@ Scheme3D::performHzSteps (time_step t, GridCoordinate3D HzStart, GridCoordinate3
    */
   if (solverSettings.getDoUsePML ())
   {
-    calculateHzStepPML (t, HzStart, HzEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HZ), true, true> (t, HzStart, HzEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HZ), true, false> (t, HzStart, HzEnd);
+    }
   }
   else
   {
-    calculateFieldStep<static_cast<uint8_t> (GridType::HZ)> (t, HzStart, HzEnd);
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HZ), false, true> (t, HzStart, HzEnd);
+    }
+    else
+    {
+      calculateFieldStep<static_cast<uint8_t> (GridType::HZ), false, false> (t, HzStart, HzEnd);
+    }
   }
 
   if (solverSettings.getDoUsePointSourceHz ())
@@ -2006,168 +1273,6 @@ Scheme3D::calculateHzTFSF (GridCoordinate3D posAbs,
   else if (do_need_update_right)
   {
     valEy1 += diffX;
-  }
-}
-
-void
-Scheme3D::calculateHzStepPML (time_step t, GridCoordinate3D HzStart, GridCoordinate3D HzEnd)
-{
-  FPValue eps0 = PhysicsConst::Eps0;
-  FPValue mu0 = PhysicsConst::Mu0;
-
-  for (int i = HzStart.getX (); i < HzEnd.getX (); ++i)
-  {
-    for (int j = HzStart.getY (); j < HzEnd.getY (); ++j)
-    {
-      for (int k = HzStart.getZ (); k < HzEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Hz->getTotalPosition (pos);
-
-        FieldPointValue* valBz = Bz->getFieldPointValue (pos);
-
-        FPValue sigmaX = yeeLayout->getMaterial (posAbs, GridType::BZ, SigmaX, GridType::SIGMAX);
-
-        GridCoordinate3D posLeft = yeeLayout->getHzCircuitElement (pos, LayoutDirection::LEFT);
-        GridCoordinate3D posRight = yeeLayout->getHzCircuitElement (pos, LayoutDirection::RIGHT);
-        GridCoordinate3D posDown = yeeLayout->getHzCircuitElement (pos, LayoutDirection::DOWN);
-        GridCoordinate3D posUp = yeeLayout->getHzCircuitElement (pos, LayoutDirection::UP);
-
-        FieldPointValue* valEy1 = Ey->getFieldPointValue (posRight);
-        FieldPointValue* valEy2 = Ey->getFieldPointValue (posLeft);
-
-        FieldPointValue* valEx1 = Ex->getFieldPointValue (posUp);
-        FieldPointValue* valEx2 = Ex->getFieldPointValue (posDown);
-
-        FieldValue prevEx1 = valEx1->getPrevValue ();
-        FieldValue prevEx2 = valEx2->getPrevValue ();
-
-        FieldValue prevEy1 = valEy1->getPrevValue ();
-        FieldValue prevEy2 = valEy2->getPrevValue ();
-
-        if (solverSettings.getDoUseTFSF ())
-        {
-          calculateHzTFSF (posAbs, prevEx1, prevEx2, prevEy1, prevEy2, posDown, posUp, posLeft, posRight);
-        }
-
-        FieldValue prevMz = 0;
-        if (Mz != NULLPTR)
-        {
-          prevMz = Mz (yeeLayout->getHzCoordFP (posAbs) * gridStep, (t + 0.5) * gridTimeStep);
-        }
-
-        FPValue k_x = 1;
-
-        FPValue Ca = (2 * eps0 * k_x - sigmaX * gridTimeStep) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-        FPValue Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_x + sigmaX * gridTimeStep);
-
-        FieldValue val = calculateHz_3D_Precalc (valBz->getPrevValue (),
-                                                 prevEx1,
-                                                 prevEx2,
-                                                 prevEy1,
-                                                 prevEy2,
-                                                 prevMz * gridStep,
-                                                 Ca,
-                                                 Cb);
-
-        valBz->setCurValue (val);
-      }
-    }
-  }
-
-  if (solverSettings.getDoUseMetamaterials ())
-  {
-#ifdef TWO_TIME_STEPS
-    for (int i = HzStart.getX (); i < HzEnd.getX (); ++i)
-    {
-      for (int j = HzStart.getY (); j < HzEnd.getY (); ++j)
-      {
-        for (int k = HzStart.getZ (); k < HzEnd.getZ (); ++k)
-        {
-          GridCoordinate3D pos (i, j, k);
-          GridCoordinate3D posAbs = Hz->getTotalPosition (pos);
-
-          FieldPointValue* valB1z = B1z->getFieldPointValue (pos);
-          FieldPointValue* valBz = Bz->getFieldPointValue (pos);
-
-          FPValue omegaPM;
-          FPValue gammaM;
-          FPValue mu = yeeLayout->getMetaMaterial (posAbs, GridType::BZ, Mu, GridType::MU, OmegaPM, GridType::OMEGAPM, GammaM, GridType::GAMMAM, omegaPM, gammaM);
-
-          /*
-           * FIXME: precalculate coefficients
-           */
-          FPValue C = 4*mu0*mu + 2*gridTimeStep*mu0*mu*gammaM + mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM;
-
-          FieldValue val = calculateDrudeH (valBz->getCurValue (),
-                                            valBz->getPrevValue (),
-                                            valBz->getPrevPrevValue (),
-                                            valB1z->getPrevValue (),
-                                            valB1z->getPrevPrevValue (),
-                                            (4 + 2*gridTimeStep*gammaM) / C,
-                                            -8 / C,
-                                            (4 - 2*gridTimeStep*gammaM) / C,
-                                            (2*mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM - 8*mu0*mu) / C,
-                                            (4*mu0*mu - 2*gridTimeStep*mu0*mu*gammaM + mu0*gridTimeStep*gridTimeStep*omegaPM*omegaPM) / C);
-
-          valB1z->setCurValue (val);
-        }
-      }
-    }
-#else
-    ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
-#endif
-  }
-
-  for (int i = HzStart.getX (); i < HzEnd.getX (); ++i)
-  {
-    for (int j = HzStart.getY (); j < HzEnd.getY (); ++j)
-    {
-      for (int k = HzStart.getZ (); k < HzEnd.getZ (); ++k)
-      {
-        GridCoordinate3D pos (i, j, k);
-        GridCoordinate3D posAbs = Hz->getTotalPosition (pos);
-
-        FieldPointValue* valHz = Hz->getFieldPointValue (pos);
-
-        FieldPointValue* valBz;
-
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          valBz = B1z->getFieldPointValue (pos);
-        }
-        else
-        {
-          valBz = Bz->getFieldPointValue (pos);
-        }
-
-        FPValue mu = yeeLayout->getMaterial (posAbs, GridType::BZ, Mu, GridType::MU);
-        FPValue sigmaY = yeeLayout->getMaterial (posAbs, GridType::BZ, SigmaY, GridType::SIGMAY);
-        FPValue sigmaZ = yeeLayout->getMaterial (posAbs, GridType::BZ, SigmaZ, GridType::SIGMAZ);
-
-        FPValue modifier = mu * mu0;
-        if (solverSettings.getDoUseMetamaterials ())
-        {
-          modifier = 1;
-        }
-
-        FPValue k_y = 1;
-        FPValue k_z = 1;
-
-        FPValue Ca = (2 * eps0 * k_y - sigmaY * gridTimeStep) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-        FPValue Cb = ((2 * eps0 * k_z + sigmaZ * gridTimeStep) / (modifier)) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-        FPValue Cc = ((2 * eps0 * k_z - sigmaZ * gridTimeStep) / (modifier)) / (2 * eps0 * k_y + sigmaY * gridTimeStep);
-
-        FieldValue val = calculateHz_from_Bz_Precalc (valHz->getPrevValue (),
-                                                      valBz->getCurValue (),
-                                                      valBz->getPrevValue (),
-                                                      Ca,
-                                                      Cb,
-                                                      Cc);
-
-        valHz->setCurValue (val);
-      }
-    }
   }
 }
 
