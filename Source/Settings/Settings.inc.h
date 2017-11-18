@@ -187,6 +187,12 @@ SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterY, getEpsSphereCenterY, int, 0, "--e
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterZ, getEpsSphereCenterZ, int, 0, "--eps-sphere-center-z", "Center position by z coordinate of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereRadius, getEpsSphereRadius, int, 0, "--eps-sphere-radius", "Radius of Eps material sphere")
 
+SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphere, getOmegaPESphere, int, 0, "--omegape-sphere", "Electric plasma frequency material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereCenterX, getOmegaPESphereCenterX, int, 0, "--omegape-sphere-center-x", "Center position by x coordinate of electric plasma frequency material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereCenterY, getOmegaPESphereCenterY, int, 0, "--omegape-sphere-center-y", "Center position by y coordinate of electric plasma frequency material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereCenterZ, getOmegaPESphereCenterZ, int, 0, "--omegape-sphere-center-z", "Center position by z coordinate of electric plasma frequency material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereRadius, getOmegaPESphereRadius, int, 0, "--omegape-sphere-radius", "Radius of electric plasma frequency material sphere")
+
 /*
 SETTINGS_ELEM_FIELD_TYPE_STRING(exFileName, getExFileName, std::string, "", "--load-ex-from-file", "File name to load Ex from")
 SETTINGS_ELEM_FIELD_TYPE_STRING(eyFileName, getEyFileName, std::string, "", "--load-ey-from-file", "File name to load Ey from")
