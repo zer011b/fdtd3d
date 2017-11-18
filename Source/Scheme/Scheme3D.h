@@ -149,9 +149,9 @@ private:
   FieldValue approximateIncidentWaveE (GridCoordinateFP3D);
   FieldValue approximateIncidentWaveH (GridCoordinateFP3D);
 
-  // template <uint8_t grid_type>
-  // void calculateTFSF (GridCoordinate3D, FieldValue &, FieldValue &, FieldValue &, FieldValue &,
-  //                     GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
+  template <uint8_t grid_type, bool is3DMode>
+  void calculateTFSF (GridCoordinate3D, FieldValue &, FieldValue &, FieldValue &, FieldValue &,
+                      GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
 
   void calculateExTFSF (GridCoordinate3D, FieldValue &, FieldValue &, FieldValue &, FieldValue &,
                         GridCoordinate3D, GridCoordinate3D, GridCoordinate3D, GridCoordinate3D);
@@ -330,83 +330,310 @@ Scheme3D::performPointSourceCalc (time_step t)
 #endif /* !COMPLEX_FIELD_VALUES */
   }
 }
-//
-// template <uint8_t grid_type>
-// void calculateTFSF (GridCoordinate3D posAbs,
-//                     FieldValue &valOpposite11,
-//                     FieldValue &valOpposite12,
-//                     FieldValue &valOpposite21,
-//                     FieldValue &valOpposite22,
-//                     GridCoordinate3D pos11,
-//                     GridCoordinate3D pos12,
-//                     GridCoordinate3D pos21,
-//                     GridCoordinate3D pos22)
-// {
-//   switch (grid_type)
-//   {
-//     case (static_cast<uint8_t> (GridType::EX)):
-//     {
-//       bool do_need_update_down = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::DOWN, DO_USE_3D_MODE);
-//       bool do_need_update_up = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::UP, DO_USE_3D_MODE);
-//
-//       bool do_need_update_back = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::BACK, DO_USE_3D_MODE);
-//       bool do_need_update_front = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT, DO_USE_3D_MODE);
-//
-//   GridCoordinate3D auxPosY;
-//   GridCoordinate3D auxPosZ;
-//   FieldValue diffY;
-//   FieldValue diffZ;
-//
-//   if (do_need_update_down)
-//   {
-//     auxPosY = posUp;
-//   }
-//   else if (do_need_update_up)
-//   {
-//     auxPosY = posDown;
-//   }
-//
-//   if (do_need_update_back)
-//   {
-//     auxPosZ = posFront;
-//   }
-//   else if (do_need_update_front)
-//   {
-//     auxPosZ = posBack;
-//   }
-//
-//   if (do_need_update_down || do_need_update_up)
-//   {
-//     GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz->getTotalPosition (auxPosY));
-//
-//     diffY = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
-//   }
-//
-//   if (do_need_update_back || do_need_update_front)
-//   {
-//     GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy->getTotalPosition (auxPosZ));
-//
-//     diffZ = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (realCoord));
-//   }
-//
-//   if (do_need_update_down)
-//   {
-//     valOpposite11 -= diffY;
-//   }
-//   else if (do_need_update_up)
-//   {
-//     valOpposite12 -= diffY;
-//   }
-//
-//   if (do_need_update_back)
-//   {
-//     valOpposite21 -= diffZ;
-//   }
-//   else if (do_need_update_front)
-//   {
-//     valOpposite22 -= diffZ;
-//   }
-// }
+
+template <uint8_t grid_type, bool is3DMode>
+void Scheme3D::calculateTFSF (GridCoordinate3D posAbs,
+                              FieldValue &valOpposite11,
+                              FieldValue &valOpposite12,
+                              FieldValue &valOpposite21,
+                              FieldValue &valOpposite22,
+                              GridCoordinate3D pos11,
+                              GridCoordinate3D pos12,
+                              GridCoordinate3D pos21,
+                              GridCoordinate3D pos22)
+{
+  bool doNeedUpdate11;
+  bool doNeedUpdate12;
+  bool doNeedUpdate21;
+  bool doNeedUpdate22;
+
+  bool isRevertVals;
+
+  switch (grid_type)
+  {
+    case (static_cast<uint8_t> (GridType::EX)):
+    {
+      ASSERT (pos11.getX () == pos12.getX () && pos11.getY () < pos12.getY () && pos11.getZ () == pos12.getZ ());
+      ASSERT (pos21.getX () == pos22.getX () && pos21.getY () == pos22.getY () && pos21.getZ () < pos22.getZ ());
+
+      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::DOWN, is3DMode);
+      doNeedUpdate12 = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::UP, is3DMode);
+
+      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::BACK, is3DMode);
+      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT, is3DMode);
+
+      isRevertVals = true;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::EY)):
+    {
+      ASSERT (pos11.getX () == pos12.getX () && pos11.getY () == pos12.getY () && pos11.getZ () < pos12.getZ ());
+      ASSERT (pos21.getX () < pos22.getX () && pos21.getY () == pos22.getY () && pos21.getZ () == pos22.getZ ());
+
+      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::BACK, is3DMode);
+      doNeedUpdate12 = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::FRONT, is3DMode);
+
+      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::LEFT, is3DMode);
+      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::RIGHT, is3DMode);
+
+      isRevertVals = true;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::EZ)):
+    {
+      ASSERT (pos11.getX () < pos12.getX () && pos11.getY () == pos12.getY () && pos11.getZ () == pos12.getZ ());
+      ASSERT (pos21.getX () == pos22.getX () && pos21.getY () < pos22.getY () && pos21.getZ () == pos22.getZ ());
+
+      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::LEFT, is3DMode);
+      doNeedUpdate12 = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::RIGHT, is3DMode);
+
+      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN, is3DMode);
+      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP, is3DMode);
+
+      isRevertVals = true;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HX)):
+    {
+      ASSERT (pos11.getX () == pos12.getX () && pos11.getY () == pos12.getY () && pos11.getZ () < pos12.getZ ());
+      ASSERT (pos21.getX () == pos22.getX () && pos21.getY () < pos22.getY () && pos21.getZ () == pos22.getZ ());
+
+      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::BACK, is3DMode);
+      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::FRONT, is3DMode);
+
+      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN, is3DMode);
+      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP, is3DMode);
+
+      isRevertVals = false;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HY)):
+    {
+      ASSERT (pos11.getX () < pos12.getX () && pos11.getY () == pos12.getY () && pos11.getZ () == pos12.getZ ());
+      ASSERT (pos21.getX () == pos22.getX () && pos21.getY () == pos22.getY () && pos21.getZ () < pos22.getZ ());
+
+      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::LEFT, is3DMode);
+      doNeedUpdate12 = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::RIGHT, is3DMode);
+
+      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::BACK, is3DMode);
+      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::FRONT, is3DMode);
+
+      isRevertVals = false;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HZ)):
+    {
+      ASSERT (pos11.getX () == pos12.getX () && pos11.getY () < pos12.getY () && pos11.getZ () == pos12.getZ ());
+      ASSERT (pos21.getX () < pos22.getX () && pos21.getY () == pos22.getY () && pos21.getZ () == pos22.getZ ());
+
+      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::DOWN, is3DMode);
+      doNeedUpdate12 = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::UP, is3DMode);
+
+      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::LEFT, is3DMode);
+      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT, is3DMode);
+
+      isRevertVals = false;
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  GridCoordinate3D auxPos1;
+  GridCoordinate3D auxPos2;
+  FieldValue diff1;
+  FieldValue diff2;
+
+  if (isRevertVals)
+  {
+    if (doNeedUpdate11)
+    {
+      auxPos1 = pos12;
+    }
+    else if (doNeedUpdate12)
+    {
+      auxPos1 = pos11;
+    }
+
+    if (doNeedUpdate21)
+    {
+      auxPos2 = pos22;
+    }
+    else if (doNeedUpdate22)
+    {
+      auxPos2 = pos21;
+    }
+  }
+  else
+  {
+    if (doNeedUpdate11)
+    {
+      auxPos1 = pos11;
+    }
+    else if (doNeedUpdate12)
+    {
+      auxPos1 = pos12;
+    }
+
+    if (doNeedUpdate21)
+    {
+      auxPos2 = pos21;
+    }
+    else if (doNeedUpdate22)
+    {
+      auxPos2 = pos22;
+    }
+  }
+
+  if (doNeedUpdate11 || doNeedUpdate12)
+  {
+    switch (grid_type)
+    {
+      case (static_cast<uint8_t> (GridType::EX)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz->getTotalPosition (auxPos1));
+        diff1 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EY)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx->getTotalPosition (auxPos1));
+        diff1 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EZ)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy->getTotalPosition (auxPos1));
+        diff1 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HX)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey->getTotalPosition (auxPos1));
+        diff1 = FPValue (-1.0) * yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HY)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez->getTotalPosition (auxPos1));
+        diff1 = FPValue (-1.0) * yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HZ)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex->getTotalPosition (auxPos1));
+        diff1 = FPValue (-1.0) * yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        break;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+  }
+
+  if (doNeedUpdate21 || doNeedUpdate22)
+  {
+    switch (grid_type)
+    {
+      case (static_cast<uint8_t> (GridType::EX)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy->getTotalPosition (auxPos2));
+        diff2 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EY)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz->getTotalPosition (auxPos2));
+        diff2 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EZ)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx->getTotalPosition (auxPos2));
+        diff2 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HX)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez->getTotalPosition (auxPos2));
+        diff2 = FPValue (-1.0) * yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HY)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex->getTotalPosition (auxPos2));
+        diff2 = FPValue (-1.0) * yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HZ)):
+      {
+        GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey->getTotalPosition (auxPos2));
+        diff2 = FPValue (-1.0) * yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        break;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+  }
+
+  if (isRevertVals)
+  {
+    if (doNeedUpdate11)
+    {
+      valOpposite12 -= diff1;
+    }
+    else if (doNeedUpdate12)
+    {
+      valOpposite11 -= diff1;
+    }
+
+    if (doNeedUpdate21)
+    {
+      valOpposite22 -= diff2;
+    }
+    else if (doNeedUpdate22)
+    {
+      valOpposite21 -= diff2;
+    }
+  }
+  else
+  {
+    if (doNeedUpdate11)
+    {
+      valOpposite11 -= diff1;
+    }
+    else if (doNeedUpdate12)
+    {
+      valOpposite12 -= diff1;
+    }
+
+    if (doNeedUpdate21)
+    {
+      valOpposite21 -= diff2;
+    }
+    else if (doNeedUpdate22)
+    {
+      valOpposite22 -= diff2;
+    }
+  }
+}
 
 template<uint8_t grid_type, bool usePML, bool useMetamaterials>
 void
@@ -914,45 +1141,7 @@ Scheme3D::calculateFieldStep (time_step t, GridCoordinate3D start, GridCoordinat
 
           if (solverSettings.getDoUseTFSF ())
           {
-            // TODO: unify
-            // calculateTFSF<grid_type> (posAbs, prev12, prev11, prev22, prev21, pos12, pos11, pos22, pos21);
-            switch (grid_type)
-            {
-              case (static_cast<uint8_t> (GridType::EX)):
-              {
-                calculateExTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::EY)):
-              {
-                calculateEyTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::EZ)):
-              {
-                calculateEzTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HX)):
-              {
-                calculateHxTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HY)):
-              {
-                calculateHyTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HZ)):
-              {
-                calculateHzTFSF (posAbs, prev12, prev11, prev22, prev21, pos11, pos12, pos21, pos22);
-                break;
-              }
-              default:
-              {
-                UNREACHABLE;
-              }
-            }
+            calculateTFSF<grid_type, true> (posAbs, prev11, prev12, prev21, prev22, pos11, pos12, pos21, pos22);
           }
 
           FieldValue prevRightSide = 0;
