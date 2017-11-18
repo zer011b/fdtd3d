@@ -2105,6 +2105,33 @@ Scheme3D::initGrids ()
       }
     }
 
+    if (solverSettings.getOmegaPESphere () != 0)
+    {
+      for (int i = 0; i < OmegaPE->getSize ().getX (); ++i)
+      {
+        for (int j = 0; j < OmegaPE->getSize ().getY (); ++j)
+        {
+          for (int k = 0; k < OmegaPE->getSize ().getZ (); ++k)
+          {
+            GridCoordinate3D pos (i, j, k);
+            GridCoordinateFP3D posAbs = yeeLayout->getEpsCoordFP (OmegaPE->getTotalPosition (pos));
+            FieldPointValue *val = OmegaPE->getFieldPointValue (pos);
+
+            FieldValue omegapeVal = getFieldValueRealOnly (solverSettings.getOmegaPESphere () * 2 * PhysicsConst::Pi * sourceFrequency);
+
+            FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
+            GridCoordinateFP3D center (solverSettings.getOmegaPESphereCenterX (),
+                                       solverSettings.getOmegaPESphereCenterY (),
+                                       solverSettings.getOmegaPESphereCenterZ ());
+            val->setCurValue (Approximation::approximateSphereAccurate (posAbs,
+                                                                        center * modifier + GridCoordinateFP3D (0.5, 0.5, 0.5),
+                                                                        solverSettings.getOmegaPESphereRadius () * modifier,
+                                                                        omegapeVal));
+          }
+        }
+      }
+    }
+
     OmegaPM->initialize ();
 
     if (!solverSettings.getOmegaPMFileName ().empty ())
