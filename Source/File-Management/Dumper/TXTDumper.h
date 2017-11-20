@@ -34,7 +34,7 @@ void
 TXTDumper<TCoord>::dumpGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord) const
 {
   /**
-   * FIXME: use startCoord and endCoord
+   * TODO: use startCoord and endCoord
    */
   const TCoord& size = grid->getSize ();
   std::cout << "Saving grid '" << grid->getName () << "' to text. Size: " << size.calculateTotalCoord () << ". " << std::endl;

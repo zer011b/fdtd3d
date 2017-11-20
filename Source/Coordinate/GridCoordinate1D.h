@@ -4,6 +4,12 @@
 #include "FieldValue.h"
 #include "Settings.h"
 
+ENUM_CLASS (Dimension, uint8_t,
+  Dim1,
+  Dim2,
+  Dim3
+);
+
 template<class TcoordType, bool doSignChecks>
 class GridCoordinate1DTemplate;
 
@@ -28,6 +34,8 @@ protected:
 
 public:
 
+  static const Dimension dimension;
+
   // Constructor for all cases.
   explicit CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate (const TcoordType& cx = 0)
     : x (cx)
@@ -36,6 +44,13 @@ public:
     {
       ASSERT (x >= 0);
     }
+  }
+
+  explicit CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate (const TcoordType& cx,
+                                                           const TcoordType& tmp1,
+                                                           const TcoordType& tmp2)
+    : GridCoordinate1DTemplate (cx)
+  {
   }
 
   CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate (const GridCoordinate1DTemplate& coord)

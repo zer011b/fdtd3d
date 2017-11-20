@@ -15,6 +15,7 @@
 #include <iostream>
 
 #include "Assert.h"
+#include "Settings.h"
 
 #ifdef PARALLEL_GRID
 

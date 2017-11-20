@@ -27,8 +27,10 @@ protected:
 
 public:
 
-  CUDA_DEVICE CUDA_HOST GridCoordinate2DTemplate ()
-    : GridCoordinate1DTemplate<TcoordType, doSignChecks> (), y (0)
+  static const Dimension dimension;
+
+  explicit CUDA_DEVICE CUDA_HOST GridCoordinate2DTemplate (const TcoordType& cx = 0, const TcoordType& cy = 0)
+    : GridCoordinate1DTemplate<TcoordType, doSignChecks> (cx), y (cy)
   {
     if (doSignChecks)
     {
@@ -37,14 +39,11 @@ public:
     }
   }
 
-  explicit CUDA_DEVICE CUDA_HOST GridCoordinate2DTemplate (const TcoordType& cx, const TcoordType& cy)
-    : GridCoordinate1DTemplate<TcoordType, doSignChecks> (cx), y (cy)
+  explicit CUDA_DEVICE CUDA_HOST GridCoordinate2DTemplate (const TcoordType& cx,
+                                                           const TcoordType& cy,
+                                                           const TcoordType& tmp)
+    : GridCoordinate2DTemplate (cx, cy)
   {
-    if (doSignChecks)
-    {
-      TcoordType x = GridCoordinate1DTemplate<TcoordType, doSignChecks>::getX ();
-      ASSERT (x >= 0 && y >= 0);
-    }
   }
 
   CUDA_DEVICE CUDA_HOST GridCoordinate2DTemplate (const GridCoordinate2DTemplate& pos)

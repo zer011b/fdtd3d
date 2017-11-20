@@ -13,7 +13,7 @@ BMPHelper::getValueFromPixelBlueGreenRed (const RGBApixel& pixel, const FPValue&
                                           const FPValue& max)
 {
   /*
-   * FIXME: use maxNeg
+   * TODO: use maxNeg
    */
   FPValue retval = 0;
   FPValue max_2 = max / 2.0;
@@ -47,7 +47,7 @@ BMPHelper::getValueFromPixelGray (const RGBApixel& pixel, const FPValue& maxNeg,
                                   const FPValue& max)
 {
   /*
-   * FIXME: use maxNeg
+   * TODO: use maxNeg
    */
   ASSERT (pixel.Red == pixel.Green
           && pixel.Red == pixel.Blue);

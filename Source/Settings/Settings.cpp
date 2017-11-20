@@ -134,13 +134,70 @@ Settings::parseArg (int &index, /**< out: current argument index */
   {
     ntffSizeZ = tfsfSizeY = tfsfSizeX;
   }
-  else if (strcmp (argv[index], "--2d") == 0)
+  else if (strcmp (argv[index], "--1d-exhy") == 0)
+  {
+    dimension = 1;
+    schemeType = SchemeType::Dim1_ExHy;
+  }
+  else if (strcmp (argv[index], "--1d-exhz") == 0)
+  {
+    dimension = 1;
+    schemeType = SchemeType::Dim1_ExHz;
+  }
+  else if (strcmp (argv[index], "--1d-eyhx") == 0)
+  {
+    dimension = 1;
+    schemeType = SchemeType::Dim1_EyHx;
+  }
+  else if (strcmp (argv[index], "--1d-eyhz") == 0)
+  {
+    dimension = 1;
+    schemeType = SchemeType::Dim1_EyHz;
+  }
+  else if (strcmp (argv[index], "--1d-ezhx") == 0)
+  {
+    dimension = 1;
+    schemeType = SchemeType::Dim1_EzHx;
+  }
+  else if (strcmp (argv[index], "--1d-ezhy") == 0)
+  {
+    dimension = 1;
+    schemeType = SchemeType::Dim1_EzHy;
+  }
+  else if (strcmp (argv[index], "--2d-tex") == 0)
   {
     dimension = 2;
+    schemeType = SchemeType::Dim2_TEx;
+  }
+  else if (strcmp (argv[index], "--2d-tey") == 0)
+  {
+    dimension = 2;
+    schemeType = SchemeType::Dim2_TEy;
+  }
+  else if (strcmp (argv[index], "--2d-tez") == 0)
+  {
+    dimension = 2;
+    schemeType = SchemeType::Dim2_TEz;
+  }
+  else if (strcmp (argv[index], "--2d-tmx") == 0)
+  {
+    dimension = 2;
+    schemeType = SchemeType::Dim2_TMx;
+  }
+  else if (strcmp (argv[index], "--2d-tmy") == 0)
+  {
+    dimension = 2;
+    schemeType = SchemeType::Dim2_TMy;
+  }
+  else if (strcmp (argv[index], "--2d-tmz") == 0)
+  {
+    dimension = 2;
+    schemeType = SchemeType::Dim2_TMz;
   }
   else if (strcmp (argv[index], "--3d") == 0)
   {
     dimension = 3;
+    schemeType = SchemeType::Dim3;
   }
   else if (strcmp (argv[index], "--cmd-from-file") == 0)
   {

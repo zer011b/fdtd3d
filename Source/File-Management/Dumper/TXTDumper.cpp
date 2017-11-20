@@ -11,7 +11,7 @@ void
 TXTDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFileType type, GridCoordinate1D startCoord, GridCoordinate1D endCoord) const
 {
   /**
-   * FIXME: use startCoord and endCoord
+   * TODO: use startCoord and endCoord
    */
   std::ofstream file;
   switch (type)
@@ -118,7 +118,7 @@ void
 TXTDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFileType type, GridCoordinate2D startCoord, GridCoordinate2D endCoord) const
 {
   /**
-   * FIXME: use startCoord and endCoord
+   * TODO: use startCoord and endCoord
    */
   std::ofstream file;
   switch (type)
@@ -228,7 +228,7 @@ void
 TXTDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFileType type, GridCoordinate3D startCoord, GridCoordinate3D endCoord) const
 {
   /**
-   * FIXME: use startCoord and endCoord
+   * TODO: use startCoord and endCoord
    */
   std::ofstream file;
   switch (type)

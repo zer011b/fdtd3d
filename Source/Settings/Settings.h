@@ -22,6 +22,23 @@ enum LogLevelType
   LOG_LEVEL_FULL = LOG_LEVEL_3
 };
 
+ENUM_CLASS (SchemeType, uint8_t,
+  NONE,
+  Dim1_ExHy,
+  Dim1_ExHz,
+  Dim1_EyHx,
+  Dim1_EyHz,
+  Dim1_EzHx,
+  Dim1_EzHy,
+  Dim2_TEx,
+  Dim2_TEy,
+  Dim2_TEz,
+  Dim2_TMx,
+  Dim2_TMy,
+  Dim2_TMz,
+  Dim3
+);
+
 /**
  * Settings for solver
  */
@@ -33,6 +50,11 @@ private:
    * Number of dimensions
    */
   int dimension;
+
+  /**
+   * Type of calculation scheme
+   */
+  SchemeType schemeType;
 
 #define SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
   fieldType fieldName;
@@ -62,6 +84,7 @@ public:
    */
   Settings ()
     : dimension (0)
+    , schemeType (SchemeType::NONE)
 #define SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
     , fieldName (defaultVal)
 #define SETTINGS_ELEM_FIELD_TYPE_INT(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
@@ -113,6 +136,16 @@ public:
   {
     return dimension;
   } /* Settings::getDimension */
+
+  /**
+   * Get scheme type
+   *
+   * @return scheme type
+   */
+  SchemeType getSchemeType () const
+  {
+    return schemeType;
+  } /* Settings::getSchemeType */
 }; /* Settings */
 
 extern Settings solverSettings;
