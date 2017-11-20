@@ -42,7 +42,7 @@ Approximation::approximateDrudeModel (FPValue &omega,
                                       FPValue gamma2)
 {
   /*
-   * FIXME: incorrect!
+   * TODO: incorrect!
    */
   FPValue dividerOmega = 0;
   FPValue dividerGamma = 0;
@@ -87,7 +87,7 @@ Approximation::approximateDrudeModel (FPValue &omega,
                                       FPValue gamma4)
 {
   /*
-   * FIXME: incorrect!
+   * TODO: incorrect!
    */
   FPValue dividerOmega = 0;
   FPValue dividerGamma = 0;
@@ -164,7 +164,7 @@ Approximation::approximateDrudeModel (FPValue &omega,
 {
   UNREACHABLE;
   /*
-   * FIXME: incorrect!
+   * TODO: incorrect!
    */
   // FPValue dividerOmega = 0;
   // FPValue dividerGamma = 0;

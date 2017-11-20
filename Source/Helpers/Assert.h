@@ -68,6 +68,12 @@ extern void program_fail ();
   } \
 }
 
+#define ALWAYS_ASSERT_MESSAGE(x) \
+{ \
+  DPRINTF (LOG_LEVEL_NONE, "Assert '%s' at %s:%d.\n", x, __FILE__, __LINE__); \
+  program_fail (); \
+}
+
 /*
  * Enum class for c++11 and not c++11 builds
  */

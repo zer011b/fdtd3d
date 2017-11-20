@@ -25,7 +25,18 @@
 /*
  * Calculation mode
  */
-// SETTINGS_ELEM_OPTION_TYPE_NONE("--2d", "2D mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--1d-exhy", "1D ExHy mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--1d-exhz", "1D ExHz mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--1d-eyhx", "1D EyHx mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--1d-eyhz", "1D EyHz mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--1d-ezhx", "1D EzHx mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--1d-ezhy", "1D EzHy mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--2d-tex", "2D TEx mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--2d-tey", "2D TEy mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--2d-tez", "2D TEz mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--2d-tmx", "2D TMx mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--2d-tmy", "2D TMy mode computations")
+SETTINGS_ELEM_OPTION_TYPE_NONE("--2d-tmz", "2D TMz mode computations")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--3d", "3D mode computations")
 SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(logLevel, getLogLevel, LogLevelType, LOG_LEVEL_NONE, "--log-level", "Log level of fdtd3d (0,1,2,3)")
 

@@ -34,7 +34,7 @@ void
 DATDumper<TCoord>::writeToFile (Grid<TCoord> *grid, GridFileType type, TCoord startCoord, TCoord endCoord) const
 {
   /**
-   * FIXME: use startCoord and endCoord
+   * TODO: use startCoord and endCoord
    */
   std::ofstream file;
   switch (type)
@@ -128,7 +128,7 @@ void
 DATDumper<TCoord>::dumpGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord) const
 {
   /**
-   * FIXME: use startCoord and endCoord
+   * TODO: use startCoord and endCoord
    */
   const TCoord& size = grid->getSize ();
   std::cout << "Saving grid '" << grid->getName () << "' to binary. Size: " << size.calculateTotalCoord () << ". " << std::endl;

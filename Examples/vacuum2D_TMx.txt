@@ -1,0 +1,37 @@
+// Plane wave launched in vacuum, TMx
+
+--time-steps
+100
+--sizex
+500
+--sizey
+500
+--2d-tmx
+--angle-phi
+90
+--angle-psi
+0
+--dx
+0.0005
+--wavelength
+0.02
+--log-level
+2
+--save-res
+#--save-as-txt
+--save-as-bmp
+--palette-rgb
+--orth-axis-z
+--pml-sizex
+20
+--same-size-pml
+--use-pml
+#--use-tfsf
+#--tfsf-sizex
+#7
+#--same-size-tfsf
+#--save-tfsf-e-incident
+#--save-tfsf-h-incident
+--point-source-pos-x 250
+--point-source-pos-y 250
+--point-source-ex

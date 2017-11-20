@@ -12,7 +12,7 @@
  *       Consequent dump to and load from ".bmp" file of grid will change grid values.
  */
 /*
- * FIXME: get rid of duplicate code for dump of 3d, 2d and 1d grids
+ * TODO: get rid of duplicate code for dump of 3d, 2d and 1d grids
  */
 template <class TCoord>
 class BMPDumper: public Dumper<TCoord>
