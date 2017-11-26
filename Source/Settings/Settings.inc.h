@@ -53,6 +53,11 @@ SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeY, getTFSFSizeY, grid_coord, 20, "--tfsf-si
 SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeZ, getTFSFSizeZ, grid_coord, 20, "--tfsf-sizez", "Size of TF/SF scattered area by z coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by z coordinate")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-tfsf", "Use size of TF/SF scattered area by x coordinate for y and z coordinates too")
 
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseTFSFPML, getDoUseTFSFPML, bool, false, "--use-tfsf-pml", "Use TF/SF PML")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfPMLSizeXLeft, getTFSFPMLSizeXLeft, grid_coord, 0, "--tfsf-pml-size-x-left", "Size of TF/SF PML by x coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfPMLSizeXRight, getTFSFPMLSizeXRight, grid_coord, 20, "--tfsf-pml-size-x-right", "Size of TF/SF PML by x coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSourcePosX, getTFSFSourcePosX, grid_coord, 0, "--tfsf-source-pos-x", "")
+
 /*
  * Size of ntff area
  */

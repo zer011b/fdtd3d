@@ -59,7 +59,10 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
   , SigmaY (NULLPTR)
   , SigmaZ (NULLPTR)
   , EInc (NULLPTR)
+  , DInc (NULLPTR)
   , HInc (NULLPTR)
+  , BInc (NULLPTR)
+  , SigmaXInc (NULLPTR)
   , totalEx (NULLPTR)
   , totalEy (NULLPTR)
   , totalEz (NULLPTR)
@@ -267,8 +270,21 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
 
   if (solverSettings.getDoUseTFSF ())
   {
-    EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "EInc");
-    HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc");
+    if (solverSettings.getDoUseTFSFPML ())
+    {
+      EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (SQR (totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "EInc");
+      HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (SQR (totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc");
+
+      DInc = new Grid<GridCoordinate1D> (GridCoordinate1D (SQR (totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "DInc");
+      BInc = new Grid<GridCoordinate1D> (GridCoordinate1D (SQR (totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "BInc");
+
+      SigmaXInc = new Grid<GridCoordinate1D> (GridCoordinate1D (SQR (totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "SigmaXInc");
+    }
+    else
+    {
+      EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "EInc");
+      HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (100*(totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc");
+    }
   }
 
   ASSERT (!solverSettings.getDoUseTFSF ()
@@ -458,6 +474,11 @@ Scheme3D::~Scheme3D ()
   {
     delete EInc;
     delete HInc;
+
+    delete DInc;
+    delete BInc;
+
+    delete SigmaXInc;
   }
 
   if (totalInitialized)
@@ -500,19 +521,19 @@ Scheme3D::~Scheme3D ()
 }
 
 void
-Scheme3D::performPlaneWaveESteps (time_step t)
+Scheme3D::performPlaneWaveDSteps (time_step t)
 {
-  grid_coord size = EInc->getSize ().getX ();
+  grid_coord size = DInc->getSize ().getX ();
 
   ASSERT (size > 0);
 
-  FPValue modifier = gridTimeStep / (relPhaseVelocity * PhysicsConst::Eps0 * gridStep);
+  FPValue modifier = 1 / (relPhaseVelocity * gridStep);
 
   for (grid_coord i = 1; i < size; ++i)
   {
     GridCoordinate1D pos (i);
 
-    FieldPointValue *valE = EInc->getFieldPointValue (pos);
+    FieldPointValue *valD = DInc->getFieldPointValue (pos);
 
     GridCoordinate1D posLeft (i - 1);
     GridCoordinate1D posRight (i);
@@ -520,12 +541,42 @@ Scheme3D::performPlaneWaveESteps (time_step t)
     FieldPointValue *valH1 = HInc->getFieldPointValue (posLeft);
     FieldPointValue *valH2 = HInc->getFieldPointValue (posRight);
 
-    FieldValue val = valE->getPrevValue () + modifier * (valH1->getPrevValue () - valH2->getPrevValue ());
+    FieldPointValue *valSigma = SigmaXInc->getFieldPointValue (pos);
+
+    FPValue Ca = (2 * PhysicsConst::Eps0 - valSigma->getCurValue () * gridTimeStep)
+                 / (2 * PhysicsConst::Eps0 + valSigma->getCurValue () * gridTimeStep);
+    FPValue Cb =  2 * PhysicsConst::Eps0 * gridTimeStep / (2 * PhysicsConst::Eps0 + valSigma->getCurValue () * gridTimeStep);
+
+    FieldValue val = Ca * valD->getPrevValue () + Cb * modifier * (valH2->getPrevValue () - valH1->getPrevValue ());
+
+    valD->setCurValue (val);
+  }
+
+  //ALWAYS_ASSERT (DInc->getFieldPointValue (GridCoordinate1D (size - 1))->getCurValue () == getFieldValueRealOnly (0.0));
+
+  DInc->nextTimeStep ();
+}
+
+void
+Scheme3D::performPlaneWaveESteps (time_step t)
+{
+  grid_coord size = EInc->getSize ().getX ();
+
+  ASSERT (size > 0);
+
+  for (grid_coord i = 1; i < size; ++i)
+  {
+    GridCoordinate1D pos (i);
+
+    FieldPointValue *valE = EInc->getFieldPointValue (pos);
+    FieldPointValue *valD = DInc->getFieldPointValue (pos);
+
+    FieldValue val = valE->getPrevValue () + /*1/eps here*/ 1 / (PhysicsConst::Eps0) * (valD->getPrevValue () - valD->getPrevPrevValue ());
 
     valE->setCurValue (val);
   }
 
-  GridCoordinate1D pos (0);
+  GridCoordinate1D pos (solverSettings.getTFSFSourcePosX ());
   FieldPointValue *valE = EInc->getFieldPointValue (pos);
 
   FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
@@ -536,9 +587,38 @@ Scheme3D::performPlaneWaveESteps (time_step t)
   valE->setCurValue (sin (arg));
 #endif /* !COMPLEX_FIELD_VALUES */
 
-  ALWAYS_ASSERT (EInc->getFieldPointValue (GridCoordinate1D (size - 1))->getCurValue () == getFieldValueRealOnly (0.0));
+  //ALWAYS_ASSERT (EInc->getFieldPointValue (GridCoordinate1D (size - 1))->getCurValue () == getFieldValueRealOnly (0.0));
 
   EInc->nextTimeStep ();
+}
+
+void
+Scheme3D::performPlaneWaveBSteps (time_step t)
+{
+  grid_coord size = BInc->getSize ().getX ();
+
+  ASSERT (size > 0);
+
+  FPValue modifier = gridTimeStep / (relPhaseVelocity * gridStep);
+
+  for (grid_coord i = 0; i < size - 1; ++i)
+  {
+    GridCoordinate1D pos (i);
+
+    FieldPointValue *valB = BInc->getFieldPointValue (pos);
+
+    GridCoordinate1D posLeft (i);
+    GridCoordinate1D posRight (i+1);
+
+    FieldPointValue *valE1 = EInc->getFieldPointValue (posLeft);
+    FieldPointValue *valE2 = EInc->getFieldPointValue (posRight);
+
+    FieldValue val = valB->getPrevValue () + modifier * (valE2->getPrevValue () - valE1->getPrevValue ());
+
+    valB->setCurValue (val);
+  }
+
+  BInc->nextTimeStep ();
 }
 
 void
@@ -546,28 +626,30 @@ Scheme3D::performPlaneWaveHSteps (time_step t)
 {
   grid_coord size = HInc->getSize ().getX ();
 
-  ASSERT (size > 1);
-
-  FPValue modifier = gridTimeStep / (relPhaseVelocity * PhysicsConst::Mu0 * gridStep);
+  ASSERT (size > 0);
 
   for (grid_coord i = 0; i < size - 1; ++i)
   {
     GridCoordinate1D pos (i);
 
-    FieldPointValue *valH = HInc->getFieldPointValue (pos);
-
     GridCoordinate1D posLeft (i);
-    GridCoordinate1D posRight (i + 1);
+    GridCoordinate1D posRight (i+1);
 
-    FieldPointValue *valE1 = EInc->getFieldPointValue (posLeft);
-    FieldPointValue *valE2 = EInc->getFieldPointValue (posRight);
+    FieldPointValue *valH = HInc->getFieldPointValue (pos);
+    FieldPointValue *valB = BInc->getFieldPointValue (pos);
 
-    FieldValue val = valH->getPrevValue () + modifier * (valE1->getPrevValue () - valE2->getPrevValue ());
+    FieldPointValue *valSigma1 = SigmaXInc->getFieldPointValue (posLeft);
+    FieldPointValue *valSigma2 = SigmaXInc->getFieldPointValue (posRight);
+    FieldValue sigma = (valSigma1->getCurValue () + valSigma2->getCurValue ()) / 2;
+
+    FPValue Da = (2 * PhysicsConst::Eps0 - sigma * gridTimeStep)
+                 / (2 * PhysicsConst::Eps0 + sigma * gridTimeStep);
+    FPValue Db =  2 * PhysicsConst::Eps0 /*eps here*/ / (2 * PhysicsConst::Eps0 + sigma * gridTimeStep);
+
+    FieldValue val = Da * valH->getPrevValue () + Db / (PhysicsConst::Mu0) * (valB->getPrevValue () - valB->getPrevPrevValue ());
 
     valH->setCurValue (val);
   }
-
-  ALWAYS_ASSERT (HInc->getFieldPointValue (GridCoordinate1D (size - 2))->getCurValue () == getFieldValueRealOnly (0.0));
 
   HInc->nextTimeStep ();
 }
@@ -878,6 +960,7 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 
     if (solverSettings.getDoUseTFSF ())
     {
+      performPlaneWaveDSteps (t);
       performPlaneWaveESteps (t);
     }
 
@@ -923,6 +1006,7 @@ Scheme3D::performNSteps (time_step startStep, time_step numberTimeSteps)
 
     if (solverSettings.getDoUseTFSF ())
     {
+      performPlaneWaveBSteps (t);
       performPlaneWaveHSteps (t);
     }
 
@@ -2133,6 +2217,62 @@ Scheme3D::initGrids ()
   {
     EInc->initialize ();
     HInc->initialize ();
+
+    if (solverSettings.getDoUseTFSFPML ())
+    {
+      DInc->initialize ();
+      BInc->initialize ();
+
+      FPValue eps0 = PhysicsConst::Eps0;
+      FPValue mu0 = PhysicsConst::Mu0;
+
+      for (grid_coord i = 0; i < SigmaXInc->getSize ().getX (); ++i)
+      {
+        FieldPointValue* valSigma = new FieldPointValue ();
+
+        GridCoordinate1D pos (i);
+        GridCoordinate1D size = SigmaXInc->getSize ();
+
+        /*
+         * FIXME: add layout coordinates for material: sigma, eps, etc.
+         */
+        if (pos.getX () < solverSettings.getTFSFPMLSizeXLeft ())
+        {
+          FPValue boundary = solverSettings.getTFSFPMLSizeXLeft () * gridStep;
+          uint32_t exponent = 6;
+          FPValue R_err = 1e-16;
+          FPValue sigma_max_1 = -log (R_err) * (exponent + 1.0) / (2.0 * sqrt (mu0 / eps0) * boundary);
+          FPValue boundaryFactor = sigma_max_1 / (gridStep * (pow (boundary, exponent)) * (exponent + 1));
+
+          grid_coord dist = solverSettings.getTFSFPMLSizeXLeft () - pos.getX ();
+          FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+          FPValue x2 = dist * gridStep;       // lower bounds for point i
+
+          FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));    //   polynomial grading
+
+          valSigma->setCurValue (getFieldValueRealOnly (val));
+        }
+        else if (pos.getX () > size.getX () - solverSettings.getTFSFPMLSizeXRight ())
+        {
+          FPValue boundary = solverSettings.getTFSFPMLSizeXRight () * gridStep;
+          uint32_t exponent = 6;
+          FPValue R_err = 1e-16;
+          FPValue sigma_max_1 = -log (R_err) * (exponent + 1.0) / (2.0 * sqrt (mu0 / eps0) * boundary);
+          FPValue boundaryFactor = sigma_max_1 / (gridStep * (pow (boundary, exponent)) * (exponent + 1));
+
+          grid_coord dist = pos.getX () - (size.getX () - solverSettings.getTFSFPMLSizeXRight ());
+          FPValue x1 = (dist + 1) * gridStep;       // upper bounds for point i
+          FPValue x2 = dist * gridStep;       // lower bounds for point i
+
+          //std::cout << boundaryFactor * (pow(x1, (exponent + 1)) - pow(x2, (exponent + 1))) << std::endl;
+          FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));   //   polynomial grading
+
+          valSigma->setCurValue (getFieldValueRealOnly (val));
+        }
+
+        SigmaXInc->setFieldPointValue (valSigma, pos);
+      }
+    }
   }
 
   if (solverSettings.getDoUseParallelGrid ())

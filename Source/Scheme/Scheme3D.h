@@ -55,7 +55,11 @@ class Scheme3D: public Scheme
   Grid<GridCoordinate3D> *GammaM;
 
   Grid<GridCoordinate1D> *EInc;
+  Grid<GridCoordinate1D> *DInc;
   Grid<GridCoordinate1D> *HInc;
+  Grid<GridCoordinate1D> *BInc;
+
+  Grid<GridCoordinate1D> *SigmaXInc;
 
   Grid<GridCoordinate3D> *totalEx;
   Grid<GridCoordinate3D> *totalEy;
@@ -181,7 +185,9 @@ private:
   int updateAmplitude (FPValue, FieldPointValue *, FPValue *);
 
   void performPlaneWaveESteps (time_step);
+  void performPlaneWaveDSteps (time_step);
   void performPlaneWaveHSteps (time_step);
+  void performPlaneWaveBSteps (time_step);
 
   void makeGridScattered (Grid<GridCoordinate3D> *, GridType);
   void gatherFieldsTotal (bool);
