@@ -137,6 +137,8 @@ class Scheme3D: public Scheme
   SourceCallBack HyExact;
   SourceCallBack HzExact;
 
+  FPValue normG;
+
 private:
 
   template <uint8_t grid_coord, bool usePML, bool useMetamaterials>

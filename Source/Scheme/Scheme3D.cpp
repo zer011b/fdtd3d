@@ -106,6 +106,7 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
   , HxExact (NULLPTR)
   , HyExact (NULLPTR)
   , HzExact (NULLPTR)
+  , normG (0)
 {
   if (solverSettings.getDoUseNTFF ())
   {
@@ -272,13 +273,13 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
   {
     if (solverSettings.getDoUseTFSFPML ())
     {
-      EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (SQR (totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "EInc");
-      HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (SQR (totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "HInc");
+      EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (1000), 0, "EInc");
+      HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (1000), 0, "HInc");
 
-      DInc = new Grid<GridCoordinate1D> (GridCoordinate1D (SQR (totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "DInc");
-      BInc = new Grid<GridCoordinate1D> (GridCoordinate1D (SQR (totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "BInc");
+      DInc = new Grid<GridCoordinate1D> (GridCoordinate1D (1000), 0, "DInc");
+      BInc = new Grid<GridCoordinate1D> (GridCoordinate1D (1000), 0, "BInc");
 
-      SigmaXInc = new Grid<GridCoordinate1D> (GridCoordinate1D (SQR (totSize.getX () + totSize.getY () + totSize.getZ ())), 0, "SigmaXInc");
+      SigmaXInc = new Grid<GridCoordinate1D> (GridCoordinate1D (1000), 0, "SigmaXInc");
     }
     else
     {
@@ -564,6 +565,8 @@ Scheme3D::performPlaneWaveESteps (time_step t)
 
   ASSERT (size > 0);
 
+  FPValue norm = 0.0;
+
   for (grid_coord i = 1; i < size; ++i)
   {
     GridCoordinate1D pos (i);
@@ -573,19 +576,57 @@ Scheme3D::performPlaneWaveESteps (time_step t)
 
     FieldValue val = valE->getPrevValue () + /*1/eps here*/ 1 / (PhysicsConst::Eps0) * (valD->getPrevValue () - valD->getPrevPrevValue ());
 
-    valE->setCurValue (val);
+    if (t == 0)
+    {
+    //   FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
+    //
+    //   // exp (- (x-x0)^2)
+    //
+    // #ifdef COMPLEX_FIELD_VALUES
+    //   valE->setCurValue (FieldValue (sin (arg), cos (arg)));
+    // #else /* COMPLEX_FIELD_VALUES */
+    //   //valE->setCurValue (sin (arg));
+      valE->setCurValue (exp (- SQR((FPValue) (pos.getX() - 500)) / SQR(15.0)));
+    // #endif /* !COMPLEX_FIELD_VALUES */
+    }
+    else
+    {
+      valE->setCurValue (val);
+    }
+
+    if (i >= solverSettings.getTFSFPMLSizeXLeft () && i <= size - solverSettings.getTFSFPMLSizeXRight ())
+    {
+      // exact solution diff
+      FPValue exact = (exp (- SQR((FPValue) (pos.getX() - 500 + t*1.0 / 2.0)) / SQR(15.0))
+                       + exp (- SQR((FPValue) (pos.getX() - 500 - t*1.0 / 2.0)) / SQR(15.0))) / 2;
+      if (fabs(exact - valE->getCurValue ()) > norm)
+      {
+        norm = fabs(exact - valE->getCurValue ());
+      }
+    }
   }
 
-  GridCoordinate1D pos (solverSettings.getTFSFSourcePosX ());
-  FieldPointValue *valE = EInc->getFieldPointValue (pos);
+  if (norm > normG)
+  {
+    normG = norm;
+  }
 
-  FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
+  printf ("NORM: t=%u, %.30f\n", t, normG);
 
-#ifdef COMPLEX_FIELD_VALUES
-  valE->setCurValue (FieldValue (sin (arg), cos (arg)));
-#else /* COMPLEX_FIELD_VALUES */
-  valE->setCurValue (sin (arg));
-#endif /* !COMPLEX_FIELD_VALUES */
+
+//   GridCoordinate1D pos (solverSettings.getTFSFSourcePosX ());
+//   FieldPointValue *valE = EInc->getFieldPointValue (pos);
+//
+//   FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
+//
+//   // exp (- (x-x0)^2)
+//
+// #ifdef COMPLEX_FIELD_VALUES
+//   valE->setCurValue (FieldValue (sin (arg), cos (arg)));
+// #else /* COMPLEX_FIELD_VALUES */
+//   //valE->setCurValue (sin (arg));
+//   valE->setCurValue (exp (- SQR(pos.getX() * gridStep - t * gridTimeStep * PhysicsConst::SpeedOfLight) / SQR (gridStep)));
+// #endif /* !COMPLEX_FIELD_VALUES */
 
   //ALWAYS_ASSERT (EInc->getFieldPointValue (GridCoordinate1D (size - 1))->getCurValue () == getFieldValueRealOnly (0.0));
 
@@ -2239,7 +2280,7 @@ Scheme3D::initGrids ()
         if (pos.getX () < solverSettings.getTFSFPMLSizeXLeft ())
         {
           FPValue boundary = solverSettings.getTFSFPMLSizeXLeft () * gridStep;
-          uint32_t exponent = 6;
+          uint32_t exponent = 8;
           FPValue R_err = 1e-16;
           FPValue sigma_max_1 = -log (R_err) * (exponent + 1.0) / (2.0 * sqrt (mu0 / eps0) * boundary);
           FPValue boundaryFactor = sigma_max_1 / (gridStep * (pow (boundary, exponent)) * (exponent + 1));
@@ -2255,7 +2296,7 @@ Scheme3D::initGrids ()
         else if (pos.getX () > size.getX () - solverSettings.getTFSFPMLSizeXRight ())
         {
           FPValue boundary = solverSettings.getTFSFPMLSizeXRight () * gridStep;
-          uint32_t exponent = 6;
+          uint32_t exponent = 8;
           FPValue R_err = 1e-16;
           FPValue sigma_max_1 = -log (R_err) * (exponent + 1.0) / (2.0 * sqrt (mu0 / eps0) * boundary);
           FPValue boundaryFactor = sigma_max_1 / (gridStep * (pow (boundary, exponent)) * (exponent + 1));
