@@ -1,30 +1,39 @@
 // Plane wave launched in vacuum
-
+--courant-factor 0.5
 --time-steps
-100
+3000
 --sizex
-100
+5
 --sizey
-100
+5
 --sizez
-20
+5
 --3d
 --angle-phi
 0
 --dx
-0.0005
+0.0002
 --wavelength
 0.02
 --log-level
-2
+0
 --save-res
---save-as-bmp
---palette-rgb
---orth-axis-z
+--save-as-txt
+--save-tfsf-e-incident
+--save-tfsf-h-incident
+--save-interm-res
+--interm-save-step 10
+#--save-as-bmp
+#--palette-rgb
+#--orth-axis-z
 --pml-sizex
-5
+1
 --same-size-pml
 --use-tfsf
 --tfsf-sizex
-7
+2
 --same-size-tfsf
+--use-tfsf-pml
+--tfsf-pml-size-x-left 0
+--tfsf-pml-size-x-right 100
+--tfsf-source-pos-x 0
