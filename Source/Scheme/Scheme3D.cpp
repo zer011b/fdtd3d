@@ -273,13 +273,13 @@ Scheme3D::Scheme3D (YeeGridLayout *layout,
   {
     if (solverSettings.getDoUseTFSFPML ())
     {
-      EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (1000), 0, "EInc");
-      HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (1000), 0, "HInc");
+      EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (2000), 0, "EInc");
+      HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (2000), 0, "HInc");
 
-      DInc = new Grid<GridCoordinate1D> (GridCoordinate1D (1000), 0, "DInc");
-      BInc = new Grid<GridCoordinate1D> (GridCoordinate1D (1000), 0, "BInc");
+      DInc = new Grid<GridCoordinate1D> (GridCoordinate1D (2000), 0, "DInc");
+      BInc = new Grid<GridCoordinate1D> (GridCoordinate1D (2000), 0, "BInc");
 
-      SigmaXInc = new Grid<GridCoordinate1D> (GridCoordinate1D (1000), 0, "SigmaXInc");
+      SigmaXInc = new Grid<GridCoordinate1D> (GridCoordinate1D (2000), 0, "SigmaXInc");
     }
     else
     {
@@ -550,7 +550,36 @@ Scheme3D::performPlaneWaveDSteps (time_step t)
 
     FieldValue val = Ca * valD->getPrevValue () + Cb * modifier * (valH2->getPrevValue () - valH1->getPrevValue ());
 
-    valD->setCurValue (val);
+    if (t == 0)
+    {
+    //   FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
+    //
+    //   // exp (- (x-x0)^2)
+    //
+    // #ifdef COMPLEX_FIELD_VALUES
+    //   valE->setCurValue (FieldValue (sin (arg), cos (arg)));
+    // #else /* COMPLEX_FIELD_VALUES */
+    //   //valE->setCurValue (sin (arg));
+      valD->setCurValue (PhysicsConst::SpeedOfLight * PhysicsConst::Eps0 * (exp (- SQR((FPValue) (pos.getX() - 1000 + (0.5)*1.0 / 2.0)) / SQR(15.0*2)/64)
+                                               + exp (- SQR((FPValue) (pos.getX() - 1000 - (0.5)*1.0 / 2.0)) / SQR(15.0*2)/64)) / 2);
+    // #endif /* !COMPLEX_FIELD_VALUES */
+    }
+    else
+    {
+      valD->setCurValue (val);
+    }
+
+    if (i >= solverSettings.getTFSFPMLSizeXLeft () && i <= size - solverSettings.getTFSFPMLSizeXRight ())
+    {
+      // exact solution diff
+      FPValue exact = (PhysicsConst::SpeedOfLight * PhysicsConst::Eps0 * (exp (- SQR((FPValue) (pos.getX() - 1000 + (t+0.5)*1.0 / 2.0)) / SQR(15.0*2)/64)
+                       + exp (- SQR((FPValue) (pos.getX() - 1000 - (t+0.5)*1.0 / 2.0)) / SQR(15.0*2)/64)) / 2);
+      // if (fabs(exact - valE->getCurValue ()) > norm)
+      // {
+      //   norm = fabs(exact - valE->getCurValue ());
+      // }
+      FPValue norm = SQR (exact - valD->getCurValue ());
+    }
   }
 
   //ALWAYS_ASSERT (DInc->getFieldPointValue (GridCoordinate1D (size - 1))->getCurValue () == getFieldValueRealOnly (0.0));
@@ -574,7 +603,13 @@ Scheme3D::performPlaneWaveESteps (time_step t)
     FieldPointValue *valE = EInc->getFieldPointValue (pos);
     FieldPointValue *valD = DInc->getFieldPointValue (pos);
 
-    FieldValue val = valE->getPrevValue () + /*1/eps here*/ 1 / (PhysicsConst::Eps0) * (valD->getPrevValue () - valD->getPrevPrevValue ());
+    FPValue eps = 1.0;
+    // if (i >= size / 2 - 100 && i < size / 2 + 100)
+    // {
+    //   eps = 4.0;
+    // }
+
+    FieldValue val = valE->getPrevValue () + 1 / (eps * PhysicsConst::Eps0) * (valD->getPrevValue () - valD->getPrevPrevValue ());
 
     if (t == 0)
     {
@@ -586,7 +621,8 @@ Scheme3D::performPlaneWaveESteps (time_step t)
     //   valE->setCurValue (FieldValue (sin (arg), cos (arg)));
     // #else /* COMPLEX_FIELD_VALUES */
     //   //valE->setCurValue (sin (arg));
-      valE->setCurValue (exp (- SQR((FPValue) (pos.getX() - 500)) / SQR(15.0)));
+      valE->setCurValue (PhysicsConst::SpeedOfLight * (exp (- SQR((FPValue) (pos.getX() - 1000 + (0.5)*1.0 / 2.0)) / SQR(15.0*2)/64)
+                         + exp (- SQR((FPValue) (pos.getX() - 1000 - (0.5)*1.0 / 2.0)) / SQR(15.0*2)/64)) / 2);
     // #endif /* !COMPLEX_FIELD_VALUES */
     }
     else
@@ -597,21 +633,24 @@ Scheme3D::performPlaneWaveESteps (time_step t)
     if (i >= solverSettings.getTFSFPMLSizeXLeft () && i <= size - solverSettings.getTFSFPMLSizeXRight ())
     {
       // exact solution diff
-      FPValue exact = (exp (- SQR((FPValue) (pos.getX() - 500 + t*1.0 / 2.0)) / SQR(15.0))
-                       + exp (- SQR((FPValue) (pos.getX() - 500 - t*1.0 / 2.0)) / SQR(15.0))) / 2;
-      if (fabs(exact - valE->getCurValue ()) > norm)
-      {
-        norm = fabs(exact - valE->getCurValue ());
-      }
+      FPValue exact = PhysicsConst::SpeedOfLight * (exp (- SQR((FPValue) (pos.getX() - 1000 + (t+0.5)*1.0 / 2.0)) / SQR(15.0*2)/64)
+                       + exp (- SQR((FPValue) (pos.getX() - 1000 - (t+0.5)*1.0 / 2.0)) / SQR(15.0*2)/64)) / 2;
+      // if (fabs(exact - valE->getCurValue ()) > norm)
+      // {
+      //   norm = fabs(exact - valE->getCurValue ());
+      // }
+      norm += SQR (exact - valE->getCurValue ());
     }
   }
+
+  norm = sqrt(norm / size);
 
   if (norm > normG)
   {
     normG = norm;
   }
 
-  printf ("NORM: t=%u, %.30f\n", t, normG);
+  printf ("NORM: t=%u, %.30f, %.30f\n", t, norm, normG / PhysicsConst::SpeedOfLight);
 
 
 //   GridCoordinate1D pos (solverSettings.getTFSFSourcePosX ());
@@ -624,8 +663,7 @@ Scheme3D::performPlaneWaveESteps (time_step t)
 // #ifdef COMPLEX_FIELD_VALUES
 //   valE->setCurValue (FieldValue (sin (arg), cos (arg)));
 // #else /* COMPLEX_FIELD_VALUES */
-//   //valE->setCurValue (sin (arg));
-//   valE->setCurValue (exp (- SQR(pos.getX() * gridStep - t * gridTimeStep * PhysicsConst::SpeedOfLight) / SQR (gridStep)));
+//   valE->setCurValue (sin (arg));
 // #endif /* !COMPLEX_FIELD_VALUES */
 
   //ALWAYS_ASSERT (EInc->getFieldPointValue (GridCoordinate1D (size - 1))->getCurValue () == getFieldValueRealOnly (0.0));
@@ -656,7 +694,36 @@ Scheme3D::performPlaneWaveBSteps (time_step t)
 
     FieldValue val = valB->getPrevValue () + modifier * (valE2->getPrevValue () - valE1->getPrevValue ());
 
-    valB->setCurValue (val);
+    if (t == 0)
+    {
+    //   FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
+    //
+    //   // exp (- (x-x0)^2)
+    //
+    // #ifdef COMPLEX_FIELD_VALUES
+    //   valE->setCurValue (FieldValue (sin (arg), cos (arg)));
+    // #else /* COMPLEX_FIELD_VALUES */
+    //   //valE->setCurValue (sin (arg));
+      valB->setCurValue (PhysicsConst::SpeedOfLight * PhysicsConst::Eps0 * PhysicsConst::Mu0 * (exp (- SQR((FPValue) (pos.getX() + 0.5 - 1000 + (1)*1.0 / 2.0)) / SQR(15.0*2)/64)
+                          - exp (- SQR((FPValue) (pos.getX() + 0.5 - 1000 - (1)*1.0 / 2.0)) / SQR(15.0*2)/64)) / 2);
+    // #endif /* !COMPLEX_FIELD_VALUES */
+    }
+    else
+    {
+      valB->setCurValue (val);
+    }
+
+    if (i >= solverSettings.getTFSFPMLSizeXLeft () && i <= size - solverSettings.getTFSFPMLSizeXRight ())
+    {
+      // exact solution diff
+      FPValue exact = PhysicsConst::SpeedOfLight * PhysicsConst::Eps0 * PhysicsConst::Mu0 * (exp (- SQR((FPValue) (pos.getX() + 0.5 - 1000 + (t+1)*1.0 / 2.0)) / SQR(15.0*2)/64)
+                       - exp (- SQR((FPValue) (pos.getX() + 0.5 - 1000 - (t+1)*1.0 / 2.0)) / SQR(15.0*2)/64)) / 2;
+      // if (fabs(exact - valE->getCurValue ()) > norm)
+      // {
+      //   norm = fabs(exact - valE->getCurValue ());
+      // }
+      FPValue norm = SQR (exact - valB->getCurValue ());
+    }
   }
 
   BInc->nextTimeStep ();
@@ -683,13 +750,53 @@ Scheme3D::performPlaneWaveHSteps (time_step t)
     FieldPointValue *valSigma2 = SigmaXInc->getFieldPointValue (posRight);
     FieldValue sigma = (valSigma1->getCurValue () + valSigma2->getCurValue ()) / 2;
 
+    // FPValue eps = 1.0;
+    // if (i == size / 2 - 1)
+    // {
+    //   eps = 2.5;
+    // }
+    // else if (i > size / 2 - 1)
+    // {
+    //   eps = 4.0;
+    // }
+    FPValue mu = 1.0;
+
     FPValue Da = (2 * PhysicsConst::Eps0 - sigma * gridTimeStep)
                  / (2 * PhysicsConst::Eps0 + sigma * gridTimeStep);
-    FPValue Db =  2 * PhysicsConst::Eps0 /*eps here*/ / (2 * PhysicsConst::Eps0 + sigma * gridTimeStep);
+    FPValue Db =  2 * PhysicsConst::Eps0 / (2 * PhysicsConst::Eps0 + sigma * gridTimeStep);
 
-    FieldValue val = Da * valH->getPrevValue () + Db / (PhysicsConst::Mu0) * (valB->getPrevValue () - valB->getPrevPrevValue ());
+    FieldValue val = Da * valH->getPrevValue () + Db / (mu * PhysicsConst::Mu0) * (valB->getPrevValue () - valB->getPrevPrevValue ());
 
-    valH->setCurValue (val);
+    if (t == 0)
+    {
+    //   FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
+    //
+    //   // exp (- (x-x0)^2)
+    //
+    // #ifdef COMPLEX_FIELD_VALUES
+    //   valE->setCurValue (FieldValue (sin (arg), cos (arg)));
+    // #else /* COMPLEX_FIELD_VALUES */
+    //   //valE->setCurValue (sin (arg));
+      valH->setCurValue (PhysicsConst::SpeedOfLight * PhysicsConst::Eps0 * (exp (- SQR((FPValue) (pos.getX() + 0.5 - 1000 + (1)*1.0 / 2.0)) / SQR(15.0*2)/64)
+                          - exp (- SQR((FPValue) (pos.getX() + 0.5 - 1000 - (1)*1.0 / 2.0)) / SQR(15.0*2)/64)) / 2);
+    // #endif /* !COMPLEX_FIELD_VALUES */
+    }
+    else
+    {
+      valH->setCurValue (val);
+    }
+
+    if (i >= solverSettings.getTFSFPMLSizeXLeft () && i <= size - solverSettings.getTFSFPMLSizeXRight ())
+    {
+      // exact solution diff
+      FPValue exact = PhysicsConst::SpeedOfLight * PhysicsConst::Eps0 * (exp (- SQR((FPValue) (pos.getX() + 0.5 - 1000 + (t+1)*1.0 / 2.0)) / SQR(15.0*2)/64)
+                       - exp (- SQR((FPValue) (pos.getX() + 0.5 - 1000 - (t+1)*1.0 / 2.0)) / SQR(15.0*2)/64)) / 2;
+      // if (fabs(exact - valE->getCurValue ()) > norm)
+      // {
+      //   norm = fabs(exact - valE->getCurValue ());
+      // }
+      FPValue norm = SQR (exact - valH->getCurValue ());
+    }
   }
 
   HInc->nextTimeStep ();
