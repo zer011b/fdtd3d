@@ -97,7 +97,9 @@ See [Input & Output](Docs/Input-Output.md) for details about load and save of fi
 
 # How to cite
 
-If you would like to publish papers with results somehow obtained by fdtd3d or with any modifications of it, please, contact anyone of the authors.
+You can site the following paper about the techniques used in fdtd3d:
+
+Balykov G. (2017) Parallel FDTD Solver with Optimal Topology and Dynamic Balancing. In: Voevodin V., Sobolev S. (eds) Supercomputing. RuSCDays 2017. Communications in Computer and Information Science, vol 793. Springer, Cham
 
 # About
 
