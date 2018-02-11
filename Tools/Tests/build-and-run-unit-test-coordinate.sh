@@ -49,7 +49,7 @@ function build
           exit 1
         fi
 
-        make unit-test-grid
+        make unit-test-coordinate
 
         res=$(echo $?)
 
@@ -57,7 +57,7 @@ function build
           exit 1
         fi
 
-        ./Tests/unit-test-grid
+        ./Tests/unit-test-coordinate
 
         res=$(echo $?)
 

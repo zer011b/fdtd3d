@@ -33,3 +33,6 @@ target_link_libraries (unit-test-grid ${LIBS} Helpers Settings)
 
 add_executable (unit-test-dumpers-loaders unit-test-dumpers-loaders.cpp)
 target_link_libraries (unit-test-dumpers-loaders ${LIBS} Helpers Settings)
+
+add_executable (unit-test-coordinate unit-test-coordinate.cpp)
+target_link_libraries (unit-test-coordinate Helpers Settings Coordinate)
