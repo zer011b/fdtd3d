@@ -18,7 +18,7 @@
  *
  * TODO: inline getter/setter
  */
-template <template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
 class YeeGridLayout
 {
 public:
@@ -33,6 +33,10 @@ private:
   typedef TCoord<FPValue, false> TCSFP;
 
 protected:
+
+  CoordinateType ct1;
+  CoordinateType ct2;
+  CoordinateType ct3;
 
   const TC zeroCoord; /**< Zero coordinate of grid */
   const TC minEpsCoord; /**< Minimum epsilon coordinate */
@@ -69,14 +73,17 @@ protected:
 
   const TC leftBorderTotalField; /**< Coordinate of left border of TF/SF */
   const TC rightBorderTotalField; /**< Coordinate of right border of TF/SF */
+  const TCFP leftBorderTotalFieldFP; /**< Floating-point coordinate of left border of TF/SF */
+  const TCFP rightBorderTotalFieldFP; /**< Floating-point coordinate of right border of TF/SF */
+
   const TCFP zeroIncCoordFP; /**< Real coordinate corresponding to zero coordinate of auxiliary grid
-                                            *   for incident wave */
+                              *   for incident wave */
 
   const FPValue incidentWaveAngle1; /**< Teta incident wave angle */
   const FPValue incidentWaveAngle2; /**< Phi incident wave angle */
   const FPValue incidentWaveAngle3; /**< Psi incident wave angle */
 
-  const bool isDoubleMaterialPrecision;
+  const bool isDoubleMaterialPrecision; /**< Flag whether to use double material precision grids */
 
 public:
 
@@ -93,6 +100,10 @@ public:
   /*
    * Get size of field component grid
    */
+  TC getSize () const
+  {
+    return size;
+  }
   TC getEpsSize () const
   {
     return sizeEps;
@@ -140,27 +151,27 @@ public:
    */
   TC getExStartDiff () const
   {
-    return minExCoord + TC (1, 1, 1);
+    return minExCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   TC getEyStartDiff () const
   {
-    return minEyCoord + TC (1, 1, 1);
+    return minEyCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   TC getEzStartDiff () const
   {
-    return minEzCoord + TC (1, 1, 1);
+    return minEzCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   TC getHxStartDiff () const
   {
-    return minHxCoord + TC (1, 1, 1);
+    return minHxCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   TC getHyStartDiff () const
   {
-    return minHyCoord + TC (1, 1, 1);
+    return minHyCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   TC getHzStartDiff () const
   {
-    return minHzCoord + TC (1, 1, 1);
+    return minHzCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
 
   /*
@@ -168,27 +179,27 @@ public:
    */
   TC getExEndDiff () const
   {
-    return TC (1, 1, 1) - minExCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minExCoord;
   }
   TC getEyEndDiff () const
   {
-    return TC (1, 1, 1) - minEyCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minEyCoord;
   }
   TC getEzEndDiff () const
   {
-    return TC (1, 1, 1) - minEzCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minEzCoord;
   }
   TC getHxEndDiff () const
   {
-    return TC (1, 1, 1) - minHxCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minHxCoord;
   }
   TC getHyEndDiff () const
   {
-    return TC (1, 1, 1) - minHyCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minHyCoord;
   }
   TC getHzEndDiff () const
   {
-    return TC (1, 1, 1) - minHzCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minHzCoord;
   }
 
   /*
@@ -379,7 +390,6 @@ public:
   {
     return isInPML (getHzCoordFP (coord));
   }
-  bool isInPML (TCFP realCoordFP) const;
 
   /*
    * Total field / scattered field
@@ -396,7 +406,6 @@ public:
   {
     return zeroIncCoordFP;
   }
-  bool doNeedTFSFUpdateBorder (LayoutDirection, bool, bool, bool, bool, bool, bool) const;
   bool doNeedTFSFUpdateExBorder (TC, LayoutDirection) const;
   bool doNeedTFSFUpdateEyBorder (TC, LayoutDirection) const;
   bool doNeedTFSFUpdateEzBorder (TC, LayoutDirection) const;
@@ -415,6 +424,11 @@ public:
   FPValue getIncidentWaveAngle3 () const
   {
     return incidentWaveAngle3;
+  }
+
+  bool getIsDoubleMaterialPrecision () const
+  {
+    return isDoubleMaterialPrecision;
   }
 
   FieldValue getExFromIncidentE (FieldValue valE) const
@@ -471,350 +485,178 @@ public:
   template <bool isMetaMaterial>
   void initCoordinates (const TC &, GridType, TC &, TC &, TC &, TC &, TC &, TC &, TC &, TC &);
 
-  bool getIsDoubleMaterialPrecision () const
-  {
-    return isDoubleMaterialPrecision;
-  }
+private:
+
+  bool isInPML (TCFP realCoordFP) const;
 }; /* YeeGridLayout */
 
 class YeeGridLayoutHelper
 {
-public:
+  template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+  friend class YeeGridLayout;
 
-  /*
-   * ======================================================= Ex =======================================================
-   */
-  static bool tfsfExBorderDownX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+private:
+
+  template<int8_t Offset>
+  static bool tfsfBorder (FPValue coordFP, FPValue borderFP)
   {
-    return coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5;
-  }
-  static bool tfsfExBorderDownY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 1 && coordFP.getY () < leftBorderFP.getY ();
-  }
-  static bool tfsfExBorderDownZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ();
+    ASSERT (Offset > -10 && Offset < 10);
+    return IS_FP_EXACT (coordFP, borderFP + Offset * FPValue (1) / FPValue (10));
   }
 
-  static bool tfsfExBorderUpX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+  template<int8_t Offset1, int8_t Offset2>
+  static bool tfsfBorder (FPValue coordFP, FPValue firstBorderFP, FPValue secondBorderFP)
   {
-    return coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5;
-  }
-  static bool tfsfExBorderUpY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > rightBorderFP.getY () && coordFP.getY () < rightBorderFP.getY () + 1;
-  }
-  static bool tfsfExBorderUpZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ();
+    ASSERT (Offset1 > -10 && Offset1 < 10);
+    ASSERT (Offset2 > -10 && Offset2 < 10);
+    return coordFP > firstBorderFP + Offset1 * FPValue (1) / FPValue (10)
+           && coordFP < secondBorderFP + Offset2 * FPValue (1) / FPValue (10);
   }
 
-  static bool tfsfExBorderBackX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+  template<int8_t T>
+  static bool tfsfBorder1DFirst__1 (GridCoordinateFP1D coord, GridCoordinateFP1D leftBorderTotalFieldFP)
   {
-    return coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5;
+    return YeeGridLayoutHelper::tfsfBorder<T> (coord.get1 (), leftBorderTotalFieldFP.get1 ());
   }
-  static bool tfsfExBorderBackY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+  template<int8_t T>
+  static bool tfsfBorder1DSecond__1 (GridCoordinateFP1D coord, GridCoordinateFP1D rightBorderTotalFieldFP)
   {
-    return coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ();
+    return YeeGridLayoutHelper::tfsfBorder<T> (coord.get1 (), rightBorderTotalFieldFP.get1 ());
   }
-  static bool tfsfExBorderBackZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+  template<int8_t T1, int8_t T2>
+  static bool tfsfBorder2DFirst__1 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
   {
-    return coordFP.getZ () > leftBorderFP.getZ () - 1 && coordFP.getZ () < leftBorderFP.getZ ();
+    return YeeGridLayoutHelper::tfsfBorder<T1, -T1> (coord.get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
+           && YeeGridLayoutHelper::tfsfBorder<T2> (coord.get2 (), leftBorderTotalFieldFP.get2 ());
   }
-
-  static bool tfsfExBorderFrontX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+  template<int8_t T1, int8_t T2>
+  static bool tfsfBorder2DSecond__1 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
   {
-    return coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5;
+    return YeeGridLayoutHelper::tfsfBorder<T1, -T1> (coord.get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
+           && YeeGridLayoutHelper::tfsfBorder<T2> (coord.get2 (), rightBorderTotalFieldFP.get2 ());
   }
-  static bool tfsfExBorderFrontY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+  template<int8_t T1, int8_t T2>
+  static bool tfsfBorder2DFirst__2 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
   {
-    return coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ();
+    return YeeGridLayoutHelper::tfsfBorder<T2> (coord.get1 (), leftBorderTotalFieldFP.get1 ())
+           && YeeGridLayoutHelper::tfsfBorder<T1, -T1> (coord.get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ());
   }
-  static bool tfsfExBorderFrontZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+  template<int8_t T1, int8_t T2>
+  static bool tfsfBorder2DSecond__2 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
   {
-    return coordFP.getZ () > rightBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ () + 1;
-  }
-
-  /*
-   * ======================================================= Ey =======================================================
-   */
-  static bool tfsfEyBorderLeftX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () - 1 && coordFP.getX () < leftBorderFP.getX ();
-  }
-  static bool tfsfEyBorderLeftY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5;
-  }
-  static bool tfsfEyBorderLeftZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ();
+    return YeeGridLayoutHelper::tfsfBorder<T2> (coord.get1 (), rightBorderTotalFieldFP.get1 ())
+           && YeeGridLayoutHelper::tfsfBorder<T1, -T1> (coord.get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ());
   }
 
-  static bool tfsfEyBorderRightX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+  static bool doNeedTFSFUpdateBorder (LayoutDirection dir,
+                                      bool condL,
+                                      bool condR,
+                                      bool condD,
+                                      bool condU,
+                                      bool condB,
+                                      bool condF)
   {
-    return coordFP.getX () > rightBorderFP.getX () && coordFP.getX () < rightBorderFP.getX () + 1;
-  }
-  static bool tfsfEyBorderRightY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5;
-  }
-  static bool tfsfEyBorderRightZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ();
+    bool match = false;
+
+    switch (dir)
+    {
+      case LayoutDirection::LEFT:
+      {
+        match = condL;
+        break;
+      }
+      case LayoutDirection::RIGHT:
+      {
+        match = condR;
+        break;
+      }
+      case LayoutDirection::DOWN:
+      {
+        match = condD;
+        break;
+      }
+      case LayoutDirection::UP:
+      {
+        match = condU;
+        break;
+      }
+      case LayoutDirection::BACK:
+      {
+        match = condB;
+        break;
+      }
+      case LayoutDirection::FRONT:
+      {
+        match = condF;
+        break;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+
+    return match;
   }
 
-  static bool tfsfEyBorderBackX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+  static bool isInPML1D (GridCoordinateFP1D realCoordFP, GridCoordinateFP1D zeroCoordFP,
+                         GridCoordinate1D leftBorderPML, GridCoordinate1D rightBorderPML)
   {
-    return coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ();
-  }
-  static bool tfsfEyBorderBackY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5;
-  }
-  static bool tfsfEyBorderBackZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () - 1 && coordFP.getZ () < leftBorderFP.getZ ();
+    GridCoordinateFP1D coordLeftBorderPMLFP = convertCoord (leftBorderPML) + zeroCoordFP;
+    GridCoordinateFP1D coordRightBorderPMLFP = convertCoord (rightBorderPML) + zeroCoordFP;
+
+    /*
+     * TODO: remove floating point equality comparison
+     */
+    ASSERT (coordLeftBorderPMLFP < coordRightBorderPMLFP);
+    bool isInXPML = realCoordFP.get1 () < coordLeftBorderPMLFP.get1 ()
+                    || realCoordFP.get1 () >= coordRightBorderPMLFP.get1 ();
+
+    return isInXPML;
   }
 
-  static bool tfsfEyBorderFrontX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+  static bool isInPML2D (GridCoordinateFP2D realCoordFP, GridCoordinateFP2D zeroCoordFP,
+                         GridCoordinate2D leftBorderPML, GridCoordinate2D rightBorderPML)
   {
-    return coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ();
-  }
-  static bool tfsfEyBorderFrontY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5;
-  }
-  static bool tfsfEyBorderFrontZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > rightBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ () + 1;
+    GridCoordinateFP2D coordLeftBorderPMLFP = convertCoord (leftBorderPML) + zeroCoordFP;
+    GridCoordinateFP2D coordRightBorderPMLFP = convertCoord (rightBorderPML) + zeroCoordFP;
+
+    /*
+     * TODO: remove floating point equality comparison
+     */
+    ASSERT (coordLeftBorderPMLFP < coordRightBorderPMLFP);
+    bool isInXPML = realCoordFP.get1 () < coordLeftBorderPMLFP.get1 ()
+                    || realCoordFP.get1 () >= coordRightBorderPMLFP.get1 ();
+    bool isInYPML = realCoordFP.get2 () < coordLeftBorderPMLFP.get2 ()
+                    || realCoordFP.get2 () >= coordRightBorderPMLFP.get2 ();
+
+    return isInXPML || isInYPML;
   }
 
-  /*
-   * ======================================================= Ez =======================================================
-   */
-  static bool tfsfEzBorderLeftX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
+  static bool isInPML3D (GridCoordinateFP3D realCoordFP, GridCoordinateFP3D zeroCoordFP,
+                         GridCoordinate3D leftBorderPML, GridCoordinate3D rightBorderPML)
   {
-    return coordFP.getX () > leftBorderFP.getX () - 1 && coordFP.getX () < leftBorderFP.getX ();
-  }
-  static bool tfsfEzBorderLeftY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ();
-  }
-  static bool tfsfEzBorderLeftZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5;
-  }
+    GridCoordinateFP3D coordLeftBorderPMLFP = convertCoord (leftBorderPML) + zeroCoordFP;
+    GridCoordinateFP3D coordRightBorderPMLFP = convertCoord (rightBorderPML) + zeroCoordFP;
 
-  static bool tfsfEzBorderRightX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > rightBorderFP.getX () && coordFP.getX () < rightBorderFP.getX () + 1;
-  }
-  static bool tfsfEzBorderRightY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ();
-  }
-  static bool tfsfEzBorderRightZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5;
-  }
+    /*
+     * TODO: remove floating point equality comparison
+     */
+    ASSERT (coordLeftBorderPMLFP < coordRightBorderPMLFP);
+    bool isInXPML = realCoordFP.get1 () < coordLeftBorderPMLFP.get1 ()
+                    || realCoordFP.get1 () >= coordRightBorderPMLFP.get1 ();
+    bool isInYPML = realCoordFP.get2 () < coordLeftBorderPMLFP.get2 ()
+                    || realCoordFP.get2 () >= coordRightBorderPMLFP.get2 ();
+    bool isInZPML = realCoordFP.get3 () < coordLeftBorderPMLFP.get3 ()
+                    || realCoordFP.get3 () >= coordRightBorderPMLFP.get3 ();
 
-  static bool tfsfEzBorderDownX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ();
-  }
-  static bool tfsfEzBorderDownY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 1 && coordFP.getY () < leftBorderFP.getY ();
-  }
-  static bool tfsfEzBorderDownZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5;
-  }
-
-  static bool tfsfEzBorderUpX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ();
-  }
-  static bool tfsfEzBorderUpY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > rightBorderFP.getY () && coordFP.getY () < rightBorderFP.getY () + 1;
-  }
-  static bool tfsfEzBorderUpZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5;
-  }
-
-  /*
-   * ======================================================= Hx =======================================================
-   */
-  static bool tfsfHxBorderDownX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ();
-  }
-  static bool tfsfHxBorderDownY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < leftBorderFP.getY () + 0.5;
-  }
-  static bool tfsfHxBorderDownZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5;
-  }
-
-  static bool tfsfHxBorderUpX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ();
-  }
-  static bool tfsfHxBorderUpY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > rightBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5;
-  }
-  static bool tfsfHxBorderUpZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5;
-  }
-
-  static bool tfsfHxBorderBackX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ();
-  }
-  static bool tfsfHxBorderBackY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5;
-  }
-  static bool tfsfHxBorderBackZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < leftBorderFP.getZ () + 0.5;
-  }
-
-  static bool tfsfHxBorderFrontX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () && coordFP.getX () < rightBorderFP.getX ();
-  }
-  static bool tfsfHxBorderFrontY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5;
-  }
-  static bool tfsfHxBorderFrontZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > rightBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5;
-  }
-
-  /*
-   * ======================================================= Hy =======================================================
-   */
-  static bool tfsfHyBorderLeftX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < leftBorderFP.getX () + 0.5;
-  }
-  static bool tfsfHyBorderLeftY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ();
-  }
-  static bool tfsfHyBorderLeftZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5;
-  }
-
-  static bool tfsfHyBorderRightX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > rightBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5;
-  }
-  static bool tfsfHyBorderRightY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ();
-  }
-  static bool tfsfHyBorderRightZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5;
-  }
-
-  static bool tfsfHyBorderBackX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5;
-  }
-  static bool tfsfHyBorderBackY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ();
-  }
-  static bool tfsfHyBorderBackZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () - 0.5 && coordFP.getZ () < leftBorderFP.getZ () + 0.5;
-  }
-
-  static bool tfsfHyBorderFrontX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5;
-  }
-  static bool tfsfHyBorderFrontY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () && coordFP.getY () < rightBorderFP.getY ();
-  }
-  static bool tfsfHyBorderFrontZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > rightBorderFP.getZ () - 0.5 && coordFP.getZ () < rightBorderFP.getZ () + 0.5;
-  }
-
-  /*
-   * ======================================================= Hz =======================================================
-   */
-  static bool tfsfHzBorderLeftX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < leftBorderFP.getX () + 0.5;
-  }
-  static bool tfsfHzBorderLeftY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5;
-  }
-  static bool tfsfHzBorderLeftZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ();
-  }
-
-  static bool tfsfHzBorderRightX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > rightBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5;
-  }
-  static bool tfsfHzBorderRightY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5;
-  }
-  static bool tfsfHzBorderRightZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ();
-  }
-
-  static bool tfsfHzBorderDownX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5;
-  }
-  static bool tfsfHzBorderDownY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > leftBorderFP.getY () - 0.5 && coordFP.getY () < leftBorderFP.getY () + 0.5;
-  }
-  static bool tfsfHzBorderDownZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ();
-  }
-
-  static bool tfsfHzBorderUpX (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getX () > leftBorderFP.getX () - 0.5 && coordFP.getX () < rightBorderFP.getX () + 0.5;
-  }
-  static bool tfsfHzBorderUpY (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getY () > rightBorderFP.getY () - 0.5 && coordFP.getY () < rightBorderFP.getY () + 0.5;
-  }
-  static bool tfsfHzBorderUpZ (GridCoordinateFP3D coordFP, GridCoordinateFP3D leftBorderFP, GridCoordinateFP3D rightBorderFP)
-  {
-    return coordFP.getZ () > leftBorderFP.getZ () && coordFP.getZ () < rightBorderFP.getZ ();
+    return isInXPML || isInYPML || isInZPML;
   }
 };
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
 FPValue
-YeeGridLayout<TCoord, layout_type>::getApproximateMaterial (Grid<YeeGridLayout::TC> *gridMaterial,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<YeeGridLayout::TC> *gridMaterial,
                                        TC coord1,
                                        TC coord2)
 {
@@ -825,9 +667,9 @@ YeeGridLayout<TCoord, layout_type>::getApproximateMaterial (Grid<YeeGridLayout::
                                              Approximation::getMaterial (val2));
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
 FPValue
-YeeGridLayout<TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMaterial,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMaterial,
                                        TC coord1,
                                        TC coord2,
                                        TC coord3,
@@ -844,9 +686,9 @@ YeeGridLayout<TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMateri
                                              Approximation::getMaterial (val4));
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
 FPValue
-YeeGridLayout<TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMaterial,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMaterial,
                                        TC coord1,
                                        TC coord2,
                                        TC coord3,
@@ -875,9 +717,9 @@ YeeGridLayout<TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMateri
                                              Approximation::getMaterial (val8));
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
 FPValue
-YeeGridLayout<TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
                                            Grid<TC> *gridMaterialOmega,
                                            Grid<TC> *gridMaterialGamma,
                                            TC coord1,
@@ -909,9 +751,9 @@ YeeGridLayout<TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMa
   return material;
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
 FPValue
-YeeGridLayout<TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
                                            Grid<TC> *gridMaterialOmega,
                                            Grid<TC> *gridMaterialGamma,
                                            TC coord1,
@@ -959,9 +801,9 @@ YeeGridLayout<TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMa
   return material;
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
 FPValue
-YeeGridLayout<TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
                                            Grid<TC> *gridMaterialOmega,
                                            Grid<TC> *gridMaterialGamma,
                                            TC coord1,
@@ -1041,9 +883,9 @@ YeeGridLayout<TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMa
   return material;
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
 FPValue
-YeeGridLayout<TCoord, layout_type>::getMetaMaterial (const TC &posAbs,
+YeeGridLayout<Type, TCoord, layout_type>::getMetaMaterial (const TC &posAbs,
                                 GridType typeOfField,
                                 Grid<TC> *gridMaterial,
                                 GridType typeOfMaterial,
@@ -1125,9 +967,9 @@ YeeGridLayout<TCoord, layout_type>::getMetaMaterial (const TC &posAbs,
   }
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
 FPValue
-YeeGridLayout<TCoord, layout_type>::getMaterial (const TC &posAbs,
+YeeGridLayout<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
                             GridType typeOfField,
                             Grid<TC> *gridMaterial,
                             GridType typeOfMaterial)
@@ -1211,10 +1053,10 @@ YeeGridLayout<TCoord, layout_type>::getMaterial (const TC &posAbs,
  *
  * TODO: add separate for all fields
  */
-template <template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
 template <bool isMetaMaterial>
 void
-YeeGridLayout<TCoord, layout_type>::initCoordinates (const TC &posAbs,
+YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
                                      GridType typeOfField,
                                      TC &absPos11,
                                      TC &absPos12,
@@ -1234,22 +1076,22 @@ YeeGridLayout<TCoord, layout_type>::initCoordinates (const TC &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0.5, 0, 0)) + TC (1, 0, 0);
-        absPos12 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0.5, 0, 0)) + TC (1, 1, 0);
+        absPos11 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+        absPos12 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
 
-        absPos21 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0.5, 0, 0)) + TC (0, 0, 0);
-        absPos22 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0.5, 0, 0)) + TC (0, 1, 0);
+        absPos21 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos22 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
 
-        absPos31 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0.5, 0, 0)) + TC (1, 0, 1);
-        absPos32 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0.5, 0, 0)) + TC (1, 1, 1);
+        absPos31 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+        absPos32 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
-        absPos41 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0.5, 0, 0)) + TC (0, 0, 1);
-        absPos42 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0.5, 0, 0)) + TC (0, 1, 1);
+        absPos41 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+        absPos42 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
       }
       else
       {
-        absPos11 = getEpsCoord (realCoord - TCSFP (0.5, 0, 0));
-        absPos12 = getEpsCoord (realCoord + TCSFP (0.5, 0, 0));
+        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3));
+        absPos12 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3));
       }
 
       break;
@@ -1261,22 +1103,22 @@ YeeGridLayout<TCoord, layout_type>::initCoordinates (const TC &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0, 0.5, 0)) + TC (0, 1, 0);
-        absPos12 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0, 0.5, 0)) + TC (1, 1, 0);
+        absPos11 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+        absPos12 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
 
-        absPos21 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0, 0.5, 0)) + TC (0, 0, 0);
-        absPos22 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0, 0.5, 0)) + TC (1, 0, 0);
+        absPos21 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos22 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
 
-        absPos31 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0, 0.5, 0)) + TC (0, 1, 1);
-        absPos32 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0, 0.5, 0)) + TC (1, 1, 1);
+        absPos31 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+        absPos32 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
-        absPos41 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0, 0.5, 0)) + TC (0, 0, 1);
-        absPos42 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0, 0.5, 0)) + TC (1, 0, 1);
+        absPos41 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+        absPos42 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
       }
       else
       {
-        absPos11 = getEpsCoord (realCoord - TCSFP (0, 0.5, 0));
-        absPos12 = getEpsCoord (realCoord + TCSFP (0, 0.5, 0));
+        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3));
+        absPos12 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3));
       }
 
       break;
@@ -1288,22 +1130,22 @@ YeeGridLayout<TCoord, layout_type>::initCoordinates (const TC &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0, 0, 0.5)) + TC (0, 0, 1);
-        absPos12 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0, 0, 0.5)) + TC (0, 1, 1);
+        absPos11 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+        absPos12 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
 
-        absPos21 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0, 0, 0.5)) + TC (1, 0, 1);
-        absPos22 = grid_coord (2) * getEpsCoord (realCoord - TCSFP (0, 0, 0.5)) + TC (1, 1, 1);
+        absPos21 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+        absPos22 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
-        absPos31 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0, 0, 0.5)) + TC (0, 0, 0);
-        absPos32 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0, 0, 0.5)) + TC (0, 1, 0);
+        absPos31 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos32 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
 
-        absPos41 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0, 0, 0.5)) + TC (1, 0, 0);
-        absPos42 = grid_coord (2) * getEpsCoord (realCoord + TCSFP (0, 0, 0.5)) + TC (1, 1, 0);
+        absPos41 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+        absPos42 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
       }
       else
       {
-        absPos11 = getEpsCoord (realCoord - TCSFP (0, 0, 0.5));
-        absPos12 = getEpsCoord (realCoord + TCSFP (0, 0, 0.5));
+        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3));
+        absPos12 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3));
       }
 
       break;
@@ -1316,31 +1158,31 @@ YeeGridLayout<TCoord, layout_type>::initCoordinates (const TC &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        coord = realCoord + TCSFP (0.0, -0.5, -0.5);
-        absPos11 = grid_coord (2) * getEpsCoord (coord) + TC (0, 1, 1);
-        absPos12 = grid_coord (2) * getEpsCoord (coord) + TC (1, 1, 1);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, -0.5, ct1, ct2, ct3);
+        absPos11 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+        absPos12 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
-        coord = realCoord + TCSFP (0.0, -0.5, 0.5);
-        absPos21 = grid_coord (2) * getEpsCoord (coord) + TC (0, 1, 0);
-        absPos22 = grid_coord (2) * getEpsCoord (coord) + TC (1, 1, 0);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, 0.5, ct1, ct2, ct3);
+        absPos21 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+        absPos22 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
 
-        coord = realCoord + TCSFP (0.0, 0.5, -0.5);
-        absPos31 = grid_coord (2) * getEpsCoord (coord) + TC (0, 0, 1);
-        absPos32 = grid_coord (2) * getEpsCoord (coord) + TC (1, 0, 1);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, -0.5, ct1, ct2, ct3);
+        absPos31 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+        absPos32 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
 
-        coord = realCoord + TCSFP (0.0, 0.5, 0.5);
-        absPos41 = grid_coord (2) * getEpsCoord (coord) + TC (0, 0, 0);
-        absPos42 = grid_coord (2) * getEpsCoord (coord) + TC (1, 0, 0);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, 0.5, ct1, ct2, ct3);
+        absPos41 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos42 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
       }
       else
       {
-        coord = realCoord + TCSFP (0.0, -0.5, -0.5);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, -0.5, ct1, ct2, ct3);
         absPos11 = getEpsCoord (coord);
-        coord = realCoord + TCSFP (0.0, -0.5, 0.5);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, 0.5, ct1, ct2, ct3);
         absPos12 = getEpsCoord (coord);
-        coord = realCoord + TCSFP (0.0, 0.5, -0.5);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, -0.5, ct1, ct2, ct3);
         absPos21 = getEpsCoord (coord);
-        coord = realCoord + TCSFP (0.0, 0.5, 0.5);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, 0.5, ct1, ct2, ct3);
         absPos22 = getEpsCoord (coord);
       }
 
@@ -1354,31 +1196,31 @@ YeeGridLayout<TCoord, layout_type>::initCoordinates (const TC &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        coord = realCoord + TCSFP (-0.5, 0.0, -0.5);
-        absPos11 = grid_coord (2) * getEpsCoord (coord) + TC (1, 0, 1);
-        absPos12 = grid_coord (2) * getEpsCoord (coord) + TC (1, 1, 1);
+        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, -0.5, ct1, ct2, ct3);
+        absPos11 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+        absPos12 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
-        coord = realCoord + TCSFP (-0.5, 0.0, 0.5);
-        absPos21 = grid_coord (2) * getEpsCoord (coord) + TC (1, 0, 0);
-        absPos22 = grid_coord (2) * getEpsCoord (coord) + TC (1, 1, 0);
+        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, 0.5, ct1, ct2, ct3);
+        absPos21 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+        absPos22 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
 
-        coord = realCoord + TCSFP (0.5, 0.0, -0.5);
-        absPos31 = grid_coord (2) * getEpsCoord (coord) + TC (0, 0, 1);
-        absPos32 = grid_coord (2) * getEpsCoord (coord) + TC (0, 1, 1);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, -0.5, ct1, ct2, ct3);
+        absPos31 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+        absPos32 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
 
-        coord = realCoord + TCSFP (0.5, 0.0, 0.5);
-        absPos41 = grid_coord (2) * getEpsCoord (coord) + TC (0, 0, 0);
-        absPos42 = grid_coord (2) * getEpsCoord (coord) + TC (0, 1, 0);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, 0.5, ct1, ct2, ct3);
+        absPos41 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos42 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
       }
       else
       {
-        coord = realCoord + TCSFP (-0.5, 0.0, -0.5);
+        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, -0.5, ct1, ct2, ct3);
         absPos11 = getEpsCoord (coord);
-        coord = realCoord + TCSFP (-0.5, 0.0, 0.5);
+        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, 0.5, ct1, ct2, ct3);
         absPos12 = getEpsCoord (coord);
-        coord = realCoord + TCSFP (0.5, 0.0, -0.5);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, -0.5, ct1, ct2, ct3);
         absPos21 = getEpsCoord (coord);
-        coord = realCoord + TCSFP (0.5, 0.0, 0.5);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, 0.5, ct1, ct2, ct3);
         absPos22 = getEpsCoord (coord);
       }
 
@@ -1392,31 +1234,31 @@ YeeGridLayout<TCoord, layout_type>::initCoordinates (const TC &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        coord = realCoord + TCSFP (-0.5, -0.5, 0.0);
-        absPos11 = grid_coord (2) * getEpsCoord (coord) + TC (1, 1, 0);
-        absPos12 = grid_coord (2) * getEpsCoord (coord) + TC (1, 1, 1);
+        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, -0.5, 0.0, ct1, ct2, ct3);
+        absPos11 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+        absPos12 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
-        coord = realCoord + TCSFP (-0.5, 0.5, 0.0);
-        absPos21 = grid_coord (2) * getEpsCoord (coord) + TC (1, 0, 0);
-        absPos22 = grid_coord (2) * getEpsCoord (coord) + TC (1, 0, 1);
+        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.5, 0.0, ct1, ct2, ct3);
+        absPos21 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+        absPos22 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
 
-        coord = realCoord + TCSFP (0.5, -0.5, 0.0);
-        absPos31 = grid_coord (2) * getEpsCoord (coord) + TC (0, 1, 0);
-        absPos32 = grid_coord (2) * getEpsCoord (coord) + TC (0, 1, 1);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.5, -0.5, 0.0, ct1, ct2, ct3);
+        absPos31 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+        absPos32 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
 
-        coord = realCoord + TCSFP (0.5, 0.5, 0.0);
-        absPos41 = grid_coord (2) * getEpsCoord (coord) + TC (0, 0, 0);
-        absPos42 = grid_coord (2) * getEpsCoord (coord) + TC (0, 0, 1);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.5, 0.0), ct1, ct2, ct3;
+        absPos41 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos42 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
       }
       else
       {
-        coord = realCoord + TCSFP (-0.5, -0.5, 0.0);
+        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, -0.5, 0.0, ct1, ct2, ct3);
         absPos11 = getEpsCoord (coord);
-        coord = realCoord + TCSFP (-0.5, 0.5, 0.0);
+        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.5, 0.0, ct1, ct2, ct3);
         absPos12 = getEpsCoord (coord);
-        coord = realCoord + TCSFP (0.5, -0.5, 0.0);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.5, -0.5, 0.0, ct1, ct2, ct3);
         absPos21 = getEpsCoord (coord);
-        coord = realCoord + TCSFP (0.5, 0.5, 0.0);
+        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.5, 0.0, ct1, ct2, ct3);
         absPos22 = getEpsCoord (coord);
       }
 
@@ -1429,9 +1271,9 @@ YeeGridLayout<TCoord, layout_type>::initCoordinates (const TC &posAbs,
   }
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
-typename YeeGridLayout<TCoord, layout_type>::TC
-YeeGridLayout<TCoord, layout_type>::getExCircuitElement (TC coord, LayoutDirection dir) const
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+typename YeeGridLayout<Type, TCoord, layout_type>::TC
+YeeGridLayout<Type, TCoord, layout_type>::getExCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minExCoord) + minExCoordFP;
 
@@ -1439,25 +1281,25 @@ YeeGridLayout<TCoord, layout_type>::getExCircuitElement (TC coord, LayoutDirecti
   {
     case LayoutDirection::DOWN:
     {
-      coordFP = coordFP - TCSFP (0, 0.5, 0);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
       coordFP = coordFP - minHzCoordFP;
       break;
     }
     case LayoutDirection::UP:
     {
-      coordFP = coordFP + TCSFP (0, 0.5, 0);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
       coordFP = coordFP - minHzCoordFP;
       break;
     }
     case LayoutDirection::BACK:
     {
-      coordFP = coordFP - TCSFP (0, 0, 0.5);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
       coordFP = coordFP - minHyCoordFP;
       break;
     }
     case LayoutDirection::FRONT:
     {
-      coordFP = coordFP + TCSFP (0, 0, 0.5);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
       coordFP = coordFP - minHyCoordFP;
       break;
     }
@@ -1472,9 +1314,9 @@ YeeGridLayout<TCoord, layout_type>::getExCircuitElement (TC coord, LayoutDirecti
   return convertCoord (coordFP);
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
-typename YeeGridLayout<TCoord, layout_type>::TC
-YeeGridLayout<TCoord, layout_type>::getEyCircuitElement (TC coord, LayoutDirection dir) const
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+typename YeeGridLayout<Type, TCoord, layout_type>::TC
+YeeGridLayout<Type, TCoord, layout_type>::getEyCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minEyCoord) + minEyCoordFP;
 
@@ -1482,25 +1324,25 @@ YeeGridLayout<TCoord, layout_type>::getEyCircuitElement (TC coord, LayoutDirecti
   {
     case LayoutDirection::LEFT:
     {
-      coordFP = coordFP - TCSFP (0.5, 0, 0);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
       coordFP = coordFP - minHzCoordFP;
       break;
     }
     case LayoutDirection::RIGHT:
     {
-      coordFP = coordFP + TCSFP (0.5, 0, 0);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
       coordFP = coordFP - minHzCoordFP;
       break;
     }
     case LayoutDirection::BACK:
     {
-      coordFP = coordFP - TCSFP (0, 0, 0.5);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
       coordFP = coordFP - minHxCoordFP;
       break;
     }
     case LayoutDirection::FRONT:
     {
-      coordFP = coordFP + TCSFP (0, 0, 0.5);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
       coordFP = coordFP - minHxCoordFP;
       break;
     }
@@ -1515,9 +1357,9 @@ YeeGridLayout<TCoord, layout_type>::getEyCircuitElement (TC coord, LayoutDirecti
   return convertCoord (coordFP);
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
-typename YeeGridLayout<TCoord, layout_type>::TC
-YeeGridLayout<TCoord, layout_type>::getEzCircuitElement (TC coord, LayoutDirection dir) const
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+typename YeeGridLayout<Type, TCoord, layout_type>::TC
+YeeGridLayout<Type, TCoord, layout_type>::getEzCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minEzCoord) + minEzCoordFP;
 
@@ -1525,25 +1367,25 @@ YeeGridLayout<TCoord, layout_type>::getEzCircuitElement (TC coord, LayoutDirecti
   {
     case LayoutDirection::LEFT:
     {
-      coordFP = coordFP - TCSFP (0.5, 0, 0);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
       coordFP = coordFP - minHyCoordFP;
       break;
     }
     case LayoutDirection::RIGHT:
     {
-      coordFP = coordFP + TCSFP (0.5, 0, 0);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
       coordFP = coordFP - minHyCoordFP;
       break;
     }
     case LayoutDirection::DOWN:
     {
-      coordFP = coordFP - TCSFP (0, 0.5, 0);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
       coordFP = coordFP - minHxCoordFP;
       break;
     }
     case LayoutDirection::UP:
     {
-      coordFP = coordFP + TCSFP (0, 0.5, 0);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
       coordFP = coordFP - minHxCoordFP;
       break;
     }
@@ -1558,9 +1400,9 @@ YeeGridLayout<TCoord, layout_type>::getEzCircuitElement (TC coord, LayoutDirecti
   return convertCoord (coordFP);
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
-typename YeeGridLayout<TCoord, layout_type>::TC
-YeeGridLayout<TCoord, layout_type>::getHxCircuitElement (TC coord, LayoutDirection dir) const
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+typename YeeGridLayout<Type, TCoord, layout_type>::TC
+YeeGridLayout<Type, TCoord, layout_type>::getHxCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minHxCoord) + minHxCoordFP;
 
@@ -1568,25 +1410,25 @@ YeeGridLayout<TCoord, layout_type>::getHxCircuitElement (TC coord, LayoutDirecti
   {
     case LayoutDirection::DOWN:
     {
-      coordFP = coordFP - TCSFP (0, 0.5, 0);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
       coordFP = coordFP - minEzCoordFP;
       break;
     }
     case LayoutDirection::UP:
     {
-      coordFP = coordFP + TCSFP (0, 0.5, 0);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
       coordFP = coordFP - minEzCoordFP;
       break;
     }
     case LayoutDirection::BACK:
     {
-      coordFP = coordFP - TCSFP (0, 0, 0.5);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
       coordFP = coordFP - minEyCoordFP;
       break;
     }
     case LayoutDirection::FRONT:
     {
-      coordFP = coordFP + TCSFP (0, 0, 0.5);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
       coordFP = coordFP - minEyCoordFP;
       break;
     }
@@ -1601,9 +1443,9 @@ YeeGridLayout<TCoord, layout_type>::getHxCircuitElement (TC coord, LayoutDirecti
   return convertCoord (coordFP);
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
-typename YeeGridLayout<TCoord, layout_type>::TC
-YeeGridLayout<TCoord, layout_type>::getHyCircuitElement (TC coord, LayoutDirection dir) const
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+typename YeeGridLayout<Type, TCoord, layout_type>::TC
+YeeGridLayout<Type, TCoord, layout_type>::getHyCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minHyCoord) + minHyCoordFP;
 
@@ -1611,25 +1453,25 @@ YeeGridLayout<TCoord, layout_type>::getHyCircuitElement (TC coord, LayoutDirecti
   {
     case LayoutDirection::LEFT:
     {
-      coordFP = coordFP - TCSFP (0.5, 0, 0);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
       coordFP = coordFP - minEzCoordFP;
       break;
     }
     case LayoutDirection::RIGHT:
     {
-      coordFP = coordFP + TCSFP (0.5, 0, 0);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
       coordFP = coordFP - minEzCoordFP;
       break;
     }
     case LayoutDirection::BACK:
     {
-      coordFP = coordFP - TCSFP (0, 0, 0.5);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
       coordFP = coordFP - minExCoordFP;
       break;
     }
     case LayoutDirection::FRONT:
     {
-      coordFP = coordFP + TCSFP (0, 0, 0.5);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
       coordFP = coordFP - minExCoordFP;
       break;
     }
@@ -1644,9 +1486,9 @@ YeeGridLayout<TCoord, layout_type>::getHyCircuitElement (TC coord, LayoutDirecti
   return convertCoord (coordFP);
 }
 
-template <template <typename, bool> class TCoord, uint8_t layout_type>
-typename YeeGridLayout<TCoord, layout_type>::TC
-YeeGridLayout<TCoord, layout_type>::getHzCircuitElement (TC coord, LayoutDirection dir) const
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+typename YeeGridLayout<Type, TCoord, layout_type>::TC
+YeeGridLayout<Type, TCoord, layout_type>::getHzCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minHzCoord) + minHzCoordFP;
 
@@ -1654,25 +1496,25 @@ YeeGridLayout<TCoord, layout_type>::getHzCircuitElement (TC coord, LayoutDirecti
   {
     case LayoutDirection::LEFT:
     {
-      coordFP = coordFP - TCSFP (0.5, 0, 0);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
       coordFP = coordFP - minEyCoordFP;
       break;
     }
     case LayoutDirection::RIGHT:
     {
-      coordFP = coordFP + TCSFP (0.5, 0, 0);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
       coordFP = coordFP - minEyCoordFP;
       break;
     }
     case LayoutDirection::DOWN:
     {
-      coordFP = coordFP - TCSFP (0, 0.5, 0);
+      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
       coordFP = coordFP - minExCoordFP;
       break;
     }
     case LayoutDirection::UP:
     {
-      coordFP = coordFP + TCSFP (0, 0.5, 0);
+      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
       coordFP = coordFP - minExCoordFP;
       break;
     }
@@ -1685,59 +1527,6 @@ YeeGridLayout<TCoord, layout_type>::getHzCircuitElement (TC coord, LayoutDirecti
   }
 
   return convertCoord (coordFP);
-}
-
-template <template <typename, bool> class TCoord, uint8_t layout_type>
-bool
-YeeGridLayout<TCoord, layout_type>::doNeedTFSFUpdateBorder (LayoutDirection dir,
-                                                            bool condL,
-                                                            bool condR,
-                                                            bool condD,
-                                                            bool condU,
-                                                            bool condB,
-                                                            bool condF) const
-{
-  bool match = true;
-
-  switch (dir)
-  {
-    case LayoutDirection::LEFT:
-    {
-      match = condL;
-      break;
-    }
-    case LayoutDirection::RIGHT:
-    {
-      match = condR;
-      break;
-    }
-    case LayoutDirection::DOWN:
-    {
-      match = condD;
-      break;
-    }
-    case LayoutDirection::UP:
-    {
-      match = condU;
-      break;
-    }
-    case LayoutDirection::BACK:
-    {
-      match = condB;
-      break;
-    }
-    case LayoutDirection::FRONT:
-    {
-      match = condF;
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  return match;
 }
 
 #endif /* YEE_GRID_LAYOUT_H */

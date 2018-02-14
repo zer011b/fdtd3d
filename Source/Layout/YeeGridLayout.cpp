@@ -1,485 +1,852 @@
 #include "YeeGridLayout.h"
 
-template <>
-const bool YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isParallel = false;
-template <>
-const bool YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isParallel = false;
-template <>
-const bool YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED>::isParallel = false;
+template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+const bool YeeGridLayout<Type, TCoord, layout_type>::isParallel = false;
 
+/*
+ * Ex
+ */
 template <>
 bool
-YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
-  GridCoordinateFP3D coordFP = expand2 (getExCoordFP (coord));
-
-  GridCoordinateFP3D leftBorderFP = expand2 (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand2 (zeroCoordFP + convertCoord (rightBorderTotalField));
-
-  return doNeedTFSFUpdateBorder (dir,
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
                                  false,
-                                 YeeGridLayoutHelper::tfsfExBorderDownX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfExBorderUpX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfExBorderBackX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfExBorderFrontX (coordFP, leftBorderFP, rightBorderFP));
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<-5> (getExCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<5> (getExCoordFP (coord), rightBorderTotalFieldFP));
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<-5> (getExCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<5> (getExCoordFP (coord), rightBorderTotalFieldFP),
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
 }
 
 template <>
 bool
-YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
-  GridCoordinateFP3D coordFP = expand (getExCoordFP (coord));
-
-  GridCoordinateFP3D leftBorderFP = expand (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand (zeroCoordFP + convertCoord (rightBorderTotalField));
-
-  return doNeedTFSFUpdateBorder (dir,
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
                                  false,
-                                 YeeGridLayoutHelper::tfsfExBorderDownX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderDownY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfExBorderUpX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderUpY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfExBorderBackX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderBackY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfExBorderFrontX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderFrontY (coordFP, leftBorderFP, rightBorderFP));
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<-1, -5> (getExCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<-1, 5> (getExCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<-1, -5> (getExCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<-1, 5> (getExCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<4, -5> (getExCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<4, 5> (getExCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<4, -5> (getExCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<4, 5> (getExCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
 }
 
 template <>
 bool
-YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
-  GridCoordinateFP3D coordFP = getExCoordFP (coord);
-
-  GridCoordinateFP3D leftBorderFP = zeroCoordFP + convertCoord (leftBorderTotalField);
-  GridCoordinateFP3D rightBorderFP = zeroCoordFP + convertCoord (rightBorderTotalField);
-
-  return doNeedTFSFUpdateBorder (dir,
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
                                  false,
-                                 YeeGridLayoutHelper::tfsfExBorderDownX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderDownY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderDownZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfExBorderUpX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderUpY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderUpZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfExBorderBackX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderBackY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderBackZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfExBorderFrontX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderFrontY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfExBorderFrontZ (coordFP, leftBorderFP, rightBorderFP));
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-5> (getExCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<5> (getExCoordFP (coord).get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-5> (getExCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<5> (getExCoordFP (coord).get3 (), rightBorderTotalFieldFP.get3 ()));
+}
+
+/*
+ * Ey
+ */
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<-5> (getEyCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<5> (getEyCoordFP (coord), rightBorderTotalFieldFP));
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<-5> (getEyCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<5> (getEyCoordFP (coord), rightBorderTotalFieldFP),
+                                 false,
+                                 false,
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
 }
 
 template <>
 bool
-YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
-  GridCoordinateFP3D coordFP = expand2 (getEyCoordFP (coord));
-
-  GridCoordinateFP3D leftBorderFP = expand2 (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand2 (zeroCoordFP + convertCoord (rightBorderTotalField));
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfEyBorderLeftX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEyBorderRightX (coordFP, leftBorderFP, rightBorderFP),
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
                                  false,
-                                 YeeGridLayoutHelper::tfsfEyBorderBackX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEyBorderFrontX (coordFP, leftBorderFP, rightBorderFP));
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<-1, -5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<-1, 5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
 }
-
 template <>
 bool
-YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
-  GridCoordinateFP3D coordFP = expand (getEyCoordFP (coord));
-
-  GridCoordinateFP3D leftBorderFP = expand (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand (zeroCoordFP + convertCoord (rightBorderTotalField));
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfEyBorderLeftX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderLeftY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEyBorderRightX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderRightY (coordFP, leftBorderFP, rightBorderFP),
-                                 false,
-                                 false,
-                                 YeeGridLayoutHelper::tfsfEyBorderBackX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderBackY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEyBorderFrontX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderFrontY (coordFP, leftBorderFP, rightBorderFP));
+  return false;
 }
-
 template <>
 bool
-YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
-  GridCoordinateFP3D coordFP = getEyCoordFP (coord);
-
-  GridCoordinateFP3D leftBorderFP = zeroCoordFP + convertCoord (leftBorderTotalField);
-  GridCoordinateFP3D rightBorderFP = zeroCoordFP + convertCoord (rightBorderTotalField);
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfEyBorderLeftX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderLeftY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderLeftZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEyBorderRightX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderRightY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderRightZ (coordFP, leftBorderFP, rightBorderFP),
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<-1, -5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<-1, 5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
                                  false,
                                  false,
-                                 YeeGridLayoutHelper::tfsfEyBorderBackX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderBackY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderBackZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEyBorderFrontX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderFrontY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEyBorderFrontZ (coordFP, leftBorderFP, rightBorderFP));
+                                 false,
+                                 false);
 }
-
 template <>
 bool
-YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
-  GridCoordinateFP3D coordFP = expand2 (getEzCoordFP (coord));
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<4, -5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<4, 5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<4, -5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<4, 5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate3D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder<-5> (getEyCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<5> (getEyCoordFP (coord).get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-5> (getEyCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<5> (getEyCoordFP (coord).get3 (), rightBorderTotalFieldFP.get3 ()));
+}
 
-  GridCoordinateFP3D leftBorderFP = expand2 (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand2 (zeroCoordFP + convertCoord (rightBorderTotalField));
+/*
+ * Ez
+ */
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<-5> (getEzCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<5> (getEzCoordFP (coord), rightBorderTotalFieldFP),
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<-5> (getEzCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<5> (getEzCoordFP (coord), rightBorderTotalFieldFP),
+                                 false,
+                                 false,
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<-1, -5> (getEzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<-1, 5> (getEzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<-1, -5> (getEzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<-1, 5> (getEzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 false,
+                                 false,
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<4, -5> (getEzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<4, 5> (getEzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<4, -5> (getEzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<4, 5> (getEzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder<-5> (getEzCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<5> (getEzCoordFP (coord).get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-5> (getEzCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<5> (getEzCoordFP (coord).get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 false,
+                                 false);
+}
 
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfEzBorderLeftX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEzBorderRightX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEzBorderDownX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEzBorderUpX (coordFP, leftBorderFP, rightBorderFP),
+/*
+ * Hx
+ */
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<0> (getHxCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<0> (getHxCoordFP (coord), rightBorderTotalFieldFP));
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<0> (getHxCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<0> (getHxCoordFP (coord), rightBorderTotalFieldFP),
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<-1, 0> (getHxCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<-1, 0> (getHxCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<-1, 0> (getHxCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<-1, 0> (getHxCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<4, 0> (getHxCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<4, 0> (getHxCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<4, 0> (getHxCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<4, 0> (getHxCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate3D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<0> (getHxCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<0> (getHxCoordFP (coord).get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<0> (getHxCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<0> (getHxCoordFP (coord).get3 (), rightBorderTotalFieldFP.get3 ()));
+}
+
+/*
+ * Hy
+ */
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<0> (getHyCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<0> (getHyCoordFP (coord), rightBorderTotalFieldFP));
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<0> (getHyCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<0> (getHyCoordFP (coord), rightBorderTotalFieldFP),
+                                 false,
+                                 false,
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<-1, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<-1, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<-1, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<-1, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<4, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<4, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<4, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<4, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 false,
+                                 false,
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate3D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder<0> (getHyCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<0> (getHyCoordFP (coord).get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<0> (getHyCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<0> (getHyCoordFP (coord).get3 (), rightBorderTotalFieldFP.get3 ()));
+}
+
+/*
+ * Hz
+ */
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<0> (getHzCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<0> (getHzCoordFP (coord), rightBorderTotalFieldFP),
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder1DFirst__1<0> (getHzCoordFP (coord), leftBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder1DSecond__1<0> (getHzCoordFP (coord), rightBorderTotalFieldFP),
+                                 false,
+                                 false,
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<-1, 0> (getHzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<-1, 0> (getHzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__1<-1, 0> (getHzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__1<-1, 0> (getHzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 false,
+                                 false,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<4, 0> (getHzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<4, 0> (getHzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder2DFirst__2<4, 0> (getHzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 YeeGridLayoutHelper::tfsfBorder2DSecond__2<4, 0> (getHzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
+                                 false,
+                                 false,
+                                 false,
+                                 false);
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+{
+  return false;
+}
+template <>
+bool
+YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate3D coord, LayoutDirection dir) const
+{
+  return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
+                                 YeeGridLayoutHelper::tfsfBorder<0> (getHzCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<0> (getHzCoordFP (coord).get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<0> (getHzCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<0> (getHzCoordFP (coord).get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
                                  false,
                                  false);
 }
 
 template <>
-bool
-YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+bool YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
-  GridCoordinateFP3D coordFP = expand (getEzCoordFP (coord));
-
-  GridCoordinateFP3D leftBorderFP = expand (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand (zeroCoordFP + convertCoord (rightBorderTotalField));
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfEzBorderLeftX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderLeftY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEzBorderRightX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderRightY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEzBorderDownX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderDownY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEzBorderUpX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderUpY (coordFP, leftBorderFP, rightBorderFP),
-                                 false,
-                                 false);
+  return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool
-YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection dir) const
+bool YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
-  GridCoordinateFP3D coordFP = getEzCoordFP (coord);
-
-  GridCoordinateFP3D leftBorderFP = zeroCoordFP + convertCoord (leftBorderTotalField);
-  GridCoordinateFP3D rightBorderFP = zeroCoordFP + convertCoord (rightBorderTotalField);
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfEzBorderLeftX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderLeftY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderLeftZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEzBorderRightX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderRightY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderRightZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEzBorderDownX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderDownY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderDownZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfEzBorderUpX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderUpY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfEzBorderUpZ (coordFP, leftBorderFP, rightBorderFP),
-                                 false,
-                                 false);
+  return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool
-YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+bool YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
-  GridCoordinateFP3D coordFP = expand2 (getHxCoordFP (coord));
-
-  GridCoordinateFP3D leftBorderFP = expand2 (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand2 (zeroCoordFP + convertCoord (rightBorderTotalField));
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 false,
-                                 false,
-                                 YeeGridLayoutHelper::tfsfHxBorderDownX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHxBorderUpX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHxBorderBackX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHxBorderFrontX (coordFP, leftBorderFP, rightBorderFP));
+  return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool
-YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+bool YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
-  GridCoordinateFP3D coordFP = expand (getHxCoordFP (coord));
-
-  GridCoordinateFP3D leftBorderFP = expand (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand (zeroCoordFP + convertCoord (rightBorderTotalField));
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 false,
-                                 false,
-                                 YeeGridLayoutHelper::tfsfHxBorderDownX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderDownY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHxBorderUpX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderUpY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHxBorderBackX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderBackY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHxBorderFrontX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderFrontY (coordFP, leftBorderFP, rightBorderFP));
+  return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool
-YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate3D coord, LayoutDirection dir) const
+bool YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
-  GridCoordinateFP3D coordFP = getHxCoordFP (coord);
-
-  GridCoordinateFP3D leftBorderFP = zeroCoordFP + convertCoord (leftBorderTotalField);
-  GridCoordinateFP3D rightBorderFP = zeroCoordFP + convertCoord (rightBorderTotalField);
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 false,
-                                 false,
-                                 YeeGridLayoutHelper::tfsfHxBorderDownX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderDownY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderDownZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHxBorderUpX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderUpY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderUpZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHxBorderBackX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderBackY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderBackZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHxBorderFrontX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderFrontY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHxBorderFrontZ (coordFP, leftBorderFP, rightBorderFP));
+  return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool
-YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+bool YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
-  GridCoordinateFP3D coordFP = expand2 (getHyCoordFP (coord));
-
-  GridCoordinateFP3D leftBorderFP = expand2 (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand2 (zeroCoordFP + convertCoord (rightBorderTotalField));
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfHyBorderLeftX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHyBorderRightX (coordFP, leftBorderFP, rightBorderFP),
-                                 false,
-                                 false,
-                                 YeeGridLayoutHelper::tfsfHyBorderBackX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHyBorderFrontX (coordFP, leftBorderFP, rightBorderFP));
+  return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool
-YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+bool YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
-  GridCoordinateFP3D coordFP = expand (getHyCoordFP (coord));
-
-  GridCoordinateFP3D leftBorderFP = expand (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand (zeroCoordFP + convertCoord (rightBorderTotalField));
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfHyBorderLeftX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderLeftY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHyBorderRightX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderRightY (coordFP, leftBorderFP, rightBorderFP),
-                                 false,
-                                 false,
-                                 YeeGridLayoutHelper::tfsfHyBorderBackX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderBackY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHyBorderFrontX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderFrontY (coordFP, leftBorderFP, rightBorderFP));
+  return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool
-YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate3D coord, LayoutDirection dir) const
+bool YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
-  GridCoordinateFP3D coordFP = getHyCoordFP (coord);
-
-  GridCoordinateFP3D leftBorderFP = zeroCoordFP + convertCoord (leftBorderTotalField);
-  GridCoordinateFP3D rightBorderFP = zeroCoordFP + convertCoord (rightBorderTotalField);
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfHyBorderLeftX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderLeftY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderLeftZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHyBorderRightX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderRightY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderRightZ (coordFP, leftBorderFP, rightBorderFP),
-                                 false,
-                                 false,
-                                 YeeGridLayoutHelper::tfsfHyBorderBackX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderBackY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderBackZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHyBorderFrontX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderFrontY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHyBorderFrontZ (coordFP, leftBorderFP, rightBorderFP));
+  return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool
-YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+bool YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
-  GridCoordinateFP3D coordFP = expand2 (getHzCoordFP (coord));
-
-  GridCoordinateFP3D leftBorderFP = expand2 (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand2 (zeroCoordFP + convertCoord (rightBorderTotalField));
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfHzBorderLeftX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHzBorderRightX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHzBorderDownX (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHzBorderUpX (coordFP, leftBorderFP, rightBorderFP),
-                                 false,
-                                 false);
+  return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool
-YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+bool YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
-  GridCoordinateFP3D coordFP = expand (getHzCoordFP (coord));
-
-  GridCoordinateFP3D leftBorderFP = expand (zeroCoordFP + convertCoord (leftBorderTotalField));
-  GridCoordinateFP3D rightBorderFP = expand (zeroCoordFP + convertCoord (rightBorderTotalField));
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfHzBorderLeftX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderLeftY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHzBorderRightX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderRightY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHzBorderDownX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderDownY (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHzBorderUpX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderUpY (coordFP, leftBorderFP, rightBorderFP),
-                                 false,
-                                 false);
+  return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool
-YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate3D coord, LayoutDirection dir) const
+bool YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
-  GridCoordinateFP3D coordFP = getHzCoordFP (coord);
-
-  GridCoordinateFP3D leftBorderFP = zeroCoordFP + convertCoord (leftBorderTotalField);
-  GridCoordinateFP3D rightBorderFP = zeroCoordFP + convertCoord (rightBorderTotalField);
-
-  return doNeedTFSFUpdateBorder (dir,
-                                 YeeGridLayoutHelper::tfsfHzBorderLeftX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderLeftY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderLeftZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHzBorderRightX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderRightY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderRightZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHzBorderDownX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderDownY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderDownZ (coordFP, leftBorderFP, rightBorderFP),
-                                 YeeGridLayoutHelper::tfsfHzBorderUpX (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderUpY (coordFP, leftBorderFP, rightBorderFP)
-                                 && YeeGridLayoutHelper::tfsfHzBorderUpZ (coordFP, leftBorderFP, rightBorderFP),
-                                 false,
-                                 false);
+  return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+bool YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
-  GridCoordinateFP1D coordLeftBorderPMLFP = convertCoord (leftBorderPML) + zeroCoordFP;
-  GridCoordinateFP1D coordRightBorderPMLFP = convertCoord (rightBorderPML) + zeroCoordFP;
-
-  /*
-   * TODO: remove floating point equality comparison
-   */
-  bool isInXPML = coordLeftBorderPMLFP.getX () != coordRightBorderPMLFP.getX ()
-                  && (realCoordFP.getX () < coordLeftBorderPMLFP.getX ()
-                      || realCoordFP.getX () >= coordRightBorderPMLFP.getX ());
-
-  return isInXPML;
+  return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
 template <>
-bool YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+bool YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP3D realCoordFP) const
 {
-  GridCoordinateFP2D coordLeftBorderPMLFP = convertCoord (leftBorderPML) + zeroCoordFP;
-  GridCoordinateFP2D coordRightBorderPMLFP = convertCoord (rightBorderPML) + zeroCoordFP;
-
-  /*
-   * TODO: remove floating point equality comparison
-   */
-  bool isInXPML = coordLeftBorderPMLFP.getX () != coordRightBorderPMLFP.getX ()
-                  && (realCoordFP.getX () < coordLeftBorderPMLFP.getX ()
-                      || realCoordFP.getX () >= coordRightBorderPMLFP.getX ());
-  bool isInYPML = coordLeftBorderPMLFP.getY () != coordRightBorderPMLFP.getY ()
-                  && (realCoordFP.getY () < coordLeftBorderPMLFP.getY ()
-                      || realCoordFP.getY () >= coordRightBorderPMLFP.getY ());
-
-  return isInXPML || isInYPML;
+  return YeeGridLayoutHelper::isInPML3D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
-
-template <>
-bool YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP3D realCoordFP) const
-{
-  GridCoordinateFP3D coordLeftBorderPMLFP = convertCoord (leftBorderPML) + zeroCoordFP;
-  GridCoordinateFP3D coordRightBorderPMLFP = convertCoord (rightBorderPML) + zeroCoordFP;
-
-  /*
-   * TODO: remove floating point equality comparison
-   */
-  bool isInXPML = coordLeftBorderPMLFP.getX () != coordRightBorderPMLFP.getX ()
-                  && (realCoordFP.getX () < coordLeftBorderPMLFP.getX ()
-                      || realCoordFP.getX () >= coordRightBorderPMLFP.getX ());
-  bool isInYPML = coordLeftBorderPMLFP.getY () != coordRightBorderPMLFP.getY ()
-                  && (realCoordFP.getY () < coordLeftBorderPMLFP.getY ()
-                      || realCoordFP.getY () >= coordRightBorderPMLFP.getY ());
-  bool isInZPML = coordLeftBorderPMLFP.getZ () != coordRightBorderPMLFP.getZ ()
-                  && (realCoordFP.getZ () < coordLeftBorderPMLFP.getZ ()
-                      || realCoordFP.getZ () >= coordRightBorderPMLFP.getZ ());
-
-  return isInXPML || isInYPML || isInZPML;
-}
-
 
 #define DEFAULT_VALS_LIST \
-  zeroCoord (0, 0, 0) \
-  , minEpsCoord (0, 0, 0) \
-  , minMuCoord (0, 0, 0) \
-  , minExCoord (0, 0, 0) \
-  , minEyCoord (0, 0, 0) \
-  , minEzCoord (0, 0, 0) \
-  , minHxCoord (0, 0, 0) \
-  , minHyCoord (0, 0, 0) \
-  , minHzCoord (0, 0, 0) \
-  , minEpsCoordFP (0.5, 0.5, 0.5) \
-  , minMuCoordFP (0.5, 0.5, 0.5) \
-  , zeroCoordFP (0.0, 0.0, 0.0) \
-  , minExCoordFP (1.0, 0.5, 0.5) \
-  , minEyCoordFP (0.5, 1.0, 0.5) \
-  , minEzCoordFP (0.5, 0.5, 1.0) \
-  , minHxCoordFP (0.5, 1.0, 1.0) \
-  , minHyCoordFP (1.0, 0.5, 1.0) \
-  , minHzCoordFP (1.0, 1.0, 0.5) \
+  zeroCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , minEpsCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , minMuCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , minExCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , minEyCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , minEzCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , minHxCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , minHyCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , minHzCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , minEpsCoordFP (TCFP::initAxesCoordinate (0.5, 0.5, 0.5, ct1, ct2, ct3)) \
+  , minMuCoordFP (TCFP::initAxesCoordinate (0.5, 0.5, 0.5, ct1, ct2, ct3)) \
+  , zeroCoordFP (TCFP::initAxesCoordinate (0.0, 0.0, 0.0, ct1, ct2, ct3)) \
+  , minExCoordFP (TCFP::initAxesCoordinate (1.0, 0.5, 0.5, ct1, ct2, ct3)) \
+  , minEyCoordFP (TCFP::initAxesCoordinate (0.5, 1.0, 0.5, ct1, ct2, ct3)) \
+  , minEzCoordFP (TCFP::initAxesCoordinate (0.5, 0.5, 1.0, ct1, ct2, ct3)) \
+  , minHxCoordFP (TCFP::initAxesCoordinate (0.5, 1.0, 1.0, ct1, ct2, ct3)) \
+  , minHyCoordFP (TCFP::initAxesCoordinate (1.0, 0.5, 1.0, ct1, ct2, ct3)) \
+  , minHzCoordFP (TCFP::initAxesCoordinate (1.0, 1.0, 0.5, ct1, ct2, ct3)) \
   , size (coordSize) \
   , sizeEps (coordSize * (doubleMaterialPrecision ? 2 : 1)) \
   , sizeMu (coordSize * (doubleMaterialPrecision ? 2 : 1)) \
@@ -493,72 +860,301 @@ bool YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED>::isInPML (G
   , rightBorderPML (coordSize - sizePML) \
   , leftBorderTotalField (sizeScatteredZone) \
   , rightBorderTotalField (coordSize - sizeScatteredZone) \
+  , leftBorderTotalFieldFP (zeroCoordFP + convertCoord (leftBorderTotalField)) \
+  , rightBorderTotalFieldFP (zeroCoordFP + convertCoord (rightBorderTotalField)) \
   , incidentWaveAngle1 (incWaveAngle1) \
   , incidentWaveAngle2 (incWaveAngle2) \
   , incidentWaveAngle3 (incWaveAngle3) \
   , isDoubleMaterialPrecision (doubleMaterialPrecision)
 
 template <>
-YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout (GridCoordinate1D coordSize,
-                                                                                GridCoordinate1D sizePML,
-                                                                                GridCoordinate1D sizeScatteredZone,
-                                                                                FPValue incWaveAngle1, /**< teta */
-                                                                                FPValue incWaveAngle2, /**< phi */
-                                                                                FPValue incWaveAngle3, /**< psi */
-                                                                                bool doubleMaterialPrecision)
-: DEFAULT_VALS_LIST
+YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate1D coordSize,
+   GridCoordinate1D sizePML,
+   GridCoordinate1D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::Z)
+, ct2 (CoordinateType::NONE)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
-, zeroIncCoordFP (leftBorderTotalField.getX () - 2.5 * sin (incWaveAngle1) * cos (incWaveAngle2))
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
 {
-  ASSERT (size.getX () > 0);
+  ASSERT (size.get1 () > 0);
+  ASSERT (incWaveAngle1 == incWaveAngle2 == incWaveAngle3 == 0);
+}
+
+template <>
+YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate1D coordSize,
+   GridCoordinate1D sizePML,
+   GridCoordinate1D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::Y)
+, ct2 (CoordinateType::NONE)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
+{
+  ASSERT (size.get1 () > 0);
+  ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle2 == PhysicsConst::Pi / 2 && incWaveAngle3 == 0);
+}
+
+template <>
+YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate1D coordSize,
+   GridCoordinate1D sizePML,
+   GridCoordinate1D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::Z)
+, ct2 (CoordinateType::NONE)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
+{
+  ASSERT (size.get1 () > 0);
+  ASSERT (incWaveAngle1 == incWaveAngle2 == incWaveAngle3 == 0);
+}
+
+template <>
+YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate1D coordSize,
+   GridCoordinate1D sizePML,
+   GridCoordinate1D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::X)
+, ct2 (CoordinateType::NONE)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
+{
+  ASSERT (size.get1 () > 0);
+  ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle2 == 0 && incWaveAngle3 == 0);
+}
+
+template <>
+YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate1D coordSize,
+   GridCoordinate1D sizePML,
+   GridCoordinate1D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::Y)
+, ct2 (CoordinateType::NONE)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
+{
+  ASSERT (size.get1 () > 0);
+  ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle2 == PhysicsConst::Pi / 2 && incWaveAngle3 == PhysicsConst::Pi / 2);
+}
+
+template <>
+YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate1D coordSize,
+   GridCoordinate1D sizePML,
+   GridCoordinate1D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::X)
+, ct2 (CoordinateType::NONE)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
+{
+  ASSERT (size.get1 () > 0);
+  ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle2 == 0 && incWaveAngle3 == PhysicsConst::Pi / 2);
+}
+
+template <>
+YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate2D coordSize,
+   GridCoordinate2D sizePML,
+   GridCoordinate2D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::Y)
+, ct2 (CoordinateType::Z)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * sin (incWaveAngle1),
+                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1), ct1, ct2)
+{
+  ASSERT (size.get1 () > 0 && size.get2 () > 0);
+  ASSERT (incWaveAngle2 == PhysicsConst::Pi / 2 && incWaveAngle3 == PhysicsConst::Pi / 2);
 
   // TODO: add other angles
   ASSERT (incWaveAngle1 >= 0 && incWaveAngle1 <= PhysicsConst::Pi / 2);
+}
+
+template <>
+YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate2D coordSize,
+   GridCoordinate2D sizePML,
+   GridCoordinate2D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::X)
+, ct2 (CoordinateType::Z)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * sin (incWaveAngle1),
+                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1), ct1, ct2)
+{
+  ASSERT (size.get1 () > 0 && size.get2 () > 0);
+  ASSERT (incWaveAngle2 == 0 && incWaveAngle3 == PhysicsConst::Pi / 2);
+
+  // TODO: add other angles
+  ASSERT (incWaveAngle1 >= 0 && incWaveAngle1 <= PhysicsConst::Pi / 2);
+}
+
+template <>
+YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate2D coordSize,
+   GridCoordinate2D sizePML,
+   GridCoordinate2D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::X)
+, ct2 (CoordinateType::Y)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * cos (incWaveAngle2),
+                  leftBorderTotalField.get2 () - 2.5 * sin (incWaveAngle2), ct1, ct2)
+{
+  ASSERT (size.get1 () > 0 && size.get2 () > 0);
+  ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle3 == 0);
+
+  // TODO: add other angles
   ASSERT (incWaveAngle2 >= 0 && incWaveAngle2 <= PhysicsConst::Pi / 2);
 }
 
 template <>
-YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout (GridCoordinate2D coordSize,
-                                                                                GridCoordinate2D sizePML,
-                                                                                GridCoordinate2D sizeScatteredZone,
-                                                                                FPValue incWaveAngle1, /**< teta */
-                                                                                FPValue incWaveAngle2, /**< phi */
-                                                                                FPValue incWaveAngle3, /**< psi */
-                                                                                bool doubleMaterialPrecision)
-: DEFAULT_VALS_LIST
-// TODO: check this, only two angles should be used!
-, zeroIncCoordFP (leftBorderTotalField.getX () - 2.5 * sin (incWaveAngle1) * cos (incWaveAngle2),
-                  leftBorderTotalField.getY () - 2.5 * sin (incWaveAngle1) * sin (incWaveAngle2))
+YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate2D coordSize,
+   GridCoordinate2D sizePML,
+   GridCoordinate2D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::Y)
+, ct2 (CoordinateType::Z)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * sin (incWaveAngle1),
+                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1), ct1, ct2)
 {
-  ASSERT (size.getX () > 0);
-  ASSERT (size.getY () > 0);
+  ASSERT (size.get1 () > 0 && size.get2 () > 0);
+  ASSERT (incWaveAngle2 == PhysicsConst::Pi / 2 && incWaveAngle3 == 0);
 
   // TODO: add other angles
   ASSERT (incWaveAngle1 >= 0 && incWaveAngle1 <= PhysicsConst::Pi / 2);
+}
+
+template <>
+YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate2D coordSize,
+   GridCoordinate2D sizePML,
+   GridCoordinate2D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::X)
+, ct2 (CoordinateType::Z)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * sin (incWaveAngle1),
+                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1), ct1, ct2)
+{
+  ASSERT (size.get1 () > 0 && size.get2 () > 0);
+  ASSERT (incWaveAngle2 == 0 && incWaveAngle3 == 0);
+
+  // TODO: add other angles
+  ASSERT (incWaveAngle1 >= 0 && incWaveAngle1 <= PhysicsConst::Pi / 2);
+}
+
+template <>
+YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate2D coordSize,
+   GridCoordinate2D sizePML,
+   GridCoordinate2D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::X)
+, ct2 (CoordinateType::Y)
+, ct3 (CoordinateType::NONE)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * cos (incWaveAngle2),
+                  leftBorderTotalField.get2 () - 2.5 * sin (incWaveAngle2), ct1, ct2)
+{
+  ASSERT (size.get1 () > 0 && size.get2 () > 0);
+  ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle3 == PhysicsConst::Pi / 2);
+
+  // TODO: add other angles
   ASSERT (incWaveAngle2 >= 0 && incWaveAngle2 <= PhysicsConst::Pi / 2);
 }
 
 template <>
-YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED>::YeeGridLayout (GridCoordinate3D coordSize,
-                                                                                GridCoordinate3D sizePML,
-                                                                                GridCoordinate3D sizeScatteredZone,
-                                                                                FPValue incWaveAngle1, /**< teta */
-                                                                                FPValue incWaveAngle2, /**< phi */
-                                                                                FPValue incWaveAngle3, /**< psi */
-                                                                                bool doubleMaterialPrecision)
-: DEFAULT_VALS_LIST
-// TODO: check this, only two angles should be used!
-, zeroIncCoordFP (leftBorderTotalField.getX () - 2.5 * sin (incWaveAngle1) * cos (incWaveAngle2),
-                  leftBorderTotalField.getY () - 2.5 * sin (incWaveAngle1) * sin (incWaveAngle2),
-                  leftBorderTotalField.getZ () - 2.5 * cos (incWaveAngle1))
+YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+  (GridCoordinate3D coordSize,
+   GridCoordinate3D sizePML,
+   GridCoordinate3D sizeScatteredZone,
+   FPValue incWaveAngle1, /**< teta */
+   FPValue incWaveAngle2, /**< phi */
+   FPValue incWaveAngle3, /**< psi */
+   bool doubleMaterialPrecision)
+: ct1 (CoordinateType::X)
+, ct2 (CoordinateType::Y)
+, ct3 (CoordinateType::Z)
+, DEFAULT_VALS_LIST
+// TODO: check this, only one angle should be used!
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * sin (incWaveAngle1) * cos (incWaveAngle2),
+                  leftBorderTotalField.get2 () - 2.5 * sin (incWaveAngle1) * sin (incWaveAngle2),
+                  leftBorderTotalField.get3 () - 2.5 * cos (incWaveAngle1), ct1, ct2, ct3)
 {
-  ASSERT (size.getX () > 0);
-  ASSERT (size.getY () > 0);
-  ASSERT (size.getZ () > 0);
+  ASSERT (size.get1 () > 0 && size.get2 () > 0 && size.get3 () > 0);
 
   // TODO: add other angles
   ASSERT (incWaveAngle1 >= 0 && incWaveAngle1 <= PhysicsConst::Pi / 2);
   ASSERT (incWaveAngle2 >= 0 && incWaveAngle2 <= PhysicsConst::Pi / 2);
+  ASSERT (incWaveAngle3 >= 0 && incWaveAngle3 <= PhysicsConst::Pi / 2);
 }
 
 #undef DEFAULT_VALS_LIST

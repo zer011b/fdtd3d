@@ -86,4 +86,8 @@ typedef uint32_t time_step;
 extern FieldValue getFieldValueRealOnly (FPValue);
 extern FPValue getRealOnlyFromFieldValue (const FieldValue &);
 
+#define FPEXACT_ACCURACY (FPValue(0.0000001))
+#define IS_FP_EXACT(a,b) \
+  (((a) > (b) ? (a) - (b) : (b) - (a)) < FPEXACT_ACCURACY)
+
 #endif /* FIELD_VALUES_H */
