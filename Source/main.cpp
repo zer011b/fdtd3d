@@ -45,7 +45,7 @@ int runMode ()
   TCoord<grid_coord, true> pmlSize (solverSettings.getPMLSizeX (), solverSettings.getPMLSizeY (), solverSettings.getPMLSizeZ ());
   TCoord<grid_coord, true> tfsfSize (solverSettings.getTFSFSizeX (), solverSettings.getTFSFSizeY (), solverSettings.getTFSFSizeZ ());
 
-  YeeGridLayout<TCoord, layout_type> *yeeLayout = NULLPTR;
+  YeeGridLayout<Type, TCoord, layout_type> *yeeLayout = NULLPTR;
 
   if (solverSettings.getDoUseParallelGrid ())
   {
@@ -97,7 +97,7 @@ int runMode ()
   }
   else
   {
-    yeeLayout = new YeeGridLayout<TCoord, layout_type> (
+    yeeLayout = new YeeGridLayout<Type, TCoord, layout_type> (
                 overallSize,
                 pmlSize,
                 tfsfSize,
@@ -166,7 +166,7 @@ int runMode ()
     }
     else
     {
-      Scheme<Type, TCoord, YeeGridLayout<TCoord, layout_type> > scheme (yeeLayout,
+      Scheme<Type, TCoord, YeeGridLayout<Type, TCoord, layout_type> > scheme (yeeLayout,
                                                                         overallSize,
                                                                         solverSettings.getNumTimeSteps ());
       scheme.initScheme (solverSettings.getGridStep (), /* dx */

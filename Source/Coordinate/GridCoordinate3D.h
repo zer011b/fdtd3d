@@ -46,9 +46,8 @@ public:
 #endif /* DEBUG_INFO */
   {
 #ifdef DEBUG_INFO
-    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () != GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()));
-    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () != getType3 ()));
-    ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 () != getType3 ()));
+    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()));
+    ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 () < getType3 ()));
 #endif /* DEBUG_INFO */
 
     if (doSignChecks)
@@ -269,6 +268,30 @@ public:
       , getType3 ()
 #endif /* DEBUG_INFO */
       );
+  }
+
+  GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator/ (TcoordType rhs) const
+  {
+    TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+    TcoordType coord2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+    return GridCoordinate3DTemplate<TcoordType, doSignChecks> (coord1 / rhs, coord2 / rhs, get3 () / rhs
+#ifdef DEBUG_INFO
+      , GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
+      , GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
+      , getType3 ()
+#endif /* DEBUG_INFO */
+      );
+  }
+
+  static GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST initAxesCoordinate (const TcoordType& c1,
+                                                                                               const TcoordType& c2,
+                                                                                               const TcoordType& c3,
+                                                                                               CoordinateType ct1,
+                                                                                               CoordinateType ct2,
+                                                                                               CoordinateType ct3)
+  {
+    ASSERT (ct1 == CoordinateType::X && ct2 == CoordinateType::Y && ct3 == CoordinateType::Z);
+    return GridCoordinate3DTemplate<TcoordType, doSignChecks> (c1, c2, c3, ct1, ct2, ct3);
   }
 
   friend GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST (::operator* <TcoordType, doSignChecks>)

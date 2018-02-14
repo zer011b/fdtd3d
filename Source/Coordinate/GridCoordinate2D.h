@@ -46,7 +46,7 @@ public:
 #endif /* DEBUG_INFO */
   {
 #ifdef DEBUG_INFO
-    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () != getType2 ()));
+    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < getType2 ()));
 #endif /* DEBUG_INFO */
 
     if (doSignChecks)
@@ -224,6 +224,42 @@ public:
       , GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 (), getType2 ()
 #endif /* DEBUG_INFO */
       );
+  }
+
+  GridCoordinate2DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator/ (TcoordType rhs) const
+  {
+    TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+    return GridCoordinate2DTemplate<TcoordType, doSignChecks> (coord1 / rhs, get2 () / rhs
+#ifdef DEBUG_INFO
+      , GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 (), getType2 ()
+#endif /* DEBUG_INFO */
+      );
+  }
+
+  static GridCoordinate2DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST initAxesCoordinate (const TcoordType& c1,
+                                                                                               const TcoordType& c2,
+                                                                                               const TcoordType& c3,
+                                                                                               CoordinateType ct1,
+                                                                                               CoordinateType ct2,
+                                                                                               CoordinateType ct3)
+  {
+    ASSERT (ct3 == CoordinateType::NONE);
+    if (ct1 == CoordinateType::X && ct2 == CoordinateType::Y)
+    {
+      return GridCoordinate2DTemplate<TcoordType, doSignChecks> (c1, c2, ct1, ct2);
+    }
+    else if (ct1 == CoordinateType::X && ct2 == CoordinateType::Z)
+    {
+      return GridCoordinate2DTemplate<TcoordType, doSignChecks> (c1, c3, ct1, ct2);
+    }
+    else if (ct1 == CoordinateType::Y && ct2 == CoordinateType::Z)
+    {
+      return GridCoordinate2DTemplate<TcoordType, doSignChecks> (c2, c3, ct1, ct2);
+    }
+    else
+    {
+      UNREACHABLE;
+    }
   }
 
   friend GridCoordinate2DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST (::operator* <TcoordType, doSignChecks>)

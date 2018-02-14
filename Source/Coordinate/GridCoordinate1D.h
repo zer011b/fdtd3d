@@ -11,6 +11,7 @@ ENUM_CLASS (Dimension, uint8_t,
 );
 
 ENUM_CLASS (CoordinateType, uint8_t,
+  NONE,
   X,
   Y,
   Z,
@@ -200,6 +201,42 @@ public:
       , getType1 ()
 #endif /* DEBUG_INFO */
       );
+  }
+
+  GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator/ (TcoordType rhs) const
+  {
+    return GridCoordinate1DTemplate<TcoordType, doSignChecks> (get1 () / rhs
+#ifdef DEBUG_INFO
+      , getType1 ()
+#endif /* DEBUG_INFO */
+      );
+  }
+
+  static GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST initAxesCoordinate (const TcoordType& c1,
+                                                                                               const TcoordType& c2,
+                                                                                               const TcoordType& c3,
+                                                                                               CoordinateType ct1,
+                                                                                               CoordinateType ct2,
+                                                                                               CoordinateType ct3)
+  {
+    ASSERT (ct2 == CoordinateType::NONE && ct3 == CoordinateType::NONE);
+
+    if (ct1 == CoordinateType::X)
+    {
+      return GridCoordinate1DTemplate<TcoordType, doSignChecks> (c1, ct1);
+    }
+    else if (ct1 == CoordinateType::Y)
+    {
+      return GridCoordinate1DTemplate<TcoordType, doSignChecks> (c2, ct1);
+    }
+    else if (ct1 == CoordinateType::Z)
+    {
+      return GridCoordinate1DTemplate<TcoordType, doSignChecks> (c3, ct1);
+    }
+    else
+    {
+      UNREACHABLE;
+    }
   }
 
   friend GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST (::operator* <TcoordType, doSignChecks>)

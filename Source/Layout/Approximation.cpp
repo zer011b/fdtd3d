@@ -302,7 +302,7 @@ Approximation::approximateSphereFast (GridCoordinateFP3D midPos,
                                       FPValue radius,
                                       FieldValue eps)
 {
-  FPValue d = sqrt (SQR (midPos.getX () - center.getX ()) + SQR (midPos.getY () - center.getY ()) + SQR (midPos.getZ () - center.getZ ()));
+  FPValue d = sqrt (SQR (midPos.get1 () - center.get1 ()) + SQR (midPos.get2 () - center.get2 ()) + SQR (midPos.get3 () - center.get3 ()));
 
   FPValue diff = d - radius;
 
@@ -328,8 +328,8 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
                                           FPValue radius,
                                           FieldValue eps)
 {
-  GridCoordinateFP3D start (midPos.getX () - 0.5, midPos.getY () - 0.5, midPos.getZ () - 0.5);
-  GridCoordinateFP3D end (midPos.getX () + 0.5, midPos.getY () + 0.5, midPos.getZ () + 0.5);
+  GridCoordinateFP3D start (midPos.get1 () - 0.5, midPos.get2 () - 0.5, midPos.get3 () - 0.5);
+  GridCoordinateFP3D end (midPos.get1 () + 0.5, midPos.get2 () + 0.5, midPos.get3 () + 0.5);
 
   int numSteps = 100;
   FPValue step = 1.0 / numSteps;
@@ -339,38 +339,38 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
   {
     for (int j = 0; j < numSteps; ++j)
     {
-      GridCoordinateFP3D pos (start.getX () + i * step, start.getY () + j * step, 0.0);
-      FPValue temp = SQR (radius) - SQR (pos.getX () - center.getX ()) - SQR (pos.getY () - center.getY ());
+      GridCoordinateFP3D pos (start.get1 () + i * step, start.get2 () + j * step, 0.0);
+      FPValue temp = SQR (radius) - SQR (pos.get1 () - center.get1 ()) - SQR (pos.get2 () - center.get2 ());
 
       if (temp < 0)
       {
-        pos.setZ (0.0);
+        pos.set3 (0.0);
       }
       else
       {
-        if (midPos.getZ () > center.getZ ())
+        if (midPos.get3 () > center.get3 ())
         {
-          pos.setZ (center.getZ () + sqrt (temp));
+          pos.set3 (center.get3 () + sqrt (temp));
         }
         else
         {
-          pos.setZ (center.getZ () - sqrt (temp));
+          pos.set3 (center.get3 () - sqrt (temp));
         }
 
-        if (pos.getZ () < start.getZ ())
+        if (pos.get3 () < start.get3 ())
         {
-          pos.setZ (1.0);
+          pos.set3 (1.0);
         }
-        else if (pos.getZ () > end.getZ ())
+        else if (pos.get3 () > end.get3 ())
         {
-          pos.setZ (0.0);
+          pos.set3 (0.0);
         }
         else
         {
-          pos.setZ (pos.getZ () - start.getZ ());
+          pos.set3 (pos.get3 () - start.get3 ());
         }
       }
-      volume += pos.getZ () * elemS;
+      volume += pos.get3 () * elemS;
     }
   }
 
