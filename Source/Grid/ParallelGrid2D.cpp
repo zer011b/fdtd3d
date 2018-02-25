@@ -25,7 +25,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
   }
   else
   {
-    nodeGridSizeX = topologySize.getX ();
+    nodeGridSizeX = topologySize.get1 ();
   }
   nodeGridSizeY = 1;
 
@@ -46,7 +46,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
   }
   else
   {
-    nodeGridSizeY = topologySize.getY ();
+    nodeGridSizeY = topologySize.get2 ();
   }
   nodeGridSizeX = 1;
 
@@ -104,7 +104,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
 
   int nodeGridSizeXOptimal;
   int nodeGridSizeYOptimal;
-  initOptimal (size.getX (), size.getY (), nodeGridSizeXOptimal, nodeGridSizeYOptimal);
+  initOptimal (size.get1 (), size.get2 (), nodeGridSizeXOptimal, nodeGridSizeYOptimal);
 
   if (!doUseManualTopology)
   {
@@ -113,8 +113,8 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
   }
   else
   {
-    nodeGridSizeX = topologySize.getX ();
-    nodeGridSizeY = topologySize.getY ();
+    nodeGridSizeX = topologySize.get1 ();
+    nodeGridSizeY = topologySize.get2 ();
   }
 
   nodeGridSizeXY = nodeGridSizeX * nodeGridSizeY;

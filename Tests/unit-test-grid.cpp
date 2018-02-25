@@ -12,84 +12,64 @@
 #include "cstdlib"
 #endif /* !CXX11_ENABLED */
 
+template <class TCoord>
+void testFunc (TCoord overallSize)
+{
+  Grid<TCoord> grid (overallSize, 0);
+
+  /*
+   * Copy constructor
+   */
+  Grid<TCoord> grid_1 (grid);
+
+  grid.initialize ();
+
+  /*
+   * Copy constructor with initialize grid
+   */
+  Grid<TCoord> grid_2 (grid);
+
+  /*
+   * Operator =
+   */
+  grid = grid_1;
+
+  /*
+   * Operator = with initialized grid
+   */
+  grid = grid_2;
+
+  /*
+   * Dynamic creation of grid
+   */
+  Grid<TCoord> *grid_3 = new Grid<TCoord> (overallSize, 0);
+  Grid<TCoord> *grid_4 = new Grid<TCoord> (overallSize, 0);
+
+  *grid_3 = *grid_4;
+
+  grid_4->initialize ();
+
+  *grid_3 = *grid_4;
+
+  delete grid_3;
+  delete grid_4;
+}
+
 int main (int argc, char** argv)
 {
   int gridSizeX = 32;
   int gridSizeY = 32;
   int gridSizeZ = 32;
 
-  GridCoordinate1D overallSize1D (gridSizeX);
-  GridCoordinate2D overallSize2D (gridSizeX, gridSizeY);
-  GridCoordinate3D overallSize3D (gridSizeX, gridSizeY, gridSizeZ);
+  testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeX, CoordinateType::X));
+  testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeY, CoordinateType::Y));
+  testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeZ, CoordinateType::Z));
 
-  {
-    Grid<GridCoordinate1D> grid1D (overallSize1D, 0);
-    Grid<GridCoordinate2D> grid2D (overallSize2D, 0);
-    Grid<GridCoordinate3D> grid3D (overallSize3D, 0);
+  testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeX, gridSizeY, CoordinateType::X, CoordinateType::Y));
+  testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeX, gridSizeZ, CoordinateType::X, CoordinateType::Z));
+  testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeY, gridSizeZ, CoordinateType::Y, CoordinateType::Z));
 
-    /*
-     * Copy constructor
-     */
-    Grid<GridCoordinate1D> grid1D_1 (grid1D);
-    Grid<GridCoordinate2D> grid2D_1 (grid2D);
-    Grid<GridCoordinate3D> grid3D_1 (grid3D);
-
-    grid1D.initialize ();
-    grid2D.initialize ();
-    grid3D.initialize ();
-
-    /*
-     * Copy constructor with initialize grid
-     */
-    Grid<GridCoordinate1D> grid1D_2 (grid1D);
-    Grid<GridCoordinate2D> grid2D_2 (grid2D);
-    Grid<GridCoordinate3D> grid3D_2 (grid3D);
-
-    /*
-     * Operator =
-     */
-    grid1D = grid1D_1;
-    grid2D = grid2D_1;
-    grid3D = grid3D_1;
-
-    /*
-     * Operator = with initialized grid
-     */
-    grid1D = grid1D_2;
-    grid2D = grid2D_2;
-    grid3D = grid3D_2;
-
-    /*
-     * Dynamic creation of grid
-     */
-    Grid<GridCoordinate3D> *grid3D_3 = new Grid<GridCoordinate3D> (overallSize3D, 0);
-    Grid<GridCoordinate2D> *grid2D_3 = new Grid<GridCoordinate2D> (overallSize2D, 0);
-    Grid<GridCoordinate1D> *grid1D_3 = new Grid<GridCoordinate1D> (overallSize1D, 0);
-
-    Grid<GridCoordinate3D> *grid3D_4 = new Grid<GridCoordinate3D> (overallSize3D, 0);
-    Grid<GridCoordinate2D> *grid2D_4 = new Grid<GridCoordinate2D> (overallSize2D, 0);
-    Grid<GridCoordinate1D> *grid1D_4 = new Grid<GridCoordinate1D> (overallSize1D, 0);
-
-    *grid3D_3 = *grid3D_4;
-    *grid2D_3 = *grid2D_4;
-    *grid1D_3 = *grid1D_4;
-
-    grid3D_4->initialize ();
-    grid2D_4->initialize ();
-    grid1D_4->initialize ();
-
-    *grid3D_3 = *grid3D_4;
-    *grid2D_3 = *grid2D_4;
-    *grid1D_3 = *grid1D_4;
-
-    delete grid1D_3;
-    delete grid2D_3;
-    delete grid3D_3;
-
-    delete grid1D_4;
-    delete grid2D_4;
-    delete grid3D_4;
-  }
+  testFunc<GridCoordinate3D> (GridCoordinate3D (gridSizeX, gridSizeY, gridSizeZ, CoordinateType::X, CoordinateType::Y, CoordinateType::Z));
 
   return 0;
 } /* main */

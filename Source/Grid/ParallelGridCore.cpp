@@ -854,7 +854,7 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
                                     ParallelGridCoordinate size, /**< size of grid (not used
                                                                   *   for 1D buffer dimensions) */
                                     bool useManualTopology, /**< flag whether to use manual virtual topology */
-                                    GridCoordinate3D topology) /**< topology size, specified manually */
+                                    ParallelGridCoordinate topology) /**< topology size, specified manually */
   : processId (process)
   , totalProcCount (totalProc)
   , doUseManualTopology (useManualTopology)

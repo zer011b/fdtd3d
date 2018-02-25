@@ -47,7 +47,9 @@ int main (int argc, char** argv)
 
   int bufSize = 2;
 
-  MPI_Init (&argc, &argv);
+  int res = MPI_Init (&argc, &argv);
+
+  ALWAYS_ASSERT (res == MPI_SUCCESS);
 
   int rank, numProcs;
 
@@ -72,60 +74,72 @@ int main (int argc, char** argv)
   DPRINTF (LOG_LEVEL_STAGES, "Start process %d of %d\n", rank, numProcs);
 
 #ifdef GRID_1D
-  GridCoordinate3D overallSize (gridSizeX, 0, 0);
-  GridCoordinate3D pmlSize (10, 0, 0);
-  GridCoordinate3D tfsfSize (20, 0, 0);
-  GridCoordinate3D bufferSize (bufSize, 0, 0);
+  GridCoordinate1D overallSize (gridSizeX, CoordinateType::X);
+  GridCoordinate1D pmlSize (10, CoordinateType::X);
+  GridCoordinate1D tfsfSize (20, CoordinateType::X);
+  GridCoordinate1D bufferSize (bufSize, CoordinateType::X);
+  GridCoordinate1D topologySize (0, CoordinateType::X);
+
+#define SCHEME_TYPE SchemeType::Dim1_EzHy
+#define ANGLES PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
-  GridCoordinate3D overallSize (gridSizeX, gridSizeY, 0);
-  GridCoordinate3D pmlSize (10, 10, 0);
-  GridCoordinate3D tfsfSize (20, 20, 0);
-  GridCoordinate3D bufferSize (bufSize, bufSize, 0);
+  GridCoordinate2D overallSize (gridSizeX, gridSizeY, CoordinateType::X, CoordinateType::Y);
+  GridCoordinate2D pmlSize (10, 10, CoordinateType::X, CoordinateType::Y);
+  GridCoordinate2D tfsfSize (20, 20, CoordinateType::X, CoordinateType::Y);
+  GridCoordinate2D bufferSize (bufSize, bufSize, CoordinateType::X, CoordinateType::Y);
+  GridCoordinate2D topologySize (0, 0, CoordinateType::X, CoordinateType::Y);
+
+#define SCHEME_TYPE SchemeType::Dim2_TEz
+#define ANGLES PhysicsConst::Pi / 2, 0, 0
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
-  GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ);
-  GridCoordinate3D pmlSize (10, 10, 10);
-  GridCoordinate3D tfsfSize (20, 20, 20);
-  GridCoordinate3D bufferSize (bufSize, bufSize, bufSize);
+  GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  GridCoordinate3D pmlSize (10, 10, 10, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  GridCoordinate3D tfsfSize (20, 20, 20, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  GridCoordinate3D bufferSize (bufSize, bufSize, bufSize, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  GridCoordinate3D topologySize (0, 0, 0, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+
+#define SCHEME_TYPE SchemeType::Dim3
+#define ANGLES 0, 0, 0
 #endif /* GRID_3D */
 
-  ParallelGridCore parallelGridCore (rank, numProcs, overallSize, false, GridCoordinate3D(0, 0, 0));
+  ParallelGridCore parallelGridCore (rank, numProcs, overallSize, false, topologySize);
   ParallelGrid::initializeParallelCore (&parallelGridCore);
 
   bool isDoubleMaterialPrecision = false;
 
-  ParallelYeeGridLayout yeeLayout (overallSize, pmlSize, tfsfSize, PhysicsConst::Pi / 2, 0, 0, isDoubleMaterialPrecision);
+  ParallelYeeGridLayout<SCHEME_TYPE, LayoutType::E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSize, ANGLES, isDoubleMaterialPrecision);
   yeeLayout.Initialize (&parallelGridCore);
 
   ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode ());
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  for (grid_coord i = 0; i < grid.getSize ().getX (); ++i)
+  for (grid_coord i = 0; i < grid.getSize ().get1 (); ++i)
   {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-    for (grid_coord j = 0; j < grid.getSize ().getY (); ++j)
+    for (grid_coord j = 0; j < grid.getSize ().get2 (); ++j)
     {
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-      for (grid_coord k = 0; k < grid.getSize ().getZ (); ++k)
+      for (grid_coord k = 0; k < grid.getSize ().get3 (); ++k)
       {
 #endif /* GRID_3D */
         FieldPointValue* val = new FieldPointValue ();
 
 #ifdef GRID_1D
-        GridCoordinate1D pos (i);
+        GridCoordinate1D pos (i, CoordinateType::X);
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
-        GridCoordinate2D pos (i, j);
+        GridCoordinate2D pos (i, j, CoordinateType::X, CoordinateType::Y);
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
-        GridCoordinate3D pos (i, j, k);
+        GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 #endif /* GRID_3D */
 
         ParallelGridCoordinate posAbs = grid.getTotalPosition (pos);
@@ -177,28 +191,28 @@ int main (int argc, char** argv)
   ParallelGridBase *gridTotal = grid.gatherFullGrid ();
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  for (grid_coord i = 0; i < grid.getSize ().getX (); ++i)
+  for (grid_coord i = 0; i < grid.getSize ().get1 (); ++i)
   {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-    for (grid_coord j = 0; j < grid.getSize ().getY (); ++j)
+    for (grid_coord j = 0; j < grid.getSize ().get2 (); ++j)
     {
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-      for (grid_coord k = 0; k < grid.getSize ().getZ (); ++k)
+      for (grid_coord k = 0; k < grid.getSize ().get3 (); ++k)
       {
 #endif /* GRID_3D */
 
 #ifdef GRID_1D
-        GridCoordinate1D pos (i);
+        GridCoordinate1D pos (i, CoordinateType::X);
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
-        GridCoordinate2D pos (i, j);
+        GridCoordinate2D pos (i, j, CoordinateType::X, CoordinateType::Y);
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
-        GridCoordinate3D pos (i, j, k);
+        GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 #endif /* GRID_3D */
 
         FieldPointValue *val = gridTotal->getFieldPointValue (pos);
@@ -235,23 +249,23 @@ int main (int argc, char** argv)
 #endif /* !COMPLEX_FIELD_VALUES */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-        grid_coord step = gridTotal->getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
+        grid_coord step = gridTotal->getSize ().get1 () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
         int process = i / step;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-        grid_coord step = gridTotal->getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
+        grid_coord step = gridTotal->getSize ().get2 () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
         int process = j / step;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
-        grid_coord step = gridTotal->getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
+        grid_coord step = gridTotal->getSize ().get3 () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
         int process = k / step;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-        grid_coord stepX = gridTotal->getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
-        grid_coord stepY = gridTotal->getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
+        grid_coord stepX = gridTotal->getSize ().get1 () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
+        grid_coord stepY = gridTotal->getSize ().get2 () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
 
         int processI = i / stepX;
         int processJ = j / stepY;
@@ -260,8 +274,8 @@ int main (int argc, char** argv)
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-        grid_coord stepY = gridTotal->getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
-        grid_coord stepZ = gridTotal->getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
+        grid_coord stepY = gridTotal->getSize ().get2 () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
+        grid_coord stepZ = gridTotal->getSize ().get3 () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
 
         int processJ = j / stepY;
         int processK = k / stepZ;
@@ -270,8 +284,8 @@ int main (int argc, char** argv)
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-        grid_coord stepX = gridTotal->getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
-        grid_coord stepZ = gridTotal->getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
+        grid_coord stepX = gridTotal->getSize ().get1 () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
+        grid_coord stepZ = gridTotal->getSize ().get3 () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
 
         int processI = i / stepX;
         int processK = k / stepZ;
@@ -280,9 +294,9 @@ int main (int argc, char** argv)
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
-        grid_coord stepX = gridTotal->getSize ().getX () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
-        grid_coord stepY = gridTotal->getSize ().getY () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
-        grid_coord stepZ = gridTotal->getSize ().getZ () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
+        grid_coord stepX = gridTotal->getSize ().get1 () / ParallelGrid::getParallelCore ()->getNodeGridSizeX ();
+        grid_coord stepY = gridTotal->getSize ().get2 () / ParallelGrid::getParallelCore ()->getNodeGridSizeY ();
+        grid_coord stepZ = gridTotal->getSize ().get3 () / ParallelGrid::getParallelCore ()->getNodeGridSizeZ ();
 
         int processI = i / stepX;
         int processJ = j / stepY;
