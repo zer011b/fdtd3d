@@ -202,6 +202,9 @@ typedef std::vector<MPI_Request> VectorRequests;
  *
  * All grids corresponding to computational nodes have buffers only on the sides where nodes have neighbours.
  */
+ /*
+  * TODO: neighbour -> neighbor
+  */
 class ParallelGrid: public ParallelGridBase
 {
 private:
@@ -436,6 +439,25 @@ public:
 
   bool isBufferLeftPosition (ParallelGridCoordinate);
   bool isBufferRightPosition (ParallelGridCoordinate);
+
+  BufferPosition getBufferForPosition (ParallelGridCoordinate) const;
+
+  const std::vector<ParallelGridCoordinate> &getSendStart () const
+  {
+    return sendStart;
+  }
+  const std::vector<ParallelGridCoordinate> &getSendEnd () const
+  {
+    return sendEnd;
+  }
+  const std::vector<ParallelGridCoordinate> &getRecvStart () const
+  {
+    return recvStart;
+  }
+  const std::vector<ParallelGridCoordinate> &getRecvEnd () const
+  {
+    return recvEnd;
+  }
 
 public:
 

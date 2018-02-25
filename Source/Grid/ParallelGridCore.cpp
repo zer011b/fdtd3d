@@ -6,6 +6,10 @@
 #include <unistd.h>
 #endif /* DYNAMIC_GRID */
 
+#if PRINT_MESSAGE
+extern const char* BufferPositionNames[];
+#endif /* PRINT_MESSAGE */
+
 /**
  * Initialize vector with opposite directions
  *
@@ -120,6 +124,132 @@ ParallelGridCore::getOpposite (BufferPosition direction) /**< direction to get o
   return BUFFER_COUNT;
 } /* ParallelGridCore::getOpposite */
 
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+bool
+ParallelGridCore::getHasL (int process) const
+{
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
+  if (process > 0)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+      defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (process % nodeGridSizeX > 0)
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool
+ParallelGridCore::getHasR (int process) const
+{
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
+  if (process < nodeGridSizeX - 1)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
+      defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (process % nodeGridSizeX < nodeGridSizeX - 1)
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+  {
+    return true;
+  }
+
+  return false;
+}
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+bool
+ParallelGridCore::getHasD (int process) const
+{
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
+  if (process > 0)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+  if (process >= nodeGridSizeX)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  if (process % nodeGridSizeY > 0)
+#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if ((process % (nodeGridSizeXY)) >= nodeGridSizeX)
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool
+ParallelGridCore::getHasU (int process) const
+{
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
+  if (process < nodeGridSizeY - 1)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+  if (process < nodeGridSizeXY - nodeGridSizeX)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  if (process % nodeGridSizeY < nodeGridSizeY - 1)
+#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if ((process % (nodeGridSizeXY)) < nodeGridSizeXY - nodeGridSizeX)
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+  {
+    return true;
+  }
+
+  return false;
+}
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
+          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+bool
+ParallelGridCore::getHasB (int process) const
+{
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+  if (process > 0)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  if (process >= nodeGridSizeY)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+  if (process >= nodeGridSizeX)
+#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (process >= nodeGridSizeXY)
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool
+ParallelGridCore::getHasF (int process) const
+{
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+  if (process < nodeGridSizeZ - 1)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  if (process < nodeGridSizeYZ - nodeGridSizeY)
+#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+  if (process < nodeGridSizeXZ - nodeGridSizeX)
+#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  if (process < nodeGridSizeXYZ - nodeGridSizeXY)
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+  {
+    return true;
+  }
+
+  return false
+}
+#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
+          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
 /**
  * Initialize flags whether computational node has neighbours
  */
@@ -128,100 +258,22 @@ ParallelGridCore::InitBufferFlags ()
 {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  hasL = false;
-  hasR = false;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
-  if (processId > 0)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-      defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId % nodeGridSizeX > 0)
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-  {
-    hasL = true;
-  }
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
-  if (processId < nodeGridSizeX - 1)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || \
-      defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId % nodeGridSizeX < nodeGridSizeX - 1)
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-  {
-    hasR = true;
-  }
+  hasL = getHasL (processId);
+  hasR = getHasR (processId);
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  hasU = false;
-  hasD = false;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
-  if (processId > 0)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-  if (processId >= nodeGridSizeX)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  if (processId % nodeGridSizeY > 0)
-#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if ((processId % (nodeGridSizeXY)) >= nodeGridSizeX)
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-  {
-    hasD = true;
-  }
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
-  if (processId < nodeGridSizeY - 1)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
-  if (processId < nodeGridSizeXY - nodeGridSizeX)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  if (processId % nodeGridSizeY < nodeGridSizeY - 1)
-#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if ((processId % (nodeGridSizeXY)) < nodeGridSizeXY - nodeGridSizeX)
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-  {
-    hasU = true;
-  }
+  hasD = getHasD (processId);
+  hasU = getHasU (processId);
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  hasF = false;
-  hasB = false;
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  if (processId > 0)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  if (processId >= nodeGridSizeY)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  if (processId >= nodeGridSizeX)
-#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId >= nodeGridSizeXY)
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-  {
-    hasB = true;
-  }
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  if (processId < nodeGridSizeZ - 1)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  if (processId < nodeGridSizeYZ - nodeGridSizeY)
-#elif defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  if (processId < nodeGridSizeXZ - nodeGridSizeX)
-#elif defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  if (processId < nodeGridSizeXYZ - nodeGridSizeXY)
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-  {
-    hasF = true;
-  }
+  hasB = getHasB (processId);
+  hasF = getHasF (processId);
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 } /* ParallelGridCore::InitBufferFlags */
@@ -310,6 +362,393 @@ ParallelGridCore::InitDirections ()
   directions[RIGHT_UP_BACK] = processId - nodeGridSizeXY + nodeGridSizeX + 1;
   directions[RIGHT_UP_FRONT] = processId + nodeGridSizeXY + nodeGridSizeX + 1;
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+
+#ifdef DYNAMIC_GRID
+  perfPointsValues.resize (totalProcCount);
+  perfTimeValues.resize (totalProcCount);
+
+  latencySumValues.resize (totalProcCount);
+  latencyCountValues.resize (totalProcCount);
+
+  bandwidthSumValues.resize (totalProcCount);
+  bandwidthCountValues.resize (totalProcCount);
+
+  for (int i = 0; i < totalProcCount; ++i)
+  {
+    latencySumValues[i].resize (totalProcCount);
+    latencyCountValues[i].resize (totalProcCount);
+
+    bandwidthSumValues[i].resize (totalProcCount);
+    bandwidthCountValues[i].resize (totalProcCount);
+  }
+
+  nodesForDirections.resize (BUFFER_COUNT);
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
+    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  for (int i = processId - 1; i >= processId - getNodeGridX (); --i)
+  {
+    nodesForDirections[LEFT].push_back (i);
+  }
+  for (int i = processId + 1; i < processId - getNodeGridX () + getNodeGridSizeX (); ++i)
+  {
+    nodesForDirections[RIGHT].push_back (i);
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  for (int i = processId - 1; i >= processId - getNodeGridY (); --i)
+  {
+    nodesForDirections[DOWN].push_back (i);
+  }
+  for (int i = processId + 1; i < processId - getNodeGridY () + getNodeGridSizeY (); ++i)
+  {
+    nodesForDirections[UP].push_back (i);
+  }
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  for (int i = processId - getNodeGridSizeX (); i >= processId - getNodeGridY () * getNodeGridSizeX (); i -= getNodeGridSizeX ())
+  {
+    nodesForDirections[DOWN].push_back (i);
+  }
+  for (int i = processId + getNodeGridSizeX (); i < processId - (getNodeGridY () - getNodeGridSizeY ()) * getNodeGridSizeX (); i += getNodeGridSizeX ())
+  {
+    nodesForDirections[UP].push_back (i);
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+  for (int i = processId - 1; i >= processId - getNodeGridZ (); --i)
+  {
+    nodesForDirections[BACK].push_back (i);
+  }
+  for (int i = processId + 1; i < processId - getNodeGridZ () + getNodeGridSizeZ (); ++i)
+  {
+    nodesForDirections[FRONT].push_back (i);
+  }
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  for (int i = processId - getNodeGridSizeY (); i >= processId - getNodeGridZ () * getNodeGridSizeY (); i -= getNodeGridSizeY ())
+  {
+    nodesForDirections[BACK].push_back (i);
+  }
+  for (int i = processId + getNodeGridSizeY (); i < processId - (getNodeGridZ () - getNodeGridSizeZ ()) * getNodeGridSizeY (); i += getNodeGridSizeY ())
+  {
+    nodesForDirections[FRONT].push_back (i);
+  }
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+  for (int i = processId - getNodeGridSizeX (); i >= processId - getNodeGridZ () * getNodeGridSizeX (); i -= getNodeGridSizeX ())
+  {
+    nodesForDirections[BACK].push_back (i);
+  }
+  for (int i = processId + getNodeGridSizeX (); i < processId - (getNodeGridZ () - getNodeGridSizeZ ()) * getNodeGridSizeX (); i += getNodeGridSizeX ())
+  {
+    nodesForDirections[FRONT].push_back (i);
+  }
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  for (int i = processId - getNodeGridSizeXY (); i >= processId - getNodeGridZ () * getNodeGridSizeXY (); i -= getNodeGridSizeXY ())
+  {
+    nodesForDirections[BACK].push_back (i);
+  }
+  for (int i = processId + getNodeGridSizeXY (); i < processId - (getNodeGridZ () - getNodeGridSizeZ ()) * getNodeGridSizeXY (); i += getNodeGridSizeXY ())
+  {
+    nodesForDirections[FRONT].push_back (i);
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  int i = 0;
+  if (getHasL () && getHasD ())
+  {
+    for (i = processId - getNodeGridSizeX () - 1; getHasL (i) && getHasD (i); i -= getNodeGridSizeX () + 1)
+    {
+      nodesForDirections[LEFT_DOWN].push_back (i);
+    }
+    nodesForDirections[LEFT_DOWN].push_back (i);
+  }
+  if (getHasL () && getHasU ())
+  {
+    for (i = processId + getNodeGridSizeX () - 1; getHasL (i) && getHasU (i); i += getNodeGridSizeX () - 1)
+    {
+      nodesForDirections[LEFT_UP].push_back (i);
+    }
+    nodesForDirections[LEFT_UP].push_back (i);
+  }
+  if (getHasR () && getHasD ())
+  {
+    for (i = processId - getNodeGridSizeX () + 1; getHasR (i) && getHasD (i); i -= getNodeGridSizeX () - 1)
+    {
+      nodesForDirections[RIGHT_DOWN].push_back (i);
+    }
+    nodesForDirections[RIGHT_DOWN].push_back (i);
+  }
+  if (getHasR () && getHasU ())
+  {
+    for (i = processId + getNodeGridSizeX () + 1; getHasR (i) && getHasU (i); i += getNodeGridSizeX () + 1)
+    {
+      nodesForDirections[RIGHT_UP].push_back (i);
+    }
+    nodesForDirections[RIGHT_UP].push_back (i);
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  int i = 0;
+  if (getHasD () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeY () - 1; getHasD (i) && getHasB (i); i -= getNodeGridSizeY () + 1)
+    {
+      nodesForDirections[DOWN_BACK].push_back (i);
+    }
+    nodesForDirections[DOWN_BACK].push_back (i);
+  }
+  if (getHasD () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeY () - 1; getHasD (i) && getHasF (i); i += getNodeGridSizeY () - 1)
+    {
+      nodesForDirections[DOWN_FRONT].push_back (i);
+    }
+    nodesForDirections[DOWN_FRONT].push_back (i);
+  }
+  if (getHasU () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeY () + 1; getHasU (i) && getHasB (i); i -= getNodeGridSizeY () - 1)
+    {
+      nodesForDirections[UP_BACK].push_back (i);
+    }
+    nodesForDirections[UP_BACK].push_back (i);
+  }
+  if (getHasU () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeY () + 1; getHasU (i) && getHasF (i); i += getNodeGridSizeY () + 1)
+    {
+      nodesForDirections[UP_FRONT].push_back (i);
+    }
+    nodesForDirections[UP_FRONT].push_back (i);
+  }
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  int i = 0;
+  if (getHasD () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeXY () - 1; getHasD (i) && getHasB (i); i -= getNodeGridSizeXY () + 1)
+    {
+      nodesForDirections[DOWN_BACK].push_back (i);
+    }
+    nodesForDirections[DOWN_BACK].push_back (i);
+  }
+  if (getHasD () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeXY () - 1; getHasD (i) && getHasF (i); i += getNodeGridSizeXY () - 1)
+    {
+      nodesForDirections[DOWN_FRONT].push_back (i);
+    }
+    nodesForDirections[DOWN_FRONT].push_back (i);
+  }
+  if (getHasU () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeXY () + 1; getHasU (i) && getHasB (i); i -= getNodeGridSizeXY () - 1)
+    {
+      nodesForDirections[UP_BACK].push_back (i);
+    }
+    nodesForDirections[UP_BACK].push_back (i);
+  }
+  if (getHasU () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeXY () + 1; getHasU (i) && getHasF (i); i += getNodeGridSizeXY () + 1)
+    {
+      nodesForDirections[UP_FRONT].push_back (i);
+    }
+    nodesForDirections[UP_FRONT].push_back (i);
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+  int i = 0;
+  if (getHasL () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeX () - 1; getHasL (i) && getHasB (i); i -= getNodeGridSizeX () + 1)
+    {
+      nodesForDirections[LEFT_BACK].push_back (i);
+    }
+    nodesForDirections[LEFT_BACK].push_back (i);
+  }
+  if (getHasL () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeX () - 1; getHasL (i) && getHasF (i); i += getNodeGridSizeX () - 1)
+    {
+      nodesForDirections[LEFT_FRONT].push_back (i);
+    }
+    nodesForDirections[LEFT_FRONT].push_back (i);
+  }
+  if (getHasR () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeX () + 1; getHasR (i) && getHasB (i); i -= getNodeGridSizeX () - 1)
+    {
+      nodesForDirections[RIGHT_BACK].push_back (i);
+    }
+    nodesForDirections[RIGHT_BACK].push_back (i);
+  }
+  if (getHasR () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeX () + 1; getHasR (i) && getHasF (i); i += getNodeGridSizeX () + 1)
+    {
+      nodesForDirections[RIGHT_FRONT].push_back (i);
+    }
+    nodesForDirections[RIGHT_FRONT].push_back (i);
+  }
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  int i = 0;
+  if (getHasL () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeXY () - 1; getHasL (i) && getHasB (i); i -= getNodeGridSizeXY () + 1)
+    {
+      nodesForDirections[LEFT_BACK].push_back (i);
+    }
+    nodesForDirections[LEFT_BACK].push_back (i);
+  }
+  if (getHasL () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeXY () - 1; getHasL (i) && getHasF (i); i += getNodeGridSizeXY () - 1)
+    {
+      nodesForDirections[LEFT_FRONT].push_back (i);
+    }
+    nodesForDirections[LEFT_FRONT].push_back (i);
+  }
+  if (getHasR () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeXY () + 1; getHasR (i) && getHasB (i); i -= getNodeGridSizeXY () - 1)
+    {
+      nodesForDirections[RIGHT_BACK].push_back (i);
+    }
+    nodesForDirections[RIGHT_BACK].push_back (i);
+  }
+  if (getHasR () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeXY () + 1; getHasR (i) && getHasF (i); i += getNodeGridSizeXY () + 1)
+    {
+      nodesForDirections[RIGHT_FRONT].push_back (i);
+    }
+    nodesForDirections[RIGHT_FRONT].push_back (i);
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  int i = 0;
+  if (getHasL () && getHasD () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeXY () - getNodeGridSizeX () - 1;
+         getHasL (i) && getHasD (i) && getHasB (i);
+         i -= getNodeGridSizeXY () + getNodeGridSizeX () + 1)
+    {
+      nodesForDirections[LEFT_DOWN_BACK].push_back (i);
+    }
+    nodesForDirections[LEFT_DOWN_BACK].push_back (i);
+  }
+  if (getHasL () && getHasD () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeXY () - getNodeGridSizeX () - 1;
+         getHasL (i) && getHasD (i) && getHasF (i);
+         i += getNodeGridSizeXY () - getNodeGridSizeX () - 1)
+    {
+      nodesForDirections[LEFT_DOWN_FRONT].push_back (i);
+    }
+    nodesForDirections[LEFT_DOWN_FRONT].push_back (i);
+  }
+  if (getHasL () && getHasU () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeXY () + getNodeGridSizeX () - 1;
+         getHasL (i) && getHasU (i) && getHasB (i);
+         i -= getNodeGridSizeXY () - getNodeGridSizeX () + 1)
+    {
+      nodesForDirections[LEFT_UP_BACK].push_back (i);
+    }
+    nodesForDirections[LEFT_UP_BACK].push_back (i);
+  }
+  if (getHasL () && getHasU () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeXY () + getNodeGridSizeX () - 1;
+         getHasL (i) && getHasU (i) && getHasF (i);
+         i += getNodeGridSizeXY () + getNodeGridSizeX () - 1)
+    {
+      nodesForDirections[LEFT_UP_FRONT].push_back (i);
+    }
+    nodesForDirections[LEFT_UP_FRONT].push_back (i);
+  }
+
+  if (getHasR () && getHasD () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeXY () - getNodeGridSizeX () + 1;
+         getHasR (i) && getHasD (i) && getHasB (i);
+         i -= getNodeGridSizeXY () + getNodeGridSizeX () - 1)
+    {
+      nodesForDirections[RIGHT_DOWN_BACK].push_back (i);
+    }
+    nodesForDirections[RIGHT_DOWN_BACK].push_back (i);
+  }
+  if (getHasR () && getHasD () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeXY () - getNodeGridSizeX () + 1;
+         getHasR (i) && getHasD (i) && getHasF (i);
+         i += getNodeGridSizeXY () - getNodeGridSizeX () + 1)
+    {
+      nodesForDirections[RIGHT_DOWN_FRONT].push_back (i);
+    }
+    nodesForDirections[RIGHT_DOWN_FRONT].push_back (i);
+  }
+  if (getHasR () && getHasU () && getHasB ())
+  {
+    for (i = processId - getNodeGridSizeXY () + getNodeGridSizeX () + 1;
+         getHasR (i) && getHasU (i) && getHasB (i);
+         i -= getNodeGridSizeXY () - getNodeGridSizeX () - 1)
+    {
+      nodesForDirections[RIGHT_UP_BACK].push_back (i);
+    }
+    nodesForDirections[RIGHT_UP_BACK].push_back (i);
+  }
+  if (getHasR () && getHasU () && getHasF ())
+  {
+    for (i = processId + getNodeGridSizeXY () + getNodeGridSizeX () + 1;
+         getHasR (i) && getHasU (i) && getHasF (i);
+         i += getNodeGridSizeXY () + getNodeGridSizeX () + 1)
+    {
+      nodesForDirections[RIGHT_UP_FRONT].push_back (i);
+    }
+    nodesForDirections[RIGHT_UP_FRONT].push_back (i);
+  }
+#endif
+
+#if PRINT_MESSAGE
+  MPI_Barrier (MPI_COMM_WORLD);
+  if (processId == 0)
+  {
+    DPRINTF (LOG_LEVEL_NONE, "=== Processes map ===\n");
+  }
+  for (int pid = 0; pid < totalProcCount; ++pid)
+  {
+    if (processId == pid)
+    {
+      DPRINTF (LOG_LEVEL_NONE, "Process #%d:\n", processId);
+      for (int dir = 0; dir < BUFFER_COUNT; ++dir)
+      {
+        DPRINTF (LOG_LEVEL_NONE, "  Processes to %s: ", BufferPositionNames[dir]);
+
+        for (int i = 0; i < nodesForDirections[dir].size (); ++i)
+        {
+          DPRINTF (LOG_LEVEL_NONE, " %d, ", nodesForDirections[dir][i]);
+        }
+
+        DPRINTF (LOG_LEVEL_NONE, "\n");
+      }
+    }
+    MPI_Barrier (MPI_COMM_WORLD);
+  }
+#endif
+#endif
 } /* ParallelGridCore::InitDirections */
 
 /**
@@ -844,6 +1283,17 @@ ParallelGridCore::ParallelGridCoreConstructor (ParallelGridCoordinate size) /**<
 
   InitBufferFlags ();
   InitDirections ();
+
+#ifdef DYNAMIC_GRID
+  /*
+   * All nodes are enables by default
+   */
+  nodeState.resize (totalProcCount);
+  for (int i = 0; i < nodeState.size (); ++i)
+  {
+    nodeState[i] = 1;
+  }
+#endif
 } /* ParallelGridCore::ParallelGridCoreConstructor */
 
 /**
@@ -886,6 +1336,40 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
 
   ParallelGridCoreConstructor (size);
 
+#ifndef COMBINED_SENDRECV
+  isEvenForDirection.resize (BUFFER_COUNT);
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) \
+    || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  isEvenForDirection[LEFT] = isEvenForDirection[RIGHT] = getNodeGridX () % 2 == 0;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) \
+    || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  isEvenForDirection[DOWN] = isEvenForDirection[UP] = getNodeGridY () % 2 == 0;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) \
+    || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  isEvenForDirection[BACK] = isEvenForDirection[FRONT] = getNodeGridZ () % 2 == 0;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  isEvenForDirection[LEFT_DOWN] = isEvenForDirection[RIGHT_DOWN] = getNodeGridX () % 2 == 0;
+  isEvenForDirection[LEFT_UP] = isEvenForDirection[RIGHT_UP] = getNodeGridX () % 2 == 0;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  isEvenForDirection[DOWN_BACK] = isEvenForDirection[UP_BACK] = getNodeGridY () % 2 == 0;
+  isEvenForDirection[DOWN_FRONT] = isEvenForDirection[UP_FRONT] = getNodeGridY () % 2 == 0;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  isEvenForDirection[LEFT_BACK] = isEvenForDirection[RIGHT_BACK] = getNodeGridX () % 2 == 0;
+  isEvenForDirection[LEFT_FRONT] = isEvenForDirection[RIGHT_FRONT] = getNodeGridX () % 2 == 0;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+  isEvenForDirection[LEFT_DOWN_BACK] = isEvenForDirection[LEFT_DOWN_FRONT] = getNodeGridX () % 2 == 0;
+  isEvenForDirection[LEFT_UP_BACK] = isEvenForDirection[LEFT_UP_FRONT] = getNodeGridX () % 2 == 0;
+  isEvenForDirection[RIGHT_DOWN_BACK] = isEvenForDirection[RIGHT_DOWN_FRONT] = getNodeGridX () % 2 == 0;
+  isEvenForDirection[RIGHT_UP_BACK] = isEvenForDirection[RIGHT_UP_FRONT] = getNodeGridX () % 2 == 0;
+#endif
+#endif /* !COMBINED_SENDRECV */
+
   doShare.resize (BUFFER_COUNT);
   for (int i = 0; i < BUFFER_COUNT; ++i)
   {
@@ -908,10 +1392,47 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
   ASSERT (retCode == MPI_SUCCESS);
 
 #ifdef DYNAMIC_GRID
-  calcClockAll.resize (totalProcCount);
-  shareClockAll.resize (totalProcCount);
+  calcClockSumBetweenRebalance.resize (totalProcCount);
+  calcClockCountBetweenRebalance.resize (totalProcCount);
+
+  shareClockCountBetweenRebalance.resize (totalProcCount);
+
+  shareClockSumBetweenRebalance.resize (totalProcCount);
+  shareClockIterBetweenRebalance.resize (totalProcCount);
+
+  for (int i = 0; i < totalProcCount; ++i)
+  {
+    shareClockSumBetweenRebalance[i].resize (totalProcCount);
+    shareClockIterBetweenRebalance[i].resize (totalProcCount);
+  }
+
+#ifdef MPI_DYNAMIC_CLOCK
+  shareClockSec_buf = new FPValue [CLOCK_BUF_SIZE * totalProcCount];
+#else
+  shareClockSec_buf = new uint64_t [CLOCK_BUF_SIZE * totalProcCount];
+  shareClockNSec_buf = new uint64_t [CLOCK_BUF_SIZE * totalProcCount];
+#endif
+  shareClockBufSize_buf = new uint32_t [CLOCK_BUF_SIZE * totalProcCount];
+
+  shareClockBufSize2_buf = new uint32_t [CLOCK_BUF_SIZE * totalProcCount];
+  shareClockIter_buf = new uint32_t [CLOCK_BUF_SIZE * totalProcCount];
 #endif /* DYNAMIC_GRID */
 } /* ParallelGridCore */
+
+ParallelGridCore::~ParallelGridCore ()
+{
+#ifdef DYNAMIC_GRID
+  delete[] shareClockSec_buf;
+
+#ifndef MPI_DYNAMIC_CLOCK
+  delete[] shareClockNSec_buf;
+#endif
+  delete[] shareClockBufSize_buf;
+
+  delete[] shareClockBufSize2_buf;
+  delete[] shareClockIter_buf;
+#endif /* DYNAMIC_GRID */
+}
 
 #ifdef DYNAMIC_GRID
 /**
@@ -936,40 +1457,67 @@ ParallelGridCore::StopCalcClock ()
   timespec diff;
   timespec_diff (&calcStart, &calcStop, &diff);
 
-  calcClock.tv_sec += diff.tv_sec;
-  calcClock.tv_nsec += diff.tv_nsec;
+  timespec sum;
+  timespec_sum (&calcClockSumBetweenRebalance[processId], &diff, &sum);
 
-  if (calcClock.tv_nsec >= 1000000000)
-  {
-    calcClock.tv_sec += 1;
-    calcClock.tv_nsec -= 1000000000;
-  }
+  calcClockSumBetweenRebalance[processId] = sum;
 } /* ParallelGridCore::StopCalcClock */
 
 /**
  * Start clock for share operations
  */
 void
-ParallelGridCore::StartShareClock ()
+ParallelGridCore::StartShareClock (int pid, /**< pid of process, with which share operations' time is measured */
+                                   uint32_t count)
 {
+  ASSERT (pid >= 0 && pid < totalProcCount);
+  ASSERT (pid != processId);
+
+#ifdef MPI_DYNAMIC_CLOCK
+  ShareClock_t map = getShareClockCur (pid);
+  FPValue val = -MPI_Wtime ();
+  if (map.find (count) != map.end ())
+  {
+    val += map[count];
+  }
+  setShareClockCur (pid, count, val);
+#else
   int status = clock_gettime (CLOCK_MONOTONIC, &shareStart);
   ASSERT (status == 0);
+#endif
 } /* ParallelGridCore::StartShareClock */
 
 /**
  * Stop clock for share operations
  */
 void
-ParallelGridCore::StopShareClock ()
+ParallelGridCore::StopShareClock (int pid, /**< pid of process, with which share operations' time is measured */
+                                  uint32_t count)
 {
+  ASSERT (pid >= 0 && pid < totalProcCount);
+  ASSERT (pid != processId);
+
+  ShareClock_t map = getShareClockCur (pid);
+  ASSERT (map.find (count) != map.end ());
+
+#ifdef MPI_DYNAMIC_CLOCK
+  FPValue val = MPI_Wtime ();
+  val += map[count];
+  setShareClockCur (pid, count, val);
+#else
   int status = clock_gettime (CLOCK_MONOTONIC, &shareStop);
   ASSERT (status == 0);
 
   timespec diff;
   timespec_diff (&shareStart, &shareStop, &diff);
 
-  shareClock.tv_sec += diff.tv_sec;
-  shareClock.tv_nsec += diff.tv_nsec;
+  timespec val_old = map[count];
+
+  timespec sum;
+  timespec_sum (&val_old, &diff, &sum);
+
+  setShareClockCur (pid, count, sum);
+#endif
 } /* ParallelGridCore::StopShareClock */
 
 /**
@@ -992,62 +1540,280 @@ ParallelGridCore::timespec_diff (struct timespec *start, /**< start moment */
   }
 } /* ParallelGridCore::timespec_diff */
 
-/**
- * Share clock counters with other processes
- */
+void
+ParallelGridCore::timespec_sum (struct timespec *start, /**< start moment */
+                                struct timespec *stop, /**< end moment */
+                                struct timespec *result) /**< out: difference of two moments in time */
+{
+  result->tv_sec = start->tv_sec + stop->tv_sec;
+  result->tv_nsec = start->tv_nsec + stop->tv_nsec;
+
+  if (result->tv_nsec >= 1000000000)
+  {
+    result->tv_nsec -= 1000000000;
+    result->tv_sec += 1;
+  }
+}
+
+void
+ParallelGridCore::timespec_avg (struct timespec *start, /**< start moment */
+                                struct timespec *stop, /**< end moment */
+                                struct timespec *result) /**< out: difference of two moments in time */
+{
+  result->tv_sec = (start->tv_sec + stop->tv_sec) / 2;
+  result->tv_nsec = (start->tv_nsec + stop->tv_nsec) / 2;
+}
+
 void ParallelGridCore::ShareClocks ()
+{
+  ShareCalcClocks ();
+  ShareShareClocks ();
+}
+
+void ParallelGridCore::ShareCalcClocks ()
 {
   for (int process = 0; process < getTotalProcCount (); ++process)
   {
     uint64_t calcClockSec;
     uint64_t calcClockNSec;
-
-    uint64_t shareClockSec;
-    uint64_t shareClockNSec;
+    uint32_t calcClockCount;
 
     if (process == getProcessId ())
     {
-      calcClockSec = (uint64_t) calcClock.tv_sec;
-      calcClockNSec = (uint64_t) calcClock.tv_nsec;
-
-      shareClockSec = (uint64_t) shareClock.tv_sec;
-      shareClockNSec = (uint64_t) shareClock.tv_nsec;
+      calcClockSec = (uint64_t) calcClockSumBetweenRebalance[process].tv_sec;
+      calcClockNSec = (uint64_t) calcClockSumBetweenRebalance[process].tv_nsec;
+      calcClockCount = calcClockCountBetweenRebalance[process];
     }
 
     MPI_Bcast (&calcClockSec, 1, MPI_LONG_LONG, process, communicator);
     MPI_Bcast (&calcClockNSec, 1, MPI_LONG_LONG, process, communicator);
-    MPI_Bcast (&shareClockSec, 1, MPI_LONG_LONG, process, communicator);
-    MPI_Bcast (&shareClockNSec, 1, MPI_LONG_LONG, process, communicator);
+    MPI_Bcast (&calcClockCount, 1, MPI_UNSIGNED, process, communicator);
 
-    timespec calc;
-    timespec share;
-
-    calc.tv_sec = calcClockSec;
-    calc.tv_nsec = calcClockNSec;
-
-    share.tv_sec = shareClockSec;
-    share.tv_nsec = shareClockNSec;
-
-    calcClockAll[process] = calc;
-    shareClockAll[process] = share;
+    if (process != getProcessId ())
+    {
+      calcClockSumBetweenRebalance[process].tv_sec = calcClockSec;
+      calcClockSumBetweenRebalance[process].tv_nsec = calcClockNSec;
+      calcClockCountBetweenRebalance[process] = calcClockCount;
+    }
 
     MPI_Barrier (communicator);
   }
-} /* ParallelGridCore::ShareClocks */
+}
+
+/**
+ * Share clock counters with other processes
+ */
+void ParallelGridCore::ShareShareClocks ()
+{
+  for (int process = 0; process < getTotalProcCount (); ++process)
+  {
+    if (process == getProcessId ())
+    {
+      int j = 0;
+      int jj = 0;
+      for (int i = 0; i < getTotalProcCount (); ++i)
+      {
+        ASSERT (shareClockSumBetweenRebalance[process][i].size () == CLOCK_BUF_SIZE
+                || shareClockSumBetweenRebalance[process][i].empty ());
+
+        // Map is temporary of size CLOCK_BUF_SIZE
+        for (ShareClock_t::iterator it = shareClockSumBetweenRebalance[process][i].begin ();
+             it != shareClockSumBetweenRebalance[process][i].end (); ++it)
+        {
+          shareClockBufSize_buf[j] = it->first;
+
+#ifdef MPI_DYNAMIC_CLOCK
+          shareClockSec_buf[j] = it->second;
+#else
+          shareClockSec_buf[j] = it->second.tv_sec;
+          shareClockNSec_buf[j] = it->second.tv_sec;
+#endif
+
+          j++;
+        }
+
+        if (shareClockSumBetweenRebalance[process][i].empty ())
+        {
+          shareClockBufSize_buf[j] = 0;
+          shareClockSec_buf[j] = 0;
+#ifndef MPI_DYNAMIC_CLOCK
+          shareClockNSec_buf[j] = 0;
+#endif
+          j++;
+
+          shareClockBufSize_buf[j] = 0;
+          shareClockSec_buf[j] = 0;
+#ifndef MPI_DYNAMIC_CLOCK
+          shareClockNSec_buf[j] = 0;
+#endif
+          j++;
+        }
+
+
+        for (IterCount_t::iterator it = shareClockIterBetweenRebalance[process][i].begin ();
+             it != shareClockIterBetweenRebalance[process][i].end (); ++it)
+        {
+          shareClockBufSize2_buf[jj] = it->first;
+          shareClockIter_buf[jj] = it->second;
+
+          jj++;
+        }
+
+        if (shareClockIterBetweenRebalance[process][i].empty ())
+        {
+          shareClockBufSize2_buf[jj] = 0;
+          shareClockIter_buf[jj] = 0;
+          jj++;
+
+          shareClockBufSize2_buf[jj] = 0;
+          shareClockIter_buf[jj] = 0;
+          jj++;
+        }
+      }
+    }
+
+    MPI_Bcast (shareClockBufSize_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_UNSIGNED, process, communicator);
+#ifdef MPI_DYNAMIC_CLOCK
+    MPI_Bcast (shareClockSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_FPVALUE, process, communicator);
+#else
+    MPI_Bcast (shareClockSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_LONG_LONG, process, communicator);
+    MPI_Bcast (shareClockNSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_LONG_LONG, process, communicator);
+#endif
+
+    MPI_Bcast (shareClockBufSize2_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_UNSIGNED, process, communicator);
+    MPI_Bcast (shareClockIter_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_UNSIGNED, process, communicator);
+
+    if (process != getProcessId ())
+    {
+      for (int i = 0; i < totalProcCount; ++i)
+      {
+        for (int j = 0; j < CLOCK_BUF_SIZE; ++j)
+        {
+          int index = i * CLOCK_BUF_SIZE + j;
+
+          uint32_t bufSize = shareClockBufSize_buf[index];
+
+#ifdef MPI_DYNAMIC_CLOCK
+          FPValue val = shareClockSec_buf[index];
+          if (val == 0 && bufSize == 0)
+          {
+            continue;
+          }
+#else
+          timespec val;
+          val.tv_sec = shareClockSec_buf[index];
+          val.tv_nsec = shareClockNSec_buf[index];
+          if (val.tv_sec == 0 && val.tv_nsec == 0 && bufSize == 0)
+          {
+            continue;
+          }
+#endif
+
+          shareClockSumBetweenRebalance[process][i][bufSize] = val;
+
+
+          uint32_t bufSize2 = shareClockBufSize2_buf[index];
+          uint32_t val2 = shareClockIter_buf[index];
+          if (val2 == 0 && bufSize2 == 0)
+          {
+            continue;
+          }
+          shareClockIterBetweenRebalance[process][i][bufSize2] = val2;
+        }
+      }
+    }
+
+    MPI_Barrier (communicator);
+  }
+
+  /*
+   * Balance share clocks
+   */
+  for (int i = 0; i < totalProcCount; ++i)
+  {
+    for (int j = i + 1; j < totalProcCount; ++j)
+    {
+      ASSERT (shareClockSumBetweenRebalance[i][j].size () == shareClockSumBetweenRebalance[j][i].size ());
+      ASSERT (shareClockIterBetweenRebalance[i][j].size () == shareClockIterBetweenRebalance[j][i].size ());
+      ASSERT (shareClockSumBetweenRebalance[i][j].size () == shareClockIterBetweenRebalance[i][j].size ());
+
+      ASSERT (shareClockSumBetweenRebalance[i][j].size () == CLOCK_BUF_SIZE
+              || shareClockSumBetweenRebalance[i][j].size () == 0);
+
+      for (ShareClock_t::iterator it = shareClockSumBetweenRebalance[i][j].begin ();
+           it != shareClockSumBetweenRebalance[i][j].end (); ++it)
+      {
+        uint32_t bufSize = it->first;
+
+        ShareClock_t::iterator iter = shareClockSumBetweenRebalance[j][i].find (bufSize);
+        ASSERT (iter != shareClockSumBetweenRebalance[j][i].end ());
+
+#ifdef MPI_DYNAMIC_CLOCK
+        FPValue tmp = (it->second + iter->second) / FPValue (2);
+#else
+        timespec tmp;
+        timespec_avg (&it->second, &iter->second, &tmp);
+#endif
+        shareClockSumBetweenRebalance[i][j][bufSize] = tmp;
+        shareClockSumBetweenRebalance[j][i][bufSize] = tmp;
+      }
+    }
+  }
+}
 
 /**
  * Set clocks to zeros
  */
 void
-ParallelGridCore::ClearClocks ()
+ParallelGridCore::ClearCalcClocks ()
 {
-  calcClock.tv_sec = 0;
-  calcClock.tv_nsec = 0;
+  for (int i = 0; i < totalProcCount; ++i)
+  {
+    calcClockSumBetweenRebalance[i].tv_sec = 0;
+    calcClockSumBetweenRebalance[i].tv_nsec = 0;
 
-  shareClock.tv_sec = 0;
-  shareClock.tv_nsec = 0;
-} /* ParallelGridCore::ClearClocks */
+    calcClockCountBetweenRebalance[i] = 0;
+  }
+}
+
+void
+ParallelGridCore::ClearShareClocks ()
+{
+  for (int i = 0; i < totalProcCount; ++i)
+  {
+    shareClockCountBetweenRebalance[i] = 0;
+
+    for (int j = 0; j < totalProcCount; ++j)
+    {
+      shareClockSumBetweenRebalance[i][j].clear ();
+      shareClockIterBetweenRebalance[i][j].clear ();
+    }
+  }
+}
 
 #endif /* DYNAMIC_GRID */
+
+int
+ParallelGridCore::getNodeForDirection (BufferPosition dir) const
+{
+#ifdef DYNAMIC_GRID
+  for (int i = 0; i < nodesForDirections[dir].size (); ++i)
+  {
+    int process = nodesForDirections[dir][i];
+
+    /*
+     * Choose the first enabled node
+     */
+    if (nodeState[process])
+    {
+      return process;
+    }
+  }
+
+  return -1;
+#else
+  return directions[dir];
+#endif
+}
 
 #endif /* PARALLEL_GRID */

@@ -4987,7 +4987,6 @@ Scheme<Type, TCoord, Layout>::additionalUpdateOfGrids (time_step t, time_step &d
       {
         DPRINTF (LOG_LEVEL_STAGES, "Try rebalance on step %u, steps elapsed after previous %u\n", t, diffT);
       }
-      ParallelGrid::getParallelCore ()->ShareClocks ();
 
       ParallelYeeGridLayout *parallelYeeLayout = (ParallelYeeGridLayout *) yeeLayout;
 
@@ -5131,8 +5130,6 @@ Scheme<Type, TCoord, Layout>::additionalUpdateOfGrids (time_step t, time_step &d
           ((ParallelGrid *) OmegaPM)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
           ((ParallelGrid *) GammaM)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
         }
-
-        ParallelGrid::getParallelCore ()->ClearClocks ();
 
         //diffT += 1;
         //diffT *= 2;

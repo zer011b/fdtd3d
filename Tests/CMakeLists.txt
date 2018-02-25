@@ -22,6 +22,9 @@ include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/Dumper")
 add_executable (unit-test-parallel-grid unit-test-parallel-grid.cpp)
 target_link_libraries (unit-test-parallel-grid ${LIBS} Grid Helpers Settings Layout)
 
+add_executable (perf-test-parallel-grid perf-test-parallel-grid.cpp)
+target_link_libraries (perf-test-parallel-grid ${LIBS} Grid Helpers Settings Layout)
+
 add_executable (unit-test-grid unit-test-grid.cpp)
 target_link_libraries (unit-test-grid ${LIBS} Grid Helpers Settings)
 

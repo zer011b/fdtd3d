@@ -7,6 +7,10 @@
 
 #include <mpi.h>
 
+#ifdef DYNAMIC_GRID
+#include <map>
+#endif
+
 /**
  * Base grid of parallel grid and parallel grid coordinate
  */
@@ -30,6 +34,17 @@
 #define ParallelGridCoordinate GridCoordinate3D
 #define ParallelGridCoordinateFP GridCoordinateFP3D
 #endif /* GRID_3D */
+
+#ifdef DYNAMIC_GRID
+#define CLOCK_BUF_SIZE 2
+
+#ifdef MPI_DYNAMIC_CLOCK
+// Clock for different buffer sizes, i.e. latency for size 0
+typedef std::map<uint32_t, FPValue> ShareClock_t;
+#else
+typedef std::map<uint32_t, timespec> ShareClock_t;
+#endif
+#endif
 
 /**
  * Parallel grid buffer types.
@@ -66,6 +81,18 @@ private:
    * Process ids corresponding to directions
    */
   std::vector<int> directions;
+
+#ifdef DYNAMIC_GRID
+  /**
+   * States of all processes
+   */
+  std::vector<int> nodeState;
+
+  /**
+   * Lists of nodes for each direction (the closest come in the beggining of nodesForDirections[dir])
+   */
+  std::vector< std::vector<int> > nodesForDirections;
+#endif
 
   /**
    * Flags corresponding to direction, whether send and receive procedures should be performed for this direction
@@ -181,44 +208,79 @@ private:
 
 #ifdef DYNAMIC_GRID
   /**
-   * Clock counter for calculations of current process
+   * Latest clock counter for calculations of all processes
    */
-  timespec calcClock;
+  std::vector<timespec> calcClockSumBetweenRebalance;
+  std::vector<grid_coord> calcClockCountBetweenRebalance;
 
   /**
-   * Clock counter for share operations of current process
+   * Latest clock counter for share operations of all with all processes
    */
-  timespec shareClock;
+  std::vector< std::vector<ShareClock_t> > shareClockSumBetweenRebalance;
 
   /**
-   * Clock counter for start of calculations of current process
+   * Number of point that are shared at a single time step
+   */
+  std::vector< uint32_t > shareClockCountBetweenRebalance;
+
+  /**
+   * Number of interations for different buffer sizes
+   */
+  typedef std::map<uint32_t, uint32_t> IterCount_t;
+  std::vector< std::vector<IterCount_t> > shareClockIterBetweenRebalance;
+
+public:
+  /**
+   * Total values
+   */
+  std::vector<FPValue> perfPointsValues;
+  std::vector<FPValue> perfTimeValues;
+
+  std::vector< std::vector<FPValue> > latencySumValues;
+  std::vector< std::vector<FPValue> > latencyCountValues;
+
+  std::vector< std::vector<FPValue> > bandwidthSumValues;
+  std::vector< std::vector<FPValue> > bandwidthCountValues;
+
+private:
+  time_step T_balance;
+  time_step T_perf;
+
+  /**
+   * Helper buffers used for sharing
+   */
+#ifdef MPI_DYNAMIC_CLOCK
+  FPValue *shareClockSec_buf;
+#else
+  uint64_t *shareClockSec_buf;
+  uint64_t *shareClockNSec_buf;
+#endif
+  uint32_t *shareClockBufSize_buf;
+
+  uint32_t *shareClockBufSize2_buf;
+  uint32_t *shareClockIter_buf;
+
+  /**
+   * Helper clock counter for start of calculations of current process
    */
   timespec calcStart;
 
   /**
-   * Clock counter for stop of calculations of current process
+   * Helper clock counter for stop of calculations of current process
    */
   timespec calcStop;
 
+#ifndef MPI_DYNAMIC_CLOCK
   /**
-   * Clock counter for start of share operations of current process
+   * Helper clock counter for start of share operations of current process
    */
   timespec shareStart;
 
   /**
-   * Clock counter for stop of share operations of current process
+   * Helper clock counter for stop of share operations of current process
    */
   timespec shareStop;
-
-  /**
-   * Clock counters for calculations for all processes
-   */
-  std::vector<timespec> calcClockAll;
-
-  /**
-   * Clock counters for share operations for all processes
-   */
-  std::vector<timespec> shareClockAll;
+#endif
 #endif /* DYNAMIC_GRID */
 
   /**
@@ -237,6 +299,10 @@ private:
    */
   MPI_Comm communicator;
 
+#ifndef COMBINED_SENDRECV
+  std::vector<bool> isEvenForDirection;
+#endif /* !COMBINED_SENDRECV */
+
 private:
 
   void initOppositeDirections ();
@@ -254,11 +320,14 @@ private:
 
 #ifdef DYNAMIC_GRID
   void timespec_diff (struct timespec *, struct timespec *, struct timespec *);
+  void timespec_sum (struct timespec *, struct timespec *, struct timespec *);
+  void timespec_avg (struct timespec *, struct timespec *, struct timespec *);
 #endif /* DYNAMIC_GRID */
 
 public:
 
   ParallelGridCore (int, int, ParallelGridCoordinate, bool, ParallelGridCoordinate);
+  ~ParallelGridCore ();
 
   /**
    * Getter for communicator for all processes, used in computations
@@ -269,6 +338,13 @@ public:
   {
     return communicator;
   } /* getCommunicator */
+
+#ifndef COMBINED_SENDRECV
+  const std::vector<bool> &getIsEvenForDirection () const
+  {
+    return isEvenForDirection;
+  }
+#endif /* !COMBINED_SENDRECV */
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
 
@@ -388,6 +464,7 @@ public:
   {
     return hasL;
   } /* getHasL */
+  bool getHasL (int) const;
 
   /**
    * Getter for flag whether computational node has right neighbour
@@ -398,6 +475,7 @@ public:
   {
     return hasR;
   } /* getHasR */
+  bool getHasR (int) const;
 
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -424,6 +502,7 @@ public:
   {
     return hasD;
   } /* getHasD */
+  bool getHasD (int) const;
 
   /**
    * Getter for flag whether computational node has up neighbour
@@ -434,6 +513,7 @@ public:
   {
     return hasU;
   } /* getHasU */
+  bool getHasU (int) const;
 
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -460,6 +540,7 @@ public:
   {
     return hasB;
   } /* getHasB */
+  bool getHasB (int) const;
 
   /**
    * Getter for flag whether computational node has front neighbour
@@ -470,6 +551,7 @@ public:
   {
     return hasF;
   } /* getHasF */
+  bool getHasF (int) const;
 
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -501,7 +583,7 @@ public:
    * @return flags corresponding to direction, whether send and receive procedures should be performed
    * for this direction
    */
-  const std::vector< std::pair<bool, bool> > &getDoShare ()
+  const std::vector< std::pair<bool, bool> > &getDoShare () const
   {
     return doShare;
   } /* getDoShare */
@@ -511,20 +593,12 @@ public:
    *
    * @return opposite buffer position corresponding to buffer position
    */
-  const std::vector<BufferPosition> &getOppositeDirections ()
+  const std::vector<BufferPosition> &getOppositeDirections () const
   {
     return oppositeDirections;
   } /* getOppositeDirections */
 
-  /**
-   * Getter for process ids corresponding to directions
-   *
-   * @return process ids corresponding to directions
-   */
-  const std::vector<int> &getDirections ()
-  {
-    return directions;
-  } /* getDirections */
+  int getNodeForDirection (BufferPosition) const;
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 
@@ -540,34 +614,117 @@ public:
 
 #ifdef DYNAMIC_GRID
 
+  std::vector<int> &getNodeState ()
+  {
+    return nodeState;
+  }
+
   void StartCalcClock ();
   void StopCalcClock ();
 
-  void StartShareClock ();
-  void StopShareClock ();
+  void StartShareClock (int, uint32_t);
+  void StopShareClock (int, uint32_t);
 
   void ShareClocks ();
-  void ClearClocks ();
+  void ShareCalcClocks ();
+  void ShareShareClocks ();
+
+  void ClearCalcClocks ();
+  void ClearShareClocks ();
 
   /**
    * Getter for calculations clock
    *
    * @return calculations clock
    */
-  timespec getCalcClock () const
+  timespec getCalcClock (int pid) const
   {
-    return calcClock;
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    ASSERT (nodeState[pid] == 1 && (calcClockSumBetweenRebalance[pid].tv_sec > 0 || calcClockSumBetweenRebalance[pid].tv_nsec > 0)
+            || nodeState[pid] == 0 && calcClockSumBetweenRebalance[pid].tv_sec == 0 && calcClockSumBetweenRebalance[pid].tv_nsec == 0);
+    return calcClockSumBetweenRebalance[pid];
   } /* getCalcClock */
 
-  /**
-   * Getter for share clock
-   *
-   * @return share clock
-   */
-  timespec getShareClock () const
+  uint32_t getCalcClockCount (int pid) const
   {
-    return shareClock;
-  } /* getShareClock */
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    ASSERT (nodeState[pid] == 1 && calcClockCountBetweenRebalance[pid] > 0
+            || nodeState[pid] == 0 && calcClockCountBetweenRebalance[pid] == 0);
+    return calcClockCountBetweenRebalance[pid];
+  }
+
+  void setCalcClockCount (int pid, uint32_t val)
+  {
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    ASSERT (nodeState[pid] == 1 && val > 0
+            || nodeState[pid] == 0 && val == 0);
+    calcClockCountBetweenRebalance[pid] = val;
+  }
+
+  const ShareClock_t & getShareClock (int process, int pid) const
+  {
+    ASSERT (process >= 0 && process < totalProcCount);
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    ASSERT (nodeState[process] == 1 && nodeState[pid] == 1
+            || (nodeState[process] == 0 || nodeState[pid] == 0) && shareClockSumBetweenRebalance[process][pid].empty ());
+    return shareClockSumBetweenRebalance[process][pid];
+  }
+
+  const ShareClock_t & getShareClockCur (int pid) const
+  {
+    return getShareClock (processId, pid);
+  }
+
+  const uint32_t & getShareClockCountCur (int pid) const
+  {
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    ASSERT (nodeState[processId] == 1 && nodeState[pid] == 1 && shareClockCountBetweenRebalance[pid] > 0
+            || (nodeState[processId] == 0 || nodeState[pid] == 0) && shareClockCountBetweenRebalance[pid] == 0);
+    return shareClockCountBetweenRebalance[pid];
+  }
+
+  const uint32_t & getShareClockIter (int process, int pid, uint32_t bufSize)
+  {
+    ASSERT (process >= 0 && process < totalProcCount);
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    ASSERT (shareClockIterBetweenRebalance[process][pid].find (bufSize) != shareClockIterBetweenRebalance[process][pid].end ());
+    ASSERT (nodeState[process] == 1 && nodeState[pid] == 1 && shareClockIterBetweenRebalance[process][pid][bufSize] > 0
+            || (nodeState[process] == 0 || nodeState[pid] == 0) && shareClockIterBetweenRebalance[process][pid][bufSize] == 0);
+    return shareClockIterBetweenRebalance[process][pid][bufSize];
+  }
+
+  const uint32_t & getShareClockIterCur (int pid, uint32_t bufSize)
+  {
+    return getShareClockIter (processId, pid, bufSize);
+  }
+
+#ifdef MPI_DYNAMIC_CLOCK
+  void setShareClockCur (int pid, uint32_t shareSize, FPValue val)
+#else
+  void setShareClockCur (int pid, uint32_t shareSize, timespec val)
+#endif
+  {
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    ASSERT (nodeState[processId] == 1 && nodeState[pid] == 1
+            || (nodeState[processId] == 0 || nodeState[pid] == 0) && val == 0);
+    shareClockSumBetweenRebalance[processId][pid][shareSize] = val;
+  }
+
+  void setShareClockCountCur (int pid, uint32_t val)
+  {
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    ASSERT (nodeState[processId] == 1 && nodeState[pid] == 1 && val > 0
+            || (nodeState[processId] == 0 || nodeState[pid] == 0) && val == 0);
+    shareClockCountBetweenRebalance[pid] = val;
+  }
+
+  void setShareClockIterCur (int pid, uint32_t bufSize, uint32_t val)
+  {
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    ASSERT (nodeState[processId] == 1 && nodeState[pid] == 1 && val > 0
+            || (nodeState[processId] == 0 || nodeState[pid] == 0) && val == 0);
+    shareClockIterBetweenRebalance[processId][pid][bufSize] = val;
+  }
 
 #endif /* DYNAMIC_GRID */
 

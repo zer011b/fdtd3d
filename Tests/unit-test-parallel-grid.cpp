@@ -31,6 +31,164 @@ const FPValue imagMult = 1000;
 const FPValue prevMult = 16;
 const FPValue prevPrevMult = prevMult * prevMult;
 
+std::vector<ParallelGridCoordinate> neighbourSendStart (BUFFER_COUNT);
+std::vector<ParallelGridCoordinate> neighbourSendEnd (BUFFER_COUNT);
+
+void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
+{
+  FieldPointValue *val = grid->getFieldPointValue (pos);
+  BufferPosition dir = grid->getBufferForPosition (pos);
+
+  if (dir == BUFFER_NONE)
+  {
+    return;
+  }
+
+  BufferPosition opposite = ParallelGrid::getParallelCore ()->getOppositeDirections ()[dir];
+  ParallelGridCoordinate posInNeighbor = pos - grid->getRecvStart ()[opposite] + neighbourSendStart[dir];
+
+#ifdef GRID_1D
+  FPValue multiplier = posInNeighbor.get1 ();
+#endif
+#ifdef GRID_2D
+  FPValue multiplier = posInNeighbor.get1 () * posInNeighbor.get2 ();
+#endif
+#ifdef GRID_3D
+  FPValue multiplier = posInNeighbor.get1 () * posInNeighbor.get2 () * posInNeighbor.get3 ();
+#endif
+
+  int pidSender = ParallelGrid::getParallelCore ()->getNodeForDirection (dir);
+
+  ParallelGridCoordinate sendStart = grid->getSendStart ()[dir];
+
+  FieldValue cur = val->getCurValue ();
+#ifdef COMPLEX_FIELD_VALUES
+  ASSERT (cur.real () == pidSender * multiplier);
+  ASSERT (cur.imag () == pidSender * multiplier * imagMult);
+#else
+  ASSERT (cur == pidSender * multiplier);
+#endif
+
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+  FieldValue prev = val->getPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+  ASSERT (prev.real () == pidSender * multiplier * prevMult);
+  ASSERT (prev.imag () == pidSender * multiplier * prevMult * imagMult);
+#else
+  ASSERT (prev == pidSender * multiplier * prevMult);
+#endif
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+
+#if defined (TWO_TIME_STEPS)
+  FieldValue prevPrev = val->getPrevPrevValue ();
+#ifdef COMPLEX_FIELD_VALUES
+  ASSERT (prevPrev.real () == pidSender * multiplier * prevPrevMult);
+  ASSERT (prevPrev.imag () == pidSender * multiplier * prevPrevMult * imagMult);
+#else
+  ASSERT (prevPrev == pidSender * multiplier * prevPrevMult);
+#endif
+#endif /* TWO_TIME_STEPS */
+}
+
+ParallelGrid * initGrid (ParallelGridCoordinate overallSize,
+                         ParallelGridCoordinate bufferSize,
+                         ParallelGridCoordinate sizeForCurNode,
+                         bool isAbsVal)
+{
+  ParallelGrid *grid = new ParallelGrid (overallSize, bufferSize, 0, sizeForCurNode);
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
+  {
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+    for (grid_coord j = 0; j < grid->getSize ().get2 (); ++j)
+    {
+#endif /* GRID_2D || GRID_3D */
+#if defined (GRID_3D)
+      for (grid_coord k = 0; k < grid->getSize ().get3 (); ++k)
+      {
+#endif /* GRID_3D */
+        FieldPointValue* val = new FieldPointValue ();
+
+#ifdef GRID_1D
+        GridCoordinate1D pos (i, CoordinateType::X);
+#endif /* GRID_1D */
+
+#ifdef GRID_2D
+        GridCoordinate2D pos (i, j, CoordinateType::X, CoordinateType::Y);
+#endif /* GRID_2D */
+
+#ifdef GRID_3D
+        GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+#endif /* GRID_3D */
+
+        ParallelGridCoordinate totalPos = grid->getTotalPosition (pos);
+        ParallelGridCoordinate coord;
+
+        if (isAbsVal)
+        {
+          coord = totalPos;
+        }
+        else
+        {
+          coord = pos;
+        }
+
+        FPValue fpval = 0;
+
+        fpval = ParallelGrid::getParallelCore ()->getProcessId ();
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+        fpval *= coord.get1 ();
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+        fpval *= coord.get2 ();
+#endif /* GRID_2D || GRID_3D */
+#if defined (GRID_3D)
+        fpval *= coord.get3 ();
+#endif /* GRID_3D */
+
+#ifdef COMPLEX_FIELD_VALUES
+
+        val->setCurValue (FieldValue (fpval, fpval * imagMult));
+
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+        val->setPrevValue (FieldValue (fpval * prevMult, fpval * prevMult * imagMult));
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+
+#if defined (TWO_TIME_STEPS)
+        val->setPrevPrevValue (FieldValue (fpval * prevPrevMult, fpval * prevPrevMult * imagMult));
+#endif /* TWO_TIME_STEPS */
+
+#else /* COMPLEX_FIELD_VALUES */
+
+        val->setCurValue (fpval);
+
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+        val->setPrevValue (fpval * prevMult);
+#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+
+#if defined (TWO_TIME_STEPS)
+        val->setPrevPrevValue (fpval * prevPrevMult);
+#endif /* TWO_TIME_STEPS */
+
+#endif /* !COMPLEX_FIELD_VALUES */
+
+        grid->setFieldPointValue (val, pos);
+
+#if defined (GRID_3D)
+      }
+#endif /* GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+    }
+#endif /* GRID_2D || GRID_3D */
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+  }
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+
+  return grid;
+}
+
 int main (int argc, char** argv)
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
@@ -114,22 +272,195 @@ int main (int argc, char** argv)
   ParallelYeeGridLayout<SCHEME_TYPE, LayoutType::E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSize, ANGLES, isDoubleMaterialPrecision);
   yeeLayout.Initialize (&parallelGridCore);
 
-  ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode ());
+  ParallelGrid *grid = initGrid (overallSize, bufferSize, yeeLayout.getSizeForCurNode (), false);
 
+  for (int buf = 0; buf < BUFFER_COUNT; ++buf)
+  {
+    bool doSend = ParallelGrid::getParallelCore ()->getDoShare ()[buf].first;
+    bool doReceive = ParallelGrid::getParallelCore ()->getDoShare ()[buf].second;
+
+    BufferPosition opposite = ParallelGrid::getParallelCore ()->getOppositeDirections ()[buf];
+
+    int processTo = ParallelGrid::getParallelCore ()->getNodeForDirection ((BufferPosition) buf);
+    int processFrom = ParallelGrid::getParallelCore ()->getNodeForDirection (opposite);
+
+    if (doSend && processTo != -1
+        && !doReceive)
+    {
+      ParallelGridCoordinate sendStart = grid->getSendStart ()[buf];
+      ParallelGridCoordinate sendEnd = grid->getSendEnd ()[buf];
+
+#ifdef GRID_1D
+      grid_coord coordStart[1];
+      grid_coord coordEnd[1];
+      coordStart[0] = sendStart.get1 ();
+      coordEnd[0] = sendEnd.get1 ();
+      int size = 1;
+#endif
+#ifdef GRID_2D
+      grid_coord coordStart[2];
+      grid_coord coordEnd[2];
+      coordStart[0] = sendStart.get1 ();
+      coordStart[1] = sendStart.get2 ();
+      coordEnd[0] = sendStart.get1 ();
+      coordEnd[1] = sendStart.get2 ();
+      int size = 2;
+#endif
+#ifdef GRID_3D
+      grid_coord coordStart[3];
+      grid_coord coordEnd[3];
+      coordStart[0] = sendStart.get1 ();
+      coordStart[1] = sendStart.get2 ();
+      coordStart[2] = sendStart.get3 ();
+      int size = 3;
+#endif
+      MPI_Send (coordStart, size, MPI_COORD, processTo, rank, ParallelGrid::getParallelCore ()->getCommunicator ());
+      MPI_Send (coordEnd, size, MPI_COORD, processTo, rank, ParallelGrid::getParallelCore ()->getCommunicator ());
+    }
+    else if (doSend && processTo != -1
+             && doReceive && processFrom != -1)
+    {
+      ParallelGridCoordinate sendStart = grid->getSendStart ()[buf];
+      ParallelGridCoordinate sendEnd = grid->getSendEnd ()[buf];
+
+#ifdef GRID_1D
+      grid_coord coordStart[1];
+      grid_coord coordEnd[1];
+      coordStart[0] = sendStart.get1 ();
+      coordEnd[0] = sendEnd.get1 ();
+      int size = 1;
+#endif
+#ifdef GRID_2D
+      grid_coord coordStart[2];
+      grid_coord coordEnd[2];
+      coordStart[0] = sendStart.get1 ();
+      coordStart[1] = sendStart.get2 ();
+      coordEnd[0] = sendStart.get1 ();
+      coordEnd[1] = sendStart.get2 ();
+      int size = 2;
+#endif
+#ifdef GRID_3D
+      grid_coord coordStart[3];
+      grid_coord coordEnd[3];
+      coordStart[0] = sendStart.get1 ();
+      coordStart[1] = sendStart.get2 ();
+      coordStart[2] = sendStart.get3 ();
+      int size = 3;
+#endif
+
+      MPI_Status status;
+
+#ifdef GRID_1D
+      grid_coord _coordStart[1];
+      grid_coord _coordEnd[1];
+      int _size = 1;
+#endif
+#ifdef GRID_2D
+      grid_coord _coordStart[2];
+      grid_coord _coordEnd[2];
+      int _size = 2;
+#endif
+#ifdef GRID_3D
+      grid_coord _coordStart[3];
+      grid_coord _coordEnd[3];
+      int _size = 3;
+#endif
+
+      MPI_Sendrecv (coordStart, size, MPI_COORD, processTo, rank,
+                    _coordStart, _size, MPI_COORD, processFrom, processFrom,
+                    ParallelGrid::getParallelCore ()->getCommunicator (), &status);
+      MPI_Sendrecv (coordEnd, size, MPI_COORD, processTo, rank,
+                    _coordEnd, _size, MPI_COORD, processFrom, processFrom,
+                    ParallelGrid::getParallelCore ()->getCommunicator (), &status);
+
+      neighbourSendStart[opposite] = grid->getSendStart ()[buf];
+      neighbourSendEnd[opposite] = grid->getSendStart ()[buf];
+
+#ifdef GRID_1D
+      neighbourSendStart[opposite].set1 (_coordStart[0]);
+      neighbourSendEnd[opposite].set1 (_coordEnd[0]);
+#endif
+#ifdef GRID_2D
+      neighbourSendStart[opposite].set1 (_coordStart[0]);
+      neighbourSendStart[opposite].set2 (_coordStart[1]);
+      neighbourSendEnd[opposite].set1 (_coordEnd[0]);
+      neighbourSendEnd[opposite].set2 (_coordEnd[1]);
+#endif
+#ifdef GRID_3D
+      neighbourSendStart[opposite].set1 (_coordStart[0]);
+      neighbourSendStart[opposite].set2 (_coordStart[1]);
+      neighbourSendStart[opposite].set3 (_coordStart[2]);
+      neighbourSendEnd[opposite].set1 (_coordEnd[0]);
+      neighbourSendEnd[opposite].set2 (_coordEnd[1]);
+      neighbourSendEnd[opposite].set3 (_coordEnd[2]);
+#endif
+    }
+    else if (!doSend
+             && doReceive && processFrom != -1)
+    {
+      MPI_Status status;
+
+#ifdef GRID_1D
+      grid_coord coordStart[1];
+      grid_coord coordEnd[1];
+      int size = 1;
+#endif
+#ifdef GRID_2D
+      grid_coord coordStart[2];
+      grid_coord coordEnd[2];
+      int size = 2;
+#endif
+#ifdef GRID_3D
+      grid_coord coordStart[3];
+      grid_coord coordEnd[3];
+      int size = 3;
+#endif
+      MPI_Recv (coordStart, size, MPI_COORD, processFrom, processFrom, ParallelGrid::getParallelCore ()->getCommunicator (), &status);
+      MPI_Recv (coordEnd, size, MPI_COORD, processFrom, processFrom, ParallelGrid::getParallelCore ()->getCommunicator (), &status);
+
+      neighbourSendStart[opposite] = grid->getSendStart ()[buf];
+      neighbourSendEnd[opposite] = grid->getSendStart ()[buf];
+
+#ifdef GRID_1D
+      neighbourSendStart[opposite].set1 (coordStart[0]);
+      neighbourSendEnd[opposite].set1 (coordEnd[0]);
+#endif
+#ifdef GRID_2D
+      neighbourSendStart[opposite].set1 (coordStart[0]);
+      neighbourSendStart[opposite].set2 (coordStart[1]);
+      neighbourSendEnd[opposite].set1 (coordEnd[0]);
+      neighbourSendEnd[opposite].set2 (coordEnd[1]);
+#endif
+#ifdef GRID_3D
+      neighbourSendStart[opposite].set1 (coordStart[0]);
+      neighbourSendStart[opposite].set2 (coordStart[1]);
+      neighbourSendStart[opposite].set3 (coordStart[2]);
+      neighbourSendEnd[opposite].set1 (coordEnd[0]);
+      neighbourSendEnd[opposite].set2 (coordEnd[1]);
+      neighbourSendEnd[opposite].set3 (coordEnd[2]);
+#endif
+    }
+
+    MPI_Barrier (MPI_COMM_WORLD);
+  }
+
+  grid->share ();
+
+  /*
+   * Check that buffers were correctly initialized
+   */
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  for (grid_coord i = 0; i < grid.getSize ().get1 (); ++i)
+  for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
   {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-    for (grid_coord j = 0; j < grid.getSize ().get2 (); ++j)
+    for (grid_coord j = 0; j < grid->getSize ().get2 (); ++j)
     {
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-      for (grid_coord k = 0; k < grid.getSize ().get3 (); ++k)
+      for (grid_coord k = 0; k < grid->getSize ().get3 (); ++k)
       {
 #endif /* GRID_3D */
-        FieldPointValue* val = new FieldPointValue ();
-
 #ifdef GRID_1D
         GridCoordinate1D pos (i, CoordinateType::X);
 #endif /* GRID_1D */
@@ -142,39 +473,7 @@ int main (int argc, char** argv)
         GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 #endif /* GRID_3D */
 
-        ParallelGridCoordinate posAbs = grid.getTotalPosition (pos);
-
-        FPValue fpval = 0;
-
-        fpval = ParallelGrid::getParallelCore ()->getProcessId ();
-
-#ifdef COMPLEX_FIELD_VALUES
-
-        val->setCurValue (FieldValue (fpval, fpval * imagMult));
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-        val->setPrevValue (FieldValue (fpval * prevMult, fpval * prevMult * imagMult));
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-
-#if defined (TWO_TIME_STEPS)
-        val->setPrevPrevValue (FieldValue (fpval * prevPrevMult, fpval * prevPrevMult * imagMult));
-#endif /* TWO_TIME_STEPS */
-
-#else /* COMPLEX_FIELD_VALUES */
-
-        val->setCurValue (fpval);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-        val->setPrevValue (fpval * prevMult);
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-
-#if defined (TWO_TIME_STEPS)
-        val->setPrevPrevValue (fpval * prevPrevMult);
-#endif /* TWO_TIME_STEPS */
-
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        grid.setFieldPointValue (val, pos);
+        checkVal (grid, pos);
 
 #if defined (GRID_3D)
       }
@@ -186,20 +485,21 @@ int main (int argc, char** argv)
   }
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 
-  grid.share ();
+  delete grid;
+  grid = initGrid (overallSize, bufferSize, yeeLayout.getSizeForCurNode (), true);
 
-  ParallelGridBase *gridTotal = grid.gatherFullGrid ();
+  ParallelGridBase *gridTotal = grid->gatherFullGrid ();
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  for (grid_coord i = 0; i < grid.getSize ().get1 (); ++i)
+  for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
   {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-    for (grid_coord j = 0; j < grid.getSize ().get2 (); ++j)
+    for (grid_coord j = 0; j < grid->getSize ().get2 (); ++j)
     {
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-      for (grid_coord k = 0; k < grid.getSize ().get3 (); ++k)
+      for (grid_coord k = 0; k < grid->getSize ().get3 (); ++k)
       {
 #endif /* GRID_3D */
 
@@ -308,6 +608,16 @@ int main (int argc, char** argv)
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
         FPValue fpprocess = (FPValue) process;
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+        fpprocess *= i;
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+        fpprocess *= j;
+#endif /* GRID_2D || GRID_3D */
+#if defined (GRID_3D)
+        fpprocess *= k;
+#endif /* GRID_3D */
 
         ASSERT (fpprocess == fpval);
 
