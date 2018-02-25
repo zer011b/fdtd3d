@@ -6,16 +6,19 @@
  */
 #ifdef FLOAT_VALUES
 typedef float FPValue;
+#define MPI_FPVALUE MPI_FLOAT
 #define FP_MOD "%f"
 #endif /* FLOAT_VALUES */
 
 #ifdef DOUBLE_VALUES
 typedef double FPValue;
+#define MPI_FPVALUE MPI_DOUBLE
 #define FP_MOD "%f"
 #endif /* DOUBLE_VALUES */
 
 #ifdef LONG_DOUBLE_VALUES
 typedef long double FPValue;
+#define MPI_FPVALUE MPI_LONG_DOUBLE
 #define FP_MOD "%Lf"
 #endif /* LONG_DOUBLE_VALUES */
 

@@ -171,16 +171,23 @@ void ParallelGrid::gatherStartPosition ()
     MPI_Status status;
     int retCode;
 
+    int state = 1;
+#ifdef DYNAMIC_GRID
+    state = ParallelGrid::getParallelCore ()->getNodeState ()[ParallelGrid::getParallelCore ()->getProcessId ()];
+#endif
+
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
   defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
     if (process == ParallelGrid::getParallelCore ()->getProcessId ()
-        &&  ParallelGrid::getParallelCore ()->getHasL ())
+        && state
+        && ParallelGrid::getParallelCore ()->getHasL ()
+        && ParallelGrid::getParallelCore ()->getNodeForDirection (LEFT) != -1)
     {
       retCode = MPI_Recv (&startx,
                           1,
                           MPI_COORD,
-                          ParallelGrid::getParallelCore ()->getDirections ()[LEFT],
+                          ParallelGrid::getParallelCore ()->getNodeForDirection (LEFT),
                           0,
                           ParallelGrid::getParallelCore ()->getCommunicator (),
                           &status);
@@ -189,12 +196,12 @@ void ParallelGrid::gatherStartPosition ()
       hasReceivedX = true;
     }
     else if (ParallelGrid::getParallelCore ()->getHasR ()
-             && ParallelGrid::getParallelCore ()->getDirections ()[RIGHT] == process)
+             && ParallelGrid::getParallelCore ()->getNodeForDirection (RIGHT) == process)
     {
       retCode = MPI_Send (&endx,
                           1,
                           MPI_COORD,
-                          ParallelGrid::getParallelCore ()->getDirections ()[RIGHT],
+                          ParallelGrid::getParallelCore ()->getNodeForDirection (RIGHT),
                           0,
                           ParallelGrid::getParallelCore ()->getCommunicator ());
       ASSERT (retCode == MPI_SUCCESS);
@@ -206,12 +213,14 @@ void ParallelGrid::gatherStartPosition ()
   defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
     if (process == ParallelGrid::getParallelCore ()->getProcessId ()
-        &&  ParallelGrid::getParallelCore ()->getHasD ())
+        && state
+        && ParallelGrid::getParallelCore ()->getHasD ()
+        && ParallelGrid::getParallelCore ()->getNodeForDirection (DOWN) != -1)
     {
       retCode = MPI_Recv (&starty,
                           1,
                           MPI_COORD,
-                          ParallelGrid::getParallelCore ()->getDirections ()[DOWN],
+                          ParallelGrid::getParallelCore ()->getNodeForDirection (DOWN),
                           1,
                           ParallelGrid::getParallelCore ()->getCommunicator (),
                           &status);
@@ -220,12 +229,12 @@ void ParallelGrid::gatherStartPosition ()
       hasReceivedY = true;
     }
     else if (ParallelGrid::getParallelCore ()->getHasU ()
-             && ParallelGrid::getParallelCore ()->getDirections ()[UP] == process)
+             && ParallelGrid::getParallelCore ()->getNodeForDirection (UP) == process)
     {
       retCode = MPI_Send (&endy,
                           1,
                           MPI_COORD,
-                          ParallelGrid::getParallelCore ()->getDirections ()[UP],
+                          ParallelGrid::getParallelCore ()->getNodeForDirection (UP),
                           1,
                           ParallelGrid::getParallelCore ()->getCommunicator ());
       ASSERT (retCode == MPI_SUCCESS);
@@ -237,12 +246,14 @@ void ParallelGrid::gatherStartPosition ()
   defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
     if (process == ParallelGrid::getParallelCore ()->getProcessId ()
-        && ParallelGrid::getParallelCore ()->getHasB ())
+        && state
+        && ParallelGrid::getParallelCore ()->getHasB ()
+        && ParallelGrid::getParallelCore ()->getNodeForDirection (BACK) != -1)
     {
       retCode = MPI_Recv (&startz,
                           1,
                           MPI_COORD,
-                          ParallelGrid::getParallelCore ()->getDirections ()[BACK],
+                          ParallelGrid::getParallelCore ()->getNodeForDirection (BACK),
                           2,
                           ParallelGrid::getParallelCore ()->getCommunicator (),
                           &status);
@@ -251,12 +262,12 @@ void ParallelGrid::gatherStartPosition ()
       hasReceivedZ = true;
     }
     else if (ParallelGrid::getParallelCore ()->getHasF ()
-             && ParallelGrid::getParallelCore ()->getDirections ()[FRONT] == process)
+             && ParallelGrid::getParallelCore ()->getNodeForDirection (FRONT) == process)
     {
       retCode = MPI_Send (&endz,
                           1,
                           MPI_COORD,
-                          ParallelGrid::getParallelCore ()->getDirections ()[FRONT],
+                          ParallelGrid::getParallelCore ()->getNodeForDirection (FRONT),
                           2,
                           ParallelGrid::getParallelCore ()->getCommunicator ());
       ASSERT (retCode == MPI_SUCCESS);
@@ -264,9 +275,12 @@ void ParallelGrid::gatherStartPosition ()
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
-    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+    if (process == ParallelGrid::getParallelCore ()->getProcessId ()
+        && state)
     {
+#ifndef DYNAMIC_GRID
       ASSERT (hasReceivedX || hasReceivedY || hasReceivedZ || process == 0);
+#endif
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
       endx = startx + currentSize.get1 ();
@@ -309,7 +323,8 @@ void ParallelGrid::gatherStartPosition ()
       initializeStartPosition (startPosition);
     }
 
-    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+    if (process == ParallelGrid::getParallelCore ()->getProcessId ()
+        && state)
     {
 #ifdef GRID_1D
       DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (%u) for grid '%s' for proc %d (of %d)\n",
@@ -2842,13 +2857,28 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
+  int state = 1;
+#ifdef DYNAMIC_GRID
+  state = parallelGridCore->getNodeState ()[parallelGridCore->getProcessId ()];
+#endif
+
+  if (state == 0)
+  {
+    return;
+  }
+
   bool doSend = parallelGridCore->getDoShare ()[bufferDirection].first;
   bool doReceive = parallelGridCore->getDoShare ()[bufferDirection].second;
+
+  BufferPosition opposite = parallelGridCore->getOppositeDirections ()[bufferDirection];
+
+  int processTo = parallelGridCore->getNodeForDirection (bufferDirection);
+  int processFrom = parallelGridCore->getNodeForDirection (opposite);
 
   /*
    * Copy to send buffer
    */
-  if (doSend)
+  if (doSend && processTo != -1)
   {
     grid_coord index = 0;
 
@@ -2919,11 +2949,6 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
 #endif /* GRID_1D || GRID_2D || GRID_3D */
   }
 
-  BufferPosition opposite = parallelGridCore->getOppositeDirections ()[bufferDirection];
-
-  int processTo = parallelGridCore->getDirections ()[bufferDirection];
-  int processFrom = parallelGridCore->getDirections ()[opposite];
-
   DPRINTF (LOG_LEVEL_FULL, "\tSHARE RAW. PID=#%d. Directions TO(%d)=%s=#%d, FROM(%d)=%s=#%d.\n",
            parallelGridCore->getProcessId (),
            doSend,
@@ -2933,17 +2958,85 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
            BufferPositionNames[opposite],
            processFrom);
 
-  if (doSend && !doReceive)
+  if (doSend && processTo != -1
+      && (!doReceive || doReceive && processFrom == -1))
   {
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StartShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
+#endif /* DYNAMIC_GRID */
+
     SendRawBuffer (bufferDirection, processTo);
+
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StopShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
+#endif /* DYNAMIC_GRID */
   }
-  else if (!doSend && doReceive)
+  else if ((!doSend || doSend && processTo == -1)
+           && doReceive && processFrom != -1)
   {
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StartShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
+#endif /* DYNAMIC_GRID */
+
     ReceiveRawBuffer (opposite, processFrom);
+
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StopShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
+#endif /* DYNAMIC_GRID */
   }
-  else if (doSend && doReceive)
+  else if (doSend && processTo != -1
+           && doReceive && processFrom != -1)
   {
+#ifdef COMBINED_SENDRECV
+#ifdef DYNAMIC_GRID
+    UNREACHABLE;
+#endif
     SendReceiveRawBuffer (bufferDirection, processTo, opposite, processFrom);
+#else
+    // Even send first, then receive. Non-even receive first, then send
+    if (parallelGridCore->getIsEvenForDirection()[bufferDirection])
+    {
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StartShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
+#endif /* DYNAMIC_GRID */
+
+      SendRawBuffer (bufferDirection, processTo);
+
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StopShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
+#endif /* DYNAMIC_GRID */
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StartShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
+#endif /* DYNAMIC_GRID */
+
+      ReceiveRawBuffer (opposite, processFrom);
+
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StopShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
+#endif /* DYNAMIC_GRID */
+    }
+    else
+    {
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StartShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
+#endif /* DYNAMIC_GRID */
+
+      ReceiveRawBuffer (opposite, processFrom);
+
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StopShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
+#endif /* DYNAMIC_GRID */
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StartShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
+#endif /* DYNAMIC_GRID */
+
+      SendRawBuffer (bufferDirection, processTo);
+
+#ifdef DYNAMIC_GRID
+    parallelGridCore->StopShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
+#endif /* DYNAMIC_GRID */
+    }
+#endif
   }
   else
   {
@@ -2955,7 +3048,7 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
   /*
    * Copy from receive buffer
    */
-  if (doReceive)
+  if (doReceive && processFrom != -1)
   {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     for (grid_coord index = 0, i = recvStart[bufferDirection].get1 ();
@@ -3052,16 +3145,7 @@ ParallelGrid::SendReceive ()
 void
 ParallelGrid::share ()
 {
-#ifdef DYNAMIC_GRID
-  parallelGridCore->StartShareClock ();
-#endif /* DYNAMIC_GRID */
-
   SendReceive ();
-
-#ifdef DYNAMIC_GRID
-  parallelGridCore->StopShareClock ();
-#endif /* DYNAMIC_GRID */
-
   MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
 } /* ParallelGrid::share */
 
@@ -4336,6 +4420,10 @@ ParallelGrid::Resize (ParallelGridCoordinate newCurrentNodeSize) /**< new size o
            oldSize.calculateTotalCoord (),
            currentSize.calculateTotalCoord ());
 
+  /*
+   * TODO: check if this share is needed
+   * TODO: optimize to fill buffers without sharing
+   */
   share ();
 } /* ParallelGrid::Resize */
 
@@ -4382,5 +4470,1294 @@ ParallelGrid::isBufferRightPosition (ParallelGridCoordinate pos) /**< position t
     return true;
   }
 } /* ParallelGrid::isBufferRightPosition */
+
+BufferPosition
+ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
+{
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
+  if (ParallelGrid::getParallelCore ()->getHasL ()
+      && pos.get1 () < bufferSize.get1 ())
+  {
+    return LEFT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 ())
+  {
+    return RIGHT;
+  }
+  else
+  {
+    return BUFFER_NONE;
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
+  if (ParallelGrid::getParallelCore ()->getHasD ()
+      && pos.get2 () < bufferSize.get2 ())
+  {
+    return DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 ())
+  {
+    return UP;
+  }
+  else
+  {
+    return BUFFER_NONE;
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+  if (ParallelGrid::getParallelCore ()->getHasB ()
+      && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
+  {
+    return FRONT;
+  }
+  else
+  {
+    return BUFFER_NONE;
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+  if (ParallelGrid::getParallelCore ()->getHasL ()
+      && ParallelGrid::getParallelCore ()->getHasD ()
+      && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 ())
+  {
+    return LEFT_DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 ())
+  {
+    return LEFT_UP;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 ())
+  {
+    return LEFT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 ())
+  {
+    return LEFT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 ())
+  {
+    return LEFT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 ())
+  {
+    return RIGHT_DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 ())
+  {
+    return RIGHT_UP;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 ())
+  {
+    return RIGHT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 ())
+  {
+    return RIGHT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 ())
+  {
+    return RIGHT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 ())
+  {
+    return DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 ())
+  {
+    return DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 ())
+  {
+    return DOWN;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 ())
+  {
+    return UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 ())
+  {
+    return UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 ())
+  {
+    return UP;
+  }
+
+  else
+  {
+    return BUFFER_NONE;
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+  if (ParallelGrid::getParallelCore ()->getHasD ()
+      && ParallelGrid::getParallelCore ()->getHasB ()
+      && pos.get2 () < bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return DOWN_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
+  {
+    return DOWN_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return DOWN;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return UP_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get2 () >= bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+
+  else
+  {
+    return;
+  }
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+  if (ParallelGrid::getParallelCore ()->getHasL ()
+      && ParallelGrid::getParallelCore ()->getHasB ()
+      && pos.get1 () < bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return LEFT_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return LEFT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return RIGHT_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return RIGHT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+
+  else
+  {
+    return BUFFER_NONE;
+  }
+#endif
+
+#ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
+  if (ParallelGrid::getParallelCore ()->getHasL ()
+      && ParallelGrid::getParallelCore ()->getHasD ()
+      && ParallelGrid::getParallelCore ()->getHasB ()
+      && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return LEFT_DOWN_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT_DOWN_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return LEFT_UP_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT_UP_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return RIGHT_DOWN_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT_DOWN_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return RIGHT_UP_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT_UP_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT_DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return LEFT_DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT_DOWN;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT_DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return RIGHT_DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT_DOWN;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT_UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return LEFT_UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT_UP;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT_UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return RIGHT_UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT_UP;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return DOWN_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return DOWN_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return DOWN_BACK;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return DOWN_FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return DOWN_FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return DOWN_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return UP_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return UP_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return UP_BACK;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP_FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP_FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return LEFT_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return LEFT_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return LEFT_BACK;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT_FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT_FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return RIGHT_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return RIGHT_BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return RIGHT_BACK;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT_FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT_FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT_FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return LEFT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return LEFT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return LEFT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return LEFT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return RIGHT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return RIGHT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return RIGHT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return RIGHT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return DOWN;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return DOWN;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return DOWN;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return DOWN;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+  {
+    return UP;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasU ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasF ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+  {
+    return UP;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasB ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+  {
+    return BACK;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && !ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && !ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && !ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && !ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+  else if (ParallelGrid::getParallelCore ()->getHasF ()
+           && ParallelGrid::getParallelCore ()->getHasL ()
+           && ParallelGrid::getParallelCore ()->getHasR ()
+           && ParallelGrid::getParallelCore ()->getHasD ()
+           && ParallelGrid::getParallelCore ()->getHasU ()
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+  {
+    return FRONT;
+  }
+
+  else
+  {
+    return BUFFER_NONE;
+  }
+#endif
+}
 
 #endif /* PARALLEL_GRID */
