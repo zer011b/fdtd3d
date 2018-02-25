@@ -31,7 +31,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
   }
   else
   {
-    nodeGridSizeX = topologySize.getX ();
+    nodeGridSizeX = topologySize.get1 ();
   }
   nodeGridSizeY = 1;
   nodeGridSizeZ = 1;
@@ -54,7 +54,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
   }
   else
   {
-    nodeGridSizeY = topologySize.getY ();
+    nodeGridSizeY = topologySize.get2 ();
   }
   nodeGridSizeX = 1;
   nodeGridSizeZ = 1;
@@ -77,7 +77,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
   }
   else
   {
-    nodeGridSizeZ = topologySize.getZ ();
+    nodeGridSizeZ = topologySize.get3 ();
   }
   nodeGridSizeX = 1;
   nodeGridSizeY = 1;
@@ -144,7 +144,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< desired relati
   int nodeGridSizeZOptimal;
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  initOptimal (size.getX (), size.getY (), nodeGridSizeXOptimal, nodeGridSizeYOptimal);
+  initOptimal (size.get1 (), size.get2 (), nodeGridSizeXOptimal, nodeGridSizeYOptimal);
   nodeGridSizeZOptimal = 1;
 
   if (!doUseManualTopology)
@@ -154,8 +154,8 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< desired relati
   }
   else
   {
-    nodeGridSizeX = topologySize.getX ();
-    nodeGridSizeY = topologySize.getY ();
+    nodeGridSizeX = topologySize.get1 ();
+    nodeGridSizeY = topologySize.get2 ();
   }
   nodeGridSizeZ = 1;
 
@@ -169,7 +169,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< desired relati
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  initOptimal (size.getY (), size.getZ (), nodeGridSizeYOptimal, nodeGridSizeZOptimal);
+  initOptimal (size.get2 (), size.get3 (), nodeGridSizeYOptimal, nodeGridSizeZOptimal);
   nodeGridSizeXOptimal = 1;
 
   if (!doUseManualTopology)
@@ -179,8 +179,8 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< desired relati
   }
   else
   {
-    nodeGridSizeY = topologySize.getY ();
-    nodeGridSizeZ = topologySize.getZ ();
+    nodeGridSizeY = topologySize.get2 ();
+    nodeGridSizeZ = topologySize.get3 ();
   }
   nodeGridSizeX = 1;
 
@@ -194,7 +194,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< desired relati
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  initOptimal (size.getX (), size.getZ (), nodeGridSizeXOptimal, nodeGridSizeZOptimal);
+  initOptimal (size.get1 (), size.get3 (), nodeGridSizeXOptimal, nodeGridSizeZOptimal);
   nodeGridSizeYOptimal = 1;
 
   if (!doUseManualTopology)
@@ -204,8 +204,8 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< desired relati
   }
   else
   {
-    nodeGridSizeX = topologySize.getX ();
-    nodeGridSizeZ = topologySize.getZ ();
+    nodeGridSizeX = topologySize.get1 ();
+    nodeGridSizeZ = topologySize.get3 ();
   }
   nodeGridSizeY = 1;
 
@@ -270,7 +270,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
   int nodeGridSizeXOptimal;
   int nodeGridSizeYOptimal;
   int nodeGridSizeZOptimal;
-  initOptimal (size.getX (), size.getY (), size.getZ (), nodeGridSizeXOptimal, nodeGridSizeYOptimal, nodeGridSizeZOptimal);
+  initOptimal (size.get1 (), size.get2 (), size.get3 (), nodeGridSizeXOptimal, nodeGridSizeYOptimal, nodeGridSizeZOptimal);
 
   if (!doUseManualTopology)
   {
@@ -280,9 +280,9 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
   }
   else
   {
-    nodeGridSizeX = topologySize.getX ();
-    nodeGridSizeY = topologySize.getY ();
-    nodeGridSizeZ = topologySize.getZ ();
+    nodeGridSizeX = topologySize.get1 ();
+    nodeGridSizeY = topologySize.get2 ();
+    nodeGridSizeZ = topologySize.get3 ();
   }
 
   nodeGridSizeXYZ = nodeGridSizeX * nodeGridSizeY * nodeGridSizeZ;

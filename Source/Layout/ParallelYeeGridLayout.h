@@ -9,8 +9,8 @@
 /**
  * Parallel Yee grid layout with size of grid per nodes
  */
-template <uint8_t layout_type>
-class ParallelYeeGridLayout: public YeeGridLayout<ParallelGridCoordinate, layout_type>
+template <SchemeType Type, uint8_t layout_type>
+class ParallelYeeGridLayout: public YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>
 {
 public:
 
@@ -48,11 +48,11 @@ public:
 
   ParallelGridCoordinate getEpsSizeForCurNode () const
   {
-    return isDoubleMaterialPrecision ? getSizeForCurNode () * 2: getSizeForCurNode ();
+    return YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::isDoubleMaterialPrecision ? getSizeForCurNode () * 2: getSizeForCurNode ();
   }
   ParallelGridCoordinate getMuSizeForCurNode () const
   {
-    return isDoubleMaterialPrecision ? getSizeForCurNode () * 2: getSizeForCurNode ();
+    return YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::isDoubleMaterialPrecision ? getSizeForCurNode () * 2: getSizeForCurNode ();
   }
 
   ParallelGridCoordinate getExSizeForCurNode () const
@@ -95,20 +95,20 @@ public:
   /**
    * Constructor of Parallel Yee grid
    */
-  ParallelYeeGridLayout (ParallelGridCoordinate coordSize,
-                         ParallelGridCoordinate sizePML,
-                         ParallelGridCoordinate sizeScatteredZone,
-                         FPValue incidentWaveAngle1, /**< teta */
-                         FPValue incidentWaveAngle2, /**< phi */
-                         FPValue incidentWaveAngle3, /**< psi */
-                         bool isDoubleMaterialPrecision)
-    : YeeGridLayout (coordSize,
-                     sizePML,
-                     sizeScatteredZone,
-                     incidentWaveAngle1,
-                     incidentWaveAngle2,
-                     incidentWaveAngle3,
-                     isDoubleMaterialPrecision)
+  ParallelYeeGridLayout<Type, layout_type> (ParallelGridCoordinate coordSize,
+                                            ParallelGridCoordinate sizePML,
+                                            ParallelGridCoordinate sizeScatteredZone,
+                                            FPValue incidentWaveAngle1, /**< teta */
+                                            FPValue incidentWaveAngle2, /**< phi */
+                                            FPValue incidentWaveAngle3, /**< psi */
+                                            bool isDoubleMaterialPrecision)
+    : YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type> (coordSize,
+                                                                        sizePML,
+                                                                        sizeScatteredZone,
+                                                                        incidentWaveAngle1,
+                                                                        incidentWaveAngle2,
+                                                                        incidentWaveAngle3,
+                                                                        isDoubleMaterialPrecision)
   {
   } /* ParallelYeeGridLayout */
 
@@ -124,21 +124,21 @@ public:
 /**
  * Identify size of grid for current computational node
  */
-template <uint8_t layout_type>
+template <SchemeType Type, uint8_t layout_type>
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
 void
-ParallelYeeGridLayout::CalculateGridSizeForNode (grid_coord &c1, grid_coord &core1, int nodeGridSize1, bool has1, grid_coord size1) const
+ParallelYeeGridLayout<Type, layout_type>::CalculateGridSizeForNode (grid_coord &c1, grid_coord &core1, int nodeGridSize1, bool has1, grid_coord size1) const
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_1D_Z) */
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
 void
-ParallelYeeGridLayout::CalculateGridSizeForNode (grid_coord &c1, grid_coord &core1, int nodeGridSize1, bool has1, grid_coord size1,
-                                                 grid_coord &c2, grid_coord &core2, int nodeGridSize2, bool has2, grid_coord size2) const
+ParallelYeeGridLayout<Type, layout_type>::CalculateGridSizeForNode (grid_coord &c1, grid_coord &core1, int nodeGridSize1, bool has1, grid_coord size1,
+                                                                    grid_coord &c2, grid_coord &core2, int nodeGridSize2, bool has2, grid_coord size2) const
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ */
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 void
-ParallelYeeGridLayout::CalculateGridSizeForNode (grid_coord &c1, grid_coord &core1, int nodeGridSize1, bool has1, grid_coord size1,
-                                                 grid_coord &c2, grid_coord &core2, int nodeGridSize2, bool has2, grid_coord size2,
-                                                 grid_coord &c3, grid_coord &core3, int nodeGridSize3, bool has3, grid_coord size3) const
+ParallelYeeGridLayout<Type, layout_type>::CalculateGridSizeForNode (grid_coord &c1, grid_coord &core1, int nodeGridSize1, bool has1, grid_coord size1,
+                                                                    grid_coord &c2, grid_coord &core2, int nodeGridSize2, bool has2, grid_coord size2,
+                                                                    grid_coord &c3, grid_coord &core3, int nodeGridSize3, bool has3, grid_coord size3) const
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 {
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || \
@@ -192,9 +192,9 @@ ParallelYeeGridLayout::CalculateGridSizeForNode (grid_coord &c1, grid_coord &cor
 /**
  * Initialize size of grid per node
  */
-template <uint8_t layout_type>
+template <SchemeType Type, uint8_t layout_type>
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
+ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
   ASSERT (parallelCore);
   parallelGridCore = parallelCore;
@@ -206,9 +206,13 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
                             core1,
                             parallelGridCore->getNodeGridSizeX (),
                             parallelGridCore->getHasR (),
-                            size.getX ());
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 ());
 
-  sizeForCurNode = GridCoordinate1D (core1);
+  sizeForCurNode = GridCoordinate1D (core1
+#ifdef DEBUG_INFO
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                     );
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* GRID_1D */
@@ -220,9 +224,9 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
 /**
  * Initialize size of grid per node
  */
-template <uint8_t layout_type>
+template <SchemeType Type, uint8_t layout_type>
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
+ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
   ASSERT (parallelCore);
   parallelGridCore = parallelCore;
@@ -238,22 +242,27 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
                             core1,
                             parallelGridCore->getNodeGridSizeX (),
                             parallelGridCore->getHasR (),
-                            size.getX ());
-  core2 = size.getY ();
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 ());
+  core2 = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 ();
   c2 = core2;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  core1 = size.getX ();
+  core1 = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 ();
   c1 = core1;
   CalculateGridSizeForNode (c2,
                             core2,
                             parallelGridCore->getNodeGridSizeY (),
                             parallelGridCore->getHasU (),
-                            size.getY ());
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 ());
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 
-  sizeForCurNode = GridCoordinate2D (core1, core2);
+  sizeForCurNode = GridCoordinate2D (core1, core2
+#ifdef DEBUG_INFO
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType1 ()
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                     );
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y */
@@ -263,9 +272,9 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
 /**
  * Initialize size of grid per node
  */
-template <uint8_t layout_type>
+template <SchemeType Type, uint8_t layout_type>
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
+ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
   ASSERT (parallelCore);
   parallelGridCore = parallelCore;
@@ -280,14 +289,19 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
                             core1,
                             parallelGridCore->getNodeGridSizeX (),
                             parallelGridCore->getHasR (),
-                            size.getX (),
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
                             c2,
                             core2,
                             parallelGridCore->getNodeGridSizeY (),
                             parallelGridCore->getHasU (),
-                            size.getY ());
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 ());
 
-  sizeForCurNode = GridCoordinate2D (core1, core2);
+  sizeForCurNode = GridCoordinate2D (core1, core2
+#ifdef DEBUG_INFO
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType1 ()
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                     );
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
@@ -303,9 +317,9 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
 /**
  * Initialize size of grid per node
  */
-template <uint8_t layout_type>
+template <SchemeType Type, uint8_t layout_type>
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
+ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
   ASSERT (parallelCore);
   parallelGridCore = parallelCore;
@@ -323,38 +337,44 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
                             core1,
                             parallelGridCore->getNodeGridSizeX (),
                             parallelGridCore->getHasR (),
-                            size.getX ());
-  core2 = size.getY ();
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 ());
+  core2 = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 ();
   c2 = core2;
-  core3 = size.getZ ();
+  core3 = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get3 ();
   c3 = core3;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  core1 = size.getX ();
+  core1 = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 ();
   c1 = core1;
   CalculateGridSizeForNode (c2,
                             core2,
                             parallelGridCore->getNodeGridSizeY (),
                             parallelGridCore->getHasU (),
-                            size.getY ());
-  core3 = size.getZ ();
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 ());
+  core3 = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get3 ();
   c3 = core3;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
-  core1 = size.getX ();
+  core1 = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 ();
   c1 = core1;
-  core2 = size.getY ();
+  core2 = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 ();
   c2 = core2;
   CalculateGridSizeForNode (c3,
                             core3,
                             parallelGridCore->getNodeGridSizeZ (),
                             parallelGridCore->getHasF (),
-                            size.getZ ());
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get3 ());
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 
-  sizeForCurNode = GridCoordinate3D (core1, core2, core3);
+  sizeForCurNode = GridCoordinate3D (core1, core2, core3
+#ifdef DEBUG_INFO
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType1 ()
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType2 ()
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                     );
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_1D_Z */
@@ -366,9 +386,9 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
 /**
  * Initialize size of grid per node
  */
-template <uint8_t layout_type>
+template <SchemeType Type, uint8_t layout_type>
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
+ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
   ASSERT (parallelCore);
   parallelGridCore = parallelCore;
@@ -386,47 +406,53 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
                             core1,
                             parallelGridCore->getNodeGridSizeX (),
                             parallelGridCore->getHasR (),
-                            size.getX (),
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
                             c2,
                             core2,
                             parallelGridCore->getNodeGridSizeY (),
                             parallelGridCore->getHasU (),
-                            size.getY ());
-  core3 = size.getZ ();
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 ());
+  core3 = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get3 ();
   c3 = core3;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  core1 = size.getX ();
+  core1 = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 ();
   c1 = core1;
   CalculateGridSizeForNode (c2,
                             core2,
                             parallelGridCore->getNodeGridSizeY (),
                             parallelGridCore->getHasU (),
-                            size.getY (),
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 (),
                             c3,
                             core3,
                             parallelGridCore->getNodeGridSizeZ (),
                             parallelGridCore->getHasF (),
-                            size.getZ ());
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get3 ());
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  core2 = size.getY ();
+  core2 = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 ();
   c2 = core2;
   CalculateGridSizeForNode (c1,
                             core1,
                             parallelGridCore->getNodeGridSizeX (),
                             parallelGridCore->getHasR (),
-                            size.getX (),
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
                             c3,
                             core3,
                             parallelGridCore->getNodeGridSizeZ (),
                             parallelGridCore->getHasF (),
-                            size.getZ ());
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get3 ());
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
-  sizeForCurNode = GridCoordinate3D (core1, core2, core3);
+  sizeForCurNode = GridCoordinate3D (core1, core2, core3
+#ifdef DEBUG_INFO
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType1 ()
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType2 ()
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                     );
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_2D_XZ */
@@ -436,9 +462,9 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
 /**
  * Initialize size of grid per node
  */
-template <uint8_t layout_type>
+template <SchemeType Type, uint8_t layout_type>
 void
-ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
+ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
   ASSERT (parallelCore);
   parallelGridCore = parallelCore;
@@ -455,19 +481,25 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
                             core1,
                             parallelGridCore->getNodeGridSizeX (),
                             parallelGridCore->getHasR (),
-                            size.getX (),
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
                             c2,
                             core2,
                             parallelGridCore->getNodeGridSizeY (),
                             parallelGridCore->getHasU (),
-                            size.getY (),
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 (),
                             c3,
                             core3,
                             parallelGridCore->getNodeGridSizeZ (),
                             parallelGridCore->getHasF (),
-                            size.getZ ());
+                            YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get3 ());
 
-  sizeForCurNode = GridCoordinate3D (core1, core2, core3);
+  sizeForCurNode = GridCoordinate3D (core1, core2, core3
+#ifdef DEBUG_INFO
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType1 ()
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType2 ()
+                                     , YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                     );
 } /* ParallelYeeGridLayout::Initialize */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -482,8 +514,8 @@ ParallelYeeGridLayout::Initialize (const ParallelGridCore *parallelCore) /**< in
  * @return true if size was changed
  *         false, otherwise
  */
-template <uint8_t layout_type>
-bool ParallelYeeGridLayout::Rebalance (time_step difft) /**< number of time steps elapsed since the last rebalance */
+template <SchemeType Type, uint8_t layout_type>
+bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< number of time steps elapsed since the last rebalance */
 {
   ParallelGridCoordinate newSize = sizeForCurNode;
   ParallelGridCoordinate oldSize = sizeForCurNode;
@@ -491,7 +523,7 @@ bool ParallelYeeGridLayout::Rebalance (time_step difft) /**< number of time step
   timespec calcClock = parallelGridCore->getCalcClock ();
 
   grid_coord minX = 4;
-  grid_coord maxX = size.getX () - minX * (parallelGridCore->getTotalProcCount () - 1);
+  grid_coord maxX = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 () - minX * (parallelGridCore->getTotalProcCount () - 1);
 
   FPValue timesec = (FPValue) calcClock.tv_sec + ((FPValue) calcClock.tv_nsec) / 1000000000;
   FPValue speedCur = (difft * oldSize.calculateTotalCoord ()) / timesec;
@@ -516,7 +548,7 @@ bool ParallelYeeGridLayout::Rebalance (time_step difft) /**< number of time step
     MPI_Barrier (parallelGridCore->getCommunicator ());
   }
 
-  grid_coord x = ((FPValue)size.getX ()) * speedCur / (sumSpeed);
+  grid_coord x = ((FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 ()) * speedCur / (sumSpeed);
 
   if (x < minX)
   {
@@ -533,11 +565,11 @@ bool ParallelYeeGridLayout::Rebalance (time_step difft) /**< number of time step
   //         speed[parallelGridCore->getProcessId ()],
   //         calcClock.tv_sec,
   //         calcClock.tv_nsec,
-  //         (FPValue)size.getX (),
+  //         (FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
   //         difft,
   //         sumSpeed);
 
-  newSize.setX (x);
+  newSize.set1 (x);
 
   if (parallelGridCore->getProcessId () == 0)
   {
@@ -547,7 +579,7 @@ bool ParallelYeeGridLayout::Rebalance (time_step difft) /**< number of time step
     grid_coord sumX = 0;
     for (int process = 0; process < parallelGridCore->getTotalProcCount (); ++process)
     {
-      grid_coord x_n = ((FPValue)size.getX ()) * speed[process] / (sumSpeed);
+      grid_coord x_n = ((FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 ()) * speed[process] / (sumSpeed);
       if (x_n < minX)
       {
         x_n = minX;
@@ -559,9 +591,9 @@ bool ParallelYeeGridLayout::Rebalance (time_step difft) /**< number of time step
       sumX += x_n;
     }
 
-    newSize.setX (x + size.getX () - sumX);
+    newSize.set1 (x + YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 () - sumX);
 
-    // printf ("!!! %d %lu %u\n", sumX, newSize.getX (), x);
+    // printf ("!!! %d %lu %u\n", sumX, newSize.get1 (), x);
   }
 
   sizeForCurNode = newSize;

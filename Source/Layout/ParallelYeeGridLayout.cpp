@@ -2,7 +2,7 @@
 
 #ifdef PARALLEL_GRID
 
-template <uint8_t layout_type>
-const bool ParallelYeeGridLayout::isParallel = true;
+template <SchemeType Type, uint8_t layout_type>
+const bool ParallelYeeGridLayout<Type, layout_type>::isParallel = true;
 
 #endif /* PARALLEL_GRID */

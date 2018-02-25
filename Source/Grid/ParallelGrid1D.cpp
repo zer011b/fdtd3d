@@ -20,7 +20,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
   }
   else
   {
-    nodeGridSizeX = topologySize.getX ();
+    nodeGridSizeX = topologySize.get1 ();
   }
 
   if (nodeGridSizeX <= 1)

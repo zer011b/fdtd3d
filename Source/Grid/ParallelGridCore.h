@@ -12,18 +12,21 @@
  */
 #ifdef GRID_1D
 #define ParallelGridBase Grid<GridCoordinate1D>
+#define ParallelGridCoordinateTemplate GridCoordinate1DTemplate
 #define ParallelGridCoordinate GridCoordinate1D
 #define ParallelGridCoordinateFP GridCoordinateFP1D
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
 #define ParallelGridBase Grid<GridCoordinate2D>
+#define ParallelGridCoordinateTemplate GridCoordinate2DTemplate
 #define ParallelGridCoordinate GridCoordinate2D
 #define ParallelGridCoordinateFP GridCoordinateFP2D
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
 #define ParallelGridBase Grid<GridCoordinate3D>
+#define ParallelGridCoordinateTemplate GridCoordinate3DTemplate
 #define ParallelGridCoordinate GridCoordinate3D
 #define ParallelGridCoordinateFP GridCoordinateFP3D
 #endif /* GRID_3D */
@@ -226,7 +229,7 @@ private:
   /**
    * Virtual topology size, which was specified manually (not used in case of optimal virtual topology)
    */
-  GridCoordinate3D topologySize;
+  ParallelGridCoordinate topologySize;
 
   /**
    * Communicator for all processes, used in computations
@@ -255,7 +258,7 @@ private:
 
 public:
 
-  ParallelGridCore (int, int, ParallelGridCoordinate, bool, GridCoordinate3D);
+  ParallelGridCore (int, int, ParallelGridCoordinate, bool, ParallelGridCoordinate);
 
   /**
    * Getter for communicator for all processes, used in computations

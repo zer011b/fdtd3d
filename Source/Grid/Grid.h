@@ -161,11 +161,10 @@ template <class TCoord>
 void
 Grid<TCoord>::deleteGrid ()
 {
-  for (VectorFieldPointValues::iterator iter = gridValues.begin ();
-       iter != gridValues.end ();
-       ++iter)
+  for (grid_coord i = 0; i < gridValues.size (); ++i)
   {
-    delete (*iter);
+    delete gridValues[i];
+    gridValues[i] = NULLPTR;
   }
 } /* Grid<TCoord>::deleteGrid */
 
@@ -187,6 +186,10 @@ Grid<TCoord>::copyGrid (const Grid<TCoord> &grid) /**< grid to copy */
     {
       gridValues[i] = new FieldPointValue ();
       *gridValues[i] = *grid.gridValues[i];
+    }
+    else
+    {
+      gridValues[i] = NULLPTR;
     }
   }
 } /* Grid<TCoord>::copyGrid */
@@ -271,21 +274,9 @@ Grid<TCoord>::getSize () const
 } /* Grid<TCoord>::getSize */
 
 /**
- * Get first coordinate from which to perfrom computations at current step
+ * Get last coordinate until which to perform computations at current step
  *
- * @return first coordinate from which to perfrom computations at current step
- */
-template <class TCoord>
-TCoord
-Grid<TCoord>::getComputationStart (TCoord diffPosStart) const
-{
-  return TCoord () + diffPosStart;
-} /* Grid<TCoord>::getComputationStart */
-
-/**
- * Get last coordinate until which to perfrom computations at current step
- *
- * @return last coordinate until which to perfrom computations at current step
+ * @return last coordinate until which to perform computations at current step
  */
 template <class TCoord>
 TCoord

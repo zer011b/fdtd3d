@@ -53,14 +53,14 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
   /*
    * Check that buffer size is equal for all coordinate axes
    */
-  ASSERT (bufSize.getX () != 0);
+  ASSERT (bufSize.get1 () != 0);
 
 #if defined (GRID_2D) || defined (GRID_3D)
-  ASSERT (bufSize.getX () == bufSize.getY ());
+  ASSERT (bufSize.get1 () == bufSize.get2 ());
 #endif /* GRID_2D || GRID_3D */
 
 #ifdef GRID_3D
-  ASSERT (bufSize.getX () == bufSize.getZ ());
+  ASSERT (bufSize.get1 () == bufSize.get3 ());
 #endif /* GRID_3D */
 
   /*
@@ -74,11 +74,11 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
 
 #ifdef GRID_2D
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  bufferSize = ParallelGridCoordinate (bufSize.getX (), 0);
+  bufferSize = ParallelGridCoordinate (bufSize.get1 (), 0);
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  bufferSize = ParallelGridCoordinate (0, bufSize.getY ());
+  bufferSize = ParallelGridCoordinate (0, bufSize.get2 ());
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
@@ -88,27 +88,27 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
 
 #ifdef GRID_3D
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  bufferSize = ParallelGridCoordinate (bufSize.getX (), 0, 0);
+  bufferSize = ParallelGridCoordinate (bufSize.get1 (), 0, 0);
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  bufferSize = ParallelGridCoordinate (0, bufSize.getY (), 0);
+  bufferSize = ParallelGridCoordinate (0, bufSize.get2 (), 0);
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
-  bufferSize = ParallelGridCoordinate (0, 0, bufSize.getZ ());
+  bufferSize = ParallelGridCoordinate (0, 0, bufSize.get3 ());
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  bufferSize = ParallelGridCoordinate (bufSize.getX (), bufSize.getY (), 0);
+  bufferSize = ParallelGridCoordinate (bufSize.get1 (), bufSize.get2 (), 0);
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  bufferSize = ParallelGridCoordinate (0, bufSize.getY (), bufSize.getZ ());
+  bufferSize = ParallelGridCoordinate (0, bufSize.get2 (), bufSize.get3 ());
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  bufferSize = ParallelGridCoordinate (bufSize.getX (), 0, bufSize.getZ ());
+  bufferSize = ParallelGridCoordinate (bufSize.get1 (), 0, bufSize.get3 ());
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 
 #ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
@@ -163,8 +163,6 @@ void ParallelGrid::gatherStartPosition ()
     /*
      * Receive start position from previous nodes
      */
-
-    ParallelGridCoordinate startPosition;
 
     bool hasReceivedX = false;
     bool hasReceivedY = false;
@@ -271,23 +269,41 @@ void ParallelGrid::gatherStartPosition ()
       ASSERT (hasReceivedX || hasReceivedY || hasReceivedZ || process == 0);
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-      endx = startx + currentSize.getX ();
+      endx = startx + currentSize.get1 ();
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-      endy = starty + currentSize.getY ();
+      endy = starty + currentSize.get2 ();
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-      endz = startz + currentSize.getZ ();
+      endz = startz + currentSize.get3 ();
 #endif /* GRID_3D */
 
 #ifdef GRID_1D
-      startPosition = GridCoordinate1D (startx);
+      ParallelGridCoordinate startPosition = GridCoordinate1D (startx
+#ifdef DEBUG_INFO
+                                                               ,getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                                               );
 #endif /* GRID_1D */
 #ifdef GRID_2D
-      startPosition = GridCoordinate2D (startx, starty);
+      ParallelGridCoordinate startPosition = GridCoordinate2D (startx,
+                                                               starty
+#ifdef DEBUG_INFO
+                                                               , getSize ().getType1 ()
+                                                               , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                                               );
 #endif /* GRID_2D */
 #ifdef GRID_3D
-      startPosition = GridCoordinate3D (startx, starty, startz);
+      ParallelGridCoordinate startPosition = GridCoordinate3D (startx,
+                                                               starty,
+                                                               startz
+#ifdef DEBUG_INFO
+                                                               , getSize ().getType1 ()
+                                                               , getSize ().getType2 ()
+                                                               , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                                               );
 #endif /* GRID_3D */
 
       initializeStartPosition (startPosition);
@@ -342,7 +358,7 @@ void ParallelGrid::initializeStartPosition (ParallelGridCoordinate chunkStartPos
   }
   else
   {
-    posX = chunkStartPos.getX () - bufferSize.getX ();
+    posX = chunkStartPos.get1 () - bufferSize.get1 ();
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
         PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -357,7 +373,7 @@ void ParallelGrid::initializeStartPosition (ParallelGridCoordinate chunkStartPos
   }
   else
   {
-    posY = chunkStartPos.getY () - bufferSize.getY ();
+    posY = chunkStartPos.get2 () - bufferSize.get2 ();
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
         PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -372,50 +388,111 @@ void ParallelGrid::initializeStartPosition (ParallelGridCoordinate chunkStartPos
   }
   else
   {
-    posZ = chunkStartPos.getZ () - bufferSize.getZ ();
+    posZ = chunkStartPos.get3 () - bufferSize.get3 ();
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
         PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #ifdef GRID_1D
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  posStart = ParallelGridCoordinate (posX);
+  posStart = ParallelGridCoordinate (posX
+#ifdef DEBUG_INFO
+                                     , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                     );
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  posStart = ParallelGridCoordinate (posX, 0);
+  posStart = ParallelGridCoordinate (posX, 0
+#ifdef DEBUG_INFO
+                                     , getSize ().getType1 ()
+                                     , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                     );
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  posStart = ParallelGridCoordinate (0, posY);
+  posStart = ParallelGridCoordinate (0, posY
+#ifdef DEBUG_INFO
+                                     , getSize ().getType1 ()
+                                     , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                     );
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  posStart = ParallelGridCoordinate (posX, posY);
+  posStart = ParallelGridCoordinate (posX, posY
+#ifdef DEBUG_INFO
+                                     , getSize ().getType1 ()
+                                     , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                     );
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
-  posStart = ParallelGridCoordinate (posX, 0, 0);
+  posStart = ParallelGridCoordinate (posX, 0, 0
+#ifdef DEBUG_INFO
+                                     , getSize ().getType1 ()
+                                     , getSize ().getType2 ()
+                                     , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                     );
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X */
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
-  posStart = ParallelGridCoordinate (0, posY, 0);
+  posStart = ParallelGridCoordinate (0, posY, 0
+#ifdef DEBUG_INFO
+                                     , getSize ().getType1 ()
+                                     , getSize ().getType2 ()
+                                     , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                     );
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y */
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Z
-  posStart = ParallelGridCoordinate (0, 0, posZ);
+  posStart = ParallelGridCoordinate (0, 0, posZ
+#ifdef DEBUG_INFO
+                                     , getSize ().getType1 ()
+                                     , getSize ().getType2 ()
+                                     , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                     );
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XY
-  posStart = ParallelGridCoordinate (posX, posY, 0);
+  posStart = ParallelGridCoordinate (posX, posY, 0
+#ifdef DEBUG_INFO
+                                     , getSize ().getType1 ()
+                                     , getSize ().getType2 ()
+                                     , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                     );
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_YZ
-  posStart = ParallelGridCoordinate (0, posY, posZ);
+  posStart = ParallelGridCoordinate (0, posY, posZ
+#ifdef DEBUG_INFO
+                                     , getSize ().getType1 ()
+                                     , getSize ().getType2 ()
+                                     , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                     );
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 #ifdef PARALLEL_BUFFER_DIMENSION_2D_XZ
-  posStart = ParallelGridCoordinate (posX, 0, posZ);
+  posStart = ParallelGridCoordinate (posX, 0, posZ
+#ifdef DEBUG_INFO
+                                     , getSize ().getType1 ()
+                                     , getSize ().getType2 ()
+                                     , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                     );
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 #ifdef PARALLEL_BUFFER_DIMENSION_3D_XYZ
-  posStart = ParallelGridCoordinate (posX, posY, posZ);
+  posStart = ParallelGridCoordinate (posX, posY, posZ
+#ifdef DEBUG_INFO
+                                     , getSize ().getType1 ()
+                                     , getSize ().getType2 ()
+                                     , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                     );
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 #endif /* GRID_3D */
 } /* ParallelGrid::initializeStartPosition */
@@ -491,23 +568,45 @@ ParallelGrid::SendReceiveCoordinatesInit1D_X ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[LEFT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     2 * left_coord
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[LEFT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
 #if defined (GRID_2D) || defined (GRID_3D)
     , down_coord
 #if defined (GRID_3D)
@@ -515,23 +614,45 @@ ParallelGrid::SendReceiveCoordinatesInit1D_X ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[LEFT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX ()
+    size.get1 ()
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[RIGHT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - 2 * right_coord
+    size.get1 () - 2 * right_coord
 #if defined (GRID_2D) || defined (GRID_3D)
     , down_coord
 #if defined (GRID_3D)
@@ -539,18 +660,40 @@ ParallelGrid::SendReceiveCoordinatesInit1D_X ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[RIGHT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[RIGHT] = ParallelGridCoordinate (
@@ -563,18 +706,40 @@ ParallelGrid::SendReceiveCoordinatesInit1D_X ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[RIGHT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     left_coord
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 } /* ParallelGrid::SendReceiveCoordinatesInit1D_X */
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
@@ -605,66 +770,132 @@ ParallelGrid::SendReceiveCoordinatesInit1D_Y ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[DOWN] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
 #if defined (GRID_2D) || defined (GRID_3D)
     , 2 * down_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[DOWN] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     left_coord
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[DOWN] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY ()
+    , size.get2 ()
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[UP] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     left_coord
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY () - 2 * up_coord
+    , size.get2 () - 2 * up_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[UP] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[UP] = ParallelGridCoordinate (
@@ -677,18 +908,40 @@ ParallelGrid::SendReceiveCoordinatesInit1D_Y ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[UP] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
 #if defined (GRID_2D) || defined (GRID_3D)
     , down_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 } /* ParallelGrid::SendReceiveCoordinatesInit1D_Y */
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
@@ -719,18 +972,40 @@ ParallelGrid::SendReceiveCoordinatesInit1D_Z ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[BACK] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
     , 2 * back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[BACK] = ParallelGridCoordinate (
@@ -739,22 +1014,44 @@ ParallelGrid::SendReceiveCoordinatesInit1D_Z ()
 #if defined (GRID_2D) || defined (GRID_3D)
     , down_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[BACK] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ ()
+    , size.get3 ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[FRONT] = ParallelGridCoordinate (
@@ -763,22 +1060,44 @@ ParallelGrid::SendReceiveCoordinatesInit1D_Z ()
 #if defined (GRID_2D) || defined (GRID_3D)
     , down_coord
 #if defined (GRID_3D)
-    , size.getZ () - 2 * front_coord
+    , size.get3 () - 2 * front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[FRONT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[FRONT] = ParallelGridCoordinate (
@@ -791,18 +1110,40 @@ ParallelGrid::SendReceiveCoordinatesInit1D_Z ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[FRONT] = ParallelGridCoordinate (
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
 #if defined (GRID_2D) || defined (GRID_3D)
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 } /* ParallelGrid::SendReceiveCoordinatesInit1D_Z */
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
@@ -830,6 +1171,17 @@ ParallelGrid::SendReceiveCoordinatesInit2D_XY ()
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[LEFT_DOWN] = ParallelGridCoordinate (
@@ -837,129 +1189,272 @@ ParallelGrid::SendReceiveCoordinatesInit2D_XY ()
     2 * left_coord
     , 2 * down_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[LEFT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY () - up_coord
+    size.get1 () - right_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[LEFT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX ()
-    , size.getY ()
+    size.get1 ()
+    , size.get2 ()
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[LEFT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     left_coord
-    , size.getY () - 2 * up_coord
+    , size.get2 () - 2 * up_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[LEFT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     2 * left_coord
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[LEFT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , 0
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[LEFT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX ()
+    size.get1 ()
     , down_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[RIGHT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - 2 * right_coord
+    size.get1 () - 2 * right_coord
     , down_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[RIGHT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , 2 * down_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[RIGHT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     0
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[RIGHT_DOWN] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     left_coord
-    , size.getY ()
+    , size.get2 ()
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[RIGHT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - 2 * right_coord
-    , size.getY () - 2 * up_coord
+    size.get1 () - 2 * right_coord
+    , size.get2 () - 2 * up_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[RIGHT_UP] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY () - up_coord
+    size.get1 () - right_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[RIGHT_UP] = ParallelGridCoordinate (
@@ -970,6 +1465,17 @@ ParallelGrid::SendReceiveCoordinatesInit2D_XY ()
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[RIGHT_UP] = ParallelGridCoordinate (
@@ -977,9 +1483,20 @@ ParallelGrid::SendReceiveCoordinatesInit2D_XY ()
     left_coord
     , down_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 } /* ParallelGrid::SendReceiveCoordinatesInit2D_XY */
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -1006,36 +1523,72 @@ ParallelGrid::SendReceiveCoordinatesInit2D_YZ ()
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , 2 * down_coord
 #if defined (GRID_3D)
     , 2 * back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     left_coord
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY ()
+    size.get1 () - right_coord
+    , size.get2 ()
 #if defined (GRID_3D)
-    , size.getZ ()
+    , size.get3 ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[DOWN_FRONT] = ParallelGridCoordinate (
@@ -1043,59 +1596,113 @@ ParallelGrid::SendReceiveCoordinatesInit2D_YZ ()
     left_coord
     , down_coord
 #if defined (GRID_3D)
-    , size.getZ () - 2 * front_coord
+    , size.get3 () - 2 * front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , 2 * down_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     left_coord
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
     , 0
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY ()
+    size.get1 () - right_coord
+    , size.get2 ()
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     left_coord
-    , size.getY () - 2 * up_coord
+    , size.get2 () - 2 * up_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY () - up_coord
+    size.get1 () - right_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
     , 2 * back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[UP_BACK] = ParallelGridCoordinate (
@@ -1103,39 +1710,75 @@ ParallelGrid::SendReceiveCoordinatesInit2D_YZ ()
     left_coord
     , 0
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , down_coord
 #if defined (GRID_3D)
-    , size.getZ ()
+    , size.get3 ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     left_coord
-    , size.getY () - 2 * up_coord
+    , size.get2 () - 2 * up_coord
 #if defined (GRID_3D)
-    , size.getZ () - 2 * front_coord
+    , size.get3 () - 2 * front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY () - up_coord
+    size.get1 () - right_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[UP_FRONT] = ParallelGridCoordinate (
@@ -1146,16 +1789,34 @@ ParallelGrid::SendReceiveCoordinatesInit2D_YZ ()
     , 0
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , down_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 } /* ParallelGrid::SendReceiveCoordinatesInit2D_YZ */
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -1182,36 +1843,72 @@ ParallelGrid::SendReceiveCoordinatesInit2D_XZ ()
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[LEFT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     2 * left_coord
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
     , 2 * back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[LEFT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , down_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[LEFT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX ()
-    , size.getY () - up_coord
+    size.get1 ()
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ ()
+    , size.get3 ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[LEFT_FRONT] = ParallelGridCoordinate (
@@ -1219,59 +1916,113 @@ ParallelGrid::SendReceiveCoordinatesInit2D_XZ ()
     left_coord
     , down_coord
 #if defined (GRID_3D)
-    , size.getZ () - 2 * front_coord
+    , size.get3 () - 2 * front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[LEFT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     2 * left_coord
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[LEFT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , down_coord
 #if defined (GRID_3D)
     , 0
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[LEFT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX ()
-    , size.getY () - up_coord
+    size.get1 ()
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[RIGHT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - 2 * right_coord
+    size.get1 () - 2 * right_coord
     , down_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[RIGHT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY () - up_coord
+    size.get1 () - right_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
     , 2 * back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[RIGHT_BACK] = ParallelGridCoordinate (
@@ -1279,39 +2030,75 @@ ParallelGrid::SendReceiveCoordinatesInit2D_XZ ()
     0
     , down_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[RIGHT_BACK] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     left_coord
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ ()
+    , size.get3 ()
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[RIGHT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - 2 * right_coord
+    size.get1 () - 2 * right_coord
     , down_coord
 #if defined (GRID_3D)
-    , size.getZ () - 2 * front_coord
+    , size.get3 () - 2 * front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[RIGHT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY () - up_coord
+    size.get1 () - right_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[RIGHT_FRONT] = ParallelGridCoordinate (
@@ -1322,16 +2109,34 @@ ParallelGrid::SendReceiveCoordinatesInit2D_XZ ()
     , 0
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[RIGHT_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_2D) || defined (GRID_3D)
     left_coord
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
 #if defined (GRID_3D)
     , back_coord
 #endif /* GRID_3D */
 #endif /* GRID_2D || GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_2D) || defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+#if defined (GRID_3D)
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* GRID_2D || GRID_3D */
+#endif /* DEBUG_INFO */
   );
 } /* ParallelGrid::SendReceiveCoordinatesInit2D_XZ */
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -1356,6 +2161,13 @@ ParallelGrid::SendReceiveCoordinatesInit3D_XYZ ()
     , down_coord
     , back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[LEFT_DOWN_BACK] = ParallelGridCoordinate (
@@ -1364,231 +2176,434 @@ ParallelGrid::SendReceiveCoordinatesInit3D_XYZ ()
     , 2 * down_coord
     , 2 * back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[LEFT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY () - up_coord
-    , size.getZ () - front_coord
+    size.get1 () - right_coord
+    , size.get2 () - up_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[LEFT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX ()
-    , size.getY ()
-    , size.getZ ()
+    size.get1 ()
+    , size.get2 ()
+    , size.get3 ()
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[LEFT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     left_coord
     , down_coord
-    , size.getZ () - 2 * front_coord
+    , size.get3 () - 2 * front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[LEFT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     2 * left_coord
     , 2 * down_coord
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[LEFT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY () - up_coord
+    size.get1 () - right_coord
+    , size.get2 () - up_coord
     , 0
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[LEFT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX ()
-    , size.getY ()
+    size.get1 ()
+    , size.get2 ()
     , back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[LEFT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     left_coord
-    , size.getY () - 2 * up_coord
+    , size.get2 () - 2 * up_coord
     , back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[LEFT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     2 * left_coord
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
     , 2 * back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[LEFT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , 0
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[LEFT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX ()
+    size.get1 ()
     , down_coord
-    , size.getZ ()
+    , size.get3 ()
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[LEFT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     left_coord
-    , size.getY () - 2 * up_coord
-    , size.getZ () - 2 * front_coord
+    , size.get2 () - 2 * up_coord
+    , size.get3 () - 2 * front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[LEFT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     2 * left_coord
-    , size.getY () - up_coord
-    , size.getZ () - front_coord
+    , size.get2 () - up_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[LEFT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , 0
     , 0
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[LEFT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX ()
+    size.get1 ()
     , down_coord
     , back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
 
   sendStart[RIGHT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - 2 * right_coord
+    size.get1 () - 2 * right_coord
     , down_coord
     , back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[RIGHT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , 2 * down_coord
     , 2 * back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[RIGHT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     0
-    , size.getY () - up_coord
-    , size.getZ () - front_coord
+    , size.get2 () - up_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[RIGHT_DOWN_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     left_coord
-    , size.getY ()
-    , size.getZ ()
+    , size.get2 ()
+    , size.get3 ()
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[RIGHT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - 2 * right_coord
+    size.get1 () - 2 * right_coord
     , down_coord
-    , size.getZ () - 2 * front_coord
+    , size.get3 () - 2 * front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[RIGHT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - right_coord
+    size.get1 () - right_coord
     , 2 * down_coord
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[RIGHT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     0
-    , size.getY () - up_coord
+    , size.get2 () - up_coord
     , 0
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[RIGHT_DOWN_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     left_coord
-    , size.getY ()
+    , size.get2 ()
     , back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[RIGHT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - 2 * right_coord
-    , size.getY () - 2 * up_coord
+    size.get1 () - 2 * right_coord
+    , size.get2 () - 2 * up_coord
     , back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[RIGHT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY () - up_coord
+    size.get1 () - right_coord
+    , size.get2 () - up_coord
     , 2 * back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[RIGHT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     0
     , 0
-    , size.getZ () - front_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[RIGHT_UP_BACK] = ParallelGridCoordinate (
 #if defined (GRID_3D)
     left_coord
     , down_coord
-    , size.getZ ()
+    , size.get3 ()
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendStart[RIGHT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - 2 * right_coord
-    , size.getY () - 2 * up_coord
-    , size.getZ () - 2 * front_coord
+    size.get1 () - 2 * right_coord
+    , size.get2 () - 2 * up_coord
+    , size.get3 () - 2 * front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   sendEnd[RIGHT_UP_FRONT] = ParallelGridCoordinate (
 #if defined (GRID_3D)
-    size.getX () - right_coord
-    , size.getY () - up_coord
-    , size.getZ () - front_coord
+    size.get1 () - right_coord
+    , size.get2 () - up_coord
+    , size.get3 () - front_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvStart[RIGHT_UP_FRONT] = ParallelGridCoordinate (
@@ -1597,6 +2612,13 @@ ParallelGrid::SendReceiveCoordinatesInit3D_XYZ ()
     , 0
     , 0
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 
   recvEnd[RIGHT_UP_FRONT] = ParallelGridCoordinate (
@@ -1605,6 +2627,13 @@ ParallelGrid::SendReceiveCoordinatesInit3D_XYZ ()
     , down_coord
     , back_coord
 #endif /* GRID_3D */
+#ifdef DEBUG_INFO
+#if defined (GRID_3D)
+    , getSize ().getType1 ()
+    , getSize ().getType2 ()
+    , getSize ().getType3 ()
+#endif /* GRID_3D */
+#endif /* DEBUG_INFO */
   );
 } /* ParallelGrid::SendReceiveCoordinatesInit3D_XYZ */
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
@@ -1824,32 +2853,47 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
     grid_coord index = 0;
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    for (grid_coord i = sendStart[bufferDirection].getX ();
-         i < sendEnd[bufferDirection].getX ();
+    for (grid_coord i = sendStart[bufferDirection].get1 ();
+         i < sendEnd[bufferDirection].get1 ();
          ++i)
     {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-      for (grid_coord j = sendStart[bufferDirection].getY ();
-           j < sendEnd[bufferDirection].getY ();
+      for (grid_coord j = sendStart[bufferDirection].get2 ();
+           j < sendEnd[bufferDirection].get2 ();
            ++j)
       {
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-        for (grid_coord k = sendStart[bufferDirection].getZ ();
-             k < sendEnd[bufferDirection].getZ ();
+        for (grid_coord k = sendStart[bufferDirection].get3 ();
+             k < sendEnd[bufferDirection].get3 ();
              ++k)
         {
 #endif /* GRID_3D */
 
 #if defined (GRID_1D)
-          ParallelGridCoordinate pos (i);
+          ParallelGridCoordinate pos (i
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_1D */
 #if defined (GRID_2D)
-          ParallelGridCoordinate pos (i, j);
+          ParallelGridCoordinate pos (i, j
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_2D */
 #if defined (GRID_3D)
-          ParallelGridCoordinate pos (i, j, k);
+          ParallelGridCoordinate pos (i, j, k
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+                                      , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_3D */
 
           FieldPointValue* val = getFieldPointValue (pos);
@@ -1914,20 +2958,20 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
   if (doReceive)
   {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    for (grid_coord index = 0, i = recvStart[bufferDirection].getX ();
-         i < recvEnd[bufferDirection].getX (); ++i)
+    for (grid_coord index = 0, i = recvStart[bufferDirection].get1 ();
+         i < recvEnd[bufferDirection].get1 (); ++i)
     {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 
 #if defined (GRID_2D) || defined (GRID_3D)
-      for (grid_coord j = recvStart[bufferDirection].getY ();
-           j < recvEnd[bufferDirection].getY (); ++j)
+      for (grid_coord j = recvStart[bufferDirection].get2 ();
+           j < recvEnd[bufferDirection].get2 (); ++j)
       {
 #endif /* GRID_2D || GRID_3D */
 
 #if defined (GRID_3D)
-        for (grid_coord k = recvStart[bufferDirection].getZ ();
-             k < recvEnd[bufferDirection].getZ (); ++k)
+        for (grid_coord k = recvStart[bufferDirection].get3 ();
+             k < recvEnd[bufferDirection].get3 (); ++k)
         {
 #endif /* GRID_3D */
 
@@ -1945,18 +2989,31 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
 #endif /* !TWO_TIME_STEPS */
 
 #if defined (GRID_1D)
-          ParallelGridCoordinate pos (i);
+          ParallelGridCoordinate pos (i
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_1D */
-
 #if defined (GRID_2D)
-          ParallelGridCoordinate pos (i, j);
+          ParallelGridCoordinate pos (i, j
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_2D */
-
 #if defined (GRID_3D)
-          ParallelGridCoordinate pos (i, j, k);
+          ParallelGridCoordinate pos (i, j, k
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+                                      , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_3D */
 
-          setFieldPointValue (val, ParallelGridCoordinate (pos));
+          setFieldPointValue (val, pos);
 
 #if defined (GRID_3D)
         }
@@ -2062,24 +3119,24 @@ ParallelGrid::InitBuffers ()
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasL ())
   {
-    int buf_size = bufferSize.getX () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * numTimeStepsInBuild;
 #if defined (GRID_2D) || defined (GRID_3D)
-    buf_size *= currentSize.getY ();
+    buf_size *= currentSize.get2 ();
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-    buf_size *= currentSize.getZ ();
+    buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
     buffersSend[LEFT].resize (buf_size);
     buffersReceive[LEFT].resize (buf_size);
   }
   if (parallelGridCore->getHasR ())
   {
-    int buf_size = bufferSize.getX () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * numTimeStepsInBuild;
 #if defined (GRID_2D) || defined (GRID_3D)
-    buf_size *= currentSize.getY ();
+    buf_size *= currentSize.get2 ();
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-    buf_size *= currentSize.getZ ();
+    buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
     buffersSend[RIGHT].resize (buf_size);
     buffersReceive[RIGHT].resize (buf_size);
@@ -2091,18 +3148,18 @@ ParallelGrid::InitBuffers ()
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasD ())
   {
-    int buf_size = bufferSize.getY () * currentSize.getX () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * currentSize.get1 () * numTimeStepsInBuild;
 #if defined (GRID_3D)
-    buf_size *= currentSize.getZ ();
+    buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
     buffersSend[DOWN].resize (buf_size);
     buffersReceive[DOWN].resize (buf_size);
   }
   if (parallelGridCore->getHasU ())
   {
-    int buf_size = bufferSize.getY () * currentSize.getX () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * currentSize.get1 () * numTimeStepsInBuild;
 #if defined (GRID_3D)
-    buf_size *= currentSize.getZ ();
+    buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
     buffersSend[UP].resize (buf_size);
     buffersReceive[UP].resize (buf_size);
@@ -2114,13 +3171,13 @@ ParallelGrid::InitBuffers ()
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasB ())
   {
-    int buf_size = bufferSize.getZ () * currentSize.getY () * currentSize.getX () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get3 () * currentSize.get2 () * currentSize.get1 () * numTimeStepsInBuild;
     buffersSend[BACK].resize (buf_size);
     buffersReceive[BACK].resize (buf_size);
   }
   if (parallelGridCore->getHasF ())
   {
-    int buf_size = bufferSize.getZ () * currentSize.getY () * currentSize.getX () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get3 () * currentSize.get2 () * currentSize.get1 () * numTimeStepsInBuild;
     buffersSend[FRONT].resize (buf_size);
     buffersReceive[FRONT].resize (buf_size);
   }
@@ -2130,36 +3187,36 @@ ParallelGrid::InitBuffers ()
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasL () && parallelGridCore->getHasD ())
   {
-    int buf_size = bufferSize.getX () * bufferSize.getY () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get2 () * numTimeStepsInBuild;
 #if defined (GRID_3D)
-    buf_size *= currentSize.getZ ();
+    buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
     buffersSend[LEFT_DOWN].resize (buf_size);
     buffersReceive[LEFT_DOWN].resize (buf_size);
   }
   if (parallelGridCore->getHasL () && parallelGridCore->getHasU ())
   {
-    int buf_size = bufferSize.getX () * bufferSize.getY () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get2 () * numTimeStepsInBuild;
 #if defined (GRID_3D)
-    buf_size *= currentSize.getZ ();
+    buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
     buffersSend[LEFT_UP].resize (buf_size);
     buffersReceive[LEFT_UP].resize (buf_size);
   }
   if (parallelGridCore->getHasR () && parallelGridCore->getHasD ())
   {
-    int buf_size = bufferSize.getX () * bufferSize.getY () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get2 () * numTimeStepsInBuild;
 #if defined (GRID_3D)
-    buf_size *= currentSize.getZ ();
+    buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
     buffersSend[RIGHT_DOWN].resize (buf_size);
     buffersReceive[RIGHT_DOWN].resize (buf_size);
   }
   if (parallelGridCore->getHasR () && parallelGridCore->getHasU ())
   {
-    int buf_size = bufferSize.getX () * bufferSize.getY () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get2 () * numTimeStepsInBuild;
 #if defined (GRID_3D)
-    buf_size *= currentSize.getZ ();
+    buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
     buffersSend[RIGHT_UP].resize (buf_size);
     buffersReceive[RIGHT_UP].resize (buf_size);
@@ -2169,25 +3226,25 @@ ParallelGrid::InitBuffers ()
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasD () && parallelGridCore->getHasB ())
   {
-    int buf_size = bufferSize.getY () * bufferSize.getZ () * currentSize.getX () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * numTimeStepsInBuild;
     buffersSend[DOWN_BACK].resize (buf_size);
     buffersReceive[DOWN_BACK].resize (buf_size);
   }
   if (parallelGridCore->getHasD () && parallelGridCore->getHasF ())
   {
-    int buf_size = bufferSize.getY () * bufferSize.getZ () * currentSize.getX () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * numTimeStepsInBuild;
     buffersSend[DOWN_FRONT].resize (buf_size);
     buffersReceive[DOWN_FRONT].resize (buf_size);
   }
   if (parallelGridCore->getHasU () && parallelGridCore->getHasB ())
   {
-    int buf_size = bufferSize.getY () * bufferSize.getZ () * currentSize.getX () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * numTimeStepsInBuild;
     buffersSend[UP_BACK].resize (buf_size);
     buffersReceive[UP_BACK].resize (buf_size);
   }
   if (parallelGridCore->getHasU () && parallelGridCore->getHasF ())
   {
-    int buf_size = bufferSize.getY () * bufferSize.getZ () * currentSize.getX () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * numTimeStepsInBuild;
     buffersSend[UP_FRONT].resize (buf_size);
     buffersReceive[UP_FRONT].resize (buf_size);
   }
@@ -2196,32 +3253,32 @@ ParallelGrid::InitBuffers ()
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasL () && parallelGridCore->getHasB ())
   {
-    int buf_size = bufferSize.getX () * bufferSize.getZ () * currentSize.getY () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * numTimeStepsInBuild;
     buffersSend[LEFT_BACK].resize (buf_size);
     buffersReceive[LEFT_BACK].resize (buf_size);
   }
   if (parallelGridCore->getHasL () && parallelGridCore->getHasF ())
   {
-    int buf_size = bufferSize.getX () * bufferSize.getZ () * currentSize.getY () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * numTimeStepsInBuild;
     buffersSend[LEFT_FRONT].resize (buf_size);
     buffersReceive[LEFT_FRONT].resize (buf_size);
   }
   if (parallelGridCore->getHasR () && parallelGridCore->getHasB ())
   {
-    int buf_size = bufferSize.getX () * bufferSize.getZ () * currentSize.getY () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * numTimeStepsInBuild;
     buffersSend[RIGHT_BACK].resize (buf_size);
     buffersReceive[RIGHT_BACK].resize (buf_size);
   }
   if (parallelGridCore->getHasR () && parallelGridCore->getHasF ())
   {
-    int buf_size = bufferSize.getX () * bufferSize.getZ () * currentSize.getY () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * numTimeStepsInBuild;
     buffersSend[RIGHT_FRONT].resize (buf_size);
     buffersReceive[RIGHT_FRONT].resize (buf_size);
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  int buf_size = bufferSize.getX () * bufferSize.getY () * bufferSize.getZ () * numTimeStepsInBuild;
+  int buf_size = bufferSize.get1 () * bufferSize.get2 () * bufferSize.get3 () * numTimeStepsInBuild;
   if (parallelGridCore->getHasL ()
       && parallelGridCore->getHasD ()
       && parallelGridCore->getHasB ())
@@ -2295,16 +3352,46 @@ ParallelGrid::ParallelGridConstructor ()
   initBufferOffsets (left_coord, right_coord, down_coord, up_coord, back_coord, front_coord);
 
 #ifdef GRID_1D
-  ParallelGridCoordinate bufLeft (left_coord);
-  ParallelGridCoordinate bufRight (right_coord);
+  ParallelGridCoordinate bufLeft (left_coord
+#ifdef DEBUG_INFO
+                                  , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                  );
+  ParallelGridCoordinate bufRight (right_coord
+#ifdef DEBUG_INFO
+                                  , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                  );
 #endif /* GRID_1D */
 #ifdef GRID_2D
-  ParallelGridCoordinate bufLeft (left_coord, down_coord);
-  ParallelGridCoordinate bufRight (right_coord, up_coord);
+  ParallelGridCoordinate bufLeft (left_coord, down_coord
+#ifdef DEBUG_INFO
+                                  , getSize ().getType1 ()
+                                  , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                  );
+  ParallelGridCoordinate bufRight (right_coord, up_coord
+#ifdef DEBUG_INFO
+                                  , getSize ().getType1 ()
+                                  , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                  );
 #endif /* GRID_2D */
 #ifdef GRID_3D
-  ParallelGridCoordinate bufLeft (left_coord, down_coord, back_coord);
-  ParallelGridCoordinate bufRight (right_coord, up_coord, front_coord);
+  ParallelGridCoordinate bufLeft (left_coord, down_coord, back_coord
+#ifdef DEBUG_INFO
+                                  , getSize ().getType1 ()
+                                  , getSize ().getType2 ()
+                                  , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                  );
+  ParallelGridCoordinate bufRight (right_coord, up_coord, front_coord
+#ifdef DEBUG_INFO
+                                  , getSize ().getType1 ()
+                                  , getSize ().getType2 ()
+                                  , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                  );
 #endif /* GRID_3D */
 
   size = currentSize + bufLeft + bufRight;
@@ -2319,22 +3406,22 @@ ParallelGrid::ParallelGridConstructor ()
 #ifdef GRID_1D
   DPRINTF (LOG_LEVEL_FULL, "Grid size for #%d process: " COORD_MOD ".\n",
           parallelGridCore->getProcessId (),
-          currentSize.getX ());
+          currentSize.get1 ());
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
   DPRINTF (LOG_LEVEL_FULL, "Grid size for #%d process: " COORD_MOD "x" COORD_MOD ".\n",
           parallelGridCore->getProcessId (),
-          currentSize.getX (),
-          currentSize.getY ());
+          currentSize.get1 (),
+          currentSize.get2 ());
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
   DPRINTF (LOG_LEVEL_FULL, "Grid size for #%d process: " COORD_MOD "x" COORD_MOD "x" COORD_MOD ".\n",
           parallelGridCore->getProcessId (),
-          currentSize.getX (),
-          currentSize.getY (),
-          currentSize.getZ ());
+          currentSize.get1 (),
+          currentSize.get2 (),
+          currentSize.get3 ());
 #endif /* GRID_3D */
 } /* ParallelGrid::ParallelGridConstructor */
 
@@ -2350,23 +3437,23 @@ ParallelGrid::nextTimeStep ()
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  ASSERT (shareStep <= bufferSize.getX ());
+  ASSERT (shareStep <= bufferSize.get1 ());
 
-  bool is_share_time = shareStep == bufferSize.getX ();
+  bool is_share_time = shareStep == bufferSize.get1 ();
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  ASSERT (shareStep <= bufferSize.getY ());
+  ASSERT (shareStep <= bufferSize.get2 ());
 
-  bool is_share_time = shareStep == bufferSize.getY ();
+  bool is_share_time = shareStep == bufferSize.get2 ();
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  ASSERT (shareStep <= bufferSize.getZ ());
+  ASSERT (shareStep <= bufferSize.get3 ());
 
-  bool is_share_time = shareStep == bufferSize.getZ ();
+  bool is_share_time = shareStep == bufferSize.get3 ();
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
@@ -2421,15 +3508,30 @@ ParallelGrid::getChunkStartPosition () const
   initBufferOffsets (left_coord, right_coord, down_coord, up_coord, back_coord, front_coord);
 
 #ifdef GRID_1D
-  return posStart + GridCoordinate1D (left_coord);
+  return posStart + GridCoordinate1D (left_coord
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
-  return posStart + GridCoordinate2D (left_coord, down_coord);
+  return posStart + GridCoordinate2D (left_coord, down_coord
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
-  return posStart + GridCoordinate3D (left_coord, down_coord, back_coord);
+  return posStart + GridCoordinate3D (left_coord, down_coord, back_coord
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+                                      , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_3D */
 } /* ParallelGrid::getChunkStartPosition */
 
@@ -2499,13 +3601,13 @@ ParallelGridCoordinate
 ParallelGrid::getComputationStart (ParallelGridCoordinate diffPosStart) const /**< layout coordinate modifier */
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_coord diffX = diffPosStart.getX ();
+  grid_coord diffX = diffPosStart.get1 ();
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-  grid_coord diffY = diffPosStart.getY ();
+  grid_coord diffY = diffPosStart.get2 ();
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-  grid_coord diffZ = diffPosStart.getZ ();
+  grid_coord diffZ = diffPosStart.get3 ();
 #endif /* GRID_3D */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
@@ -2546,13 +3648,28 @@ ParallelGrid::getComputationStart (ParallelGridCoordinate diffPosStart) const /*
 #endif /* GRID_3D */
 
 #ifdef GRID_1D
-  return ParallelGridCoordinate (px);
+  return ParallelGridCoordinate (px
+#ifdef DEBUG_INFO
+                                 , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                 );
 #endif /* GRID_1D */
 #ifdef GRID_2D
-  return ParallelGridCoordinate (px, py);
+  return ParallelGridCoordinate (px, py
+#ifdef DEBUG_INFO
+                                 , getSize ().getType1 ()
+                                 , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                 );
 #endif /* GRID_2D */
 #ifdef GRID_3D
-  return ParallelGridCoordinate (px, py, pz);
+  return ParallelGridCoordinate (px, py, pz
+#ifdef DEBUG_INFO
+                                 , getSize ().getType1 ()
+                                 , getSize ().getType2 ()
+                                 , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                 );
 #endif /* GRID_3D */
 } /* ParallelGrid::getComputationStart */
 
@@ -2565,13 +3682,13 @@ ParallelGridCoordinate
 ParallelGrid::getComputationEnd (ParallelGridCoordinate diffPosEnd) const /**< layout coordinate modifier */
 {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_coord diffX = diffPosEnd.getX ();
+  grid_coord diffX = diffPosEnd.get1 ();
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-  grid_coord diffY = diffPosEnd.getY ();
+  grid_coord diffY = diffPosEnd.get2 ();
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-  grid_coord diffZ = diffPosEnd.getZ ();
+  grid_coord diffZ = diffPosEnd.get3 ();
 #endif /* GRID_3D */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
@@ -2602,23 +3719,38 @@ ParallelGrid::getComputationEnd (ParallelGridCoordinate diffPosEnd) const /**< l
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  grid_coord px = ParallelGridBase::getSize ().getX () - diffX;
+  grid_coord px = ParallelGridBase::getSize ().get1 () - diffX;
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-  grid_coord py = ParallelGridBase::getSize ().getY () - diffY;
+  grid_coord py = ParallelGridBase::getSize ().get2 () - diffY;
 #endif /* GRID_2D || GRID_3D */
 #ifdef GRID_3D
-  grid_coord pz = ParallelGridBase::getSize ().getZ () - diffZ;
+  grid_coord pz = ParallelGridBase::getSize ().get3 () - diffZ;
 #endif /* GRID_3D */
 
 #ifdef GRID_1D
-  return ParallelGridCoordinate (px);
+  return ParallelGridCoordinate (px
+#ifdef DEBUG_INFO
+                                 , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                 );
 #endif /* GRID_1D */
 #ifdef GRID_2D
-  return ParallelGridCoordinate (px, py);
+  return ParallelGridCoordinate (px, py
+#ifdef DEBUG_INFO
+                                 , getSize ().getType1 ()
+                                 , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                 );
 #endif /* GRID_2D */
 #ifdef GRID_3D
-  return ParallelGridCoordinate (px, py, pz);
+  return ParallelGridCoordinate (px, py, pz
+#ifdef DEBUG_INFO
+                                 , getSize ().getType1 ()
+                                 , getSize ().getType2 ()
+                                 , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                 );
 #endif /* GRID_3D */
 } /* ParallelGrid::getComputationEnd */
 
@@ -2645,7 +3777,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
   left_coord = 0;
   if (parallelGridCore->getHasL ())
   {
-    left_coord = bufferSize.getX ();
+    left_coord = bufferSize.get1 ();
   }
   else
   {
@@ -2655,7 +3787,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
   right_coord = 0;
   if (parallelGridCore->getHasR ())
   {
-    right_coord = bufferSize.getX ();
+    right_coord = bufferSize.get1 ();
   }
   else
   {
@@ -2673,7 +3805,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
   down_coord = 0;
   if (parallelGridCore->getHasD ())
   {
-    down_coord = bufferSize.getY ();
+    down_coord = bufferSize.get2 ();
   }
   else
   {
@@ -2683,7 +3815,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
   up_coord = 0;
   if (parallelGridCore->getHasU ())
   {
-    up_coord = bufferSize.getY ();
+    up_coord = bufferSize.get2 ();
   }
   else
   {
@@ -2701,7 +3833,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
   back_coord = 0;
   if (parallelGridCore->getHasB ())
   {
-    back_coord = bufferSize.getZ ();
+    back_coord = bufferSize.get3 ();
   }
   else
   {
@@ -2711,7 +3843,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
   front_coord = 0;
   if (parallelGridCore->getHasF ())
   {
-    front_coord = bufferSize.getZ ();
+    front_coord = bufferSize.get3 ();
   }
   else
   {
@@ -2780,8 +3912,8 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 
     if (process == ParallelGrid::getParallelCore ()->getProcessId ())
     {
-      startX = chunkStart.getX ();
-      endX = chunkEnd.getX ();
+      startX = chunkStart.get1 ();
+      endX = chunkEnd.get1 ();
     }
 
     MPI_Bcast (&startX, 1, MPI_COORD, process, ParallelGrid::getParallelCore ()->getCommunicator ());
@@ -2794,8 +3926,8 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 
     if (process == ParallelGrid::getParallelCore ()->getProcessId ())
     {
-      startY = chunkStart.getY ();
-      endY = chunkEnd.getY ();
+      startY = chunkStart.get2 ();
+      endY = chunkEnd.get2 ();
     }
 
     MPI_Bcast (&startY, 1, MPI_COORD, process, ParallelGrid::getParallelCore ()->getCommunicator ());
@@ -2808,8 +3940,8 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 
     if (process == ParallelGrid::getParallelCore ()->getProcessId ())
     {
-      startZ = chunkStart.getZ ();
-      endZ = chunkEnd.getZ ();
+      startZ = chunkStart.get3 ();
+      endZ = chunkEnd.get3 ();
     }
 
     MPI_Bcast (&startZ, 1, MPI_COORD, process, ParallelGrid::getParallelCore ()->getCommunicator ());
@@ -2817,13 +3949,28 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 #endif /* GRID_3D */
 
 #ifdef GRID_1D
-    ParallelGridCoordinate sizeCoord (endX - startX);
+    ParallelGridCoordinate sizeCoord (endX - startX
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_1D */
 #ifdef GRID_2D
-    ParallelGridCoordinate sizeCoord (endX - startX, endY - startY);
+    ParallelGridCoordinate sizeCoord (endX - startX, endY - startY
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_2D */
 #ifdef GRID_3D
-    ParallelGridCoordinate sizeCoord (endX - startX, endY - startY, endZ - startZ);
+    ParallelGridCoordinate sizeCoord (endX - startX, endY - startY, endZ - startZ
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+                                      , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_3D */
 
     /*
@@ -2851,26 +3998,41 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
       grid_coord index = 0;
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-      for (grid_coord i = left_coord; i < left_coord + sizeCoord.getX (); ++i)
+      for (grid_coord i = left_coord; i < left_coord + sizeCoord.get1 (); ++i)
       {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-        for (grid_coord j = down_coord; j < down_coord + sizeCoord.getY (); ++j)
+        for (grid_coord j = down_coord; j < down_coord + sizeCoord.get2 (); ++j)
         {
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-          for (grid_coord k = back_coord; k < back_coord + sizeCoord.getZ (); ++k)
+          for (grid_coord k = back_coord; k < back_coord + sizeCoord.get3 (); ++k)
           {
 #endif /* GRID_3D */
 
 #ifdef GRID_1D
-            ParallelGridCoordinate pos (i);
+            ParallelGridCoordinate pos (i
+#ifdef DEBUG_INFO
+                                        , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_1D */
 #ifdef GRID_2D
-            ParallelGridCoordinate pos (i, j);
+            ParallelGridCoordinate pos (i, j
+#ifdef DEBUG_INFO
+                                        , getSize ().getType1 ()
+                                        , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_2D */
 #ifdef GRID_3D
-            ParallelGridCoordinate pos (i, j, k);
+            ParallelGridCoordinate pos (i, j, k
+#ifdef DEBUG_INFO
+                                        , getSize ().getType1 ()
+                                        , getSize ().getType2 ()
+                                        , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_3D */
 
             grid_coord coord = calculateIndexFromPosition (pos);
@@ -2958,13 +4120,28 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 #endif /* GRID_3D */
 
 #ifdef GRID_1D
-          ParallelGridCoordinate pos (i);
+          ParallelGridCoordinate pos (i
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_1D */
 #ifdef GRID_2D
-          ParallelGridCoordinate pos (i, j);
+          ParallelGridCoordinate pos (i, j
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_2D */
 #ifdef GRID_3D
-          ParallelGridCoordinate pos (i, j, k);
+          ParallelGridCoordinate pos (i, j, k
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+                                      , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_3D */
 
           FieldPointValue *val = grid->getFieldPointValue (pos);
@@ -3037,16 +4214,31 @@ ParallelGrid::Resize (ParallelGridCoordinate newCurrentNodeSize) /**< new size o
     ParallelGridCoordinate chunkEnd = chunkStart + getCurrentSize ();
 
 #ifdef GRID_1D
-    ParallelGridCoordinate sizeCoord (chunkEnd.getX () - chunkStart.getX ());
+    ParallelGridCoordinate sizeCoord (chunkEnd.get1 () - chunkStart.get1 ()
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_1D */
 #ifdef GRID_2D
-    ParallelGridCoordinate sizeCoord (chunkEnd.getX () - chunkStart.getX (),
-                                      chunkEnd.getY () - chunkStart.getY ());
+    ParallelGridCoordinate sizeCoord (chunkEnd.get1 () - chunkStart.get1 (),
+                                      chunkEnd.get2 () - chunkStart.get2 ()
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_2D */
 #ifdef GRID_3D
-    ParallelGridCoordinate sizeCoord (chunkEnd.getX () - chunkStart.getX (),
-                                      chunkEnd.getY () - chunkStart.getY (),
-                                      chunkEnd.getZ () - chunkStart.getZ ());
+    ParallelGridCoordinate sizeCoord (chunkEnd.get1 () - chunkStart.get1 (),
+                                      chunkEnd.get2 () - chunkStart.get2 (),
+                                      chunkEnd.get3 () - chunkStart.get3 ()
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+                                      , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                      );
 #endif /* GRID_3D */
 
     grid_coord left_coord, right_coord;
@@ -3058,32 +4250,62 @@ ParallelGrid::Resize (ParallelGridCoordinate newCurrentNodeSize) /**< new size o
     grid_coord index = 0;
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    for (grid_coord i = left_coord; i < left_coord + sizeCoord.getX (); ++i)
+    for (grid_coord i = left_coord; i < left_coord + sizeCoord.get1 (); ++i)
     {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 #if defined (GRID_2D) || defined (GRID_3D)
-      for (grid_coord j = down_coord; j < down_coord + sizeCoord.getY (); ++j)
+      for (grid_coord j = down_coord; j < down_coord + sizeCoord.get2 (); ++j)
       {
 #endif /* GRID_2D || GRID_3D */
 #if defined (GRID_3D)
-        for (grid_coord k = back_coord; k < back_coord + sizeCoord.getZ (); ++k)
+        for (grid_coord k = back_coord; k < back_coord + sizeCoord.get3 (); ++k)
         {
 #endif /* GRID_3D */
 
 #ifdef GRID_1D
-          ParallelGridCoordinate pos (i);
-          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.getX ());
+          ParallelGridCoordinate pos (i
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                      );
+          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.get1 ()
+#ifdef DEBUG_INFO
+                                           , getSize ().getType1 ()
+#endif /* DEBUG_INFO */
+                                           );
 #endif /* GRID_1D */
 #ifdef GRID_2D
-          ParallelGridCoordinate pos (i, j);
-          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.getX (),
-                                           j - down_coord + chunkStart.getY ());
+          ParallelGridCoordinate pos (i, j
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                      );
+          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.get1 (),
+                                           j - down_coord + chunkStart.get2 ()
+#ifdef DEBUG_INFO
+                                           , getSize ().getType1 ()
+                                           , getSize ().getType2 ()
+#endif /* DEBUG_INFO */
+                                           );
 #endif /* GRID_2D */
 #ifdef GRID_3D
-          ParallelGridCoordinate pos (i, j, k);
-          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.getX (),
-                                           j - down_coord + chunkStart.getY (),
-                                           k - back_coord + chunkStart.getZ ());
+          ParallelGridCoordinate pos (i, j, k
+#ifdef DEBUG_INFO
+                                      , getSize ().getType1 ()
+                                      , getSize ().getType2 ()
+                                      , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                      );
+          ParallelGridCoordinate posTotal (i - left_coord + chunkStart.get1 (),
+                                           j - down_coord + chunkStart.get2 (),
+                                           k - back_coord + chunkStart.get3 ()
+#ifdef DEBUG_INFO
+                                           , getSize ().getType1 ()
+                                           , getSize ().getType2 ()
+                                           , getSize ().getType3 ()
+#endif /* DEBUG_INFO */
+                                           );
 #endif /* GRID_3D */
 
           grid_coord coord = calculateIndexFromPosition (pos);
