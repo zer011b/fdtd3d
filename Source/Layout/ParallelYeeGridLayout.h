@@ -221,12 +221,12 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallel
   parallelGridCore->setCalcClockCount (parallelGridCore->getProcessId (), sizeForCurNode.calculateTotalCoord ());
 
   int dirL = parallelGridCore->getNodeForDirection (LEFT);
-  if (parallelGridCore->getHasL () && dirL != -1)
+  if (dirL != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirL, 1);
   }
   int dirR = parallelGridCore->getNodeForDirection (RIGHT);
-  if (parallelGridCore->getHasR () && dirR != -1)
+  if (dirR != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirR, 1);
   }
@@ -244,7 +244,7 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallel
  */
 template <SchemeType Type, uint8_t layout_type>
 void
-ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
+ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
   ASSERT (parallelCore);
   parallelGridCore = parallelCore;
@@ -280,12 +280,12 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *pa
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_X
   int dirL = parallelGridCore->getNodeForDirection (LEFT);
-  if (parallelGridCore->getHasL () && dirL != -1)
+  if (dirL != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirL, sizeForCurNode.get2 ());
   }
   int dirR = parallelGridCore->getNodeForDirection (RIGHT);
-  if (parallelGridCore->getHasR () && dirR != -1)
+  if (dirR != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirR, sizeForCurNode.get2 ());
   }
@@ -293,12 +293,12 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *pa
 
 #ifdef PARALLEL_BUFFER_DIMENSION_1D_Y
   int dirD = parallelGridCore->getNodeForDirection (DOWN);
-  if (parallelGridCore->getHasD () && dirD != -1)
+  if (dirD != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirD, sizeForCurNode.get1 ());
   }
   int dirU = parallelGridCore->getNodeForDirection (UP);
-  if (parallelGridCore->getHasU () && dirU != -1)
+  if (dirU != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirU, sizeForCurNode.get1 ());
   }
@@ -315,7 +315,7 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *pa
  */
 template <SchemeType Type, uint8_t layout_type>
 void
-ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
+ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
   ASSERT (parallelCore);
   parallelGridCore = parallelCore;
@@ -343,46 +343,46 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *pa
   parallelGridCore->setCalcClockCount (parallelGridCore->getProcessId (), sizeForCurNode.calculateTotalCoord ());
 
   int dirL = parallelGridCore->getNodeForDirection (LEFT);
-  if (parallelGridCore->getHasL () && dirL != -1)
+  if (dirL != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirL, sizeForCurNode.get2 ());
   }
   int dirR = parallelGridCore->getNodeForDirection (RIGHT);
-  if (parallelGridCore->getHasR () && dirR != -1)
+  if (dirR != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirR, sizeForCurNode.get2 ());
   }
 
   int dirD = parallelGridCore->getNodeForDirection (DOWN);
-  if (parallelGridCore->getHasD () && dirD != -1)
+  if (dirD != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirD, sizeForCurNode.get1 ());
   }
   int dirU = parallelGridCore->getNodeForDirection (UP);
-  if (parallelGridCore->getHasU () && dirU != -1)
+  if (dirU != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirU, sizeForCurNode.get1 ());
   }
 
 
   int dirLD = parallelGridCore->getNodeForDirection (LEFT_DOWN);
-  if (parallelGridCore->getHasL () && parallelGridCore->getHasD () && dirLD != -1)
+  if (dirLD != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirLD, 1);
   }
   int dirRD = parallelGridCore->getNodeForDirection (RIGHT_DOWN);
-  if (parallelGridCore->getHasR () && parallelGridCore->getHasD () && dirRD != -1)
+  if (dirRD != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirRD, 1);
   }
 
   int dirLU = parallelGridCore->getNodeForDirection (LEFT_UP);
-  if (parallelGridCore->getHasL () && parallelGridCore->getHasU () && dirLU != -1)
+  if (dirLU != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirLU, 1);
   }
   int dirRU = parallelGridCore->getNodeForDirection (RIGHT_UP);
-  if (parallelGridCore->getHasR () && parallelGridCore->getHasU () && dirRU != -1)
+  if (dirRU != PID_NONE)
   {
     parallelGridCore->setShareClockCountCur (dirRU, 1);
   }
@@ -404,7 +404,7 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *pa
  */
 template <SchemeType Type, uint8_t layout_type>
 void
-ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
+ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
   ASSERT (parallelCore);
   parallelGridCore = parallelCore;
@@ -467,7 +467,7 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *pa
  */
 template <SchemeType Type, uint8_t layout_type>
 void
-ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
+ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
   ASSERT (parallelCore);
   parallelGridCore = parallelCore;
@@ -537,7 +537,7 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *pa
  */
 template <SchemeType Type, uint8_t layout_type>
 void
-ParallelYeeGridLayout<Type, layout_type>::Initialize (const ParallelGridCore *parallelCore) /**< initialized parallel grid core */
+ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
   ASSERT (parallelCore);
   parallelGridCore = parallelCore;
@@ -600,13 +600,13 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
   {
 #ifdef GRID_1D
     int dirL = parallelGridCore->getNodeForDirection (LEFT);
-    if (parallelGridCore->getHasL () && dirL != -1)
+    if (dirL != PID_NONE)
     {
       parallelGridCore->setShareClockIterCur (dirL, parallelGridCore->getShareClockCountCur (dirL), difft);
       parallelGridCore->setShareClockIterCur (dirL, latency_buf_size, latency_measure_count);
     }
     int dirR = parallelGridCore->getNodeForDirection (RIGHT);
-    if (parallelGridCore->getHasR () && dirR != -1)
+    if (dirR != PID_NONE)
     {
       parallelGridCore->setShareClockIterCur (dirR, parallelGridCore->getShareClockCountCur (dirR), difft);
       parallelGridCore->setShareClockIterCur (dirR, latency_buf_size, latency_measure_count);
@@ -694,16 +694,13 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
         break;
       }
 
-      bool doSend = parallelGridCore->getDoShare ()[bufferDirection].first;
-      bool doReceive = parallelGridCore->getDoShare ()[bufferDirection].second;
-
       BufferPosition opposite = parallelGridCore->getOppositeDirections ()[bufferDirection];
 
       int processTo = parallelGridCore->getNodeForDirection (bufferDirection);
       int processFrom = parallelGridCore->getNodeForDirection (opposite);
 
-      if (doSend && processTo != -1
-          && (!doReceive || doReceive && processFrom == -1))
+      if (processTo != PID_NONE
+          && processFrom == PID_NONE)
       {
         parallelGridCore->StartShareClock (processTo, latency_buf_size);
 
@@ -712,8 +709,8 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
 
         parallelGridCore->StopShareClock (processTo, latency_buf_size);
       }
-      else if ((!doSend || doSend && processTo == -1)
-               && doReceive && processFrom != -1)
+      else if (processTo == PID_NONE
+               && processFrom != PID_NONE)
       {
         parallelGridCore->StartShareClock (processFrom, latency_buf_size);
 
@@ -723,8 +720,8 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
 
         parallelGridCore->StopShareClock (processFrom, latency_buf_size);
       }
-      else if (doSend && processTo != -1
-               && doReceive && processFrom != -1)
+      else if (processTo != PID_NONE
+               && processFrom != PID_NONE)
       {
 #ifdef COMBINED_SENDRECV
         UNREACHABLE;
@@ -1278,12 +1275,12 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
 
 #ifdef GRID_1D
     int dirL = parallelGridCore->getNodeForDirection (LEFT);
-    if (parallelGridCore->getHasL () && dirL != -1)
+    if (dirL != PID_NONE)
     {
       parallelGridCore->setShareClockCountCur (dirL, 1);
     }
     int dirR = parallelGridCore->getNodeForDirection (RIGHT);
-    if (parallelGridCore->getHasR () && dirR != -1)
+    if (dirR != PID_NONE)
     {
       parallelGridCore->setShareClockCountCur (dirR, 1);
     }

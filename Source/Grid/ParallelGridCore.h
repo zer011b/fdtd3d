@@ -35,6 +35,8 @@
 #define ParallelGridCoordinateFP GridCoordinateFP3D
 #endif /* GRID_3D */
 
+#define PID_NONE (-1)
+
 #ifdef DYNAMIC_GRID
 #define CLOCK_BUF_SIZE 2
 
@@ -77,10 +79,12 @@ private:
    */
   int totalProcCount;
 
+#ifndef DYNAMIC_GRID
   /**
    * Process ids corresponding to directions
    */
   std::vector<int> directions;
+#endif
 
 #ifdef DYNAMIC_GRID
   /**
@@ -93,11 +97,6 @@ private:
    */
   std::vector< std::vector<int> > nodesForDirections;
 #endif
-
-  /**
-   * Flags corresponding to direction, whether send and receive procedures should be performed for this direction
-   */
-  std::vector< std::pair<bool, bool> > doShare;
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
 
@@ -162,12 +161,12 @@ private:
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
   /**
-   * Flag whether computational node has left neighbour
+   * Flag whether computational node has left neighbor
    */
   bool hasL;
 
   /**
-   * Flag whether computational node has right neighbour
+   * Flag whether computational node has right neighbor
    */
   bool hasR;
 
@@ -178,12 +177,12 @@ private:
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
   /**
-   * Flag whether computational node has down neighbour
+   * Flag whether computational node has down neighbor
    */
   bool hasD;
 
   /**
-   * Flag whether computational node has up neighbour
+   * Flag whether computational node has up neighbor
    */
   bool hasU;
 
@@ -194,12 +193,12 @@ private:
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
   /**
-   * Flag whether computational node has back neighbour
+   * Flag whether computational node has back neighbor
    */
   bool hasB;
 
   /**
-   * Flag whether computational node has front neighbour
+   * Flag whether computational node has front neighbor
    */
   bool hasF;
 
@@ -308,8 +307,6 @@ private:
   void initOppositeDirections ();
   BufferPosition getOpposite (BufferPosition);
 
-  void getShare (BufferPosition, std::pair<bool, bool> &);
-
   /*
    * TODO: make names start with lower case
    */
@@ -322,6 +319,8 @@ private:
   void timespec_diff (struct timespec *, struct timespec *, struct timespec *);
   void timespec_sum (struct timespec *, struct timespec *, struct timespec *);
   void timespec_avg (struct timespec *, struct timespec *, struct timespec *);
+
+  void SetNodesForDirections ();
 #endif /* DYNAMIC_GRID */
 
 public:
@@ -456,9 +455,9 @@ public:
   int getNodeGridX (int) const;
 
   /**
-   * Getter for flag whether computational node has left neighbour
+   * Getter for flag whether computational node has left neighbor
    *
-   * @return flag whether computational node has left neighbour
+   * @return flag whether computational node has left neighbor
    */
   bool getHasL () const
   {
@@ -467,9 +466,9 @@ public:
   bool getHasL (int) const;
 
   /**
-   * Getter for flag whether computational node has right neighbour
+   * Getter for flag whether computational node has right neighbor
    *
-   * @return flag whether computational node has right neighbour
+   * @return flag whether computational node has right neighbor
    */
   bool getHasR () const
   {
@@ -494,9 +493,9 @@ public:
   int getNodeGridY (int) const;
 
   /**
-   * Getter for flag whether computational node has down neighbour
+   * Getter for flag whether computational node has down neighbor
    *
-   * @return flag whether computational node has down neighbour
+   * @return flag whether computational node has down neighbor
    */
   bool getHasD () const
   {
@@ -505,9 +504,9 @@ public:
   bool getHasD (int) const;
 
   /**
-   * Getter for flag whether computational node has up neighbour
+   * Getter for flag whether computational node has up neighbor
    *
-   * @return flag whether computational node has up neighbour
+   * @return flag whether computational node has up neighbor
    */
   bool getHasU () const
   {
@@ -532,9 +531,9 @@ public:
   int getNodeGridZ (int) const;
 
   /**
-   * Getter for flag whether computational node has back neighbour
+   * Getter for flag whether computational node has back neighbor
    *
-   * @return flag whether computational node has back neighbour
+   * @return flag whether computational node has back neighbor
    */
   bool getHasB () const
   {
@@ -543,9 +542,9 @@ public:
   bool getHasB (int) const;
 
   /**
-   * Getter for flag whether computational node has front neighbour
+   * Getter for flag whether computational node has front neighbor
    *
-   * @return flag whether computational node has front neighbour
+   * @return flag whether computational node has front neighbor
    */
   bool getHasF () const
   {
@@ -575,18 +574,6 @@ public:
   {
     return totalProcCount;
   } /* getTotalProcCount */
-
-  /**
-   * Getter for flags corresponding to direction, whether send and receive procedures should be performed
-   * for this direction
-   *
-   * @return flags corresponding to direction, whether send and receive procedures should be performed
-   * for this direction
-   */
-  const std::vector< std::pair<bool, bool> > &getDoShare () const
-  {
-    return doShare;
-  } /* getDoShare */
 
   /**
    * Getter for opposite buffer position corresponding to buffer position

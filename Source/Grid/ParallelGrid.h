@@ -200,11 +200,8 @@ typedef std::vector<MPI_Request> VectorRequests;
  *       | /
  *       |/_____________+ Ox
  *
- * All grids corresponding to computational nodes have buffers only on the sides where nodes have neighbours.
+ * All grids corresponding to computational nodes have buffers only on the sides where nodes have neighbors.
  */
- /*
-  * TODO: neighbour -> neighbor
-  */
 class ParallelGrid: public ParallelGridBase
 {
 private:

@@ -79,7 +79,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
 
     printf ("OPTIMAL virtual topology has some requirements in order for it to be optimal:\n"
             "  - all computational nodes have the same performance\n"
-            "  - all neighbouring computational nodes have the same share time\n"
+            "  - all neighboring computational nodes have the same share time\n"
             "  - virtual topology matches physical topology\n"
             "In other words, OPTIMAL virtual topology is optimal only for homogeneous architectures.\n"
             "Make sure all these requirements are met, otherwise, OPTIMAL virtual topology could be non-optimal.\n"
@@ -148,7 +148,7 @@ ParallelGridCore::NodeGridInit (ParallelGridCoordinate size) /**< size of grid *
 
     printf ("OPTIMAL virtual topology has some requirements in order for it to be optimal:\n"
             "  - all computational nodes have the same performance\n"
-            "  - all neighbouring computational nodes have the same share time\n"
+            "  - all neighboring computational nodes have the same share time\n"
             "  - virtual topology matches physical topology\n"
             "In other words, OPTIMAL virtual topology is optimal only for homogeneous architectures.\n"
             "Make sure all these requirements are met, otherwise, OPTIMAL virtual topology could be non-optimal.\n"
