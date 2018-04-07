@@ -31,8 +31,8 @@ const FPValue imagMult = 1000;
 const FPValue prevMult = 16;
 const FPValue prevPrevMult = prevMult * prevMult;
 
-std::vector<ParallelGridCoordinate> neighbourSendStart (BUFFER_COUNT);
-std::vector<ParallelGridCoordinate> neighbourSendEnd (BUFFER_COUNT);
+std::vector<ParallelGridCoordinate> neighborSendStart (BUFFER_COUNT);
+std::vector<ParallelGridCoordinate> neighborSendEnd (BUFFER_COUNT);
 
 void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
 {
@@ -45,7 +45,7 @@ void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
   }
 
   BufferPosition opposite = ParallelGrid::getParallelCore ()->getOppositeDirections ()[dir];
-  ParallelGridCoordinate posInNeighbor = pos - grid->getRecvStart ()[opposite] + neighbourSendStart[dir];
+  ParallelGridCoordinate posInNeighbor = pos - grid->getRecvStart ()[opposite] + neighborSendStart[dir];
 
 #ifdef GRID_1D
   FPValue multiplier = posInNeighbor.get1 ();
@@ -58,6 +58,7 @@ void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
 #endif
 
   int pidSender = ParallelGrid::getParallelCore ()->getNodeForDirection (dir);
+  ASSERT (pidSender != PID_NONE);
 
   ParallelGridCoordinate sendStart = grid->getSendStart ()[dir];
 
@@ -276,16 +277,13 @@ int main (int argc, char** argv)
 
   for (int buf = 0; buf < BUFFER_COUNT; ++buf)
   {
-    bool doSend = ParallelGrid::getParallelCore ()->getDoShare ()[buf].first;
-    bool doReceive = ParallelGrid::getParallelCore ()->getDoShare ()[buf].second;
-
     BufferPosition opposite = ParallelGrid::getParallelCore ()->getOppositeDirections ()[buf];
 
     int processTo = ParallelGrid::getParallelCore ()->getNodeForDirection ((BufferPosition) buf);
     int processFrom = ParallelGrid::getParallelCore ()->getNodeForDirection (opposite);
 
-    if (doSend && processTo != -1
-        && !doReceive)
+    if (processTo != PID_NONE
+        && processFrom == PID_NONE)
     {
       ParallelGridCoordinate sendStart = grid->getSendStart ()[buf];
       ParallelGridCoordinate sendEnd = grid->getSendEnd ()[buf];
@@ -317,8 +315,8 @@ int main (int argc, char** argv)
       MPI_Send (coordStart, size, MPI_COORD, processTo, rank, ParallelGrid::getParallelCore ()->getCommunicator ());
       MPI_Send (coordEnd, size, MPI_COORD, processTo, rank, ParallelGrid::getParallelCore ()->getCommunicator ());
     }
-    else if (doSend && processTo != -1
-             && doReceive && processFrom != -1)
+    else if (processTo != PID_NONE
+             && processFrom != PID_NONE)
     {
       ParallelGridCoordinate sendStart = grid->getSendStart ()[buf];
       ParallelGridCoordinate sendEnd = grid->getSendEnd ()[buf];
@@ -373,30 +371,30 @@ int main (int argc, char** argv)
                     _coordEnd, _size, MPI_COORD, processFrom, processFrom,
                     ParallelGrid::getParallelCore ()->getCommunicator (), &status);
 
-      neighbourSendStart[opposite] = grid->getSendStart ()[buf];
-      neighbourSendEnd[opposite] = grid->getSendStart ()[buf];
+      neighborSendStart[opposite] = grid->getSendStart ()[buf];
+      neighborSendEnd[opposite] = grid->getSendStart ()[buf];
 
 #ifdef GRID_1D
-      neighbourSendStart[opposite].set1 (_coordStart[0]);
-      neighbourSendEnd[opposite].set1 (_coordEnd[0]);
+      neighborSendStart[opposite].set1 (_coordStart[0]);
+      neighborSendEnd[opposite].set1 (_coordEnd[0]);
 #endif
 #ifdef GRID_2D
-      neighbourSendStart[opposite].set1 (_coordStart[0]);
-      neighbourSendStart[opposite].set2 (_coordStart[1]);
-      neighbourSendEnd[opposite].set1 (_coordEnd[0]);
-      neighbourSendEnd[opposite].set2 (_coordEnd[1]);
+      neighborSendStart[opposite].set1 (_coordStart[0]);
+      neighborSendStart[opposite].set2 (_coordStart[1]);
+      neighborSendEnd[opposite].set1 (_coordEnd[0]);
+      neighborSendEnd[opposite].set2 (_coordEnd[1]);
 #endif
 #ifdef GRID_3D
-      neighbourSendStart[opposite].set1 (_coordStart[0]);
-      neighbourSendStart[opposite].set2 (_coordStart[1]);
-      neighbourSendStart[opposite].set3 (_coordStart[2]);
-      neighbourSendEnd[opposite].set1 (_coordEnd[0]);
-      neighbourSendEnd[opposite].set2 (_coordEnd[1]);
-      neighbourSendEnd[opposite].set3 (_coordEnd[2]);
+      neighborSendStart[opposite].set1 (_coordStart[0]);
+      neighborSendStart[opposite].set2 (_coordStart[1]);
+      neighborSendStart[opposite].set3 (_coordStart[2]);
+      neighborSendEnd[opposite].set1 (_coordEnd[0]);
+      neighborSendEnd[opposite].set2 (_coordEnd[1]);
+      neighborSendEnd[opposite].set3 (_coordEnd[2]);
 #endif
     }
-    else if (!doSend
-             && doReceive && processFrom != -1)
+    else if (processTo == PID_NONE
+             && processFrom != PID_NONE)
     {
       MPI_Status status;
 
@@ -418,26 +416,26 @@ int main (int argc, char** argv)
       MPI_Recv (coordStart, size, MPI_COORD, processFrom, processFrom, ParallelGrid::getParallelCore ()->getCommunicator (), &status);
       MPI_Recv (coordEnd, size, MPI_COORD, processFrom, processFrom, ParallelGrid::getParallelCore ()->getCommunicator (), &status);
 
-      neighbourSendStart[opposite] = grid->getSendStart ()[buf];
-      neighbourSendEnd[opposite] = grid->getSendStart ()[buf];
+      neighborSendStart[opposite] = grid->getSendStart ()[buf];
+      neighborSendEnd[opposite] = grid->getSendStart ()[buf];
 
 #ifdef GRID_1D
-      neighbourSendStart[opposite].set1 (coordStart[0]);
-      neighbourSendEnd[opposite].set1 (coordEnd[0]);
+      neighborSendStart[opposite].set1 (coordStart[0]);
+      neighborSendEnd[opposite].set1 (coordEnd[0]);
 #endif
 #ifdef GRID_2D
-      neighbourSendStart[opposite].set1 (coordStart[0]);
-      neighbourSendStart[opposite].set2 (coordStart[1]);
-      neighbourSendEnd[opposite].set1 (coordEnd[0]);
-      neighbourSendEnd[opposite].set2 (coordEnd[1]);
+      neighborSendStart[opposite].set1 (coordStart[0]);
+      neighborSendStart[opposite].set2 (coordStart[1]);
+      neighborSendEnd[opposite].set1 (coordEnd[0]);
+      neighborSendEnd[opposite].set2 (coordEnd[1]);
 #endif
 #ifdef GRID_3D
-      neighbourSendStart[opposite].set1 (coordStart[0]);
-      neighbourSendStart[opposite].set2 (coordStart[1]);
-      neighbourSendStart[opposite].set3 (coordStart[2]);
-      neighbourSendEnd[opposite].set1 (coordEnd[0]);
-      neighbourSendEnd[opposite].set2 (coordEnd[1]);
-      neighbourSendEnd[opposite].set3 (coordEnd[2]);
+      neighborSendStart[opposite].set1 (coordStart[0]);
+      neighborSendStart[opposite].set2 (coordStart[1]);
+      neighborSendStart[opposite].set3 (coordStart[2]);
+      neighborSendEnd[opposite].set1 (coordEnd[0]);
+      neighborSendEnd[opposite].set2 (coordEnd[1]);
+      neighborSendEnd[opposite].set3 (coordEnd[2]);
 #endif
     }
 

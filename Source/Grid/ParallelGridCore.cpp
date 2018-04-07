@@ -245,13 +245,13 @@ ParallelGridCore::getHasF (int process) const
     return true;
   }
 
-  return false
+  return false;
 }
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 /**
- * Initialize flags whether computational node has neighbours
+ * Initialize flags whether computational node has neighbors
  */
 void
 ParallelGridCore::InitBufferFlags ()
@@ -279,90 +279,91 @@ ParallelGridCore::InitBufferFlags ()
 } /* ParallelGridCore::InitBufferFlags */
 
 /**
- * Initialize ids of neighbour computational nodes
+ * Initialize ids of neighbor computational nodes
  */
 void
 ParallelGridCore::InitDirections ()
 {
+#ifndef DYNAMIC_GRID
   directions.resize (BUFFER_COUNT);
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  directions[LEFT] = processId - 1;
-  directions[RIGHT] = processId + 1;
+  directions[LEFT] = hasL ? processId - 1 : PID_NONE;
+  directions[RIGHT] = hasR ? processId + 1 : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  directions[DOWN] = processId - 1;
-  directions[UP] = processId + 1;
+  directions[DOWN] = hasD ? processId - 1 : PID_NONE;
+  directions[UP] = hasU ? processId + 1 : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_YZ */
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  directions[DOWN] = processId - nodeGridSizeX;
-  directions[UP] = processId + nodeGridSizeX;
+  directions[DOWN] = hasD ? processId - nodeGridSizeX : PID_NONE;
+  directions[UP] = hasU ? processId + nodeGridSizeX : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
-  directions[BACK] = processId - 1;
-  directions[FRONT] = processId + 1;
+  directions[BACK] = hasB ? processId - 1 : PID_NONE;
+  directions[FRONT] = hasF ? processId + 1 : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z */
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  directions[BACK] = processId - nodeGridSizeY;
-  directions[FRONT] = processId + nodeGridSizeY;
+  directions[BACK] = hasB ? processId - nodeGridSizeY : PID_NONE;
+  directions[FRONT] = hasF ? processId + nodeGridSizeY : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  directions[BACK] = processId - nodeGridSizeX;
-  directions[FRONT] = processId + nodeGridSizeX;
+  directions[BACK] = hasB ? processId - nodeGridSizeX : PID_NONE;
+  directions[FRONT] = hasF ? processId + nodeGridSizeX : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  directions[BACK] = processId - nodeGridSizeXY;
-  directions[FRONT] = processId + nodeGridSizeXY;
+  directions[BACK] = hasB ? processId - nodeGridSizeXY : PID_NONE;
+  directions[FRONT] = hasF ? processId + nodeGridSizeXY : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  directions[LEFT_DOWN] = processId - nodeGridSizeX - 1;
-  directions[LEFT_UP] = processId + nodeGridSizeX - 1;
-  directions[RIGHT_DOWN] = processId - nodeGridSizeX + 1;
-  directions[RIGHT_UP] = processId + nodeGridSizeX + 1;
+  directions[LEFT_DOWN] = hasL && hasD ? processId - nodeGridSizeX - 1 : PID_NONE;
+  directions[LEFT_UP] = hasL && hasU ? processId + nodeGridSizeX - 1 : PID_NONE;
+  directions[RIGHT_DOWN] = hasR && hasD ? processId - nodeGridSizeX + 1 : PID_NONE;
+  directions[RIGHT_UP] = hasR && hasU ? processId + nodeGridSizeX + 1 : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  directions[DOWN_BACK] = processId - nodeGridSizeY - 1;
-  directions[DOWN_FRONT] = processId + nodeGridSizeY - 1;
-  directions[UP_BACK] = processId - nodeGridSizeY + 1;
-  directions[UP_FRONT] = processId + nodeGridSizeY + 1;
+  directions[DOWN_BACK] = hasD && hasB ? processId - nodeGridSizeY - 1 : PID_NONE;
+  directions[DOWN_FRONT] = hasD && hasF ? processId + nodeGridSizeY - 1 : PID_NONE;
+  directions[UP_BACK] = hasU && hasB ? processId - nodeGridSizeY + 1 : PID_NONE;
+  directions[UP_FRONT] = hasU && hasF ? processId + nodeGridSizeY + 1 : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ */
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  directions[DOWN_BACK] = processId - nodeGridSizeXY - nodeGridSizeX;
-  directions[DOWN_FRONT] = processId + nodeGridSizeXY - nodeGridSizeX;
-  directions[UP_BACK] = processId - nodeGridSizeXY + nodeGridSizeX;
-  directions[UP_FRONT] = processId + nodeGridSizeXY + nodeGridSizeX;
+  directions[DOWN_BACK] = hasD && hasB ? processId - nodeGridSizeXY - nodeGridSizeX : PID_NONE;
+  directions[DOWN_FRONT] = hasD && hasF ? processId + nodeGridSizeXY - nodeGridSizeX : PID_NONE;
+  directions[UP_BACK] = hasU && hasB ? processId - nodeGridSizeXY + nodeGridSizeX : PID_NONE;
+  directions[UP_FRONT] = hasU && hasF ? processId + nodeGridSizeXY + nodeGridSizeX : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  directions[LEFT_BACK] = processId - nodeGridSizeX - 1;
-  directions[LEFT_FRONT] = processId + nodeGridSizeX - 1;
-  directions[RIGHT_BACK] = processId - nodeGridSizeX + 1;
-  directions[RIGHT_FRONT] = processId + nodeGridSizeX + 1;
+  directions[LEFT_BACK] = hasL && hasB ? processId - nodeGridSizeX - 1 : PID_NONE;
+  directions[LEFT_FRONT] = hasL && hasF ? processId + nodeGridSizeX - 1 : PID_NONE;
+  directions[RIGHT_BACK] = hasR && hasB ? processId - nodeGridSizeX + 1 : PID_NONE;
+  directions[RIGHT_FRONT] = hasR && hasF ? processId + nodeGridSizeX + 1 : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  directions[LEFT_BACK] = processId - nodeGridSizeXY - 1;
-  directions[LEFT_FRONT] = processId + nodeGridSizeXY - 1;
-  directions[RIGHT_BACK] = processId - nodeGridSizeXY + 1;
-  directions[RIGHT_FRONT] = processId + nodeGridSizeXY + 1;
+  directions[LEFT_BACK] = hasL && hasB ? processId - nodeGridSizeXY - 1 : PID_NONE;
+  directions[LEFT_FRONT] = hasL && hasF ? processId + nodeGridSizeXY - 1 : PID_NONE;
+  directions[RIGHT_BACK] = hasR && hasB ? processId - nodeGridSizeXY + 1 : PID_NONE;
+  directions[RIGHT_FRONT] = hasR && hasF ? processId + nodeGridSizeXY + 1 : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  directions[LEFT_DOWN_BACK] = processId - nodeGridSizeXY - nodeGridSizeX - 1;
-  directions[LEFT_DOWN_FRONT] = processId + nodeGridSizeXY - nodeGridSizeX - 1;
-  directions[LEFT_UP_BACK] = processId - nodeGridSizeXY + nodeGridSizeX - 1;
-  directions[LEFT_UP_FRONT] = processId + nodeGridSizeXY + nodeGridSizeX - 1;
-  directions[RIGHT_DOWN_BACK] = processId - nodeGridSizeXY - nodeGridSizeX + 1;
-  directions[RIGHT_DOWN_FRONT] = processId + nodeGridSizeXY - nodeGridSizeX + 1;
-  directions[RIGHT_UP_BACK] = processId - nodeGridSizeXY + nodeGridSizeX + 1;
-  directions[RIGHT_UP_FRONT] = processId + nodeGridSizeXY + nodeGridSizeX + 1;
+  directions[LEFT_DOWN_BACK] = hasL && hasD && hasB ? processId - nodeGridSizeXY - nodeGridSizeX - 1 : PID_NONE;
+  directions[LEFT_DOWN_FRONT] = hasL && hasD && hasF ? processId + nodeGridSizeXY - nodeGridSizeX - 1 : PID_NONE;
+  directions[LEFT_UP_BACK] = hasL && hasU && hasB ? processId - nodeGridSizeXY + nodeGridSizeX - 1 : PID_NONE;
+  directions[LEFT_UP_FRONT] = hasL && hasU && hasF ? processId + nodeGridSizeXY + nodeGridSizeX - 1 : PID_NONE;
+  directions[RIGHT_DOWN_BACK] = hasR && hasD && hasB ? processId - nodeGridSizeXY - nodeGridSizeX + 1 : PID_NONE;
+  directions[RIGHT_DOWN_FRONT] = hasR && hasD && hasF ? processId + nodeGridSizeXY - nodeGridSizeX + 1 : PID_NONE;
+  directions[RIGHT_UP_BACK] = hasR && hasU && hasB ? processId - nodeGridSizeXY + nodeGridSizeX + 1 : PID_NONE;
+  directions[RIGHT_UP_FRONT] = hasR && hasU && hasF ? processId + nodeGridSizeXY + nodeGridSizeX + 1 : PID_NONE;
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
+#endif
 
 #ifdef DYNAMIC_GRID
   perfPointsValues.resize (totalProcCount);
@@ -383,6 +384,14 @@ ParallelGridCore::InitDirections ()
     bandwidthCountValues[i].resize (totalProcCount);
   }
 
+  SetNodesForDirections ();
+#endif
+} /* ParallelGridCore::InitDirections */
+
+#ifdef DYNAMIC_GRID
+void
+ParallelGridCore::SetNodesForDirections ()
+{
   nodesForDirections.resize (BUFFER_COUNT);
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
@@ -460,9 +469,9 @@ ParallelGridCore::InitDirections ()
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  int i = 0;
   if (getHasL () && getHasD ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeX () - 1; getHasL (i) && getHasD (i); i -= getNodeGridSizeX () + 1)
     {
       nodesForDirections[LEFT_DOWN].push_back (i);
@@ -471,6 +480,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasL () && getHasU ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeX () - 1; getHasL (i) && getHasU (i); i += getNodeGridSizeX () - 1)
     {
       nodesForDirections[LEFT_UP].push_back (i);
@@ -479,6 +489,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasR () && getHasD ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeX () + 1; getHasR (i) && getHasD (i); i -= getNodeGridSizeX () - 1)
     {
       nodesForDirections[RIGHT_DOWN].push_back (i);
@@ -487,6 +498,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasR () && getHasU ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeX () + 1; getHasR (i) && getHasU (i); i += getNodeGridSizeX () + 1)
     {
       nodesForDirections[RIGHT_UP].push_back (i);
@@ -496,9 +508,9 @@ ParallelGridCore::InitDirections ()
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
-  int i = 0;
   if (getHasD () && getHasB ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeY () - 1; getHasD (i) && getHasB (i); i -= getNodeGridSizeY () + 1)
     {
       nodesForDirections[DOWN_BACK].push_back (i);
@@ -507,6 +519,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasD () && getHasF ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeY () - 1; getHasD (i) && getHasF (i); i += getNodeGridSizeY () - 1)
     {
       nodesForDirections[DOWN_FRONT].push_back (i);
@@ -515,6 +528,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasU () && getHasB ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeY () + 1; getHasU (i) && getHasB (i); i -= getNodeGridSizeY () - 1)
     {
       nodesForDirections[UP_BACK].push_back (i);
@@ -523,6 +537,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasU () && getHasF ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeY () + 1; getHasU (i) && getHasF (i); i += getNodeGridSizeY () + 1)
     {
       nodesForDirections[UP_FRONT].push_back (i);
@@ -531,10 +546,10 @@ ParallelGridCore::InitDirections ()
   }
 #endif
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  int i = 0;
   if (getHasD () && getHasB ())
   {
-    for (i = processId - getNodeGridSizeXY () - 1; getHasD (i) && getHasB (i); i -= getNodeGridSizeXY () + 1)
+    int i = 0;
+    for (i = processId - getNodeGridSizeXY () - getNodeGridSizeX (); getHasD (i) && getHasB (i); i -= getNodeGridSizeXY () + getNodeGridSizeX ())
     {
       nodesForDirections[DOWN_BACK].push_back (i);
     }
@@ -542,7 +557,8 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasD () && getHasF ())
   {
-    for (i = processId + getNodeGridSizeXY () - 1; getHasD (i) && getHasF (i); i += getNodeGridSizeXY () - 1)
+    int i = 0;
+    for (i = processId + getNodeGridSizeXY () - getNodeGridSizeX (); getHasD (i) && getHasF (i); i += getNodeGridSizeXY () - getNodeGridSizeX ())
     {
       nodesForDirections[DOWN_FRONT].push_back (i);
     }
@@ -550,7 +566,8 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasU () && getHasB ())
   {
-    for (i = processId - getNodeGridSizeXY () + 1; getHasU (i) && getHasB (i); i -= getNodeGridSizeXY () - 1)
+    int i = 0;
+    for (i = processId - getNodeGridSizeXY () + getNodeGridSizeX (); getHasU (i) && getHasB (i); i -= getNodeGridSizeXY () - getNodeGridSizeX ())
     {
       nodesForDirections[UP_BACK].push_back (i);
     }
@@ -558,7 +575,8 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasU () && getHasF ())
   {
-    for (i = processId + getNodeGridSizeXY () + 1; getHasU (i) && getHasF (i); i += getNodeGridSizeXY () + 1)
+    int i = 0;
+    for (i = processId + getNodeGridSizeXY () + getNodeGridSizeX (); getHasU (i) && getHasF (i); i += getNodeGridSizeXY () + getNodeGridSizeX ())
     {
       nodesForDirections[UP_FRONT].push_back (i);
     }
@@ -567,9 +585,9 @@ ParallelGridCore::InitDirections ()
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
-  int i = 0;
   if (getHasL () && getHasB ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeX () - 1; getHasL (i) && getHasB (i); i -= getNodeGridSizeX () + 1)
     {
       nodesForDirections[LEFT_BACK].push_back (i);
@@ -578,6 +596,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasL () && getHasF ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeX () - 1; getHasL (i) && getHasF (i); i += getNodeGridSizeX () - 1)
     {
       nodesForDirections[LEFT_FRONT].push_back (i);
@@ -586,6 +605,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasR () && getHasB ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeX () + 1; getHasR (i) && getHasB (i); i -= getNodeGridSizeX () - 1)
     {
       nodesForDirections[RIGHT_BACK].push_back (i);
@@ -594,6 +614,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasR () && getHasF ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeX () + 1; getHasR (i) && getHasF (i); i += getNodeGridSizeX () + 1)
     {
       nodesForDirections[RIGHT_FRONT].push_back (i);
@@ -602,9 +623,9 @@ ParallelGridCore::InitDirections ()
   }
 #endif
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  int i = 0;
   if (getHasL () && getHasB ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeXY () - 1; getHasL (i) && getHasB (i); i -= getNodeGridSizeXY () + 1)
     {
       nodesForDirections[LEFT_BACK].push_back (i);
@@ -613,6 +634,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasL () && getHasF ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeXY () - 1; getHasL (i) && getHasF (i); i += getNodeGridSizeXY () - 1)
     {
       nodesForDirections[LEFT_FRONT].push_back (i);
@@ -621,6 +643,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasR () && getHasB ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeXY () + 1; getHasR (i) && getHasB (i); i -= getNodeGridSizeXY () - 1)
     {
       nodesForDirections[RIGHT_BACK].push_back (i);
@@ -629,6 +652,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasR () && getHasF ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeXY () + 1; getHasR (i) && getHasF (i); i += getNodeGridSizeXY () + 1)
     {
       nodesForDirections[RIGHT_FRONT].push_back (i);
@@ -638,9 +662,9 @@ ParallelGridCore::InitDirections ()
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  int i = 0;
   if (getHasL () && getHasD () && getHasB ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeXY () - getNodeGridSizeX () - 1;
          getHasL (i) && getHasD (i) && getHasB (i);
          i -= getNodeGridSizeXY () + getNodeGridSizeX () + 1)
@@ -651,6 +675,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasL () && getHasD () && getHasF ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeXY () - getNodeGridSizeX () - 1;
          getHasL (i) && getHasD (i) && getHasF (i);
          i += getNodeGridSizeXY () - getNodeGridSizeX () - 1)
@@ -661,6 +686,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasL () && getHasU () && getHasB ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeXY () + getNodeGridSizeX () - 1;
          getHasL (i) && getHasU (i) && getHasB (i);
          i -= getNodeGridSizeXY () - getNodeGridSizeX () + 1)
@@ -671,6 +697,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasL () && getHasU () && getHasF ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeXY () + getNodeGridSizeX () - 1;
          getHasL (i) && getHasU (i) && getHasF (i);
          i += getNodeGridSizeXY () + getNodeGridSizeX () - 1)
@@ -682,6 +709,7 @@ ParallelGridCore::InitDirections ()
 
   if (getHasR () && getHasD () && getHasB ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeXY () - getNodeGridSizeX () + 1;
          getHasR (i) && getHasD (i) && getHasB (i);
          i -= getNodeGridSizeXY () + getNodeGridSizeX () - 1)
@@ -692,6 +720,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasR () && getHasD () && getHasF ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeXY () - getNodeGridSizeX () + 1;
          getHasR (i) && getHasD (i) && getHasF (i);
          i += getNodeGridSizeXY () - getNodeGridSizeX () + 1)
@@ -702,6 +731,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasR () && getHasU () && getHasB ())
   {
+    int i = 0;
     for (i = processId - getNodeGridSizeXY () + getNodeGridSizeX () + 1;
          getHasR (i) && getHasU (i) && getHasB (i);
          i -= getNodeGridSizeXY () - getNodeGridSizeX () - 1)
@@ -712,6 +742,7 @@ ParallelGridCore::InitDirections ()
   }
   if (getHasR () && getHasU () && getHasF ())
   {
+    int i = 0;
     for (i = processId + getNodeGridSizeXY () + getNodeGridSizeX () + 1;
          getHasR (i) && getHasU (i) && getHasF (i);
          i += getNodeGridSizeXY () + getNodeGridSizeX () + 1)
@@ -748,396 +779,8 @@ ParallelGridCore::InitDirections ()
     MPI_Barrier (MPI_COMM_WORLD);
   }
 #endif
+}
 #endif
-} /* ParallelGridCore::InitDirections */
-
-/**
- * Identify if computational nodes needs to perform send/receive operations in case share is performed in
- * specified direction
- */
-void
-ParallelGridCore::getShare (BufferPosition direction, /**< direction of share operation (send, opposite for receive) */
-                            std::pair<bool, bool>& pair) /**< out: pair of flags whether computational node needs to
-                                                          *        perform send and receive operations */
-{
-  bool doSend = true;
-  bool doReceive = true;
-
-  switch (direction)
-  {
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case LEFT:
-    {
-      if (!hasL)
-      {
-        doSend = false;
-      }
-      else if (!hasR)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-    case RIGHT:
-    {
-      if (!hasL)
-      {
-        doReceive = false;
-      }
-      else if (!hasR)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case UP:
-    {
-      if (!hasD)
-      {
-        doReceive = false;
-      }
-      if (!hasU)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case DOWN:
-    {
-      if (!hasD)
-      {
-        doSend = false;
-      }
-      else if (!hasU)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
-          PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
-    defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case FRONT:
-    {
-      if (!hasB)
-      {
-        doReceive = false;
-      }
-      else if (!hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case BACK:
-    {
-      if (!hasB)
-      {
-        doSend = false;
-      }
-      else if (!hasF)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
-          PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case LEFT_UP:
-    {
-      if (!hasR || !hasD)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasU)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case LEFT_DOWN:
-    {
-      if (!hasL || !hasD)
-      {
-        doSend = false;
-      }
-      if (!hasR || !hasU)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-    case RIGHT_UP:
-    {
-      if (!hasL || !hasD)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasU)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_DOWN:
-    {
-      if (!hasR || !hasD)
-      {
-        doSend = false;
-      }
-      if (!hasL || !hasU)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XY || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case LEFT_FRONT:
-    {
-      if (!hasR || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case LEFT_BACK:
-    {
-      if (!hasL || !hasB)
-      {
-        doSend = false;
-      }
-      if (!hasR || !hasF)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-    case RIGHT_FRONT:
-    {
-      if (!hasL || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_BACK:
-    {
-      if (!hasR || !hasB)
-      {
-        doSend = false;
-      }
-      if (!hasL || !hasF)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case UP_FRONT:
-    {
-      if (!hasD || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasU || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case UP_BACK:
-    {
-      if (!hasU || !hasB)
-      {
-        doSend = false;
-      }
-      if (!hasD || !hasF)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-    case DOWN_FRONT:
-    {
-      if (!hasU || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasD || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case DOWN_BACK:
-    {
-      if (!hasD || !hasB)
-      {
-        doSend = false;
-      }
-      if (!hasU || !hasF)
-      {
-        doReceive = false;
-      }
-
-      break;
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-
-#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-    case LEFT_UP_FRONT:
-    {
-      if (!hasR || !hasD || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasU || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case LEFT_UP_BACK:
-    {
-      if (!hasR || !hasD || !hasF)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasU || !hasB)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case LEFT_DOWN_FRONT:
-    {
-      if (!hasR || !hasU || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasD || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case LEFT_DOWN_BACK:
-    {
-      if (!hasR || !hasU || !hasF)
-      {
-        doReceive = false;
-      }
-      if (!hasL || !hasD || !hasB)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_UP_FRONT:
-    {
-      if (!hasL || !hasD || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasU || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_UP_BACK:
-    {
-      if (!hasL || !hasD || !hasF)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasU || !hasB)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_DOWN_FRONT:
-    {
-      if (!hasL || !hasU || !hasB)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasD || !hasF)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-    case RIGHT_DOWN_BACK:
-    {
-      if (!hasL || !hasU || !hasF)
-      {
-        doReceive = false;
-      }
-      if (!hasR || !hasD || !hasB)
-      {
-        doSend = false;
-      }
-
-      break;
-    }
-#endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  pair.first = doSend;
-  pair.second = doReceive;
-} /* ParallelGridCore::getShare */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -1311,7 +954,7 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
   , topologySize (topology)
 {
   /*
-   * Set default values for flags whether computational node has neighbours
+   * Set default values for flags whether computational node has neighbors
    */
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -1369,12 +1012,6 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
   isEvenForDirection[RIGHT_UP_BACK] = isEvenForDirection[RIGHT_UP_FRONT] = getNodeGridX () % 2 == 0;
 #endif
 #endif /* !COMBINED_SENDRECV */
-
-  doShare.resize (BUFFER_COUNT);
-  for (int i = 0; i < BUFFER_COUNT; ++i)
-  {
-    getShare ((BufferPosition) i, doShare[i]);
-  }
 
 #ifdef GRID_1D
   totalProcCount = nodeGridSizeX;
@@ -1810,7 +1447,7 @@ ParallelGridCore::getNodeForDirection (BufferPosition dir) const
     }
   }
 
-  return -1;
+  return PID_NONE;
 #else
   return directions[dir];
 #endif

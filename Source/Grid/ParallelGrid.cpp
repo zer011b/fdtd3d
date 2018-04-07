@@ -181,8 +181,7 @@ void ParallelGrid::gatherStartPosition ()
 
     if (process == ParallelGrid::getParallelCore ()->getProcessId ()
         && state
-        && ParallelGrid::getParallelCore ()->getHasL ()
-        && ParallelGrid::getParallelCore ()->getNodeForDirection (LEFT) != -1)
+        && ParallelGrid::getParallelCore ()->getNodeForDirection (LEFT) != PID_NONE)
     {
       retCode = MPI_Recv (&startx,
                           1,
@@ -195,7 +194,7 @@ void ParallelGrid::gatherStartPosition ()
 
       hasReceivedX = true;
     }
-    else if (ParallelGrid::getParallelCore ()->getHasR ()
+    else if (state
              && ParallelGrid::getParallelCore ()->getNodeForDirection (RIGHT) == process)
     {
       retCode = MPI_Send (&endx,
@@ -214,8 +213,7 @@ void ParallelGrid::gatherStartPosition ()
 
     if (process == ParallelGrid::getParallelCore ()->getProcessId ()
         && state
-        && ParallelGrid::getParallelCore ()->getHasD ()
-        && ParallelGrid::getParallelCore ()->getNodeForDirection (DOWN) != -1)
+        && ParallelGrid::getParallelCore ()->getNodeForDirection (DOWN) != PID_NONE)
     {
       retCode = MPI_Recv (&starty,
                           1,
@@ -228,7 +226,7 @@ void ParallelGrid::gatherStartPosition ()
 
       hasReceivedY = true;
     }
-    else if (ParallelGrid::getParallelCore ()->getHasU ()
+    else if (state
              && ParallelGrid::getParallelCore ()->getNodeForDirection (UP) == process)
     {
       retCode = MPI_Send (&endy,
@@ -247,8 +245,7 @@ void ParallelGrid::gatherStartPosition ()
 
     if (process == ParallelGrid::getParallelCore ()->getProcessId ()
         && state
-        && ParallelGrid::getParallelCore ()->getHasB ()
-        && ParallelGrid::getParallelCore ()->getNodeForDirection (BACK) != -1)
+        && ParallelGrid::getParallelCore ()->getNodeForDirection (BACK) != PID_NONE)
     {
       retCode = MPI_Recv (&startz,
                           1,
@@ -261,7 +258,7 @@ void ParallelGrid::gatherStartPosition ()
 
       hasReceivedZ = true;
     }
-    else if (ParallelGrid::getParallelCore ()->getHasF ()
+    else if (state
              && ParallelGrid::getParallelCore ()->getNodeForDirection (FRONT) == process)
     {
       retCode = MPI_Send (&endz,
@@ -279,6 +276,8 @@ void ParallelGrid::gatherStartPosition ()
         && state)
     {
 #ifndef DYNAMIC_GRID
+      // For dynamic grid only one node can be left, so nothing is received
+      // TODO: add check that a single node is left for dynamic grid
       ASSERT (hasReceivedX || hasReceivedY || hasReceivedZ || process == 0);
 #endif
 
@@ -2857,19 +2856,6 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
-  int state = 1;
-#ifdef DYNAMIC_GRID
-  state = parallelGridCore->getNodeState ()[parallelGridCore->getProcessId ()];
-#endif
-
-  if (state == 0)
-  {
-    return;
-  }
-
-  bool doSend = parallelGridCore->getDoShare ()[bufferDirection].first;
-  bool doReceive = parallelGridCore->getDoShare ()[bufferDirection].second;
-
   BufferPosition opposite = parallelGridCore->getOppositeDirections ()[bufferDirection];
 
   int processTo = parallelGridCore->getNodeForDirection (bufferDirection);
@@ -2878,7 +2864,7 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
   /*
    * Copy to send buffer
    */
-  if (doSend && processTo != -1)
+  if (processTo != PID_NONE)
   {
     grid_coord index = 0;
 
@@ -2949,17 +2935,15 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
 #endif /* GRID_1D || GRID_2D || GRID_3D */
   }
 
-  DPRINTF (LOG_LEVEL_FULL, "\tSHARE RAW. PID=#%d. Directions TO(%d)=%s=#%d, FROM(%d)=%s=#%d.\n",
+  DPRINTF (LOG_LEVEL_FULL, "\tSHARE RAW. PID=#%d. Directions TO(%s=#%d), FROM(%s=#%d).\n",
            parallelGridCore->getProcessId (),
-           doSend,
            BufferPositionNames[bufferDirection],
            processTo,
-           doReceive,
            BufferPositionNames[opposite],
            processFrom);
 
-  if (doSend && processTo != -1
-      && (!doReceive || doReceive && processFrom == -1))
+  if (processTo != PID_NONE
+      && processFrom == PID_NONE)
   {
 #ifdef DYNAMIC_GRID
     parallelGridCore->StartShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
@@ -2971,8 +2955,8 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
     parallelGridCore->StopShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
 #endif /* DYNAMIC_GRID */
   }
-  else if ((!doSend || doSend && processTo == -1)
-           && doReceive && processFrom != -1)
+  else if (processTo == PID_NONE
+           && processFrom != PID_NONE)
   {
 #ifdef DYNAMIC_GRID
     parallelGridCore->StartShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
@@ -2984,8 +2968,8 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
     parallelGridCore->StopShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
 #endif /* DYNAMIC_GRID */
   }
-  else if (doSend && processTo != -1
-           && doReceive && processFrom != -1)
+  else if (processTo != PID_NONE
+           && processFrom != PID_NONE)
   {
 #ifdef COMBINED_SENDRECV
 #ifdef DYNAMIC_GRID
@@ -2997,43 +2981,39 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
     if (parallelGridCore->getIsEvenForDirection()[bufferDirection])
     {
 #ifdef DYNAMIC_GRID
-    parallelGridCore->StartShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
+      parallelGridCore->StartShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
 #endif /* DYNAMIC_GRID */
 
       SendRawBuffer (bufferDirection, processTo);
 
 #ifdef DYNAMIC_GRID
-    parallelGridCore->StopShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
-#endif /* DYNAMIC_GRID */
-#ifdef DYNAMIC_GRID
-    parallelGridCore->StartShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
+      parallelGridCore->StopShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
+      parallelGridCore->StartShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
 #endif /* DYNAMIC_GRID */
 
       ReceiveRawBuffer (opposite, processFrom);
 
 #ifdef DYNAMIC_GRID
-    parallelGridCore->StopShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
+      parallelGridCore->StopShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
 #endif /* DYNAMIC_GRID */
     }
     else
     {
 #ifdef DYNAMIC_GRID
-    parallelGridCore->StartShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
+      parallelGridCore->StartShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
 #endif /* DYNAMIC_GRID */
 
       ReceiveRawBuffer (opposite, processFrom);
 
 #ifdef DYNAMIC_GRID
-    parallelGridCore->StopShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
-#endif /* DYNAMIC_GRID */
-#ifdef DYNAMIC_GRID
-    parallelGridCore->StartShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
+      parallelGridCore->StopShareClock (processFrom, parallelGridCore->getShareClockCountCur (processFrom));
+      parallelGridCore->StartShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
 #endif /* DYNAMIC_GRID */
 
       SendRawBuffer (bufferDirection, processTo);
 
 #ifdef DYNAMIC_GRID
-    parallelGridCore->StopShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
+      parallelGridCore->StopShareClock (processTo, parallelGridCore->getShareClockCountCur (processTo));
 #endif /* DYNAMIC_GRID */
     }
 #endif
@@ -3048,7 +3028,7 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
   /*
    * Copy from receive buffer
    */
-  if (doReceive && processFrom != -1)
+  if (processFrom != PID_NONE)
   {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     for (grid_coord index = 0, i = recvStart[bufferDirection].get1 ();
@@ -3128,6 +3108,16 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
 void
 ParallelGrid::SendReceive ()
 {
+#ifdef DYNAMIC_GRID
+  /*
+   * No sharing for disabled nodes
+   */
+  if (parallelGridCore->getNodeState ()[parallelGridCore->getProcessId ()] == 0)
+  {
+    return;
+  }
+#endif
+
   DPRINTF (LOG_LEVEL_FULL, "Send/Receive PID=%d\n", parallelGridCore->getProcessId ());
 
   /*
@@ -4421,7 +4411,7 @@ ParallelGrid::Resize (ParallelGridCoordinate newCurrentNodeSize) /**< new size o
            currentSize.calculateTotalCoord ());
 
   /*
-   * TODO: check if this share is needed
+   * TODO: check if this share is needed (looks like it's used only for buffers initialiation, which can be done without share)
    * TODO: optimize to fill buffers without sharing
    */
   share ();
