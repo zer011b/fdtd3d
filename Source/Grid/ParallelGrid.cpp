@@ -63,6 +63,10 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
   ASSERT (bufSize.get1 () == bufSize.get3 ());
 #endif /* GRID_3D */
 
+#ifdef DYNAMIC_GRID
+  ASSERT (bufSize.get1 () == 1);
+#endif
+
   /*
    * Set buffer size with virtual topology in mind
    */
@@ -366,7 +370,7 @@ void ParallelGrid::initializeStartPosition (ParallelGridCoordinate chunkStartPos
   defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
   grid_coord posX;
-  if (parallelGridCore->getNodeGridX () == 0)
+  if (parallelGridCore->getNodeForDirection (LEFT) == PID_NONE)
   {
     posX = 0;
   }
@@ -381,7 +385,7 @@ void ParallelGrid::initializeStartPosition (ParallelGridCoordinate chunkStartPos
   defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
   grid_coord posY;
-  if (parallelGridCore->getNodeGridY () == 0)
+  if (parallelGridCore->getNodeForDirection (DOWN) == PID_NONE)
   {
     posY = 0;
   }
@@ -396,7 +400,7 @@ void ParallelGrid::initializeStartPosition (ParallelGridCoordinate chunkStartPos
   defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 
   grid_coord posZ;
-  if (parallelGridCore->getNodeGridZ () == 0)
+  if (parallelGridCore->getNodeForDirection (BACK) == PID_NONE)
   {
     posZ = 0;
   }
@@ -3849,7 +3853,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   left_coord = 0;
-  if (parallelGridCore->getHasL ())
+  if (parallelGridCore->getNodeForDirection (LEFT) != PID_NONE)
   {
     left_coord = bufferSize.get1 ();
   }
@@ -3859,7 +3863,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
   }
 
   right_coord = 0;
-  if (parallelGridCore->getHasR ())
+  if (parallelGridCore->getNodeForDirection (RIGHT) != PID_NONE)
   {
     right_coord = bufferSize.get1 ();
   }
@@ -3877,7 +3881,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   down_coord = 0;
-  if (parallelGridCore->getHasD ())
+  if (parallelGridCore->getNodeForDirection (DOWN) != PID_NONE)
   {
     down_coord = bufferSize.get2 ();
   }
@@ -3887,7 +3891,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
   }
 
   up_coord = 0;
-  if (parallelGridCore->getHasU ())
+  if (parallelGridCore->getNodeForDirection (UP) != PID_NONE)
   {
     up_coord = bufferSize.get2 ();
   }
@@ -3905,7 +3909,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   back_coord = 0;
-  if (parallelGridCore->getHasB ())
+  if (parallelGridCore->getNodeForDirection (BACK) != PID_NONE)
   {
     back_coord = bufferSize.get3 ();
   }
@@ -3915,7 +3919,7 @@ ParallelGrid::initBufferOffsets (grid_coord &left_coord, /**< out: left buffer s
   }
 
   front_coord = 0;
-  if (parallelGridCore->getHasF ())
+  if (parallelGridCore->getNodeForDirection (FRONT) != PID_NONE)
   {
     front_coord = bufferSize.get3 ();
   }
@@ -4262,27 +4266,36 @@ ParallelGrid::Resize (ParallelGridCoordinate newCurrentNodeSize) /**< new size o
   ParallelGridCoordinate oldSize = currentSize;
 
   currentSize = newCurrentNodeSize;
+  
+  int state = 1;
+#ifdef DYNAMIC_GRID
+  state = ParallelGrid::getParallelCore ()->getNodeState ()[ParallelGrid::getParallelCore ()->getProcessId ()];
+#endif
 
-  ParallelGridConstructor ();
-
-  /*
-   * TODO: do not free/allocate each time
-   */
-  for (grid_coord index = size.calculateTotalCoord (); index < gridValues.size (); ++index)
+  if (state)
   {
-    delete gridValues[index];
-  }
+    ParallelGridConstructor ();
 
-  grid_coord temp = gridValues.size ();
-  gridValues.resize (size.calculateTotalCoord ());
+    /*
+     * TODO: do not free/allocate each time
+     */
+    for (grid_coord index = size.calculateTotalCoord (); index < gridValues.size (); ++index)
+    {
+      delete gridValues[index];
+    }
 
-  for (grid_coord index = temp; index < size.calculateTotalCoord (); ++index)
-  {
-    gridValues[index] = new FieldPointValue ();
+    grid_coord temp = gridValues.size ();
+    gridValues.resize (size.calculateTotalCoord ());
+
+    for (grid_coord index = temp; index < size.calculateTotalCoord (); ++index)
+    {
+      gridValues[index] = new FieldPointValue ();
+    }
   }
 
   gatherStartPosition ();
 
+  if (state)
   {
     ParallelGridCoordinate chunkStart = getChunkStartPosition ();
     ParallelGridCoordinate chunkEnd = chunkStart + getCurrentSize ();

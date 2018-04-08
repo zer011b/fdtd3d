@@ -38,7 +38,7 @@
 #define PID_NONE (-1)
 
 #ifdef DYNAMIC_GRID
-#define CLOCK_BUF_SIZE 2
+#define CLOCK_BUF_SIZE 100
 
 #ifdef MPI_DYNAMIC_CLOCK
 // Clock for different buffer sizes, i.e. latency for size 0
@@ -243,7 +243,7 @@ public:
 
 private:
   time_step T_balance;
-  time_step T_perf;
+  //time_step T_perf;
 
   /**
    * Helper buffers used for sharing
@@ -440,6 +440,91 @@ public:
   } /* getNodeGridSizeXYZ */
 
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+#ifdef GRID_1D
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
+  int getNodeGrid (int coord) const
+  {
+    ASSERT (coord >= 0 && coord < getTotalProcCount ());
+    return coord;
+  }
+#endif
+#endif
+
+#ifdef GRID_2D
+  int getNodeGrid (int coord1, int coord2) const
+  {
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+    ASSERT (coord1 >= 0 && coord1 < getNodeGridSizeX ());
+#else
+    ASSERT (coord1 == 0);
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+    ASSERT (coord2 >= 0 && coord2 < getNodeGridSizeY ());
+#else
+    ASSERT (coord2 == 0);
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
+    return coord1;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
+    return coord2;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+    return coord2 * getNodeGridSizeX () + coord1;
+#endif
+  }
+#endif
+
+#ifdef GRID_3D
+  int getNodeGrid (int coord1, int coord2, int coord3) const
+  {
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) \
+    || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+    ASSERT (coord1 >= 0 && coord1 < getNodeGridSizeX ());
+#else
+    ASSERT (coord1 == 0);
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) \
+    || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+    ASSERT (coord2 >= 0 && coord2 < getNodeGridSizeY ());
+#else
+    ASSERT (coord2 == 0);
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) \
+    || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+    ASSERT (coord3 >= 0 && coord3 < getNodeGridSizeZ ());
+#else
+    ASSERT (coord3 == 0);
+#endif
+
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
+    return coord1;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Y)
+    return coord2;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
+    return coord3;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XY)
+    return coord2 * getNodeGridSizeX () + coord1;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
+    return coord3 * getNodeGridSizeY () + coord2;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
+    return coord3 * getNodeGridSizeX () + coord1;
+#endif
+#if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
+    return coord3 * getNodeGridSizeXY () + coord2 * getNodeGridSizeX () + coord1;
+#endif
+  }
+#endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -661,6 +746,14 @@ public:
   {
     return getShareClock (processId, pid);
   }
+
+  // const bool checkShareClockCount (int pid1, int pid2) const
+  // {
+  //   ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+  //   ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+  //   ASSERT (nodeState[processId] == 1 && nodeState[pid] == 1);
+  //   return shareClockCountBetweenRebalance[pid] > 0;
+  // }
 
   const uint32_t & getShareClockCountCur (int pid) const
   {
