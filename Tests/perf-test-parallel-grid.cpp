@@ -20,10 +20,11 @@
 
 int main (int argc, char** argv)
 {
-#if defined (GRID_1D)
   grid_coord gridSizeX = STOI (argv[1]);
-  time_step NUM_TIME_STEPS = STOI (argv[2]);
-  time_step SHARE_TIME_STEP = STOI (argv[3]);
+  grid_coord gridSizeY = STOI (argv[2]);
+  grid_coord gridSizeZ = STOI (argv[3]);
+  time_step NUM_TIME_STEPS = STOI (argv[4]);
+  time_step SHARE_TIME_STEP = STOI (argv[5]);
 
   int bufSize = 1;
 
@@ -35,20 +36,38 @@ int main (int argc, char** argv)
   MPI_Comm_rank (MPI_COMM_WORLD, &rank);
   MPI_Comm_size (MPI_COMM_WORLD, &numProcs);
 
-  printf ("X: PID %d of %d, grid size x: " COORD_MOD "\n", rank, numProcs, gridSizeX);
+  printf ("X: PID %d of %d, grid size (" COORD_MOD "," COORD_MOD "," COORD_MOD "\n",
+    rank, numProcs, gridSizeX, gridSizeY, gridSizeZ);
 
   printf ("Start process %d of %d\n", rank, numProcs);
 
-  GridCoordinate1D overallSize (gridSizeX, CoordinateType::X);
-  GridCoordinate1D pmlSize (2, CoordinateType::X);
-  GridCoordinate1D tfsfSize (4, CoordinateType::X);
-  GridCoordinate1D bufferSize (bufSize, CoordinateType::X);
-  GridCoordinate1D topologySize (0, CoordinateType::X);
+  ParallelGridCoordinate overallSize (gridSizeX, gridSizeY, gridSizeZ,
+                                      CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  ParallelGridCoordinate pmlSize (2, 2, 2,
+                                  CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  ParallelGridCoordinate tfsfSize (4, 4, 4,
+                                   CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  ParallelGridCoordinate bufferSize (bufSize, bufSize, bufSize,
+                                     CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  ParallelGridCoordinate topologySize (2, 2, 2,
+                                       CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 
+#if defined (GRID_1D)
 #define SCHEME_TYPE SchemeType::Dim1_EzHy
 #define ANGLES PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2
+#endif
 
-  ParallelGridCore parallelGridCore (rank, numProcs, overallSize, false, topologySize);
+#if defined (GRID_2D)
+#define SCHEME_TYPE SchemeType::Dim2_TEz
+#define ANGLES PhysicsConst::Pi / 2, 0, 0
+#endif
+
+#if defined (GRID_3D)
+#define SCHEME_TYPE SchemeType::Dim3
+#define ANGLES 0, 0, 0
+#endif
+
+  ParallelGridCore parallelGridCore (rank, numProcs, overallSize, true, topologySize);
   ParallelGrid::initializeParallelCore (&parallelGridCore);
 
   bool isDoubleMaterialPrecision = false;
@@ -58,7 +77,15 @@ int main (int argc, char** argv)
 
   ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode ());
 
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   for (grid_coord i = 0; i < grid.getSize ().get1 (); ++i)
+#endif
+#if defined (GRID_2D) || defined (GRID_3D)
+  for (grid_coord j = 0; j < grid.getSize ().get2 (); ++j)
+#endif
+#if defined (GRID_3D)
+  for (grid_coord k = 0; k < grid.getSize ().get3 (); ++k)
+#endif
   {
     FieldPointValue* val = new FieldPointValue ();
 
@@ -68,8 +95,16 @@ int main (int argc, char** argv)
     val->setCurValue (FieldValue (i * PhysicsConst::Eps0));
 #endif
 
+#ifdef GRID_1D
     GridCoordinate1D pos (i, CoordinateType::X);
-    //GridCoordinate1D posAbs = grid.getTotalPosition (pos);
+#endif
+#ifdef GRID_2D
+    GridCoordinate2D pos (i, j, CoordinateType::X, CoordinateType::Y);
+#endif
+#ifdef GRID_3D
+    GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+#endif
+
     grid.setFieldPointValue (val, pos);
   }
 
@@ -93,10 +128,28 @@ int main (int argc, char** argv)
       // {
       //   usleep(200000);
       // }
+
+      printf ("# %d ----> %u %u %u\n", ParallelGrid::getParallelCore ()->getProcessId (), grid.getSize ().get1 (), grid.getSize ().get2 (), grid.getSize ().get3 ());
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
       for (grid_coord i = 0; i < grid.getSize ().get1 (); ++i)
+#endif
+#if defined (GRID_2D) || defined (GRID_3D)
+      for (grid_coord j = 0; j < grid.getSize ().get2 (); ++j)
+#endif
+#if defined (GRID_3D)
+      for (grid_coord k = 0; k < grid.getSize ().get3 (); ++k)
+#endif
       {
+#ifdef GRID_1D
         GridCoordinate1D pos (i, CoordinateType::X);
-        //GridCoordinate1D posAbs = grid.getTotalPosition (pos);
+#endif
+#ifdef GRID_2D
+        GridCoordinate2D pos (i, j, CoordinateType::X, CoordinateType::Y);
+#endif
+#ifdef GRID_3D
+        GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+#endif
 
         FieldPointValue *value = grid.getFieldPointValue (pos);
 
@@ -144,7 +197,6 @@ int main (int argc, char** argv)
        (double) (tv2.tv_sec - tv1.tv_sec));
 
   return 0;
-#endif
 } /* main */
 
 #else /* PARALLEL_GRID */

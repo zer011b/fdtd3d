@@ -1271,19 +1271,22 @@ void ParallelGridCore::ShareShareClocks ()
 
         if (shareClockSumBetweenRebalance[process][i].empty ())
         {
-          shareClockBufSize_buf[j] = 0;
-          shareClockSec_buf[j] = 0;
+          for (int k = 0; k < CLOCK_BUF_SIZE; ++k)
+          {
+            shareClockBufSize_buf[j] = 0;
+            shareClockSec_buf[j] = 0;
 #ifndef MPI_DYNAMIC_CLOCK
-          shareClockNSec_buf[j] = 0;
+            shareClockNSec_buf[j] = 0;
 #endif
-          j++;
-
-          shareClockBufSize_buf[j] = 0;
-          shareClockSec_buf[j] = 0;
-#ifndef MPI_DYNAMIC_CLOCK
-          shareClockNSec_buf[j] = 0;
-#endif
-          j++;
+            j++;
+// 
+//             shareClockBufSize_buf[j] = 0;
+//             shareClockSec_buf[j] = 0;
+// #ifndef MPI_DYNAMIC_CLOCK
+//             shareClockNSec_buf[j] = 0;
+// #endif
+//             j++;
+          }
         }
 
 
@@ -1298,13 +1301,16 @@ void ParallelGridCore::ShareShareClocks ()
 
         if (shareClockIterBetweenRebalance[process][i].empty ())
         {
-          shareClockBufSize2_buf[jj] = 0;
-          shareClockIter_buf[jj] = 0;
-          jj++;
-
-          shareClockBufSize2_buf[jj] = 0;
-          shareClockIter_buf[jj] = 0;
-          jj++;
+          for (int k = 0; k < CLOCK_BUF_SIZE; ++k)
+          {
+            shareClockBufSize2_buf[jj] = 0;
+            shareClockIter_buf[jj] = 0;
+            jj++;
+            // 
+            // shareClockBufSize2_buf[jj] = 0;
+            // shareClockIter_buf[jj] = 0;
+            // jj++;
+          }
         }
       }
     }
