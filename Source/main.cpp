@@ -28,7 +28,7 @@ int cudaThreadsX = 8;
 int cudaThreadsY = 8;
 int cudaThreadsZ = 8;
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 int runMode ()
 {
   int rank = 0;
@@ -283,32 +283,32 @@ int main (int argc, char** argv)
     {
       case SchemeType::Dim1_ExHy:
       {
-        exit_code = runMode<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED> ();
         break;
       }
       case SchemeType::Dim1_ExHz:
       {
-        exit_code = runMode<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED> ();
         break;
       }
       case SchemeType::Dim1_EyHx:
       {
-        exit_code = runMode<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED> ();
         break;
       }
       case SchemeType::Dim1_EyHz:
       {
-        exit_code = runMode<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED> ();
         break;
       }
       case SchemeType::Dim1_EzHx:
       {
-        exit_code = runMode<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED> ();
         break;
       }
       case SchemeType::Dim1_EzHy:
       {
-        exit_code = runMode<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED> ();
         break;
       }
       default:
@@ -323,32 +323,32 @@ int main (int argc, char** argv)
     {
       case SchemeType::Dim2_TEx:
       {
-        exit_code = runMode<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED> ();
         break;
       }
       case SchemeType::Dim2_TEy:
       {
-        exit_code = runMode<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED> ();
         break;
       }
       case SchemeType::Dim2_TEz:
       {
-        exit_code = runMode<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED> ();
         break;
       }
       case SchemeType::Dim2_TMx:
       {
-        exit_code = runMode<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED> ();
         break;
       }
       case SchemeType::Dim2_TMy:
       {
-        exit_code = runMode<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED> ();
         break;
       }
       case SchemeType::Dim2_TMz:
       {
-        exit_code = runMode<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED> ();
+        exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED> ();
         break;
       }
       default:
@@ -361,7 +361,7 @@ int main (int argc, char** argv)
   {
     ASSERT (solverSettings.getDimension () == 3);
 
-    exit_code = runMode<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED> ();
+    exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> ();
   }
 
   return exit_code;

@@ -53,17 +53,17 @@ int main (int argc, char** argv)
                                        CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 
 #if defined (GRID_1D)
-#define SCHEME_TYPE SchemeType::Dim1_EzHy
+#define SCHEME_TYPE (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy))
 #define ANGLES PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2
 #endif
 
 #if defined (GRID_2D)
-#define SCHEME_TYPE SchemeType::Dim2_TEz
+#define SCHEME_TYPE (static_cast<SchemeType_t> (SchemeType::Dim2_TEz))
 #define ANGLES PhysicsConst::Pi / 2, 0, 0
 #endif
 
 #if defined (GRID_3D)
-#define SCHEME_TYPE SchemeType::Dim3
+#define SCHEME_TYPE (static_cast<SchemeType_t> (SchemeType::Dim3))
 #define ANGLES 0, 0, 0
 #endif
 
@@ -72,7 +72,7 @@ int main (int argc, char** argv)
 
   bool isDoubleMaterialPrecision = false;
 
-  ParallelYeeGridLayout<SCHEME_TYPE, LayoutType::E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSize, ANGLES, isDoubleMaterialPrecision);
+  ParallelYeeGridLayout<SCHEME_TYPE, E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSize, ANGLES, isDoubleMaterialPrecision);
   yeeLayout.Initialize (&parallelGridCore);
 
   ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode ());

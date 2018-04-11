@@ -17,7 +17,7 @@
 #define SIZEZ 4
 #define MULT 2
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                        grid_coord mult, grid_coord sx, grid_coord sy, grid_coord sz)
 {
@@ -27,73 +27,73 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
 
   switch (Type)
   {
-    case SchemeType::Dim1_ExHy:
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)):
     {
       ct1 = CoordinateType::Z;
       break;
     }
-    case SchemeType::Dim1_ExHz:
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)):
     {
       ct1 = CoordinateType::Y;
       break;
     }
-    case SchemeType::Dim1_EyHx:
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)):
     {
       ct1 = CoordinateType::Z;
       break;
     }
-    case SchemeType::Dim1_EyHz:
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)):
     {
       ct1 = CoordinateType::X;
       break;
     }
-    case SchemeType::Dim1_EzHx:
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)):
     {
       ct1 = CoordinateType::Y;
       break;
     }
-    case SchemeType::Dim1_EzHy:
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)):
     {
       ct1 = CoordinateType::X;
       break;
     }
-    case SchemeType::Dim2_TEx:
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)):
     {
       ct1 = CoordinateType::Y;
       ct2 = CoordinateType::Z;
       break;
     }
-    case SchemeType::Dim2_TEy:
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)):
     {
       ct1 = CoordinateType::X;
       ct2 = CoordinateType::Z;
       break;
     }
-    case SchemeType::Dim2_TEz:
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)):
     {
       ct1 = CoordinateType::X;
       ct2 = CoordinateType::Y;
       break;
     }
-    case SchemeType::Dim2_TMx:
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)):
     {
       ct1 = CoordinateType::Y;
       ct2 = CoordinateType::Z;
       break;
     }
-    case SchemeType::Dim2_TMy:
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)):
     {
       ct1 = CoordinateType::X;
       ct2 = CoordinateType::Z;
       break;
     }
-    case SchemeType::Dim2_TMz:
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)):
     {
       ct1 = CoordinateType::X;
       ct2 = CoordinateType::Y;
       break;
     }
-    case SchemeType::Dim3:
+    case (static_cast<SchemeType_t> (SchemeType::Dim3)):
     {
       ct1 = CoordinateType::X;
       ct2 = CoordinateType::Y;
@@ -357,7 +357,7 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   TCoord<FPValue, true> coordHzFP = layout.getHzCoordFP (TCoord<grid_coord, true>::initAxesCoordinate (i, j, k, ct1, ct2, ct3)); \
 
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim1_ExHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                         grid_coord mult, grid_coord sz)
 {
@@ -377,7 +377,7 @@ void testFuncDim1_ExHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   GridCoordinate1D sizePML (sz, ct1);
   GridCoordinate1D sizeTFSF (sizez_tfsf, ct1);
 
-  YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
                                                                                       sizeTFSF,
                                                                                       incAngle1,
@@ -452,7 +452,7 @@ void testFuncDim1_ExHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim1_ExHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                         grid_coord mult, grid_coord sy)
 {
@@ -470,7 +470,7 @@ void testFuncDim1_ExHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   GridCoordinate1D sizePML (sy, ct1);
   GridCoordinate1D sizeTFSF (sizey_tfsf, ct1);
 
-  YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
                                                                                       sizeTFSF,
                                                                                       incAngle1,
@@ -545,7 +545,7 @@ void testFuncDim1_ExHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim1_EyHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                         grid_coord mult, grid_coord sz)
 {
@@ -563,7 +563,7 @@ void testFuncDim1_EyHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   GridCoordinate1D sizePML (sz, ct1);
   GridCoordinate1D sizeTFSF (sizez_tfsf, ct1);
 
-  YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
                                                                                       sizeTFSF,
                                                                                       incAngle1,
@@ -638,7 +638,7 @@ void testFuncDim1_EyHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim1_EyHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                         grid_coord mult, grid_coord sx)
 {
@@ -656,7 +656,7 @@ void testFuncDim1_EyHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   GridCoordinate1D sizePML (sx, ct1);
   GridCoordinate1D sizeTFSF (sizex_tfsf, ct1);
 
-  YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
                                                                                       sizeTFSF,
                                                                                       incAngle1,
@@ -731,7 +731,7 @@ void testFuncDim1_EyHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim1_EzHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                         grid_coord mult, grid_coord sy)
 {
@@ -749,7 +749,7 @@ void testFuncDim1_EzHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   GridCoordinate1D sizePML (sy, ct1);
   GridCoordinate1D sizeTFSF (sizey_tfsf, ct1);
 
-  YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
                                                                                       sizeTFSF,
                                                                                       incAngle1,
@@ -824,7 +824,7 @@ void testFuncDim1_EzHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim1_EzHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                         grid_coord mult, grid_coord sx)
 {
@@ -842,7 +842,7 @@ void testFuncDim1_EzHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   GridCoordinate1D sizePML (sx, ct1);
   GridCoordinate1D sizeTFSF (sizex_tfsf, ct1);
 
-  YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
                                                                                       sizeTFSF,
                                                                                       incAngle1,
@@ -917,7 +917,7 @@ void testFuncDim1_EzHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim2_TEx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                        grid_coord mult, grid_coord sy, grid_coord sz)
 {
@@ -938,7 +938,7 @@ void testFuncDim2_TEx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   GridCoordinate2D sizePML (sy, sz, ct1, ct2);
   GridCoordinate2D sizeTFSF (sizey_tfsf, sizez_tfsf, ct1, ct2);
 
-  YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
                                                                                      sizeTFSF,
                                                                                      incAngle1,
@@ -1072,7 +1072,7 @@ void testFuncDim2_TEx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim2_TEy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                        grid_coord mult, grid_coord sx, grid_coord sz)
 {
@@ -1093,7 +1093,7 @@ void testFuncDim2_TEy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   GridCoordinate2D sizePML (sx, sz, ct1, ct2);
   GridCoordinate2D sizeTFSF (sizex_tfsf, sizez_tfsf, ct1, ct2);
 
-  YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
                                                                                      sizeTFSF,
                                                                                      incAngle1,
@@ -1227,7 +1227,7 @@ void testFuncDim2_TEy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim2_TEz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                        grid_coord mult, grid_coord sx, grid_coord sy)
 {
@@ -1248,7 +1248,7 @@ void testFuncDim2_TEz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   GridCoordinate2D sizePML (sx, sy, ct1, ct2);
   GridCoordinate2D sizeTFSF (sizex_tfsf, sizey_tfsf, ct1, ct2);
 
-  YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
                                                                                      sizeTFSF,
                                                                                      incAngle1,
@@ -1382,7 +1382,7 @@ void testFuncDim2_TEz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim2_TMx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                        grid_coord mult, grid_coord sy, grid_coord sz)
 {
@@ -1403,7 +1403,7 @@ void testFuncDim2_TMx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   GridCoordinate2D sizePML (sy, sz, ct1, ct2);
   GridCoordinate2D sizeTFSF (sizey_tfsf, sizez_tfsf, ct1, ct2);
 
-  YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
                                                                                      sizeTFSF,
                                                                                      incAngle1,
@@ -1538,7 +1538,7 @@ void testFuncDim2_TMx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim2_TMy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                        grid_coord mult, grid_coord sx, grid_coord sz)
 {
@@ -1559,7 +1559,7 @@ void testFuncDim2_TMy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   GridCoordinate2D sizePML (sx, sz, ct1, ct2);
   GridCoordinate2D sizeTFSF (sizex_tfsf, sizez_tfsf, ct1, ct2);
 
-  YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
                                                                                      sizeTFSF,
                                                                                      incAngle1,
@@ -1694,7 +1694,7 @@ void testFuncDim2_TMy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim2_TMz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                        grid_coord mult, grid_coord sx, grid_coord sy)
 {
@@ -1715,7 +1715,7 @@ void testFuncDim2_TMz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   GridCoordinate2D sizePML (sx, sy, ct1, ct2);
   GridCoordinate2D sizeTFSF (sizex_tfsf, sizey_tfsf, ct1, ct2);
 
-  YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
                                                                                      sizeTFSF,
                                                                                      incAngle1,
@@ -1850,7 +1850,7 @@ void testFuncDim2_TMz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   }
 }
 
-template<uint8_t layout_type>
+template<LayoutType layout_type>
 void testFuncDim3 (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                    grid_coord mult, grid_coord sx, grid_coord sy, grid_coord sz)
 {
@@ -1874,7 +1874,7 @@ void testFuncDim3 (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool
   GridCoordinate3D sizePML (sx, sy, sz, ct1, ct2, ct3);
   GridCoordinate3D sizeTFSF (sizex_tfsf, sizey_tfsf, sizez_tfsf, ct1, ct2, ct3);
 
-  YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, layout_type> layout (size,
+  YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, layout_type> layout (size,
                                                                                  sizePML,
                                                                                  sizeTFSF,
                                                                                  incAngle1,
@@ -2247,7 +2247,7 @@ void testFuncDim3 (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void testFunc (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision)
 {
   for (grid_coord mult = 2; mult <= MULT; ++mult)
@@ -2273,65 +2273,65 @@ int main (int argc, char** argv)
 
   for (int dMaterialPrecision = 0; dMaterialPrecision <= 1; ++dMaterialPrecision)
   {
-    testFunc<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED> (0, 0, 0, dMaterialPrecision);
-    testFunc<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, 0, dMaterialPrecision);
-    testFunc<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED> (0, 0, 0, dMaterialPrecision);
-    testFunc<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, 0, 0, dMaterialPrecision);
-    testFunc<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
-    testFunc<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED> (0, 0, 0, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, 0, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED> (0, 0, 0, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, 0, 0, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
 
     for (grid_coord mult = 2; mult <= MULT; ++mult)
     {
       for (grid_coord sz = SIZEZ; sz <= 2*SIZEZ; sz += SIZEZ)
       {
-        testFuncDim1_ExHy<LayoutType::E_CENTERED> (0, 0, 0, dMaterialPrecision, mult, sz);
-        testFuncDim1_EyHx<LayoutType::E_CENTERED> (0, 0, 0, dMaterialPrecision, mult, sz);
+        testFuncDim1_ExHy<E_CENTERED> (0, 0, 0, dMaterialPrecision, mult, sz);
+        testFuncDim1_EyHx<E_CENTERED> (0, 0, 0, dMaterialPrecision, mult, sz);
       }
 
       for (grid_coord sy = SIZEY; sy <= 2*SIZEY; sy += SIZEY)
       {
-        testFuncDim1_ExHz<LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, 0, dMaterialPrecision, mult, sy);
-        testFuncDim1_EzHx<LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sy);
+        testFuncDim1_ExHz<E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, 0, dMaterialPrecision, mult, sy);
+        testFuncDim1_EzHx<E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sy);
       }
 
       for (grid_coord sx = SIZEX; sx <= 2*SIZEX; sx += SIZEX)
       {
-        testFuncDim1_EyHz<LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, 0, 0, dMaterialPrecision, mult, sx);
-        testFuncDim1_EzHy<LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx);
+        testFuncDim1_EyHz<E_CENTERED> (PhysicsConst::Pi / 2, 0, 0, dMaterialPrecision, mult, sx);
+        testFuncDim1_EzHy<E_CENTERED> (PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx);
       }
     }
 
     for (FPValue angle1 = 0.0; angle1 <= PhysicsConst::Pi / 2; angle1 += PhysicsConst::Pi / 4)
     {
-      testFunc<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED> (angle1, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
-      testFunc<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED> (angle1, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
-      testFunc<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, angle1, 0, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED> (angle1, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED> (angle1, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, angle1, 0, dMaterialPrecision);
 
-      testFunc<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED> (angle1, PhysicsConst::Pi / 2, 0, dMaterialPrecision);
-      testFunc<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED> (angle1, 0, 0, dMaterialPrecision);
-      testFunc<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, angle1, PhysicsConst::Pi / 2, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED> (angle1, PhysicsConst::Pi / 2, 0, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED> (angle1, 0, 0, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, angle1, PhysicsConst::Pi / 2, dMaterialPrecision);
 
       for (grid_coord mult = 2; mult <= MULT; ++mult)
       {
         for (grid_coord sy = SIZEY; sy <= 2*SIZEY; sy += SIZEY)
         for (grid_coord sz = SIZEZ; sz <= 2*SIZEZ; sz += SIZEZ)
         {
-          testFuncDim2_TEx<LayoutType::E_CENTERED> (angle1, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sy, sz);
-          testFuncDim2_TMx<LayoutType::E_CENTERED> (angle1, PhysicsConst::Pi / 2, 0, dMaterialPrecision, mult, sy, sz);
+          testFuncDim2_TEx<E_CENTERED> (angle1, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sy, sz);
+          testFuncDim2_TMx<E_CENTERED> (angle1, PhysicsConst::Pi / 2, 0, dMaterialPrecision, mult, sy, sz);
         }
 
         for (grid_coord sx = SIZEX; sx <= 2*SIZEX; sx += SIZEX)
         for (grid_coord sz = SIZEZ; sz <= 2*SIZEZ; sz += SIZEZ)
         {
-          testFuncDim2_TEy<LayoutType::E_CENTERED> (angle1, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx, sz);
-          testFuncDim2_TMy<LayoutType::E_CENTERED> (angle1, 0, 0, dMaterialPrecision, mult, sx, sz);
+          testFuncDim2_TEy<E_CENTERED> (angle1, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx, sz);
+          testFuncDim2_TMy<E_CENTERED> (angle1, 0, 0, dMaterialPrecision, mult, sx, sz);
         }
 
         for (grid_coord sx = SIZEX; sx <= 2*SIZEX; sx += SIZEX)
         for (grid_coord sy = SIZEY; sy <= 2*SIZEY; sy += SIZEY)
         {
-          testFuncDim2_TEz<LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, angle1, 0, dMaterialPrecision, mult, sx, sy);
-          testFuncDim2_TMz<LayoutType::E_CENTERED> (PhysicsConst::Pi / 2, angle1, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx, sy);
+          testFuncDim2_TEz<E_CENTERED> (PhysicsConst::Pi / 2, angle1, 0, dMaterialPrecision, mult, sx, sy);
+          testFuncDim2_TMz<E_CENTERED> (PhysicsConst::Pi / 2, angle1, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx, sy);
         }
       }
 
@@ -2339,7 +2339,7 @@ int main (int argc, char** argv)
       {
         for (FPValue angle3 = 0.0; angle3 <= PhysicsConst::Pi / 2; angle3 += PhysicsConst::Pi / 4)
         {
-          testFunc<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED> (angle1, angle2, angle3, dMaterialPrecision);
+          testFunc<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (angle1, angle2, angle3, dMaterialPrecision);
 
           for (grid_coord mult = 2; mult <= MULT; ++mult)
           {
@@ -2347,7 +2347,7 @@ int main (int argc, char** argv)
             for (grid_coord sy = SIZEY; sy <= 2*SIZEY; sy += SIZEY)
             for (grid_coord sz = SIZEZ; sz <= 2*SIZEZ; sz += SIZEZ)
             {
-              testFuncDim3<LayoutType::E_CENTERED> (angle1, angle2, angle3, dMaterialPrecision, mult, sx, sy, sz);
+              testFuncDim3<E_CENTERED> (angle1, angle2, angle3, dMaterialPrecision, mult, sx, sy, sz);
             }
           }
         }

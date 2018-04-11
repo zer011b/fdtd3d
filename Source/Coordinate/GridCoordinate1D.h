@@ -73,17 +73,27 @@ public:
                                                                                      CoordinateType t1 = CoordinateType::X,
                                                                                      CoordinateType t2 = CoordinateType::Y,
                                                                                      CoordinateType t3 = CoordinateType::Z)
-    : GridCoordinate1DTemplate<TcoordType, doSignChecks> (c1, t1)
+    : coord1 (c1)
+#ifdef DEBUG_INFO
+    , type1 (t1)
+#endif /* DEBUG_INFO */
   {
+    if (doSignChecks)
+    {
+      ASSERT (coord1 >= 0);
+    }
   }
 
   CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks> (const GridCoordinate1DTemplate<TcoordType, doSignChecks>& pos)
-    : GridCoordinate1DTemplate<TcoordType, doSignChecks> (pos.get1 ()
+    : coord1 (pos.get1 ())
 #ifdef DEBUG_INFO
-        , pos.getType1 ()
+    , type1 (pos.getType1 ())
 #endif /* DEBUG_INFO */
-        )
   {
+    if (doSignChecks)
+    {
+      ASSERT (coord1 >= 0);
+    }
   }
 
   CUDA_DEVICE CUDA_HOST ~GridCoordinate1DTemplate<TcoordType, doSignChecks> () {};

@@ -40,7 +40,8 @@ public:
                                                                                      CoordinateType t1 = CoordinateType::X,
                                                                                      CoordinateType t2 = CoordinateType::Y,
                                                                                      CoordinateType t3 = CoordinateType::Z)
-    : GridCoordinate2DTemplate<TcoordType, doSignChecks> (c1, c2, t1, t2), coord3 (c3)
+    : GridCoordinate2DTemplate<TcoordType, doSignChecks> (c1, c2, t1, t2)
+    , coord3 (c3)
 #ifdef DEBUG_INFO
     , type3 (t3)
 #endif /* DEBUG_INFO */
@@ -59,11 +60,16 @@ public:
   }
 
   CUDA_DEVICE CUDA_HOST GridCoordinate3DTemplate<TcoordType, doSignChecks> (const GridCoordinate3DTemplate<TcoordType, doSignChecks>& pos)
-    : GridCoordinate3DTemplate<TcoordType, doSignChecks> (pos.get1 (), pos.get2 (), pos.get3 ()
+    : GridCoordinate2DTemplate<TcoordType, doSignChecks> (pos.get1 (), pos.get2 ()
 #ifdef DEBUG_INFO
-      , pos.getType1 (), pos.getType2 (), pos.getType3 ()
+    , pos.getType1 ()
+    , pos.getType2 ()
 #endif /* DEBUG_INFO */
       )
+    , coord3 (pos.get3 ())
+#ifdef DEBUG_INFO
+    , type3 (pos.getType3 ())
+#endif /* DEBUG_INFO */
   {
   }
 

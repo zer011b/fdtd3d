@@ -1,4 +1,4 @@
-#ifndef SCHEME_H
+SchemeType_t#ifndef SCHEME_H
 #define SCHEME_H
 
 #include "GridInterface.h"
@@ -24,15 +24,15 @@ struct NPair
   }
 };
 
-typedef YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED> YL1D;
-typedef YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED> YL2D;
-typedef YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED> YL3D;
+typedef YeeGridLayout<GridCoordinate1DTemplate, E_CENTERED> YL1D;
+typedef YeeGridLayout<GridCoordinate2DTemplate, E_CENTERED> YL2D;
+typedef YeeGridLayout<GridCoordinate3DTemplate, E_CENTERED> YL3D;
 #ifdef PARALLEL_GRID
-typedef ParallelYeeGridLayout<LayoutType::E_CENTERED> PYL;
+typedef ParallelYeeGridLayout<E_CENTERED> PYL;
 #endif /* PARALLEL_GRID */
 
 // TODO: remove TCoord, as Layout has it defined
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 class Scheme
 {
   typedef TCoord<grid_coord, true> TC;

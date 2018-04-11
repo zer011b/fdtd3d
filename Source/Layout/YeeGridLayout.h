@@ -18,7 +18,7 @@
  *
  * TODO: inline getter/setter
  */
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 class YeeGridLayout
 {
 public:
@@ -492,7 +492,7 @@ private:
 
 class YeeGridLayoutHelper
 {
-  template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
   friend class YeeGridLayout;
 
 private:
@@ -654,7 +654,7 @@ private:
   }
 };
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<YeeGridLayout::TC> *gridMaterial,
                                        TC coord1,
@@ -667,7 +667,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<YeeGridLa
                                              Approximation::getMaterial (val2));
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMaterial,
                                        TC coord1,
@@ -686,7 +686,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *grid
                                              Approximation::getMaterial (val4));
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMaterial,
                                        TC coord1,
@@ -717,7 +717,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *grid
                                              Approximation::getMaterial (val8));
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
                                            Grid<TC> *gridMaterialOmega,
@@ -751,7 +751,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *
   return material;
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
                                            Grid<TC> *gridMaterialOmega,
@@ -801,7 +801,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *
   return material;
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
                                            Grid<TC> *gridMaterialOmega,
@@ -883,7 +883,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *
   return material;
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getMetaMaterial (const TC &posAbs,
                                 GridType typeOfField,
@@ -967,7 +967,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getMetaMaterial (const TC &posAbs,
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
                             GridType typeOfField,
@@ -1053,7 +1053,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
  *
  * TODO: add separate for all fields
  */
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template <bool isMetaMaterial>
 void
 YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
@@ -1271,7 +1271,7 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getExCircuitElement (TC coord, LayoutDirection dir) const
 {
@@ -1314,7 +1314,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getExCircuitElement (TC coord, LayoutD
   return convertCoord (coordFP);
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getEyCircuitElement (TC coord, LayoutDirection dir) const
 {
@@ -1357,7 +1357,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getEyCircuitElement (TC coord, LayoutD
   return convertCoord (coordFP);
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getEzCircuitElement (TC coord, LayoutDirection dir) const
 {
@@ -1400,7 +1400,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getEzCircuitElement (TC coord, LayoutD
   return convertCoord (coordFP);
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getHxCircuitElement (TC coord, LayoutDirection dir) const
 {
@@ -1443,7 +1443,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getHxCircuitElement (TC coord, LayoutD
   return convertCoord (coordFP);
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getHyCircuitElement (TC coord, LayoutDirection dir) const
 {
@@ -1486,7 +1486,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getHyCircuitElement (TC coord, LayoutD
   return convertCoord (coordFP);
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getHzCircuitElement (TC coord, LayoutDirection dir) const
 {

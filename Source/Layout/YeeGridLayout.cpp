@@ -1,6 +1,6 @@
 #include "YeeGridLayout.h"
 
-template <SchemeType Type, template <typename, bool> class TCoord, uint8_t layout_type>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 const bool YeeGridLayout<Type, TCoord, layout_type>::isParallel = false;
 
 /*
@@ -8,7 +8,7 @@ const bool YeeGridLayout<Type, TCoord, layout_type>::isParallel = false;
  */
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -20,7 +20,7 @@ YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -32,38 +32,38 @@ YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -75,7 +75,7 @@ YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -87,7 +87,7 @@ YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -99,20 +99,20 @@ YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 
 template <>
 bool
-YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -136,19 +136,19 @@ YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED
  */
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -160,7 +160,7 @@ YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder1DFirst__1<-5> (getEyCoordFP (coord), leftBorderTotalFieldFP),
@@ -172,20 +172,20 @@ YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -197,13 +197,13 @@ YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder2DFirst__2<-1, -5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
@@ -215,13 +215,13 @@ YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder2DFirst__2<4, -5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
@@ -233,13 +233,13 @@ YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder<-5> (getEyCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
@@ -263,31 +263,31 @@ YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED
  */
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -299,7 +299,7 @@ YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder1DFirst__1<-5> (getEzCoordFP (coord), leftBorderTotalFieldFP),
@@ -311,7 +311,7 @@ YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -323,7 +323,7 @@ YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder2DFirst__2<-1, -5> (getEzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
@@ -335,25 +335,25 @@ YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder2DFirst__2<4, -5> (getEzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
@@ -365,7 +365,7 @@ YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder<-5> (getEzCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
@@ -389,19 +389,19 @@ YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED
  */
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -413,13 +413,13 @@ YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -431,13 +431,13 @@ YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -449,25 +449,25 @@ YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -479,7 +479,7 @@ YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -491,7 +491,7 @@ YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -515,7 +515,7 @@ YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED
  */
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -527,31 +527,31 @@ YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder1DFirst__1<0> (getHyCoordFP (coord), leftBorderTotalFieldFP),
@@ -563,13 +563,13 @@ YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder2DFirst__2<-1, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
@@ -581,13 +581,13 @@ YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -599,13 +599,13 @@ YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder2DFirst__2<4, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
@@ -617,7 +617,7 @@ YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder<0> (getHyCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
@@ -641,13 +641,13 @@ YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED
  */
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -659,13 +659,13 @@ YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder1DFirst__1<0> (getHzCoordFP (coord), leftBorderTotalFieldFP),
@@ -677,31 +677,31 @@ YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder2DFirst__2<-1, 0> (getHzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
@@ -713,7 +713,7 @@ YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
@@ -725,7 +725,7 @@ YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder2DFirst__2<4, 0> (getHzCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP),
@@ -737,13 +737,13 @@ YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
 bool
-YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate3D coord, LayoutDirection dir) const
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder<0> (getHzCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
@@ -763,67 +763,67 @@ YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED
 }
 
 template <>
-bool YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::isInPML (GridCoordinateFP3D realCoordFP) const
+bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::isInPML (GridCoordinateFP3D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML3D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
@@ -868,7 +868,7 @@ bool YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CEN
   , isDoubleMaterialPrecision (doubleMaterialPrecision)
 
 template <>
-YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
    GridCoordinate1D sizeScatteredZone,
@@ -888,7 +888,7 @@ YeeGridLayout<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
    GridCoordinate1D sizeScatteredZone,
@@ -908,7 +908,7 @@ YeeGridLayout<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
    GridCoordinate1D sizeScatteredZone,
@@ -928,7 +928,7 @@ YeeGridLayout<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
    GridCoordinate1D sizeScatteredZone,
@@ -948,7 +948,7 @@ YeeGridLayout<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
    GridCoordinate1D sizeScatteredZone,
@@ -968,7 +968,7 @@ YeeGridLayout<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
    GridCoordinate1D sizeScatteredZone,
@@ -988,7 +988,7 @@ YeeGridLayout<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, LayoutType::E_CEN
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
    GridCoordinate2D sizeScatteredZone,
@@ -1012,7 +1012,7 @@ YeeGridLayout<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
    GridCoordinate2D sizeScatteredZone,
@@ -1036,7 +1036,7 @@ YeeGridLayout<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
    GridCoordinate2D sizeScatteredZone,
@@ -1060,7 +1060,7 @@ YeeGridLayout<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
    GridCoordinate2D sizeScatteredZone,
@@ -1084,7 +1084,7 @@ YeeGridLayout<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
    GridCoordinate2D sizeScatteredZone,
@@ -1108,7 +1108,7 @@ YeeGridLayout<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
    GridCoordinate2D sizeScatteredZone,
@@ -1132,7 +1132,7 @@ YeeGridLayout<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, LayoutType::E_CENT
 }
 
 template <>
-YeeGridLayout<SchemeType::Dim3, GridCoordinate3DTemplate, LayoutType::E_CENTERED>::YeeGridLayout
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate3D coordSize,
    GridCoordinate3D sizePML,
    GridCoordinate3D sizeScatteredZone,
