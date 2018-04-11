@@ -76,7 +76,7 @@ ENUM_CLASS (GridType, uint8_t,
  * H_CENTERED:
  * TODO: add description
  */
-enum LayoutType : uint8_t
+enum LayoutType
 {
   E_CENTERED,
   H_CENTERED

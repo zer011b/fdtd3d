@@ -22,7 +22,9 @@ enum LogLevelType
   LOG_LEVEL_FULL = LOG_LEVEL_3
 };
 
-ENUM_CLASS (SchemeType, uint8_t,
+typedef uint8_t SchemeType_t;
+
+ENUM_CLASS (SchemeType, SchemeType_t,
   NONE,
   Dim1_ExHy,
   Dim1_ExHz,

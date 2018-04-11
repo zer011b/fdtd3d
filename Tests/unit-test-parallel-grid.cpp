@@ -239,7 +239,7 @@ int main (int argc, char** argv)
   GridCoordinate1D bufferSize (bufSize, CoordinateType::X);
   GridCoordinate1D topologySize (0, CoordinateType::X);
 
-#define SCHEME_TYPE SchemeType::Dim1_EzHy
+#define SCHEME_TYPE (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy))
 #define ANGLES PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2
 #endif /* GRID_1D */
 
@@ -250,7 +250,7 @@ int main (int argc, char** argv)
   GridCoordinate2D bufferSize (bufSize, bufSize, CoordinateType::X, CoordinateType::Y);
   GridCoordinate2D topologySize (0, 0, CoordinateType::X, CoordinateType::Y);
 
-#define SCHEME_TYPE SchemeType::Dim2_TEz
+#define SCHEME_TYPE (static_cast<SchemeType_t> (SchemeType::Dim2_TEz))
 #define ANGLES PhysicsConst::Pi / 2, 0, 0
 #endif /* GRID_2D */
 
@@ -261,7 +261,7 @@ int main (int argc, char** argv)
   GridCoordinate3D bufferSize (bufSize, bufSize, bufSize, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
   GridCoordinate3D topologySize (0, 0, 0, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 
-#define SCHEME_TYPE SchemeType::Dim3
+#define SCHEME_TYPE (static_cast<SchemeType_t> (SchemeType::Dim3))
 #define ANGLES 0, 0, 0
 #endif /* GRID_3D */
 
@@ -270,7 +270,7 @@ int main (int argc, char** argv)
 
   bool isDoubleMaterialPrecision = false;
 
-  ParallelYeeGridLayout<SCHEME_TYPE, LayoutType::E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSize, ANGLES, isDoubleMaterialPrecision);
+  ParallelYeeGridLayout<SCHEME_TYPE, E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSize, ANGLES, isDoubleMaterialPrecision);
   yeeLayout.Initialize (&parallelGridCore);
 
   ParallelGrid *grid = initGrid (overallSize, bufferSize, yeeLayout.getSizeForCurNode (), false);

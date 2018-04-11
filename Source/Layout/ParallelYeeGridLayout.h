@@ -17,7 +17,7 @@ public:
   Entry_t (int newcoord, int newaxis, FPValue newVal)
   : coord (newcoord), axis (newaxis), val (newVal) {}
 
-  bool operator < (Entry_t entry)
+  bool operator < (Entry_t entry) const
   {
     return val < entry.val;
   }
@@ -33,7 +33,7 @@ enum Axis_t
 /**
  * Parallel Yee grid layout with size of grid per nodes
  */
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 class ParallelYeeGridLayout: public YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>
 {
 public:
@@ -193,7 +193,7 @@ public:
 /**
  * Identify size of grid for current computational node
  */
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
 void
 ParallelYeeGridLayout<Type, layout_type>::CalculateGridSizeForNode (grid_coord &core1, int nodeGridSize1, bool has1, grid_coord size1) const
@@ -246,7 +246,7 @@ ParallelYeeGridLayout<Type, layout_type>::CalculateGridSizeForNode (grid_coord &
 
 #ifdef DYNAMIC_GRID
 
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void
 ParallelYeeGridLayout<Type, layout_type>::InitializeCounters ()
 {
@@ -489,7 +489,7 @@ ParallelYeeGridLayout<Type, layout_type>::InitializeCounters ()
 /**
  * Initialize size of grid per node
  */
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void
 ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
@@ -523,7 +523,7 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallel
 /**
  * Initialize size of grid per node
  */
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void
 ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
@@ -568,7 +568,7 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallel
 /**
  * Initialize size of grid per node
  */
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void
 ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
@@ -612,7 +612,7 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallel
 /**
  * Initialize size of grid per node
  */
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void
 ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
@@ -672,7 +672,7 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallel
 /**
  * Initialize size of grid per node
  */
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void
 ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
@@ -739,7 +739,7 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallel
 /**
  * Initialize size of grid per node
  */
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void
 ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallelCore) /**< initialized parallel grid core */
 {
@@ -782,7 +782,7 @@ ParallelYeeGridLayout<Type, layout_type>::Initialize (ParallelGridCore *parallel
 
 #ifdef DYNAMIC_GRID
 
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void ParallelYeeGridLayout<Type, layout_type>::doAdditionalShareMeasurements (uint32_t latency_measure_count,
                                                                               uint32_t latency_buf_size)
 {
@@ -958,7 +958,7 @@ void ParallelYeeGridLayout<Type, layout_type>::doAdditionalShareMeasurements (ui
   }
 }
 
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void ParallelYeeGridLayout<Type, layout_type>::InitializeIterationCounters (time_step difft)
 {
   if (parallelGridCore->getNodeState ()[parallelGridCore->getProcessId ()])
@@ -976,7 +976,7 @@ void ParallelYeeGridLayout<Type, layout_type>::InitializeIterationCounters (time
   }
 }
 
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void ParallelYeeGridLayout<Type, layout_type>::getCurrentPerfValues (time_step difft,
                                                                      std::vector<FPValue> &curPoints,
                                                                      std::vector<FPValue> &curTimes)
@@ -1002,7 +1002,7 @@ void ParallelYeeGridLayout<Type, layout_type>::getCurrentPerfValues (time_step d
   }
 }
 
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void ParallelYeeGridLayout<Type, layout_type>::getCurrentShareValues (std::vector< std::vector<int> > &skipCurShareMeasurement,
                                                                       std::vector< std::vector<FPValue> > &curShareLatency,
                                                                       std::vector< std::vector<FPValue> > &curShareBandwidth)
@@ -1107,7 +1107,7 @@ void ParallelYeeGridLayout<Type, layout_type>::getCurrentShareValues (std::vecto
 
       if (bandwidth < 0)
       {
-        bandwidth = 1000000000000;
+        bandwidth = 1000000000;
       }
 
       // bandwidth = (val_size1 - val_size2) / (val_time1 / parallelGridCore->getShareClockIter (i, j, val_size1) - val_time2 / parallelGridCore->getShareClockIter (i, j, val_size2));
@@ -1169,7 +1169,7 @@ void ParallelYeeGridLayout<Type, layout_type>::getCurrentShareValues (std::vecto
   }
 }
 
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void ParallelYeeGridLayout<Type, layout_type>::calcTotalPerf (std::vector<FPValue> &speed,
                                                               FPValue &sumSpeedEnabled,
                                                               const std::vector<FPValue> &curPoints,
@@ -1199,7 +1199,7 @@ void ParallelYeeGridLayout<Type, layout_type>::calcTotalPerf (std::vector<FPValu
   }
 }
 
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void ParallelYeeGridLayout<Type, layout_type>::calcTotalLatencyAndBandwidth (std::vector< std::vector<FPValue> > &latency,
                                                                              std::vector< std::vector<FPValue> > &bandwidth,
                                                                              const std::vector< std::vector<FPValue> > &curShareLatency,
@@ -1251,7 +1251,7 @@ void ParallelYeeGridLayout<Type, layout_type>::calcTotalLatencyAndBandwidth (std
   }
 }
 
-// template <SchemeType Type, uint8_t layout_type>
+// template <SchemeType_t Type, LayoutType layout_type>
 // void ParallelYeeGridLayout<Type, layout_type>::spreadGridPoints ()
 // {
 // #ifdef GRID_1D
@@ -1298,7 +1298,7 @@ void ParallelYeeGridLayout<Type, layout_type>::calcTotalLatencyAndBandwidth (std
 // #endif
 // }
 
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void ParallelYeeGridLayout<Type, layout_type>::spreadGridPointsPerAxis (std::vector<grid_coord> &spread,
                                                                         grid_coord &sum_spread,
                                                                         FPValue sumSpeedEnabled,
@@ -1478,7 +1478,7 @@ void ParallelYeeGridLayout<Type, layout_type>::spreadGridPointsPerAxis (std::vec
   }
 }
 
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_LR,
                                                              FPValue &max_share_DU,
                                                              FPValue &max_share_BF,
@@ -1689,7 +1689,7 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
  * @return true if size was changed
  *         false, otherwise
  */
-template <SchemeType Type, uint8_t layout_type>
+template <SchemeType_t Type, LayoutType layout_type>
 bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< number of time steps elapsed since the last rebalance */
 {
   ParallelGridCoordinate newSize = sizeForCurNode;

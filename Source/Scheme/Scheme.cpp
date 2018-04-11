@@ -24,7 +24,7 @@
 #define SPECIALIZE_TEMPLATE_FUNC(RET, STYPE, COORD, LAYOUT, NAME, ARGSND, ARGS, NAME_HELPER) \
   template <> \
   RET \
-  Scheme<SchemeType::STYPE, COORD, LAYOUT>::NAME ARGSND \
+  Scheme<static_cast<SchemeType_t> (SchemeType::STYPE), COORD, LAYOUT>::NAME ARGSND \
   { \
     return SchemeHelper::NAME_HELPER ARGS; \
   }
@@ -161,55 +161,55 @@ SPECIALIZE_TEMPLATE(void, void, void,
                     (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22),
                     (pos11, pos12, pos21, pos22))
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
-const bool Scheme<Type, TCoord, Layout>::doNeedEx = Type == SchemeType::Dim1_ExHy || Type == SchemeType::Dim1_ExHz
-                                                    || Type == SchemeType::Dim2_TEy || Type == SchemeType::Dim2_TEz
-                                                    || Type == SchemeType::Dim2_TMx || Type == SchemeType::Dim3;
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
+const bool Scheme<Type, TCoord, Layout>::doNeedEx = Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHy) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
-const bool Scheme<Type, TCoord, Layout>::doNeedEy = Type == SchemeType::Dim1_EyHx || Type == SchemeType::Dim1_EyHz
-                                                    || Type == SchemeType::Dim2_TEx || Type == SchemeType::Dim2_TEz
-                                                    || Type == SchemeType::Dim2_TMy || Type == SchemeType::Dim3;
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
+const bool Scheme<Type, TCoord, Layout>::doNeedEy = Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHx) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
-const bool Scheme<Type, TCoord, Layout>::doNeedEz = Type == SchemeType::Dim1_EzHx || Type == SchemeType::Dim1_EzHy
-                                                    || Type == SchemeType::Dim2_TEx || Type == SchemeType::Dim2_TEy
-                                                    || Type == SchemeType::Dim2_TMz || Type == SchemeType::Dim3;
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
+const bool Scheme<Type, TCoord, Layout>::doNeedEz = Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHx) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMz) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
-const bool Scheme<Type, TCoord, Layout>::doNeedHx = Type == SchemeType::Dim1_EyHx || Type == SchemeType::Dim1_EzHx
-                                                    || Type == SchemeType::Dim2_TMy || Type == SchemeType::Dim2_TMz
-                                                    || Type == SchemeType::Dim2_TEx || Type == SchemeType::Dim3;
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
+const bool Scheme<Type, TCoord, Layout>::doNeedHx = Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHx) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMz)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
-const bool Scheme<Type, TCoord, Layout>::doNeedHy = Type == SchemeType::Dim1_ExHy || Type == SchemeType::Dim1_EzHy
-                                                    || Type == SchemeType::Dim2_TMx || Type == SchemeType::Dim2_TMz
-                                                    || Type == SchemeType::Dim2_TEy || Type == SchemeType::Dim3;
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
+const bool Scheme<Type, TCoord, Layout>::doNeedHy = Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHy) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMz)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
-const bool Scheme<Type, TCoord, Layout>::doNeedHz = Type == SchemeType::Dim1_ExHz || Type == SchemeType::Dim1_EyHz
-                                                    || Type == SchemeType::Dim2_TMx || Type == SchemeType::Dim2_TMy
-                                                    || Type == SchemeType::Dim2_TEz || Type == SchemeType::Dim3;
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
+const bool Scheme<Type, TCoord, Layout>::doNeedHz = Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHz) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
-const bool Scheme<Type, TCoord, Layout>::doNeedSigmaX = Type == SchemeType::Dim1_EyHz || Type == SchemeType::Dim1_EzHy
-                                                    || Type == SchemeType::Dim2_TEy || Type == SchemeType::Dim2_TEz
-                                                    || Type == SchemeType::Dim2_TMy || Type == SchemeType::Dim2_TMz
-                                                    || Type == SchemeType::Dim3;
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
+const bool Scheme<Type, TCoord, Layout>::doNeedSigmaX = Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHz) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMz)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
-const bool Scheme<Type, TCoord, Layout>::doNeedSigmaY = Type == SchemeType::Dim1_ExHz || Type == SchemeType::Dim1_EzHx
-                                                    || Type == SchemeType::Dim2_TEx || Type == SchemeType::Dim2_TEz
-                                                    || Type == SchemeType::Dim2_TMx || Type == SchemeType::Dim2_TMz
-                                                    || Type == SchemeType::Dim3;
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
+const bool Scheme<Type, TCoord, Layout>::doNeedSigmaY = Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHz) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMz)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
-const bool Scheme<Type, TCoord, Layout>::doNeedSigmaZ = Type == SchemeType::Dim1_ExHy || Type == SchemeType::Dim1_EyHx
-                                                    || Type == SchemeType::Dim2_TEx || Type == SchemeType::Dim2_TEy
-                                                    || Type == SchemeType::Dim2_TMx || Type == SchemeType::Dim2_TMy
-                                                    || Type == SchemeType::Dim3;
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
+const bool Scheme<Type, TCoord, Layout>::doNeedSigmaZ = Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHy) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy)
+                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 Scheme<Type, TCoord, Layout>::Scheme (Layout *layout,
                                       const TC& totSize,
                                       time_step tStep)
@@ -597,7 +597,7 @@ Scheme<Type, TCoord, Layout>::Scheme (Layout *layout,
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 Scheme<Type, TCoord, Layout>::~Scheme ()
 {
   delete Eps;
@@ -700,7 +700,7 @@ Scheme<Type, TCoord, Layout>::~Scheme ()
   delete dumper1D[FILE_TYPE_TXT];
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 template<uint8_t EnumVal>
 void
 Scheme<Type, TCoord, Layout>::performPointSourceCalc (time_step t)
@@ -770,7 +770,7 @@ Scheme<Type, TCoord, Layout>::performPointSourceCalc (time_step t)
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 template <uint8_t grid_type>
 void Scheme<Type, TCoord, Layout>::calculateTFSF (TC posAbs,
                             FieldValue &valOpposite11,
@@ -1123,7 +1123,7 @@ void Scheme<Type, TCoord, Layout>::calculateTFSF (TC posAbs,
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 template <uint8_t grid_type>
 void
 Scheme<Type, TCoord, Layout>::calculateFieldStepIterationExact (time_step t,
@@ -1224,7 +1224,7 @@ Scheme<Type, TCoord, Layout>::calculateFieldStepIterationExact (time_step t,
 #endif
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 template <uint8_t grid_type>
 void
 Scheme<Type, TCoord, Layout>::calculateFieldStepIterationBorder (time_step t,
@@ -1288,7 +1288,7 @@ Scheme<Type, TCoord, Layout>::calculateFieldStepIterationBorder (time_step t,
   grid->getFieldPointValue (pos)->setCurValue (borderFunc (expandTo3D (realCoord * gridStep), timestep * gridTimeStep));
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 template <bool useMetamaterials>
 void
 Scheme<Type, TCoord, Layout>::calculateFieldStepIterationPML (time_step t,
@@ -1350,7 +1350,7 @@ Scheme<Type, TCoord, Layout>::calculateFieldStepIterationPML (time_step t,
   valField->setCurValue (val);
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::calculateFieldStepIterationPMLMetamaterials (time_step t,
                                                                            TC pos,
@@ -1404,7 +1404,7 @@ Scheme<Type, TCoord, Layout>::calculateFieldStepIterationPMLMetamaterials (time_
   valField1->setCurValue (val);
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 template<uint8_t grid_type, bool usePML>
 void
 Scheme<Type, TCoord, Layout>::calculateFieldStepIteration (time_step t,
@@ -1594,7 +1594,7 @@ Scheme<Type, TCoord, Layout>::calculateFieldStepIteration (time_step t,
   valField->setCurValue (val);
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 template<uint8_t grid_type, bool usePML, bool useMetamaterials>
 void
 Scheme<Type, TCoord, Layout>::calculateFieldStepInit (Grid<TC> **grid, GridType *gridType, Grid<TC> **materialGrid, GridType *materialGridType, Grid<TC> **materialGrid1, GridType *materialGridType1,
@@ -1916,7 +1916,7 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 template<uint8_t grid_type, bool usePML, bool useMetamaterials>
 void
 Scheme<Type, TCoord, Layout>::calculateFieldStep (time_step t, TC start, TC end)
@@ -2094,7 +2094,7 @@ Scheme<Type, TCoord, Layout>::calculateFieldStep (time_step t, TC start, TC end)
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::performPlaneWaveESteps (time_step t)
 {
@@ -2137,7 +2137,7 @@ Scheme<Type, TCoord, Layout>::performPlaneWaveESteps (time_step t)
   EInc->nextTimeStep ();
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::performPlaneWaveHSteps (time_step t)
 {
@@ -2169,14 +2169,14 @@ Scheme<Type, TCoord, Layout>::performPlaneWaveHSteps (time_step t)
   HInc->nextTimeStep ();
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 FieldValue
 Scheme<Type, TCoord, Layout>::approximateIncidentWaveE (TCFP pos)
 {
   Layout *layout = Scheme<Type, TCoord, Layout>::yeeLayout;
   return SchemeHelper::approximateIncidentWaveE<TCoord> (pos, layout->getZeroIncCoordFP (), EInc, layout->getIncidentWaveAngle1 (), layout->getIncidentWaveAngle2 ());
 }
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 FieldValue
 Scheme<Type, TCoord, Layout>::approximateIncidentWaveH (TCFP pos)
 {
@@ -2225,37 +2225,37 @@ SchemeHelper::approximateIncidentWave<GridCoordinate3DTemplate> (GridCoordinateF
 #ifdef GRID_1D
 template <>
 void
-Scheme<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, PYL> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, PYL> (yeeLayout, gridStep, SigmaY);
 };
 template <>
 void
-Scheme<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, PYL> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, PYL> (yeeLayout, gridStep, SigmaX);
 };
 template <>
 void
-Scheme<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, PYL> (yeeLayout, gridStep, SigmaY);
 };
 template <>
 void
-Scheme<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, PYL> (yeeLayout, gridStep, SigmaX);
 };
@@ -2264,42 +2264,42 @@ Scheme<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, PYL>::initSigmas ()
 #ifdef GRID_2D
 template <>
 void
-Scheme<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaY);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaX);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaX);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaY);
 };
 template <>
 void
-Scheme<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaY);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaX);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaX);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, PYL> (yeeLayout, gridStep, SigmaY);
@@ -2309,7 +2309,7 @@ Scheme<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, PYL>::initSigmas ()
 #ifdef GRID_3D
 template <>
 void
-Scheme<SchemeType::Dim3, GridCoordinate3DTemplate, PYL>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, PYL>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate3DTemplate, PYL> (yeeLayout, gridStep, SigmaX);
   SchemeHelper::initSigmaY<GridCoordinate3DTemplate, PYL> (yeeLayout, gridStep, SigmaY);
@@ -2320,79 +2320,79 @@ Scheme<SchemeType::Dim3, GridCoordinate3DTemplate, PYL>::initSigmas ()
 
 template <>
 void
-Scheme<SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, YL1D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, YL1D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, YL1D> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, YL1D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, YL1D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, YL1D> (yeeLayout, gridStep, SigmaY);
 };
 template <>
 void
-Scheme<SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, YL1D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, YL1D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, YL1D> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, YL1D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, YL1D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, YL1D> (yeeLayout, gridStep, SigmaX);
 };
 template <>
 void
-Scheme<SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, YL1D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, YL1D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, YL1D> (yeeLayout, gridStep, SigmaY);
 };
 template <>
 void
-Scheme<SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, YL1D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, YL1D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate1DTemplate, YL1D> (yeeLayout, gridStep, SigmaX);
 };
 
 template <>
 void
-Scheme<SchemeType::Dim2_TEx, GridCoordinate2DTemplate, YL2D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, YL2D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaY);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim2_TEy, GridCoordinate2DTemplate, YL2D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, YL2D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaX);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim2_TEz, GridCoordinate2DTemplate, YL2D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, YL2D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaX);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaY);
 };
 template <>
 void
-Scheme<SchemeType::Dim2_TMx, GridCoordinate2DTemplate, YL2D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, YL2D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaY);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim2_TMy, GridCoordinate2DTemplate, YL2D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, YL2D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaX);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaZ);
 };
 template <>
 void
-Scheme<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, YL2D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, YL2D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaX);
   SchemeHelper::initSigmaY<GridCoordinate2DTemplate, YL2D> (yeeLayout, gridStep, SigmaY);
@@ -2400,7 +2400,7 @@ Scheme<SchemeType::Dim2_TMz, GridCoordinate2DTemplate, YL2D>::initSigmas ()
 
 template <>
 void
-Scheme<SchemeType::Dim3, GridCoordinate3DTemplate, YL3D>::initSigmas ()
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, YL3D>::initSigmas ()
 {
   SchemeHelper::initSigmaX<GridCoordinate3DTemplate, YL3D> (yeeLayout, gridStep, SigmaX);
   SchemeHelper::initSigmaY<GridCoordinate3DTemplate, YL3D> (yeeLayout, gridStep, SigmaY);
@@ -2421,7 +2421,7 @@ SchemeHelper::approximateIncidentWaveH (TCoord<FPValue, true> realCoord, TCoord<
   return approximateIncidentWave<TCoord> (realCoord, zeroCoord, 0.5, HInc, incAngle1, incAngle2);
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::performNSteps (time_step startStep, time_step numberTimeSteps)
 {
@@ -2655,7 +2655,7 @@ Scheme<Type, TCoord, Layout>::performNSteps (time_step startStep, time_step numb
   }
 }
 //
-// template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+// template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 // void
 // Scheme<Type, TCoord, Layout>::performAmplitudeSteps (time_step startStep)
 // {
@@ -2938,7 +2938,7 @@ Scheme<Type, TCoord, Layout>::performNSteps (time_step startStep, time_step numb
 // #endif /* !COMPLEX_FIELD_VALUES */
 // }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 int
 Scheme<Type, TCoord, Layout>::updateAmplitude (FPValue val, FieldPointValue *amplitudeValue, FPValue *maxAccuracy)
 {
@@ -2981,7 +2981,7 @@ Scheme<Type, TCoord, Layout>::updateAmplitude (FPValue val, FieldPointValue *amp
 #endif /* !COMPLEX_FIELD_VALUES */
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::performSteps ()
 {
@@ -3048,7 +3048,7 @@ Scheme<Type, TCoord, Layout>::performSteps ()
 #endif /* !CUDA_ENABLED */
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::initScheme (FPValue dx, FPValue sourceWaveLen)
 {
@@ -3066,7 +3066,7 @@ Scheme<Type, TCoord, Layout>::initScheme (FPValue dx, FPValue sourceWaveLen)
   relPhaseVelocity = phaseVelocity0 / phaseVelocity;
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::initCallBacks ()
 {
@@ -3172,7 +3172,7 @@ Scheme<Type, TCoord, Layout>::initCallBacks ()
 #endif
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::initMaterialFromFile (GridType gridType, Grid<TC> *grid, Grid<TC> *totalGrid)
 {
@@ -3249,7 +3249,7 @@ Scheme<Type, TCoord, Layout>::initMaterialFromFile (GridType gridType, Grid<TC> 
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::initGridWithInitialVals (GridType gridType, Grid<TC> *grid)
 {
@@ -3346,7 +3346,7 @@ Scheme<Type, TCoord, Layout>::initGridWithInitialVals (GridType gridType, Grid<T
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::initGrids ()
 {
@@ -4353,7 +4353,7 @@ SchemeHelper::ntffL3D (FPValue angleTeta, FPValue anglePhi,
   return lx + ly + lz;
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 FPValue
 Scheme<Type, TCoord, Layout>::Pointing_scat (FPValue angleTeta, FPValue anglePhi, Grid<TC> *curEx, Grid<TC> *curEy, Grid<TC> *curEz,
                        Grid<TC> *curHx, Grid<TC> *curHy, Grid<TC> *curHz)
@@ -4443,14 +4443,14 @@ Scheme<Type, TCoord, Layout>::Pointing_scat (FPValue angleTeta, FPValue anglePhi
 #endif
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 FPValue
 Scheme<Type, TCoord, Layout>::Pointing_inc (FPValue angleTeta, FPValue anglePhi)
 {
   return sqrt (PhysicsConst::Eps0 / PhysicsConst::Mu0);
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::makeGridScattered (Grid<TC> *grid, GridType gridType)
 {
@@ -4569,7 +4569,7 @@ Scheme<Type, TCoord, Layout>::makeGridScattered (Grid<TC> *grid, GridType gridTy
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::gatherFieldsTotal (bool scattered)
 {
@@ -4767,7 +4767,7 @@ Scheme<Type, TCoord, Layout>::gatherFieldsTotal (bool scattered)
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::saveGrids (time_step t)
 {
@@ -4886,7 +4886,7 @@ Scheme<Type, TCoord, Layout>::saveGrids (time_step t)
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::saveNTFF (bool isReverse, time_step t)
 {
@@ -4973,7 +4973,7 @@ Scheme<Type, TCoord, Layout>::saveNTFF (bool isReverse, time_step t)
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 void
 Scheme<Type, TCoord, Layout>::additionalUpdateOfGrids (time_step t, time_step &diffT)
 {
@@ -5141,7 +5141,7 @@ Scheme<Type, TCoord, Layout>::additionalUpdateOfGrids (time_step t, time_step &d
   }
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 typename Scheme<Type, TCoord, Layout>::TC
 Scheme<Type, TCoord, Layout>::getStartCoord (GridType gridType, TC size)
 {
@@ -5210,7 +5210,7 @@ Scheme<Type, TCoord, Layout>::getStartCoord (GridType gridType, TC size)
   return getStartCoordRes (orthogonalAxis, start, size);
 }
 
-template <SchemeType Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
 typename Scheme<Type, TCoord, Layout>::TC
 Scheme<Type, TCoord, Layout>::getEndCoord (GridType gridType, TC size)
 {
@@ -5283,64 +5283,64 @@ Scheme<Type, TCoord, Layout>::getEndCoord (GridType gridType, TC size)
 
 #ifdef GRID_1D
 template class
-Scheme< SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 #endif
 #ifdef GRID_2D
 template class
-Scheme< SchemeType::Dim2_TEx, GridCoordinate2DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim2_TEy, GridCoordinate2DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim2_TEz, GridCoordinate2DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim2_TMx, GridCoordinate2DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim2_TMy, GridCoordinate2DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim2_TMz, GridCoordinate2DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 #endif
 #ifdef GRID_3D
 template class
-Scheme< SchemeType::Dim3, GridCoordinate3DTemplate, ParallelYeeGridLayout<LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, ParallelYeeGridLayout<E_CENTERED> >;
 #endif
 
 #endif
 
 template class
-Scheme< SchemeType::Dim1_ExHy, GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim1_ExHz, GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim1_EyHx, GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim1_EyHz, GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim1_EzHx, GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim1_EzHy, GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, YeeGridLayout<GridCoordinate1DTemplate, E_CENTERED> >;
 
 template class
-Scheme< SchemeType::Dim2_TEx, GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim2_TEy, GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim2_TEz, GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim2_TMx, GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim2_TMy, GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, E_CENTERED> >;
 template class
-Scheme< SchemeType::Dim2_TMz, GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, YeeGridLayout<GridCoordinate2DTemplate, E_CENTERED> >;
 
 template class
-Scheme< SchemeType::Dim3, GridCoordinate3DTemplate, YeeGridLayout<GridCoordinate3DTemplate, LayoutType::E_CENTERED> >;
+Scheme< static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, YeeGridLayout<GridCoordinate3DTemplate, E_CENTERED> >;

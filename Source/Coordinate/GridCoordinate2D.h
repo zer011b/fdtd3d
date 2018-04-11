@@ -40,7 +40,8 @@ public:
                                                                                      const TcoordType& c2 = 0,
                                                                                      CoordinateType t1 = CoordinateType::X,
                                                                                      CoordinateType t2 = CoordinateType::Y)
-    : GridCoordinate1DTemplate<TcoordType, doSignChecks> (c1, t1), coord2 (c2)
+    : GridCoordinate1DTemplate<TcoordType, doSignChecks> (c1, t1)
+    , coord2 (c2)
 #ifdef DEBUG_INFO
     , type2 (t2)
 #endif /* DEBUG_INFO */
@@ -62,17 +63,43 @@ public:
                                                                                      CoordinateType t1 = CoordinateType::X,
                                                                                      CoordinateType t2 = CoordinateType::Y,
                                                                                      CoordinateType t3 = CoordinateType::Z)
-    : GridCoordinate2DTemplate<TcoordType, doSignChecks> (c1, c2, t1, t2)
+    : GridCoordinate1DTemplate<TcoordType, doSignChecks> (c1, t1)
+    , coord2 (c2)
+#ifdef DEBUG_INFO
+    , type2 (t2)
+#endif /* DEBUG_INFO */
   {
+#ifdef DEBUG_INFO
+    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < getType2 ()));
+#endif /* DEBUG_INFO */
+
+    if (doSignChecks)
+    {
+      TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+      ASSERT (coord1 >= 0 && coord2 >= 0);
+    }
   }
 
   CUDA_DEVICE CUDA_HOST GridCoordinate2DTemplate<TcoordType, doSignChecks> (const GridCoordinate2DTemplate<TcoordType, doSignChecks>& pos)
-    : GridCoordinate2DTemplate<TcoordType, doSignChecks> (pos.get1 (), pos.get2 ()
+    : GridCoordinate1DTemplate<TcoordType, doSignChecks> (pos.get1 ()
 #ifdef DEBUG_INFO
-      , pos.getType1 (), pos.getType2 ()
+      , pos.getType1 ()
 #endif /* DEBUG_INFO */
       )
+    , coord2 (pos.get2 ())
+#ifdef DEBUG_INFO
+    , type2 (pos.getType2 ())
+#endif /* DEBUG_INFO */
   {
+#ifdef DEBUG_INFO
+    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < getType2 ()));
+#endif /* DEBUG_INFO */
+
+    if (doSignChecks)
+    {
+      TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+      ASSERT (coord1 >= 0 && coord2 >= 0);
+    }
   }
 
   CUDA_DEVICE CUDA_HOST ~GridCoordinate2DTemplate<TcoordType, doSignChecks> () {}
