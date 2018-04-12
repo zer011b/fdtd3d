@@ -168,6 +168,15 @@ int main (int argc, char** argv)
 #endif
     }
 
+#ifdef MPI_DYNAMIC_CLOCK
+    printf ("#### %d : %f\n", ParallelGrid::getParallelCore ()->getProcessId (),
+      ParallelGrid::getParallelCore ()->getCalcClock (ParallelGrid::getParallelCore ()->getProcessId ()));
+#else
+    printf ("#### %d : %d %d\n", ParallelGrid::getParallelCore ()->getProcessId (),
+      ParallelGrid::getParallelCore ()->getCalcClock (ParallelGrid::getParallelCore ()->getProcessId ()).tv_sec,
+      ParallelGrid::getParallelCore ()->getCalcClock (ParallelGrid::getParallelCore ()->getProcessId ()).tv_nsec);
+#endif
+
     grid.nextTimeStep ();
 
 #ifdef DYNAMIC_GRID

@@ -985,8 +985,12 @@ void ParallelYeeGridLayout<Type, layout_type>::getCurrentPerfValues (time_step d
   {
     curPoints[i] = difft * parallelGridCore->getCalcClockCount (i);
 
-    timespec calcClockCur = parallelGridCore->getCalcClock (i);
+    CalcClock_t calcClockCur = parallelGridCore->getCalcClock (i);
+#ifdef MPI_DYNAMIC_CLOCK
+    FPValue timesec = calcClockCur;
+#else
     FPValue timesec = (FPValue) calcClockCur.tv_sec + ((FPValue) calcClockCur.tv_nsec) / 1000000000;
+#endif
     curTimes[i] = timesec;
 
 #ifdef ENABLE_ASSERTS

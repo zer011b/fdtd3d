@@ -1078,8 +1078,13 @@ ParallelGridCore::~ParallelGridCore ()
 void
 ParallelGridCore::StartCalcClock ()
 {
+#ifdef MPI_DYNAMIC_CLOCK
+  FPValue val = -MPI_Wtime ();
+  calcClockSumBetweenRebalance[processId] += val;
+#else
   int status = clock_gettime (CLOCK_MONOTONIC, &calcStart);
   ASSERT (status == 0);
+#endif
 } /* ParallelGridCore::StartCalcClock */
 
 /**
@@ -1088,6 +1093,10 @@ ParallelGridCore::StartCalcClock ()
 void
 ParallelGridCore::StopCalcClock ()
 {
+#ifdef MPI_DYNAMIC_CLOCK
+  FPValue val = MPI_Wtime ();
+  calcClockSumBetweenRebalance[processId] += val;
+#else
   int status = clock_gettime (CLOCK_MONOTONIC, &calcStop);
   ASSERT (status == 0);
 
@@ -1098,6 +1107,7 @@ ParallelGridCore::StopCalcClock ()
   timespec_sum (&calcClockSumBetweenRebalance[processId], &diff, &sum);
 
   calcClockSumBetweenRebalance[processId] = sum;
+#endif
 } /* ParallelGridCore::StopCalcClock */
 
 /**
@@ -1211,25 +1221,41 @@ void ParallelGridCore::ShareCalcClocks ()
 {
   for (int process = 0; process < getTotalProcCount (); ++process)
   {
+#ifdef MPI_DYNAMIC_CLOCK
+    FPValue calcClockSec;
+#else
     uint64_t calcClockSec;
     uint64_t calcClockNSec;
+#endif
     uint32_t calcClockCount;
 
     if (process == getProcessId ())
     {
+#ifdef MPI_DYNAMIC_CLOCK
+      calcClockSec = calcClockSumBetweenRebalance[process];
+#else
       calcClockSec = (uint64_t) calcClockSumBetweenRebalance[process].tv_sec;
       calcClockNSec = (uint64_t) calcClockSumBetweenRebalance[process].tv_nsec;
+#endif
       calcClockCount = calcClockCountBetweenRebalance[process];
     }
 
+#ifdef MPI_DYNAMIC_CLOCK
+    MPI_Bcast (&calcClockSec, 1, MPI_FPVALUE, process, communicator);
+#else
     MPI_Bcast (&calcClockSec, 1, MPI_LONG_LONG, process, communicator);
     MPI_Bcast (&calcClockNSec, 1, MPI_LONG_LONG, process, communicator);
+#endif
     MPI_Bcast (&calcClockCount, 1, MPI_UNSIGNED, process, communicator);
 
     if (process != getProcessId ())
     {
+#ifdef MPI_DYNAMIC_CLOCK
+      calcClockSumBetweenRebalance[process] = calcClockSec;
+#else
       calcClockSumBetweenRebalance[process].tv_sec = calcClockSec;
       calcClockSumBetweenRebalance[process].tv_nsec = calcClockNSec;
+#endif
       calcClockCountBetweenRebalance[process] = calcClockCount;
     }
 
@@ -1412,8 +1438,12 @@ ParallelGridCore::ClearCalcClocks ()
 {
   for (int i = 0; i < totalProcCount; ++i)
   {
+#ifdef MPI_DYNAMIC_CLOCK
+    calcClockSumBetweenRebalance[i] = 0;
+#else
     calcClockSumBetweenRebalance[i].tv_sec = 0;
     calcClockSumBetweenRebalance[i].tv_nsec = 0;
+#endif
 
     calcClockCountBetweenRebalance[i] = 0;
   }

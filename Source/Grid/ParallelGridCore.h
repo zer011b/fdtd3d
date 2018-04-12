@@ -43,8 +43,10 @@
 #ifdef MPI_DYNAMIC_CLOCK
 // Clock for different buffer sizes, i.e. latency for size 0
 typedef std::map<uint32_t, FPValue> ShareClock_t;
+typedef FPValue CalcClock_t;
 #else
 typedef std::map<uint32_t, timespec> ShareClock_t;
+typedef timespec CalcClock_t;
 #endif
 #endif
 
@@ -209,7 +211,7 @@ private:
   /**
    * Latest clock counter for calculations of all processes
    */
-  std::vector<timespec> calcClockSumBetweenRebalance;
+  std::vector<CalcClock_t> calcClockSumBetweenRebalance;
   std::vector<grid_coord> calcClockCountBetweenRebalance;
 
   /**
@@ -709,11 +711,16 @@ public:
    *
    * @return calculations clock
    */
-  timespec getCalcClock (int pid) const
+  CalcClock_t getCalcClock (int pid) const
   {
     ASSERT (pid >= 0 && pid < totalProcCount);
+#ifdef MPI_DYNAMIC_CLOCK
+    ASSERT (nodeState[pid] == 1 && calcClockSumBetweenRebalance[pid] > 0
+            || nodeState[pid] == 0 && calcClockSumBetweenRebalance[pid] == 0);
+#else
     ASSERT (nodeState[pid] == 1 && (calcClockSumBetweenRebalance[pid].tv_sec > 0 || calcClockSumBetweenRebalance[pid].tv_nsec > 0)
             || nodeState[pid] == 0 && calcClockSumBetweenRebalance[pid].tv_sec == 0 && calcClockSumBetweenRebalance[pid].tv_nsec == 0);
+#endif
     return calcClockSumBetweenRebalance[pid];
   } /* getCalcClock */
 
