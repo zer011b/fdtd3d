@@ -14,7 +14,7 @@ BMPLoader<GridCoordinate1D>::loadGrid (Grid<GridCoordinate1D> *grid) const
 {
 #if PRINT_MESSAGE
   const GridCoordinate1D& size = grid->getSize ();
-  grid_coord sx = size.getX ();
+  grid_coord sx = size.get1 ();
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Loading 1D from BMP image. Size: " COORD_MOD "x1x1\n",
     sx);
@@ -34,8 +34,8 @@ BMPLoader<GridCoordinate2D>::loadGrid (Grid<GridCoordinate2D> *grid) const
 {
 #if PRINT_MESSAGE
   const GridCoordinate2D& size = grid->getSize ();
-  grid_coord sx = size.getX ();
-  grid_coord sy = size.getY ();
+  grid_coord sx = size.get1 ();
+  grid_coord sy = size.get2 ();
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Loading 2D from BMP image. Size: " COORD_MOD "x" COORD_MOD "x1\n",
     sx, sy)
@@ -64,7 +64,7 @@ void
 BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid, GridFileType load_type) const
 {
   const GridCoordinate1D& size = grid->getSize ();
-  grid_coord sx = size.getX ();
+  grid_coord sx = size.get1 ();
   grid_coord sy = 1;
 
   // Create image for values and max/min values.
@@ -208,7 +208,7 @@ BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid, GridFil
     GridCoordinate1D coord = grid->calculatePositionFromIndex (iter);
 
     // Pixel coordinate.
-    grid_coord px = coord.getX ();
+    grid_coord px = coord.get1 ();
     grid_coord py = 0;
 
     RGBApixel pixelRe = imageRe.GetPixel(px, py);
@@ -274,8 +274,8 @@ void
 BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid, GridFileType load_type) const
 {
   const GridCoordinate2D& size = grid->getSize ();
-  grid_coord sx = size.getX ();
-  grid_coord sy = size.getY ();
+  grid_coord sx = size.get1 ();
+  grid_coord sy = size.get2 ();
 
   // Create image for values and max/min values.
   BMP imageRe;
@@ -418,8 +418,8 @@ BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid, GridFil
     GridCoordinate2D coord = grid->calculatePositionFromIndex (iter);
 
     // Pixel coordinate.
-    grid_coord px = coord.getX ();
-    grid_coord py = coord.getY ();
+    grid_coord px = coord.get1 ();
+    grid_coord py = coord.get2 ();
 
     RGBApixel pixelRe = imageRe.GetPixel(px, py);
 

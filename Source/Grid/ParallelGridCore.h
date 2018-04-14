@@ -38,7 +38,7 @@
 #define PID_NONE (-1)
 
 #ifdef DYNAMIC_GRID
-#define CLOCK_BUF_SIZE 100
+#define CLOCK_BUF_SIZE 1000
 
 #ifdef MPI_DYNAMIC_CLOCK
 // Clock for different buffer sizes, i.e. latency for size 0

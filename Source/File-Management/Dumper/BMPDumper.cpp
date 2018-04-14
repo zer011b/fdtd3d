@@ -17,7 +17,7 @@ BMPDumper<GridCoordinate1D>::dumpGrid (Grid<GridCoordinate1D> *grid,
 #if PRINT_MESSAGE
   const GridCoordinate1D& size = grid->getSize ();
 
-  grid_coord sx = size.getX ();
+  grid_coord sx = size.get1 ();
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 1D Grid <%s> to BMP image. Size: " COORD_MOD "x1x1\n",
     grid->getName ().c_str (), sx);
 #endif /* PRINT_MESSAGE */
@@ -39,8 +39,8 @@ BMPDumper<GridCoordinate2D>::dumpGrid (Grid<GridCoordinate2D> *grid,
 #if PRINT_MESSAGE
   const GridCoordinate2D& size = grid->getSize ();
 
-  grid_coord sx = size.getX ();
-  grid_coord sy = size.getY ();
+  grid_coord sx = size.get1 ();
+  grid_coord sy = size.get2 ();
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 2D Grid <%s> to BMP image. Size: " COORD_MOD "x" COORD_MOD "x1\n",
     grid->getName ().c_str (), sx, sy);
@@ -63,9 +63,9 @@ BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> *grid,
 #if PRINT_MESSAGE
   const GridCoordinate3D& size = grid->getSize ();
 
-  grid_coord sx = size.getX ();
-  grid_coord sy = size.getY ();
-  grid_coord sz = size.getZ ();
+  grid_coord sx = size.get1 ();
+  grid_coord sy = size.get2 ();
+  grid_coord sz = size.get3 ();
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 3D Grid <%s> to BMP image. Size: " COORD_MOD "x" COORD_MOD "x" COORD_MOD "\n",
     grid->getName ().c_str (), sx, sy, sz);
@@ -84,7 +84,7 @@ void
 BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFileType dump_type, GridCoordinate1D startCoord, GridCoordinate1D endCoord) const
 {
   const GridCoordinate1D& size = grid->getSize ();
-  grid_coord sx = size.getX ();
+  grid_coord sx = size.get1 ();
   grid_coord sy = 1;
 
   // Create image for current values and max/min values.
@@ -171,7 +171,7 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
   }
 
   // Go through all values and calculate max/min.
-  for (grid_coord i = startCoord.getX (); i < endCoord.getX (); ++i)
+  for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
   {
     const FieldPointValue* current = grid->getFieldPointValue (GridCoordinate1D (i));
 
@@ -280,7 +280,7 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
-  for (grid_coord i = startCoord.getX (); i < endCoord.getX (); ++i)
+  for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
   {
     // Get current point value.
     GridCoordinate1D coord (i);
@@ -288,7 +288,7 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
     ASSERT (current);
 
     // Pixel coordinate.
-    grid_coord px = coord.getX ();
+    grid_coord px = coord.get1 ();
     grid_coord py = 0;
 
     // Get pixel for image.
@@ -476,8 +476,8 @@ void
 BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFileType dump_type, GridCoordinate2D startCoord, GridCoordinate2D endCoord) const
 {
   const GridCoordinate2D& size = grid->getSize ();
-  grid_coord sx = size.getX ();
-  grid_coord sy = size.getY ();;
+  grid_coord sx = size.get1 ();
+  grid_coord sy = size.get2 ();;
 
   // Create image for current values and max/min values.
   BMP imageRe;
@@ -563,9 +563,9 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
   }
 
   // Go through all values and calculate max/min.
-  for (grid_coord i = startCoord.getX (); i < endCoord.getX (); ++i)
+  for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
   {
-    for (grid_coord j = startCoord.getY (); j < endCoord.getY (); ++j)
+    for (grid_coord j = startCoord.get2 (); j < endCoord.get2 (); ++j)
     {
       const FieldPointValue* current = grid->getFieldPointValue (GridCoordinate2D (i, j));
 
@@ -675,9 +675,9 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
 #endif /* COMPLEX_FIELD_VALUES */
 
   // Go through all values and set pixels.
-  for (grid_coord i = startCoord.getX (); i < endCoord.getX (); ++i)
+  for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
   {
-    for (grid_coord j = startCoord.getY (); j < endCoord.getY (); ++j)
+    for (grid_coord j = startCoord.get2 (); j < endCoord.get2 (); ++j)
     {
       GridCoordinate2D coord (i, j);
 
@@ -686,8 +686,8 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
       ASSERT (current);
 
       // Pixel coordinate.
-      grid_coord px = coord.getX ();
-      grid_coord py = coord.getY ();;
+      grid_coord px = coord.get1 ();
+      grid_coord py = coord.get2 ();;
 
       // Get pixel for image.
       FPValue valueRe = 0;
@@ -877,9 +877,9 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
 //  ASSERT_MESSAGE ("3D Dumper is not implemented.")
 
   const GridCoordinate3D& size = grid->getSize ();
-  grid_coord sx = size.getX ();
-  grid_coord sy = size.getY ();
-  grid_coord sz = size.getZ ();
+  grid_coord sx = size.get1 ();
+  grid_coord sy = size.get2 ();
+  grid_coord sz = size.get3 ();
 
   const FieldPointValue* value0 = grid->getFieldPointValue (startCoord);
   ASSERT (value0);
@@ -950,11 +950,11 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
   }
 
   // Go through all values and calculate max/min.
-  for (grid_coord i = startCoord.getX (); i < endCoord.getX (); ++i)
+  for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
   {
-    for (grid_coord j = startCoord.getY (); j < endCoord.getY (); ++j)
+    for (grid_coord j = startCoord.get2 (); j < endCoord.get2 (); ++j)
     {
-      for (grid_coord k = startCoord.getZ (); k < endCoord.getZ (); ++k)
+      for (grid_coord k = startCoord.get3 (); k < endCoord.get3 (); ++k)
       {
         const FieldPointValue* current = grid->getFieldPointValue (GridCoordinate3D (i, j, k));
 
@@ -1074,44 +1074,44 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
 
   if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::X)
   {
-    coordStart1 = startCoord.getX ();
-    coordEnd1 = endCoord.getX ();
+    coordStart1 = startCoord.get1 ();
+    coordEnd1 = endCoord.get1 ();
     size1 = sx;
 
-    coordStart2 = startCoord.getY ();
-    coordEnd2 = endCoord.getY ();
+    coordStart2 = startCoord.get2 ();
+    coordEnd2 = endCoord.get2 ();
     size2 = sy;
 
-    coordStart3 = startCoord.getZ ();
-    coordEnd3 = endCoord.getZ ();
+    coordStart3 = startCoord.get3 ();
+    coordEnd3 = endCoord.get3 ();
     size3 = sz;
   }
   else if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::Y)
   {
-    coordStart1 = startCoord.getY ();
-    coordEnd1 = endCoord.getY ();
+    coordStart1 = startCoord.get2 ();
+    coordEnd1 = endCoord.get2 ();
     size1 = sy;
 
-    coordStart2 = startCoord.getX ();
-    coordEnd2 = endCoord.getX ();
+    coordStart2 = startCoord.get1 ();
+    coordEnd2 = endCoord.get1 ();
     size2 = sx;
 
-    coordStart3 = startCoord.getZ ();
-    coordEnd3 = endCoord.getZ ();
+    coordStart3 = startCoord.get3 ();
+    coordEnd3 = endCoord.get3 ();
     size3 = sz;
   }
   else if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::Z)
   {
-    coordStart1 = startCoord.getZ ();
-    coordEnd1 = endCoord.getZ ();
+    coordStart1 = startCoord.get3 ();
+    coordEnd1 = endCoord.get3 ();
     size1 = sz;
 
-    coordStart2 = startCoord.getX ();
-    coordEnd2 = endCoord.getX ();
+    coordStart2 = startCoord.get1 ();
+    coordEnd2 = endCoord.get1 ();
     size2 = sx;
 
-    coordStart3 = startCoord.getY ();
-    coordEnd3 = endCoord.getY ();
+    coordStart3 = startCoord.get2 ();
+    coordEnd3 = endCoord.get2 ();
     size3 = sy;
   }
 

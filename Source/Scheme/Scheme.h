@@ -1,4 +1,4 @@
-SchemeType_t#ifndef SCHEME_H
+#ifndef SCHEME_H
 #define SCHEME_H
 
 #include "GridInterface.h"
@@ -24,15 +24,7 @@ struct NPair
   }
 };
 
-typedef YeeGridLayout<GridCoordinate1DTemplate, E_CENTERED> YL1D;
-typedef YeeGridLayout<GridCoordinate2DTemplate, E_CENTERED> YL2D;
-typedef YeeGridLayout<GridCoordinate3DTemplate, E_CENTERED> YL3D;
-#ifdef PARALLEL_GRID
-typedef ParallelYeeGridLayout<E_CENTERED> PYL;
-#endif /* PARALLEL_GRID */
-
-// TODO: remove TCoord, as Layout has it defined
-template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 class Scheme
 {
   typedef TCoord<grid_coord, true> TC;
@@ -42,9 +34,14 @@ class Scheme
 
 protected:
 
-  Layout *yeeLayout;
+  YeeGridLayout<Type, TCoord, layout_type> *yeeLayout;
+  bool isParallelLayout;
 
 private:
+
+  CoordinateType ct1;
+  CoordinateType ct2;
+  CoordinateType ct3;
 
   Grid<TC> *Ex;
   Grid<TC> *Ey;
@@ -183,6 +180,8 @@ private:
   static const bool doNeedSigmaZ;
 
 private:
+
+  void initCoordTypesFromSize (TC);
 
   template <uint8_t grid_type>
   void calculateTFSF (TC, FieldValue &, FieldValue &, FieldValue &, FieldValue &,
@@ -371,6 +370,9 @@ public:
   void initCallBacks ();
   void initGrids ();
 
+  void initFullMaterialGrids ();
+  void initFullFieldGrids ();
+
   /**
    * Default constructor used for template instantiation
    */
@@ -378,7 +380,8 @@ public:
   {
   }
 
-  Scheme (Layout *layout,
+  Scheme (YeeGridLayout<Type, TCoord, layout_type> *layout,
+          bool parallelLayout,
           const TC& totSize,
           time_step tStep);
 
@@ -388,6 +391,327 @@ public:
 class SchemeHelper
 {
 public:
+
+  static
+  void initFullMaterialGrids1D (Grid<GridCoordinate1D> *Eps, Grid<GridCoordinate1D> *totalEps,
+                                Grid<GridCoordinate1D> *Mu, Grid<GridCoordinate1D> *totalMu,
+                                Grid<GridCoordinate1D> *OmegaPE, Grid<GridCoordinate1D> *totalOmegaPE,
+                                Grid<GridCoordinate1D> *OmegaPM, Grid<GridCoordinate1D> *totalOmegaPM,
+                                Grid<GridCoordinate1D> *GammaE, Grid<GridCoordinate1D> *totalGammaE,
+                                Grid<GridCoordinate1D> *GammaM, Grid<GridCoordinate1D> *totalGammaM)
+  {
+#ifdef PARALLEL_GRID
+#ifdef GRID_1D
+    ((ParallelGrid *) Eps)->gatherFullGridPlacement (totalEps);
+    ((ParallelGrid *) Mu)->gatherFullGridPlacement (totalMu);
+
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      ((ParallelGrid *) OmegaPE)->gatherFullGridPlacement (totalOmegaPE);
+      ((ParallelGrid *) OmegaPM)->gatherFullGridPlacement (totalOmegaPM);
+      ((ParallelGrid *) GammaE)->gatherFullGridPlacement (totalGammaE);
+      ((ParallelGrid *) GammaM)->gatherFullGridPlacement (totalGammaM);
+    }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                    "Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+  }
+
+  static
+  void initFullMaterialGrids2D (Grid<GridCoordinate2D> *Eps, Grid<GridCoordinate2D> *totalEps,
+                                Grid<GridCoordinate2D> *Mu, Grid<GridCoordinate2D> *totalMu,
+                                Grid<GridCoordinate2D> *OmegaPE, Grid<GridCoordinate2D> *totalOmegaPE,
+                                Grid<GridCoordinate2D> *OmegaPM, Grid<GridCoordinate2D> *totalOmegaPM,
+                                Grid<GridCoordinate2D> *GammaE, Grid<GridCoordinate2D> *totalGammaE,
+                                Grid<GridCoordinate2D> *GammaM, Grid<GridCoordinate2D> *totalGammaM)
+  {
+#ifdef PARALLEL_GRID
+#ifdef GRID_2D
+    ((ParallelGrid *) Eps)->gatherFullGridPlacement (totalEps);
+    ((ParallelGrid *) Mu)->gatherFullGridPlacement (totalMu);
+
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      ((ParallelGrid *) OmegaPE)->gatherFullGridPlacement (totalOmegaPE);
+      ((ParallelGrid *) OmegaPM)->gatherFullGridPlacement (totalOmegaPM);
+      ((ParallelGrid *) GammaE)->gatherFullGridPlacement (totalGammaE);
+      ((ParallelGrid *) GammaM)->gatherFullGridPlacement (totalGammaM);
+    }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                    "Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+  }
+
+  static
+  void initFullMaterialGrids3D (Grid<GridCoordinate3D> *Eps, Grid<GridCoordinate3D> *totalEps,
+                                Grid<GridCoordinate3D> *Mu, Grid<GridCoordinate3D> *totalMu,
+                                Grid<GridCoordinate3D> *OmegaPE, Grid<GridCoordinate3D> *totalOmegaPE,
+                                Grid<GridCoordinate3D> *OmegaPM, Grid<GridCoordinate3D> *totalOmegaPM,
+                                Grid<GridCoordinate3D> *GammaE, Grid<GridCoordinate3D> *totalGammaE,
+                                Grid<GridCoordinate3D> *GammaM, Grid<GridCoordinate3D> *totalGammaM)
+  {
+#ifdef PARALLEL_GRID
+#ifdef GRID_3D
+    ((ParallelGrid *) Eps)->gatherFullGridPlacement (totalEps);
+    ((ParallelGrid *) Mu)->gatherFullGridPlacement (totalMu);
+
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      ((ParallelGrid *) OmegaPE)->gatherFullGridPlacement (totalOmegaPE);
+      ((ParallelGrid *) OmegaPM)->gatherFullGridPlacement (totalOmegaPM);
+      ((ParallelGrid *) GammaE)->gatherFullGridPlacement (totalGammaE);
+      ((ParallelGrid *) GammaM)->gatherFullGridPlacement (totalGammaM);
+    }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                    "Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+  }
+
+  static
+  void initFullFieldGrids1D (bool totalInitialized,
+                             bool doNeedEx, Grid<GridCoordinate1D> *Ex, Grid<GridCoordinate1D> *totalEx,
+                             bool doNeedEy, Grid<GridCoordinate1D> *Ey, Grid<GridCoordinate1D> *totalEy,
+                             bool doNeedEz, Grid<GridCoordinate1D> *Ez, Grid<GridCoordinate1D> *totalEz,
+                             bool doNeedHx, Grid<GridCoordinate1D> *Hx, Grid<GridCoordinate1D> *totalHx,
+                             bool doNeedHy, Grid<GridCoordinate1D> *Hy, Grid<GridCoordinate1D> *totalHy,
+                             bool doNeedHz, Grid<GridCoordinate1D> *Hz, Grid<GridCoordinate1D> *totalHz)
+  {
+#ifdef PARALLEL_GRID
+#ifdef GRID_1D
+    if (totalInitialized)
+    {
+      if (doNeedEx)
+      {
+        totalEx = ((ParallelGrid *) Ex)->gatherFullGridPlacement (totalEx);
+      }
+      if (doNeedEy)
+      {
+        totalEy = ((ParallelGrid *) Ey)->gatherFullGridPlacement (totalEy);
+      }
+      if (doNeedEz)
+      {
+        totalEz = ((ParallelGrid *) Ez)->gatherFullGridPlacement (totalEz);
+      }
+
+      if (doNeedHx)
+      {
+        totalHx = ((ParallelGrid *) Hx)->gatherFullGridPlacement (totalHx);
+      }
+      if (doNeedHy)
+      {
+        totalHy = ((ParallelGrid *) Hy)->gatherFullGridPlacement (totalHy);
+      }
+      if (doNeedHz)
+      {
+        totalHz = ((ParallelGrid *) Hz)->gatherFullGridPlacement (totalHz);
+      }
+    }
+    else
+    {
+      if (doNeedEx)
+      {
+        totalEx = ((ParallelGrid *) Ex)->gatherFullGrid ();
+      }
+      if (doNeedEy)
+      {
+        totalEy = ((ParallelGrid *) Ey)->gatherFullGrid ();
+      }
+      if (doNeedEz)
+      {
+        totalEz = ((ParallelGrid *) Ez)->gatherFullGrid ();
+      }
+
+      if (doNeedHx)
+      {
+        totalHx = ((ParallelGrid *) Hx)->gatherFullGrid ();
+      }
+      if (doNeedHy)
+      {
+        totalHy = ((ParallelGrid *) Hy)->gatherFullGrid ();
+      }
+      if (doNeedHz)
+      {
+        totalHz = ((ParallelGrid *) Hz)->gatherFullGrid ();
+      }
+
+      totalInitialized = true;
+    }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                    "Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+  }
+
+  static
+  void initFullFieldGrids2D (bool totalInitialized,
+                             bool doNeedEx, Grid<GridCoordinate2D> *Ex, Grid<GridCoordinate2D> *totalEx,
+                             bool doNeedEy, Grid<GridCoordinate2D> *Ey, Grid<GridCoordinate2D> *totalEy,
+                             bool doNeedEz, Grid<GridCoordinate2D> *Ez, Grid<GridCoordinate2D> *totalEz,
+                             bool doNeedHx, Grid<GridCoordinate2D> *Hx, Grid<GridCoordinate2D> *totalHx,
+                             bool doNeedHy, Grid<GridCoordinate2D> *Hy, Grid<GridCoordinate2D> *totalHy,
+                             bool doNeedHz, Grid<GridCoordinate2D> *Hz, Grid<GridCoordinate2D> *totalHz)
+  {
+#ifdef PARALLEL_GRID
+#ifdef GRID_2D
+    if (totalInitialized)
+    {
+      if (doNeedEx)
+      {
+        totalEx = ((ParallelGrid *) Ex)->gatherFullGridPlacement (totalEx);
+      }
+      if (doNeedEy)
+      {
+        totalEy = ((ParallelGrid *) Ey)->gatherFullGridPlacement (totalEy);
+      }
+      if (doNeedEz)
+      {
+        totalEz = ((ParallelGrid *) Ez)->gatherFullGridPlacement (totalEz);
+      }
+
+      if (doNeedHx)
+      {
+        totalHx = ((ParallelGrid *) Hx)->gatherFullGridPlacement (totalHx);
+      }
+      if (doNeedHy)
+      {
+        totalHy = ((ParallelGrid *) Hy)->gatherFullGridPlacement (totalHy);
+      }
+      if (doNeedHz)
+      {
+        totalHz = ((ParallelGrid *) Hz)->gatherFullGridPlacement (totalHz);
+      }
+    }
+    else
+    {
+      if (doNeedEx)
+      {
+        totalEx = ((ParallelGrid *) Ex)->gatherFullGrid ();
+      }
+      if (doNeedEy)
+      {
+        totalEy = ((ParallelGrid *) Ey)->gatherFullGrid ();
+      }
+      if (doNeedEz)
+      {
+        totalEz = ((ParallelGrid *) Ez)->gatherFullGrid ();
+      }
+
+      if (doNeedHx)
+      {
+        totalHx = ((ParallelGrid *) Hx)->gatherFullGrid ();
+      }
+      if (doNeedHy)
+      {
+        totalHy = ((ParallelGrid *) Hy)->gatherFullGrid ();
+      }
+      if (doNeedHz)
+      {
+        totalHz = ((ParallelGrid *) Hz)->gatherFullGrid ();
+      }
+
+      totalInitialized = true;
+    }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                    "Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+  }
+
+  static
+  void initFullFieldGrids3D (bool totalInitialized,
+                             bool doNeedEx, Grid<GridCoordinate3D> *Ex, Grid<GridCoordinate3D> *totalEx,
+                             bool doNeedEy, Grid<GridCoordinate3D> *Ey, Grid<GridCoordinate3D> *totalEy,
+                             bool doNeedEz, Grid<GridCoordinate3D> *Ez, Grid<GridCoordinate3D> *totalEz,
+                             bool doNeedHx, Grid<GridCoordinate3D> *Hx, Grid<GridCoordinate3D> *totalHx,
+                             bool doNeedHy, Grid<GridCoordinate3D> *Hy, Grid<GridCoordinate3D> *totalHy,
+                             bool doNeedHz, Grid<GridCoordinate3D> *Hz, Grid<GridCoordinate3D> *totalHz)
+  {
+#ifdef PARALLEL_GRID
+#ifdef GRID_3D
+    if (totalInitialized)
+    {
+      if (doNeedEx)
+      {
+        totalEx = ((ParallelGrid *) Ex)->gatherFullGridPlacement (totalEx);
+      }
+      if (doNeedEy)
+      {
+        totalEy = ((ParallelGrid *) Ey)->gatherFullGridPlacement (totalEy);
+      }
+      if (doNeedEz)
+      {
+        totalEz = ((ParallelGrid *) Ez)->gatherFullGridPlacement (totalEz);
+      }
+
+      if (doNeedHx)
+      {
+        totalHx = ((ParallelGrid *) Hx)->gatherFullGridPlacement (totalHx);
+      }
+      if (doNeedHy)
+      {
+        totalHy = ((ParallelGrid *) Hy)->gatherFullGridPlacement (totalHy);
+      }
+      if (doNeedHz)
+      {
+        totalHz = ((ParallelGrid *) Hz)->gatherFullGridPlacement (totalHz);
+      }
+    }
+    else
+    {
+      if (doNeedEx)
+      {
+        totalEx = ((ParallelGrid *) Ex)->gatherFullGrid ();
+      }
+      if (doNeedEy)
+      {
+        totalEy = ((ParallelGrid *) Ey)->gatherFullGrid ();
+      }
+      if (doNeedEz)
+      {
+        totalEz = ((ParallelGrid *) Ez)->gatherFullGrid ();
+      }
+
+      if (doNeedHx)
+      {
+        totalHx = ((ParallelGrid *) Hx)->gatherFullGrid ();
+      }
+      if (doNeedHy)
+      {
+        totalHy = ((ParallelGrid *) Hy)->gatherFullGrid ();
+      }
+      if (doNeedHz)
+      {
+        totalHz = ((ParallelGrid *) Hz)->gatherFullGrid ();
+      }
+
+      totalInitialized = true;
+    }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                    "Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+  }
 
   static void initSigma (FieldPointValue *fieldValue, grid_coord dist, FPValue boundary, FPValue gridStep)
   {
@@ -423,12 +747,12 @@ public:
     return proportionD1 * val1->getPrevValue () + proportionD2 * val2->getPrevValue ();
   }
 
-  template <template <typename, bool> class TCoord, typename Layout>
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
   static
-  void initSigmaX (Layout *layout, FPValue dx, Grid< TCoord<grid_coord, true> > *sigma)
+  void initSigmaX (YeeGridLayout<Type, TCoord, layout_type> *layout, FPValue dx, Grid< TCoord<grid_coord, true> > *sigma)
   {
     TCoord<grid_coord, true> PMLSize = layout->getLeftBorderPML () * (layout->getIsDoubleMaterialPrecision () ? 2 : 1);
-    FPValue boundary = PMLSize.getX () * dx;
+    FPValue boundary = PMLSize.get1 () * dx;
 
     for (grid_coord i = 0; i < sigma->getSize ().calculateTotalCoord (); ++i)
     {
@@ -443,13 +767,13 @@ public:
       /*
        * TODO: add layout coordinates for material: sigma, eps, etc.
        */
-      if (posAbs.getX () < PMLSize.getX ())
+      if (posAbs.get1 () < PMLSize.get1 ())
       {
-        dist = PMLSize.getX () - posAbs.getX ();
+        dist = PMLSize.get1 () - posAbs.get1 ();
       }
-      else if (posAbs.getX () >= size.getX () - PMLSize.getX ())
+      else if (posAbs.get1 () >= size.get1 () - PMLSize.get1 ())
       {
-        dist = posAbs.getX () - (size.getX () - PMLSize.getX ());
+        dist = posAbs.get1 () - (size.get1 () - PMLSize.get1 ());
       }
 
       SchemeHelper::initSigma (valSigma, dist, boundary, dx);
@@ -457,12 +781,12 @@ public:
     }
   }
 
-  template <template <typename, bool> class TCoord, typename Layout>
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
   static
-  void initSigmaY (Layout *layout, FPValue dx, Grid< TCoord<grid_coord, true> > *sigma)
+  void initSigmaY (YeeGridLayout<Type, TCoord, layout_type> *layout, FPValue dx, Grid< TCoord<grid_coord, true> > *sigma)
   {
     TCoord<grid_coord, true> PMLSize = layout->getLeftBorderPML () * (layout->getIsDoubleMaterialPrecision () ? 2 : 1);
-    FPValue boundary = PMLSize.getY () * dx;
+    FPValue boundary = PMLSize.get2 () * dx;
 
     for (grid_coord i = 0; i < sigma->getSize ().calculateTotalCoord (); ++i)
     {
@@ -477,13 +801,13 @@ public:
       /*
        * TODO: add layout coordinates for material: sigma, eps, etc.
        */
-      if (posAbs.getY () < PMLSize.getY ())
+      if (posAbs.get2 () < PMLSize.get2 ())
       {
-        dist = PMLSize.getY () - posAbs.getY ();
+        dist = PMLSize.get2 () - posAbs.get2 ();
       }
-      else if (posAbs.getY () >= size.getY () - PMLSize.getY ())
+      else if (posAbs.get2 () >= size.get2 () - PMLSize.get2 ())
       {
-        dist = posAbs.getY () - (size.getY () - PMLSize.getY ());
+        dist = posAbs.get2 () - (size.get2 () - PMLSize.get2 ());
       }
 
       SchemeHelper::initSigma (valSigma, dist, boundary, dx);
@@ -491,12 +815,12 @@ public:
     }
   }
 
-  template <template <typename, bool> class TCoord, typename Layout>
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
   static
-  void initSigmaZ (Layout *layout, FPValue dx, Grid< TCoord<grid_coord, true> > *sigma)
+  void initSigmaZ (YeeGridLayout<Type, TCoord, layout_type> *layout, FPValue dx, Grid< TCoord<grid_coord, true> > *sigma)
   {
     TCoord<grid_coord, true> PMLSize = layout->getLeftBorderPML () * (layout->getIsDoubleMaterialPrecision () ? 2 : 1);
-    FPValue boundary = PMLSize.getZ () * dx;
+    FPValue boundary = PMLSize.get3 () * dx;
 
     for (grid_coord i = 0; i < sigma->getSize ().calculateTotalCoord (); ++i)
     {
@@ -511,13 +835,13 @@ public:
       /*
        * TODO: add layout coordinates for material: sigma, eps, etc.
        */
-      if (posAbs.getZ () < PMLSize.getZ ())
+      if (posAbs.get3 () < PMLSize.get3 ())
       {
-        dist = PMLSize.getZ () - posAbs.getZ ();
+        dist = PMLSize.get3 () - posAbs.get3 ();
       }
-      else if (posAbs.getZ () >= size.getZ () - PMLSize.getZ ())
+      else if (posAbs.get3 () >= size.get3 () - PMLSize.get3 ())
       {
-        dist = posAbs.getZ () - (size.getZ () - PMLSize.getZ ());
+        dist = posAbs.get3 () - (size.get3 () - PMLSize.get3 ());
       }
 
       SchemeHelper::initSigma (valSigma, dist, boundary, dx);
@@ -528,7 +852,7 @@ public:
   static
   NPair ntffN3D_x (grid_coord, FPValue, FPValue,
                    GridCoordinate3D, GridCoordinate3D,
-                   YL3D *,
+                   YL3D_Dim3 *,
                    FPValue, FPValue,
                    Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *,
@@ -537,7 +861,7 @@ public:
   static
   NPair ntffN3D_y (grid_coord, FPValue, FPValue,
                    GridCoordinate3D, GridCoordinate3D,
-                   YL3D *,
+                   YL3D_Dim3 *,
                    FPValue, FPValue,
                    Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *,
@@ -546,7 +870,7 @@ public:
   static
   NPair ntffN3D_z (grid_coord, FPValue, FPValue,
                    GridCoordinate3D, GridCoordinate3D,
-                   YL3D *,
+                   YL3D_Dim3 *,
                    FPValue, FPValue,
                    Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *,
@@ -555,47 +879,52 @@ public:
   static
   NPair ntffN3D (FPValue, FPValue,
                  GridCoordinate3D, GridCoordinate3D,
-                 YL3D *,
+                 YL3D_Dim3 *,
                  FPValue, FPValue,
                  Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *,
                  Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
+
+  template <SchemeType_t Type, LayoutType layout_type>
   static
   NPair ntffN2D (FPValue, FPValue,
                  GridCoordinate2D, GridCoordinate2D,
-                 YL2D *,
+                 YeeGridLayout<Type, GridCoordinate2DTemplate, layout_type> *,
                  FPValue, FPValue,
                  Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate2D> *, Grid<GridCoordinate2D> *,
                  Grid<GridCoordinate2D> *, Grid<GridCoordinate2D> *)
   {}
+
+  template <SchemeType_t Type, LayoutType layout_type>
   static
   NPair ntffN1D (FPValue, FPValue,
                  GridCoordinate1D, GridCoordinate1D,
-                 YL1D *,
+                 YeeGridLayout<Type, GridCoordinate1DTemplate, layout_type> *,
                  FPValue, FPValue,
                  Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate1D> *, Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate1D> *, Grid<GridCoordinate1D> *)
   {}
+
   static
   NPair ntffL3D_x (grid_coord, FPValue, FPValue,
                    GridCoordinate3D, GridCoordinate3D,
-                   YL3D *,
+                   YL3D_Dim3 *,
                    FPValue, FPValue,
                    Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
   static
   NPair ntffL3D_y (grid_coord, FPValue, FPValue,
                    GridCoordinate3D, GridCoordinate3D,
-                   YL3D *,
+                   YL3D_Dim3 *,
                    FPValue, FPValue,
                    Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
   static
   NPair ntffL3D_z (grid_coord, FPValue, FPValue,
                    GridCoordinate3D, GridCoordinate3D,
-                   YL3D *,
+                   YL3D_Dim3 *,
                    FPValue, FPValue,
                    Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *,
@@ -604,26 +933,30 @@ public:
   static
   NPair ntffL3D (FPValue, FPValue,
                  GridCoordinate3D, GridCoordinate3D,
-                 YL3D *,
+                 YL3D_Dim3 *,
                  FPValue, FPValue,
                  Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate3D> *,
                  Grid<GridCoordinate3D> *,
                  Grid<GridCoordinate3D> *);
+
+  template <SchemeType_t Type, LayoutType layout_type>
   static
   NPair ntffL2D (FPValue, FPValue,
                  GridCoordinate2D, GridCoordinate2D,
-                 YL2D *,
+                 YeeGridLayout<Type, GridCoordinate2DTemplate, layout_type> *,
                  FPValue, FPValue,
                  Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate2D> *,
                  Grid<GridCoordinate2D> *,
                  Grid<GridCoordinate2D> *)
   {}
+
+  template <SchemeType_t Type, LayoutType layout_type>
   static
   NPair ntffL1D (FPValue, FPValue,
                  GridCoordinate1D, GridCoordinate1D,
-                 YL1D *,
+                 YeeGridLayout<Type, GridCoordinate1DTemplate, layout_type> *,
                  FPValue, FPValue,
                  Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate1D> *,
@@ -633,96 +966,120 @@ public:
 
   static grid_coord getStartCoordOrthX (GridCoordinate3D size)
   {
-    return size.getX () / 2;
+    return size.get1 () / 2;
   }
   static grid_coord getStartCoordOrthY (GridCoordinate3D size)
   {
-    return size.getY () / 2;
+    return size.get2 () / 2;
   }
   static grid_coord getStartCoordOrthZ (GridCoordinate3D size)
   {
-    return size.getZ () / 2;
+    return size.get3 () / 2;
   }
 
   static grid_coord getEndCoordOrthX (GridCoordinate3D size)
   {
-    return size.getX () / 2 + 1;
+    return size.get1 () / 2 + 1;
   }
   static grid_coord getEndCoordOrthY (GridCoordinate3D size)
   {
-    return size.getY () / 2 + 1;
+    return size.get2 () / 2 + 1;
   }
   static grid_coord getEndCoordOrthZ (GridCoordinate3D size)
   {
-    return size.getZ () / 2 + 1;
+    return size.get3 () / 2 + 1;
   }
 
   static bool doSkipBorderFunc1D (GridCoordinate1D pos, Grid<GridCoordinate1D> *grid)
   {
-    return pos.getX () != 0 && pos.getX () != grid->getTotalSize ().getX () - 1;
+    return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1;
   }
   static bool doSkipBorderFunc2D (GridCoordinate2D pos, Grid<GridCoordinate2D> *grid)
   {
-    return pos.getX () != 0 && pos.getX () != grid->getTotalSize ().getX () - 1
-           && pos.getY () != 0 && pos.getY () != grid->getTotalSize ().getY () - 1;
+    return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1
+           && pos.get2 () != 0 && pos.get2 () != grid->getTotalSize ().get2 () - 1;
   }
   static bool doSkipBorderFunc3D (GridCoordinate3D pos, Grid<GridCoordinate3D> *grid)
   {
-    return pos.getX () != 0 && pos.getX () != grid->getTotalSize ().getX () - 1
-           && pos.getY () != 0 && pos.getY () != grid->getTotalSize ().getY () - 1
-           && pos.getZ () != 0 && pos.getZ () != grid->getTotalSize ().getZ () - 1;
+    return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1
+           && pos.get2 () != 0 && pos.get2 () != grid->getTotalSize ().get2 () - 1
+           && pos.get3 () != 0 && pos.get3 () != grid->getTotalSize ().get3 () - 1;
   }
 
   static bool doSkipMakeScattered1D (GridCoordinateFP1D pos, GridCoordinate1D left, GridCoordinate1D right)
   {
     GridCoordinateFP1D leftTFSF = convertCoord (left);
     GridCoordinateFP1D rightTFSF = convertCoord (right);
-    return pos.getX () < leftTFSF.getX () || pos.getX () > rightTFSF.getX ();
+    return pos.get1 () < leftTFSF.get1 () || pos.get1 () > rightTFSF.get1 ();
   }
   static bool doSkipMakeScattered2D (GridCoordinateFP2D pos, GridCoordinate2D left, GridCoordinate2D right)
   {
     GridCoordinateFP2D leftTFSF = convertCoord (left);
     GridCoordinateFP2D rightTFSF = convertCoord (right);
-    return pos.getX () < leftTFSF.getX () || pos.getX () > rightTFSF.getX ()
-           || pos.getY () < leftTFSF.getY () || pos.getY () > rightTFSF.getY ();
+    return pos.get1 () < leftTFSF.get1 () || pos.get1 () > rightTFSF.get1 ()
+           || pos.get2 () < leftTFSF.get2 () || pos.get2 () > rightTFSF.get2 ();
   }
   static bool doSkipMakeScattered3D (GridCoordinateFP3D pos, GridCoordinate3D left, GridCoordinate3D right)
   {
     GridCoordinateFP3D leftTFSF = convertCoord (left);
     GridCoordinateFP3D rightTFSF = convertCoord (right);
-    return pos.getX () < leftTFSF.getX () || pos.getX () > rightTFSF.getX ()
-           || pos.getY () < leftTFSF.getY () || pos.getY () > rightTFSF.getY ()
-           || pos.getZ () < leftTFSF.getZ () || pos.getZ () > rightTFSF.getZ ();
+    return pos.get1 () < leftTFSF.get1 () || pos.get1 () > rightTFSF.get1 ()
+           || pos.get2 () < leftTFSF.get2 () || pos.get2 () > rightTFSF.get2 ()
+           || pos.get3 () < leftTFSF.get3 () || pos.get3 () > rightTFSF.get3 ();
   }
 
   static GridCoordinate1D getStartCoordRes1D (OrthogonalAxis orthogonalAxis, GridCoordinate1D start, GridCoordinate1D size)
   {
     if (orthogonalAxis == OrthogonalAxis::Z)
     {
-      return GridCoordinate1D (start.getX ());
+      return GridCoordinate1D (start.get1 ()
+#ifdef DEBUG_INFO
+             , start.getType1 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::Y)
     {
-      return GridCoordinate1D (start.getX ());
+      return GridCoordinate1D (start.get1 ()
+#ifdef DEBUG_INFO
+             , start.getType1 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate1D (SchemeHelper::getStartCoordOrthX (expandTo3D (size)));
+      return GridCoordinate1D (SchemeHelper::getStartCoordOrthX (expandTo3D (size))
+#ifdef DEBUG_INFO
+             , start.getType1 ()
+#endif
+             );
     }
   }
   static GridCoordinate1D getEndCoordRes1D (OrthogonalAxis orthogonalAxis, GridCoordinate1D end, GridCoordinate1D size)
   {
     if (orthogonalAxis == OrthogonalAxis::Z)
     {
-      return GridCoordinate1D (end.getX ());
+      return GridCoordinate1D (end.get1 ()
+#ifdef DEBUG_INFO
+             , end.getType1 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::Y)
     {
-      return GridCoordinate1D (end.getX ());
+      return GridCoordinate1D (end.get1 ()
+#ifdef DEBUG_INFO
+             , end.getType1 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate1D (SchemeHelper::getEndCoordOrthX (expandTo3D (size)));
+      return GridCoordinate1D (SchemeHelper::getEndCoordOrthX (expandTo3D (size))
+#ifdef DEBUG_INFO
+             , end.getType1 ()
+#endif
+             );
     }
   }
 
@@ -730,30 +1087,54 @@ public:
   {
     if (orthogonalAxis == OrthogonalAxis::Z)
     {
-      return GridCoordinate2D (start.getX (), start.getY ());
+      return GridCoordinate2D (start.get1 (), start.get2 ()
+#ifdef DEBUG_INFO
+             , start.getType1 (), start.getType2 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::Y)
     {
-      return GridCoordinate2D (start.getX (), SchemeHelper::getStartCoordOrthY (expandTo3D (size)));
+      return GridCoordinate2D (start.get1 (), SchemeHelper::getStartCoordOrthY (expandTo3D (size))
+#ifdef DEBUG_INFO
+             , start.getType1 (), start.getType2 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate2D (SchemeHelper::getStartCoordOrthX (expandTo3D (size)), start.getY ());
+      return GridCoordinate2D (SchemeHelper::getStartCoordOrthX (expandTo3D (size)), start.get2 ()
+#ifdef DEBUG_INFO
+             , start.getType1 (), start.getType2 ()
+#endif
+             );
     }
   }
   static GridCoordinate2D getEndCoordRes2D (OrthogonalAxis orthogonalAxis, GridCoordinate2D end, GridCoordinate2D size)
   {
     if (orthogonalAxis == OrthogonalAxis::Z)
     {
-      return GridCoordinate2D (end.getX (), end.getY ());
+      return GridCoordinate2D (end.get1 (), end.get2 ()
+#ifdef DEBUG_INFO
+             , end.getType1 (), end.getType2 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::Y)
     {
-      return GridCoordinate2D (end.getX (), SchemeHelper::getEndCoordOrthY (expandTo3D (size)));
+      return GridCoordinate2D (end.get1 (), SchemeHelper::getEndCoordOrthY (expandTo3D (size))
+#ifdef DEBUG_INFO
+             , end.getType1 (), end.getType2 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate2D (SchemeHelper::getEndCoordOrthX (expandTo3D (size)), end.getY ());
+      return GridCoordinate2D (SchemeHelper::getEndCoordOrthX (expandTo3D (size)), end.get2 ()
+#ifdef DEBUG_INFO
+             , end.getType1 (), end.getType2 ()
+#endif
+             );
     }
   }
 
@@ -761,30 +1142,54 @@ public:
   {
     if (orthogonalAxis == OrthogonalAxis::Z)
     {
-      return GridCoordinate3D (start.getX (), start.getY (), SchemeHelper::getStartCoordOrthZ (expandTo3D (size)));
+      return GridCoordinate3D (start.get1 (), start.get2 (), SchemeHelper::getStartCoordOrthZ (expandTo3D (size))
+#ifdef DEBUG_INFO
+             , start.getType1 (), start.getType2 (), start.getType3 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::Y)
     {
-      return GridCoordinate3D (start.getX (), SchemeHelper::getStartCoordOrthY (expandTo3D (size)), start.getZ ());
+      return GridCoordinate3D (start.get1 (), SchemeHelper::getStartCoordOrthY (expandTo3D (size)), start.get3 ()
+#ifdef DEBUG_INFO
+             , start.getType1 (), start.getType2 (), start.getType3 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate3D (SchemeHelper::getStartCoordOrthX (expandTo3D (size)), start.getY (), start.getZ ());
+      return GridCoordinate3D (SchemeHelper::getStartCoordOrthX (expandTo3D (size)), start.get2 (), start.get3 ()
+#ifdef DEBUG_INFO
+             , start.getType1 (), start.getType2 (), start.getType3 ()
+#endif
+             );
     }
   }
   static GridCoordinate3D getEndCoordRes3D (OrthogonalAxis orthogonalAxis, GridCoordinate3D end, GridCoordinate3D size)
   {
     if (orthogonalAxis == OrthogonalAxis::Z)
     {
-      return GridCoordinate3D (end.getX (), end.getY (), SchemeHelper::getEndCoordOrthZ (expandTo3D (size)));
+      return GridCoordinate3D (end.get1 (), end.get2 (), SchemeHelper::getEndCoordOrthZ (expandTo3D (size))
+#ifdef DEBUG_INFO
+             , end.getType1 (), end.getType2 (), end.getType3 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::Y)
     {
-      return GridCoordinate3D (end.getX (), SchemeHelper::getEndCoordOrthY (expandTo3D (size)), end.getZ ());
+      return GridCoordinate3D (end.get1 (), SchemeHelper::getEndCoordOrthY (expandTo3D (size)), end.get3 ()
+#ifdef DEBUG_INFO
+             , end.getType1 (), end.getType2 (), end.getType3 ()
+#endif
+             );
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate3D (SchemeHelper::getEndCoordOrthX (expandTo3D (size)), end.getY (), end.getZ ());
+      return GridCoordinate3D (SchemeHelper::getEndCoordOrthX (expandTo3D (size)), end.get2 (), end.get3 ()
+#ifdef DEBUG_INFO
+             , end.getType1 (), end.getType2 (), end.getType3 ()
+#endif
+             );
     }
   }
 
@@ -802,134 +1207,134 @@ public:
 
   static void calculateTFSFExAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
   }
   static void calculateTFSFExAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
-    ASSERT (pos11.getY () < pos12.getY ());
-    ASSERT (pos21.getY () == pos22.getY ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
+    ASSERT (pos11.get2 () < pos12.get2 ());
+    ASSERT (pos21.get2 () == pos22.get2 ());
   }
   static void calculateTFSFExAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
-    ASSERT (pos11.getY () < pos12.getY ());
-    ASSERT (pos21.getY () == pos22.getY ());
-    ASSERT (pos11.getZ () == pos12.getZ ());
-    ASSERT (pos21.getZ () < pos22.getZ ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
+    ASSERT (pos11.get2 () < pos12.get2 ());
+    ASSERT (pos21.get2 () == pos22.get2 ());
+    ASSERT (pos11.get3 () == pos12.get3 ());
+    ASSERT (pos21.get3 () < pos22.get3 ());
   }
 
   static void calculateTFSFEyAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () < pos22.getX ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () < pos22.get1 ());
   }
   static void calculateTFSFEyAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () < pos22.getX ());
-    ASSERT (pos11.getY () == pos12.getY ());
-    ASSERT (pos21.getY () == pos22.getY ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () < pos22.get1 ());
+    ASSERT (pos11.get2 () == pos12.get2 ());
+    ASSERT (pos21.get2 () == pos22.get2 ());
   }
   static void calculateTFSFEyAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () < pos22.getX ());
-    ASSERT (pos11.getY () == pos12.getY ());
-    ASSERT (pos21.getY () == pos22.getY ());
-    ASSERT (pos11.getZ () < pos12.getZ ());
-    ASSERT (pos21.getZ () == pos22.getZ ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () < pos22.get1 ());
+    ASSERT (pos11.get2 () == pos12.get2 ());
+    ASSERT (pos21.get2 () == pos22.get2 ());
+    ASSERT (pos11.get3 () < pos12.get3 ());
+    ASSERT (pos21.get3 () == pos22.get3 ());
   }
 
   static void calculateTFSFEzAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
   {
-    ASSERT (pos11.getX () < pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
+    ASSERT (pos11.get1 () < pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
   }
   static void calculateTFSFEzAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
   {
-    ASSERT (pos11.getX () < pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
-    ASSERT (pos11.getY () == pos12.getY ());
-    ASSERT (pos21.getY () < pos22.getY ());
+    ASSERT (pos11.get1 () < pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
+    ASSERT (pos11.get2 () == pos12.get2 ());
+    ASSERT (pos21.get2 () < pos22.get2 ());
   }
   static void calculateTFSFEzAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
   {
-    ASSERT (pos11.getX () < pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
-    ASSERT (pos11.getY () == pos12.getY ());
-    ASSERT (pos21.getY () < pos22.getY ());
-    ASSERT (pos11.getZ () == pos12.getZ ());
-    ASSERT (pos21.getZ () == pos22.getZ ());
+    ASSERT (pos11.get1 () < pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
+    ASSERT (pos11.get2 () == pos12.get2 ());
+    ASSERT (pos21.get2 () < pos22.get2 ());
+    ASSERT (pos11.get3 () == pos12.get3 ());
+    ASSERT (pos21.get3 () == pos22.get3 ());
   }
 
   static void calculateTFSFHxAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
   }
   static void calculateTFSFHxAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
-    ASSERT (pos11.getY () == pos12.getY ());
-    ASSERT (pos21.getY () < pos22.getY ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
+    ASSERT (pos11.get2 () == pos12.get2 ());
+    ASSERT (pos21.get2 () < pos22.get2 ());
   }
   static void calculateTFSFHxAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
-    ASSERT (pos11.getY () == pos12.getY ());
-    ASSERT (pos21.getY () < pos22.getY ());
-    ASSERT (pos11.getZ () < pos12.getZ ());
-    ASSERT (pos21.getZ () == pos22.getZ ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
+    ASSERT (pos11.get2 () == pos12.get2 ());
+    ASSERT (pos21.get2 () < pos22.get2 ());
+    ASSERT (pos11.get3 () < pos12.get3 ());
+    ASSERT (pos21.get3 () == pos22.get3 ());
   }
 
   static void calculateTFSFHyAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
   {
-    ASSERT (pos11.getX () < pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
+    ASSERT (pos11.get1 () < pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
   }
   static void calculateTFSFHyAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
   {
-    ASSERT (pos11.getX () < pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
-    ASSERT (pos11.getY () == pos12.getY ());
-    ASSERT (pos21.getY () == pos22.getY ());
+    ASSERT (pos11.get1 () < pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
+    ASSERT (pos11.get2 () == pos12.get2 ());
+    ASSERT (pos21.get2 () == pos22.get2 ());
   }
   static void calculateTFSFHyAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
   {
-    ASSERT (pos11.getX () < pos12.getX ());
-    ASSERT (pos21.getX () == pos22.getX ());
-    ASSERT (pos11.getY () == pos12.getY ());
-    ASSERT (pos21.getY () == pos22.getY ());
-    ASSERT (pos11.getZ () == pos12.getZ ());
-    ASSERT (pos21.getZ () < pos22.getZ ());
+    ASSERT (pos11.get1 () < pos12.get1 ());
+    ASSERT (pos21.get1 () == pos22.get1 ());
+    ASSERT (pos11.get2 () == pos12.get2 ());
+    ASSERT (pos21.get2 () == pos22.get2 ());
+    ASSERT (pos11.get3 () == pos12.get3 ());
+    ASSERT (pos21.get3 () < pos22.get3 ());
   }
 
   static void calculateTFSFHzAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () < pos22.getX ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () < pos22.get1 ());
   }
   static void calculateTFSFHzAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () < pos22.getX ());
-    ASSERT (pos11.getY () < pos12.getY ());
-    ASSERT (pos21.getY () == pos22.getY ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () < pos22.get1 ());
+    ASSERT (pos11.get2 () < pos12.get2 ());
+    ASSERT (pos21.get2 () == pos22.get2 ());
   }
   static void calculateTFSFHzAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
   {
-    ASSERT (pos11.getX () == pos12.getX ());
-    ASSERT (pos21.getX () < pos22.getX ());
-    ASSERT (pos11.getY () < pos12.getY ());
-    ASSERT (pos21.getY () == pos22.getY ());
-    ASSERT (pos11.getZ () == pos12.getZ ());
-    ASSERT (pos21.getZ () == pos22.getZ ());
+    ASSERT (pos11.get1 () == pos12.get1 ());
+    ASSERT (pos21.get1 () < pos22.get1 ());
+    ASSERT (pos11.get2 () < pos12.get2 ());
+    ASSERT (pos21.get2 () == pos22.get2 ());
+    ASSERT (pos11.get3 () == pos12.get3 ());
+    ASSERT (pos21.get3 () == pos22.get3 ());
   }
 };
 

@@ -60,7 +60,7 @@ TXTDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
   file << std::setprecision(std::numeric_limits<double>::digits10);
 
   // Go through all values and write to file.
-  for (grid_coord i = 0; i < grid->getSize ().getX (); ++i)
+  for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
   {
     GridCoordinate1D pos (i);
 
@@ -68,7 +68,7 @@ TXTDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
     const FieldPointValue* current = grid->getFieldPointValue (pos);
     ASSERT (current);
 
-    file << pos.getX () << " ";
+    file << pos.get1 () << " ";
 
     switch (type)
     {
@@ -167,9 +167,9 @@ TXTDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
   file << std::setprecision(std::numeric_limits<double>::digits10);
 
   // Go through all values and write to file.
-  for (grid_coord i = 0; i < grid->getSize ().getX (); ++i)
+  for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
   {
-    for (grid_coord j = 0; j < grid->getSize ().getY (); ++j)
+    for (grid_coord j = 0; j < grid->getSize ().get2 (); ++j)
     {
       GridCoordinate2D pos (i, j);
 
@@ -177,7 +177,7 @@ TXTDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
       const FieldPointValue* current = grid->getFieldPointValue (pos);
       ASSERT (current);
 
-      file << pos.getX () << " " << pos.getY () << " ";
+      file << pos.get1 () << " " << pos.get2 () << " ";
 
       switch (type)
       {
@@ -277,11 +277,11 @@ TXTDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
   file << std::setprecision(std::numeric_limits<double>::digits10);
 
   // Go through all values and write to file.
-  for (grid_coord i = 0; i < grid->getSize ().getX (); ++i)
+  for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
   {
-    for (grid_coord j = 0; j < grid->getSize ().getY (); ++j)
+    for (grid_coord j = 0; j < grid->getSize ().get2 (); ++j)
     {
-      for (grid_coord k = 0; k < grid->getSize ().getZ (); ++k)
+      for (grid_coord k = 0; k < grid->getSize ().get3 (); ++k)
       {
         GridCoordinate3D pos (i, j, k);
 
@@ -289,7 +289,7 @@ TXTDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
         const FieldPointValue* current = grid->getFieldPointValue (pos);
         ASSERT (current);
 
-        file << pos.getX () << " " << pos.getY () << " " << pos.getZ () << " ";
+        file << pos.get1 () << " " << pos.get2 () << " " << pos.get3 () << " ";
 
         switch (type)
         {
