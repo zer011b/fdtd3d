@@ -59,7 +59,7 @@ TXTLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid, GridFil
   file >> std::setprecision(std::numeric_limits<double>::digits10);
 
   // Go through all values and write to file.
-  for (grid_coord i = 0; i < grid->getSize ().getX (); ++i)
+  for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
   {
     GridCoordinate1D pos (i);
 
@@ -192,9 +192,9 @@ TXTLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid, GridFil
   file >> std::setprecision(std::numeric_limits<double>::digits10);
 
   // Go through all values and write to file.
-  for (grid_coord i = 0; i < grid->getSize ().getX (); ++i)
+  for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
   {
-    for (grid_coord j = 0; j < grid->getSize ().getY (); ++j)
+    for (grid_coord j = 0; j < grid->getSize ().get2 (); ++j)
     {
       GridCoordinate2D pos (i, j);
 
@@ -329,11 +329,11 @@ TXTLoader<GridCoordinate3D>::loadFromFile (Grid<GridCoordinate3D> *grid, GridFil
   file >> std::setprecision(std::numeric_limits<double>::digits10);
 
   // Go through all values and write to file.
-  for (grid_coord i = 0; i < grid->getSize ().getX (); ++i)
+  for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
   {
-    for (grid_coord j = 0; j < grid->getSize ().getY (); ++j)
+    for (grid_coord j = 0; j < grid->getSize ().get2 (); ++j)
     {
-      for (grid_coord k = 0; k < grid->getSize ().getZ (); ++k)
+      for (grid_coord k = 0; k < grid->getSize ().get3 (); ++k)
       {
         GridCoordinate3D pos (i, j, k);
 

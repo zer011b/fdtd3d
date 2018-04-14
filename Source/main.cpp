@@ -47,6 +47,8 @@ int runMode ()
 
   YeeGridLayout<Type, TCoord, layout_type> *yeeLayout = NULLPTR;
 
+  bool isParallel = false;
+
   if (solverSettings.getDoUseParallelGrid ())
   {
 #if defined (PARALLEL_GRID)
@@ -60,6 +62,8 @@ int runMode ()
       TCoord<grid_coord, true> topology (solverSettings.getTopologySizeX (),
                                          solverSettings.getTopologySizeY (),
                                          solverSettings.getTopologySizeZ ());
+
+      isParallel = true;
 
       MPI_Init(&argc, &argv);
 
@@ -80,7 +84,7 @@ int runMode ()
       {
         DPRINTF (LOG_LEVEL_STAGES, "Start process %d of %d (using %d)\n", rank, numProcs, parallelGridCore->getTotalProcCount ());
 
-        yeeLayout = new ParallelYeeGridLayout<layout_type> (
+        yeeLayout = new ParallelYeeGridLayout<Type, layout_type> (
                     overallSize,
                     pmlSize,
                     tfsfSize,
@@ -139,45 +143,18 @@ int runMode ()
     cudaThreadsZ = solverSettings.getNumCudaThreadsZ ();
 #endif
 
-    if (solverSettings.getDoUseParallelGrid ())
-    {
-#ifdef PARALLEL_GRID
-      if (TCoord<grid_coord, false>::dimension != ParallelGridCoordinate::dimension)
-      {
-        UNREACHABLE
-      }
-      else
-      {
-        Scheme<Type, TCoord, ParallelYeeGridLayout<layout_type> > scheme ((ParallelYeeGridLayout *) yeeLayout,
-                                                                          overallSize,
-                                                                          solverSettings.getNumTimeSteps ());
-        scheme.initScheme (solverSettings.getGridStep (), /* dx */
-                           solverSettings.getSourceWaveLength ()); /* source wave length */
-        scheme.initCallBacks ();
-        scheme.initGrids ();
+    Scheme<Type, TCoord, layout_type > scheme (yeeLayout,
+                                               isParallel,
+                                               overallSize,
+                                               solverSettings.getNumTimeSteps ());
+    scheme.initScheme (solverSettings.getGridStep (), /* dx */
+                       solverSettings.getSourceWaveLength ()); /* source wave length */
+    scheme.initCallBacks ();
+    scheme.initGrids ();
 
-        gettimeofday(&tv1, NULL);
-        scheme.performSteps ();
-        gettimeofday(&tv2, NULL);
-      }
-#else
-      UNREACHABLE;
-#endif
-    }
-    else
-    {
-      Scheme<Type, TCoord, YeeGridLayout<Type, TCoord, layout_type> > scheme (yeeLayout,
-                                                                        overallSize,
-                                                                        solverSettings.getNumTimeSteps ());
-      scheme.initScheme (solverSettings.getGridStep (), /* dx */
-                         solverSettings.getSourceWaveLength ()); /* source wave length */
-      scheme.initCallBacks ();
-      scheme.initGrids ();
-
-      gettimeofday(&tv1, NULL);
-      scheme.performSteps ();
-      gettimeofday(&tv2, NULL);
-    }
+    gettimeofday(&tv1, NULL);
+    scheme.performSteps ();
+    gettimeofday(&tv2, NULL);
   }
 
   delete yeeLayout;

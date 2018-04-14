@@ -20,7 +20,7 @@ set(CUDA_ARCH_SM_TYPE "sm_20" CACHE STRING "Defines cuda gpu arch")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORCE_INLINES")
 
-add_definitions (-DSOLVER_VERSION="0.2.3")
+add_definitions (-DSOLVER_VERSION="0.4")
 
 if ("${CUDA_ENABLED}")
   message(FATAL_ERROR "Cuda builds are temporarily disabled")

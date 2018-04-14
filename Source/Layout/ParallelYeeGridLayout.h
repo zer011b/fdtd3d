@@ -814,7 +814,7 @@ void ParallelYeeGridLayout<Type, layout_type>::doAdditionalShareMeasurements (ui
 
   std::vector<FieldValue> tmp_buffer (latency_buf_size);
 
-  for (uint32_t index = latency_buf_size / 100; index < latency_buf_size; index += latency_buf_size / 100)
+  for (uint32_t index = latency_buf_size / CLOCK_BUF_SIZE; index < latency_buf_size; index += latency_buf_size / CLOCK_BUF_SIZE)
   for (uint32_t count = 0; count < latency_measure_count; ++count)
   for (int buf = 0; buf < BUFFER_COUNT; ++buf)
   {
@@ -3029,6 +3029,28 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
 } /* ParallelYeeGridLayout::Rebalance */
 
 #endif /* DYNAMIC_GRID */
+
+#ifdef GRID_1D
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> PYL_Dim1_ExHy;
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> PYL_Dim1_ExHz;
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> PYL_Dim1_EyHx;
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> PYL_Dim1_EyHz;
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> PYL_Dim1_EzHx;
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> PYL_Dim1_EzHy;
+#endif
+
+#ifdef GRID_2D
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> PYL_Dim2_TEx;
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> PYL_Dim2_TEy;
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> PYL_Dim2_TEz;
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> PYL_Dim2_TMx;
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> PYL_Dim2_TMy;
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> PYL_Dim2_TMz;
+#endif
+
+#ifdef GRID_3D
+typedef ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> PYL_Dim3;
+#endif
 
 #endif /* PARALLEL_GRID */
 

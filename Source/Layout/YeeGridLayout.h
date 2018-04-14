@@ -1077,7 +1077,7 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
       if (isDoubleMaterialPrecision)
       {
         absPos11 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-        absPos12 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+        absPos12 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
 
         absPos21 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
         absPos22 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
@@ -1246,7 +1246,7 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
         absPos31 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
         absPos32 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
 
-        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.5, 0.0), ct1, ct2, ct3;
+        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.5, 0.0, ct1, ct2, ct3);
         absPos41 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
         absPos42 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
       }
@@ -1528,5 +1528,21 @@ YeeGridLayout<Type, TCoord, layout_type>::getHzCircuitElement (TC coord, LayoutD
 
   return convertCoord (coordFP);
 }
+
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_ExHy;
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_ExHz;
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_EyHx;
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_EyHz;
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_EzHx;
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_EzHy;
+
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TEx;
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TEy;
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TEz;
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TMx;
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TMy;
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TMz;
+
+typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED> YL3D_Dim3;
 
 #endif /* YEE_GRID_LAYOUT_H */

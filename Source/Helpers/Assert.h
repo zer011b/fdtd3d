@@ -92,8 +92,10 @@ extern void program_fail ();
     enum Temp { __VA_ARGS__ }; \
     \
     name (Temp new_val) : temp (new_val) {} \
+    name () {} \
     \
     operator type () { return temp; } \
+    bool operator == (name x) { return temp == x.temp; } \
     \
   private: \
     Temp temp; \
