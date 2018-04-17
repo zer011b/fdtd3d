@@ -373,6 +373,10 @@ public:
   void initFullMaterialGrids ();
   void initFullFieldGrids ();
 
+#ifdef PARALLEL_GRID
+  void allocateParallelGrids ();
+#endif
+
   /**
    * Default constructor used for template instantiation
    */
@@ -480,73 +484,73 @@ public:
   }
 
   static
-  void initFullFieldGrids1D (bool totalInitialized,
-                             bool doNeedEx, Grid<GridCoordinate1D> *Ex, Grid<GridCoordinate1D> *totalEx,
-                             bool doNeedEy, Grid<GridCoordinate1D> *Ey, Grid<GridCoordinate1D> *totalEy,
-                             bool doNeedEz, Grid<GridCoordinate1D> *Ez, Grid<GridCoordinate1D> *totalEz,
-                             bool doNeedHx, Grid<GridCoordinate1D> *Hx, Grid<GridCoordinate1D> *totalHx,
-                             bool doNeedHy, Grid<GridCoordinate1D> *Hy, Grid<GridCoordinate1D> *totalHy,
-                             bool doNeedHz, Grid<GridCoordinate1D> *Hz, Grid<GridCoordinate1D> *totalHz)
+  void initFullFieldGrids1D (bool *totalInitialized,
+                             bool doNeedEx, Grid<GridCoordinate1D> **Ex, Grid<GridCoordinate1D> **totalEx,
+                             bool doNeedEy, Grid<GridCoordinate1D> **Ey, Grid<GridCoordinate1D> **totalEy,
+                             bool doNeedEz, Grid<GridCoordinate1D> **Ez, Grid<GridCoordinate1D> **totalEz,
+                             bool doNeedHx, Grid<GridCoordinate1D> **Hx, Grid<GridCoordinate1D> **totalHx,
+                             bool doNeedHy, Grid<GridCoordinate1D> **Hy, Grid<GridCoordinate1D> **totalHy,
+                             bool doNeedHz, Grid<GridCoordinate1D> **Hz, Grid<GridCoordinate1D> **totalHz)
   {
 #ifdef PARALLEL_GRID
 #ifdef GRID_1D
-    if (totalInitialized)
+    if (*totalInitialized)
     {
       if (doNeedEx)
       {
-        totalEx = ((ParallelGrid *) Ex)->gatherFullGridPlacement (totalEx);
+        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGridPlacement (*totalEx);
       }
       if (doNeedEy)
       {
-        totalEy = ((ParallelGrid *) Ey)->gatherFullGridPlacement (totalEy);
+        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGridPlacement (*totalEy);
       }
       if (doNeedEz)
       {
-        totalEz = ((ParallelGrid *) Ez)->gatherFullGridPlacement (totalEz);
+        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGridPlacement (*totalEz);
       }
 
       if (doNeedHx)
       {
-        totalHx = ((ParallelGrid *) Hx)->gatherFullGridPlacement (totalHx);
+        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGridPlacement (*totalHx);
       }
       if (doNeedHy)
       {
-        totalHy = ((ParallelGrid *) Hy)->gatherFullGridPlacement (totalHy);
+        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGridPlacement (*totalHy);
       }
       if (doNeedHz)
       {
-        totalHz = ((ParallelGrid *) Hz)->gatherFullGridPlacement (totalHz);
+        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGridPlacement (*totalHz);
       }
     }
     else
     {
       if (doNeedEx)
       {
-        totalEx = ((ParallelGrid *) Ex)->gatherFullGrid ();
+        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGrid ();
       }
       if (doNeedEy)
       {
-        totalEy = ((ParallelGrid *) Ey)->gatherFullGrid ();
+        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGrid ();
       }
       if (doNeedEz)
       {
-        totalEz = ((ParallelGrid *) Ez)->gatherFullGrid ();
+        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGrid ();
       }
 
       if (doNeedHx)
       {
-        totalHx = ((ParallelGrid *) Hx)->gatherFullGrid ();
+        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGrid ();
       }
       if (doNeedHy)
       {
-        totalHy = ((ParallelGrid *) Hy)->gatherFullGrid ();
+        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGrid ();
       }
       if (doNeedHz)
       {
-        totalHz = ((ParallelGrid *) Hz)->gatherFullGrid ();
+        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGrid ();
       }
 
-      totalInitialized = true;
+      *totalInitialized = true;
     }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
@@ -558,73 +562,73 @@ public:
   }
 
   static
-  void initFullFieldGrids2D (bool totalInitialized,
-                             bool doNeedEx, Grid<GridCoordinate2D> *Ex, Grid<GridCoordinate2D> *totalEx,
-                             bool doNeedEy, Grid<GridCoordinate2D> *Ey, Grid<GridCoordinate2D> *totalEy,
-                             bool doNeedEz, Grid<GridCoordinate2D> *Ez, Grid<GridCoordinate2D> *totalEz,
-                             bool doNeedHx, Grid<GridCoordinate2D> *Hx, Grid<GridCoordinate2D> *totalHx,
-                             bool doNeedHy, Grid<GridCoordinate2D> *Hy, Grid<GridCoordinate2D> *totalHy,
-                             bool doNeedHz, Grid<GridCoordinate2D> *Hz, Grid<GridCoordinate2D> *totalHz)
+  void initFullFieldGrids2D (bool *totalInitialized,
+                             bool doNeedEx, Grid<GridCoordinate2D> **Ex, Grid<GridCoordinate2D> **totalEx,
+                             bool doNeedEy, Grid<GridCoordinate2D> **Ey, Grid<GridCoordinate2D> **totalEy,
+                             bool doNeedEz, Grid<GridCoordinate2D> **Ez, Grid<GridCoordinate2D> **totalEz,
+                             bool doNeedHx, Grid<GridCoordinate2D> **Hx, Grid<GridCoordinate2D> **totalHx,
+                             bool doNeedHy, Grid<GridCoordinate2D> **Hy, Grid<GridCoordinate2D> **totalHy,
+                             bool doNeedHz, Grid<GridCoordinate2D> **Hz, Grid<GridCoordinate2D> **totalHz)
   {
 #ifdef PARALLEL_GRID
 #ifdef GRID_2D
-    if (totalInitialized)
+    if (*totalInitialized)
     {
       if (doNeedEx)
       {
-        totalEx = ((ParallelGrid *) Ex)->gatherFullGridPlacement (totalEx);
+        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGridPlacement (*totalEx);
       }
       if (doNeedEy)
       {
-        totalEy = ((ParallelGrid *) Ey)->gatherFullGridPlacement (totalEy);
+        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGridPlacement (*totalEy);
       }
       if (doNeedEz)
       {
-        totalEz = ((ParallelGrid *) Ez)->gatherFullGridPlacement (totalEz);
+        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGridPlacement (*totalEz);
       }
 
       if (doNeedHx)
       {
-        totalHx = ((ParallelGrid *) Hx)->gatherFullGridPlacement (totalHx);
+        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGridPlacement (*totalHx);
       }
       if (doNeedHy)
       {
-        totalHy = ((ParallelGrid *) Hy)->gatherFullGridPlacement (totalHy);
+        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGridPlacement (*totalHy);
       }
       if (doNeedHz)
       {
-        totalHz = ((ParallelGrid *) Hz)->gatherFullGridPlacement (totalHz);
+        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGridPlacement (*totalHz);
       }
     }
     else
     {
       if (doNeedEx)
       {
-        totalEx = ((ParallelGrid *) Ex)->gatherFullGrid ();
+        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGrid ();
       }
       if (doNeedEy)
       {
-        totalEy = ((ParallelGrid *) Ey)->gatherFullGrid ();
+        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGrid ();
       }
       if (doNeedEz)
       {
-        totalEz = ((ParallelGrid *) Ez)->gatherFullGrid ();
+        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGrid ();
       }
 
       if (doNeedHx)
       {
-        totalHx = ((ParallelGrid *) Hx)->gatherFullGrid ();
+        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGrid ();
       }
       if (doNeedHy)
       {
-        totalHy = ((ParallelGrid *) Hy)->gatherFullGrid ();
+        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGrid ();
       }
       if (doNeedHz)
       {
-        totalHz = ((ParallelGrid *) Hz)->gatherFullGrid ();
+        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGrid ();
       }
 
-      totalInitialized = true;
+      *totalInitialized = true;
     }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
@@ -636,13 +640,13 @@ public:
   }
 
   static
-  void initFullFieldGrids3D (bool totalInitialized,
-                             bool doNeedEx, Grid<GridCoordinate3D> *Ex, Grid<GridCoordinate3D> *totalEx,
-                             bool doNeedEy, Grid<GridCoordinate3D> *Ey, Grid<GridCoordinate3D> *totalEy,
-                             bool doNeedEz, Grid<GridCoordinate3D> *Ez, Grid<GridCoordinate3D> *totalEz,
-                             bool doNeedHx, Grid<GridCoordinate3D> *Hx, Grid<GridCoordinate3D> *totalHx,
-                             bool doNeedHy, Grid<GridCoordinate3D> *Hy, Grid<GridCoordinate3D> *totalHy,
-                             bool doNeedHz, Grid<GridCoordinate3D> *Hz, Grid<GridCoordinate3D> *totalHz)
+  void initFullFieldGrids3D (bool *totalInitialized,
+                             bool doNeedEx, Grid<GridCoordinate3D> **Ex, Grid<GridCoordinate3D> **totalEx,
+                             bool doNeedEy, Grid<GridCoordinate3D> **Ey, Grid<GridCoordinate3D> **totalEy,
+                             bool doNeedEz, Grid<GridCoordinate3D> **Ez, Grid<GridCoordinate3D> **totalEz,
+                             bool doNeedHx, Grid<GridCoordinate3D> **Hx, Grid<GridCoordinate3D> **totalHx,
+                             bool doNeedHy, Grid<GridCoordinate3D> **Hy, Grid<GridCoordinate3D> **totalHy,
+                             bool doNeedHz, Grid<GridCoordinate3D> **Hz, Grid<GridCoordinate3D> **totalHz)
   {
 #ifdef PARALLEL_GRID
 #ifdef GRID_3D
@@ -650,59 +654,59 @@ public:
     {
       if (doNeedEx)
       {
-        totalEx = ((ParallelGrid *) Ex)->gatherFullGridPlacement (totalEx);
+        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGridPlacement (*totalEx);
       }
       if (doNeedEy)
       {
-        totalEy = ((ParallelGrid *) Ey)->gatherFullGridPlacement (totalEy);
+        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGridPlacement (*totalEy);
       }
       if (doNeedEz)
       {
-        totalEz = ((ParallelGrid *) Ez)->gatherFullGridPlacement (totalEz);
+        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGridPlacement (*totalEz);
       }
 
       if (doNeedHx)
       {
-        totalHx = ((ParallelGrid *) Hx)->gatherFullGridPlacement (totalHx);
+        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGridPlacement (*totalHx);
       }
       if (doNeedHy)
       {
-        totalHy = ((ParallelGrid *) Hy)->gatherFullGridPlacement (totalHy);
+        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGridPlacement (*totalHy);
       }
       if (doNeedHz)
       {
-        totalHz = ((ParallelGrid *) Hz)->gatherFullGridPlacement (totalHz);
+        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGridPlacement (*totalHz);
       }
     }
     else
     {
       if (doNeedEx)
       {
-        totalEx = ((ParallelGrid *) Ex)->gatherFullGrid ();
+        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGrid ();
       }
       if (doNeedEy)
       {
-        totalEy = ((ParallelGrid *) Ey)->gatherFullGrid ();
+        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGrid ();
       }
       if (doNeedEz)
       {
-        totalEz = ((ParallelGrid *) Ez)->gatherFullGrid ();
+        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGrid ();
       }
 
       if (doNeedHx)
       {
-        totalHx = ((ParallelGrid *) Hx)->gatherFullGrid ();
+        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGrid ();
       }
       if (doNeedHy)
       {
-        totalHy = ((ParallelGrid *) Hy)->gatherFullGrid ();
+        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGrid ();
       }
       if (doNeedHz)
       {
-        totalHz = ((ParallelGrid *) Hz)->gatherFullGrid ();
+        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGrid ();
       }
 
-      totalInitialized = true;
+      *totalInitialized = true;
     }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
@@ -1336,6 +1340,80 @@ public:
     ASSERT (pos11.get3 () == pos12.get3 ());
     ASSERT (pos21.get3 () == pos22.get3 ());
   }
+
+#ifdef PARALLEL_GRID
+  template <SchemeType_t Type, LayoutType layout_type>
+  static
+  void allocateParallelGrids (ParallelYeeGridLayout<Type, layout_type> *pLayout,
+                              bool doNeedEx, bool doNeedEy, bool doNeedEz,
+                              bool doNeedHx, bool doNeedHy, bool doNeedHz,
+                              bool doNeedSigmaX, bool doNeedSigmaY, bool doNeedSigmaZ,
+                              ParallelGridCoordinate bufSize, ParallelGrid **Eps, ParallelGrid **Mu,
+                              ParallelGrid **Ex, ParallelGrid **Ey, ParallelGrid **Ez,
+                              ParallelGrid **Hx, ParallelGrid **Hy, ParallelGrid **Hz,
+                              ParallelGrid **Dx, ParallelGrid **Dy, ParallelGrid **Dz,
+                              ParallelGrid **Bx, ParallelGrid **By, ParallelGrid **Bz,
+                              ParallelGrid **D1x, ParallelGrid **D1y, ParallelGrid **D1z,
+                              ParallelGrid **B1x, ParallelGrid **B1y, ParallelGrid **B1z,
+                              ParallelGrid **SigmaX, ParallelGrid **SigmaY, ParallelGrid **SigmaZ,
+                              ParallelGrid **ExAmplitude, ParallelGrid **EyAmplitude, ParallelGrid **EzAmplitude,
+                              ParallelGrid **HxAmplitude, ParallelGrid **HyAmplitude, ParallelGrid **HzAmplitude,
+                              ParallelGrid **OmegaPE, ParallelGrid **GammaE,
+                              ParallelGrid **OmegaPM, ParallelGrid **GammaM)
+  {
+    *Eps = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "Eps");
+    *Mu = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getMuSizeForCurNode (), "Mu");
+
+    *Ex = doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "Ex") : NULLPTR;
+    *Ey = doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "Ey") : NULLPTR;
+    *Ez = doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "Ez") : NULLPTR;
+    *Hx = doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "Hx") : NULLPTR;
+    *Hy = doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "Hy") : NULLPTR;
+    *Hz = doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "Hz") : NULLPTR;
+
+    if (solverSettings.getDoUsePML ())
+    {
+      *Dx = doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "Dx") : NULLPTR;
+      *Dy = doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "Dy") : NULLPTR;
+      *Dz = doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "Dz") : NULLPTR;
+      *Bx = doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "Bx") : NULLPTR;
+      *By = doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "By") : NULLPTR;
+      *Bz = doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "Bz") : NULLPTR;
+
+      if (solverSettings.getDoUseMetamaterials ())
+      {
+        *D1x = doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "D1x") : NULLPTR;
+        *D1y = doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "D1y") : NULLPTR;
+        *D1z = doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "D1z") : NULLPTR;
+        *B1x = doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "B1x") : NULLPTR;
+        *B1y = doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "B1y") : NULLPTR;
+        *B1z = doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "B1z") : NULLPTR;
+      }
+
+      *SigmaX = doNeedSigmaX ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaX") : NULLPTR;
+      *SigmaY = doNeedSigmaY ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaY") : NULLPTR;
+      *SigmaZ = doNeedSigmaZ ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaZ") : NULLPTR;
+    }
+
+    if (solverSettings.getDoUseAmplitudeMode ())
+    {
+      *ExAmplitude = doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "ExAmp") : NULLPTR;
+      *EyAmplitude = doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "EyAmp") : NULLPTR;
+      *EzAmplitude = doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "EzAmp") : NULLPTR;
+      *HxAmplitude = doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "HxAmp") : NULLPTR;
+      *HyAmplitude = doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "HyAmp") : NULLPTR;
+      *HzAmplitude = doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "HzAmp") : NULLPTR;
+    }
+
+    if (solverSettings.getDoUseMetamaterials ())
+    {
+      *OmegaPE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "OmegaPE");
+      *GammaE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "GammaE");
+      *OmegaPM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "OmegaPM");
+      *GammaM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "GammaM");
+    }
+  }
+#endif
 };
 
 #endif /* SCHEME_H */

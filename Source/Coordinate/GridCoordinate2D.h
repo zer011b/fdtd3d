@@ -411,4 +411,7 @@ GridCoordinate2DTemplate<FPValue, doSignChecks> CUDA_DEVICE CUDA_HOST convertCoo
     );
 }
 
+template<class TcoordType, bool doSignChecks>
+const Dimension GridCoordinate2DTemplate<TcoordType, doSignChecks>::dimension = Dimension::Dim2;
+
 #endif /* GRID_COORDINATE_2D_H */
