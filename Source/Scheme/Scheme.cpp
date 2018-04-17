@@ -267,6 +267,385 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate
 }
 #endif
 
+#ifdef PARALLEL_GRID
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_1D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_1D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_1D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_1D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_1D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_1D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_2D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_2D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_2D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_2D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_2D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_2D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::allocateParallelGrids ()
+{
+#ifdef GRID_3D
+  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> *pLayout =
+    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> *) yeeLayout;
+
+  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize (),
+                                  solverSettings.getBufferSize ());
+
+  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
+                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
+                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
+                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
+                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
+                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
+                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
+                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
+                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
+                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
+                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
+                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
+                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
+                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#endif
+}
+#endif
+
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_type> *layout,
                                            bool parallelLayout,
@@ -360,8 +739,8 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
 
   if (solverSettings.getDoUseNTFF ())
   {
-    leftNTFF = TC (solverSettings.getNTFFSizeX (), solverSettings.getNTFFSizeY (), solverSettings.getNTFFSizeZ (),
-                   ct1, ct2, ct3);
+    leftNTFF = TC::initAxesCoordinate (solverSettings.getNTFFSizeX (), solverSettings.getNTFFSizeY (), solverSettings.getNTFFSizeZ (),
+                                       ct1, ct2, ct3);
     rightNTFF = layout->getEzSize () - leftNTFF + TC (1,1,1, ct1, ct2, ct3);
   }
 
@@ -373,7 +752,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
 
     ALWAYS_ASSERT (isParallelLayout);
 #ifdef PARALLEL_GRID
-    ALWAYS_ASSERT ((TCoord<grid_coord, false>::dimension == ParallelGridCoordinate::dimension));
+    ALWAYS_ASSERT ((TCoord<grid_coord, false>::dimension == ParallelGridCoordinateTemplate<grid_coord, false>::dimension));
 #endif
 
     useParallel = true;
@@ -382,90 +761,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
   if (useParallel)
   {
 #if defined (PARALLEL_GRID)
-    ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                    solverSettings.getBufferSize (),
-                                    solverSettings.getBufferSize ());
-
-    Eps = new ParallelGrid (layout->getEpsSize (), bufSize, 0, layout->getEpsSizeForCurNode (), "Eps");
-    Mu = new ParallelGrid (layout->getEpsSize (), bufSize, 0, layout->getMuSizeForCurNode (), "Mu");
-
-    Ex = doNeedEx ? new ParallelGrid (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), "Ex") : NULLPTR;
-    Ey = doNeedEy ? new ParallelGrid (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), "Ey") : NULLPTR;
-    Ez = doNeedEz ? new ParallelGrid (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), "Ez") : NULLPTR;
-    Hx = doNeedHx ? new ParallelGrid (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), "Hx") : NULLPTR;
-    Hy = doNeedHy ? new ParallelGrid (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), "Hy") : NULLPTR;
-    Hz = doNeedHz ? new ParallelGrid (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), "Hz") : NULLPTR;
-
-    if (solverSettings.getDoUsePML ())
-    {
-      Dx = doNeedEx ? new ParallelGrid (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), "Dx") : NULLPTR;
-      Dy = doNeedEy ? new ParallelGrid (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), "Dy") : NULLPTR;
-      Dz = doNeedEz ? new ParallelGrid (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), "Dz") : NULLPTR;
-      Bx = doNeedHx ? new ParallelGrid (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), "Bx") : NULLPTR;
-      By = doNeedHy ? new ParallelGrid (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), "By") : NULLPTR;
-      Bz = doNeedHz ? new ParallelGrid (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), "Bz") : NULLPTR;
-
-      if (solverSettings.getDoUseMetamaterials ())
-      {
-        D1x = doNeedEx ? new ParallelGrid (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), "D1x") : NULLPTR;
-        D1y = doNeedEy ? new ParallelGrid (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), "D1y") : NULLPTR;
-        D1z = doNeedEz ? new ParallelGrid (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), "D1z") : NULLPTR;
-        B1x = doNeedHx ? new ParallelGrid (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), "B1x") : NULLPTR;
-        B1y = doNeedHy ? new ParallelGrid (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), "B1y") : NULLPTR;
-        B1z = doNeedHz ? new ParallelGrid (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), "B1z") : NULLPTR;
-      }
-
-      SigmaX = doNeedSigmaX ? new ParallelGrid (layout->getEpsSize (), bufSize, 0, layout->getEpsSizeForCurNode (), "SigmaX") : NULLPTR;
-      SigmaY = doNeedSigmaY ? new ParallelGrid (layout->getEpsSize (), bufSize, 0, layout->getEpsSizeForCurNode (), "SigmaY") : NULLPTR;
-      SigmaZ = doNeedSigmaZ ? new ParallelGrid (layout->getEpsSize (), bufSize, 0, layout->getEpsSizeForCurNode (), "SigmaZ") : NULLPTR;
-    }
-
-    if (solverSettings.getDoUseAmplitudeMode ())
-    {
-      ExAmplitude = doNeedEx ? new ParallelGrid (layout->getExSize (), bufSize, 0, layout->getExSizeForCurNode (), "ExAmp") : NULLPTR;
-      EyAmplitude = doNeedEy ? new ParallelGrid (layout->getEySize (), bufSize, 0, layout->getEySizeForCurNode (), "EyAmp") : NULLPTR;
-      EzAmplitude = doNeedEz ? new ParallelGrid (layout->getEzSize (), bufSize, 0, layout->getEzSizeForCurNode (), "EzAmp") : NULLPTR;
-      HxAmplitude = doNeedHx ? new ParallelGrid (layout->getHxSize (), bufSize, 0, layout->getHxSizeForCurNode (), "HxAmp") : NULLPTR;
-      HyAmplitude = doNeedHy ? new ParallelGrid (layout->getHySize (), bufSize, 0, layout->getHySizeForCurNode (), "HyAmp") : NULLPTR;
-      HzAmplitude = doNeedHz ? new ParallelGrid (layout->getHzSize (), bufSize, 0, layout->getHzSizeForCurNode (), "HzAmp") : NULLPTR;
-    }
-
-    if (solverSettings.getDoUseMetamaterials ())
-    {
-      OmegaPE = new ParallelGrid (layout->getEpsSize (), bufSize, 0, layout->getEpsSizeForCurNode (), "OmegaPE");
-      GammaE = new ParallelGrid (layout->getEpsSize (), bufSize, 0, layout->getEpsSizeForCurNode (), "GammaE");
-      OmegaPM = new ParallelGrid (layout->getEpsSize (), bufSize, 0, layout->getEpsSizeForCurNode (), "OmegaPM");
-      GammaM = new ParallelGrid (layout->getEpsSize (), bufSize, 0, layout->getEpsSizeForCurNode (), "GammaM");
-    }
-
-    if (!solverSettings.getEpsFileName ().empty () || solverSettings.getDoSaveMaterials ())
-    {
-      totalEps = new Grid<TC> (layout->getEpsSize (), 0, "totalEps");
-    }
-    if (!solverSettings.getMuFileName ().empty () || solverSettings.getDoSaveMaterials ())
-    {
-      totalMu = new Grid<TC> (layout->getMuSize (), 0, "totalMu");
-    }
-
-    if (solverSettings.getDoUseMetamaterials ())
-    {
-      if (!solverSettings.getOmegaPEFileName ().empty () || solverSettings.getDoSaveMaterials ())
-      {
-        totalOmegaPE = new Grid<TC> (layout->getEpsSize (), 0, "totalOmegaPE");
-      }
-      if (!solverSettings.getOmegaPMFileName ().empty () || solverSettings.getDoSaveMaterials ())
-      {
-        totalOmegaPM = new Grid<TC> (layout->getEpsSize (), 0, "totalOmegaPM");
-      }
-      if (!solverSettings.getGammaEFileName ().empty () || solverSettings.getDoSaveMaterials ())
-      {
-        totalGammaE = new Grid<TC> (layout->getEpsSize (), 0, "totalGammaE");
-      }
-      if (!solverSettings.getGammaMFileName ().empty () || solverSettings.getDoSaveMaterials ())
-      {
-        totalGammaM = new Grid<TC> (layout->getEpsSize (), 0, "totalGammaM");
-      }
-    }
+    allocateParallelGrids ();
 #else /* PARALLEL_GRID */
     UNREACHABLE;
 #endif /* !PARALLEL_GRID */
@@ -820,10 +1116,10 @@ Scheme<Type, TCoord, layout_type>::performPointSourceCalc (time_step t)
 
   ASSERT (grid != NULLPTR);
 
-  TC pos (solverSettings.getPointSourcePositionX (),
-          solverSettings.getPointSourcePositionY (),
-          solverSettings.getPointSourcePositionZ (),
-          ct1, ct2, ct3);
+  TC pos = TC::initAxesCoordinate (solverSettings.getPointSourcePositionX (),
+                                   solverSettings.getPointSourcePositionY (),
+                                   solverSettings.getPointSourcePositionZ (),
+                                   ct1, ct2, ct3);
 
   FieldPointValue* pointVal = grid->getFieldPointValueOrNullByAbsolutePos (pos);
 
@@ -3209,6 +3505,7 @@ Scheme<Type, TCoord, layout_type>::initMaterialFromFile (GridType gridType, Grid
 
   if (useParallel)
   {
+#ifdef PARALLEL_GRID
     for (grid_coord i = 0; i < grid->getSize ().calculateTotalCoord (); ++i)
     {
       TC pos = grid->calculatePositionFromIndex (i);
@@ -3217,6 +3514,7 @@ Scheme<Type, TCoord, layout_type>::initMaterialFromFile (GridType gridType, Grid
       FieldPointValue *val = grid->getFieldPointValue (pos);
       *val = *totalGrid->getFieldPointValue (posAbs);
     }
+#endif
   }
 }
 
@@ -3538,10 +3836,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       FieldValue epsVal = getFieldValueRealOnly (solverSettings.getEpsSphere ());
 
       FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
-      TCFP center (solverSettings.getEpsSphereCenterX (),
-                   solverSettings.getEpsSphereCenterY (),
-                   solverSettings.getEpsSphereCenterZ (),
-                   ct1, ct2, ct3);
+
+      TCFP center = TCFP::initAxesCoordinate(solverSettings.getEpsSphereCenterX (),
+                                             solverSettings.getEpsSphereCenterY (),
+                                             solverSettings.getEpsSphereCenterZ (),
+                                             ct1, ct2, ct3);
       val->setCurValue (Approximation::approximateSphereAccurate (expandTo3D (posAbs),
                                                                   expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5, ct1, ct2, ct3)),
                                                                   solverSettings.getEpsSphereRadius () * modifier,
@@ -3568,10 +3867,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         FieldValue omegapeVal = getFieldValueRealOnly (solverSettings.getOmegaPESphere () * 2 * PhysicsConst::Pi * sourceFrequency);
 
         FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
-        TCFP center (solverSettings.getOmegaPESphereCenterX (),
-                     solverSettings.getOmegaPESphereCenterY (),
-                     solverSettings.getOmegaPESphereCenterZ (),
-                     ct1, ct2, ct3);
+
+        TCFP center = TCFP::initAxesCoordinate (solverSettings.getOmegaPESphereCenterX (),
+                                                solverSettings.getOmegaPESphereCenterY (),
+                                                solverSettings.getOmegaPESphereCenterZ (),
+                                                ct1, ct2, ct3);
         val->setCurValue (Approximation::approximateSphereAccurate (expandTo3D (posAbs),
                                                                     expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5, ct1, ct2, ct3)),
                                                                     solverSettings.getOmegaPESphereRadius () * modifier,
@@ -4732,104 +5032,104 @@ template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids3D (totalInitialized, doNeedEx, Ex, totalEx, doNeedEy, Ey, totalEy, doNeedEz, Ez, totalEz,
-                                      doNeedHx, Hx, totalHx, doNeedHy, Hy, totalHy, doNeedHz, Hz, totalHz);
+  SchemeHelper::initFullFieldGrids3D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
+                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -4990,14 +5290,14 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
 
   if (solverSettings.getDoUseManualStartEndDumpCoord ())
   {
-    TC start (solverSettings.getSaveStartCoordX (),
-              solverSettings.getSaveStartCoordY (),
-              solverSettings.getSaveStartCoordZ (),
-              ct1, ct2, ct3);
-    TC end (solverSettings.getSaveEndCoordX (),
-            solverSettings.getSaveEndCoordY (),
-            solverSettings.getSaveEndCoordZ (),
-            ct1, ct2, ct3);
+    TC start = TC::initAxesCoordinate (solverSettings.getSaveStartCoordX (),
+                                       solverSettings.getSaveStartCoordY (),
+                                       solverSettings.getSaveStartCoordZ (),
+                                       ct1, ct2, ct3);
+    TC end = TC::initAxesCoordinate (solverSettings.getSaveEndCoordX (),
+                                     solverSettings.getSaveEndCoordY (),
+                                     solverSettings.getSaveEndCoordZ (),
+                                     ct1, ct2, ct3);
 
     startEx = startEy = startEz = startHx = startHy = startHz = start;
     endEx = endEy = endEz = endHx = endHy = endHz = end;
