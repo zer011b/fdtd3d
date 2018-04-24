@@ -5494,7 +5494,7 @@ Scheme<Type, TCoord, layout_type>::additionalUpdateOfGrids (time_step t, time_st
 
       ASSERT (isParallelLayout);
 
-      ParallelYeeGridLayout *parallelYeeLayout = (ParallelYeeGridLayout *) yeeLayout;
+      ParallelYeeGridLayout<Type, layout_type> *parallelYeeLayout = (ParallelYeeGridLayout<Type, layout_type> *) yeeLayout;
 
       if (parallelYeeLayout->Rebalance (diffT))
       {
