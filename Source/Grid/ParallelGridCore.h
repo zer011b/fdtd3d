@@ -9,7 +9,7 @@
 
 #ifdef DYNAMIC_GRID
 #include <map>
-#endif
+#endif /* DYNAMIC_GRID */
 
 /**
  * Base grid of parallel grid and parallel grid coordinate
@@ -35,20 +35,36 @@
 #define ParallelGridCoordinateFP GridCoordinateFP3D
 #endif /* GRID_3D */
 
+/**
+ * Process ID for non-existing processes
+ */
 #define PID_NONE (-1)
 
+
 #ifdef DYNAMIC_GRID
+/**
+ * Size of buffer for additional measurements
+ */
 #define CLOCK_BUF_SIZE 1000
 
+/**
+ * Type for share clock for different buffer sizes.
+ * Type of calc clock.
+ */
 #ifdef MPI_DYNAMIC_CLOCK
-// Clock for different buffer sizes, i.e. latency for size 0
 typedef std::map<uint32_t, FPValue> ShareClock_t;
 typedef FPValue CalcClock_t;
-#else
+#else /* MPI_DYNAMIC_CLOCK */
 typedef std::map<uint32_t, timespec> ShareClock_t;
 typedef timespec CalcClock_t;
-#endif
-#endif
+#endif /* !MPI_DYNAMIC_CLOCK */
+
+/**
+ * Type for number of iterations for different buffer sizes.
+ */
+typedef std::map<uint32_t, uint32_t> IterCount_t;
+#endif /* DYNAMIC_GRID */
+
 
 /**
  * Parallel grid buffer types.
@@ -212,6 +228,10 @@ private:
    * Latest clock counter for calculations of all processes
    */
   std::vector<CalcClock_t> calcClockSumBetweenRebalance;
+
+  /**
+   * Number of points, on which computations are performed
+   */
   std::vector<grid_coord> calcClockCountBetweenRebalance;
 
   /**
@@ -220,32 +240,39 @@ private:
   std::vector< std::vector<ShareClock_t> > shareClockSumBetweenRebalance;
 
   /**
-   * Number of point that are shared at a single time step
+   * Number of points that are shared at a single time step
    */
   std::vector< uint32_t > shareClockCountBetweenRebalance;
 
   /**
    * Number of interations for different buffer sizes
    */
-  typedef std::map<uint32_t, uint32_t> IterCount_t;
   std::vector< std::vector<IterCount_t> > shareClockIterBetweenRebalance;
 
-public:
   /**
-   * Total values
+   * Total values for performance: perf is totalSumPerfPointsPerProcess/totalSumPerfTimePerProcess then
    */
-  std::vector<FPValue> perfPointsValues;
-  std::vector<FPValue> perfTimeValues;
+  std::vector<FPValue> totalSumPerfPointsPerProcess;
+  std::vector<FPValue> totalSumPerfTimePerProcess;
 
-  std::vector< std::vector<FPValue> > latencySumValues;
-  std::vector< std::vector<FPValue> > latencyCountValues;
+  /**
+   * Total values for latency: latency is totalSumLatencyPerConnection/totalSumLatencyCountPerConnection then
+   */
+  std::vector< std::vector<FPValue> > totalSumLatencyPerConnection;
+  std::vector< std::vector<FPValue> > totalSumLatencyCountPerConnection;
 
-  std::vector< std::vector<FPValue> > bandwidthSumValues;
-  std::vector< std::vector<FPValue> > bandwidthCountValues;
+  /**
+   * Total values of bandwidth: latency is totalSumBandwidthPerConnection/totalSumBandwidthCountPerConnection then
+   */
+  std::vector< std::vector<FPValue> > totalSumBandwidthPerConnection;
+  std::vector< std::vector<FPValue> > totalSumBandwidthCountPerConnection;
 
 private:
+  /*
+   * TODO: Use this
+   */
   time_step T_balance;
-  //time_step T_perf;
+  time_step T_perf;
 
   /**
    * Helper buffers used for sharing
@@ -705,6 +732,158 @@ public:
 
   void ClearCalcClocks ();
   void ClearShareClocks ();
+
+  FPValue getTotalSumPerfPointsPerProcess (int pid) const
+  {
+    ASSERT (totalProcCount == totalSumPerfPointsPerProcess.size ());
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    return totalSumPerfPointsPerProcess[pid];
+  }
+
+  void setTotalSumPerfPointsPerProcess (int pid, FPValue val)
+  {
+    ASSERT (totalProcCount == totalSumPerfPointsPerProcess.size ());
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    totalSumPerfPointsPerProcess[pid] = val;
+  }
+
+  void increaseTotalSumPerfPointsPerProcess (int pid, FPValue val)
+  {
+    setTotalSumPerfPointsPerProcess (pid, getTotalSumPerfPointsPerProcess (pid) + val);
+  }
+
+  FPValue getTotalSumPerfTimePerProcess (int pid) const
+  {
+    ASSERT (totalProcCount == totalSumPerfTimePerProcess.size ());
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    return totalSumPerfTimePerProcess[pid];
+  }
+
+  void setTotalSumPerfTimePerProcess (int pid, FPValue val)
+  {
+    ASSERT (totalProcCount == totalSumPerfTimePerProcess.size ());
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    totalSumPerfTimePerProcess[pid] = val;
+  }
+
+  void increaseTotalSumPerfTimePerProcess (int pid, FPValue val)
+  {
+    setTotalSumPerfTimePerProcess (pid, getTotalSumPerfTimePerProcess (pid) + val);
+  }
+
+  FPValue getTotalSumLatencyPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == totalSumLatencyPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumLatencyPerConnection[pid1].size ());
+    return totalSumLatencyPerConnection[pid1][pid2];
+  }
+
+  void setTotalSumLatencyPerConnection (int pid1, int pid2, FPValue val)
+  {
+    ASSERT (totalProcCount == totalSumLatencyPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumLatencyPerConnection[pid1].size ());
+    totalSumLatencyPerConnection[pid1][pid2] = val;
+  }
+
+  void increaseTotalSumLatencyPerConnection (int pid1, int pid2, FPValue val)
+  {
+    setTotalSumLatencyPerConnection (pid1, pid2, getTotalSumLatencyPerConnection (pid1, pid2) + val);
+  }
+
+  FPValue getTotalSumLatencyCountPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == totalSumLatencyCountPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumLatencyCountPerConnection[pid1].size ());
+    return totalSumLatencyCountPerConnection[pid1][pid2];
+  }
+
+  void setTotalSumLatencyCountPerConnection (int pid1, int pid2, FPValue val)
+  {
+    ASSERT (totalProcCount == totalSumLatencyCountPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumLatencyCountPerConnection[pid1].size ());
+    totalSumLatencyCountPerConnection[pid1][pid2] = val;
+  }
+
+  void increaseTotalSumLatencyCountPerConnection (int pid1, int pid2, FPValue val)
+  {
+    setTotalSumLatencyCountPerConnection (pid1, pid2, getTotalSumLatencyCountPerConnection (pid1, pid2) + val);
+  }
+
+  FPValue getTotalSumBandwidthPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == totalSumBandwidthPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumBandwidthPerConnection[pid1].size ());
+    return totalSumBandwidthPerConnection[pid1][pid2];
+  }
+
+  void setTotalSumBandwidthPerConnection (int pid1, int pid2, FPValue val)
+  {
+    ASSERT (totalProcCount == totalSumBandwidthPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumBandwidthPerConnection[pid1].size ());
+    totalSumBandwidthPerConnection[pid1][pid2] = val;
+  }
+
+  void increaseTotalSumBandwidthPerConnection (int pid1, int pid2, FPValue val)
+  {
+    setTotalSumBandwidthPerConnection (pid1, pid2, getTotalSumBandwidthPerConnection (pid1, pid2) + val);
+  }
+
+  FPValue getTotalSumBandwidthCountPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection[pid1].size ());
+    return totalSumBandwidthCountPerConnection[pid1][pid2];
+  }
+
+  void setTotalSumBandwidthCountPerConnection (int pid1, int pid2, FPValue val)
+  {
+    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection[pid1].size ());
+    totalSumBandwidthCountPerConnection[pid1][pid2] = val;
+  }
+
+  void increaseTotalSumBandwidthCountPerConnection (int pid1, int pid2, FPValue val)
+  {
+    setTotalSumBandwidthCountPerConnection (pid1, pid2, getTotalSumBandwidthCountPerConnection (pid1, pid2) + val);
+  }
+
+  FPValue getLatencyForConnection (int pid1, int pid2)
+  {
+    FPValue count = getTotalSumLatencyCountPerConnection (pid1, pid2);
+    if (count == 0)
+    {
+      return 0;
+    }
+
+    return getTotalSumLatencyPerConnection (pid1, pid2) / count;
+  }
+
+  FPValue getBandwidthForConnection (int pid1, int pid2)
+  {
+    FPValue count = getTotalSumBandwidthCountPerConnection (pid1, pid2);
+    if (count == 0)
+    {
+      return 0;
+    }
+
+    return getTotalSumBandwidthPerConnection (pid1, pid2) / count;
+  }
 
   /**
    * Getter for calculations clock

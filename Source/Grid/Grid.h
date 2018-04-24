@@ -38,8 +38,8 @@ protected:
    */
   time_step timeStep;
 
-  /*
-   * TODO: add grid name
+  /**
+   * Name of the grid.
    */
   std::string gridName;
 
@@ -97,10 +97,6 @@ public:
   void initialize ();
   void initialize (FieldValue);
 }; /* Grid */
-
-/*
- * Templates definition
- */
 
 /**
  * Constructor of grid

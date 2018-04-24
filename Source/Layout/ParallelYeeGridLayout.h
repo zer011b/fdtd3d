@@ -1183,17 +1183,18 @@ void ParallelYeeGridLayout<Type, layout_type>::calcTotalPerf (std::vector<FPValu
   {
     if (parallelGridCore->getNodeState ()[process] == 1)
     {
-      parallelGridCore->perfPointsValues[process] += curPoints[process];
-      parallelGridCore->perfTimeValues[process] += curTimes[process];
+      parallelGridCore->increaseTotalSumPerfPointsPerProcess (process, curPoints[process]);
+      parallelGridCore->increaseTotalSumPerfTimePerProcess (process, curTimes[process]);
     }
 
-    if (parallelGridCore->perfTimeValues[process] == 0)
+    if (parallelGridCore->getTotalSumPerfTimePerProcess (process) == 0)
     {
       speed[process] = 0;
     }
     else
     {
-      speed[process] = parallelGridCore->perfPointsValues[process] / parallelGridCore->perfTimeValues[process];
+      speed[process] = parallelGridCore->getTotalSumPerfPointsPerProcess (process)
+                       / parallelGridCore->getTotalSumPerfTimePerProcess (process);
     }
 
     if (parallelGridCore->getNodeState ()[process] == 1)
@@ -1227,30 +1228,16 @@ void ParallelYeeGridLayout<Type, layout_type>::calcTotalLatencyAndBandwidth (std
       {
         if (skipCurShareMeasurement[process][i] == 0)
         {
-          parallelGridCore->latencySumValues[process][i] += curShareLatency[process][i];
-          parallelGridCore->latencyCountValues[process][i] += 1;
+          parallelGridCore->increaseTotalSumLatencyPerConnection (process, i, curShareLatency[process][i]);
+          parallelGridCore->increaseTotalSumLatencyCountPerConnection (process, i, 1);
 
-          parallelGridCore->bandwidthSumValues[process][i] += curShareBandwidth[process][i];
-          parallelGridCore->bandwidthCountValues[process][i] += 1;
+          parallelGridCore->increaseTotalSumBandwidthPerConnection (process, i, curShareBandwidth[process][i]);
+          parallelGridCore->increaseTotalSumBandwidthCountPerConnection (process, i, 1);
         }
       }
 
-      if (parallelGridCore->latencyCountValues[process][i] != 0)
-      {
-        latency[process][i] = parallelGridCore->latencySumValues[process][i] / parallelGridCore->latencyCountValues[process][i];
-      }
-      else
-      {
-        latency[process][i] = 0;
-      }
-      if (parallelGridCore->bandwidthCountValues[process][i] != 0)
-      {
-        bandwidth[process][i] = parallelGridCore->bandwidthSumValues[process][i] / parallelGridCore->bandwidthCountValues[process][i];
-      }
-      else
-      {
-        bandwidth[process][i] = 0;
-      }
+      latency[process][i] = parallelGridCore->getLatencyForConnection (process, i);
+      bandwidth[process][i] = parallelGridCore->getBandwidthForConnection (process, i);
     }
   }
 }
@@ -2981,8 +2968,8 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
           parallelGridCore->getNodeState ()[parallelGridCore->getProcessId ()],
           x, y, z,
           speed[parallelGridCore->getProcessId ()],
-          parallelGridCore->perfPointsValues[parallelGridCore->getProcessId ()],
-          parallelGridCore->perfTimeValues[parallelGridCore->getProcessId ()],
+          parallelGridCore->getTotalSumPerfPointsPerProcess (parallelGridCore->getProcessId ()),
+          parallelGridCore->getTotalSumPerfTimePerProcess (parallelGridCore->getProcessId ()),
           (FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
           (FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 (),
           (FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get3 (),
@@ -2996,11 +2983,11 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
       printf ("Share: %d--%d (latency=%.15f (%f / %f), bw=%.15f (%f / %f))\n",
         i, j,
         latency[i][j],
-        parallelGridCore->latencySumValues[i][j],
-        parallelGridCore->latencyCountValues[i][j],
+        parallelGridCore->getTotalSumLatencyPerConnection (i, j),
+        parallelGridCore->getTotalSumLatencyCountPerConnection (i, j),
         bandwidth[i][j],
-        parallelGridCore->bandwidthSumValues[i][j],
-        parallelGridCore->bandwidthCountValues[i][j]);
+        parallelGridCore->getTotalSumBandwidthPerConnection (i, j),
+        parallelGridCore->getTotalSumBandwidthCountPerConnection (i, j));
     }
   }
 
