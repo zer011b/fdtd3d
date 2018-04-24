@@ -366,22 +366,22 @@ ParallelGridCore::InitDirections ()
 #endif
 
 #ifdef DYNAMIC_GRID
-  perfPointsValues.resize (totalProcCount);
-  perfTimeValues.resize (totalProcCount);
+  totalSumPerfPointsPerProcess.resize (totalProcCount);
+  totalSumPerfTimePerProcess.resize (totalProcCount);
 
-  latencySumValues.resize (totalProcCount);
-  latencyCountValues.resize (totalProcCount);
+  totalSumLatencyPerConnection.resize (totalProcCount);
+  totalSumLatencyCountPerConnection.resize (totalProcCount);
 
-  bandwidthSumValues.resize (totalProcCount);
-  bandwidthCountValues.resize (totalProcCount);
+  totalSumBandwidthPerConnection.resize (totalProcCount);
+  totalSumBandwidthCountPerConnection.resize (totalProcCount);
 
   for (int i = 0; i < totalProcCount; ++i)
   {
-    latencySumValues[i].resize (totalProcCount);
-    latencyCountValues[i].resize (totalProcCount);
+    totalSumLatencyPerConnection[i].resize (totalProcCount);
+    totalSumLatencyCountPerConnection[i].resize (totalProcCount);
 
-    bandwidthSumValues[i].resize (totalProcCount);
-    bandwidthCountValues[i].resize (totalProcCount);
+    totalSumBandwidthPerConnection[i].resize (totalProcCount);
+    totalSumBandwidthCountPerConnection[i].resize (totalProcCount);
   }
 
   SetNodesForDirections ();
@@ -392,6 +392,9 @@ ParallelGridCore::InitDirections ()
 void
 ParallelGridCore::SetNodesForDirections ()
 {
+  /*
+   * TODO: initialize processes considering real number of processes given, i.e. if only 2 are given for 3D-XYZ
+   */
   nodesForDirections.resize (BUFFER_COUNT);
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
@@ -1305,7 +1308,7 @@ void ParallelGridCore::ShareShareClocks ()
             shareClockNSec_buf[j] = 0;
 #endif
             j++;
-// 
+//
 //             shareClockBufSize_buf[j] = 0;
 //             shareClockSec_buf[j] = 0;
 // #ifndef MPI_DYNAMIC_CLOCK
@@ -1332,7 +1335,7 @@ void ParallelGridCore::ShareShareClocks ()
             shareClockBufSize2_buf[jj] = 0;
             shareClockIter_buf[jj] = 0;
             jj++;
-            // 
+            //
             // shareClockBufSize2_buf[jj] = 0;
             // shareClockIter_buf[jj] = 0;
             // jj++;
