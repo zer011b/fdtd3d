@@ -45,7 +45,7 @@
 /**
  * Size of buffer for additional measurements
  */
-#define CLOCK_BUF_SIZE 1000
+#define CLOCK_BUF_SIZE 10
 
 /**
  * Type for share clock for different buffer sizes.
@@ -111,9 +111,9 @@ private:
   std::vector<int> nodeState;
 
   /**
-   * Lists of nodes for each direction (the closest come in the beggining of nodesForDirections[dir])
+   * Lists of nodes for each direction (the closest come in the beggining of nodesForDirections[dir]) for each process
    */
-  std::vector< std::vector<int> > nodesForDirections;
+  std::vector< std::vector< std::vector<int> > > nodesForDirections;
 #endif
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
@@ -267,7 +267,27 @@ private:
   std::vector< std::vector<FPValue> > totalSumBandwidthPerConnection;
   std::vector< std::vector<FPValue> > totalSumBandwidthCountPerConnection;
 
-private:
+  /**
+   * Value for number of grid point between rebalances
+   */
+  std::vector<FPValue> curPoints;
+  /**
+   * Value for calculation time between rebalances
+   */
+  std::vector<FPValue> curTimes;
+
+  std::vector< std::vector<int> > skipCurShareMeasurement;
+
+  /**
+   * Values of current latency and bandwidth between rebalance
+   */
+  std::vector< std::vector<FPValue> > curShareLatency;
+  std::vector< std::vector<FPValue> > curShareBandwidth;
+
+  std::vector<FPValue> speed;
+  std::vector< std::vector<FPValue> > latency;
+  std::vector< std::vector<FPValue> > bandwidth;
+
   /*
    * TODO: Use this
    */
@@ -349,7 +369,7 @@ private:
   void timespec_sum (struct timespec *, struct timespec *, struct timespec *);
   void timespec_avg (struct timespec *, struct timespec *, struct timespec *);
 
-  void SetNodesForDirections ();
+  void SetNodesForDirections (int);
 #endif /* DYNAMIC_GRID */
 
 public:
@@ -733,12 +753,82 @@ public:
   void ClearCalcClocks ();
   void ClearShareClocks ();
 
+  FPValue getPerf (int pid) const
+  {
+    ASSERT (totalProcCount == speed.size ());
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    return speed[pid];
+  }
+  FPValue getLatency (int pid1, int pid2) const
+  {
+    ASSERT (totalProcCount == latency.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == latency[pid1].size ());
+    ASSERT (latency[pid1][pid2] == latency[pid2][pid1]);
+    return latency[pid1][pid2];
+  }
+  FPValue getBandwidth (int pid1, int pid2) const
+  {
+    ASSERT (totalProcCount == bandwidth.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == bandwidth[pid1].size ());
+    ASSERT (bandwidth[pid1][pid2] == bandwidth[pid2][pid1]);
+    return bandwidth[pid1][pid2];
+  }
+
   FPValue getTotalSumPerfPointsPerProcess (int pid) const
   {
     ASSERT (totalProcCount == totalSumPerfPointsPerProcess.size ());
     ASSERT (pid >= 0 && pid < totalProcCount);
     return totalSumPerfPointsPerProcess[pid];
   }
+
+  FPValue getTotalSumPerfTimePerProcess (int pid) const
+  {
+    ASSERT (totalProcCount == totalSumPerfTimePerProcess.size ());
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    return totalSumPerfTimePerProcess[pid];
+  }
+
+  FPValue getTotalSumLatencyPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == totalSumLatencyPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumLatencyPerConnection[pid1].size ());
+    return totalSumLatencyPerConnection[pid1][pid2];
+  }
+
+  FPValue getTotalSumLatencyCountPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == totalSumLatencyCountPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumLatencyCountPerConnection[pid1].size ());
+    return totalSumLatencyCountPerConnection[pid1][pid2];
+  }
+
+  FPValue getTotalSumBandwidthPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == totalSumBandwidthPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumBandwidthPerConnection[pid1].size ());
+    return totalSumBandwidthPerConnection[pid1][pid2];
+  }
+
+  FPValue getTotalSumBandwidthCountPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection[pid1].size ());
+    return totalSumBandwidthCountPerConnection[pid1][pid2];
+  }
+
+private:
 
   void setTotalSumPerfPointsPerProcess (int pid, FPValue val)
   {
@@ -752,13 +842,6 @@ public:
     setTotalSumPerfPointsPerProcess (pid, getTotalSumPerfPointsPerProcess (pid) + val);
   }
 
-  FPValue getTotalSumPerfTimePerProcess (int pid) const
-  {
-    ASSERT (totalProcCount == totalSumPerfTimePerProcess.size ());
-    ASSERT (pid >= 0 && pid < totalProcCount);
-    return totalSumPerfTimePerProcess[pid];
-  }
-
   void setTotalSumPerfTimePerProcess (int pid, FPValue val)
   {
     ASSERT (totalProcCount == totalSumPerfTimePerProcess.size ());
@@ -769,15 +852,6 @@ public:
   void increaseTotalSumPerfTimePerProcess (int pid, FPValue val)
   {
     setTotalSumPerfTimePerProcess (pid, getTotalSumPerfTimePerProcess (pid) + val);
-  }
-
-  FPValue getTotalSumLatencyPerConnection (int pid1, int pid2)
-  {
-    ASSERT (totalProcCount == totalSumLatencyPerConnection.size ());
-    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
-    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumLatencyPerConnection[pid1].size ());
-    return totalSumLatencyPerConnection[pid1][pid2];
   }
 
   void setTotalSumLatencyPerConnection (int pid1, int pid2, FPValue val)
@@ -794,15 +868,6 @@ public:
     setTotalSumLatencyPerConnection (pid1, pid2, getTotalSumLatencyPerConnection (pid1, pid2) + val);
   }
 
-  FPValue getTotalSumLatencyCountPerConnection (int pid1, int pid2)
-  {
-    ASSERT (totalProcCount == totalSumLatencyCountPerConnection.size ());
-    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
-    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumLatencyCountPerConnection[pid1].size ());
-    return totalSumLatencyCountPerConnection[pid1][pid2];
-  }
-
   void setTotalSumLatencyCountPerConnection (int pid1, int pid2, FPValue val)
   {
     ASSERT (totalProcCount == totalSumLatencyCountPerConnection.size ());
@@ -815,15 +880,6 @@ public:
   void increaseTotalSumLatencyCountPerConnection (int pid1, int pid2, FPValue val)
   {
     setTotalSumLatencyCountPerConnection (pid1, pid2, getTotalSumLatencyCountPerConnection (pid1, pid2) + val);
-  }
-
-  FPValue getTotalSumBandwidthPerConnection (int pid1, int pid2)
-  {
-    ASSERT (totalProcCount == totalSumBandwidthPerConnection.size ());
-    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
-    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumBandwidthPerConnection[pid1].size ());
-    return totalSumBandwidthPerConnection[pid1][pid2];
   }
 
   void setTotalSumBandwidthPerConnection (int pid1, int pid2, FPValue val)
@@ -840,15 +896,6 @@ public:
     setTotalSumBandwidthPerConnection (pid1, pid2, getTotalSumBandwidthPerConnection (pid1, pid2) + val);
   }
 
-  FPValue getTotalSumBandwidthCountPerConnection (int pid1, int pid2)
-  {
-    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection.size ());
-    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
-    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection[pid1].size ());
-    return totalSumBandwidthCountPerConnection[pid1][pid2];
-  }
-
   void setTotalSumBandwidthCountPerConnection (int pid1, int pid2, FPValue val)
   {
     ASSERT (totalProcCount == totalSumBandwidthCountPerConnection.size ());
@@ -863,27 +910,47 @@ public:
     setTotalSumBandwidthCountPerConnection (pid1, pid2, getTotalSumBandwidthCountPerConnection (pid1, pid2) + val);
   }
 
-  FPValue getLatencyForConnection (int pid1, int pid2)
+  /**
+   * Calculate overall latency of share operations between pid1 and pid2 computational nodes
+   *
+   * @return overall latency of share operations between pid1 and pid2 computational nodes
+   */
+  FPValue calcLatencyForConnection (int pid1, /**< id of first computational node */
+                                    int pid2) /**< id of second computational node */
   {
     FPValue count = getTotalSumLatencyCountPerConnection (pid1, pid2);
     if (count == 0)
     {
+      /*
+       * Should get here only for cases when nodes have never performed share opeations
+       */
       return 0;
     }
 
     return getTotalSumLatencyPerConnection (pid1, pid2) / count;
   }
 
-  FPValue getBandwidthForConnection (int pid1, int pid2)
+  /**
+   * Calculate overall bandwidth of share operations between pid1 and pid2 computational nodes
+   *
+   * @return overall bandwidth of share operations between pid1 and pid2 computational nodes
+   */
+  FPValue calcBandwidthForConnection (int pid1, /**< id of first computational node */
+                                      int pid2) /**< id of second computational node */
   {
     FPValue count = getTotalSumBandwidthCountPerConnection (pid1, pid2);
     if (count == 0)
     {
+      /*
+       * Should get here only for cases when nodes have never performed share opeations
+       */
       return 0;
     }
 
     return getTotalSumBandwidthPerConnection (pid1, pid2) / count;
   }
+
+public:
 
   /**
    * Getter for calculations clock
@@ -933,15 +1000,12 @@ public:
     return getShareClock (processId, pid);
   }
 
-  // const bool checkShareClockCount (int pid1, int pid2) const
-  // {
-  //   ASSERT (pid1 >= 0 && pid1 < totalProcCount);
-  //   ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-  //   ASSERT (nodeState[processId] == 1 && nodeState[pid] == 1);
-  //   return shareClockCountBetweenRebalance[pid] > 0;
-  // }
-
-  const uint32_t & getShareClockCountCur (int pid) const
+  /**
+   * Get size of buffer shared between current process and pid during computations
+   *
+   * @return size of buffer shared between current process and pid during computations
+   */
+  const uint32_t & getShareClockCountCur (int pid) const /**< id of process, with which to get buffer size */
   {
     ASSERT (pid >= 0 && pid < totalProcCount);
     ASSERT (nodeState[processId] == 1 && nodeState[pid] == 1 && shareClockCountBetweenRebalance[pid] > 0
@@ -991,6 +1055,16 @@ public:
             || (nodeState[processId] == 0 || nodeState[pid] == 0) && val == 0);
     shareClockIterBetweenRebalance[processId][pid][bufSize] = val;
   }
+
+  int getNodeForDirectionForProcess (int, BufferPosition) const;
+
+  void updateCurrentPerfValues (time_step);
+  void approximateWithLinearRegression (FPValue &, FPValue &, const ShareClock_t &);
+  void updateCurrentShareValues ();
+  void doAdditionalShareMeasurements (uint32_t, uint32_t, uint32_t, uint32_t);
+  void initializeIterationCounters (time_step);
+  FPValue calcTotalPerf (time_step);
+  void calcTotalLatencyAndBandwidth (time_step);
 
 #endif /* DYNAMIC_GRID */
 

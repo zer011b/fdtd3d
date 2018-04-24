@@ -249,6 +249,12 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceHx, getDoUsePointSourceHx, bool, f
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceHy, getDoUsePointSourceHy, bool, false, "--point-source-hy", "Point source Hy")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceHz, getDoUsePointSourceHz, bool, false, "--point-source-hz", "Point source Hz")
 
+/*
+ * Dynamic grid
+ */
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCheckDisablingConditions, getDoCheckDisablingConditions, bool, false, "--check-disabling-cond", "Check dynamic grid disabling conditions")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCheckEnablingConditions, getDoCheckEnablingConditions, bool, false, "--check-enabling-cond", "Check dynamic grid enabling conditions")
+
 SETTINGS_ELEM_OPTION_TYPE_STRING("--cmd-from-file", "Load command line from file. Cmd file has the next format:\n"
                                                     "\t\t<cmd with arg>\n"
                                                     "\t\t<value>\n"
