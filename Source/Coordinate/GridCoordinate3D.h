@@ -307,18 +307,6 @@ public:
   friend GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST (::operator- <TcoordType, doSignChecks>)
     (GridCoordinate3DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate3DTemplate<TcoordType, !doSignChecks>& rhs);
 
-  GridCoordinate2DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST shrink () const
-  {
-    TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
-    TcoordType coord2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
-    return GridCoordinate2DTemplate<TcoordType, doSignChecks> (coord1, coord2
-#ifdef DEBUG_INFO
-      , GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
-      , GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
-#endif /* DEBUG_INFO */
-      );
-  }
-
   void print () const
   {
     TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
@@ -410,41 +398,45 @@ GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operato
 }
 
 template<class TcoordType, bool doSignChecks>
-GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST expand (const GridCoordinate2DTemplate<TcoordType, doSignChecks> &coord,
-                                                                                 CoordinateType t3 = CoordinateType::Z)
-{
-  TcoordType coord1 = coord.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
-  TcoordType coord2 = coord.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
-  return GridCoordinate3DTemplate<TcoordType, doSignChecks> (coord1, coord2, 0
-#ifdef DEBUG_INFO
-    , coord.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
-    , coord.GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
-    , t3
-#endif /* DEBUG_INFO */
-    );
-}
-
-template<class TcoordType, bool doSignChecks>
-GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST expand2 (const GridCoordinate1DTemplate<TcoordType, doSignChecks> &coord,
-                                                                                  CoordinateType t2 = CoordinateType::Y,
-                                                                                  CoordinateType t3 = CoordinateType::Z)
-{
-  TcoordType coord1 = coord.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
-  return GridCoordinate3DTemplate<TcoordType, doSignChecks> (coord1, 0, 0
-#ifdef DEBUG_INFO
-    , coord.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
-    , t2
-    , t3
-#endif /* DEBUG_INFO */
-    );
-}
-
-template<class TcoordType, bool doSignChecks>
 GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST expandTo3D (const GridCoordinate1DTemplate<TcoordType, doSignChecks> &coord,
-                                                                                     CoordinateType t2 = CoordinateType::Y,
-                                                                                     CoordinateType t3 = CoordinateType::Z)
+                                                                                     CoordinateType t1,
+                                                                                     CoordinateType t2,
+                                                                                     CoordinateType t3)
 {
-  return expand2 (coord, t2, t3);
+#ifdef DEBUG_INFO
+  ASSERT (coord.getType1 () == t1);
+  ASSERT (t2 == CoordinateType::NONE);
+  ASSERT (t3 == CoordinateType::NONE);
+#endif /* DEBUG_INFO */
+
+  TcoordType coord1 = 0;
+  TcoordType coord2 = 0;
+  TcoordType coord3 = 0;
+
+  if (t1 == CoordinateType::X)
+  {
+    coord1 = coord.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+  }
+  else if (t1 == CoordinateType::Y)
+  {
+    coord2 = coord.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+  }
+  else if (t1 == CoordinateType::Z)
+  {
+    coord3 = coord.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+  }
+  else
+  {
+    UNREACHABLE;
+  }
+
+  return GridCoordinate3DTemplate<TcoordType, doSignChecks> (coord1, coord2, coord3
+#ifdef DEBUG_INFO
+    , CoordinateType::X
+    , CoordinateType::Y
+    , CoordinateType::Z
+#endif /* DEBUG_INFO */
+    );
 }
 
 template<class TcoordType, bool doSignChecks>
@@ -452,31 +444,98 @@ void CUDA_DEVICE CUDA_HOST expandTo3DStartEnd (const GridCoordinate1DTemplate<Tc
                                                const GridCoordinate1DTemplate<TcoordType, doSignChecks> &end,
                                                GridCoordinate3DTemplate<TcoordType, doSignChecks> &start3D,
                                                GridCoordinate3DTemplate<TcoordType, doSignChecks> &end3D,
-                                               CoordinateType t2 = CoordinateType::Y,
-                                               CoordinateType t3 = CoordinateType::Z)
+                                               CoordinateType t1,
+                                               CoordinateType t2,
+                                               CoordinateType t3)
 {
 #ifdef DEBUG_INFO
   ASSERT (start.getType1 () == end.getType1 ());
+  ASSERT (start.getType1 () == t1);
+  ASSERT (t2 == CoordinateType::NONE);
+  ASSERT (t3 == CoordinateType::NONE);
 #endif /* DEBUG_INFO */
 
-  start3D = expandTo3D (start, t2, t3);
+  start3D = expandTo3D (start, t1, t2, t3);
 
-  TcoordType end_1 = end.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+  TcoordType coord1 = 1;
+  TcoordType coord2 = 1;
+  TcoordType coord3 = 1;
 
-  end3D = GridCoordinate3DTemplate<TcoordType, doSignChecks> (end_1, 1, 1
+  if (t1 == CoordinateType::X)
+  {
+    coord1 = end.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+  }
+  else if (t1 == CoordinateType::Y)
+  {
+    coord2 = end.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+  }
+  else if (t1 == CoordinateType::Z)
+  {
+    coord3 = end.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+  }
+  else
+  {
+    UNREACHABLE;
+  }
+
+  end3D = GridCoordinate3DTemplate<TcoordType, doSignChecks> (coord1, coord2, coord3
 #ifdef DEBUG_INFO
-    , end.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
-    , t2
-    , t3
+    , CoordinateType::X
+    , CoordinateType::Y
+    , CoordinateType::Z
 #endif /* DEBUG_INFO */
     );
 }
 
 template<class TcoordType, bool doSignChecks>
 GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST expandTo3D (const GridCoordinate2DTemplate<TcoordType, doSignChecks> &coord,
-                                                                                     CoordinateType t3 = CoordinateType::Z)
+                                                                                     CoordinateType t1,
+                                                                                     CoordinateType t2,
+                                                                                     CoordinateType t3)
 {
-  return expand (coord, t3);
+#ifdef DEBUG_INFO
+  ASSERT (coord.getType1 () == t1);
+  ASSERT (coord.getType2 () == t2);
+  ASSERT (t3 == CoordinateType::NONE);
+#endif /* DEBUG_INFO */
+
+  TcoordType coord1 = 0;
+  TcoordType coord2 = 0;
+  TcoordType coord3 = 0;
+
+  if (t1 == CoordinateType::X)
+  {
+    coord1 = coord.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+  }
+  else if (t1 == CoordinateType::Y)
+  {
+    coord2 = coord.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+  }
+  else
+  {
+    UNREACHABLE;
+  }
+
+  if (t2 == CoordinateType::Y)
+  {
+    coord2 = coord.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+  }
+  else if (t2 == CoordinateType::Z)
+  {
+    coord3 = coord.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+  }
+  else
+  {
+    UNREACHABLE;
+  }
+
+  return GridCoordinate3DTemplate<TcoordType, doSignChecks> (coord1, coord2, coord3
+#ifdef DEBUG_INFO
+    , CoordinateType::X
+    , CoordinateType::Y
+    , CoordinateType::Z
+#endif /* DEBUG_INFO */
+    );
 }
 
 template<class TcoordType, bool doSignChecks>
@@ -484,30 +543,71 @@ void CUDA_DEVICE CUDA_HOST expandTo3DStartEnd (const GridCoordinate2DTemplate<Tc
                                                const GridCoordinate2DTemplate<TcoordType, doSignChecks> &end,
                                                GridCoordinate3DTemplate<TcoordType, doSignChecks> &start3D,
                                                GridCoordinate3DTemplate<TcoordType, doSignChecks> &end3D,
-                                               CoordinateType t3 = CoordinateType::Z)
+                                               CoordinateType t1,
+                                               CoordinateType t2,
+                                               CoordinateType t3)
 {
 #ifdef DEBUG_INFO
   ASSERT (start.getType1 () == end.getType1 ());
   ASSERT (start.getType2 () == end.getType2 ());
+  ASSERT (start.getType1 () == t1);
+  ASSERT (start.getType2 () == t2);
+  ASSERT (t3 == CoordinateType::NONE);
 #endif /* DEBUG_INFO */
 
-  start3D = expandTo3D (start, t3);
+  start3D = expandTo3D (start, t1, t2, t3);
 
-  TcoordType end_1 = end.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
-  TcoordType end_2 = end.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+  TcoordType coord1 = 1;
+  TcoordType coord2 = 1;
+  TcoordType coord3 = 1;
 
-  end3D = GridCoordinate3DTemplate<TcoordType, doSignChecks> (end_1, end_2, 1
+  if (t1 == CoordinateType::X)
+  {
+    coord1 = end.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+  }
+  else if (t1 == CoordinateType::Y)
+  {
+    coord2 = end.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+  }
+  else
+  {
+    UNREACHABLE;
+  }
+
+  if (t2 == CoordinateType::Y)
+  {
+    coord2 = end.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+  }
+  else if (t2 == CoordinateType::Z)
+  {
+    coord3 = end.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+  }
+  else
+  {
+    UNREACHABLE;
+  }
+
+  end3D = GridCoordinate3DTemplate<TcoordType, doSignChecks> (coord1, coord2, coord3
 #ifdef DEBUG_INFO
-    , end.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
-    , end.GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
-    , t3
+    , CoordinateType::X
+    , CoordinateType::Y
+    , CoordinateType::Z
 #endif /* DEBUG_INFO */
     );
 }
 
 template<class TcoordType, bool doSignChecks>
-GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST expandTo3D (const GridCoordinate3DTemplate<TcoordType, doSignChecks> &coord)
+GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST expandTo3D (const GridCoordinate3DTemplate<TcoordType, doSignChecks> &coord,
+                                                                                     CoordinateType t1,
+                                                                                     CoordinateType t2,
+                                                                                     CoordinateType t3)
 {
+#ifdef DEBUG_INFO
+  ASSERT (coord.getType1 () == t1);
+  ASSERT (coord.getType2 () == t2);
+  ASSERT (coord.getType3 () == t3);
+#endif /* DEBUG_INFO */
+
   return coord;
 }
 
@@ -515,8 +615,20 @@ template<class TcoordType, bool doSignChecks>
 void CUDA_DEVICE CUDA_HOST expandTo3DStartEnd (const GridCoordinate3DTemplate<TcoordType, doSignChecks> &start,
                                                const GridCoordinate3DTemplate<TcoordType, doSignChecks> &end,
                                                GridCoordinate3DTemplate<TcoordType, doSignChecks> &start3D,
-                                               GridCoordinate3DTemplate<TcoordType, doSignChecks> &end3D)
+                                               GridCoordinate3DTemplate<TcoordType, doSignChecks> &end3D,
+                                               CoordinateType t1,
+                                               CoordinateType t2,
+                                               CoordinateType t3)
 {
+#ifdef DEBUG_INFO
+  ASSERT (start.getType1 () == end.getType1 ());
+  ASSERT (start.getType2 () == end.getType2 ());
+  ASSERT (start.getType3 () == end.getType3 ());
+  ASSERT (start.getType1 () == t1);
+  ASSERT (start.getType2 () == t2);
+  ASSERT (start.getType3 () == t3);
+#endif /* DEBUG_INFO */
+
   start3D = start;
   end3D = end;
 }

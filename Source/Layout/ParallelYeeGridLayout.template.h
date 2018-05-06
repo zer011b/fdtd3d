@@ -2641,7 +2641,7 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
       int pid2 = parallelGridCore->getNodeGrid (i, j + 1);
 #endif
 #ifdef GRID_3D
-      FPValue size = spreadX[i] * spreadZ[k]
+      FPValue size = spreadX[i] * spreadZ[k];
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i, j + 1, k);
 #endif

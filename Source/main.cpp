@@ -298,6 +298,369 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)),
 #endif
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+void initSettings (TCoord<grid_coord, true> &, TCoord<grid_coord, true> &, TCoord<grid_coord, true> &);
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>
+  (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeZ ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::Z
+#endif
+                                                            );
+  pmlSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getPMLSizeZ ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::Z
+#endif
+                                                        );
+  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeZ ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::Z
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>
+  (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeY ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::Y
+#endif
+                                                            );
+  pmlSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getPMLSizeY ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::Y
+#endif
+                                                        );
+  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeY ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::Y
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>
+  (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeZ ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::Z
+#endif
+                                                            );
+  pmlSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getPMLSizeZ ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::Z
+#endif
+                                                        );
+  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeZ ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::Z
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>
+  (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeX ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::X
+#endif
+                                                            );
+  pmlSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getPMLSizeX ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::X
+#endif
+                                                        );
+  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::X
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>
+  (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeY ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::Y
+#endif
+                                                            );
+  pmlSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getPMLSizeY ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::Y
+#endif
+                                                        );
+  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeY ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::Y
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>
+  (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeX ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::X
+#endif
+                                                            );
+  pmlSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getPMLSizeX ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::X
+#endif
+                                                        );
+  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::X
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>
+  (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeY (),
+                                                            solverSettings.getSizeZ ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::Y
+                                                            , CoordinateType::Z
+#endif
+                                                            );
+  pmlSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getPMLSizeY (),
+                                                        solverSettings.getPMLSizeZ ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::Y
+                                                        , CoordinateType::Z
+#endif
+                                                        );
+  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeY (),
+                                                         solverSettings.getTFSFSizeZ ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::Y
+                                                         , CoordinateType::Z
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>
+  (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeX (),
+                                                            solverSettings.getSizeZ ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::X
+                                                            , CoordinateType::Z
+#endif
+                                                            );
+  pmlSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getPMLSizeX (),
+                                                        solverSettings.getPMLSizeZ ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::X
+                                                        , CoordinateType::Z
+#endif
+                                                        );
+  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX (),
+                                                         solverSettings.getTFSFSizeZ ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::X
+                                                         , CoordinateType::Z
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>
+  (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeX (),
+                                                            solverSettings.getSizeY ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::X
+                                                            , CoordinateType::Y
+#endif
+                                                            );
+  pmlSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getPMLSizeX (),
+                                                        solverSettings.getPMLSizeY ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::X
+                                                        , CoordinateType::Y
+#endif
+                                                        );
+  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX (),
+                                                         solverSettings.getTFSFSizeY ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::X
+                                                         , CoordinateType::Y
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>
+  (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeY (),
+                                                            solverSettings.getSizeZ ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::Y
+                                                            , CoordinateType::Z
+#endif
+                                                            );
+  pmlSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getPMLSizeY (),
+                                                        solverSettings.getPMLSizeZ ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::Y
+                                                        , CoordinateType::Z
+#endif
+                                                        );
+  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeY (),
+                                                         solverSettings.getTFSFSizeZ ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::Y
+                                                         , CoordinateType::Z
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>
+  (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeX (),
+                                                            solverSettings.getSizeZ ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::X
+                                                            , CoordinateType::Z
+#endif
+                                                            );
+  pmlSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getPMLSizeX (),
+                                                        solverSettings.getPMLSizeZ ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::X
+                                                        , CoordinateType::Z
+#endif
+                                                        );
+  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX (),
+                                                         solverSettings.getTFSFSizeZ ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::X
+                                                         , CoordinateType::Z
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>
+  (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeX (),
+                                                            solverSettings.getSizeY ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::X
+                                                            , CoordinateType::Y
+#endif
+                                                            );
+  pmlSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getPMLSizeX (),
+                                                        solverSettings.getPMLSizeY ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::X
+                                                        , CoordinateType::Y
+#endif
+                                                        );
+  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX (),
+                                                         solverSettings.getTFSFSizeY ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::X
+                                                         , CoordinateType::Y
+#endif
+                                                         );
+}
+
+template <>
+void
+initSettings<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>
+  (GridCoordinate3DTemplate<grid_coord, true> &overallSize,
+   GridCoordinate3DTemplate<grid_coord, true> &pmlSize,
+   GridCoordinate3DTemplate<grid_coord, true> &tfsfSize)
+{
+  overallSize = GridCoordinate3DTemplate<grid_coord, true> (solverSettings.getSizeX (),
+                                                            solverSettings.getSizeY (),
+                                                            solverSettings.getSizeZ ()
+#ifdef DEBUG_INFO
+                                                            , CoordinateType::X
+                                                            , CoordinateType::Y
+                                                            , CoordinateType::Z
+#endif
+                                                            );
+  pmlSize = GridCoordinate3DTemplate<grid_coord, true> (solverSettings.getPMLSizeX (),
+                                                        solverSettings.getPMLSizeY (),
+                                                        solverSettings.getPMLSizeZ ()
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::X
+                                                        , CoordinateType::Y
+                                                        , CoordinateType::Z
+#endif
+                                                        );
+  tfsfSize = GridCoordinate3DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX (),
+                                                         solverSettings.getTFSFSizeY (),
+                                                         solverSettings.getTFSFSizeZ ()
+#ifdef DEBUG_INFO
+                                                         , CoordinateType::X
+                                                         , CoordinateType::Y
+                                                         , CoordinateType::Z
+#endif
+                                                         );
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 int runMode (int argc, char** argv)
 {
   int rank = 0;
@@ -310,9 +673,10 @@ int runMode (int argc, char** argv)
   bool skipProcess = false;
 #endif
 
-  TCoord<grid_coord, true> overallSize (solverSettings.getSizeX (), solverSettings.getSizeY (), solverSettings.getSizeZ ());
-  TCoord<grid_coord, true> pmlSize (solverSettings.getPMLSizeX (), solverSettings.getPMLSizeY (), solverSettings.getPMLSizeZ ());
-  TCoord<grid_coord, true> tfsfSize (solverSettings.getTFSFSizeX (), solverSettings.getTFSFSizeY (), solverSettings.getTFSFSizeZ ());
+  TCoord<grid_coord, true> overallSize;
+  TCoord<grid_coord, true> pmlSize;
+  TCoord<grid_coord, true> tfsfSize;
+  initSettings<Type, TCoord, layout_type> (overallSize, pmlSize, tfsfSize);
 
   YeeGridLayout<Type, TCoord, layout_type> *yeeLayout = NULLPTR;
 

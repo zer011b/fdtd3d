@@ -211,41 +211,64 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
     ALWAYS_ASSERT ((GridCoordinate3DTemplate<TcoordType, doSignChecks>::initAxesCoordinate (i, 10 * i, 17 * i, CoordinateType::X, CoordinateType::Y, CoordinateType::Z).get2 () == 10 * i));
     ALWAYS_ASSERT ((GridCoordinate3DTemplate<TcoordType, doSignChecks>::initAxesCoordinate (i, 10 * i, 17 * i, CoordinateType::X, CoordinateType::Y, CoordinateType::Z).get3 () == 17 * i));
 
-    if (correct2D)
-    {
-      *coord2D = expand (*coord1D, t2);
-      ALWAYS_ASSERT (coord2D->get1 () == coord1D->get1 () && coord2D->get2 () == 0);
-      ALWAYS_ASSERT (coord2D->shrink () == *coord1D);
-    }
-
     if (correct3D)
     {
-      *coord3D = expand2 (*coord1D, t2, t3);
-      ALWAYS_ASSERT (coord3D->get1 () == coord1D->get1 () && coord3D->get2 () == 0 && coord3D->get3 () == 0);
-
-      ALWAYS_ASSERT ((expandTo3D (GridCoordinate1DTemplate<TcoordType, doSignChecks> (i)) == GridCoordinate3DTemplate<TcoordType, doSignChecks> (i, 0, 0)));
-      ALWAYS_ASSERT ((expandTo3D (GridCoordinate2DTemplate<TcoordType, doSignChecks> (i, 10 * i)) == GridCoordinate3DTemplate<TcoordType, doSignChecks> (i, 10 * i, 0)));
-      ALWAYS_ASSERT ((expandTo3D (GridCoordinate3DTemplate<TcoordType, doSignChecks> (i, 10 * i, 17 * i)) == GridCoordinate3DTemplate<TcoordType, doSignChecks> (i, 10 * i, 17 * i)));
+      ALWAYS_ASSERT ((expandTo3D (GridCoordinate1DTemplate<TcoordType, doSignChecks> (i, CoordinateType::X),
+                                  CoordinateType::X, CoordinateType::NONE, CoordinateType::NONE)
+                      == GridCoordinate3DTemplate<TcoordType, doSignChecks> (i, 0, 0, CoordinateType::X, CoordinateType::Y, CoordinateType::Z)));
+      ALWAYS_ASSERT ((expandTo3D (GridCoordinate1DTemplate<TcoordType, doSignChecks> (i, CoordinateType::Y),
+                                  CoordinateType::Y, CoordinateType::NONE, CoordinateType::NONE)
+                      == GridCoordinate3DTemplate<TcoordType, doSignChecks> (0, i, 0, CoordinateType::X, CoordinateType::Y, CoordinateType::Z)));
+      ALWAYS_ASSERT ((expandTo3D (GridCoordinate1DTemplate<TcoordType, doSignChecks> (i, CoordinateType::Z),
+                                  CoordinateType::Z, CoordinateType::NONE, CoordinateType::NONE)
+                      == GridCoordinate3DTemplate<TcoordType, doSignChecks> (0, 0, i, CoordinateType::X, CoordinateType::Y, CoordinateType::Z)));
+      ALWAYS_ASSERT ((expandTo3D (GridCoordinate2DTemplate<TcoordType, doSignChecks> (i, 10 * i, CoordinateType::X, CoordinateType::Y),
+                                  CoordinateType::X, CoordinateType::Y, CoordinateType::NONE)
+                      == GridCoordinate3DTemplate<TcoordType, doSignChecks> (i, 10 * i, 0, CoordinateType::X, CoordinateType::Y, CoordinateType::Z)));
+      ALWAYS_ASSERT ((expandTo3D (GridCoordinate2DTemplate<TcoordType, doSignChecks> (i, 10 * i, CoordinateType::Y, CoordinateType::Z),
+                                  CoordinateType::Y, CoordinateType::Z, CoordinateType::NONE)
+                      == GridCoordinate3DTemplate<TcoordType, doSignChecks> (0, i, 10 * i, CoordinateType::X, CoordinateType::Y, CoordinateType::Z)));
+      ALWAYS_ASSERT ((expandTo3D (GridCoordinate3DTemplate<TcoordType, doSignChecks> (i, 10 * i, 17 * i, CoordinateType::X, CoordinateType::Y, CoordinateType::Z),
+                                  CoordinateType::X, CoordinateType::Y, CoordinateType::Z)
+                      == GridCoordinate3DTemplate<TcoordType, doSignChecks> (i, 10 * i, 17 * i, CoordinateType::X, CoordinateType::Y, CoordinateType::Z)));
 
       GridCoordinate3DTemplate<TcoordType, doSignChecks> coord3D_3;
       GridCoordinate3DTemplate<TcoordType, doSignChecks> coord3D_4;
-      expandTo3DStartEnd (GridCoordinate1DTemplate<TcoordType, doSignChecks> (i), GridCoordinate1DTemplate<TcoordType, doSignChecks> (10 * i), coord3D_3, coord3D_4);
+      expandTo3DStartEnd (GridCoordinate1DTemplate<TcoordType, doSignChecks> (i, CoordinateType::X),
+                          GridCoordinate1DTemplate<TcoordType, doSignChecks> (10 * i, CoordinateType::X),
+                          coord3D_3, coord3D_4, CoordinateType::X, CoordinateType::NONE, CoordinateType::NONE);
       ALWAYS_ASSERT (coord3D_3.get1 () == i && coord3D_3.get2 () == 0 && coord3D_3.get3 () == 0);
       ALWAYS_ASSERT (coord3D_4.get1 () == 10 * i && coord3D_4.get2 () == 1 && coord3D_4.get3 () == 1);
 
-      expandTo3DStartEnd (GridCoordinate2DTemplate<TcoordType, doSignChecks> (i, 10 * i), GridCoordinate2DTemplate<TcoordType, doSignChecks> (10 * i, 17 * i), coord3D_3, coord3D_4);
+      expandTo3DStartEnd (GridCoordinate1DTemplate<TcoordType, doSignChecks> (i, CoordinateType::Y),
+                          GridCoordinate1DTemplate<TcoordType, doSignChecks> (10 * i, CoordinateType::Y),
+                          coord3D_3, coord3D_4, CoordinateType::Y, CoordinateType::NONE, CoordinateType::NONE);
+      ALWAYS_ASSERT (coord3D_3.get1 () == 0 && coord3D_3.get2 () == i && coord3D_3.get3 () == 0);
+      ALWAYS_ASSERT (coord3D_4.get1 () == 1 && coord3D_4.get2 () == 10 * i && coord3D_4.get3 () == 1);
+
+      expandTo3DStartEnd (GridCoordinate1DTemplate<TcoordType, doSignChecks> (i, CoordinateType::Z),
+                          GridCoordinate1DTemplate<TcoordType, doSignChecks> (10 * i, CoordinateType::Z),
+                          coord3D_3, coord3D_4, CoordinateType::Z, CoordinateType::NONE, CoordinateType::NONE);
+      ALWAYS_ASSERT (coord3D_3.get1 () == 0 && coord3D_3.get2 () == 0 && coord3D_3.get3 () == i);
+      ALWAYS_ASSERT (coord3D_4.get1 () == 1 && coord3D_4.get2 () == 1 && coord3D_4.get3 () == 10 * i)
+
+      expandTo3DStartEnd (GridCoordinate2DTemplate<TcoordType, doSignChecks> (i, 10 * i, CoordinateType::X, CoordinateType::Y),
+                          GridCoordinate2DTemplate<TcoordType, doSignChecks> (10 * i, 17 * i, CoordinateType::X, CoordinateType::Y),
+                          coord3D_3, coord3D_4, CoordinateType::X, CoordinateType::Y, CoordinateType::NONE);
       ALWAYS_ASSERT (coord3D_3.get1 () == i && coord3D_3.get2 () == 10 * i && coord3D_3.get3 () == 0);
       ALWAYS_ASSERT (coord3D_4.get1 () == 10 * i && coord3D_4.get2 () == 17 * i && coord3D_4.get3 () == 1);
 
-      expandTo3DStartEnd (GridCoordinate3DTemplate<TcoordType, doSignChecks> (i, 10 * i, 17 * i), GridCoordinate3DTemplate<TcoordType, doSignChecks> (10 * i, 17 * i, 22 * i), coord3D_3, coord3D_4);
+      expandTo3DStartEnd (GridCoordinate2DTemplate<TcoordType, doSignChecks> (i, 10 * i, CoordinateType::Y, CoordinateType::Z),
+                          GridCoordinate2DTemplate<TcoordType, doSignChecks> (10 * i, 17 * i, CoordinateType::Y, CoordinateType::Z),
+                          coord3D_3, coord3D_4, CoordinateType::Y, CoordinateType::Z, CoordinateType::NONE);
+      ALWAYS_ASSERT (coord3D_3.get1 () == 0 && coord3D_3.get2 () == i && coord3D_3.get3 () == 10 * i);
+      ALWAYS_ASSERT (coord3D_4.get1 () == 1 && coord3D_4.get2 () == 10 * i && coord3D_4.get3 () == 17 * i);
+
+      expandTo3DStartEnd (GridCoordinate3DTemplate<TcoordType, doSignChecks> (i, 10 * i, 17 * i, CoordinateType::X, CoordinateType::Y, CoordinateType::Z),
+                          GridCoordinate3DTemplate<TcoordType, doSignChecks> (10 * i, 17 * i, 22 * i, CoordinateType::X, CoordinateType::Y, CoordinateType::Z),
+                          coord3D_3, coord3D_4, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
       ALWAYS_ASSERT (coord3D_3.get1 () == i && coord3D_3.get2 () == 10 * i && coord3D_3.get3 () == 17 * i);
       ALWAYS_ASSERT (coord3D_4.get1 () == 10 * i && coord3D_4.get2 () == 17 * i && coord3D_4.get3 () == 22 * i);
-    }
-
-    if (correct2D && correct3D)
-    {
-      ALWAYS_ASSERT (expand (*coord2D, t3) == *coord3D);
-      ALWAYS_ASSERT (coord3D->shrink () == *coord2D);
     }
 
     delete coord1D;
