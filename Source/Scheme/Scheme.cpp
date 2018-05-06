@@ -86,48 +86,6 @@ SPECIALIZE_TEMPLATE(bool, bool, bool,
                     (GridCoordinateFP3D pos),
                     (pos, yeeLayout->getLeftBorderTFSF (), yeeLayout->getRightBorderTFSF ()))
 
-SPECIALIZE_TEMPLATE(void, void, void,
-                    calculateTFSFExAsserts,
-                    (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22),
-                    (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22),
-                    (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22),
-                    (pos11, pos12, pos21, pos22))
-
-SPECIALIZE_TEMPLATE(void, void, void,
-                    calculateTFSFEyAsserts,
-                    (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22),
-                    (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22),
-                    (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22),
-                    (pos11, pos12, pos21, pos22))
-
-SPECIALIZE_TEMPLATE(void, void, void,
-                    calculateTFSFEzAsserts,
-                    (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22),
-                    (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22),
-                    (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22),
-                    (pos11, pos12, pos21, pos22))
-
-SPECIALIZE_TEMPLATE(void, void, void,
-                    calculateTFSFHxAsserts,
-                    (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22),
-                    (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22),
-                    (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22),
-                    (pos11, pos12, pos21, pos22))
-
-SPECIALIZE_TEMPLATE(void, void, void,
-                    calculateTFSFHyAsserts,
-                    (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22),
-                    (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22),
-                    (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22),
-                    (pos11, pos12, pos21, pos22))
-
-SPECIALIZE_TEMPLATE(void, void, void,
-                    calculateTFSFHzAsserts,
-                    (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22),
-                    (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22),
-                    (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22),
-                    (pos11, pos12, pos21, pos22))
-
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 const bool Scheme<Type, TCoord, layout_type>::doNeedEx = Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHy) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)
                                                     || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz)
@@ -176,96 +134,466 @@ const bool Scheme<Type, TCoord, layout_type>::doNeedSigmaZ = Type == static_cast
                                                     || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy)
                                                     || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
 
-#ifdef DEBUG_INFO
 template <>
 void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate1D size)
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFExAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
 {
-  ct1 = size.getType1 ();
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
 }
 template <>
 void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate1D size)
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFExAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
 {
-  ct1 = size.getType1 ();
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
 }
 template <>
 void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate1D size)
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFExAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
 {
-  ct1 = size.getType1 ();
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () < pos22.get2 ());
 }
 template <>
 void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate1D size)
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFExAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
 {
-  ct1 = size.getType1 ();
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () < pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
 }
 template <>
 void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate1D size)
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFExAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
 {
-  ct1 = size.getType1 ();
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () < pos22.get2 ());
 }
 template <>
 void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate1D size)
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFExAsserts
+  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
 {
-  ct1 = size.getType1 ();
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate2D size)
-{
-  ct1 = size.getType1 ();
-  ct2 = size.getType2 ();
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate2D size)
-{
-  ct1 = size.getType1 ();
-  ct2 = size.getType2 ();
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate2D size)
-{
-  ct1 = size.getType1 ();
-  ct2 = size.getType2 ();
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate2D size)
-{
-  ct1 = size.getType1 ();
-  ct2 = size.getType2 ();
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate2D size)
-{
-  ct1 = size.getType1 ();
-  ct2 = size.getType2 ();
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate2D size)
-{
-  ct1 = size.getType1 ();
-  ct2 = size.getType2 ();
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () < pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+  ASSERT (pos11.get3 () == pos12.get3 ());
+  ASSERT (pos21.get3 () < pos22.get3 ());
 }
 
 template <>
 void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::initCoordTypesFromSize (GridCoordinate3D size)
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEyAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
 {
-  ct1 = size.getType1 ();
-  ct2 = size.getType2 ();
-  ct3 = size.getType3 ();
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
 }
-#endif
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEyAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEyAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () < pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEyAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEyAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+  ASSERT (pos11.get2 () < pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFEyAsserts
+  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+  ASSERT (pos11.get3 () < pos12.get3 ());
+  ASSERT (pos21.get3 () == pos22.get3 ());
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEzAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEzAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
+{
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEzAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEzAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEzAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () < pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFEzAsserts
+  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
+{
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () < pos22.get2 ());
+  ASSERT (pos11.get3 () == pos12.get3 ());
+  ASSERT (pos21.get3 () == pos22.get3 ());
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHxAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
+{
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHxAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHxAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+  ASSERT (pos11.get2 () < pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHxAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHxAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () < pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFHxAsserts
+  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () < pos22.get2 ());
+  ASSERT (pos11.get3 () < pos12.get3 ());
+  ASSERT (pos21.get3 () == pos22.get3 ());
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHyAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHyAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
+{
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHyAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () < pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHyAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () < pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHyAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFHyAsserts
+  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
+{
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+  ASSERT (pos11.get3 () == pos12.get3 ());
+  ASSERT (pos21.get3 () < pos22.get3 ());
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHzAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
+{
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHzAsserts
+  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHzAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+  ASSERT (pos11.get2 () < pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHzAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () < pos12.get1 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHzAsserts
+  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFHzAsserts
+  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
+{
+  ASSERT (pos11.get1 () == pos12.get1 ());
+  ASSERT (pos21.get1 () < pos22.get1 ());
+  ASSERT (pos11.get2 () < pos12.get2 ());
+  ASSERT (pos21.get2 () == pos22.get2 ());
+  ASSERT (pos11.get3 () == pos12.get3 ());
+  ASSERT (pos21.get3 () == pos22.get3 ());
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::Z;
+  ct2 = CoordinateType::NONE;
+  ct3 = CoordinateType::NONE;
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::Y;
+  ct2 = CoordinateType::NONE;
+  ct3 = CoordinateType::NONE;
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::Z;
+  ct2 = CoordinateType::NONE;
+  ct3 = CoordinateType::NONE;
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::X;
+  ct2 = CoordinateType::NONE;
+  ct3 = CoordinateType::NONE;
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::Y;
+  ct2 = CoordinateType::NONE;
+  ct3 = CoordinateType::NONE;
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::X;
+  ct2 = CoordinateType::NONE;
+  ct3 = CoordinateType::NONE;
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::Y;
+  ct2 = CoordinateType::Z;
+  ct3 = CoordinateType::NONE;
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::X;
+  ct2 = CoordinateType::Z;
+  ct3 = CoordinateType::NONE;
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::X;
+  ct2 = CoordinateType::Y;
+  ct3 = CoordinateType::NONE;
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::Y;
+  ct2 = CoordinateType::Z;
+  ct3 = CoordinateType::NONE;
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::X;
+  ct2 = CoordinateType::Z;
+  ct3 = CoordinateType::NONE;
+}
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::X;
+  ct2 = CoordinateType::Y;
+  ct3 = CoordinateType::NONE;
+}
+
+template <>
+void
+Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::initCoordTypes ()
+{
+  ct1 = CoordinateType::X;
+  ct2 = CoordinateType::Y;
+  ct3 = CoordinateType::Z;
+}
 
 #ifdef PARALLEL_GRID
 template <>
@@ -733,9 +1061,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
   , HzExact (NULLPTR)
   , useParallel (false)
 {
-#ifdef DEBUG_INFO
-  initCoordTypesFromSize (totSize);
-#endif
+  initCoordTypes ();
 
   if (solverSettings.getDoUseNTFF ())
   {
@@ -1550,7 +1876,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationExact (time_step t
   }
 
   FieldValue numerical = grid->getFieldPointValue (pos)->getCurValue ();
-  FieldValue exact = exactFunc (expandTo3D (realCoord * gridStep), timestep * gridTimeStep);
+  FieldValue exact = exactFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
 
 #ifdef COMPLEX_FIELD_VALUES
   FPValue modExact = sqrt (SQR (exact.real ()) + SQR (exact.imag ()));
@@ -1649,7 +1975,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationBorder (time_step 
     }
   }
 
-  grid->getFieldPointValue (pos)->setCurValue (borderFunc (expandTo3D (realCoord * gridStep), timestep * gridTimeStep));
+  grid->getFieldPointValue (pos)->setCurValue (borderFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep));
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -1941,7 +2267,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
   FieldValue prevRightSide = 0;
   if (rightSideFunc != NULLPTR)
   {
-    prevRightSide = rightSideFunc (expandTo3D (coordFP * gridStep), timestep * gridTimeStep);
+    prevRightSide = rightSideFunc (expandTo3D (coordFP * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
   }
 
   // TODO: precalculate Ca,Cb
@@ -2340,7 +2666,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
   GridCoordinate3D start3D;
   GridCoordinate3D end3D;
 
-  expandTo3DStartEnd (start, end, start3D, end3D);
+  expandTo3DStartEnd (start, end, start3D, end3D, ct1, ct2, ct3);
 
   // TODO: remove this check for each iteration
   if (t > 0)
@@ -2353,7 +2679,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
         // TODO: check that this is optimized out in case 2D mode
         for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
         {
-          TC pos (i, j, k, ct1, ct2, ct3);
+          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
           calculateFieldStepIteration<grid_type, usePML> (t, pos, grid, gridType, materialGrid, materialGridType,
                                                           oppositeGrid1, oppositeGrid2, rightSideFunc, materialModifier);
         }
@@ -2373,7 +2699,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
             // TODO: check that this loop is optimized out
             for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
             {
-              TC pos (i, j, k, ct1, ct2, ct3);
+              TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
               calculateFieldStepIterationPMLMetamaterials (t, pos, grid, gridPML1, gridType,
                 materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
                 materialModifier);
@@ -2393,7 +2719,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
           // TODO: check that this loop is optimized out
           for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
           {
-            TC pos (i, j, k, ct1, ct2, ct3);
+            TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
             calculateFieldStepIterationPML<useMetamaterials> (t, pos, grid, gridPML1, gridPML2, gridType, gridPMLType1,
               materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
               materialModifier);
@@ -2413,7 +2739,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
         // TODO: check that this loop is optimized out
         for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
         {
-          TC pos (i, j, k, ct1, ct2, ct3);
+          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
           calculateFieldStepIterationBorder<grid_type> (t, pos, grid, borderFunc);
         }
       }
@@ -2438,7 +2764,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
         // TODO: check that this loop is optimized out
         for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
         {
-          TC pos (i, j, k, ct1, ct2, ct3);
+          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
           calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
         }
       }
@@ -3611,7 +3937,7 @@ Scheme<Type, TCoord, layout_type>::initGridWithInitialVals (GridType gridType, G
       }
     }
 
-    grid->getFieldPointValue (pos)->setCurValue (cb (expandTo3D (realCoord * gridStep), 0.5 * gridTimeStep));
+    grid->getFieldPointValue (pos)->setCurValue (cb (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), 0.5 * gridTimeStep));
   }
 }
 
@@ -3841,8 +4167,8 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                              solverSettings.getEpsSphereCenterY (),
                                              solverSettings.getEpsSphereCenterZ (),
                                              ct1, ct2, ct3);
-      val->setCurValue (Approximation::approximateSphereAccurate (expandTo3D (posAbs),
-                                                                  expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5, ct1, ct2, ct3)),
+      val->setCurValue (Approximation::approximateSphereAccurate (expandTo3D (posAbs, ct1, ct2, ct3),
+                                                                  expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5, ct1, ct2, ct3), ct1, ct2, ct3),
                                                                   solverSettings.getEpsSphereRadius () * modifier,
                                                                   epsVal));
     }
@@ -3872,8 +4198,8 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                 solverSettings.getOmegaPESphereCenterY (),
                                                 solverSettings.getOmegaPESphereCenterZ (),
                                                 ct1, ct2, ct3);
-        val->setCurValue (Approximation::approximateSphereAccurate (expandTo3D (posAbs),
-                                                                    expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5, ct1, ct2, ct3)),
+        val->setCurValue (Approximation::approximateSphereAccurate (expandTo3D (posAbs, ct1, ct2, ct3),
+                                                                    expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5, ct1, ct2, ct3), ct1, ct2, ct3),
                                                                     solverSettings.getOmegaPESphereRadius () * modifier,
                                                                     omegapeVal));
       }
@@ -5696,7 +6022,7 @@ Scheme<Type, TCoord, layout_type>::getStartCoord (GridType gridType, TC size)
       }
     }
 
-    start = convertCoord (expandTo3D (leftBorder - min)) + GridCoordinate3D (1, 1, 1);
+    start = convertCoord (expandTo3D (leftBorder - min, ct1, ct2, ct3)) + GridCoordinate3D (1, 1, 1);
   }
 
   OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
@@ -5765,7 +6091,7 @@ Scheme<Type, TCoord, layout_type>::getEndCoord (GridType gridType, TC size)
       }
     }
 
-    end = convertCoord (expandTo3D (rightBorder - min));
+    end = convertCoord (expandTo3D (rightBorder - min, ct1, ct2, ct3));
   }
 
   OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;

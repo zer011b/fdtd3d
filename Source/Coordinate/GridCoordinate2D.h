@@ -296,16 +296,6 @@ public:
   friend GridCoordinate2DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST (::operator- <TcoordType, doSignChecks>)
     (GridCoordinate2DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate2DTemplate<TcoordType, !doSignChecks>& rhs);
 
-  GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST shrink () const
-  {
-    TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
-    return GridCoordinate1DTemplate<TcoordType, doSignChecks> (coord1
-#ifdef DEBUG_INFO
-      , GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
-#endif /* DEBUG_INFO */
-      );
-  }
-
   void print () const
   {
     TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
@@ -368,17 +358,6 @@ GridCoordinate2DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operato
   return GridCoordinate2DTemplate<TcoordType, doSignChecks> (lcoord1 - rcoord1, lhs.get2 () - rhs.get2 ()
 #ifdef DEBUG_INFO
     , lhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 (), lhs.getType2 ()
-#endif /* DEBUG_INFO */
-    );
-}
-
-template<class TcoordType, bool doSignChecks>
-GridCoordinate2DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST expand (const GridCoordinate1DTemplate<TcoordType, doSignChecks> &coord, CoordinateType t2 = CoordinateType::Y)
-{
-  TcoordType coord1 = coord.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
-  return GridCoordinate2DTemplate<TcoordType, doSignChecks> (coord1, 0
-#ifdef DEBUG_INFO
-    , coord.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 (), t2
 #endif /* DEBUG_INFO */
     );
 }

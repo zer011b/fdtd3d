@@ -181,7 +181,7 @@ private:
 
 private:
 
-  void initCoordTypesFromSize (TC);
+  void initCoordTypes ();
 
   template <uint8_t grid_type>
   void calculateTFSF (TC, FieldValue &, FieldValue &, FieldValue &, FieldValue &,
@@ -249,12 +249,12 @@ private:
   FieldValue approximateIncidentWaveE (TCFP pos);
   FieldValue approximateIncidentWaveH (TCFP pos);
 
-  void calculateTFSFExAsserts (TC, TC, TC, TC);
-  void calculateTFSFEyAsserts (TC, TC, TC, TC);
-  void calculateTFSFEzAsserts (TC, TC, TC, TC);
-  void calculateTFSFHxAsserts (TC, TC, TC, TC);
-  void calculateTFSFHyAsserts (TC, TC, TC, TC);
-  void calculateTFSFHzAsserts (TC, TC, TC, TC);
+  void calculateTFSFExAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  void calculateTFSFEyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  void calculateTFSFEzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  void calculateTFSFHxAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  void calculateTFSFHyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
 
   /*
    * 3D ntff
@@ -968,28 +968,34 @@ public:
                  Grid<GridCoordinate1D> *)
   {}
 
-  static grid_coord getStartCoordOrthX (GridCoordinate3D size)
+  template <typename TCoord>
+  static grid_coord getStartCoordOrthX (TCoord size)
   {
     return size.get1 () / 2;
   }
-  static grid_coord getStartCoordOrthY (GridCoordinate3D size)
+  template <typename TCoord>
+  static grid_coord getStartCoordOrthY (TCoord size)
   {
     return size.get2 () / 2;
   }
-  static grid_coord getStartCoordOrthZ (GridCoordinate3D size)
+  template <typename TCoord>
+  static grid_coord getStartCoordOrthZ (TCoord size)
   {
     return size.get3 () / 2;
   }
 
-  static grid_coord getEndCoordOrthX (GridCoordinate3D size)
+  template <typename TCoord>
+  static grid_coord getEndCoordOrthX (TCoord size)
   {
     return size.get1 () / 2 + 1;
   }
-  static grid_coord getEndCoordOrthY (GridCoordinate3D size)
+  template <typename TCoord>
+  static grid_coord getEndCoordOrthY (TCoord size)
   {
     return size.get2 () / 2 + 1;
   }
-  static grid_coord getEndCoordOrthZ (GridCoordinate3D size)
+  template <typename TCoord>
+  static grid_coord getEndCoordOrthZ (TCoord size)
   {
     return size.get3 () / 2 + 1;
   }
@@ -1052,7 +1058,7 @@ public:
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate1D (SchemeHelper::getStartCoordOrthX (expandTo3D (size))
+      return GridCoordinate1D (SchemeHelper::getStartCoordOrthX (size)
 #ifdef DEBUG_INFO
              , start.getType1 ()
 #endif
@@ -1079,7 +1085,7 @@ public:
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate1D (SchemeHelper::getEndCoordOrthX (expandTo3D (size))
+      return GridCoordinate1D (SchemeHelper::getEndCoordOrthX (size)
 #ifdef DEBUG_INFO
              , end.getType1 ()
 #endif
@@ -1099,7 +1105,7 @@ public:
     }
     else if (orthogonalAxis == OrthogonalAxis::Y)
     {
-      return GridCoordinate2D (start.get1 (), SchemeHelper::getStartCoordOrthY (expandTo3D (size))
+      return GridCoordinate2D (start.get1 (), SchemeHelper::getStartCoordOrthY (size)
 #ifdef DEBUG_INFO
              , start.getType1 (), start.getType2 ()
 #endif
@@ -1107,7 +1113,7 @@ public:
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate2D (SchemeHelper::getStartCoordOrthX (expandTo3D (size)), start.get2 ()
+      return GridCoordinate2D (SchemeHelper::getStartCoordOrthX (size), start.get2 ()
 #ifdef DEBUG_INFO
              , start.getType1 (), start.getType2 ()
 #endif
@@ -1126,7 +1132,7 @@ public:
     }
     else if (orthogonalAxis == OrthogonalAxis::Y)
     {
-      return GridCoordinate2D (end.get1 (), SchemeHelper::getEndCoordOrthY (expandTo3D (size))
+      return GridCoordinate2D (end.get1 (), SchemeHelper::getEndCoordOrthY (size)
 #ifdef DEBUG_INFO
              , end.getType1 (), end.getType2 ()
 #endif
@@ -1134,7 +1140,7 @@ public:
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate2D (SchemeHelper::getEndCoordOrthX (expandTo3D (size)), end.get2 ()
+      return GridCoordinate2D (SchemeHelper::getEndCoordOrthX (size), end.get2 ()
 #ifdef DEBUG_INFO
              , end.getType1 (), end.getType2 ()
 #endif
@@ -1146,7 +1152,7 @@ public:
   {
     if (orthogonalAxis == OrthogonalAxis::Z)
     {
-      return GridCoordinate3D (start.get1 (), start.get2 (), SchemeHelper::getStartCoordOrthZ (expandTo3D (size))
+      return GridCoordinate3D (start.get1 (), start.get2 (), SchemeHelper::getStartCoordOrthZ (size)
 #ifdef DEBUG_INFO
              , start.getType1 (), start.getType2 (), start.getType3 ()
 #endif
@@ -1154,7 +1160,7 @@ public:
     }
     else if (orthogonalAxis == OrthogonalAxis::Y)
     {
-      return GridCoordinate3D (start.get1 (), SchemeHelper::getStartCoordOrthY (expandTo3D (size)), start.get3 ()
+      return GridCoordinate3D (start.get1 (), SchemeHelper::getStartCoordOrthY (size), start.get3 ()
 #ifdef DEBUG_INFO
              , start.getType1 (), start.getType2 (), start.getType3 ()
 #endif
@@ -1162,7 +1168,7 @@ public:
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate3D (SchemeHelper::getStartCoordOrthX (expandTo3D (size)), start.get2 (), start.get3 ()
+      return GridCoordinate3D (SchemeHelper::getStartCoordOrthX (size), start.get2 (), start.get3 ()
 #ifdef DEBUG_INFO
              , start.getType1 (), start.getType2 (), start.getType3 ()
 #endif
@@ -1173,7 +1179,7 @@ public:
   {
     if (orthogonalAxis == OrthogonalAxis::Z)
     {
-      return GridCoordinate3D (end.get1 (), end.get2 (), SchemeHelper::getEndCoordOrthZ (expandTo3D (size))
+      return GridCoordinate3D (end.get1 (), end.get2 (), SchemeHelper::getEndCoordOrthZ (size)
 #ifdef DEBUG_INFO
              , end.getType1 (), end.getType2 (), end.getType3 ()
 #endif
@@ -1181,7 +1187,7 @@ public:
     }
     else if (orthogonalAxis == OrthogonalAxis::Y)
     {
-      return GridCoordinate3D (end.get1 (), SchemeHelper::getEndCoordOrthY (expandTo3D (size)), end.get3 ()
+      return GridCoordinate3D (end.get1 (), SchemeHelper::getEndCoordOrthY (size), end.get3 ()
 #ifdef DEBUG_INFO
              , end.getType1 (), end.getType2 (), end.getType3 ()
 #endif
@@ -1189,7 +1195,7 @@ public:
     }
     else if (orthogonalAxis == OrthogonalAxis::X)
     {
-      return GridCoordinate3D (SchemeHelper::getEndCoordOrthX (expandTo3D (size)), end.get2 (), end.get3 ()
+      return GridCoordinate3D (SchemeHelper::getEndCoordOrthX (size), end.get2 (), end.get3 ()
 #ifdef DEBUG_INFO
              , end.getType1 (), end.getType2 (), end.getType3 ()
 #endif
@@ -1208,138 +1214,6 @@ public:
   template <template <typename, bool> class TCoord>
   static
   FieldValue approximateIncidentWaveH (TCoord<FPValue, true>, TCoord<FPValue, true>, Grid<GridCoordinate1D> *, FPValue, FPValue);
-
-  static void calculateTFSFExAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-  }
-  static void calculateTFSFExAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-  static void calculateTFSFExAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-    ASSERT (pos11.get3 () == pos12.get3 ());
-    ASSERT (pos21.get3 () < pos22.get3 ());
-  }
-
-  static void calculateTFSFEyAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-  }
-  static void calculateTFSFEyAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-  static void calculateTFSFEyAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-    ASSERT (pos11.get3 () < pos12.get3 ());
-    ASSERT (pos21.get3 () == pos22.get3 ());
-  }
-
-  static void calculateTFSFEzAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-  }
-  static void calculateTFSFEzAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-  }
-  static void calculateTFSFEzAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-    ASSERT (pos11.get3 () == pos12.get3 ());
-    ASSERT (pos21.get3 () == pos22.get3 ());
-  }
-
-  static void calculateTFSFHxAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-  }
-  static void calculateTFSFHxAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-  }
-  static void calculateTFSFHxAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-    ASSERT (pos11.get3 () < pos12.get3 ());
-    ASSERT (pos21.get3 () == pos22.get3 ());
-  }
-
-  static void calculateTFSFHyAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-  }
-  static void calculateTFSFHyAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-  static void calculateTFSFHyAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-    ASSERT (pos11.get3 () == pos12.get3 ());
-    ASSERT (pos21.get3 () < pos22.get3 ());
-  }
-
-  static void calculateTFSFHzAsserts1D (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-  }
-  static void calculateTFSFHzAsserts2D (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-  static void calculateTFSFHzAsserts3D (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-    ASSERT (pos11.get3 () == pos12.get3 ());
-    ASSERT (pos21.get3 () == pos22.get3 ());
-  }
 
 #ifdef PARALLEL_GRID
   template <SchemeType_t Type, LayoutType layout_type>
