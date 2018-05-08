@@ -1,14 +1,13 @@
-// Point source launched in vacuum, TMx
+// Point source launched in vacuum, ExHy
 
 --time-steps 100
 
---sizey 200
 --sizez 200
 
---2d-tmx
+--1d-exhy
 
 --angle-teta 0
---angle-phi 90
+--angle-phi 0
 --angle-psi 0
 
 --dx 0.0005
@@ -20,10 +19,8 @@
 --save-as-bmp
 --palette-rgb
 
---pml-sizey 20
 --pml-sizez 20
 --use-pml
 
---point-source-pos-y 100
 --point-source-pos-z 100
 --point-source-ex

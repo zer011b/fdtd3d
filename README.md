@@ -93,7 +93,7 @@ cd Release/Source
 # 0.02
 ```
 
-See [Input & Output](Docs/Input-Output.md) for details about load and save of files.
+You can find some examples in `./Examples`. See [Input & Output](Docs/Input-Output.md) for details about load and save of files.
 
 # How to cite
 

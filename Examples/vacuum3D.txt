@@ -1,0 +1,33 @@
+// Plane wave launched in vacuum, 3D
+
+--time-steps 100
+
+--sizex 40
+--sizey 40
+--sizez 40
+
+--3d
+
+--angle-teta 0
+--angle-phi 0
+--angle-psi 0
+
+--dx 0.0005
+--wavelength 0.02
+
+--log-level 2
+
+--save-res
+--save-as-bmp
+--orth-axis-z
+--palette-rgb
+
+--pml-sizex 10
+--pml-sizey 10
+--pml-sizey 10
+--use-pml
+
+--use-tfsf
+--tfsf-sizex 12
+--tfsf-sizey 12
+--tfsf-sizez 12
