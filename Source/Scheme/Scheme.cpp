@@ -604,9 +604,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -633,9 +634,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -662,9 +664,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -691,9 +694,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -720,9 +724,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -749,9 +754,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -778,9 +784,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -807,9 +814,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -836,9 +844,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -865,9 +874,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -894,9 +904,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -923,9 +934,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
@@ -952,9 +964,10 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize (solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize (),
-                                  solverSettings.getBufferSize ());
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               solverSettings.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
                                        doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,

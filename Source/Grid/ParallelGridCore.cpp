@@ -397,6 +397,7 @@ ParallelGridCore::InitDirections ()
     bandwidth[i].resize (totalProcCount);
   }
 
+  nodesForDirections.resize (totalProcCount);
   for (int i = 0; i < totalProcCount; ++i)
   {
     SetNodesForDirections (i);
