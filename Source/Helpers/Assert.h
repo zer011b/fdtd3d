@@ -94,8 +94,11 @@ extern void program_fail ();
     name (Temp new_val) : temp (new_val) {} \
     name () {} \
     \
-    operator type () { return temp; } \
-    bool operator == (name x) { return temp == x.temp; } \
+    operator type () const { return temp; } \
+    bool operator < (name x) const { return temp < x.temp; } \
+    bool operator > (name x) const { return temp > x.temp; } \
+    bool operator == (name x) const { return temp == x.temp; } \
+    bool operator == (Temp t) const { return temp == t; } \
     \
   private: \
     Temp temp; \

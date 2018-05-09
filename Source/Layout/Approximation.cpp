@@ -223,7 +223,7 @@ Approximation::getMaterial (const FieldPointValue *val)
 }
 
 FPValue
-Approximation::phaseVelocityIncidentWave3D (FPValue delta,
+Approximation::phaseVelocityIncidentWave (FPValue delta,
                                             FPValue freeSpaceWaveLentgh,
                                             FPValue courantNum,
                                             FPValue N_lambda,
@@ -281,21 +281,6 @@ Approximation::phaseVelocityIncidentWave3D (FPValue delta,
   return PhysicsConst::SpeedOfLight * 2 * PhysicsConst::Pi / k;
 }
 
-FPValue
-Approximation::phaseVelocityIncidentWave2D (FPValue delta,
-                                            FPValue freeSpaceWaveLentgh,
-                                            FPValue courantNum,
-                                            FPValue N_lambda,
-                                            FPValue incidentWaveAngle2)
-{
-  return phaseVelocityIncidentWave3D (delta,
-                                      freeSpaceWaveLentgh,
-                                      courantNum,
-                                      N_lambda,
-                                      PhysicsConst::Pi / 2,
-                                      incidentWaveAngle2);
-}
-
 FieldValue
 Approximation::approximateSphereFast (GridCoordinateFP3D midPos,
                                       GridCoordinateFP3D center,
@@ -328,8 +313,10 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
                                           FPValue radius,
                                           FieldValue eps)
 {
-  GridCoordinateFP3D start (midPos.get1 () - 0.5, midPos.get2 () - 0.5, midPos.get3 () - 0.5);
-  GridCoordinateFP3D end (midPos.get1 () + 0.5, midPos.get2 () + 0.5, midPos.get3 () + 0.5);
+  GridCoordinateFP3D start (midPos.get1 () - 0.5, midPos.get2 () - 0.5, midPos.get3 () - 0.5,
+                            CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  GridCoordinateFP3D end (midPos.get1 () + 0.5, midPos.get2 () + 0.5, midPos.get3 () + 0.5,
+                          CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 
   int numSteps = 100;
   FPValue step = 1.0 / numSteps;
@@ -339,7 +326,8 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
   {
     for (int j = 0; j < numSteps; ++j)
     {
-      GridCoordinateFP3D pos (start.get1 () + i * step, start.get2 () + j * step, 0.0);
+      GridCoordinateFP3D pos (start.get1 () + i * step, start.get2 () + j * step, 0.0,
+                              CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
       FPValue temp = SQR (radius) - SQR (pos.get1 () - center.get1 ()) - SQR (pos.get2 () - center.get2 ());
 
       if (temp < 0)

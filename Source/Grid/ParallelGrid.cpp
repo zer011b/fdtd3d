@@ -147,8 +147,6 @@ void ParallelGrid::gatherStartPosition ()
            parallelGridCore->getProcessId (),
            parallelGridCore->getTotalProcCount ());
 
-  ASSERT (sizeof (grid_coord) == sizeof (int32_t));
-
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   grid_coord startx = 0;
   grid_coord endx = 0;

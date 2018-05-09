@@ -1169,8 +1169,8 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
 
   if (solverSettings.getDoUseTFSF ())
   {
-    EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(totSize.get1 ())), 0, "EInc");
-    HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(totSize.get1 ())), 0, "HInc");
+    EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(totSize.get1 ()), CoordinateType::X), 0, "EInc");
+    HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(totSize.get1 ()), CoordinateType::X), 0, "HInc");
   }
 
   ASSERT (!solverSettings.getDoUseTFSF ()
@@ -2835,7 +2835,10 @@ Scheme<Type, TCoord, layout_type>::performPlaneWaveESteps (time_step t)
   valE->setCurValue (sin (arg));
 #endif /* !COMPLEX_FIELD_VALUES */
 
-  ALWAYS_ASSERT (EInc->getFieldPointValue (GridCoordinate1D (size - 1))->getCurValue () == getFieldValueRealOnly (0.0));
+#ifdef ENABLE_ASSERTS
+  GridCoordinate1D posEnd (size - 1, CoordinateType::X);
+  ALWAYS_ASSERT (EInc->getFieldPointValue (posEnd)->getCurValue () == getFieldValueRealOnly (0.0));
+#endif
 
   EInc->nextTimeStep ();
 }
@@ -2867,7 +2870,10 @@ Scheme<Type, TCoord, layout_type>::performPlaneWaveHSteps (time_step t)
     valH->setCurValue (val);
   }
 
-  ALWAYS_ASSERT (HInc->getFieldPointValue (GridCoordinate1D (size - 2))->getCurValue () == getFieldValueRealOnly (0.0));
+#ifdef ENABLE_ASSERTS
+  GridCoordinate1D pos (size - 2, CoordinateType::X);
+  ALWAYS_ASSERT (HInc->getFieldPointValue (pos)->getCurValue () == getFieldValueRealOnly (0.0));
+#endif
 
   HInc->nextTimeStep ();
 }
@@ -3666,8 +3672,8 @@ Scheme<Type, TCoord, layout_type>::initScheme (FPValue dx, FPValue sourceWaveLen
   gridTimeStep = gridStep * courantNum / PhysicsConst::SpeedOfLight;
 
   FPValue N_lambda = sourceWaveLength / gridStep;
-  FPValue phaseVelocity0 = Approximation::phaseVelocityIncidentWave3D (gridStep, sourceWaveLength, courantNum, N_lambda, PhysicsConst::Pi / 2, 0);
-  FPValue phaseVelocity = Approximation::phaseVelocityIncidentWave3D (gridStep, sourceWaveLength, courantNum, N_lambda, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ());
+  FPValue phaseVelocity0 = Approximation::phaseVelocityIncidentWave (gridStep, sourceWaveLength, courantNum, N_lambda, PhysicsConst::Pi / 2, 0);
+  FPValue phaseVelocity = Approximation::phaseVelocityIncidentWave (gridStep, sourceWaveLength, courantNum, N_lambda, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ());
 
   relPhaseVelocity = phaseVelocity0 / phaseVelocity;
 }
@@ -5671,37 +5677,37 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
 
     if (doNeedEx)
     {
-      dumper[type]->init (t, CURRENT, processId, "3D-in-time-Ex");
+      dumper[type]->init (t, CURRENT, processId, totalEx->getName ().c_str ());
       dumper[type]->dumpGrid (totalEx, startEx, endEx);
     }
 
     if (doNeedEy)
     {
-      dumper[type]->init (t, CURRENT, processId, "3D-in-time-Ey");
+      dumper[type]->init (t, CURRENT, processId, totalEy->getName ().c_str ());
       dumper[type]->dumpGrid (totalEy, startEy, endEy);
     }
 
     if (doNeedEz)
     {
-      dumper[type]->init (t, CURRENT, processId, "3D-in-time-Ez");
+      dumper[type]->init (t, CURRENT, processId, totalEz->getName ().c_str ());
       dumper[type]->dumpGrid (totalEz, startEz, endEz);
     }
 
     if (doNeedHx)
     {
-      dumper[type]->init (t, CURRENT, processId, "3D-in-time-Hx");
+      dumper[type]->init (t, CURRENT, processId, totalHx->getName ().c_str ());
       dumper[type]->dumpGrid (totalHx, startHx, endHx);
     }
 
     if (doNeedHy)
     {
-      dumper[type]->init (t, CURRENT, processId, "3D-in-time-Hy");
+      dumper[type]->init (t, CURRENT, processId, totalHy->getName ().c_str ());
       dumper[type]->dumpGrid (totalHy, startHy, endHy);
     }
 
     if (doNeedHz)
     {
-      dumper[type]->init (t, CURRENT, processId, "3D-in-time-Hz");
+      dumper[type]->init (t, CURRENT, processId, totalHz->getName ().c_str ());
       dumper[type]->dumpGrid (totalHz, startHz, endHz);
     }
 
@@ -5713,7 +5719,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       }
 
       dumper1D[type]->init (t, CURRENT, processId, "EInc");
-      dumper1D[type]->dumpGrid (EInc, GridCoordinate1D (0), EInc->getSize ());
+      dumper1D[type]->dumpGrid (EInc, GridCoordinate1D (0, CoordinateType::X), EInc->getSize ());
     }
 
     if (solverSettings.getDoSaveTFSFHInc ())
@@ -5724,7 +5730,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       }
 
       dumper1D[type]->init (t, CURRENT, processId, "HInc");
-      dumper1D[type]->dumpGrid (HInc, GridCoordinate1D (0), HInc->getSize ());
+      dumper1D[type]->dumpGrid (HInc, GridCoordinate1D (0, CoordinateType::X), HInc->getSize ());
     }
   }
 }
@@ -6035,7 +6041,7 @@ Scheme<Type, TCoord, layout_type>::getStartCoord (GridType gridType, TC size)
       }
     }
 
-    start = convertCoord (expandTo3D (leftBorder - min, ct1, ct2, ct3)) + GridCoordinate3D (1, 1, 1);
+    start = convertCoord (expandTo3D (leftBorder - min, ct1, ct2, ct3)) + GridCoordinate3D (1, 1, 1, ct1, ct2, ct3);
   }
 
   OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;

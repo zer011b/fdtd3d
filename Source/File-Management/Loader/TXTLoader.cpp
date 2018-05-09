@@ -61,7 +61,11 @@ TXTLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid, GridFil
   // Go through all values and write to file.
   for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
   {
-    GridCoordinate1D pos (i);
+    GridCoordinate1D pos (i
+#ifdef DEBUG_INFO
+                          , grid->getSize ().getType1 ()
+#endif
+                         );
 
     // Get current point value.
     FieldPointValue* current = grid->getFieldPointValue (pos);
@@ -196,7 +200,12 @@ TXTLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid, GridFil
   {
     for (grid_coord j = 0; j < grid->getSize ().get2 (); ++j)
     {
-      GridCoordinate2D pos (i, j);
+      GridCoordinate2D pos (i, j
+#ifdef DEBUG_INFO
+                            , grid->getSize ().getType1 ()
+                            , grid->getSize ().getType2 ()
+#endif
+                           );
 
       // Get current point value.
       FieldPointValue* current = grid->getFieldPointValue (pos);
@@ -335,7 +344,13 @@ TXTLoader<GridCoordinate3D>::loadFromFile (Grid<GridCoordinate3D> *grid, GridFil
     {
       for (grid_coord k = 0; k < grid->getSize ().get3 (); ++k)
       {
-        GridCoordinate3D pos (i, j, k);
+        GridCoordinate3D pos (i, j, k
+#ifdef DEBUG_INFO
+                              , grid->getSize ().getType1 ()
+                              , grid->getSize ().getType2 ()
+                              , grid->getSize ().getType3 ()
+#endif
+                             );
 
         // Get current point value.
         FieldPointValue* current = grid->getFieldPointValue (pos);

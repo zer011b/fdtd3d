@@ -746,7 +746,6 @@ public:
   void StartShareClock (int, uint32_t);
   void StopShareClock (int, uint32_t);
 
-  void ShareClocks ();
   void ShareCalcClocks ();
   void ShareShareClocks ();
 

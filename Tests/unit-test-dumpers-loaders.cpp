@@ -67,7 +67,13 @@ static void checkIsTheSame (Grid<GridCoordinate1D> *grid1D,
       for (grid_coord k = 0; k < gridSizeZ; ++k)
       {
         FieldPointValue val_old;
-        GridCoordinate3D pos (i, j, k);
+        GridCoordinate3D pos (i, j, k
+#ifdef DEBUG_INFO
+                              , grid3D->getSize ().getType1 ()
+                              , grid3D->getSize ().getType2 ()
+                              , grid3D->getSize ().getType3 ()
+#endif
+                             );
 
         FPValue fpval = i * j * k;
         updateVal (&val_old, fpval);
@@ -78,7 +84,12 @@ static void checkIsTheSame (Grid<GridCoordinate1D> *grid1D,
       }
 
       FieldPointValue val_old;
-      GridCoordinate2D pos (i, j);
+      GridCoordinate2D pos (i, j
+#ifdef DEBUG_INFO
+                            , grid2D->getSize ().getType1 ()
+                            , grid2D->getSize ().getType2 ()
+#endif
+                           );
 
       FPValue fpval = i * j;
       updateVal (&val_old, fpval);
@@ -89,7 +100,11 @@ static void checkIsTheSame (Grid<GridCoordinate1D> *grid1D,
     }
 
     FieldPointValue val_old;
-    GridCoordinate1D pos (i);
+    GridCoordinate1D pos (i
+#ifdef DEBUG_INFO
+                          , grid1D->getSize ().getType1 ()
+#endif
+                         );
 
     FPValue fpval = i;
     updateVal (&val_old, fpval);
@@ -120,15 +135,33 @@ static void bmp (Grid<GridCoordinate1D> *grid1D,
 
   bmpDumper1D.init (0, ALL, 0, "tmp1D");
   bmpLoader1D.init (0, ALL, 0, "tmp1D");
-  bmpDumper1D.dumpGrid (grid1D, GridCoordinate1D (0), grid1D->getSize ());
+  GridCoordinate1D pos1D (0
+#ifdef DEBUG_INFO
+                          , grid1D->getSize ().getType1 ()
+#endif
+                          );
+  bmpDumper1D.dumpGrid (grid1D, pos1D, grid1D->getSize ());
 
   bmpDumper2D.init (0, ALL, 0, "tmp2D");
   bmpLoader2D.init (0, ALL, 0, "tmp2D");
-  bmpDumper2D.dumpGrid (grid2D, GridCoordinate2D (0, 0), grid2D->getSize ());
+  GridCoordinate2D pos2D (0, 0
+#ifdef DEBUG_INFO
+                          , grid2D->getSize ().getType1 ()
+                          , grid2D->getSize ().getType2 ()
+#endif
+                          );
+  bmpDumper2D.dumpGrid (grid2D, pos2D, grid2D->getSize ());
 
   bmpDumper3D.init (0, ALL, 0, "tmp3D");
   bmpLoader3D.init (0, ALL, 0, "tmp3D");
-  bmpDumper3D.dumpGrid (grid3D, GridCoordinate3D (0, 0, 0), grid3D->getSize ());
+  GridCoordinate3D pos3D (0, 0, 0
+#ifdef DEBUG_INFO
+                          , grid3D->getSize ().getType1 ()
+                          , grid3D->getSize ().getType2 ()
+                          , grid3D->getSize ().getType3 ()
+#endif
+                          );
+  bmpDumper3D.dumpGrid (grid3D, pos3D, grid3D->getSize ());
 
   bmpLoader1D.loadGrid (grid1D);
   bmpLoader2D.loadGrid (grid2D);
@@ -153,9 +186,29 @@ static void dat (Grid<GridCoordinate1D> *grid1D,
   DATLoader<GridCoordinate3D> datLoader3D;
   datLoader3D.init (0, ALL, 0, "tmp3D");
 
-  datDumper1D.dumpGrid (grid1D, GridCoordinate1D (0), grid1D->getSize ());
-  datDumper2D.dumpGrid (grid2D, GridCoordinate2D (0, 0), grid2D->getSize ());
-  datDumper3D.dumpGrid (grid3D, GridCoordinate3D (0, 0, 0), grid3D->getSize ());
+  GridCoordinate1D pos1D (0
+#ifdef DEBUG_INFO
+                          , grid1D->getSize ().getType1 ()
+#endif
+                          );
+  datDumper1D.dumpGrid (grid1D, pos1D, grid1D->getSize ());
+
+  GridCoordinate2D pos2D (0, 0
+#ifdef DEBUG_INFO
+                          , grid2D->getSize ().getType1 ()
+                          , grid2D->getSize ().getType2 ()
+#endif
+                          );
+  datDumper2D.dumpGrid (grid2D, pos2D, grid2D->getSize ());
+
+  GridCoordinate3D pos3D (0, 0, 0
+#ifdef DEBUG_INFO
+                          , grid3D->getSize ().getType1 ()
+                          , grid3D->getSize ().getType2 ()
+                          , grid3D->getSize ().getType3 ()
+#endif
+                          );
+  datDumper3D.dumpGrid (grid3D, pos3D, grid3D->getSize ());
 
   datLoader1D.loadGrid (grid1D);
   datLoader2D.loadGrid (grid2D);
@@ -182,9 +235,29 @@ static void txt (Grid<GridCoordinate1D> *grid1D,
   TXTLoader<GridCoordinate3D> txtLoader3D;
   txtLoader3D.init (0, ALL, 0, "tmp3D");
 
-  txtDumper1D.dumpGrid (grid1D, GridCoordinate1D (0), grid1D->getSize ());
-  txtDumper2D.dumpGrid (grid2D, GridCoordinate2D (0, 0), grid2D->getSize ());
-  txtDumper3D.dumpGrid (grid3D, GridCoordinate3D (0, 0, 0), grid3D->getSize ());
+  GridCoordinate1D pos1D (0
+#ifdef DEBUG_INFO
+                          , grid1D->getSize ().getType1 ()
+#endif
+                          );
+  txtDumper1D.dumpGrid (grid1D, pos1D, grid1D->getSize ());
+
+  GridCoordinate2D pos2D (0, 0
+#ifdef DEBUG_INFO
+                          , grid2D->getSize ().getType1 ()
+                          , grid2D->getSize ().getType2 ()
+#endif
+                          );
+  txtDumper2D.dumpGrid (grid2D, pos2D, grid2D->getSize ());
+
+  GridCoordinate3D pos3D (0, 0, 0
+#ifdef DEBUG_INFO
+                          , grid3D->getSize ().getType1 ()
+                          , grid3D->getSize ().getType2 ()
+                          , grid3D->getSize ().getType3 ()
+#endif
+                          );
+  txtDumper3D.dumpGrid (grid3D, pos3D, grid3D->getSize ());
 
   txtLoader1D.loadGrid (grid1D);
   txtLoader2D.loadGrid (grid2D);
@@ -195,9 +268,24 @@ static void txt (Grid<GridCoordinate1D> *grid1D,
 
 int main (int argc, char** argv)
 {
-  GridCoordinate1D overallSize1D (gridSizeX);
-  GridCoordinate2D overallSize2D (gridSizeX, gridSizeY);
-  GridCoordinate3D overallSize3D (gridSizeX, gridSizeY, gridSizeZ);
+  GridCoordinate1D overallSize1D (gridSizeX
+#ifdef DEBUG_INFO
+                                  , CoordinateType::X
+#endif
+                                  );
+  GridCoordinate2D overallSize2D (gridSizeX, gridSizeY
+#ifdef DEBUG_INFO
+                                  , CoordinateType::X
+                                  , CoordinateType::Y
+#endif
+                                  );
+  GridCoordinate3D overallSize3D (gridSizeX, gridSizeY, gridSizeZ
+#ifdef DEBUG_INFO
+                                  , CoordinateType::X
+                                  , CoordinateType::Y
+                                  , CoordinateType::Z
+#endif
+                                  );
 
   Grid<GridCoordinate1D> grid1D (overallSize1D, 0);
   Grid<GridCoordinate2D> grid2D (overallSize2D, 0);
@@ -210,7 +298,13 @@ int main (int argc, char** argv)
       for (grid_coord k = 0; k < gridSizeZ; ++k)
       {
         FieldPointValue* val = new FieldPointValue ();
-        GridCoordinate3D pos (i, j, k);
+        GridCoordinate3D pos (i, j, k
+#ifdef DEBUG_INFO
+                              , grid3D.getSize ().getType1 ()
+                              , grid3D.getSize ().getType2 ()
+                              , grid3D.getSize ().getType3 ()
+#endif
+                              );
 
         FPValue fpval = i * j * k;
         updateVal (val, fpval);
@@ -219,7 +313,12 @@ int main (int argc, char** argv)
       }
 
       FieldPointValue* val = new FieldPointValue ();
-      GridCoordinate2D pos (i, j);
+      GridCoordinate2D pos (i, j
+#ifdef DEBUG_INFO
+                            , grid2D.getSize ().getType1 ()
+                            , grid2D.getSize ().getType2 ()
+#endif
+                            );
 
       FPValue fpval = i * j;
       updateVal (val, fpval);
@@ -228,7 +327,11 @@ int main (int argc, char** argv)
     }
 
     FieldPointValue* val = new FieldPointValue ();
-    GridCoordinate1D pos (i);
+    GridCoordinate1D pos (i
+#ifdef DEBUG_INFO
+                          , grid1D.getSize ().getType1 ()
+#endif
+                          );
 
     FPValue fpval = i;
     updateVal (val, fpval);

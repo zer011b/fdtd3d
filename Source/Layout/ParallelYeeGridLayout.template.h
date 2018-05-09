@@ -2320,13 +2320,13 @@ void ParallelYeeGridLayout<Type, layout_type>::spreadGridPointsPerAxis (std::vec
     totalSize = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 ();
   }
 #if defined (GRID_2D) || defined (GRID_3D)
-  if (axis1 == OY)
+  else if (axis1 == OY)
   {
     totalSize = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 ();
   }
 #endif
 #if defined (GRID_3D)
-  if (axis1 == OZ)
+  else if (axis1 == OZ)
   {
     totalSize = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get3 ();
   }
