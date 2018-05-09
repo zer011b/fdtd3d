@@ -3432,42 +3432,42 @@ ParallelGrid::ParallelGridConstructor ()
 #ifdef GRID_1D
   ParallelGridCoordinate bufLeft (left_coord
 #ifdef DEBUG_INFO
-                                  , getSize ().getType1 ()
+                                  , bufferSize.getType1 ()
 #endif /* DEBUG_INFO */
                                   );
   ParallelGridCoordinate bufRight (right_coord
 #ifdef DEBUG_INFO
-                                  , getSize ().getType1 ()
+                                  , bufferSize.getType1 ()
 #endif /* DEBUG_INFO */
                                   );
 #endif /* GRID_1D */
 #ifdef GRID_2D
   ParallelGridCoordinate bufLeft (left_coord, down_coord
 #ifdef DEBUG_INFO
-                                  , getSize ().getType1 ()
-                                  , getSize ().getType2 ()
+                                  , bufferSize.getType1 ()
+                                  , bufferSize.getType2 ()
 #endif /* DEBUG_INFO */
                                   );
   ParallelGridCoordinate bufRight (right_coord, up_coord
 #ifdef DEBUG_INFO
-                                  , getSize ().getType1 ()
-                                  , getSize ().getType2 ()
+                                  , bufferSize.getType1 ()
+                                  , bufferSize.getType2 ()
 #endif /* DEBUG_INFO */
                                   );
 #endif /* GRID_2D */
 #ifdef GRID_3D
   ParallelGridCoordinate bufLeft (left_coord, down_coord, back_coord
 #ifdef DEBUG_INFO
-                                  , getSize ().getType1 ()
-                                  , getSize ().getType2 ()
-                                  , getSize ().getType3 ()
+                                  , bufferSize.getType1 ()
+                                  , bufferSize.getType2 ()
+                                  , bufferSize.getType3 ()
 #endif /* DEBUG_INFO */
                                   );
   ParallelGridCoordinate bufRight (right_coord, up_coord, front_coord
 #ifdef DEBUG_INFO
-                                  , getSize ().getType1 ()
-                                  , getSize ().getType2 ()
-                                  , getSize ().getType3 ()
+                                  , bufferSize.getType1 ()
+                                  , bufferSize.getType2 ()
+                                  , bufferSize.getType3 ()
 #endif /* DEBUG_INFO */
                                   );
 #endif /* GRID_3D */
@@ -4266,7 +4266,7 @@ ParallelGrid::Resize (ParallelGridCoordinate newCurrentNodeSize) /**< new size o
   ParallelGridCoordinate oldSize = currentSize;
 
   currentSize = newCurrentNodeSize;
-  
+
   int state = 1;
 #ifdef DYNAMIC_GRID
   state = ParallelGrid::getParallelCore ()->getNodeState ()[ParallelGrid::getParallelCore ()->getProcessId ()];

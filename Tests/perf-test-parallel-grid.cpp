@@ -129,7 +129,7 @@ int main (int argc, char** argv)
       //   usleep(200000);
       // }
 
-      printf ("# %d ----> %u %u %u\n", ParallelGrid::getParallelCore ()->getProcessId (), grid.getSize ().get1 (), grid.getSize ().get2 (), grid.getSize ().get3 ());
+      //printf ("# %d ----> %u %u %u\n", ParallelGrid::getParallelCore ()->getProcessId (), grid.getSize ().get1 (), grid.getSize ().get2 (), grid.getSize ().get3 ());
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
       for (grid_coord i = 0; i < grid.getSize ().get1 (); ++i)
