@@ -539,12 +539,6 @@ ParallelGridCore::timespec_avg (struct timespec *start, /**< start moment */
   result->tv_nsec = (start->tv_nsec + stop->tv_nsec) / 2;
 }
 
-void ParallelGridCore::ShareClocks ()
-{
-  ShareCalcClocks ();
-  ShareShareClocks ();
-}
-
 void ParallelGridCore::ShareCalcClocks ()
 {
   for (int process = 0; process < getTotalProcCount (); ++process)
@@ -1152,6 +1146,8 @@ ParallelGridCore::initializeIterationCounters (time_step difft) /**< elapsed num
 FPValue
 ParallelGridCore::calcTotalPerf (time_step difft) /**< elapsed number of time steps */
 {
+  ShareCalcClocks ();
+
   updateCurrentPerfValues (difft);
 
   FPValue sumSpeedEnabled = 0;
@@ -1187,8 +1183,8 @@ void
 ParallelGridCore::calcTotalLatencyAndBandwidth (time_step difft) /**< elapsed number of time steps */
 {
   // TODO: this should not be constants
-  uint32_t latency_measure_count = 10;
-  uint32_t latency_buf_size = 100000;
+  uint32_t latency_measure_count = 100;
+  uint32_t latency_buf_size = 10000;
 
   initializeIterationCounters (difft);
 
@@ -1197,7 +1193,7 @@ ParallelGridCore::calcTotalLatencyAndBandwidth (time_step difft) /**< elapsed nu
                                  latency_buf_size / CLOCK_BUF_SIZE,
                                  latency_buf_size / CLOCK_BUF_SIZE);
 
-  ShareClocks ();
+  ShareShareClocks ();
 
   updateCurrentShareValues ();
 

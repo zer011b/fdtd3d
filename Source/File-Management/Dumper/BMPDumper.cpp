@@ -173,7 +173,12 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
   // Go through all values and calculate max/min.
   for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
   {
-    const FieldPointValue* current = grid->getFieldPointValue (GridCoordinate1D (i));
+    GridCoordinate1D pos (i
+#ifdef DEBUG_INFO
+                          , grid->getSize ().getType1 ()
+#endif
+                         );
+    const FieldPointValue* current = grid->getFieldPointValue (pos);
 
     ASSERT (current);
 
@@ -283,7 +288,11 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, GridFile
   for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
   {
     // Get current point value.
-    GridCoordinate1D coord (i);
+    GridCoordinate1D coord (i
+#ifdef DEBUG_INFO
+                            , grid->getSize ().getType1 ()
+#endif
+                            );
     const FieldPointValue* current = grid->getFieldPointValue (coord);
     ASSERT (current);
 
@@ -567,7 +576,13 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
   {
     for (grid_coord j = startCoord.get2 (); j < endCoord.get2 (); ++j)
     {
-      const FieldPointValue* current = grid->getFieldPointValue (GridCoordinate2D (i, j));
+      GridCoordinate2D pos (i, j
+#ifdef DEBUG_INFO
+                            , grid->getSize ().getType1 ()
+                            , grid->getSize ().getType2 ()
+#endif
+                           );
+      const FieldPointValue* current = grid->getFieldPointValue (pos);
 
       ASSERT (current);
 
@@ -679,7 +694,12 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, GridFile
   {
     for (grid_coord j = startCoord.get2 (); j < endCoord.get2 (); ++j)
     {
-      GridCoordinate2D coord (i, j);
+      GridCoordinate2D coord (i, j
+#ifdef DEBUG_INFO
+                              , grid->getSize ().getType1 ()
+                              , grid->getSize ().getType2 ()
+#endif
+                             );
 
       // Get current point value.
       const FieldPointValue* current = grid->getFieldPointValue (coord);
@@ -956,7 +976,14 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
     {
       for (grid_coord k = startCoord.get3 (); k < endCoord.get3 (); ++k)
       {
-        const FieldPointValue* current = grid->getFieldPointValue (GridCoordinate3D (i, j, k));
+        GridCoordinate3D pos (i, j, k
+#ifdef DEBUG_INFO
+                              , grid->getSize ().getType1 ()
+                              , grid->getSize ().getType2 ()
+                              , grid->getSize ().getType3 ()
+#endif
+                             );
+        const FieldPointValue* current = grid->getFieldPointValue (pos);
 
         ASSERT (current);
 
@@ -1140,15 +1167,33 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, GridFile
 
         if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::X)
         {
-          pos = GridCoordinate3D (coord1, coord2, coord3);
+          pos = GridCoordinate3D (coord1, coord2, coord3
+#ifdef DEBUG_INFO
+                                  , grid->getSize ().getType1 ()
+                                  , grid->getSize ().getType2 ()
+                                  , grid->getSize ().getType3 ()
+#endif
+                                 );
         }
         else if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::Y)
         {
-          pos = GridCoordinate3D (coord2, coord1, coord3);
+          pos = GridCoordinate3D (coord2, coord1, coord3
+#ifdef DEBUG_INFO
+                                  , grid->getSize ().getType1 ()
+                                  , grid->getSize ().getType2 ()
+                                  , grid->getSize ().getType3 ()
+#endif
+                                 );
         }
         else if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::Z)
         {
-          pos = GridCoordinate3D (coord2, coord3, coord1);
+          pos = GridCoordinate3D (coord2, coord3, coord1
+#ifdef DEBUG_INFO
+                                  , grid->getSize ().getType1 ()
+                                  , grid->getSize ().getType2 ()
+                                  , grid->getSize ().getType3 ()
+#endif
+                                 );
         }
 
         // Get current point value.

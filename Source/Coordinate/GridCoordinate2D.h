@@ -36,10 +36,19 @@ public:
 
   static const Dimension dimension;
 
-  explicit CUDA_DEVICE CUDA_HOST GridCoordinate2DTemplate<TcoordType, doSignChecks> (const TcoordType& c1 = 0,
-                                                                                     const TcoordType& c2 = 0,
-                                                                                     CoordinateType t1 = CoordinateType::X,
-                                                                                     CoordinateType t2 = CoordinateType::Y)
+  CUDA_DEVICE CUDA_HOST GridCoordinate2DTemplate<TcoordType, doSignChecks> ()
+    : GridCoordinate1DTemplate<TcoordType, doSignChecks> ()
+    , coord2 (0)
+#ifdef DEBUG_INFO
+    , type2 (CoordinateType::NONE)
+#endif /* DEBUG_INFO */
+  {
+  }
+
+  explicit CUDA_DEVICE CUDA_HOST GridCoordinate2DTemplate<TcoordType, doSignChecks> (const TcoordType& c1,
+                                                                                     const TcoordType& c2,
+                                                                                     CoordinateType t1,
+                                                                                     CoordinateType t2)
     : GridCoordinate1DTemplate<TcoordType, doSignChecks> (c1, t1)
     , coord2 (c2)
 #ifdef DEBUG_INFO
@@ -60,9 +69,9 @@ public:
   explicit CUDA_DEVICE CUDA_HOST GridCoordinate2DTemplate<TcoordType, doSignChecks> (const TcoordType& c1,
                                                                                      const TcoordType& c2,
                                                                                      const TcoordType& tmp,
-                                                                                     CoordinateType t1 = CoordinateType::X,
-                                                                                     CoordinateType t2 = CoordinateType::Y,
-                                                                                     CoordinateType t3 = CoordinateType::Z)
+                                                                                     CoordinateType t1,
+                                                                                     CoordinateType t2,
+                                                                                     CoordinateType t3)
     : GridCoordinate1DTemplate<TcoordType, doSignChecks> (c1, t1)
     , coord2 (c2)
 #ifdef DEBUG_INFO

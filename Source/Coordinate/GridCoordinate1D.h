@@ -53,9 +53,16 @@ public:
 
   static const Dimension dimension;
 
-  // Constructor for all cases.
-  explicit CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks> (const TcoordType& c1 = 0,
-                                                                                     CoordinateType t1 = CoordinateType::X)
+  CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks> ()
+    : coord1 (0)
+#ifdef DEBUG_INFO
+    , type1 (CoordinateType::NONE)
+#endif /* DEBUG_INFO */
+  {
+  }
+
+  explicit CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks> (const TcoordType& c1,
+                                                                                     CoordinateType t1)
     : coord1 (c1)
 #ifdef DEBUG_INFO
     , type1 (t1)
@@ -70,9 +77,9 @@ public:
   explicit CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks> (const TcoordType& c1,
                                                                                      const TcoordType& tmp1,
                                                                                      const TcoordType& tmp2,
-                                                                                     CoordinateType t1 = CoordinateType::X,
-                                                                                     CoordinateType t2 = CoordinateType::Y,
-                                                                                     CoordinateType t3 = CoordinateType::Z)
+                                                                                     CoordinateType t1,
+                                                                                     CoordinateType t2,
+                                                                                     CoordinateType t3)
     : coord1 (c1)
 #ifdef DEBUG_INFO
     , type1 (t1)

@@ -31,7 +31,7 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
     GridCoordinate1DTemplate<TcoordType, doSignChecks> *coord1D = new GridCoordinate1DTemplate<TcoordType, doSignChecks> (i, t1);
     GridCoordinate1DTemplate<TcoordType, doSignChecks> *coord1D_1 = new GridCoordinate1DTemplate<TcoordType, doSignChecks> (i + 5, t1);
     GridCoordinate1DTemplate<TcoordType, !doSignChecks> *coord1D_2 = new GridCoordinate1DTemplate<TcoordType, !doSignChecks> (i + 44, t1);
-    coord1D->print ();
+
     ALWAYS_ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks> (coord1D->get1 (), t1) == *coord1D));
     ALWAYS_ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks> (*coord1D) == *coord1D));
 
@@ -43,7 +43,7 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
       coord2D = new GridCoordinate2DTemplate<TcoordType, doSignChecks> (i, 10 * i, t1, t2);
       coord2D_1 = new GridCoordinate2DTemplate<TcoordType, doSignChecks> (i + 5, 10 * i + 5, t1, t2);
       coord2D_2 = new GridCoordinate2DTemplate<TcoordType, !doSignChecks> (i + 44, 10 * i + 333, t1, t2);
-      coord2D->print ();
+
       ALWAYS_ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks> (coord2D->get1 (), coord2D->get2 (), t1, t2) == *coord2D));
       ALWAYS_ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks> (*coord2D) == *coord2D));
     }
@@ -56,7 +56,7 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
       coord3D = new GridCoordinate3DTemplate<TcoordType, doSignChecks> (i, 10 * i, 17 * i, t1, t2, t3);
       coord3D_1 = new GridCoordinate3DTemplate<TcoordType, doSignChecks> (i + 5, 10 * i + 5, 17 * i + 5, t1, t2, t3);
       coord3D_2 = new GridCoordinate3DTemplate<TcoordType, !doSignChecks> (i + 44, 10 * i + 333, 17 * i + 941, t1, t2, t3);
-      coord3D->print ();
+
       ALWAYS_ASSERT ((GridCoordinate3DTemplate<TcoordType, doSignChecks> (coord3D->get1 (), coord3D->get2 (), coord3D->get3 (), t1, t2, t3) == *coord3D));
       ALWAYS_ASSERT ((GridCoordinate3DTemplate<TcoordType, doSignChecks> (*coord3D) == *coord3D));
     }
@@ -356,13 +356,13 @@ int main (int argc, char** argv)
    */
   for (grid_coord i = 0; i < 2; ++i)
   {
-    GridCoordinate1D coord1D (i);
+    GridCoordinate1D coord1D (i, CoordinateType::X);
     ALWAYS_ASSERT (convertCoord (convertCoord (coord1D)) == coord1D);
 
-    GridCoordinate2D coord2D (i, i);
+    GridCoordinate2D coord2D (i, i, CoordinateType::X, CoordinateType::Y);
     ALWAYS_ASSERT (convertCoord (convertCoord (coord2D)) == coord2D);
 
-    GridCoordinate3D coord3D (i, i, i);
+    GridCoordinate3D coord3D (i, i, i, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
     ALWAYS_ASSERT (convertCoord (convertCoord (coord3D)) == coord3D);
   }
 

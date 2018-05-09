@@ -34,12 +34,21 @@ public:
 
   static const Dimension dimension;
 
-  explicit CUDA_DEVICE CUDA_HOST GridCoordinate3DTemplate<TcoordType, doSignChecks> (const TcoordType& c1 = 0,
-                                                                                     const TcoordType& c2 = 0,
-                                                                                     const TcoordType& c3 = 0,
-                                                                                     CoordinateType t1 = CoordinateType::X,
-                                                                                     CoordinateType t2 = CoordinateType::Y,
-                                                                                     CoordinateType t3 = CoordinateType::Z)
+  CUDA_DEVICE CUDA_HOST GridCoordinate3DTemplate<TcoordType, doSignChecks> ()
+    : GridCoordinate2DTemplate<TcoordType, doSignChecks> ()
+    , coord3 (0)
+#ifdef DEBUG_INFO
+    , type3 (CoordinateType::NONE)
+#endif /* DEBUG_INFO */
+  {
+  }
+
+  explicit CUDA_DEVICE CUDA_HOST GridCoordinate3DTemplate<TcoordType, doSignChecks> (const TcoordType& c1,
+                                                                                     const TcoordType& c2,
+                                                                                     const TcoordType& c3,
+                                                                                     CoordinateType t1,
+                                                                                     CoordinateType t2,
+                                                                                     CoordinateType t3)
     : GridCoordinate2DTemplate<TcoordType, doSignChecks> (c1, c2, t1, t2)
     , coord3 (c3)
 #ifdef DEBUG_INFO
