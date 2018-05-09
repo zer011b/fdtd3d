@@ -1,0 +1,29 @@
+// Point source launched in vacuum, TMz
+
+--time-steps 100
+
+--sizex 200
+--sizey 200
+
+--2d-tmz
+
+--angle-teta 90
+--angle-phi 0
+--angle-psi 90
+
+--dx 0.0005
+--wavelength 0.02
+
+--log-level 2
+
+--save-res
+--save-as-bmp
+--palette-rgb
+
+--pml-sizex 20
+--pml-sizey 20
+--use-pml
+
+--use-tfsf
+--tfsf-sizex 30
+--tfsf-sizey 30
