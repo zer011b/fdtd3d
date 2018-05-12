@@ -3,7 +3,9 @@
 
 const char * coordinateTypeNames[] =
 {
+  "NONE",
   "X",
   "Y",
-  "Z"
+  "Z",
+  "COUNT"
 };

@@ -1,6 +1,8 @@
 # Description
 
-This is test when exact solution should be obtained from numerical scheme
+This is test when exact solution should be obtained from numerical scheme.
+
+**In this test additional grids for incident wave are tested.**
 
 # Exact solution
 
