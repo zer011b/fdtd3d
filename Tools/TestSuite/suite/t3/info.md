@@ -2,6 +2,18 @@
 
 This is test with comparison of exact solution with numerical one.
 
+# Equations
+
+```
+dEx/dt = 1/eps0 * (dHz/dy - dHy/dz + Jx)
+dEy/dt = 1/eps0 * (dHx/dz - dHz/dx + Jy)
+dEz/dt = 1/eps0 * (dHy/dx - dHx/dy + Jz)
+
+dHx/dt = 1/mu0 * (dEy/dz - dEz/dy + Mx)
+dHy/dt = 1/mu0 * (dEz/dx - dEx/dz + My)
+dHz/dt = 1/mu0 * (dEx/dy - dEy/dx + Mz)
+```
+
 # Exact solution
 
 ```
@@ -24,4 +36,4 @@ Mz = c^2 * (2 * t * (x - y) + eps0 * mu0 * (x^2 + y^2))
 
 # Numerical solution
 
-Case of `dt = 0.5 * dx / c`. Numerical solution should match exact solution (with floating point accuracy).
+Case of `dt = 0.5 * dx / c`, i.e. Courant number set to 0.5. Numerical solution should match exact solution (with floating point accuracy).

@@ -45,11 +45,18 @@ public:
 
   explicit CUDA_DEVICE CUDA_HOST GridCoordinate3DTemplate<TcoordType, doSignChecks> (const TcoordType& c1,
                                                                                      const TcoordType& c2,
-                                                                                     const TcoordType& c3,
-                                                                                     CoordinateType t1,
-                                                                                     CoordinateType t2,
-                                                                                     CoordinateType t3)
-    : GridCoordinate2DTemplate<TcoordType, doSignChecks> (c1, c2, t1, t2)
+                                                                                     const TcoordType& c3
+#ifdef DEBUG_INFO
+                                                                                     , CoordinateType t1
+                                                                                     , CoordinateType t2
+                                                                                     , CoordinateType t3
+#endif /* DEBUG_INFO */
+                                                                                     )
+    : GridCoordinate2DTemplate<TcoordType, doSignChecks> (c1, c2
+#ifdef DEBUG_INFO
+                                                          , t1, t2
+#endif /* DEBUG_INFO */
+                                                          )
     , coord3 (c3)
 #ifdef DEBUG_INFO
     , type3 (t3)
@@ -306,7 +313,11 @@ public:
                                                                                                CoordinateType ct3)
   {
     ASSERT (ct1 == CoordinateType::X && ct2 == CoordinateType::Y && ct3 == CoordinateType::Z);
-    return GridCoordinate3DTemplate<TcoordType, doSignChecks> (c1, c2, c3, ct1, ct2, ct3);
+    return GridCoordinate3DTemplate<TcoordType, doSignChecks> (c1, c2, c3
+#ifdef DEBUG_INFO
+                                                               , ct1, ct2, ct3
+#endif /* DEBUG_INFO */
+                                                               );
   }
 
   friend GridCoordinate3DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST (::operator* <TcoordType, doSignChecks>)

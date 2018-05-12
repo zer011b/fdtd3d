@@ -61,8 +61,11 @@ public:
   {
   }
 
-  explicit CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks> (const TcoordType& c1,
-                                                                                     CoordinateType t1)
+  explicit CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks> (const TcoordType& c1
+#ifdef DEBUG_INFO
+                                                                                     , CoordinateType t1
+#endif /* DEBUG_INFO */
+                                                                                     )
     : coord1 (c1)
 #ifdef DEBUG_INFO
     , type1 (t1)
@@ -76,10 +79,13 @@ public:
 
   explicit CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks> (const TcoordType& c1,
                                                                                      const TcoordType& tmp1,
-                                                                                     const TcoordType& tmp2,
-                                                                                     CoordinateType t1,
-                                                                                     CoordinateType t2,
-                                                                                     CoordinateType t3)
+                                                                                     const TcoordType& tmp2
+#ifdef DEBUG_INFO
+                                                                                     , CoordinateType t1
+                                                                                     , CoordinateType t2
+                                                                                     , CoordinateType t3
+#endif /* DEBUG_INFO */
+                                                                                     )
     : coord1 (c1)
 #ifdef DEBUG_INFO
     , type1 (t1)
@@ -230,25 +236,37 @@ public:
   }
 
   static GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST initAxesCoordinate (const TcoordType& c1,
-                                                                                               const TcoordType& c2,
-                                                                                               const TcoordType& c3,
-                                                                                               CoordinateType ct1,
-                                                                                               CoordinateType ct2,
-                                                                                               CoordinateType ct3)
+                                                                                                      const TcoordType& c2,
+                                                                                                      const TcoordType& c3,
+                                                                                                      CoordinateType ct1,
+                                                                                                      CoordinateType ct2,
+                                                                                                      CoordinateType ct3)
   {
     ASSERT (ct2 == CoordinateType::NONE && ct3 == CoordinateType::NONE);
 
     if (ct1 == CoordinateType::X)
     {
-      return GridCoordinate1DTemplate<TcoordType, doSignChecks> (c1, ct1);
+      return GridCoordinate1DTemplate<TcoordType, doSignChecks> (c1
+#ifdef DEBUG_INFO
+                                                                 , ct1
+#endif /* DEBUG_INFO */
+                                                                 );
     }
     else if (ct1 == CoordinateType::Y)
     {
-      return GridCoordinate1DTemplate<TcoordType, doSignChecks> (c2, ct1);
+      return GridCoordinate1DTemplate<TcoordType, doSignChecks> (c2
+#ifdef DEBUG_INFO
+                                                                 , ct1
+#endif /* DEBUG_INFO */
+                                                                 );
     }
     else if (ct1 == CoordinateType::Z)
     {
-      return GridCoordinate1DTemplate<TcoordType, doSignChecks> (c3, ct1);
+      return GridCoordinate1DTemplate<TcoordType, doSignChecks> (c3
+#ifdef DEBUG_INFO
+                                                                 , ct1
+#endif /* DEBUG_INFO */
+                                                                 );
     }
     else
     {

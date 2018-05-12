@@ -881,7 +881,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1
 , ct3 (CoordinateType::NONE)
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
-, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5
+#ifdef DEBUG_INFO
+                  , ct1
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0);
   ASSERT (incWaveAngle1 == incWaveAngle2 == incWaveAngle3 == 0);
@@ -901,7 +905,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1
 , ct3 (CoordinateType::NONE)
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
-, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5
+#ifdef DEBUG_INFO
+                  , ct1
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0);
   ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle2 == PhysicsConst::Pi / 2 && incWaveAngle3 == 0);
@@ -921,7 +929,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1
 , ct3 (CoordinateType::NONE)
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
-, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5
+#ifdef DEBUG_INFO
+                  , ct1
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0);
   ASSERT (incWaveAngle1 == incWaveAngle2 == incWaveAngle3 == 0);
@@ -941,7 +953,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1
 , ct3 (CoordinateType::NONE)
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
-, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5
+#ifdef DEBUG_INFO
+                  , ct1
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0);
   ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle2 == 0 && incWaveAngle3 == 0);
@@ -961,7 +977,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1
 , ct3 (CoordinateType::NONE)
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
-, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5
+#ifdef DEBUG_INFO
+                  , ct1
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0);
   ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle2 == PhysicsConst::Pi / 2 && incWaveAngle3 == PhysicsConst::Pi / 2);
@@ -981,7 +1001,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1
 , ct3 (CoordinateType::NONE)
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
-, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5, ct1)
+, zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5
+#ifdef DEBUG_INFO
+                  , ct1
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0);
   ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle2 == 0 && incWaveAngle3 == PhysicsConst::Pi / 2);
@@ -1002,7 +1026,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2D
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
 , zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * sin (incWaveAngle1),
-                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1), ct1, ct2)
+                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1)
+#ifdef DEBUG_INFO
+                  , ct1, ct2
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0 && size.get2 () > 0);
   ASSERT (incWaveAngle2 == PhysicsConst::Pi / 2 && incWaveAngle3 == PhysicsConst::Pi / 2);
@@ -1026,7 +1054,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2D
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
 , zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * sin (incWaveAngle1),
-                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1), ct1, ct2)
+                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1)
+#ifdef DEBUG_INFO
+                  , ct1, ct2
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0 && size.get2 () > 0);
   ASSERT (incWaveAngle2 == 0 && incWaveAngle3 == PhysicsConst::Pi / 2);
@@ -1050,7 +1082,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2D
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
 , zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * cos (incWaveAngle2),
-                  leftBorderTotalField.get2 () - 2.5 * sin (incWaveAngle2), ct1, ct2)
+                  leftBorderTotalField.get2 () - 2.5 * sin (incWaveAngle2)
+#ifdef DEBUG_INFO
+                  , ct1, ct2
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0 && size.get2 () > 0);
   ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle3 == 0);
@@ -1074,7 +1110,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2D
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
 , zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * sin (incWaveAngle1),
-                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1), ct1, ct2)
+                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1)
+#ifdef DEBUG_INFO
+                  , ct1, ct2
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0 && size.get2 () > 0);
   ASSERT (incWaveAngle2 == PhysicsConst::Pi / 2 && incWaveAngle3 == 0);
@@ -1098,7 +1138,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2D
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
 , zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * sin (incWaveAngle1),
-                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1), ct1, ct2)
+                  leftBorderTotalField.get2 () - 2.5 * cos (incWaveAngle1)
+#ifdef DEBUG_INFO
+                  , ct1, ct2
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0 && size.get2 () > 0);
   ASSERT (incWaveAngle2 == 0 && incWaveAngle3 == 0);
@@ -1122,7 +1166,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2D
 , DEFAULT_VALS_LIST
 // TODO: check this, only one angle should be used!
 , zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * cos (incWaveAngle2),
-                  leftBorderTotalField.get2 () - 2.5 * sin (incWaveAngle2), ct1, ct2)
+                  leftBorderTotalField.get2 () - 2.5 * sin (incWaveAngle2)
+#ifdef DEBUG_INFO
+                  , ct1, ct2
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0 && size.get2 () > 0);
   ASSERT (incWaveAngle1 == PhysicsConst::Pi / 2 && incWaveAngle3 == PhysicsConst::Pi / 2);
@@ -1147,7 +1195,11 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
 // TODO: check this, only one angle should be used!
 , zeroIncCoordFP (leftBorderTotalField.get1 () - 2.5 * sin (incWaveAngle1) * cos (incWaveAngle2),
                   leftBorderTotalField.get2 () - 2.5 * sin (incWaveAngle1) * sin (incWaveAngle2),
-                  leftBorderTotalField.get3 () - 2.5 * cos (incWaveAngle1), ct1, ct2, ct3)
+                  leftBorderTotalField.get3 () - 2.5 * cos (incWaveAngle1)
+#ifdef DEBUG_INFO
+                  , ct1, ct2, ct3
+#endif /* DEBUG_INFO */
+                  )
 {
   ASSERT (size.get1 () > 0 && size.get2 () > 0 && size.get3 () > 0);
 

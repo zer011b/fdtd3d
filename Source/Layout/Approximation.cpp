@@ -313,10 +313,16 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
                                           FPValue radius,
                                           FieldValue eps)
 {
-  GridCoordinateFP3D start (midPos.get1 () - 0.5, midPos.get2 () - 0.5, midPos.get3 () - 0.5,
-                            CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-  GridCoordinateFP3D end (midPos.get1 () + 0.5, midPos.get2 () + 0.5, midPos.get3 () + 0.5,
-                          CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  GridCoordinateFP3D start (midPos.get1 () - 0.5, midPos.get2 () - 0.5, midPos.get3 () - 0.5
+#ifdef DEBUG_INFO
+                            , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+                            );
+  GridCoordinateFP3D end (midPos.get1 () + 0.5, midPos.get2 () + 0.5, midPos.get3 () + 0.5
+#ifdef DEBUG_INFO
+                          , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+                          );
 
   int numSteps = 100;
   FPValue step = 1.0 / numSteps;
@@ -326,8 +332,11 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
   {
     for (int j = 0; j < numSteps; ++j)
     {
-      GridCoordinateFP3D pos (start.get1 () + i * step, start.get2 () + j * step, 0.0,
-                              CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+      GridCoordinateFP3D pos (start.get1 () + i * step, start.get2 () + j * step, 0.0
+#ifdef DEBUG_INFO
+                              , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+                              );
       FPValue temp = SQR (radius) - SQR (pos.get1 () - center.get1 ()) - SQR (pos.get2 () - center.get2 ());
 
       if (temp < 0)
