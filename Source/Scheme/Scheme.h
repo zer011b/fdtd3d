@@ -231,7 +231,7 @@ private:
   TC getEndCoord (GridType, TC);
 
   void initMaterialFromFile (GridType, Grid<TC> *, Grid<TC> *);
-  void initGridWithInitialVals (GridType, Grid<TC> *);
+  void initGridWithInitialVals (GridType, Grid<TC> *, FPValue);
 
   void initSigmas ();
   // {

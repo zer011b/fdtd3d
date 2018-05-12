@@ -2,6 +2,13 @@
 
 This is test with comparison of exact solution with numerical one.
 
+# Equations
+
+```
+dEz/dt = 1/eps0 * (dHy/dx + Jz)
+dHy/dt = 1/mu0 * (dEz/dx + My)
+```
+
 # Exact solution
 
 ```
@@ -14,4 +21,4 @@ Mz = 2 * x * t * (eps0 * mu0 * x - t)
 
 # Numerical solution
 
-Case of `dt = 0.5 * dx / c`. Numerical solution should match exact solution (with floating point accuracy).
+Case of `dt = 0.5 * dx / c`, i.e. Courant number set to 0.5. Numerical solution should match exact solution (with floating point accuracy).

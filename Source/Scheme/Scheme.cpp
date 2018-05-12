@@ -1080,7 +1080,11 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
   {
     leftNTFF = TC::initAxesCoordinate (solverSettings.getNTFFSizeX (), solverSettings.getNTFFSizeY (), solverSettings.getNTFFSizeZ (),
                                        ct1, ct2, ct3);
-    rightNTFF = layout->getEzSize () - leftNTFF + TC (1,1,1, ct1, ct2, ct3);
+    rightNTFF = layout->getEzSize () - leftNTFF + TC (1, 1, 1
+#ifdef DEBUG_INFO
+                                                      , ct1, ct2, ct3
+#endif
+                                                      );
   }
 
   if (solverSettings.getDoUseParallelGrid ())
@@ -1169,8 +1173,16 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
 
   if (solverSettings.getDoUseTFSF ())
   {
-    EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(totSize.get1 ()), CoordinateType::X), 0, "EInc");
-    HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(totSize.get1 ()), CoordinateType::X), 0, "HInc");
+    EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(totSize.get1 ())
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::X
+#endif
+                                                              ), 0, "EInc");
+    HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(totSize.get1 ())
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::X
+#endif
+                                                              ), 0, "HInc");
   }
 
   ASSERT (!solverSettings.getDoUseTFSF ()
@@ -2744,13 +2756,22 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
 
   if (borderFunc != NULLPTR)
   {
-    for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+    GridCoordinate3D startBorder;
+    GridCoordinate3D endBorder;
+
+    expandTo3DStartEnd (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3),
+                        grid->getSize (),
+                        startBorder,
+                        endBorder,
+                        ct1, ct2, ct3);
+
+    for (grid_coord i = startBorder.get1 (); i < endBorder.get1 (); ++i)
     {
       // TODO: check that this loop is optimized out
-      for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+      for (grid_coord j = startBorder.get2 (); j < endBorder.get2 (); ++j)
       {
         // TODO: check that this loop is optimized out
-        for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
+        for (grid_coord k = startBorder.get3 (); k < endBorder.get3 (); ++k)
         {
           TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
           calculateFieldStepIterationBorder<grid_type> (t, pos, grid, borderFunc);
@@ -2809,12 +2830,24 @@ Scheme<Type, TCoord, layout_type>::performPlaneWaveESteps (time_step t)
 
   for (grid_coord i = 1; i < size; ++i)
   {
-    GridCoordinate1D pos (i, CoordinateType::X);
+    GridCoordinate1D pos (i
+#ifdef DEBUG_INFO
+                          , CoordinateType::X
+#endif
+                          );
 
     FieldPointValue *valE = EInc->getFieldPointValue (pos);
 
-    GridCoordinate1D posLeft (i - 1, CoordinateType::X);
-    GridCoordinate1D posRight (i, CoordinateType::X);
+    GridCoordinate1D posLeft (i - 1
+#ifdef DEBUG_INFO
+                              , CoordinateType::X
+#endif
+                              );
+    GridCoordinate1D posRight (i
+#ifdef DEBUG_INFO
+                               , CoordinateType::X
+#endif
+                               );
 
     FieldPointValue *valH1 = HInc->getFieldPointValue (posLeft);
     FieldPointValue *valH2 = HInc->getFieldPointValue (posRight);
@@ -2824,7 +2857,11 @@ Scheme<Type, TCoord, layout_type>::performPlaneWaveESteps (time_step t)
     valE->setCurValue (val);
   }
 
-  GridCoordinate1D pos (0, CoordinateType::X);
+  GridCoordinate1D pos (0
+#ifdef DEBUG_INFO
+                        , CoordinateType::X
+#endif
+                        );
   FieldPointValue *valE = EInc->getFieldPointValue (pos);
 
   FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
@@ -2855,12 +2892,24 @@ Scheme<Type, TCoord, layout_type>::performPlaneWaveHSteps (time_step t)
 
   for (grid_coord i = 0; i < size - 1; ++i)
   {
-    GridCoordinate1D pos (i, CoordinateType::X);
+    GridCoordinate1D pos (i
+#ifdef DEBUG_INFO
+                          , CoordinateType::X
+#endif
+                          );
 
     FieldPointValue *valH = HInc->getFieldPointValue (pos);
 
-    GridCoordinate1D posLeft (i, CoordinateType::X);
-    GridCoordinate1D posRight (i + 1, CoordinateType::X);
+    GridCoordinate1D posLeft (i
+#ifdef DEBUG_INFO
+                              , CoordinateType::X
+#endif
+                              );
+    GridCoordinate1D posRight (i + 1
+#ifdef DEBUG_INFO
+                               , CoordinateType::X
+#endif
+                               );
 
     FieldPointValue *valE1 = EInc->getFieldPointValue (posLeft);
     FieldPointValue *valE2 = EInc->getFieldPointValue (posRight);
@@ -3064,23 +3113,71 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       DPRINTF (LOG_LEVEL_STAGES, "Calculating time step %u...\n", t);
     }
 
-    TC ExStart = doNeedEx ? Ex->getComputationStart (yeeLayout->getExStartDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    TC ExEnd = doNeedEx ? Ex->getComputationEnd (yeeLayout->getExEndDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    TC ExStart = doNeedEx ? Ex->getComputationStart (yeeLayout->getExStartDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                         , ct1, ct2, ct3
+#endif
+                                                                                         );
+    TC ExEnd = doNeedEx ? Ex->getComputationEnd (yeeLayout->getExEndDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                   , ct1, ct2, ct3
+#endif
+                                                                                   );
 
-    TC EyStart = doNeedEy ? Ey->getComputationStart (yeeLayout->getEyStartDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    TC EyEnd = doNeedEy ? Ey->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    TC EyStart = doNeedEy ? Ey->getComputationStart (yeeLayout->getEyStartDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                         , ct1, ct2, ct3
+#endif
+                                                                                         );
+    TC EyEnd = doNeedEy ? Ey->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                   , ct1, ct2, ct3
+#endif
+                                                                                   );
 
-    TC EzStart = doNeedEz ? Ez->getComputationStart (yeeLayout->getEzStartDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    TC EzEnd = doNeedEz ? Ez->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    TC EzStart = doNeedEz ? Ez->getComputationStart (yeeLayout->getEzStartDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                         , ct1, ct2, ct3
+#endif
+                                                                                         );
+    TC EzEnd = doNeedEz ? Ez->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                   , ct1, ct2, ct3
+#endif
+                                                                                   );
 
-    TC HxStart = doNeedHx ? Hx->getComputationStart (yeeLayout->getHxStartDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    TC HxEnd = doNeedHx ? Hx->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    TC HxStart = doNeedHx ? Hx->getComputationStart (yeeLayout->getHxStartDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                         , ct1, ct2, ct3
+#endif
+                                                                                         );
+    TC HxEnd = doNeedHx ? Hx->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                   , ct1, ct2, ct3
+#endif
+                                                                                   );
 
-    TC HyStart = doNeedHy ? Hy->getComputationStart (yeeLayout->getHyStartDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    TC HyEnd = doNeedHy ? Hy->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    TC HyStart = doNeedHy ? Hy->getComputationStart (yeeLayout->getHyStartDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                         , ct1, ct2, ct3
+#endif
+                                                                                         );
+    TC HyEnd = doNeedHy ? Hy->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                   , ct1, ct2, ct3
+#endif
+                                                                                   );
 
-    TC HzStart = doNeedHz ? Hz->getComputationStart (yeeLayout->getHzStartDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    TC HzEnd = doNeedHz ? Hz->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    TC HzStart = doNeedHz ? Hz->getComputationStart (yeeLayout->getHzStartDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                         , ct1, ct2, ct3
+#endif
+                                                                                         );
+    TC HzEnd = doNeedHz ? Hz->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                   , ct1, ct2, ct3
+#endif
+                                                                                   );
 
     if (useParallel && solverSettings.getDoUseDynamicGrid ())
     {
@@ -3865,7 +3962,7 @@ Scheme<Type, TCoord, layout_type>::initMaterialFromFile (GridType gridType, Grid
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void
-Scheme<Type, TCoord, layout_type>::initGridWithInitialVals (GridType gridType, Grid<TC> *grid)
+Scheme<Type, TCoord, layout_type>::initGridWithInitialVals (GridType gridType, Grid<TC> *grid, FPValue timestep)
 {
   SourceCallBack cb = NULLPTR;
 
@@ -3956,7 +4053,7 @@ Scheme<Type, TCoord, layout_type>::initGridWithInitialVals (GridType gridType, G
       }
     }
 
-    grid->getFieldPointValue (pos)->setCurValue (cb (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), 0.5 * gridTimeStep));
+    grid->getFieldPointValue (pos)->setCurValue (cb (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep));
   }
 }
 
@@ -4187,7 +4284,12 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                              solverSettings.getEpsSphereCenterZ (),
                                              ct1, ct2, ct3);
       val->setCurValue (Approximation::approximateSphereAccurate (expandTo3D (posAbs, ct1, ct2, ct3),
-                                                                  expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5, ct1, ct2, ct3), ct1, ct2, ct3),
+                                                                  expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5
+#ifdef DEBUG_INFO
+                                                                                                        , ct1, ct2, ct3
+#endif
+                                                                                                        ),
+                                                                              ct1, ct2, ct3),
                                                                   solverSettings.getEpsSphereRadius () * modifier,
                                                                   epsVal));
     }
@@ -4218,7 +4320,12 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                 solverSettings.getOmegaPESphereCenterZ (),
                                                 ct1, ct2, ct3);
         val->setCurValue (Approximation::approximateSphereAccurate (expandTo3D (posAbs, ct1, ct2, ct3),
-                                                                    expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5, ct1, ct2, ct3), ct1, ct2, ct3),
+                                                                    expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5
+#ifdef DEBUG_INFO
+                                                                                                          , ct1, ct2, ct3
+#endif
+                                                                                                          ),
+                                                                                ct1, ct2, ct3),
                                                                     solverSettings.getOmegaPESphereRadius () * modifier,
                                                                     omegapeVal));
       }
@@ -4312,33 +4419,33 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   if (doNeedEx)
   {
     Ex->initialize ();
-    initGridWithInitialVals (GridType::EX, Ex);
+    initGridWithInitialVals (GridType::EX, Ex, 0.5 * gridTimeStep);
   }
   if (doNeedEy)
   {
     Ey->initialize ();
-    initGridWithInitialVals (GridType::EY, Ey);
+    initGridWithInitialVals (GridType::EY, Ey, 0.5 * gridTimeStep);
   }
   if (doNeedEz)
   {
     Ez->initialize ();
-    initGridWithInitialVals (GridType::EZ, Ez);
+    initGridWithInitialVals (GridType::EZ, Ez, 0.5 * gridTimeStep);
   }
 
   if (doNeedHx)
   {
     Hx->initialize ();
-    initGridWithInitialVals (GridType::HX, Hx);
+    initGridWithInitialVals (GridType::HX, Hx, gridTimeStep);
   }
   if (doNeedHy)
   {
     Hy->initialize ();
-    initGridWithInitialVals (GridType::HY, Hy);
+    initGridWithInitialVals (GridType::HY, Hy, gridTimeStep);
   }
   if (doNeedHz)
   {
     Hz->initialize ();
-    initGridWithInitialVals (GridType::HZ, Hz);
+    initGridWithInitialVals (GridType::HZ, Hz, gridTimeStep);
   }
 
   if (solverSettings.getDoUsePML ())
@@ -4487,8 +4594,16 @@ SchemeHelper::ntffN3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
   ct3 = leftNTFF.getType3 ();
 #endif
 
-  GridCoordinateFP3D coordStart (x0, leftNTFF.get2 () + 0.5, leftNTFF.get3 () + 0.5, ct1, ct2, ct3);
-  GridCoordinateFP3D coordEnd (x0, rightNTFF.get2 () - 0.5, rightNTFF.get3 () - 0.5, ct1, ct2, ct3);
+  GridCoordinateFP3D coordStart (x0, leftNTFF.get2 () + 0.5, leftNTFF.get3 () + 0.5
+#ifdef DEBUG_INFO
+                                 , ct1, ct2, ct3
+#endif
+                                 );
+  GridCoordinateFP3D coordEnd (x0, rightNTFF.get2 () - 0.5, rightNTFF.get3 () - 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
 
   FieldValue sum_teta (0.0, 0.0);
   FieldValue sum_phi (0.0, 0.0);
@@ -4497,10 +4612,26 @@ SchemeHelper::ntffN3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
   {
     for (FPValue coordZ = coordStart.get3 (); coordZ <= coordEnd.get3 (); ++coordZ)
     {
-      GridCoordinateFP3D pos1 (x0, coordY - 0.5, coordZ, ct1, ct2, ct3);
-      GridCoordinateFP3D pos2 (x0, coordY + 0.5, coordZ, ct1, ct2, ct3);
-      GridCoordinateFP3D pos3 (x0, coordY, coordZ - 0.5, ct1, ct2, ct3);
-      GridCoordinateFP3D pos4 (x0, coordY, coordZ + 0.5, ct1, ct2, ct3);
+      GridCoordinateFP3D pos1 (x0, coordY - 0.5, coordZ
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos2 (x0, coordY + 0.5, coordZ
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos3 (x0, coordY, coordZ - 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos4 (x0, coordY, coordZ + 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
 
       pos1 = pos1 - yeeLayout->getMinHzCoordFP ();
       pos2 = pos2 - yeeLayout->getMinHzCoordFP ();
@@ -4588,8 +4719,16 @@ SchemeHelper::ntffN3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
   ct3 = leftNTFF.getType3 ();
 #endif
 
-  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, y0, leftNTFF.get3 () + 0.5, ct1, ct2, ct3);
-  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, y0, rightNTFF.get3 () - 0.5, ct1, ct2, ct3);
+  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, y0, leftNTFF.get3 () + 0.5
+#ifdef DEBUG_INFO
+                                 , ct1, ct2, ct3
+#endif
+                                 );
+  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, y0, rightNTFF.get3 () - 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
 
   FieldValue sum_teta (0.0, 0.0);
   FieldValue sum_phi (0.0, 0.0);
@@ -4598,10 +4737,26 @@ SchemeHelper::ntffN3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
   {
     for (FPValue coordZ = coordStart.get3 (); coordZ <= coordEnd.get3 (); ++coordZ)
     {
-      GridCoordinateFP3D pos1 (coordX - 0.5, y0, coordZ, ct1, ct2, ct3);
-      GridCoordinateFP3D pos2 (coordX + 0.5, y0, coordZ, ct1, ct2, ct3);
-      GridCoordinateFP3D pos3 (coordX, y0, coordZ - 0.5, ct1, ct2, ct3);
-      GridCoordinateFP3D pos4 (coordX, y0, coordZ + 0.5, ct1, ct2, ct3);
+      GridCoordinateFP3D pos1 (coordX - 0.5, y0, coordZ
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos2 (coordX + 0.5, y0, coordZ
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos3 (coordX, y0, coordZ - 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos4 (coordX, y0, coordZ + 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
 
       pos1 = pos1 - yeeLayout->getMinHzCoordFP ();
       pos2 = pos2 - yeeLayout->getMinHzCoordFP ();
@@ -4689,8 +4844,16 @@ SchemeHelper::ntffN3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
   ct3 = leftNTFF.getType3 ();
 #endif
 
-  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, leftNTFF.get2 () + 0.5, z0, ct1, ct2, ct3);
-  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, rightNTFF.get2 () - 0.5, z0, ct1, ct2, ct3);
+  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, leftNTFF.get2 () + 0.5, z0
+#ifdef DEBUG_INFO
+                                 , ct1, ct2, ct3
+#endif
+                                 );
+  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, rightNTFF.get2 () - 0.5, z0
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
 
   FieldValue sum_teta (0.0, 0.0);
   FieldValue sum_phi (0.0, 0.0);
@@ -4699,10 +4862,26 @@ SchemeHelper::ntffN3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
   {
     for (FPValue coordY = coordStart.get2 (); coordY <= coordEnd.get2 (); ++coordY)
     {
-      GridCoordinateFP3D pos1 (coordX - 0.5, coordY, z0, ct1, ct2, ct3);
-      GridCoordinateFP3D pos2 (coordX + 0.5, coordY, z0, ct1, ct2, ct3);
-      GridCoordinateFP3D pos3 (coordX, coordY - 0.5, z0, ct1, ct2, ct3);
-      GridCoordinateFP3D pos4 (coordX, coordY + 0.5, z0, ct1, ct2, ct3);
+      GridCoordinateFP3D pos1 (coordX - 0.5, coordY, z0
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos2 (coordX + 0.5, coordY, z0
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos3 (coordX, coordY - 0.5, z0
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos4 (coordX, coordY + 0.5, z0
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
 
       pos1 = pos1 - yeeLayout->getMinHyCoordFP ();
       pos2 = pos2 - yeeLayout->getMinHyCoordFP ();
@@ -4790,8 +4969,16 @@ SchemeHelper::ntffL3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
   ct3 = leftNTFF.getType3 ();
 #endif
 
-  GridCoordinateFP3D coordStart (x0, leftNTFF.get2 () + 0.5, leftNTFF.get3 () + 0.5, ct1, ct2, ct3);
-  GridCoordinateFP3D coordEnd (x0, rightNTFF.get2 () - 0.5, rightNTFF.get3 () - 0.5, ct1, ct2, ct3);
+  GridCoordinateFP3D coordStart (x0, leftNTFF.get2 () + 0.5, leftNTFF.get3 () + 0.5
+#ifdef DEBUG_INFO
+                                 , ct1, ct2, ct3
+#endif
+                                 );
+  GridCoordinateFP3D coordEnd (x0, rightNTFF.get2 () - 0.5, rightNTFF.get3 () - 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
 
   FieldValue sum_teta (0.0, 0.0);
   FieldValue sum_phi (0.0, 0.0);
@@ -4800,10 +4987,26 @@ SchemeHelper::ntffL3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
   {
     for (FPValue coordZ = coordStart.get3 (); coordZ <= coordEnd.get3 (); ++coordZ)
     {
-      GridCoordinateFP3D pos1 (x0, coordY - 0.5, coordZ, ct1, ct2, ct3);
-      GridCoordinateFP3D pos2 (x0, coordY + 0.5, coordZ, ct1, ct2, ct3);
-      GridCoordinateFP3D pos3 (x0, coordY, coordZ - 0.5, ct1, ct2, ct3);
-      GridCoordinateFP3D pos4 (x0, coordY, coordZ + 0.5, ct1, ct2, ct3);
+      GridCoordinateFP3D pos1 (x0, coordY - 0.5, coordZ
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos2 (x0, coordY + 0.5, coordZ
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos3 (x0, coordY, coordZ - 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos4 (x0, coordY, coordZ + 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
 
       pos1 = pos1 - yeeLayout->getMinEyCoordFP ();
       pos2 = pos2 - yeeLayout->getMinEyCoordFP ();
@@ -4811,15 +5014,47 @@ SchemeHelper::ntffL3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
       pos3 = pos3 - yeeLayout->getMinEzCoordFP ();
       pos4 = pos4 - yeeLayout->getMinEzCoordFP ();
 
-      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0.5,0,0, ct1, ct2, ct3));
-      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0.5,0,0, ct1, ct2, ct3));
-      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0.5,0,0, ct1, ct2, ct3));
-      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0.5,0,0, ct1, ct2, ct3));
+      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0.5, 0, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0.5, 0, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0.5, 0, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0.5, 0, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
 
-      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0.5,0,0, ct1, ct2, ct3));
-      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0.5,0,0, ct1, ct2, ct3));
-      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0.5,0,0, ct1, ct2, ct3));
-      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0.5,0,0, ct1, ct2, ct3));
+      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0.5, 0, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0.5, 0, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0.5, 0, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0.5, 0, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
 
       FieldPointValue *valEy11 = curEy->getFieldPointValueOrNullByAbsolutePos (pos11);
       FieldPointValue *valEy12 = curEy->getFieldPointValueOrNullByAbsolutePos (pos12);
@@ -4904,8 +5139,16 @@ SchemeHelper::ntffL3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
   ct3 = leftNTFF.getType3 ();
 #endif
 
-  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, y0, leftNTFF.get3 () + 0.5, ct1, ct2, ct3);
-  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, y0, rightNTFF.get3 () - 0.5, ct1, ct2, ct3);
+  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, y0, leftNTFF.get3 () + 0.5
+#ifdef DEBUG_INFO
+                                 , ct1, ct2, ct3
+#endif
+                                 );
+  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, y0, rightNTFF.get3 () - 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
 
   FieldValue sum_teta (0.0, 0.0);
   FieldValue sum_phi (0.0, 0.0);
@@ -4914,10 +5157,26 @@ SchemeHelper::ntffL3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
   {
     for (FPValue coordZ = coordStart.get3 (); coordZ <= coordEnd.get3 (); ++coordZ)
     {
-      GridCoordinateFP3D pos1 (coordX - 0.5, y0, coordZ, ct1, ct2, ct3);
-      GridCoordinateFP3D pos2 (coordX + 0.5, y0, coordZ, ct1, ct2, ct3);
-      GridCoordinateFP3D pos3 (coordX, y0, coordZ - 0.5, ct1, ct2, ct3);
-      GridCoordinateFP3D pos4 (coordX, y0, coordZ + 0.5, ct1, ct2, ct3);
+      GridCoordinateFP3D pos1 (coordX - 0.5, y0, coordZ
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos2 (coordX + 0.5, y0, coordZ
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos3 (coordX, y0, coordZ - 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos4 (coordX, y0, coordZ + 0.5
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
 
       pos1 = pos1 - yeeLayout->getMinExCoordFP ();
       pos2 = pos2 - yeeLayout->getMinExCoordFP ();
@@ -4925,15 +5184,47 @@ SchemeHelper::ntffL3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
       pos3 = pos3 - yeeLayout->getMinEzCoordFP ();
       pos4 = pos4 - yeeLayout->getMinEzCoordFP ();
 
-      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0,0.5,0, ct1, ct2, ct3));
-      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0,0.5,0, ct1, ct2, ct3));
-      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0,0.5,0, ct1, ct2, ct3));
-      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0,0.5,0, ct1, ct2, ct3));
+      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0, 0.5, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0, 0.5, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0, 0.5, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0, 0.5, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
 
-      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0,0.5,0, ct1, ct2, ct3));
-      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0,0.5,0, ct1, ct2, ct3));
-      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0,0.5,0, ct1, ct2, ct3));
-      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0,0.5,0, ct1, ct2, ct3));
+      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0, 0.5, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0, 0.5, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0, 0.5, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
+      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0, 0.5, 0
+#ifdef DEBUG_INFO
+                                             , ct1, ct2, ct3
+#endif
+                                             ));
 
       FieldPointValue *valEx11 = curEx->getFieldPointValueOrNullByAbsolutePos (pos11);
       FieldPointValue *valEx12 = curEx->getFieldPointValueOrNullByAbsolutePos (pos12);
@@ -5019,8 +5310,16 @@ SchemeHelper::ntffL3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
   ct3 = leftNTFF.getType3 ();
 #endif
 
-  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, leftNTFF.get2 () + 0.5, z0, ct1, ct2, ct3);
-  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, rightNTFF.get2 () - 0.5, z0, ct1, ct2, ct3);
+  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, leftNTFF.get2 () + 0.5, z0
+#ifdef DEBUG_INFO
+                                 , ct1, ct2, ct3
+#endif
+                                 );
+  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, rightNTFF.get2 () - 0.5, z0
+#ifdef DEBUG_INFO
+                                 , ct1, ct2, ct3
+#endif
+                                 );
 
   FieldValue sum_teta (0.0, 0.0);
   FieldValue sum_phi (0.0, 0.0);
@@ -5029,10 +5328,26 @@ SchemeHelper::ntffL3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
   {
     for (FPValue coordY = coordStart.get2 (); coordY <= coordEnd.get2 (); ++coordY)
     {
-      GridCoordinateFP3D pos1 (coordX - 0.5, coordY, z0, ct1, ct2, ct3);
-      GridCoordinateFP3D pos2 (coordX + 0.5, coordY, z0, ct1, ct2, ct3);
-      GridCoordinateFP3D pos3 (coordX, coordY - 0.5, z0, ct1, ct2, ct3);
-      GridCoordinateFP3D pos4 (coordX, coordY + 0.5, z0, ct1, ct2, ct3);
+      GridCoordinateFP3D pos1 (coordX - 0.5, coordY, z0
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos2 (coordX + 0.5, coordY, z0
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos3 (coordX, coordY - 0.5, z0
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
+      GridCoordinateFP3D pos4 (coordX, coordY + 0.5, z0
+#ifdef DEBUG_INFO
+                               , ct1, ct2, ct3
+#endif
+                               );
 
       pos1 = pos1 - yeeLayout->getMinExCoordFP ();
       pos2 = pos2 - yeeLayout->getMinExCoordFP ();
@@ -5040,15 +5355,47 @@ SchemeHelper::ntffL3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
       pos3 = pos3 - yeeLayout->getMinEyCoordFP ();
       pos4 = pos4 - yeeLayout->getMinEyCoordFP ();
 
-      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0,0,0.5, ct1, ct2, ct3));
-      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0,0,0.5, ct1, ct2, ct3));
-      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0,0,0.5, ct1, ct2, ct3));
-      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0,0,0.5, ct1, ct2, ct3));
+      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0, 0, 0.5
+#ifdef DEBUG_INFO
+                                                                     , ct1, ct2, ct3
+#endif
+                                                                     ));
+      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0, 0, 0.5
+#ifdef DEBUG_INFO
+                                                                     , ct1, ct2, ct3
+#endif
+                                                                     ));
+      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0, 0, 0.5
+#ifdef DEBUG_INFO
+                                                                     , ct1, ct2, ct3
+#endif
+                                                                     ));
+      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0, 0, 0.5
+#ifdef DEBUG_INFO
+                                                                     , ct1, ct2, ct3
+#endif
+                                                                     ));
 
-      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0,0,0.5, ct1, ct2, ct3));
-      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0,0,0.5, ct1, ct2, ct3));
-      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0,0,0.5, ct1, ct2, ct3));
-      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0,0,0.5, ct1, ct2, ct3));
+      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0, 0, 0.5
+#ifdef DEBUG_INFO
+                                                                     , ct1, ct2, ct3
+#endif
+                                                                     ));
+      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0, 0, 0.5
+#ifdef DEBUG_INFO
+                                                                     , ct1, ct2, ct3
+#endif
+                                                                     ));
+      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0, 0, 0.5
+#ifdef DEBUG_INFO
+                                                                     , ct1, ct2, ct3
+#endif
+                                                                     ));
+      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0, 0, 0.5
+#ifdef DEBUG_INFO
+                                                                     , ct1, ct2, ct3
+#endif
+                                                                     ));
 
       FieldPointValue *valEx11 = curEx->getFieldPointValueOrNullByAbsolutePos (pos11);
       FieldPointValue *valEx12 = curEx->getFieldPointValueOrNullByAbsolutePos (pos12);
@@ -5649,23 +5996,71 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
   }
   else
   {
-    startEx = doNeedEx ? getStartCoord (GridType::EX, Ex->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    endEx = doNeedEx ? getEndCoord (GridType::EX, Ex->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    startEx = doNeedEx ? getStartCoord (GridType::EX, Ex->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                 , ct1, ct2, ct3
+#endif
+                                                                                 );
+    endEx = doNeedEx ? getEndCoord (GridType::EX, Ex->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                             , ct1, ct2, ct3
+#endif
+                                                                             );
 
-    startEy = doNeedEy ? getStartCoord (GridType::EY, Ey->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    endEy = doNeedEy ? getEndCoord (GridType::EY, Ey->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    startEy = doNeedEy ? getStartCoord (GridType::EY, Ey->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                 , ct1, ct2, ct3
+#endif
+                                                                                 );
+    endEy = doNeedEy ? getEndCoord (GridType::EY, Ey->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                             , ct1, ct2, ct3
+#endif
+                                                                             );
 
-    startEz = doNeedEz ? getStartCoord (GridType::EZ, Ez->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    endEz = doNeedEz ? getEndCoord (GridType::EZ, Ez->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    startEz = doNeedEz ? getStartCoord (GridType::EZ, Ez->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                 , ct1, ct2, ct3
+#endif
+                                                                                 );
+    endEz = doNeedEz ? getEndCoord (GridType::EZ, Ez->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                             , ct1, ct2, ct3
+#endif
+                                                                             );
 
-    startHx = doNeedHx ? getStartCoord (GridType::HX, Hx->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    endHx = doNeedHx ? getEndCoord (GridType::HX, Hx->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    startHx = doNeedHx ? getStartCoord (GridType::HX, Hx->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                 , ct1, ct2, ct3
+#endif
+                                                                                 );
+    endHx = doNeedHx ? getEndCoord (GridType::HX, Hx->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                             , ct1, ct2, ct3
+#endif
+                                                                             );
 
-    startHy = doNeedHy ? getStartCoord (GridType::HY, Hy->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    endHy = doNeedHy ? getEndCoord (GridType::HY, Hy->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    startHy = doNeedHy ? getStartCoord (GridType::HY, Hy->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                 , ct1, ct2, ct3
+#endif
+                                                                                 );
+    endHy = doNeedHy ? getEndCoord (GridType::HY, Hy->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                             , ct1, ct2, ct3
+#endif
+                                                                             );
 
-    startHz = doNeedHz ? getStartCoord (GridType::HZ, Hz->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
-    endHz = doNeedHz ? getEndCoord (GridType::HZ, Hz->getTotalSize ()) : TC (0, 0, 0, ct1, ct2, ct3);
+    startHz = doNeedHz ? getStartCoord (GridType::HZ, Hz->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                                 , ct1, ct2, ct3
+#endif
+                                                                                 );
+    endHz = doNeedHz ? getEndCoord (GridType::HZ, Hz->getTotalSize ()) : TC (0, 0, 0
+#ifdef DEBUG_INFO
+                                                                             , ct1, ct2, ct3
+#endif
+                                                                             );
   }
 
   for (int type = FILE_TYPE_BMP; type < FILE_TYPE_COUNT; ++type)
@@ -5719,7 +6114,12 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       }
 
       dumper1D[type]->init (t, CURRENT, processId, "EInc");
-      dumper1D[type]->dumpGrid (EInc, GridCoordinate1D (0, CoordinateType::X), EInc->getSize ());
+      dumper1D[type]->dumpGrid (EInc, GridCoordinate1D (0
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::X
+#endif
+                                                        ),
+                                EInc->getSize ());
     }
 
     if (solverSettings.getDoSaveTFSFHInc ())
@@ -5730,7 +6130,12 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       }
 
       dumper1D[type]->init (t, CURRENT, processId, "HInc");
-      dumper1D[type]->dumpGrid (HInc, GridCoordinate1D (0, CoordinateType::X), HInc->getSize ());
+      dumper1D[type]->dumpGrid (HInc, GridCoordinate1D (0
+#ifdef DEBUG_INFO
+                                                        , CoordinateType::X
+#endif
+                                                        ),
+                                HInc->getSize ());
     }
   }
 }
@@ -5996,7 +6401,12 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 typename Scheme<Type, TCoord, layout_type>::TC
 Scheme<Type, TCoord, layout_type>::getStartCoord (GridType gridType, TC size)
 {
-  TC start (0, 0, 0, ct1, ct2, ct3);
+  TC start (0, 0, 0
+#ifdef DEBUG_INFO
+            , ct1, ct2, ct3
+#endif
+            );
+
   if (solverSettings.getDoSaveWithoutPML ()
       && solverSettings.getDoUsePML ())
   {
@@ -6041,7 +6451,11 @@ Scheme<Type, TCoord, layout_type>::getStartCoord (GridType gridType, TC size)
       }
     }
 
-    start = convertCoord (expandTo3D (leftBorder - min, ct1, ct2, ct3)) + GridCoordinate3D (1, 1, 1, ct1, ct2, ct3);
+    start = convertCoord (expandTo3D (leftBorder - min, ct1, ct2, ct3)) + GridCoordinate3D (1, 1, 1
+#ifdef DEBUG_INFO
+                                                                                            , ct1, ct2, ct3
+#endif
+                                                                                            );
   }
 
   OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;

@@ -2,7 +2,13 @@
 
 This is test when exact solution should be obtained from numerical scheme.
 
-**In this test additional grids for incident wave are tested.**
+**In this test 3D mode is used and auxiliary grids for incident wave are tested.**
+
+# Equation
+
+```
+d^2 U(x,t) / dt^2 = с^2 * d^2 U(x,t) / dx^2
+```
 
 # Exact solution
 

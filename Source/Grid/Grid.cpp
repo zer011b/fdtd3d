@@ -13,7 +13,11 @@ Grid<GridCoordinate1D>::getComputationStart (GridCoordinate1D diffPosStart) cons
 #ifdef DEBUG_INFO
   ct1 = getSize ().getType1 ();
 #endif /* !DEBUG_INFO */
-  return GridCoordinate1D (0, ct1) + diffPosStart;
+  return GridCoordinate1D (0
+#ifdef DEBUG_INFO
+                           , ct1
+#endif /* DEBUG_INFO */
+                           ) + diffPosStart;
 } /* Grid<GridCoordinate1D>::getComputationStart */
 
 /**
@@ -31,7 +35,11 @@ Grid<GridCoordinate2D>::getComputationStart (GridCoordinate2D diffPosStart) cons
   ct1 = getSize ().getType1 ();
   ct2 = getSize ().getType2 ();
 #endif /* !DEBUG_INFO */
-  return GridCoordinate2D (0, 0, ct1, ct2) + diffPosStart;
+  return GridCoordinate2D (0, 0
+#ifdef DEBUG_INFO
+                           , ct1, ct2
+#endif /* DEBUG_INFO */
+                           ) + diffPosStart;
 } /* Grid<GridCoordinate2D>::getComputationStart */
 
 /**
@@ -51,7 +59,11 @@ Grid<GridCoordinate3D>::getComputationStart (GridCoordinate3D diffPosStart) cons
   ct2 = getSize ().getType2 ();
   ct3 = getSize ().getType3 ();
 #endif /* !DEBUG_INFO */
-  return GridCoordinate3D (0, 0, 0, ct1, ct2, ct3) + diffPosStart;
+  return GridCoordinate3D (0, 0, 0
+#ifdef DEBUG_INFO
+                           , ct1, ct2, ct3
+#endif /* DEBUG_INFO */
+                           ) + diffPosStart;
 } /* Grid<GridCoordinate3D>::getComputationStart */
 
 /**
@@ -203,7 +215,11 @@ Grid<GridCoordinate1D>::calculatePositionFromIndex (grid_coord index) const /**<
 #ifdef DEBUG_INFO
   ct1 = getSize ().getType1 ();
 #endif /* !DEBUG_INFO */
-  return GridCoordinate1D (index, ct1);
+  return GridCoordinate1D (index
+#ifdef DEBUG_INFO
+                           , ct1
+#endif /* DEBUG_INFO */
+                           );
 } /* Grid<GridCoordinate1D>::calculatePositionFromIndex */
 
 /**
@@ -227,7 +243,11 @@ Grid<GridCoordinate2D>::calculatePositionFromIndex (grid_coord index) const /**<
   ct2 = getSize ().getType2 ();
 #endif /* !DEBUG_INFO */
 
-  return GridCoordinate2D (x, y, ct1, ct2);
+  return GridCoordinate2D (x, y
+#ifdef DEBUG_INFO
+                           , ct1, ct2
+#endif /* DEBUG_INFO */
+                           );
 } /* Grid<GridCoordinate2D>::calculatePositionFromIndex */
 
 /**
@@ -256,5 +276,9 @@ Grid<GridCoordinate3D>::calculatePositionFromIndex (grid_coord index) const /**<
   ct3 = getSize ().getType3 ();
 #endif /* !DEBUG_INFO */
 
-  return GridCoordinate3D (x, y, z, ct1, ct2, ct3);
+  return GridCoordinate3D (x, y, z
+#ifdef DEBUG_INFO
+                           , ct1, ct2, ct3
+#endif /* DEBUG_INFO */
+                           );
 } /* Grid<GridCoordinate3D>::calculatePositionFromIndex */
