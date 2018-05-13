@@ -1,6 +1,6 @@
 # Description
 
-This is test with comparison of exact solution with numerical one.
+This is test with comparison of exact solution with numerical one for TEy mode.
 
 # Equations
 

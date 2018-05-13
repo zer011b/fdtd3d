@@ -3,7 +3,7 @@
 BASE_DIR=$1
 SOURCE_DIR=$2
 
-accuracy_percent="0.00001"
+accuracy_percent="0.0001"
 
 function launch ()
 {
@@ -15,7 +15,7 @@ function launch ()
 
   local ret=$((0))
 
-  ./fdtd3d --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
+  ./fdtd3d --time-steps $timesteps --sizex $size --same-size --2d-tmz --angle-phi 0 --dx $dx --wavelength $lambda \
     --log-level 0 --use-polinom3-border-condition --use-polinom3-start-values \
     --use-polinom3-right-side --calc-polinom3-diff-norm &> /tmp/$size.$dx.txt
 
