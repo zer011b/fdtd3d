@@ -4764,7 +4764,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
 
   else
   {
-    return;
+    return BUFFER_NONE;
   }
 #endif
 
