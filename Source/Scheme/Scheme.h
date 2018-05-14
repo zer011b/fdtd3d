@@ -756,7 +756,11 @@ public:
     FieldPointValue *val1 = FieldInc->getFieldPointValue (pos1);
     FieldPointValue *val2 = FieldInc->getFieldPointValue (pos2);
 
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     return proportionD1 * val1->getPrevValue () + proportionD2 * val2->getPrevValue ();
+#else
+    ALWAYS_ASSERT (0);
+#endif
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
