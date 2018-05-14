@@ -2055,12 +2055,16 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationPML (time_step t,
   FPValue Cb = ((2 * eps0 * k_mod1 + material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
   FPValue Cc = ((2 * eps0 * k_mod1 - material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
 
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
   FieldValue val = calcFieldFromDOrB (valField->getPrevValue (),
                                       valField1->getCurValue (),
                                       valField1->getPrevValue (),
                                       Ca,
                                       Cb,
                                       Cc);
+#else
+  ALWAYS_ASSERT (0);
+#endif
 
   valField->setCurValue (val);
 }
@@ -2105,6 +2109,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationPMLMetamaterials (
   FPValue a4 = (2*materialModifier*SQR(gridTimeStep*material1) - 8*materialModifier*material) / A;
   FPValue a5 = (4*materialModifier*material - 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1)) / A;
 
+#if defined (TWO_TIME_STEPS)
   FieldValue val = calcFieldDrude (valField->getCurValue (),
                                    valField->getPrevValue (),
                                    valField->getPrevPrevValue (),
@@ -2115,8 +2120,10 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationPMLMetamaterials (
                                    a3,
                                    a4,
                                    a5);
-
   valField1->setCurValue (val);
+#else
+  ALWAYS_ASSERT (0);
+#endif
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -2271,8 +2278,12 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
     FieldPointValue *val11 = oppositeGrid1->getFieldPointValue (pos11);
     FieldPointValue *val12 = oppositeGrid1->getFieldPointValue (pos12);
 
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     prev11 = val11->getPrevValue ();
     prev12 = val12->getPrevValue ();
+#else
+    ALWAYS_ASSERT (0);
+#endif
   }
 
   if (oppositeGrid2)
@@ -2280,8 +2291,12 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
     FieldPointValue *val21 = oppositeGrid2->getFieldPointValue (pos21);
     FieldPointValue *val22 = oppositeGrid2->getFieldPointValue (pos22);
 
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     prev21 = val21->getPrevValue ();
     prev22 = val22->getPrevValue ();
+#else
+    ALWAYS_ASSERT (0);
+#endif
   }
 
   if (solverSettings.getDoUseTFSF ())
@@ -2295,6 +2310,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
     prevRightSide = rightSideFunc (expandTo3D (coordFP * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
   }
 
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
   // TODO: precalculate Ca,Cb
   FieldValue val = calcField (valField->getPrevValue (),
                               prev12,
@@ -2305,6 +2321,9 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
                               Ca,
                               Cb,
                               gridStep);
+#else
+  ALWAYS_ASSERT (0);
+#endif
 
   valField->setCurValue (val);
 }
@@ -2852,7 +2871,11 @@ Scheme<Type, TCoord, layout_type>::performPlaneWaveESteps (time_step t)
     FieldPointValue *valH1 = HInc->getFieldPointValue (posLeft);
     FieldPointValue *valH2 = HInc->getFieldPointValue (posRight);
 
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     FieldValue val = valE->getPrevValue () + modifier * (valH1->getPrevValue () - valH2->getPrevValue ());
+#else
+    ALWAYS_ASSERT (0);
+#endif
 
     valE->setCurValue (val);
   }
@@ -2914,7 +2937,11 @@ Scheme<Type, TCoord, layout_type>::performPlaneWaveHSteps (time_step t)
     FieldPointValue *valE1 = EInc->getFieldPointValue (posLeft);
     FieldPointValue *valE2 = EInc->getFieldPointValue (posRight);
 
+#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     FieldValue val = valH->getPrevValue () + modifier * (valE1->getPrevValue () - valE2->getPrevValue ());
+#else
+    ALWAYS_ASSERT (0);
+#endif
 
     valH->setCurValue (val);
   }
