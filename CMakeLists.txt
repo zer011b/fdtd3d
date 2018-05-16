@@ -11,6 +11,7 @@ option(COMPLEX_FIELD_VALUES "Complex field values" OFF)
 option(LARGE_COORDINATES "Use int64 for grid coordinates" OFF)
 option(COMBINED_SENDRECV "Use combined sendrecv" ON)
 option(MPI_CLOCK "Use mpi clock (MPI_Wtime) for clocks" OFF)
+option(LINK_NUMA "Link with NUMA library" OFF)
 
 set(VALUE_TYPE "d" CACHE STRING "Defines type of values")
 set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
@@ -236,6 +237,10 @@ set (BUILD_FLAGS "")
 if ("${CXX11_ENABLED}")
   add_definitions (-DCXX11_ENABLED)
   set (BUILD_FLAGS "${BUILD_FLAGS} -std=c++11")
+endif ()
+
+if ("${LINK_NUMA}")
+  set (BUILD_FLAGS "${BUILD_FLAGS} -lnuma")
 endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
