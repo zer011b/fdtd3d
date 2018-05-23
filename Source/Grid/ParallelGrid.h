@@ -213,6 +213,19 @@ private:
 
 private:
 
+#ifdef DEBUG_INFO
+  /**
+   * Coordinate types for ParallelGridCoordinate, corresponding to this ParallelGrid.
+   *
+   * Note: This couldn't be placed in ParallelGridCore, as same ParallelGridCore could be used for different virtual
+   *       topologies of same dimension, for example, for 2D-XY and for 2D-XZ, however, coordinate type must be
+   *       different for them.
+   */
+  CoordinateType ct1;
+  CoordinateType ct2;
+  CoordinateType ct3;
+#endif /* DEBUG_INFO */
+
   /**
    * =======================================
    * Parameters corresponding to parallelism
