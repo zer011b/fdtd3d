@@ -42,7 +42,11 @@ void initParallel (ParallelYeeGridLayout<Type, layout_type> **yeeLayout,
 {
   ParallelGridCoordinate topology (solverSettings.getTopologySizeX (),
                                    solverSettings.getTopologySizeY (),
-                                   solverSettings.getTopologySizeZ ());
+                                   solverSettings.getTopologySizeZ ()
+#ifdef DEBUG_INFO
+                                   , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif /* DEBUG_INFO */
+                                   );
 
   MPI_Init(&argc, &argv);
 
