@@ -2827,11 +2827,11 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
     normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
     normIm = sqrt (normIm / grid->getSize ().calculateTotalCoord ());
     normMod = sqrt (normMod / grid->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM %s. Timestep %u. Value = ( %.20f , %.20f ) = ( %.20f %% , %.20f %% ), module = %.20f = ( %.20f %% )\n",
+    printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
       grid->getName ().c_str (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
 #else
     normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
-    printf ("-> DIFF NORM %s. Timestep %u. Value = ( %.20f ) = ( %.20f %% )\n",
+    printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
       grid->getName ().c_str (), t, normRe, normRe * 100.0 / maxRe);
 #endif
   }

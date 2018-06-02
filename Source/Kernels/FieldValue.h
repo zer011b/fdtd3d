@@ -8,18 +8,21 @@
 typedef float FPValue;
 #define MPI_FPVALUE MPI_FLOAT
 #define FP_MOD "%f"
+#define FP_MOD_ACC "%.20f"
 #endif /* FLOAT_VALUES */
 
 #ifdef DOUBLE_VALUES
 typedef double FPValue;
 #define MPI_FPVALUE MPI_DOUBLE
 #define FP_MOD "%f"
+#define FP_MOD_ACC "%.20f"
 #endif /* DOUBLE_VALUES */
 
 #ifdef LONG_DOUBLE_VALUES
 typedef long double FPValue;
 #define MPI_FPVALUE MPI_LONG_DOUBLE
 #define FP_MOD "%Lf"
+#define FP_MOD_ACC "%.20Lf"
 #endif /* LONG_DOUBLE_VALUES */
 
 /**

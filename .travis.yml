@@ -358,7 +358,6 @@ jobs:
       - . Tools/travis-helper.sh
       - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
 
-#======
 # ---- Debug, Cxx11, no message print build ----
     - stage: build
       env:
