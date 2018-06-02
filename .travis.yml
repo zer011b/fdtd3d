@@ -13,360 +13,533 @@ git:
   depth: 3
 jobs:
   include:
+# ==== Build stage ====
+# ---- Release, Cxx11, no message print build ----
     - stage: build
       env:
         - BUILD_MODE=Release
         - CXX11=ON
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
     - stage: build
       env:
         - BUILD_MODE=Release
         - CXX11=ON
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=OFF
-      script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
-    - stage: build
-      env:
-        - BUILD_MODE=Release
-        - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
-    - stage: build
-      env:
-        - BUILD_MODE=Release
-        - CXX11=OFF
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=OFF
-      script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
 
     - stage: build
       env:
         - BUILD_MODE=Release
         - CXX11=ON
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Release
+        - CXX11=ON
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+# ---- Release, non-Cxx11, no message print build ----
+    - stage: build
+      env:
+        - BUILD_MODE=Release
+        - CXX11=OFF
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Release
+        - CXX11=OFF
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+    - stage: build
+      env:
+        - BUILD_MODE=Release
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Release
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+# ---- Release, Cxx11, message print build ----
+    - stage: build
+      env:
+        - BUILD_MODE=Release
+        - CXX11=ON
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Release
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
     - stage: build
       env:
         - BUILD_MODE=Release
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Release
+        - CXX11=ON
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+# ---- Release, non-Cxx11, message print build ----
     - stage: build
       env:
         - BUILD_MODE=Release
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Release
+        - CXX11=OFF
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
     - stage: build
       env:
         - BUILD_MODE=Release
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Release
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+# ---- ReleaseWithAsserts, Cxx11, no message print build ----
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
 
     - stage: build
       env:
         - BUILD_MODE=ReleaseWithAsserts
         - CXX11=ON
-        - COMPLEX_VALUES=ON
+        - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
     - stage: build
       env:
         - BUILD_MODE=ReleaseWithAsserts
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+# ---- ReleaseWithAsserts, non-Cxx11, no message print build ----
     - stage: build
       env:
         - BUILD_MODE=ReleaseWithAsserts
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=OFF
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
     - stage: build
       env:
         - BUILD_MODE=ReleaseWithAsserts
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+# ---- ReleaseWithAsserts, Cxx11, message print build ----
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
 
     - stage: build
       env:
         - BUILD_MODE=ReleaseWithAsserts
         - CXX11=ON
-        - COMPLEX_VALUES=ON
+        - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
     - stage: build
       env:
         - BUILD_MODE=ReleaseWithAsserts
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+# ---- ReleaseWithAsserts, non-Cxx11, message print build ----
     - stage: build
       env:
         - BUILD_MODE=ReleaseWithAsserts
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=OFF
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
     - stage: build
       env:
         - BUILD_MODE=ReleaseWithAsserts
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=ReleaseWithAsserts
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+#======
+# ---- Debug, Cxx11, no message print build ----
+    - stage: build
+      env:
+        - BUILD_MODE=Debug
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Debug
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
 
     - stage: build
       env:
         - BUILD_MODE=Debug
         - CXX11=ON
-        - COMPLEX_VALUES=ON
+        - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
     - stage: build
       env:
         - BUILD_MODE=Debug
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+# ---- Debug, non-Cxx11, no message print build ----
     - stage: build
       env:
         - BUILD_MODE=Debug
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Debug
+        - CXX11=OFF
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
     - stage: build
       env:
         - BUILD_MODE=Debug
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Debug
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+# ---- Debug, Cxx11, message print build ----
+    - stage: build
+      env:
+        - BUILD_MODE=Debug
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Debug
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
 
     - stage: build
       env:
         - BUILD_MODE=Debug
         - CXX11=ON
-        - COMPLEX_VALUES=ON
+        - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
     - stage: build
       env:
         - BUILD_MODE=Debug
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
+# ---- Debug, non-Cxx11, message print build ----
     - stage: build
       env:
         - BUILD_MODE=Debug
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Debug
+        - CXX11=OFF
+        - COMPLEX_VALUES=ON
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+
     - stage: build
       env:
         - BUILD_MODE=Debug
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
+        - TIME_STEPS=1
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+    - stage: build
+      env:
+        - BUILD_MODE=Debug
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=ON
+        - TIME_STEPS=2
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
 
+# ==== Unit tests stage ====
+# ---- Unit test for ParallelGrid ----
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
         - CXX11=ON
         - COMPLEX_VALUES=ON
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES}
     - stage: unit-tests
       env:
@@ -374,12 +547,7 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=OFF
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES}
     - stage: unit-tests
       env:
@@ -387,12 +555,7 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=ON
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES}
     - stage: unit-tests
       env:
@@ -400,114 +563,74 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES}
 
+# ---- Unit test for Grid ----
     - stage: unit-tests
       env:
         - UNIT_TEST_GRID=""
         - CXX11=ON
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
     - stage: unit-tests
       env:
         - UNIT_TEST_GRID=""
         - CXX11=OFF
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
 
+# ---- Unit test for Dumpers/Loaders ----
     - stage: unit-tests
       env:
         - UNIT_TEST_DUMPERS_LOADERS=""
         - CXX11=ON
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
     - stage: unit-tests
       env:
         - UNIT_TEST_DUMPERS_LOADERS=""
         - CXX11=OFF
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
 
+# ---- Unit test for GridCoordinate ----
     - stage: unit-tests
       env:
         - UNIT_TEST_COORDINATE=""
         - CXX11=ON
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
     - stage: unit-tests
       env:
         - UNIT_TEST_COORDINATE=""
         - CXX11=OFF
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
 
+# ---- Unit test for YeeGridLayout ----
     - stage: unit-tests
       env:
         - UNIT_TEST_LAYOUT=""
         - CXX11=ON
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-layout.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
     - stage: unit-tests
       env:
         - UNIT_TEST_LAYOUT=""
         - CXX11=OFF
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
-      - HOME_DIR=`pwd`
-      - BUILD_DIR="${HOME_DIR}/Build"
-      - mkdir ${BUILD_DIR}
+      - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-layout.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
 
+# ==== Test suite stage ====
     - stage: test-suite
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
