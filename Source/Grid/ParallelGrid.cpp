@@ -347,14 +347,14 @@ void ParallelGrid::gatherStartPosition ()
         && state)
     {
 #ifdef GRID_1D
-      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (%u) for grid '%s' for proc %d (of %d)\n",
+      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (" COORD_MOD ") for grid '%s' for proc %d (of %d)\n",
                startx,
                gridName.data (),
                parallelGridCore->getProcessId (),
                parallelGridCore->getTotalProcCount ());
 #endif /* GRID_1D */
 #ifdef GRID_2D
-      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (%u,%u) for grid '%s' for proc %d (of %d)\n",
+      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (" COORD_MOD ", " COORD_MOD ") for grid '%s' for proc %d (of %d)\n",
                startx,
                starty,
                gridName.data (),
@@ -362,7 +362,7 @@ void ParallelGrid::gatherStartPosition ()
                parallelGridCore->getTotalProcCount ());
 #endif /* GRID_2D */
 #ifdef GRID_3D
-      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (%u,%u,%u) for grid '%s' for proc %d (of %d)\n",
+      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (" COORD_MOD ", " COORD_MOD ", " COORD_MOD ") for grid '%s' for proc %d (of %d)\n",
                startx,
                starty,
                startz,
