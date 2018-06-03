@@ -63,8 +63,12 @@ public:
 #endif /* DEBUG_INFO */
   {
 #ifdef DEBUG_INFO
-    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()));
-    ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 () < getType3 ()));
+    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ())
+            || (GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () == GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
+                && GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 () == CoordinateType::NONE));
+    ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 () < getType3 ())
+            || (GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 () == getType3 ()
+                && getType3 () == CoordinateType::NONE));
 #endif /* DEBUG_INFO */
 
     if (doSignChecks)
@@ -87,6 +91,21 @@ public:
     , type3 (pos.getType3 ())
 #endif /* DEBUG_INFO */
   {
+#ifdef DEBUG_INFO
+    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ())
+            || (GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () == GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
+                && GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 () == CoordinateType::NONE));
+    ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 () < getType3 ())
+            || (GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 () == getType3 ()
+                && getType3 () == CoordinateType::NONE));
+#endif /* DEBUG_INFO */
+
+    if (doSignChecks)
+    {
+      TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+      TcoordType coord2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+      ASSERT (coord1 >= 0 && coord2 >= 0 && coord3 >= 0);
+    }
   }
 
   CUDA_DEVICE CUDA_HOST ~GridCoordinate3DTemplate<TcoordType, doSignChecks> () {}

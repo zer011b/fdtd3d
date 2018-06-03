@@ -63,7 +63,9 @@ public:
 #endif /* DEBUG_INFO */
   {
 #ifdef DEBUG_INFO
-    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < getType2 ()));
+    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < getType2 ())
+            || (GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () == getType2 ()
+                && getType2 () == CoordinateType::NONE));
 #endif /* DEBUG_INFO */
 
     if (doSignChecks)
@@ -93,7 +95,9 @@ public:
 #endif /* DEBUG_INFO */
   {
 #ifdef DEBUG_INFO
-    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < getType2 ()));
+    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < getType2 ())
+            || (GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () == getType2 ()
+                && getType2 () == CoordinateType::NONE));
 #endif /* DEBUG_INFO */
 
     if (doSignChecks)
@@ -115,7 +119,9 @@ public:
 #endif /* DEBUG_INFO */
   {
 #ifdef DEBUG_INFO
-    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < getType2 ()));
+    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < getType2 ())
+            || (GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () == getType2 ()
+                && getType2 () == CoordinateType::NONE));
 #endif /* DEBUG_INFO */
 
     if (doSignChecks)
