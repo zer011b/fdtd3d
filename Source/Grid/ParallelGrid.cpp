@@ -3594,7 +3594,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasD ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return DOWN;
   }
@@ -3608,20 +3608,20 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return DOWN;
   }
 
   else if (ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
-           && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return UP_BACK;
   }
   else if (ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return UP_FRONT;
   }
@@ -3629,7 +3629,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasU ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return UP;
   }
@@ -3643,7 +3643,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return UP;
   }
@@ -3651,7 +3651,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return BACK;
   }
@@ -3665,7 +3665,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return BACK;
   }
@@ -3673,21 +3673,21 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasF ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
   else if (ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && !ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
   else if (ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
@@ -3707,7 +3707,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   }
   else if (ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT_FRONT;
   }
@@ -3715,7 +3715,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasL ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT;
   }
@@ -3729,7 +3729,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT;
   }
@@ -3742,7 +3742,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   }
   else if (ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT_FRONT;
   }
@@ -3750,7 +3750,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT;
   }
@@ -3764,7 +3764,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT;
   }
@@ -3794,21 +3794,21 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasF ()
            && !ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
   else if (ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasL ()
            && !ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
   else if (ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
@@ -3830,7 +3830,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT_DOWN_FRONT;
   }
@@ -3838,14 +3838,14 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return LEFT_UP_BACK;
   }
   else if (ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT_UP_FRONT;
   }
@@ -3860,7 +3860,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT_DOWN_FRONT;
   }
@@ -3868,14 +3868,14 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
   else if (ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return RIGHT_UP_BACK;
   }
   else if (ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT_UP_FRONT;
   }
@@ -3884,7 +3884,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasD ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT_DOWN;
   }
@@ -3900,7 +3900,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT_DOWN;
   }
@@ -3909,7 +3909,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasD ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT_DOWN;
   }
@@ -3925,7 +3925,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT_DOWN;
   }
@@ -3934,7 +3934,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT_UP;
   }
@@ -3942,7 +3942,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
   {
     return LEFT_UP;
   }
@@ -3950,7 +3950,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT_UP;
   }
@@ -3959,7 +3959,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT_UP;
   }
@@ -3967,7 +3967,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
   {
     return RIGHT_UP;
   }
@@ -3975,7 +3975,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT_UP;
   }
@@ -4009,7 +4009,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && !ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return DOWN_FRONT;
   }
@@ -4017,7 +4017,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasL ()
            && !ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return DOWN_FRONT;
   }
@@ -4025,7 +4025,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return DOWN_FRONT;
   }
@@ -4034,7 +4034,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return UP_BACK;
   }
@@ -4042,7 +4042,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasL ()
            && !ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return UP_BACK;
   }
@@ -4050,7 +4050,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return UP_BACK;
   }
@@ -4059,7 +4059,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && !ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return UP_FRONT;
   }
@@ -4067,7 +4067,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasL ()
            && !ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return UP_FRONT;
   }
@@ -4075,7 +4075,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasL ()
            && ParallelGrid::getParallelCore ()->getHasR ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return UP_FRONT;
   }
@@ -4084,7 +4084,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return LEFT_BACK;
   }
@@ -4100,7 +4100,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return LEFT_BACK;
   }
@@ -4109,7 +4109,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT_FRONT;
   }
@@ -4117,7 +4117,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && !ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT_FRONT;
   }
@@ -4125,7 +4125,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT_FRONT;
   }
@@ -4134,7 +4134,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return RIGHT_BACK;
   }
@@ -4150,7 +4150,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return RIGHT_BACK;
   }
@@ -4159,7 +4159,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT_FRONT;
   }
@@ -4167,7 +4167,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && !ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT_FRONT;
   }
@@ -4175,7 +4175,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasF ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT_FRONT;
   }
@@ -4185,7 +4185,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT;
   }
@@ -4194,7 +4194,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
   {
     return LEFT;
   }
@@ -4203,7 +4203,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT;
   }
@@ -4213,7 +4213,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasU ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT;
   }
@@ -4231,7 +4231,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT;
   }
@@ -4241,7 +4241,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT;
   }
@@ -4250,7 +4250,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
   {
     return LEFT;
   }
@@ -4259,7 +4259,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return LEFT;
   }
@@ -4269,7 +4269,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT;
   }
@@ -4278,7 +4278,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
   {
     return RIGHT;
   }
@@ -4287,7 +4287,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT;
   }
@@ -4297,7 +4297,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasU ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT;
   }
@@ -4315,7 +4315,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT;
   }
@@ -4325,7 +4325,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT;
   }
@@ -4334,7 +4334,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
   {
     return RIGHT;
   }
@@ -4343,7 +4343,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasU ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return RIGHT;
   }
@@ -4353,7 +4353,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return DOWN;
   }
@@ -4371,7 +4371,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return DOWN;
   }
@@ -4381,7 +4381,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return DOWN;
   }
@@ -4399,7 +4399,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return DOWN;
   }
@@ -4409,7 +4409,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return DOWN;
   }
@@ -4427,7 +4427,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return DOWN;
   }
@@ -4437,7 +4437,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return UP;
   }
@@ -4446,7 +4446,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
   {
     return UP;
   }
@@ -4455,7 +4455,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return UP;
   }
@@ -4465,7 +4465,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return UP;
   }
@@ -4474,7 +4474,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
   {
     return UP;
   }
@@ -4483,7 +4483,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return UP;
   }
@@ -4493,7 +4493,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return UP;
   }
@@ -4502,7 +4502,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && !ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 ())
   {
     return UP;
   }
@@ -4511,7 +4511,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasB ()
            && ParallelGrid::getParallelCore ()->getHasF ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= bufferSize.get3 () && pos.get3 () < getSize ().get3 () - bufferSize.get3 ())
   {
     return UP;
   }
@@ -4521,7 +4521,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return BACK;
   }
@@ -4539,7 +4539,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return BACK;
   }
@@ -4549,7 +4549,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return BACK;
   }
@@ -4567,7 +4567,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return BACK;
   }
@@ -4577,7 +4577,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return BACK;
   }
@@ -4595,7 +4595,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () < bufferSize.get3 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () < bufferSize.get3 ())
   {
     return BACK;
   }
@@ -4605,7 +4605,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
@@ -4614,7 +4614,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && !ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
@@ -4623,7 +4623,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
@@ -4633,7 +4633,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
@@ -4642,7 +4642,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && !ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
@@ -4651,7 +4651,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && !ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
@@ -4661,7 +4661,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && !ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
@@ -4670,7 +4670,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && !ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
@@ -4679,7 +4679,7 @@ ParallelGrid::getBufferForPosition (ParallelGridCoordinate pos) const
            && ParallelGrid::getParallelCore ()->getHasR ()
            && ParallelGrid::getParallelCore ()->getHasD ()
            && ParallelGrid::getParallelCore ()->getHasU ()
-           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get1 () && pos.get3 () >= getSize ().get3 () - bufferSize.get1 ())
+           && pos.get1 () >= bufferSize.get1 () && pos.get1 () < getSize ().get1 () - bufferSize.get1 () && pos.get2 () >= bufferSize.get2 () && pos.get2 () < getSize ().get2 () - bufferSize.get2 () && pos.get3 () >= getSize ().get3 () - bufferSize.get3 ())
   {
     return FRONT;
   }
