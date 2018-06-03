@@ -13,10 +13,11 @@ function launch ()
 
   local lambda="0.02"
 
-  local ret=$((0))
-
   ./fdtd3d --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
-    --log-level 0 --use-sin1-border-condition --use-sin1-start-values --calc-sin1-diff-norm &> /tmp/$size.$dx.txt
+    --log-level 0 --use-sin1-border-condition --use-sin1-start-values --calc-sin1-diff-norm \
+    --eps-normed --mu-normed --courant-factor 149896229 &> /tmp/$size.$dx.txt
+
+  local ret=$?
 
   max_diff=$(cat /tmp/$size.$dx.txt | grep "DIFF NORM Ez" | awk '{if ($10>max){max=$10}}END{print max}')
 
@@ -29,13 +30,13 @@ cd $TEST_DIR
 
 retval=$((0))
 
-size1="20"
+size1="10"
 dx1="0.001"
 
-size2="40"
+size2="20"
 dx2="0.0005"
 
-size3="80"
+size3="40"
 dx3="0.00025"
 
 function test ()
@@ -45,30 +46,30 @@ function test ()
 
   timesteps1=$(echo $timesteps | awk '{print $1 + 1}')
   launch $size1 $timesteps1 $dx1
-  diff1=$(echo $max_diff)
   if [ $? -ne 0 ]; then
     ret=$((1))
   fi
+  diff1=$(echo $max_diff)
 
   timesteps2=$(echo $timesteps | awk '{print $1 * 2 + 1}')
   launch $size2 $timesteps2 $dx2
-  diff2=$(echo $max_diff)
   if [ $? -ne 0 ]; then
     ret=$((1))
   fi
+  diff2=$(echo $max_diff)
 
   timesteps3=$(echo $timesteps | awk '{print $1 * 4 + 1}')
   launch $size3 $timesteps3 $dx3
-  diff3=$(echo $max_diff)
   if [ $? -ne 0 ]; then
     ret=$((1))
   fi
+  diff3=$(echo $max_diff)
 
   is_ok=$(echo $diff1 $diff2 $diff3 | awk '
             {
               d1 = $1 / $2;
               d2 = $2 / $3;
-              if (4.0 < d1 && 4.0 < d2)
+              if (3.5 < d1 && 3.5 < d2)
               {
                 print 1;
               }
@@ -85,12 +86,12 @@ function test ()
   return $ret
 }
 
-test 100
+test 40
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-test 200
+test 80
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi

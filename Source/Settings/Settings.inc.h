@@ -51,25 +51,25 @@ SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size", "Use size of calculation area by x
 /*
  * Size of PML area
  */
-SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeX, getPMLSizeX, grid_coord, 10, "--pml-sizex", "Size of PML area by x coordinate. PML of this size will be applied to both left and right borders of area by x coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeY, getPMLSizeY, grid_coord, 10, "--pml-sizey", "Size of PML area by y coordinate. PML of this size will be applied to both left and right borders of area by y coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeZ, getPMLSizeZ, grid_coord, 10, "--pml-sizez", "Size of PML area by z coordinate. PML of this size will be applied to both left and right borders of area by z coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeX, getPMLSizeX, grid_coord, 2, "--pml-sizex", "Size of PML area by x coordinate. PML of this size will be applied to both left and right borders of area by x coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeY, getPMLSizeY, grid_coord, 2, "--pml-sizey", "Size of PML area by y coordinate. PML of this size will be applied to both left and right borders of area by y coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeZ, getPMLSizeZ, grid_coord, 2, "--pml-sizez", "Size of PML area by z coordinate. PML of this size will be applied to both left and right borders of area by z coordinate")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-pml", "Use size of PML area by x coordinate for y and z coordinates too")
 
 /*
  * Size of tfsf area
  */
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeX, getTFSFSizeX, grid_coord, 20, "--tfsf-sizex", "Size of TF/SF scattered area by x coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by x coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeY, getTFSFSizeY, grid_coord, 20, "--tfsf-sizey", "Size of TF/SF scattered area by y coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by y coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeZ, getTFSFSizeZ, grid_coord, 20, "--tfsf-sizez", "Size of TF/SF scattered area by z coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by z coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeX, getTFSFSizeX, grid_coord, 4, "--tfsf-sizex", "Size of TF/SF scattered area by x coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by x coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeY, getTFSFSizeY, grid_coord, 4, "--tfsf-sizey", "Size of TF/SF scattered area by y coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by y coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeZ, getTFSFSizeZ, grid_coord, 4, "--tfsf-sizez", "Size of TF/SF scattered area by z coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by z coordinate")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-tfsf", "Use size of TF/SF scattered area by x coordinate for y and z coordinates too")
 
 /*
  * Size of ntff area
  */
-SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeX, getNTFFSizeX, grid_coord, 15, "--ntff-sizex", "Size of NTFF area by x coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by x coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeY, getNTFFSizeY, grid_coord, 15, "--ntff-sizey", "Size of NTFF area by y coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by y coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeZ, getNTFFSizeZ, grid_coord, 15, "--ntff-sizez", "Size of NTFF area by z coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by z coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeX, getNTFFSizeX, grid_coord, 3, "--ntff-sizex", "Size of NTFF area by x coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by x coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeY, getNTFFSizeY, grid_coord, 3, "--ntff-sizey", "Size of NTFF area by y coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by y coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeZ, getNTFFSizeZ, grid_coord, 3, "--ntff-sizez", "Size of NTFF area by z coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by z coordinate")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-ntff", "Use size of NTFF area by x coordinate for y and z coordinates too")
 
 /*
@@ -188,6 +188,9 @@ SETTINGS_ELEM_FIELD_TYPE_STRING(omegaPEFileName, getOmegaPEFileName, std::string
 SETTINGS_ELEM_FIELD_TYPE_STRING(omegaPMFileName, getOmegaPMFileName, std::string, "", "--load-omegapm-from-file", "File name to load OmegaPM from")
 SETTINGS_ELEM_FIELD_TYPE_STRING(gammaEFileName, getGammaEFileName, std::string, "", "--load-gammae-from-file", "File name to load GammaE from")
 SETTINGS_ELEM_FIELD_TYPE_STRING(gammaMFileName, getGammaMFileName, std::string, "", "--load-gammam-from-file", "File name to load GammaM from")
+
+SETTINGS_ELEM_FIELD_TYPE_NONE(useEpsAllNorm, getUseEpsAllNorm, bool, false, "--eps-normed", "Permittivity of Eps material set to 1/eps0")
+SETTINGS_ELEM_FIELD_TYPE_NONE(useMuAllNorm, getUseMuAllNorm, bool, false, "--mu-normed", "Permittivity of Mu material set to 1/mu0")
 
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphere, getEpsSphere, int, 1, "--eps-sphere", "Permittivity of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterX, getEpsSphereCenterX, int, 0, "--eps-sphere-center-x", "Center position by x coordinate of Eps material sphere")

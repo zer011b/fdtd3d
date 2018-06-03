@@ -4321,9 +4321,26 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                                   epsVal));
     }
   }
+  if (solverSettings.getUseEpsAllNorm ())
+  {
+    for (grid_coord i = 0; i < Eps->getSize ().calculateTotalCoord (); ++i)
+    {
+      FieldPointValue *val = Eps->getFieldPointValue (i);
+      val->setCurValue (getFieldValueRealOnly (FPValue(1.0) / PhysicsConst::Eps0));
+    }
+  }
 
   Mu->initialize (getFieldValueRealOnly (1.0));
   initMaterialFromFile (GridType::MU, Mu, totalMu);
+
+  if (solverSettings.getUseMuAllNorm ())
+  {
+    for (grid_coord i = 0; i < Mu->getSize ().calculateTotalCoord (); ++i)
+    {
+      FieldPointValue *val = Mu->getFieldPointValue (i);
+      val->setCurValue (getFieldValueRealOnly (FPValue(1.0) / PhysicsConst::Mu0));
+    }
+  }
 
   if (solverSettings.getDoUseMetamaterials ())
   {
