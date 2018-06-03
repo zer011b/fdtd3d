@@ -19,7 +19,7 @@ function launch ()
     --log-level 0 --use-polinom1-border-condition --use-polinom1-start-values \
     --use-polinom1-right-side --calc-polinom1-diff-norm &> /tmp/$size.$dx.txt
 
-  local max_diff=$(cat /tmp/$size.$dx.txt | grep "DIFF NORM" | awk '{if (max < $14) {max = $14}} END{printf "%.20f", max}')
+  local max_diff=$(cat /tmp/$size.$dx.txt | grep "DIFF NORM Ez" | awk '{if (max < $14) {max = $14}} END{printf "%.20f", max}')
   local is_ok=$(echo $max_diff $accuracy_percent | awk '{if ($1 > $2) {print 0} else {print 1}}')
   if [ "$is_ok" != "1" ]; then
     echo $max_diff
