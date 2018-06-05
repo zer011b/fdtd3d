@@ -300,8 +300,8 @@ int main (int argc, char** argv)
       grid_coord coordEnd[2];
       coordStart[0] = sendStart.get1 ();
       coordStart[1] = sendStart.get2 ();
-      coordEnd[0] = sendStart.get1 ();
-      coordEnd[1] = sendStart.get2 ();
+      coordEnd[0] = sendEnd.get1 ();
+      coordEnd[1] = sendEnd.get2 ();
       int size = 2;
 #endif
 #ifdef GRID_3D
@@ -310,6 +310,9 @@ int main (int argc, char** argv)
       coordStart[0] = sendStart.get1 ();
       coordStart[1] = sendStart.get2 ();
       coordStart[2] = sendStart.get3 ();
+      coordEnd[0] = sendEnd.get1 ();
+      coordEnd[1] = sendEnd.get2 ();
+      coordEnd[2] = sendEnd.get3 ();
       int size = 3;
 #endif
       MPI_Send (coordStart, size, MPI_COORD, processTo, rank, ParallelGrid::getParallelCore ()->getCommunicator ());
@@ -333,8 +336,8 @@ int main (int argc, char** argv)
       grid_coord coordEnd[2];
       coordStart[0] = sendStart.get1 ();
       coordStart[1] = sendStart.get2 ();
-      coordEnd[0] = sendStart.get1 ();
-      coordEnd[1] = sendStart.get2 ();
+      coordEnd[0] = sendEnd.get1 ();
+      coordEnd[1] = sendEnd.get2 ();
       int size = 2;
 #endif
 #ifdef GRID_3D
@@ -343,6 +346,9 @@ int main (int argc, char** argv)
       coordStart[0] = sendStart.get1 ();
       coordStart[1] = sendStart.get2 ();
       coordStart[2] = sendStart.get3 ();
+      coordEnd[0] = sendEnd.get1 ();
+      coordEnd[1] = sendEnd.get2 ();
+      coordEnd[2] = sendEnd.get3 ();
       int size = 3;
 #endif
 
