@@ -56,6 +56,11 @@ function build
         -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
         -DCMAKE_C_COMPILER=${C_COMPILER}
 
+      # TODO: add next flags to testing:
+      # -DDYNAMIC_GRID=
+      # -DCOMBINED_SENDRECV
+      # -DMPI_DYNAMIC_CLOCK
+
       res=$(echo $?)
 
       if [[ res -ne 0 ]]; then
