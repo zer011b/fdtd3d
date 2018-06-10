@@ -1,6 +1,6 @@
 # Description
 
-This is test with comparison of exact solution with numerical one (second order of accuracy).
+This is test with comparison of exact solution with numerical one (second order of accuracy) for 3D mode.
 Normed mode of Eps, Mu and C is tested.
 
 # Equations
