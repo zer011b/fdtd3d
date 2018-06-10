@@ -7,7 +7,7 @@
  */
 template <>
 GridCoordinate1D
-Grid<GridCoordinate1D>::getComputationStart (GridCoordinate1D diffPosStart) const
+Grid<GridCoordinate1D>::getComputationStart (GridCoordinate1D diffPosStart) const /**< offset from the left border */
 {
   CoordinateType ct1 = CoordinateType::NONE;
 #ifdef DEBUG_INFO
@@ -27,7 +27,7 @@ Grid<GridCoordinate1D>::getComputationStart (GridCoordinate1D diffPosStart) cons
  */
 template <>
 GridCoordinate2D
-Grid<GridCoordinate2D>::getComputationStart (GridCoordinate2D diffPosStart) const
+Grid<GridCoordinate2D>::getComputationStart (GridCoordinate2D diffPosStart) const /**< offset from the left border */
 {
   CoordinateType ct1 = CoordinateType::NONE;
   CoordinateType ct2 = CoordinateType::NONE;
@@ -49,7 +49,7 @@ Grid<GridCoordinate2D>::getComputationStart (GridCoordinate2D diffPosStart) cons
  */
 template <>
 GridCoordinate3D
-Grid<GridCoordinate3D>::getComputationStart (GridCoordinate3D diffPosStart) const
+Grid<GridCoordinate3D>::getComputationStart (GridCoordinate3D diffPosStart) const /**< offset from the left border */
 {
   CoordinateType ct1 = CoordinateType::NONE;
   CoordinateType ct2 = CoordinateType::NONE;

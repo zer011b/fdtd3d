@@ -67,12 +67,12 @@ protected:
 
 public:
 
-  Grid (const TCoord& s, time_step step, const char * = "unnamed");
-  Grid (time_step step, const char * = "unnamed");
-  Grid (const Grid &grid);
+  Grid (const TCoord&, time_step, const char * = "unnamed");
+  Grid (time_step, const char * = "unnamed");
+  Grid (const Grid &);
   virtual ~Grid ();
 
-  Grid<TCoord> & operator = (const Grid<TCoord> &grid);
+  Grid<TCoord> & operator = (const Grid<TCoord> &);
 
   const TCoord &getSize () const;
   virtual TCoord getTotalPosition (TCoord) const;
