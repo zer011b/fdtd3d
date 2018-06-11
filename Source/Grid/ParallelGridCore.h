@@ -2,78 +2,10 @@
 #define PARALLEL_GRID_CORE_H
 
 #include "Grid.h"
+#include "Parallel.h"
+#include "DynamicGrid.h"
 
 #ifdef PARALLEL_GRID
-
-#include <mpi.h>
-
-#ifdef DYNAMIC_GRID
-#include <map>
-#endif /* DYNAMIC_GRID */
-
-/**
- * Base grid of parallel grid and parallel grid coordinate
- */
-#ifdef GRID_1D
-#define ParallelGridBase Grid<GridCoordinate1D>
-#define ParallelGridCoordinateTemplate GridCoordinate1DTemplate
-#define ParallelGridCoordinate GridCoordinate1D
-#define ParallelGridCoordinateFP GridCoordinateFP1D
-#endif /* GRID_1D */
-
-#ifdef GRID_2D
-#define ParallelGridBase Grid<GridCoordinate2D>
-#define ParallelGridCoordinateTemplate GridCoordinate2DTemplate
-#define ParallelGridCoordinate GridCoordinate2D
-#define ParallelGridCoordinateFP GridCoordinateFP2D
-#endif /* GRID_2D */
-
-#ifdef GRID_3D
-#define ParallelGridBase Grid<GridCoordinate3D>
-#define ParallelGridCoordinateTemplate GridCoordinate3DTemplate
-#define ParallelGridCoordinate GridCoordinate3D
-#define ParallelGridCoordinateFP GridCoordinateFP3D
-#endif /* GRID_3D */
-
-/**
- * Process ID for non-existing processes
- */
-#define PID_NONE (-1)
-
-
-#ifdef DYNAMIC_GRID
-/**
- * Size of buffer for additional measurements
- */
-#define CLOCK_BUF_SIZE 10
-
-/**
- * Type for share clock for different buffer sizes.
- * Type of calc clock.
- */
-#ifdef MPI_DYNAMIC_CLOCK
-typedef std::map<uint32_t, FPValue> ShareClock_t;
-typedef FPValue CalcClock_t;
-#else /* MPI_DYNAMIC_CLOCK */
-typedef std::map<uint32_t, timespec> ShareClock_t;
-typedef timespec CalcClock_t;
-#endif /* !MPI_DYNAMIC_CLOCK */
-
-/**
- * Type for number of iterations for different buffer sizes.
- */
-typedef std::map<uint32_t, uint32_t> IterCount_t;
-#endif /* DYNAMIC_GRID */
-
-
-/**
- * Parallel grid buffer types.
- */
-enum BufferPosition
-{
-#define FUNCTION(X) X,
-#include "BufferPosition.inc.h"
-}; /* BufferPosition */
 
 /**
  * Class with data shared between all parallel grids on a single computational node
@@ -102,19 +34,14 @@ private:
    * Process ids corresponding to directions
    */
   std::vector<int> directions;
-#endif
-
-#ifdef DYNAMIC_GRID
+#else /* !DYNAMIC_GRID */
   /**
-   * States of all processes
+   * Dynamic data gather during execution
    */
-  std::vector<int> nodeState;
-
-  /**
-   * Lists of nodes for each direction (the closest come in the beggining of nodesForDirections[dir]) for each process
-   */
-  std::vector< std::vector< std::vector<int> > > nodesForDirections;
-#endif
+public:
+  DynamicGridInfo dynamicInfo;
+private:
+#endif /* DYNAMIC_GRID */
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
 
@@ -223,114 +150,6 @@ private:
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
-#ifdef DYNAMIC_GRID
-  /**
-   * Latest clock counter for calculations of all processes
-   */
-  std::vector<CalcClock_t> calcClockSumBetweenRebalance;
-
-  /**
-   * Number of points, on which computations are performed
-   */
-  std::vector<grid_coord> calcClockCountBetweenRebalance;
-
-  /**
-   * Latest clock counter for share operations of all with all processes
-   */
-  std::vector< std::vector<ShareClock_t> > shareClockSumBetweenRebalance;
-
-  /**
-   * Number of points that are shared at a single time step
-   */
-  std::vector< uint32_t > shareClockCountBetweenRebalance;
-
-  /**
-   * Number of interations for different buffer sizes
-   */
-  std::vector< std::vector<IterCount_t> > shareClockIterBetweenRebalance;
-
-  /**
-   * Total values for performance: perf is totalSumPerfPointsPerProcess/totalSumPerfTimePerProcess then
-   */
-  std::vector<FPValue> totalSumPerfPointsPerProcess;
-  std::vector<FPValue> totalSumPerfTimePerProcess;
-
-  /**
-   * Total values for latency: latency is totalSumLatencyPerConnection/totalSumLatencyCountPerConnection then
-   */
-  std::vector< std::vector<FPValue> > totalSumLatencyPerConnection;
-  std::vector< std::vector<FPValue> > totalSumLatencyCountPerConnection;
-
-  /**
-   * Total values of bandwidth: latency is totalSumBandwidthPerConnection/totalSumBandwidthCountPerConnection then
-   */
-  std::vector< std::vector<FPValue> > totalSumBandwidthPerConnection;
-  std::vector< std::vector<FPValue> > totalSumBandwidthCountPerConnection;
-
-  /**
-   * Value for number of grid point between rebalances
-   */
-  std::vector<FPValue> curPoints;
-  /**
-   * Value for calculation time between rebalances
-   */
-  std::vector<FPValue> curTimes;
-
-  std::vector< std::vector<int> > skipCurShareMeasurement;
-
-  /**
-   * Values of current latency and bandwidth between rebalance
-   */
-  std::vector< std::vector<FPValue> > curShareLatency;
-  std::vector< std::vector<FPValue> > curShareBandwidth;
-
-  std::vector<FPValue> speed;
-  std::vector< std::vector<FPValue> > latency;
-  std::vector< std::vector<FPValue> > bandwidth;
-
-  /*
-   * TODO: Use this
-   */
-  time_step T_balance;
-  time_step T_perf;
-
-  /**
-   * Helper buffers used for sharing
-   */
-#ifdef MPI_DYNAMIC_CLOCK
-  FPValue *shareClockSec_buf;
-#else
-  uint64_t *shareClockSec_buf;
-  uint64_t *shareClockNSec_buf;
-#endif
-  uint32_t *shareClockBufSize_buf;
-
-  uint32_t *shareClockBufSize2_buf;
-  uint32_t *shareClockIter_buf;
-
-  /**
-   * Helper clock counter for start of calculations of current process
-   */
-  timespec calcStart;
-
-  /**
-   * Helper clock counter for stop of calculations of current process
-   */
-  timespec calcStop;
-
-#ifndef MPI_DYNAMIC_CLOCK
-  /**
-   * Helper clock counter for start of share operations of current process
-   */
-  timespec shareStart;
-
-  /**
-   * Helper clock counter for stop of share operations of current process
-   */
-  timespec shareStop;
-#endif
-#endif /* DYNAMIC_GRID */
-
   /**
    * Flag whether to use manual virtual topology or not
    */
@@ -365,10 +184,6 @@ private:
   void InitDirections ();
 
 #ifdef DYNAMIC_GRID
-  void timespec_diff (struct timespec *, struct timespec *, struct timespec *);
-  void timespec_sum (struct timespec *, struct timespec *, struct timespec *);
-  void timespec_avg (struct timespec *, struct timespec *, struct timespec *);
-
   void SetNodesForDirections (int);
 #endif /* DYNAMIC_GRID */
 
@@ -734,106 +549,41 @@ public:
 #endif /* PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #ifdef DYNAMIC_GRID
-
   std::vector<int> &getNodeState ()
   {
-    return nodeState;
+    return dynamicInfo.nodeState;
   }
+#endif /* DYNAMIC_GRID */
 
-  void StartCalcClock ();
-  void StopCalcClock ();
-
-  void StartShareClock (int, uint32_t);
-  void StopShareClock (int, uint32_t);
-
-  void ShareCalcClocks ();
-  void ShareShareClocks ();
-
-  void ClearCalcClocks ();
-  void ClearShareClocks ();
-
-  FPValue getPerf (int pid) const
+  /*
+   * TODO: move out of ParallelGridCore
+   */
+  /**
+   * Find greatest common divider of two integer numbers
+   *
+   * @return greatest common divider of two integer numbers
+   */
+  static grid_coord greatestCommonDivider (grid_coord a, /**< first integer number */
+                                           grid_coord b) /**< second integer number */
   {
-    ASSERT (totalProcCount == speed.size ());
-    ASSERT (pid >= 0 && pid < totalProcCount);
-    return speed[pid];
-  }
-  FPValue getLatency (int pid1, int pid2) const
-  {
-    ASSERT (totalProcCount == latency.size ());
-    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
-    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == latency[pid1].size ());
-    ASSERT (latency[pid1][pid2] == latency[pid2][pid1]);
-    return latency[pid1][pid2];
-  }
-  FPValue getBandwidth (int pid1, int pid2) const
-  {
-    ASSERT (totalProcCount == bandwidth.size ());
-    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
-    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == bandwidth[pid1].size ());
-    ASSERT (bandwidth[pid1][pid2] == bandwidth[pid2][pid1]);
-    return bandwidth[pid1][pid2];
-  }
+    if (b == 0)
+    {
+      return a;
+    }
+    else
+    {
+      return greatestCommonDivider (b, a % b);
+    }
+  } /* greatestCommonDivider */
 
-  FPValue getTotalSumPerfPointsPerProcess (int pid) const
-  {
-    ASSERT (totalProcCount == totalSumPerfPointsPerProcess.size ());
-    ASSERT (pid >= 0 && pid < totalProcCount);
-    return totalSumPerfPointsPerProcess[pid];
-  }
-
-  FPValue getTotalSumPerfTimePerProcess (int pid) const
-  {
-    ASSERT (totalProcCount == totalSumPerfTimePerProcess.size ());
-    ASSERT (pid >= 0 && pid < totalProcCount);
-    return totalSumPerfTimePerProcess[pid];
-  }
-
-  FPValue getTotalSumLatencyPerConnection (int pid1, int pid2)
-  {
-    ASSERT (totalProcCount == totalSumLatencyPerConnection.size ());
-    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
-    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumLatencyPerConnection[pid1].size ());
-    return totalSumLatencyPerConnection[pid1][pid2];
-  }
-
-  FPValue getTotalSumLatencyCountPerConnection (int pid1, int pid2)
-  {
-    ASSERT (totalProcCount == totalSumLatencyCountPerConnection.size ());
-    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
-    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumLatencyCountPerConnection[pid1].size ());
-    return totalSumLatencyCountPerConnection[pid1][pid2];
-  }
-
-  FPValue getTotalSumBandwidthPerConnection (int pid1, int pid2)
-  {
-    ASSERT (totalProcCount == totalSumBandwidthPerConnection.size ());
-    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
-    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumBandwidthPerConnection[pid1].size ());
-    return totalSumBandwidthPerConnection[pid1][pid2];
-  }
-
-  FPValue getTotalSumBandwidthCountPerConnection (int pid1, int pid2)
-  {
-    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection.size ());
-    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
-    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection[pid1].size ());
-    return totalSumBandwidthCountPerConnection[pid1][pid2];
-  }
-
+#ifdef DYNAMIC_GRID
 private:
 
   void setTotalSumPerfPointsPerProcess (int pid, FPValue val)
   {
-    ASSERT (totalProcCount == totalSumPerfPointsPerProcess.size ());
+    ASSERT (totalProcCount == dynamicInfo.totalSumPerfPointsPerProcess.size ());
     ASSERT (pid >= 0 && pid < totalProcCount);
-    totalSumPerfPointsPerProcess[pid] = val;
+    dynamicInfo.totalSumPerfPointsPerProcess[pid] = val;
   }
 
   void increaseTotalSumPerfPointsPerProcess (int pid, FPValue val)
@@ -843,9 +593,9 @@ private:
 
   void setTotalSumPerfTimePerProcess (int pid, FPValue val)
   {
-    ASSERT (totalProcCount == totalSumPerfTimePerProcess.size ());
+    ASSERT (totalProcCount == dynamicInfo.totalSumPerfTimePerProcess.size ());
     ASSERT (pid >= 0 && pid < totalProcCount);
-    totalSumPerfTimePerProcess[pid] = val;
+    dynamicInfo.totalSumPerfTimePerProcess[pid] = val;
   }
 
   void increaseTotalSumPerfTimePerProcess (int pid, FPValue val)
@@ -855,11 +605,11 @@ private:
 
   void setTotalSumLatencyPerConnection (int pid1, int pid2, FPValue val)
   {
-    ASSERT (totalProcCount == totalSumLatencyPerConnection.size ());
+    ASSERT (totalProcCount == dynamicInfo.totalSumLatencyPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
     ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumLatencyPerConnection[pid1].size ());
-    totalSumLatencyPerConnection[pid1][pid2] = val;
+    ASSERT (totalProcCount == dynamicInfo.totalSumLatencyPerConnection[pid1].size ());
+    dynamicInfo.totalSumLatencyPerConnection[pid1][pid2] = val;
   }
 
   void increaseTotalSumLatencyPerConnection (int pid1, int pid2, FPValue val)
@@ -869,11 +619,11 @@ private:
 
   void setTotalSumLatencyCountPerConnection (int pid1, int pid2, FPValue val)
   {
-    ASSERT (totalProcCount == totalSumLatencyCountPerConnection.size ());
+    ASSERT (totalProcCount == dynamicInfo.totalSumLatencyCountPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
     ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumLatencyCountPerConnection[pid1].size ());
-    totalSumLatencyCountPerConnection[pid1][pid2] = val;
+    ASSERT (totalProcCount == dynamicInfo.totalSumLatencyCountPerConnection[pid1].size ());
+    dynamicInfo.totalSumLatencyCountPerConnection[pid1][pid2] = val;
   }
 
   void increaseTotalSumLatencyCountPerConnection (int pid1, int pid2, FPValue val)
@@ -883,11 +633,11 @@ private:
 
   void setTotalSumBandwidthPerConnection (int pid1, int pid2, FPValue val)
   {
-    ASSERT (totalProcCount == totalSumBandwidthPerConnection.size ());
+    ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
     ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumBandwidthPerConnection[pid1].size ());
-    totalSumBandwidthPerConnection[pid1][pid2] = val;
+    ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthPerConnection[pid1].size ());
+    dynamicInfo.totalSumBandwidthPerConnection[pid1][pid2] = val;
   }
 
   void increaseTotalSumBandwidthPerConnection (int pid1, int pid2, FPValue val)
@@ -897,11 +647,11 @@ private:
 
   void setTotalSumBandwidthCountPerConnection (int pid1, int pid2, FPValue val)
   {
-    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection.size ());
+    ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthCountPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
     ASSERT (pid2 >= 0 && pid2 < totalProcCount);
-    ASSERT (totalProcCount == totalSumBandwidthCountPerConnection[pid1].size ());
-    totalSumBandwidthCountPerConnection[pid1][pid2] = val;
+    ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthCountPerConnection[pid1].size ());
+    dynamicInfo.totalSumBandwidthCountPerConnection[pid1][pid2] = val;
   }
 
   void increaseTotalSumBandwidthCountPerConnection (int pid1, int pid2, FPValue val)
@@ -951,47 +701,131 @@ private:
 
 public:
 
+  void StartCalcClock ();
+  void StopCalcClock ();
+
+  void StartShareClock (int, uint32_t);
+  void StopShareClock (int, uint32_t);
+
+  void ShareCalcClocks ();
+  void ShareShareClocks ();
+
+  void ClearCalcClocks ();
+  void ClearShareClocks ();
+
+  FPValue getPerf (int pid) const
+  {
+    ASSERT (totalProcCount == dynamicInfo.speed.size ());
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    return dynamicInfo.speed[pid];
+  }
+  FPValue getLatency (int pid1, int pid2) const
+  {
+    ASSERT (totalProcCount == dynamicInfo.latency.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == dynamicInfo.latency[pid1].size ());
+    ASSERT (dynamicInfo.latency[pid1][pid2] == dynamicInfo.latency[pid2][pid1]);
+    return dynamicInfo.latency[pid1][pid2];
+  }
+  FPValue getBandwidth (int pid1, int pid2) const
+  {
+    ASSERT (totalProcCount == dynamicInfo.bandwidth.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == dynamicInfo.bandwidth[pid1].size ());
+    ASSERT (dynamicInfo.bandwidth[pid1][pid2] == dynamicInfo.bandwidth[pid2][pid1]);
+    return dynamicInfo.bandwidth[pid1][pid2];
+  }
+
+  FPValue getTotalSumPerfPointsPerProcess (int pid) const
+  {
+    ASSERT (totalProcCount == dynamicInfo.totalSumPerfPointsPerProcess.size ());
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    return dynamicInfo.totalSumPerfPointsPerProcess[pid];
+  }
+
+  FPValue getTotalSumPerfTimePerProcess (int pid) const
+  {
+    ASSERT (totalProcCount == dynamicInfo.totalSumPerfTimePerProcess.size ());
+    ASSERT (pid >= 0 && pid < totalProcCount);
+    return dynamicInfo.totalSumPerfTimePerProcess[pid];
+  }
+
+  FPValue getTotalSumLatencyPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == dynamicInfo.totalSumLatencyPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == dynamicInfo.totalSumLatencyPerConnection[pid1].size ());
+    return dynamicInfo.totalSumLatencyPerConnection[pid1][pid2];
+  }
+
+  FPValue getTotalSumLatencyCountPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == dynamicInfo.totalSumLatencyCountPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == dynamicInfo.totalSumLatencyCountPerConnection[pid1].size ());
+    return dynamicInfo.totalSumLatencyCountPerConnection[pid1][pid2];
+  }
+
+  FPValue getTotalSumBandwidthPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthPerConnection[pid1].size ());
+    return dynamicInfo.totalSumBandwidthPerConnection[pid1][pid2];
+  }
+
+  FPValue getTotalSumBandwidthCountPerConnection (int pid1, int pid2)
+  {
+    ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthCountPerConnection.size ());
+    ASSERT (pid1 >= 0 && pid1 < totalProcCount);
+    ASSERT (pid2 >= 0 && pid2 < totalProcCount);
+    ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthCountPerConnection[pid1].size ());
+    return dynamicInfo.totalSumBandwidthCountPerConnection[pid1][pid2];
+  }
+
   /**
    * Getter for calculations clock
    *
    * @return calculations clock
    */
-  CalcClock_t getCalcClock (int pid) const
+  Clock getCalcClock (int pid) const
   {
     ASSERT (pid >= 0 && pid < totalProcCount);
-#ifdef MPI_DYNAMIC_CLOCK
-    ASSERT (nodeState[pid] == 1 && calcClockSumBetweenRebalance[pid] > 0
-            || nodeState[pid] == 0 && calcClockSumBetweenRebalance[pid] == 0);
-#else
-    ASSERT (nodeState[pid] == 1 && (calcClockSumBetweenRebalance[pid].tv_sec > 0 || calcClockSumBetweenRebalance[pid].tv_nsec > 0)
-            || nodeState[pid] == 0 && calcClockSumBetweenRebalance[pid].tv_sec == 0 && calcClockSumBetweenRebalance[pid].tv_nsec == 0);
-#endif
-    return calcClockSumBetweenRebalance[pid];
+    ASSERT (dynamicInfo.nodeState[pid] == 1 && dynamicInfo.calcClockSumBetweenRebalance[pid].getFP () > 0
+            || dynamicInfo.nodeState[pid] == 0 && dynamicInfo.calcClockSumBetweenRebalance[pid].isZero ());
+
+    return dynamicInfo.calcClockSumBetweenRebalance[pid];
   } /* getCalcClock */
 
   uint32_t getCalcClockCount (int pid) const
   {
     ASSERT (pid >= 0 && pid < totalProcCount);
-    ASSERT (nodeState[pid] == 1 && calcClockCountBetweenRebalance[pid] > 0
-            || nodeState[pid] == 0 && calcClockCountBetweenRebalance[pid] == 0);
-    return calcClockCountBetweenRebalance[pid];
+    ASSERT (dynamicInfo.nodeState[pid] == 1 && dynamicInfo.calcClockCountBetweenRebalance[pid] > 0
+            || dynamicInfo.nodeState[pid] == 0 && dynamicInfo.calcClockCountBetweenRebalance[pid] == 0);
+    return dynamicInfo.calcClockCountBetweenRebalance[pid];
   }
 
   void setCalcClockCount (int pid, uint32_t val)
   {
     ASSERT (pid >= 0 && pid < totalProcCount);
-    ASSERT (nodeState[pid] == 1 && val > 0
-            || nodeState[pid] == 0 && val == 0);
-    calcClockCountBetweenRebalance[pid] = val;
+    ASSERT (dynamicInfo.nodeState[pid] == 1 && val > 0
+            || dynamicInfo.nodeState[pid] == 0 && val == 0);
+    dynamicInfo.calcClockCountBetweenRebalance[pid] = val;
   }
 
   const ShareClock_t & getShareClock (int process, int pid) const
   {
     ASSERT (process >= 0 && process < totalProcCount);
     ASSERT (pid >= 0 && pid < totalProcCount);
-    ASSERT (nodeState[process] == 1 && nodeState[pid] == 1
-            || (nodeState[process] == 0 || nodeState[pid] == 0) && shareClockSumBetweenRebalance[process][pid].empty ());
-    return shareClockSumBetweenRebalance[process][pid];
+    ASSERT (dynamicInfo.nodeState[process] == 1 && dynamicInfo.nodeState[pid] == 1
+            || (dynamicInfo.nodeState[process] == 0 || dynamicInfo.nodeState[pid] == 0)
+               && dynamicInfo.shareClockSumBetweenRebalance[process][pid].empty ());
+    return dynamicInfo.shareClockSumBetweenRebalance[process][pid];
   }
 
   const ShareClock_t & getShareClockCur (int pid) const
@@ -1007,19 +841,24 @@ public:
   const uint32_t & getShareClockCountCur (int pid) const /**< id of process, with which to get buffer size */
   {
     ASSERT (pid >= 0 && pid < totalProcCount);
-    ASSERT (nodeState[processId] == 1 && nodeState[pid] == 1 && shareClockCountBetweenRebalance[pid] > 0
-            || (nodeState[processId] == 0 || nodeState[pid] == 0) && shareClockCountBetweenRebalance[pid] == 0);
-    return shareClockCountBetweenRebalance[pid];
+    ASSERT (dynamicInfo.nodeState[processId] == 1 && dynamicInfo.nodeState[pid] == 1
+            && dynamicInfo.shareClockCountBetweenRebalance[pid] > 0
+            || (dynamicInfo.nodeState[processId] == 0 || dynamicInfo.nodeState[pid] == 0)
+               && dynamicInfo.shareClockCountBetweenRebalance[pid] == 0);
+    return dynamicInfo.shareClockCountBetweenRebalance[pid];
   }
 
   const uint32_t & getShareClockIter (int process, int pid, uint32_t bufSize)
   {
     ASSERT (process >= 0 && process < totalProcCount);
     ASSERT (pid >= 0 && pid < totalProcCount);
-    ASSERT (shareClockIterBetweenRebalance[process][pid].find (bufSize) != shareClockIterBetweenRebalance[process][pid].end ());
-    ASSERT (nodeState[process] == 1 && nodeState[pid] == 1 && shareClockIterBetweenRebalance[process][pid][bufSize] > 0
-            || (nodeState[process] == 0 || nodeState[pid] == 0) && shareClockIterBetweenRebalance[process][pid][bufSize] == 0);
-    return shareClockIterBetweenRebalance[process][pid][bufSize];
+    ASSERT (dynamicInfo.shareClockIterBetweenRebalance[process][pid].find (bufSize)
+            != dynamicInfo.shareClockIterBetweenRebalance[process][pid].end ());
+    ASSERT (dynamicInfo.nodeState[process] == 1 && dynamicInfo.nodeState[pid] == 1
+            && dynamicInfo.shareClockIterBetweenRebalance[process][pid][bufSize] > 0
+            || (dynamicInfo.nodeState[process] == 0 || dynamicInfo.nodeState[pid] == 0)
+               && dynamicInfo.shareClockIterBetweenRebalance[process][pid][bufSize] == 0);
+    return dynamicInfo.shareClockIterBetweenRebalance[process][pid][bufSize];
   }
 
   const uint32_t & getShareClockIterCur (int pid, uint32_t bufSize)
@@ -1027,32 +866,28 @@ public:
     return getShareClockIter (processId, pid, bufSize);
   }
 
-#ifdef MPI_DYNAMIC_CLOCK
-  void setShareClockCur (int pid, uint32_t shareSize, FPValue val)
-#else
-  void setShareClockCur (int pid, uint32_t shareSize, timespec val)
-#endif
+  void setShareClockCur (int pid, uint32_t shareSize, Clock val)
   {
     ASSERT (pid >= 0 && pid < totalProcCount);
-    ASSERT (nodeState[processId] == 1 && nodeState[pid] == 1
-            || (nodeState[processId] == 0 || nodeState[pid] == 0) && val == 0);
-    shareClockSumBetweenRebalance[processId][pid][shareSize] = val;
+    ASSERT (dynamicInfo.nodeState[processId] == 1 && dynamicInfo.nodeState[pid] == 1
+            || (dynamicInfo.nodeState[processId] == 0 || dynamicInfo.nodeState[pid] == 0) && val.isZero ());
+    dynamicInfo.shareClockSumBetweenRebalance[processId][pid][shareSize] = val;
   }
 
   void setShareClockCountCur (int pid, uint32_t val)
   {
     ASSERT (pid >= 0 && pid < totalProcCount);
-    ASSERT (nodeState[processId] == 1 && nodeState[pid] == 1 && val > 0
-            || (nodeState[processId] == 0 || nodeState[pid] == 0) && val == 0);
-    shareClockCountBetweenRebalance[pid] = val;
+    ASSERT (dynamicInfo.nodeState[processId] == 1 && dynamicInfo.nodeState[pid] == 1 && val > 0
+            || (dynamicInfo.nodeState[processId] == 0 || dynamicInfo.nodeState[pid] == 0) && val == 0);
+    dynamicInfo.shareClockCountBetweenRebalance[pid] = val;
   }
 
   void setShareClockIterCur (int pid, uint32_t bufSize, uint32_t val)
   {
     ASSERT (pid >= 0 && pid < totalProcCount);
-    ASSERT (nodeState[processId] == 1 && nodeState[pid] == 1 && val > 0
-            || (nodeState[processId] == 0 || nodeState[pid] == 0) && val == 0);
-    shareClockIterBetweenRebalance[processId][pid][bufSize] = val;
+    ASSERT (dynamicInfo.nodeState[processId] == 1 && dynamicInfo.nodeState[pid] == 1 && val > 0
+            || (dynamicInfo.nodeState[processId] == 0 || dynamicInfo.nodeState[pid] == 0) && val == 0);
+    dynamicInfo.shareClockIterBetweenRebalance[processId][pid][bufSize] = val;
   }
 
   int getNodeForDirectionForProcess (int, BufferPosition) const;
@@ -1064,29 +899,7 @@ public:
   void initializeIterationCounters (time_step);
   FPValue calcTotalPerf (time_step);
   void calcTotalLatencyAndBandwidth (time_step);
-
 #endif /* DYNAMIC_GRID */
-
-  /*
-   * TODO: move out of ParallelGridCore
-   */
-  /**
-   * Find greatest common divider of two integer numbers
-   *
-   * @return greatest common divider of two integer numbers
-   */
-  static grid_coord greatestCommonDivider (grid_coord a, /**< first integer number */
-                                           grid_coord b) /**< second integer number */
-  {
-    if (b == 0)
-    {
-      return a;
-    }
-    else
-    {
-      return greatestCommonDivider (b, a % b);
-    }
-  } /* greatestCommonDivider */
 }; /* ParallelGridCore */
 
 #endif /* PARALLEL_GRID */

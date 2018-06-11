@@ -10,7 +10,7 @@ option(CXX11_ENABLED "C++11 support enabled" OFF)
 option(COMPLEX_FIELD_VALUES "Complex field values" OFF)
 option(LARGE_COORDINATES "Use int64 for grid coordinates" OFF)
 option(COMBINED_SENDRECV "Use combined sendrecv" ON)
-option(MPI_DYNAMIC_CLOCK "Use mpi clock (MPI_Wtime) for dynamic grid" OFF)
+option(MPI_CLOCK "Use mpi clock (MPI_Wtime) for clocks" OFF)
 
 set(VALUE_TYPE "d" CACHE STRING "Defines type of values")
 set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
@@ -136,15 +136,15 @@ if ("${PARALLEL_GRID}")
     add_definitions (-DCOMBINED_SENDRECV="")
   endif ()
 
+  if ("${MPI_CLOCK}")
+    add_definitions (-DMPI_CLOCK="")
+  endif ()
+
   if ("${DYNAMIC_GRID}")
     add_definitions (-DDYNAMIC_GRID="")
 
     if ("${COMBINED_SENDRECV}")
       message(FATAL_ERROR "Unsupported: combined sendrecv is not yet implemented for dynamic grid")
-    endif ()
-
-    if ("${MPI_DYNAMIC_CLOCK}")
-      add_definitions (-DMPI_DYNAMIC_CLOCK="")
     endif ()
   endif ()
 
