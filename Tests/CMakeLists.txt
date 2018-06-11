@@ -19,6 +19,9 @@ include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/Loader")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/Dumper")
 
+add_executable (unit-test-clock unit-test-clock.cpp)
+target_link_libraries (unit-test-clock Helpers Settings Kernels)
+
 add_executable (unit-test-parallel-grid unit-test-parallel-grid.cpp)
 target_link_libraries (unit-test-parallel-grid ${LIBS} Grid Helpers Settings Layout)
 

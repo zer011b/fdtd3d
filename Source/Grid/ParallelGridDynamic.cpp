@@ -1,4 +1,25 @@
+#include "ParallelGrid.h"
+
+#ifdef PARALLEL_GRID
 #ifdef DYNAMIC_GRID
+
+#ifdef DEBUG_INFO
+
+#ifdef GRID_1D
+#define COORD_TYPES ,ct1
+#endif /* GRID_1D */
+
+#ifdef GRID_2D
+#define COORD_TYPES ,ct1,ct2
+#endif /* GRID_2D */
+
+#ifdef GRID_3D
+#define COORD_TYPES ,ct1,ct2,ct3
+#endif /* GRID_3D */
+
+#else /* DEBUG_INFO */
+#define COORD_TYPES
+#endif /* !DEBUG_INFO */
 
 /**
  * Resize parallel grid for current process at a new size
@@ -130,4 +151,7 @@ ParallelGrid::Resize (ParallelGridCoordinate newCurrentNodeSize) /**< new size o
   share ();
 } /* ParallelGrid::Resize */
 
+#undef COORD_TYPES
+
 #endif /* DYNAMIC_GRID */
+#endif /* PARALLEL_GRID */

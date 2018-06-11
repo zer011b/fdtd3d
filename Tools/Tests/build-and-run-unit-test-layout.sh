@@ -40,7 +40,10 @@ function build
         -DCUDA_ARCH_SM_TYPE=sm_50 \
         -DLARGE_COORDINATES=${LARGE_COORDINATES} \
         -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-        -DCMAKE_C_COMPILER=${C_COMPILER}
+        -DCMAKE_C_COMPILER=${C_COMPILER} \
+        -DDYNAMIC_GRID=OFF \
+        -DCOMBINED_SENDRECV=OFF \
+        -DMPI_CLOCK=OFF
 
       res=$(echo $?)
 

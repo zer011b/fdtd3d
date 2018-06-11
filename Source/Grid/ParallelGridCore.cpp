@@ -362,42 +362,42 @@ ParallelGridCore::InitDirections ()
 #endif
 
 #ifdef DYNAMIC_GRID
-  totalSumPerfPointsPerProcess.resize (totalProcCount);
-  totalSumPerfTimePerProcess.resize (totalProcCount);
+  dynamicInfo.totalSumPerfPointsPerProcess.resize (totalProcCount);
+  dynamicInfo.totalSumPerfTimePerProcess.resize (totalProcCount);
 
-  totalSumLatencyPerConnection.resize (totalProcCount);
-  totalSumLatencyCountPerConnection.resize (totalProcCount);
+  dynamicInfo.totalSumLatencyPerConnection.resize (totalProcCount);
+  dynamicInfo.totalSumLatencyCountPerConnection.resize (totalProcCount);
 
-  totalSumBandwidthPerConnection.resize (totalProcCount);
-  totalSumBandwidthCountPerConnection.resize (totalProcCount);
+  dynamicInfo.totalSumBandwidthPerConnection.resize (totalProcCount);
+  dynamicInfo.totalSumBandwidthCountPerConnection.resize (totalProcCount);
 
-  curPoints.resize (totalProcCount);
-  curTimes.resize (totalProcCount);
-  skipCurShareMeasurement.resize (totalProcCount);
-  curShareLatency.resize (totalProcCount);
-  curShareBandwidth.resize (totalProcCount);
+  dynamicInfo.curPoints.resize (totalProcCount);
+  dynamicInfo.curTimes.resize (totalProcCount);
+  dynamicInfo.skipCurShareMeasurement.resize (totalProcCount);
+  dynamicInfo.curShareLatency.resize (totalProcCount);
+  dynamicInfo.curShareBandwidth.resize (totalProcCount);
 
-  speed.resize (totalProcCount);
-  latency.resize (totalProcCount);
-  bandwidth.resize (totalProcCount);
+  dynamicInfo.speed.resize (totalProcCount);
+  dynamicInfo.latency.resize (totalProcCount);
+  dynamicInfo.bandwidth.resize (totalProcCount);
 
   for (int i = 0; i < totalProcCount; ++i)
   {
-    totalSumLatencyPerConnection[i].resize (totalProcCount);
-    totalSumLatencyCountPerConnection[i].resize (totalProcCount);
+    dynamicInfo.totalSumLatencyPerConnection[i].resize (totalProcCount);
+    dynamicInfo.totalSumLatencyCountPerConnection[i].resize (totalProcCount);
 
-    totalSumBandwidthPerConnection[i].resize (totalProcCount);
-    totalSumBandwidthCountPerConnection[i].resize (totalProcCount);
+    dynamicInfo.totalSumBandwidthPerConnection[i].resize (totalProcCount);
+    dynamicInfo.totalSumBandwidthCountPerConnection[i].resize (totalProcCount);
 
-    skipCurShareMeasurement[i].resize (totalProcCount);
-    curShareLatency[i].resize (totalProcCount);
-    curShareBandwidth[i].resize (totalProcCount);
+    dynamicInfo.skipCurShareMeasurement[i].resize (totalProcCount);
+    dynamicInfo.curShareLatency[i].resize (totalProcCount);
+    dynamicInfo.curShareBandwidth[i].resize (totalProcCount);
 
-    latency[i].resize (totalProcCount);
-    bandwidth[i].resize (totalProcCount);
+    dynamicInfo.latency[i].resize (totalProcCount);
+    dynamicInfo.bandwidth[i].resize (totalProcCount);
   }
 
-  nodesForDirections.resize (totalProcCount);
+  dynamicInfo.nodesForDirections.resize (totalProcCount);
   for (int i = 0; i < totalProcCount; ++i)
   {
     SetNodesForDirections (i);
@@ -554,10 +554,10 @@ ParallelGridCore::ParallelGridCoreConstructor (ParallelGridCoordinate size) /**<
   /*
    * All nodes are enables by default
    */
-  nodeState.resize (totalProcCount);
-  for (int i = 0; i < nodeState.size (); ++i)
+  dynamicInfo.nodeState.resize (totalProcCount);
+  for (int i = 0; i < dynamicInfo.nodeState.size (); ++i)
   {
-    nodeState[i] = 1;
+    dynamicInfo.nodeState[i] = 1;
   }
 #endif
 } /* ParallelGridCore::ParallelGridCoreConstructor */
@@ -652,45 +652,45 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
   ASSERT (retCode == MPI_SUCCESS);
 
 #ifdef DYNAMIC_GRID
-  calcClockSumBetweenRebalance.resize (totalProcCount);
-  calcClockCountBetweenRebalance.resize (totalProcCount);
+  dynamicInfo.calcClockSumBetweenRebalance.resize (totalProcCount);
+  dynamicInfo.calcClockCountBetweenRebalance.resize (totalProcCount);
 
-  shareClockCountBetweenRebalance.resize (totalProcCount);
+  dynamicInfo.shareClockCountBetweenRebalance.resize (totalProcCount);
 
-  shareClockSumBetweenRebalance.resize (totalProcCount);
-  shareClockIterBetweenRebalance.resize (totalProcCount);
+  dynamicInfo.shareClockSumBetweenRebalance.resize (totalProcCount);
+  dynamicInfo.shareClockIterBetweenRebalance.resize (totalProcCount);
 
   for (int i = 0; i < totalProcCount; ++i)
   {
-    shareClockSumBetweenRebalance[i].resize (totalProcCount);
-    shareClockIterBetweenRebalance[i].resize (totalProcCount);
+    dynamicInfo.shareClockSumBetweenRebalance[i].resize (totalProcCount);
+    dynamicInfo.shareClockIterBetweenRebalance[i].resize (totalProcCount);
   }
 
-#ifdef MPI_DYNAMIC_CLOCK
-  shareClockSec_buf = new FPValue [CLOCK_BUF_SIZE * totalProcCount];
-#else
-  shareClockSec_buf = new uint64_t [CLOCK_BUF_SIZE * totalProcCount];
-  shareClockNSec_buf = new uint64_t [CLOCK_BUF_SIZE * totalProcCount];
-#endif
-  shareClockBufSize_buf = new uint32_t [CLOCK_BUF_SIZE * totalProcCount];
+#ifdef MPI_CLOCK
+  dynamicInfo.shareClockSec_buf = new FPValue [CLOCK_BUF_SIZE * totalProcCount];
+#else /* MPI_CLOCK */
+  dynamicInfo.shareClockSec_buf = new uint64_t [CLOCK_BUF_SIZE * totalProcCount];
+  dynamicInfo.shareClockNSec_buf = new uint64_t [CLOCK_BUF_SIZE * totalProcCount];
+#endif /* !MPI_CLOCK */
+  dynamicInfo.shareClockBufSize_buf = new uint32_t [CLOCK_BUF_SIZE * totalProcCount];
 
-  shareClockBufSize2_buf = new uint32_t [CLOCK_BUF_SIZE * totalProcCount];
-  shareClockIter_buf = new uint32_t [CLOCK_BUF_SIZE * totalProcCount];
+  dynamicInfo.shareClockBufSize2_buf = new uint32_t [CLOCK_BUF_SIZE * totalProcCount];
+  dynamicInfo.shareClockIter_buf = new uint32_t [CLOCK_BUF_SIZE * totalProcCount];
 #endif /* DYNAMIC_GRID */
 } /* ParallelGridCore */
 
 ParallelGridCore::~ParallelGridCore ()
 {
 #ifdef DYNAMIC_GRID
-  delete[] shareClockSec_buf;
+  delete[] dynamicInfo.shareClockSec_buf;
 
-#ifndef MPI_DYNAMIC_CLOCK
-  delete[] shareClockNSec_buf;
-#endif
-  delete[] shareClockBufSize_buf;
+#ifndef MPI_CLOCK
+  delete[] dynamicInfo.shareClockNSec_buf;
+#endif /* !MPI_CLOCK */
+  delete[] dynamicInfo.shareClockBufSize_buf;
 
-  delete[] shareClockBufSize2_buf;
-  delete[] shareClockIter_buf;
+  delete[] dynamicInfo.shareClockBufSize2_buf;
+  delete[] dynamicInfo.shareClockIter_buf;
 #endif /* DYNAMIC_GRID */
 }
 
