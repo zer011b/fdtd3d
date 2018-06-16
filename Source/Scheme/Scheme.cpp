@@ -5574,34 +5574,8 @@ Scheme<Type, TCoord, layout_type>::Pointing_scat (FPValue angleTeta, FPValue ang
     tmpArray[2] = L.nTeta;
     tmpArray[3] = L.nPhi;
 
-    MPI_Datatype datatype;
-
-#ifdef FLOAT_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-    datatype = MPI_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-    datatype = MPI_FLOAT;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* FLOAT_VALUES */
-
-#ifdef DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-    datatype = MPI_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-    datatype = MPI_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* DOUBLE_VALUES */
-
-#ifdef LONG_DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-    datatype = MPI_LONG_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-    datatype = MPI_LONG_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* LONG_DOUBLE_VALUES */
-
     // gather all sum_teta and sum_phi on 0 node
-    MPI_Reduce (tmpArray, tmpArrayRes, count, datatype, MPI_SUM, 0, ParallelGrid::getParallelCore ()->getCommunicator ());
+    MPI_Reduce (tmpArray, tmpArrayRes, count, MPI_FPVALUE, MPI_SUM, 0, ParallelGrid::getParallelCore ()->getCommunicator ());
 
     if (processId == 0)
     {

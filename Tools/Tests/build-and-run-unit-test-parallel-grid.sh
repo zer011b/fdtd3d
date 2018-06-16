@@ -16,6 +16,8 @@ CXX11_ENABLED=$5
 
 COMPLEX_FIELD_VALUES=$6
 
+LARGE_COORDINATES=$7
+
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
@@ -27,7 +29,7 @@ function build
   for VALUE_TYPE in f d ld; do
     for TIME_STEPS in 1 2; do
       for PARALLEL_BUFFER in `echo $LIST_OF_BUFFERS`; do
-      for LARGE_COORDINATES in ON OFF; do
+      for COMBINED_SENDRECV in ON OFF; do
 
         if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
           continue
@@ -46,7 +48,10 @@ function build
           -DCUDA_ARCH_SM_TYPE=sm_50 \
           -DLARGE_COORDINATES=${LARGE_COORDINATES} \
           -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-          -DCMAKE_C_COMPILER=${C_COMPILER}
+          -DCMAKE_C_COMPILER=${C_COMPILER} \
+          -DDYNAMIC_GRID=OFF \
+          -DCOMBINED_SENDRECV=${COMBINED_SENDRECV} \
+          -DMPI_CLOCK=OFF
 
         res=$(echo $?)
 

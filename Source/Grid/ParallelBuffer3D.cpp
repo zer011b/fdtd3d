@@ -65,10 +65,10 @@ ParallelGridCore::initOptimal (grid_coord size1, /**< grid size by first axis */
         continue;
       }
 
-      FPValue k_fp = ((FPValue) totalProcCount) / ((FPValue) n * m);
+      DOUBLE k_fp = ((DOUBLE) totalProcCount) / ((DOUBLE) n * m);
       grid_coord k = (grid_coord) k_fp;
 
-      FPValue c1_fp = ((FPValue) size3) / k_fp;
+      DOUBLE c1_fp = ((DOUBLE) size3) / k_fp;
       grid_coord c1 = (grid_coord) c1_fp;
 
       if (k == k_fp && c1 == c1_fp)
@@ -94,7 +94,7 @@ ParallelGridCore::initOptimal (grid_coord size1, /**< grid size by first axis */
   {
     grid_coord m = *it;
 
-    FPValue optimal_n = sqrt (((FPValue) size1 * totalProcCount) / ((FPValue) m * size3));
+    DOUBLE optimal_n = sqrt (((DOUBLE) size1 * totalProcCount) / ((DOUBLE) m * size3));
 
     Triple left = allowedTriples[0];
     Triple right = allowedTriples[0];

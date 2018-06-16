@@ -16,79 +16,79 @@ ParallelGridCore::SetNodesForDirections (int pid)
   /*
    * TODO: initialize processes considering real number of processes given, i.e. if only 2 are given for 3D-XYZ
    */
-  nodesForDirections[pid].resize (BUFFER_COUNT);
+  dynamicInfo.nodesForDirections[pid].resize (BUFFER_COUNT);
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   for (int i = pid - 1; i >= pid - getNodeGridX (pid); --i)
   {
-    nodesForDirections[pid][LEFT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][LEFT].push_back (i);
   }
   for (int i = pid + 1; i < pid - getNodeGridX (pid) + getNodeGridSizeX (); ++i)
   {
-    nodesForDirections[pid][RIGHT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][RIGHT].push_back (i);
   }
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
   for (int i = pid - 1; i >= pid - getNodeGridY (pid); --i)
   {
-    nodesForDirections[pid][DOWN].push_back (i);
+    dynamicInfo.nodesForDirections[pid][DOWN].push_back (i);
   }
   for (int i = pid + 1; i < pid - getNodeGridY (pid) + getNodeGridSizeY (); ++i)
   {
-    nodesForDirections[pid][UP].push_back (i);
+    dynamicInfo.nodesForDirections[pid][UP].push_back (i);
   }
 #endif
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   for (int i = pid - getNodeGridSizeX (); i >= pid - getNodeGridY (pid) * getNodeGridSizeX (); i -= getNodeGridSizeX ())
   {
-    nodesForDirections[pid][DOWN].push_back (i);
+    dynamicInfo.nodesForDirections[pid][DOWN].push_back (i);
   }
   for (int i = pid + getNodeGridSizeX (); i < pid - (getNodeGridY (pid) - getNodeGridSizeY ()) * getNodeGridSizeX (); i += getNodeGridSizeX ())
   {
-    nodesForDirections[pid][UP].push_back (i);
+    dynamicInfo.nodesForDirections[pid][UP].push_back (i);
   }
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
   for (int i = pid - 1; i >= pid - getNodeGridZ (pid); --i)
   {
-    nodesForDirections[pid][BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][BACK].push_back (i);
   }
   for (int i = pid + 1; i < pid - getNodeGridZ (pid) + getNodeGridSizeZ (); ++i)
   {
-    nodesForDirections[pid][FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][FRONT].push_back (i);
   }
 #endif
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
   for (int i = pid - getNodeGridSizeY (); i >= pid - getNodeGridZ (pid) * getNodeGridSizeY (); i -= getNodeGridSizeY ())
   {
-    nodesForDirections[pid][BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][BACK].push_back (i);
   }
   for (int i = pid + getNodeGridSizeY (); i < pid - (getNodeGridZ (pid) - getNodeGridSizeZ ()) * getNodeGridSizeY (); i += getNodeGridSizeY ())
   {
-    nodesForDirections[pid][FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][FRONT].push_back (i);
   }
 #endif
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ)
   for (int i = pid - getNodeGridSizeX (); i >= pid - getNodeGridZ (pid) * getNodeGridSizeX (); i -= getNodeGridSizeX ())
   {
-    nodesForDirections[pid][BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][BACK].push_back (i);
   }
   for (int i = pid + getNodeGridSizeX (); i < pid - (getNodeGridZ (pid) - getNodeGridSizeZ ()) * getNodeGridSizeX (); i += getNodeGridSizeX ())
   {
-    nodesForDirections[pid][FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][FRONT].push_back (i);
   }
 #endif
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   for (int i = pid - getNodeGridSizeXY (); i >= pid - getNodeGridZ (pid) * getNodeGridSizeXY (); i -= getNodeGridSizeXY ())
   {
-    nodesForDirections[pid][BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][BACK].push_back (i);
   }
   for (int i = pid + getNodeGridSizeXY (); i < pid - (getNodeGridZ (pid) - getNodeGridSizeZ ()) * getNodeGridSizeXY (); i += getNodeGridSizeXY ())
   {
-    nodesForDirections[pid][FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][FRONT].push_back (i);
   }
 #endif
 
@@ -98,36 +98,36 @@ ParallelGridCore::SetNodesForDirections (int pid)
     int i = 0;
     for (i = pid - getNodeGridSizeX () - 1; getHasL (i) && getHasD (i); i -= getNodeGridSizeX () + 1)
     {
-      nodesForDirections[pid][LEFT_DOWN].push_back (i);
+      dynamicInfo.nodesForDirections[pid][LEFT_DOWN].push_back (i);
     }
-    nodesForDirections[pid][LEFT_DOWN].push_back (i);
+    dynamicInfo.nodesForDirections[pid][LEFT_DOWN].push_back (i);
   }
   if (getHasL (pid) && getHasU (pid))
   {
     int i = 0;
     for (i = pid + getNodeGridSizeX () - 1; getHasL (i) && getHasU (i); i += getNodeGridSizeX () - 1)
     {
-      nodesForDirections[pid][LEFT_UP].push_back (i);
+      dynamicInfo.nodesForDirections[pid][LEFT_UP].push_back (i);
     }
-    nodesForDirections[pid][LEFT_UP].push_back (i);
+    dynamicInfo.nodesForDirections[pid][LEFT_UP].push_back (i);
   }
   if (getHasR (pid) && getHasD (pid))
   {
     int i = 0;
     for (i = pid - getNodeGridSizeX () + 1; getHasR (i) && getHasD (i); i -= getNodeGridSizeX () - 1)
     {
-      nodesForDirections[pid][RIGHT_DOWN].push_back (i);
+      dynamicInfo.nodesForDirections[pid][RIGHT_DOWN].push_back (i);
     }
-    nodesForDirections[pid][RIGHT_DOWN].push_back (i);
+    dynamicInfo.nodesForDirections[pid][RIGHT_DOWN].push_back (i);
   }
   if (getHasR (pid) && getHasU (pid))
   {
     int i = 0;
     for (i = pid + getNodeGridSizeX () + 1; getHasR (i) && getHasU (i); i += getNodeGridSizeX () + 1)
     {
-      nodesForDirections[pid][RIGHT_UP].push_back (i);
+      dynamicInfo.nodesForDirections[pid][RIGHT_UP].push_back (i);
     }
-    nodesForDirections[pid][RIGHT_UP].push_back (i);
+    dynamicInfo.nodesForDirections[pid][RIGHT_UP].push_back (i);
   }
 #endif
 
@@ -137,36 +137,36 @@ ParallelGridCore::SetNodesForDirections (int pid)
     int i = 0;
     for (i = pid - getNodeGridSizeY () - 1; getHasD (i) && getHasB (i); i -= getNodeGridSizeY () + 1)
     {
-      nodesForDirections[pid][DOWN_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][DOWN_BACK].push_back (i);
     }
-    nodesForDirections[pid][DOWN_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][DOWN_BACK].push_back (i);
   }
   if (getHasD (pid) && getHasF (pid))
   {
     int i = 0;
     for (i = pid + getNodeGridSizeY () - 1; getHasD (i) && getHasF (i); i += getNodeGridSizeY () - 1)
     {
-      nodesForDirections[pid][DOWN_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][DOWN_FRONT].push_back (i);
     }
-    nodesForDirections[pid][DOWN_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][DOWN_FRONT].push_back (i);
   }
   if (getHasU (pid) && getHasB (pid))
   {
     int i = 0;
     for (i = pid - getNodeGridSizeY () + 1; getHasU (i) && getHasB (i); i -= getNodeGridSizeY () - 1)
     {
-      nodesForDirections[pid][UP_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][UP_BACK].push_back (i);
     }
-    nodesForDirections[pid][UP_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][UP_BACK].push_back (i);
   }
   if (getHasU (pid) && getHasF (pid))
   {
     int i = 0;
     for (i = pid + getNodeGridSizeY () + 1; getHasU (i) && getHasF (i); i += getNodeGridSizeY () + 1)
     {
-      nodesForDirections[pid][UP_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][UP_FRONT].push_back (i);
     }
-    nodesForDirections[pid][UP_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][UP_FRONT].push_back (i);
   }
 #endif
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -175,36 +175,36 @@ ParallelGridCore::SetNodesForDirections (int pid)
     int i = 0;
     for (i = pid - getNodeGridSizeXY () - getNodeGridSizeX (); getHasD (i) && getHasB (i); i -= getNodeGridSizeXY () + getNodeGridSizeX ())
     {
-      nodesForDirections[pid][DOWN_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][DOWN_BACK].push_back (i);
     }
-    nodesForDirections[pid][DOWN_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][DOWN_BACK].push_back (i);
   }
   if (getHasD (pid) && getHasF (pid))
   {
     int i = 0;
     for (i = pid + getNodeGridSizeXY () - getNodeGridSizeX (); getHasD (i) && getHasF (i); i += getNodeGridSizeXY () - getNodeGridSizeX ())
     {
-      nodesForDirections[pid][DOWN_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][DOWN_FRONT].push_back (i);
     }
-    nodesForDirections[pid][DOWN_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][DOWN_FRONT].push_back (i);
   }
   if (getHasU (pid) && getHasB (pid))
   {
     int i = 0;
     for (i = pid - getNodeGridSizeXY () + getNodeGridSizeX (); getHasU (i) && getHasB (i); i -= getNodeGridSizeXY () - getNodeGridSizeX ())
     {
-      nodesForDirections[pid][UP_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][UP_BACK].push_back (i);
     }
-    nodesForDirections[pid][UP_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][UP_BACK].push_back (i);
   }
   if (getHasU (pid) && getHasF (pid))
   {
     int i = 0;
     for (i = pid + getNodeGridSizeXY () + getNodeGridSizeX (); getHasU (i) && getHasF (i); i += getNodeGridSizeXY () + getNodeGridSizeX ())
     {
-      nodesForDirections[pid][UP_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][UP_FRONT].push_back (i);
     }
-    nodesForDirections[pid][UP_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][UP_FRONT].push_back (i);
   }
 #endif
 
@@ -214,36 +214,36 @@ ParallelGridCore::SetNodesForDirections (int pid)
     int i = 0;
     for (i = pid - getNodeGridSizeX () - 1; getHasL (i) && getHasB (i); i -= getNodeGridSizeX () + 1)
     {
-      nodesForDirections[pid][LEFT_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][LEFT_BACK].push_back (i);
     }
-    nodesForDirections[pid][LEFT_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][LEFT_BACK].push_back (i);
   }
   if (getHasL (pid) && getHasF (pid))
   {
     int i = 0;
     for (i = pid + getNodeGridSizeX () - 1; getHasL (i) && getHasF (i); i += getNodeGridSizeX () - 1)
     {
-      nodesForDirections[pid][LEFT_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][LEFT_FRONT].push_back (i);
     }
-    nodesForDirections[pid][LEFT_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][LEFT_FRONT].push_back (i);
   }
   if (getHasR (pid) && getHasB (pid))
   {
     int i = 0;
     for (i = pid - getNodeGridSizeX () + 1; getHasR (i) && getHasB (i); i -= getNodeGridSizeX () - 1)
     {
-      nodesForDirections[pid][RIGHT_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][RIGHT_BACK].push_back (i);
     }
-    nodesForDirections[pid][RIGHT_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][RIGHT_BACK].push_back (i);
   }
   if (getHasR (pid) && getHasF (pid))
   {
     int i = 0;
     for (i = pid + getNodeGridSizeX () + 1; getHasR (i) && getHasF (i); i += getNodeGridSizeX () + 1)
     {
-      nodesForDirections[pid][RIGHT_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][RIGHT_FRONT].push_back (i);
     }
-    nodesForDirections[pid][RIGHT_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][RIGHT_FRONT].push_back (i);
   }
 #endif
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
@@ -252,36 +252,36 @@ ParallelGridCore::SetNodesForDirections (int pid)
     int i = 0;
     for (i = pid - getNodeGridSizeXY () - 1; getHasL (i) && getHasB (i); i -= getNodeGridSizeXY () + 1)
     {
-      nodesForDirections[pid][LEFT_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][LEFT_BACK].push_back (i);
     }
-    nodesForDirections[pid][LEFT_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][LEFT_BACK].push_back (i);
   }
   if (getHasL (pid) && getHasF (pid))
   {
     int i = 0;
     for (i = pid + getNodeGridSizeXY () - 1; getHasL (i) && getHasF (i); i += getNodeGridSizeXY () - 1)
     {
-      nodesForDirections[pid][LEFT_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][LEFT_FRONT].push_back (i);
     }
-    nodesForDirections[pid][LEFT_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][LEFT_FRONT].push_back (i);
   }
   if (getHasR (pid) && getHasB (pid))
   {
     int i = 0;
     for (i = pid - getNodeGridSizeXY () + 1; getHasR (i) && getHasB (i); i -= getNodeGridSizeXY () - 1)
     {
-      nodesForDirections[pid][RIGHT_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][RIGHT_BACK].push_back (i);
     }
-    nodesForDirections[pid][RIGHT_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][RIGHT_BACK].push_back (i);
   }
   if (getHasR (pid) && getHasF (pid))
   {
     int i = 0;
     for (i = pid + getNodeGridSizeXY () + 1; getHasR (i) && getHasF (i); i += getNodeGridSizeXY () + 1)
     {
-      nodesForDirections[pid][RIGHT_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][RIGHT_FRONT].push_back (i);
     }
-    nodesForDirections[pid][RIGHT_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][RIGHT_FRONT].push_back (i);
   }
 #endif
 
@@ -293,9 +293,9 @@ ParallelGridCore::SetNodesForDirections (int pid)
          getHasL (i) && getHasD (i) && getHasB (i);
          i -= getNodeGridSizeXY () + getNodeGridSizeX () + 1)
     {
-      nodesForDirections[pid][LEFT_DOWN_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][LEFT_DOWN_BACK].push_back (i);
     }
-    nodesForDirections[pid][LEFT_DOWN_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][LEFT_DOWN_BACK].push_back (i);
   }
   if (getHasL (pid) && getHasD (pid) && getHasF (pid))
   {
@@ -304,9 +304,9 @@ ParallelGridCore::SetNodesForDirections (int pid)
          getHasL (i) && getHasD (i) && getHasF (i);
          i += getNodeGridSizeXY () - getNodeGridSizeX () - 1)
     {
-      nodesForDirections[pid][LEFT_DOWN_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][LEFT_DOWN_FRONT].push_back (i);
     }
-    nodesForDirections[pid][LEFT_DOWN_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][LEFT_DOWN_FRONT].push_back (i);
   }
   if (getHasL (pid) && getHasU (pid) && getHasB (pid))
   {
@@ -315,9 +315,9 @@ ParallelGridCore::SetNodesForDirections (int pid)
          getHasL (i) && getHasU (i) && getHasB (i);
          i -= getNodeGridSizeXY () - getNodeGridSizeX () + 1)
     {
-      nodesForDirections[pid][LEFT_UP_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][LEFT_UP_BACK].push_back (i);
     }
-    nodesForDirections[pid][LEFT_UP_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][LEFT_UP_BACK].push_back (i);
   }
   if (getHasL (pid) && getHasU (pid) && getHasF (pid))
   {
@@ -326,9 +326,9 @@ ParallelGridCore::SetNodesForDirections (int pid)
          getHasL (i) && getHasU (i) && getHasF (i);
          i += getNodeGridSizeXY () + getNodeGridSizeX () - 1)
     {
-      nodesForDirections[pid][LEFT_UP_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][LEFT_UP_FRONT].push_back (i);
     }
-    nodesForDirections[pid][LEFT_UP_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][LEFT_UP_FRONT].push_back (i);
   }
 
   if (getHasR (pid) && getHasD (pid) && getHasB (pid))
@@ -338,9 +338,9 @@ ParallelGridCore::SetNodesForDirections (int pid)
          getHasR (i) && getHasD (i) && getHasB (i);
          i -= getNodeGridSizeXY () + getNodeGridSizeX () - 1)
     {
-      nodesForDirections[pid][RIGHT_DOWN_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][RIGHT_DOWN_BACK].push_back (i);
     }
-    nodesForDirections[pid][RIGHT_DOWN_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][RIGHT_DOWN_BACK].push_back (i);
   }
   if (getHasR (pid) && getHasD (pid) && getHasF (pid))
   {
@@ -349,9 +349,9 @@ ParallelGridCore::SetNodesForDirections (int pid)
          getHasR (i) && getHasD (i) && getHasF (i);
          i += getNodeGridSizeXY () - getNodeGridSizeX () + 1)
     {
-      nodesForDirections[pid][RIGHT_DOWN_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][RIGHT_DOWN_FRONT].push_back (i);
     }
-    nodesForDirections[pid][RIGHT_DOWN_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][RIGHT_DOWN_FRONT].push_back (i);
   }
   if (getHasR (pid) && getHasU (pid) && getHasB (pid))
   {
@@ -360,9 +360,9 @@ ParallelGridCore::SetNodesForDirections (int pid)
          getHasR (i) && getHasU (i) && getHasB (i);
          i -= getNodeGridSizeXY () - getNodeGridSizeX () - 1)
     {
-      nodesForDirections[pid][RIGHT_UP_BACK].push_back (i);
+      dynamicInfo.nodesForDirections[pid][RIGHT_UP_BACK].push_back (i);
     }
-    nodesForDirections[pid][RIGHT_UP_BACK].push_back (i);
+    dynamicInfo.nodesForDirections[pid][RIGHT_UP_BACK].push_back (i);
   }
   if (getHasR (pid) && getHasU (pid) && getHasF (pid))
   {
@@ -371,9 +371,9 @@ ParallelGridCore::SetNodesForDirections (int pid)
          getHasR (i) && getHasU (i) && getHasF (i);
          i += getNodeGridSizeXY () + getNodeGridSizeX () + 1)
     {
-      nodesForDirections[pid][RIGHT_UP_FRONT].push_back (i);
+      dynamicInfo.nodesForDirections[pid][RIGHT_UP_FRONT].push_back (i);
     }
-    nodesForDirections[pid][RIGHT_UP_FRONT].push_back (i);
+    dynamicInfo.nodesForDirections[pid][RIGHT_UP_FRONT].push_back (i);
   }
 #endif
 
@@ -388,9 +388,9 @@ ParallelGridCore::SetNodesForDirections (int pid)
     {
       DPRINTF (LOG_LEVEL_NONE, "  Processes to %s: ", BufferPositionNames[dir]);
 
-      for (int i = 0; i < nodesForDirections[pid][dir].size (); ++i)
+      for (int i = 0; i < dynamicInfo.nodesForDirections[pid][dir].size (); ++i)
       {
-        DPRINTF (LOG_LEVEL_NONE, " %d, ", nodesForDirections[pid][dir][i]);
+        DPRINTF (LOG_LEVEL_NONE, " %d, ", dynamicInfo.nodesForDirections[pid][dir][i]);
       }
 
       DPRINTF (LOG_LEVEL_NONE, "\n");
@@ -406,13 +406,7 @@ ParallelGridCore::SetNodesForDirections (int pid)
 void
 ParallelGridCore::StartCalcClock ()
 {
-#ifdef MPI_DYNAMIC_CLOCK
-  FPValue val = -MPI_Wtime ();
-  calcClockSumBetweenRebalance[processId] += val;
-#else
-  int status = clock_gettime (CLOCK_MONOTONIC, &calcStart);
-  ASSERT (status == 0);
-#endif
+  dynamicInfo.calcStart = Clock::getNewClock ();
 } /* ParallelGridCore::StartCalcClock */
 
 /**
@@ -421,21 +415,10 @@ ParallelGridCore::StartCalcClock ()
 void
 ParallelGridCore::StopCalcClock ()
 {
-#ifdef MPI_DYNAMIC_CLOCK
-  FPValue val = MPI_Wtime ();
-  calcClockSumBetweenRebalance[processId] += val;
-#else
-  int status = clock_gettime (CLOCK_MONOTONIC, &calcStop);
-  ASSERT (status == 0);
+  dynamicInfo.calcStop = Clock::getNewClock ();
+  Clock diff = dynamicInfo.calcStop - dynamicInfo.calcStart;
 
-  timespec diff;
-  timespec_diff (&calcStart, &calcStop, &diff);
-
-  timespec sum;
-  timespec_sum (&calcClockSumBetweenRebalance[processId], &diff, &sum);
-
-  calcClockSumBetweenRebalance[processId] = sum;
-#endif
+  dynamicInfo.calcClockSumBetweenRebalance[processId] += diff;
 } /* ParallelGridCore::StopCalcClock */
 
 /**
@@ -448,18 +431,7 @@ ParallelGridCore::StartShareClock (int pid, /**< pid of process, with which shar
   ASSERT (pid >= 0 && pid < totalProcCount);
   ASSERT (pid != processId);
 
-#ifdef MPI_DYNAMIC_CLOCK
-  ShareClock_t map = getShareClockCur (pid);
-  FPValue val = -MPI_Wtime ();
-  if (map.find (count) != map.end ())
-  {
-    val += map[count];
-  }
-  setShareClockCur (pid, count, val);
-#else
-  int status = clock_gettime (CLOCK_MONOTONIC, &shareStart);
-  ASSERT (status == 0);
-#endif
+  dynamicInfo.shareStart = Clock::getNewClock ();
 } /* ParallelGridCore::StartShareClock */
 
 /**
@@ -472,118 +444,68 @@ ParallelGridCore::StopShareClock (int pid, /**< pid of process, with which share
   ASSERT (pid >= 0 && pid < totalProcCount);
   ASSERT (pid != processId);
 
+  dynamicInfo.shareStop = Clock::getNewClock ();
+  Clock diff = dynamicInfo.shareStop - dynamicInfo.shareStart;
+  Clock sum = diff;
+
   ShareClock_t map = getShareClockCur (pid);
-  ASSERT (map.find (count) != map.end ());
-
-#ifdef MPI_DYNAMIC_CLOCK
-  FPValue val = MPI_Wtime ();
-  val += map[count];
-  setShareClockCur (pid, count, val);
-#else
-  int status = clock_gettime (CLOCK_MONOTONIC, &shareStop);
-  ASSERT (status == 0);
-
-  timespec diff;
-  timespec_diff (&shareStart, &shareStop, &diff);
-
-  timespec val_old = map[count];
-
-  timespec sum;
-  timespec_sum (&val_old, &diff, &sum);
+  if (map.find (count) != map.end ())
+  {
+    Clock val_old = map[count];
+    sum = sum + val_old;
+  }
 
   setShareClockCur (pid, count, sum);
-#endif
 } /* ParallelGridCore::StopShareClock */
-
-/**
- * Calculate difference of two moments in time
- */
-void
-ParallelGridCore::timespec_diff (struct timespec *start, /**< start moment */
-                                 struct timespec *stop, /**< end moment */
-                                 struct timespec *result) /**< out: difference of two moments in time */
-{
-  if ((stop->tv_nsec - start->tv_nsec) < 0)
-  {
-    result->tv_sec = stop->tv_sec - start->tv_sec - 1;
-    result->tv_nsec = stop->tv_nsec - start->tv_nsec + 1000000000;
-  }
-  else
-  {
-    result->tv_sec = stop->tv_sec - start->tv_sec;
-    result->tv_nsec = stop->tv_nsec - start->tv_nsec;
-  }
-} /* ParallelGridCore::timespec_diff */
-
-void
-ParallelGridCore::timespec_sum (struct timespec *start, /**< start moment */
-                                struct timespec *stop, /**< end moment */
-                                struct timespec *result) /**< out: difference of two moments in time */
-{
-  result->tv_sec = start->tv_sec + stop->tv_sec;
-  result->tv_nsec = start->tv_nsec + stop->tv_nsec;
-
-  if (result->tv_nsec >= 1000000000)
-  {
-    result->tv_nsec -= 1000000000;
-    result->tv_sec += 1;
-  }
-}
-
-void
-ParallelGridCore::timespec_avg (struct timespec *start, /**< start moment */
-                                struct timespec *stop, /**< end moment */
-                                struct timespec *result) /**< out: difference of two moments in time */
-{
-  result->tv_sec = (start->tv_sec + stop->tv_sec) / 2;
-  result->tv_nsec = (start->tv_nsec + stop->tv_nsec) / 2;
-}
 
 void ParallelGridCore::ShareCalcClocks ()
 {
   for (int process = 0; process < getTotalProcCount (); ++process)
   {
-#ifdef MPI_DYNAMIC_CLOCK
-    FPValue calcClockSec;
-#else
+#ifdef MPI_CLOCK
+    DOUBLE calcClockSec;
+#else /* MPI_CLOCK */
     uint64_t calcClockSec;
     uint64_t calcClockNSec;
-#endif
+#endif /* !MPI_CLOCK */
     uint32_t calcClockCount;
 
     if (process == getProcessId ())
     {
-#ifdef MPI_DYNAMIC_CLOCK
-      calcClockSec = calcClockSumBetweenRebalance[process];
-#else
-      calcClockSec = (uint64_t) calcClockSumBetweenRebalance[process].tv_sec;
-      calcClockNSec = (uint64_t) calcClockSumBetweenRebalance[process].tv_nsec;
-#endif
-      calcClockCount = calcClockCountBetweenRebalance[process];
+      ClockValue val = dynamicInfo.calcClockSumBetweenRebalance[process].getVal ();
+#ifdef MPI_CLOCK
+      calcClockSec = val;
+#else /* MPI_CLOCK */
+      calcClockSec = (uint64_t) val.tv_sec;
+      calcClockNSec = (uint64_t) val.tv_nsec;
+#endif /* !MPI_CLOCK */
+      calcClockCount = dynamicInfo.calcClockCountBetweenRebalance[process];
     }
 
-#ifdef MPI_DYNAMIC_CLOCK
-    MPI_Bcast (&calcClockSec, 1, MPI_FPVALUE, process, communicator);
-#else
+#ifdef MPI_CLOCK
+    MPI_Bcast (&calcClockSec, 1, MPI_DOUBLE, process, communicator);
+#else /* MPI_CLOCK */
     MPI_Bcast (&calcClockSec, 1, MPI_LONG_LONG, process, communicator);
     MPI_Bcast (&calcClockNSec, 1, MPI_LONG_LONG, process, communicator);
-#endif
+#endif /* !MPI_CLOCK */
     MPI_Bcast (&calcClockCount, 1, MPI_UNSIGNED, process, communicator);
 
     if (process != getProcessId ())
     {
-#ifdef MPI_DYNAMIC_CLOCK
-      calcClockSumBetweenRebalance[process] = calcClockSec;
-#else
-      calcClockSumBetweenRebalance[process].tv_sec = calcClockSec;
-      calcClockSumBetweenRebalance[process].tv_nsec = calcClockNSec;
-#endif
-      calcClockCountBetweenRebalance[process] = calcClockCount;
+      ClockValue val;
+#ifdef MPI_CLOCK
+      val = calcClockSec;
+#else /* MPI_CLOCK */
+      val.tv_sec = calcClockSec;
+      val.tv_nsec = calcClockNSec;
+#endif /* !MPI_CLOCK */
+      dynamicInfo.calcClockSumBetweenRebalance[process].setVal (val);
+      dynamicInfo.calcClockCountBetweenRebalance[process] = calcClockCount;
     }
 
     MPI_Barrier (communicator);
   }
-}
+} /* ParallelGridCore::ShareCalcClocks */
 
 /**
  * Share clock counters with other processes
@@ -598,61 +520,62 @@ void ParallelGridCore::ShareShareClocks ()
       int jj = 0;
       for (int i = 0; i < getTotalProcCount (); ++i)
       {
-        ASSERT (shareClockSumBetweenRebalance[process][i].size () == CLOCK_BUF_SIZE
-                || shareClockSumBetweenRebalance[process][i].empty ());
+        ASSERT (dynamicInfo.shareClockSumBetweenRebalance[process][i].size () == CLOCK_BUF_SIZE
+                || dynamicInfo.shareClockSumBetweenRebalance[process][i].empty ());
 
         // Map is temporary of size CLOCK_BUF_SIZE
-        for (ShareClock_t::iterator it = shareClockSumBetweenRebalance[process][i].begin ();
-             it != shareClockSumBetweenRebalance[process][i].end (); ++it)
+        for (ShareClock_t::iterator it = dynamicInfo.shareClockSumBetweenRebalance[process][i].begin ();
+             it != dynamicInfo.shareClockSumBetweenRebalance[process][i].end (); ++it)
         {
-          shareClockBufSize_buf[j] = it->first;
+          dynamicInfo.shareClockBufSize_buf[j] = it->first;
+          ClockValue value = it->second.getVal ();
 
-#ifdef MPI_DYNAMIC_CLOCK
-          shareClockSec_buf[j] = it->second;
-#else
-          shareClockSec_buf[j] = it->second.tv_sec;
-          shareClockNSec_buf[j] = it->second.tv_sec;
-#endif
+#ifdef MPI_CLOCK
+          dynamicInfo.shareClockSec_buf[j] = value;
+#else /* MPI_CLOCK */
+          dynamicInfo.shareClockSec_buf[j] = value.tv_sec;
+          dynamicInfo.shareClockNSec_buf[j] = value.tv_sec;
+#endif /* !MPI_CLOCK */
 
           j++;
         }
 
-        if (shareClockSumBetweenRebalance[process][i].empty ())
+        if (dynamicInfo.shareClockSumBetweenRebalance[process][i].empty ())
         {
           for (int k = 0; k < CLOCK_BUF_SIZE; ++k)
           {
-            shareClockBufSize_buf[j] = 0;
-            shareClockSec_buf[j] = 0;
-#ifndef MPI_DYNAMIC_CLOCK
-            shareClockNSec_buf[j] = 0;
-#endif
+            dynamicInfo.shareClockBufSize_buf[j] = 0;
+            dynamicInfo.shareClockSec_buf[j] = 0;
+#ifndef MPI_CLOCK
+            dynamicInfo.shareClockNSec_buf[j] = 0;
+#endif /* !MPI_CLOCK */
             j++;
 //
-//             shareClockBufSize_buf[j] = 0;
-//             shareClockSec_buf[j] = 0;
-// #ifndef MPI_DYNAMIC_CLOCK
-//             shareClockNSec_buf[j] = 0;
+//             dynamicInfo.shareClockBufSize_buf[j] = 0;
+//             dynamicInfo.shareClockSec_buf[j] = 0;
+// #ifndef MPI_CLOCK
+//             dynamicInfo.shareClockNSec_buf[j] = 0;
 // #endif
 //             j++;
           }
         }
 
 
-        for (IterCount_t::iterator it = shareClockIterBetweenRebalance[process][i].begin ();
-             it != shareClockIterBetweenRebalance[process][i].end (); ++it)
+        for (IterCount_t::iterator it = dynamicInfo.shareClockIterBetweenRebalance[process][i].begin ();
+             it != dynamicInfo.shareClockIterBetweenRebalance[process][i].end (); ++it)
         {
-          shareClockBufSize2_buf[jj] = it->first;
-          shareClockIter_buf[jj] = it->second;
+          dynamicInfo.shareClockBufSize2_buf[jj] = it->first;
+          dynamicInfo.shareClockIter_buf[jj] = it->second;
 
           jj++;
         }
 
-        if (shareClockIterBetweenRebalance[process][i].empty ())
+        if (dynamicInfo.shareClockIterBetweenRebalance[process][i].empty ())
         {
           for (int k = 0; k < CLOCK_BUF_SIZE; ++k)
           {
-            shareClockBufSize2_buf[jj] = 0;
-            shareClockIter_buf[jj] = 0;
+            dynamicInfo.shareClockBufSize2_buf[jj] = 0;
+            dynamicInfo.shareClockIter_buf[jj] = 0;
             jj++;
             //
             // shareClockBufSize2_buf[jj] = 0;
@@ -663,16 +586,16 @@ void ParallelGridCore::ShareShareClocks ()
       }
     }
 
-    MPI_Bcast (shareClockBufSize_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_UNSIGNED, process, communicator);
-#ifdef MPI_DYNAMIC_CLOCK
-    MPI_Bcast (shareClockSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_FPVALUE, process, communicator);
-#else
-    MPI_Bcast (shareClockSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_LONG_LONG, process, communicator);
-    MPI_Bcast (shareClockNSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_LONG_LONG, process, communicator);
-#endif
+    MPI_Bcast (dynamicInfo.shareClockBufSize_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_UNSIGNED, process, communicator);
+#ifdef MPI_CLOCK
+    MPI_Bcast (dynamicInfo.shareClockSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_DOUBLE, process, communicator);
+#else /* MPI_CLOCK */
+    MPI_Bcast (dynamicInfo.shareClockSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_LONG_LONG, process, communicator);
+    MPI_Bcast (dynamicInfo.shareClockNSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_LONG_LONG, process, communicator);
+#endif /* !MPI_CLOCK */
 
-    MPI_Bcast (shareClockBufSize2_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_UNSIGNED, process, communicator);
-    MPI_Bcast (shareClockIter_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_UNSIGNED, process, communicator);
+    MPI_Bcast (dynamicInfo.shareClockBufSize2_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_UNSIGNED, process, communicator);
+    MPI_Bcast (dynamicInfo.shareClockIter_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_UNSIGNED, process, communicator);
 
     if (process != getProcessId ())
     {
@@ -682,34 +605,35 @@ void ParallelGridCore::ShareShareClocks ()
         {
           int index = i * CLOCK_BUF_SIZE + j;
 
-          uint32_t bufSize = shareClockBufSize_buf[index];
+          uint32_t bufSize = dynamicInfo.shareClockBufSize_buf[index];
 
-#ifdef MPI_DYNAMIC_CLOCK
-          FPValue val = shareClockSec_buf[index];
-          if (val == 0 && bufSize == 0)
-          {
-            continue;
-          }
-#else
+          Clock clock;
+
+#ifdef MPI_CLOCK
+          DOUBLE val = dynamicInfo.shareClockSec_buf[index];
+          clock.setVal (val);
+#else /* MPI_CLOCK */
           timespec val;
-          val.tv_sec = shareClockSec_buf[index];
-          val.tv_nsec = shareClockNSec_buf[index];
-          if (val.tv_sec == 0 && val.tv_nsec == 0 && bufSize == 0)
+          val.tv_sec = dynamicInfo.shareClockSec_buf[index];
+          val.tv_nsec = dynamicInfo.shareClockNSec_buf[index];
+          clock.setVal (val);
+#endif /* !MPI_CLOCK */
+
+          if (clock.isZero () && bufSize == 0)
           {
             continue;
           }
-#endif
 
-          shareClockSumBetweenRebalance[process][i][bufSize] = val;
+          dynamicInfo.shareClockSumBetweenRebalance[process][i][bufSize] = clock;
 
 
-          uint32_t bufSize2 = shareClockBufSize2_buf[index];
-          uint32_t val2 = shareClockIter_buf[index];
+          uint32_t bufSize2 = dynamicInfo.shareClockBufSize2_buf[index];
+          uint32_t val2 = dynamicInfo.shareClockIter_buf[index];
           if (val2 == 0 && bufSize2 == 0)
           {
             continue;
           }
-          shareClockIterBetweenRebalance[process][i][bufSize2] = val2;
+          dynamicInfo.shareClockIterBetweenRebalance[process][i][bufSize2] = val2;
         }
       }
     }
@@ -724,33 +648,28 @@ void ParallelGridCore::ShareShareClocks ()
   {
     for (int j = i + 1; j < totalProcCount; ++j)
     {
-      ASSERT (shareClockSumBetweenRebalance[i][j].size () == shareClockSumBetweenRebalance[j][i].size ());
-      ASSERT (shareClockIterBetweenRebalance[i][j].size () == shareClockIterBetweenRebalance[j][i].size ());
-      ASSERT (shareClockSumBetweenRebalance[i][j].size () == shareClockIterBetweenRebalance[i][j].size ());
+      ASSERT (dynamicInfo.shareClockSumBetweenRebalance[i][j].size () == dynamicInfo.shareClockSumBetweenRebalance[j][i].size ());
+      ASSERT (dynamicInfo.shareClockIterBetweenRebalance[i][j].size () == dynamicInfo.shareClockIterBetweenRebalance[j][i].size ());
+      ASSERT (dynamicInfo.shareClockSumBetweenRebalance[i][j].size () == dynamicInfo.shareClockIterBetweenRebalance[i][j].size ());
 
-      ASSERT (shareClockSumBetweenRebalance[i][j].size () == CLOCK_BUF_SIZE
-              || shareClockSumBetweenRebalance[i][j].size () == 0);
+      ASSERT (dynamicInfo.shareClockSumBetweenRebalance[i][j].size () == CLOCK_BUF_SIZE
+              || dynamicInfo.shareClockSumBetweenRebalance[i][j].size () == 0);
 
-      for (ShareClock_t::iterator it = shareClockSumBetweenRebalance[i][j].begin ();
-           it != shareClockSumBetweenRebalance[i][j].end (); ++it)
+      for (ShareClock_t::iterator it = dynamicInfo.shareClockSumBetweenRebalance[i][j].begin ();
+           it != dynamicInfo.shareClockSumBetweenRebalance[i][j].end (); ++it)
       {
         uint32_t bufSize = it->first;
 
-        ShareClock_t::iterator iter = shareClockSumBetweenRebalance[j][i].find (bufSize);
-        ASSERT (iter != shareClockSumBetweenRebalance[j][i].end ());
+        ShareClock_t::iterator iter = dynamicInfo.shareClockSumBetweenRebalance[j][i].find (bufSize);
+        ASSERT (iter != dynamicInfo.shareClockSumBetweenRebalance[j][i].end ());
 
-#ifdef MPI_DYNAMIC_CLOCK
-        FPValue tmp = (it->second + iter->second) / FPValue (2);
-#else
-        timespec tmp;
-        timespec_avg (&it->second, &iter->second, &tmp);
-#endif
-        shareClockSumBetweenRebalance[i][j][bufSize] = tmp;
-        shareClockSumBetweenRebalance[j][i][bufSize] = tmp;
+        Clock tmp = Clock::average (it->second, iter->second);
+        dynamicInfo.shareClockSumBetweenRebalance[i][j][bufSize] = tmp;
+        dynamicInfo.shareClockSumBetweenRebalance[j][i][bufSize] = tmp;
       }
     }
   }
-}
+} /* ParallelGridCore::ShareShareClocks */
 
 /**
  * Set clocks to zeros
@@ -760,43 +679,37 @@ ParallelGridCore::ClearCalcClocks ()
 {
   for (int i = 0; i < totalProcCount; ++i)
   {
-#ifdef MPI_DYNAMIC_CLOCK
-    calcClockSumBetweenRebalance[i] = 0;
-#else
-    calcClockSumBetweenRebalance[i].tv_sec = 0;
-    calcClockSumBetweenRebalance[i].tv_nsec = 0;
-#endif
-
-    calcClockCountBetweenRebalance[i] = 0;
+    dynamicInfo.calcClockSumBetweenRebalance[i] = Clock ();
+    dynamicInfo.calcClockCountBetweenRebalance[i] = 0;
   }
-}
+} /* ParallelGridCore::ClearCalcClocks */
 
 void
 ParallelGridCore::ClearShareClocks ()
 {
   for (int i = 0; i < totalProcCount; ++i)
   {
-    shareClockCountBetweenRebalance[i] = 0;
+    dynamicInfo.shareClockCountBetweenRebalance[i] = 0;
 
     for (int j = 0; j < totalProcCount; ++j)
     {
-      shareClockSumBetweenRebalance[i][j].clear ();
-      shareClockIterBetweenRebalance[i][j].clear ();
+      dynamicInfo.shareClockSumBetweenRebalance[i][j].clear ();
+      dynamicInfo.shareClockIterBetweenRebalance[i][j].clear ();
     }
   }
-}
+} /* ParallelGridCore::ClearShareClocks */
 
 int
 ParallelGridCore::getNodeForDirectionForProcess (int pid, BufferPosition dir) const
 {
-  for (int i = 0; i < nodesForDirections[pid][dir].size (); ++i)
+  for (int i = 0; i < dynamicInfo.nodesForDirections[pid][dir].size (); ++i)
   {
-    int process = nodesForDirections[pid][dir][i];
+    int process = dynamicInfo.nodesForDirections[pid][dir][i];
 
     /*
      * Choose the first enabled node
      */
-    if (nodeState[process])
+    if (dynamicInfo.nodeState[process])
     {
       return process;
     }
@@ -813,24 +726,19 @@ ParallelGridCore::updateCurrentPerfValues (time_step difft) /**< number of elaps
 {
   for (int i = 0; i < getTotalProcCount (); ++i)
   {
-    curPoints[i] = difft * getCalcClockCount (i);
+    dynamicInfo.curPoints[i] = difft * getCalcClockCount (i);
 
-    CalcClock_t calcClockCur = getCalcClock (i);
-#ifdef MPI_DYNAMIC_CLOCK
-    FPValue timesec = calcClockCur;
-#else
-    FPValue timesec = (FPValue) calcClockCur.tv_sec + ((FPValue) calcClockCur.tv_nsec) / 1000000000;
-#endif
-    curTimes[i] = timesec;
+    Clock calcClockCur = getCalcClock (i);
+    dynamicInfo.curTimes[i] = calcClockCur.getFP ();
 
 #ifdef ENABLE_ASSERTS
     if (getNodeState ()[i] == 0)
     {
-      ASSERT (curPoints[i] == 0 && curTimes[i] == 0);
+      ASSERT (dynamicInfo.curPoints[i] == DOUBLE (0) && dynamicInfo.curTimes[i] == DOUBLE (0));
     }
     else
     {
-      ASSERT (curPoints[i] != 0 && curTimes[i] != 0);
+      ASSERT (dynamicInfo.curPoints[i] != DOUBLE (0) && dynamicInfo.curTimes[i] != DOUBLE (0));
     }
 #endif
   }
@@ -840,25 +748,21 @@ ParallelGridCore::updateCurrentPerfValues (time_step difft) /**< number of elaps
  * Approximate latency and bandwidth using linear regression
  */
 void
-ParallelGridCore::approximateWithLinearRegression (FPValue &latency, /**< out: value of latency */
-                                                   FPValue &bandwidth, /**< out: value of bandwidth */
+ParallelGridCore::approximateWithLinearRegression (DOUBLE &latency, /**< out: value of latency */
+                                                   DOUBLE &bandwidth, /**< out: value of bandwidth */
                                                    const ShareClock_t &clockMap) /**< map of times for different buffer sizes */
 {
-  FPValue avg_sum_x = 0;
-  FPValue avg_sum_y = 0;
-  FPValue avg_sum_x2 = 0;
-  FPValue avg_sum_xy = 0;
+  DOUBLE avg_sum_x = DOUBLE (0);
+  DOUBLE avg_sum_y = DOUBLE (0);
+  DOUBLE avg_sum_x2 = DOUBLE (0);
+  DOUBLE avg_sum_xy = DOUBLE (0);
 
   int index = 0;
 
   for (ShareClock_t::const_iterator it = clockMap.begin (); it != clockMap.end (); ++it)
   {
-    FPValue bufSize = it->first;
-#ifndef MPI_DYNAMIC_CLOCK
-    FPValue clocks = (FPValue) it->second.tv_sec + ((FPValue) it->second.tv_nsec) / 1000000000;
-#else
-    FPValue clocks = it->second;
-#endif
+    DOUBLE bufSize = it->first;
+    DOUBLE clocks = it->second.getFP ();
 
     avg_sum_x += bufSize;
     avg_sum_y += clocks;
@@ -903,33 +807,33 @@ ParallelGridCore::updateCurrentShareValues ()
           || getNodeState ()[i] == 0
           || getNodeState ()[j] == 0)
       {
-        curShareLatency[i][j] = 0;
-        curShareBandwidth[i][j] = 0;
+        dynamicInfo.curShareLatency[i][j] = DOUBLE (0);
+        dynamicInfo.curShareBandwidth[i][j] = DOUBLE (0);
 
         continue;
       }
 
-      skipCurShareMeasurement[i][j] = 0;
+      dynamicInfo.skipCurShareMeasurement[i][j] = 0;
 
       ShareClock_t clockMap = getShareClock (i, j);
 
       ASSERT (clockMap.size () == CLOCK_BUF_SIZE
               || clockMap.empty ());
 
-      approximateWithLinearRegression (curShareLatency[i][j], curShareBandwidth[i][j], clockMap);
+      approximateWithLinearRegression (dynamicInfo.curShareLatency[i][j], dynamicInfo.curShareBandwidth[i][j], clockMap);
 
-      if (curShareBandwidth[i][j] <= 0 || curShareLatency[i][j] < 0)
+      if (dynamicInfo.curShareBandwidth[i][j] <= DOUBLE (0) || dynamicInfo.curShareLatency[i][j] < DOUBLE (0))
       {
         // TODO: continue measurements if current data is not enough to produce correct latency and bandwidth
-        printf ("INCORRECT: %d %d -> %f %f\n", i, j, curShareLatency[i][j], curShareBandwidth[i][j]);
-        skipCurShareMeasurement[i][j] = 1;
+        printf ("INCORRECT: %d %d -> %f %f\n", i, j, dynamicInfo.curShareLatency[i][j], dynamicInfo.curShareBandwidth[i][j]);
+        dynamicInfo.skipCurShareMeasurement[i][j] = 1;
       }
 
 #ifdef ENABLE_ASSERTS
       if (getNodeState ()[i] == 0
           || getNodeState ()[j] == 0)
       {
-        ASSERT (curShareLatency[i][j] == 0 && curShareBandwidth[i][j] == 0);
+        ASSERT (dynamicInfo.curShareLatency[i][j] == DOUBLE (0) && dynamicInfo.curShareBandwidth[i][j] == DOUBLE (0));
       }
 #endif
     }
@@ -980,32 +884,6 @@ ParallelGridCore::doAdditionalShareMeasurements (uint32_t latency_measure_count,
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
-  MPI_Datatype datatype;
-
-#ifdef FLOAT_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_FLOAT;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* FLOAT_VALUES */
-
-#ifdef DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* DOUBLE_VALUES */
-
-#ifdef LONG_DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_LONG_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_LONG_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* LONG_DOUBLE_VALUES */
-
   std::vector<FieldValue> tmp_buffer (latency_buf_size);
 
   for (uint32_t buf_size = latency_buf_start; buf_size < latency_buf_size; buf_size += latency_buf_step)
@@ -1051,7 +929,7 @@ ParallelGridCore::doAdditionalShareMeasurements (uint32_t latency_measure_count,
     {
       StartShareClock (processTo, ssize);
 
-      int retCode = MPI_Send (tmp_buffer.data(), ssize, datatype, processTo, getProcessId (), getCommunicator ());
+      int retCode = MPI_Send (tmp_buffer.data(), ssize, MPI_FPVALUE, processTo, getProcessId (), getCommunicator ());
       ASSERT (retCode == MPI_SUCCESS);
 
       StopShareClock (processTo, ssize);
@@ -1062,7 +940,7 @@ ParallelGridCore::doAdditionalShareMeasurements (uint32_t latency_measure_count,
       StartShareClock (processFrom, rsize);
 
       MPI_Status status;
-      int retCode = MPI_Recv (tmp_buffer.data(), rsize, datatype, processFrom, processFrom, getCommunicator (), &status);
+      int retCode = MPI_Recv (tmp_buffer.data(), rsize, MPI_FPVALUE, processFrom, processFrom, getCommunicator (), &status);
       ASSERT (retCode == MPI_SUCCESS);
 
       StopShareClock (processFrom, rsize);
@@ -1078,14 +956,14 @@ ParallelGridCore::doAdditionalShareMeasurements (uint32_t latency_measure_count,
       {
         StartShareClock (processTo, ssize);
 
-        int retCode = MPI_Send (tmp_buffer.data(), ssize, datatype, processTo, getProcessId (), getCommunicator ());
+        int retCode = MPI_Send (tmp_buffer.data(), ssize, MPI_FPVALUE, processTo, getProcessId (), getCommunicator ());
         ASSERT (retCode == MPI_SUCCESS);
 
         StopShareClock (processTo, ssize);
         StartShareClock (processFrom, rsize);
 
         MPI_Status status;
-        retCode = MPI_Recv (tmp_buffer.data(), rsize, datatype, processFrom, processFrom, getCommunicator (), &status);
+        retCode = MPI_Recv (tmp_buffer.data(), rsize, MPI_FPVALUE, processFrom, processFrom, getCommunicator (), &status);
         ASSERT (retCode == MPI_SUCCESS);
 
         StopShareClock (processFrom, rsize);
@@ -1095,13 +973,13 @@ ParallelGridCore::doAdditionalShareMeasurements (uint32_t latency_measure_count,
         StartShareClock (processFrom, rsize);
 
         MPI_Status status;
-        int retCode = MPI_Recv (tmp_buffer.data(), rsize, datatype, processFrom, processFrom, getCommunicator (), &status);
+        int retCode = MPI_Recv (tmp_buffer.data(), rsize, MPI_FPVALUE, processFrom, processFrom, getCommunicator (), &status);
         ASSERT (retCode == MPI_SUCCESS);
 
         StopShareClock (processFrom, rsize);
         StartShareClock (processTo, ssize);
 
-        retCode = MPI_Send (tmp_buffer.data(), ssize, datatype, processTo, getProcessId (), getCommunicator ());
+        retCode = MPI_Send (tmp_buffer.data(), ssize, MPI_FPVALUE, processTo, getProcessId (), getCommunicator ());
         ASSERT (retCode == MPI_SUCCESS);
 
         StopShareClock (processTo, ssize);
@@ -1143,33 +1021,33 @@ ParallelGridCore::initializeIterationCounters (time_step difft) /**< elapsed num
  *
  * @return sum performance of all enabled computational nodes
  */
-FPValue
+DOUBLE
 ParallelGridCore::calcTotalPerf (time_step difft) /**< elapsed number of time steps */
 {
   ShareCalcClocks ();
 
   updateCurrentPerfValues (difft);
 
-  FPValue sumSpeedEnabled = 0;
+  DOUBLE sumSpeedEnabled = DOUBLE (0);
 
   for (int process = 0; process < getTotalProcCount (); ++process)
   {
     if (getNodeState ()[process] == 1)
     {
-      increaseTotalSumPerfPointsPerProcess (process, curPoints[process]);
-      increaseTotalSumPerfTimePerProcess (process, curTimes[process]);
+      increaseTotalSumPerfPointsPerProcess (process, dynamicInfo.curPoints[process]);
+      increaseTotalSumPerfTimePerProcess (process, dynamicInfo.curTimes[process]);
     }
 
-    FPValue sumTime = getTotalSumPerfTimePerProcess (process);
-    FPValue sumPoints = getTotalSumPerfPointsPerProcess (process);
+    DOUBLE sumTime = getTotalSumPerfTimePerProcess (process);
+    DOUBLE sumPoints = getTotalSumPerfPointsPerProcess (process);
 
     ASSERT (sumTime != 0 && sumPoints != 0);
 
-    speed[process] = sumPoints / sumTime;
+    dynamicInfo.speed[process] = sumPoints / sumTime;
 
     if (getNodeState ()[process] == 1)
     {
-      sumSpeedEnabled += speed[process];
+      sumSpeedEnabled += dynamicInfo.speed[process];
     }
   }
 
@@ -1211,17 +1089,17 @@ ParallelGridCore::calcTotalLatencyAndBandwidth (time_step difft) /**< elapsed nu
        */
       if (getNodeState ()[process] == 1
           && getNodeState ()[i] == 1
-          && skipCurShareMeasurement[process][i] == 0)
+          && dynamicInfo.skipCurShareMeasurement[process][i] == 0)
       {
-        increaseTotalSumLatencyPerConnection (process, i, curShareLatency[process][i]);
-        increaseTotalSumLatencyCountPerConnection (process, i, 1);
+        increaseTotalSumLatencyPerConnection (process, i, dynamicInfo.curShareLatency[process][i]);
+        increaseTotalSumLatencyCountPerConnection (process, i, DOUBLE (1));
 
-        increaseTotalSumBandwidthPerConnection (process, i, curShareBandwidth[process][i]);
-        increaseTotalSumBandwidthCountPerConnection (process, i, 1);
+        increaseTotalSumBandwidthPerConnection (process, i, dynamicInfo.curShareBandwidth[process][i]);
+        increaseTotalSumBandwidthCountPerConnection (process, i, DOUBLE (1));
       }
 
-      latency[process][i] = calcLatencyForConnection (process, i);
-      bandwidth[process][i] = calcBandwidthForConnection (process, i);
+      dynamicInfo.latency[process][i] = calcLatencyForConnection (process, i);
+      dynamicInfo.bandwidth[process][i] = calcBandwidthForConnection (process, i);
     }
   }
 }

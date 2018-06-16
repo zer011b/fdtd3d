@@ -537,33 +537,74 @@ jobs:
         - UNIT_TEST_PARALLEL_GRID=""
         - CXX11=ON
         - COMPLEX_VALUES=ON
+        - LARGE_COORDINATES=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
         - CXX11=ON
         - COMPLEX_VALUES=OFF
+        - LARGE_COORDINATES=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
         - CXX11=OFF
         - COMPLEX_VALUES=ON
+        - LARGE_COORDINATES=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
+        - LARGE_COORDINATES=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_PARALLEL_GRID=""
+        - CXX11=ON
+        - COMPLEX_VALUES=ON
+        - LARGE_COORDINATES=OFF
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_PARALLEL_GRID=""
+        - CXX11=ON
+        - COMPLEX_VALUES=OFF
+        - LARGE_COORDINATES=OFF
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_PARALLEL_GRID=""
+        - CXX11=OFF
+        - COMPLEX_VALUES=ON
+        - LARGE_COORDINATES=OFF
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_PARALLEL_GRID=""
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - LARGE_COORDINATES=OFF
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
 
 # ---- Unit test for Grid ----
     - stage: unit-tests
@@ -628,6 +669,22 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-layout.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+
+# ---- Unit test for Clock ----
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_CLOCK=""
+        - CXX11=ON
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_CLOCK=""
+        - CXX11=OFF
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
 
 # ==== Test suite stage ====
     - stage: test-suite

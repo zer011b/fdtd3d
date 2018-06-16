@@ -50,6 +50,10 @@ void initParallel (ParallelYeeGridLayout<Type, layout_type> **yeeLayout,
 
   MPI_Init(&argc, &argv);
 
+#ifdef MPI_CLOCK
+  DPRINTF (LOG_LEVEL_1, "MPI_Wtime resolution %.10f (seconds)\n", MPI_Wtick ());
+#endif /* MPI_CLOCK */
+
   MPI_Comm_rank(MPI_COMM_WORLD, rank);
   MPI_Comm_size(MPI_COMM_WORLD, numProcs);
 

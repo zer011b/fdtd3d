@@ -20,9 +20,9 @@ public:
   int pid_coord1;
   int pid_coord2;
   Axis_t axis;
-  FPValue val;
+  DOUBLE val;
 
-  NodeBorder_t (int newcoord1, int newcoord2, Axis_t newaxis, FPValue newVal)
+  NodeBorder_t (int newcoord1, int newcoord2, Axis_t newaxis, DOUBLE newVal)
   : pid_coord1 (newcoord1), pid_coord2 (newcoord2), axis (newaxis), val (newVal) {}
 
   bool operator < (NodeBorder_t entry) const
@@ -149,7 +149,7 @@ public:
   bool Rebalance (time_step);
 
 private:
-  void spreadGridPointsPerAxis (std::vector<grid_coord> &, FPValue, int, int, Axis_t
+  void spreadGridPointsPerAxis (std::vector<grid_coord> &, DOUBLE, int, int, Axis_t
 #if defined (GRID_2D) || defined (GRID_3D)
                                 , int, int, Axis_t
 #endif
@@ -174,7 +174,7 @@ private:
 #if defined (GRID_3D)
                          , std::vector<grid_coord> &
 #endif
-                         , FPValue);
+                         , DOUBLE);
 
   void checkDisablingConditions (std::vector<grid_coord> &
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -187,23 +187,23 @@ private:
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) \
     || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue estimateTimeAcrossAxisX (int pidX1, int pidX2) const;
+  DOUBLE estimateTimeAcrossAxisX (int pidX1, int pidX2) const;
   void estimateBorderX (std::vector<NodeBorder_t> &, const std::vector<grid_coord> &) const;
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) \
     || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue estimateTimeAcrossAxisY (int pidY1, int pidY2) const;
+  DOUBLE estimateTimeAcrossAxisY (int pidY1, int pidY2) const;
   void estimateBorderY (std::vector<NodeBorder_t> &, const std::vector<grid_coord> &) const;
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) \
     || defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue estimateTimeAcrossAxisZ (int pidZ1, int pidZ2) const;
+  DOUBLE estimateTimeAcrossAxisZ (int pidZ1, int pidZ2) const;
   void estimateBorderZ (std::vector<NodeBorder_t> &, const std::vector<grid_coord> &) const;
 #endif
 
-  void estimatePerfLR (NodeBorder_t, FPValue &, FPValue &);
+  void estimatePerfLR (NodeBorder_t, DOUBLE &, DOUBLE &);
 
   void estimatePerfLRAxis (int, int, int, int,
 #if defined (GRID_2D) || defined (GRID_3D)
@@ -212,7 +212,7 @@ private:
 #if defined (GRID_3D)
                            int, int, int, int,
 #endif
-                           FPValue &, FPValue &);
+                           DOUBLE &, DOUBLE &);
 
   bool disableLR (NodeBorder_t,
                   std::vector<grid_coord> &,
@@ -222,7 +222,7 @@ private:
 #if defined (GRID_3D)
                   std::vector<grid_coord> &,
 #endif
-                  FPValue, FPValue);
+                  DOUBLE, DOUBLE);
 
   bool disableAxisLR (NodeBorder_t,
                       std::vector<grid_coord> &, int, int, int, int, int,
@@ -232,21 +232,21 @@ private:
 #if defined (GRID_3D)
                       std::vector<grid_coord> &, int, int, int, int, int,
 #endif
-                      FPValue, FPValue, FPValue, FPValue);
+                      DOUBLE, DOUBLE, DOUBLE, DOUBLE);
 
-  void findMaxTimes (FPValue &max_share_LR,
-                     FPValue &max_share_DU,
-                     FPValue &max_share_BF,
-                     FPValue &max_share_LD_RU,
-                     FPValue &max_share_LU_RD,
-                     FPValue &max_share_LB_RF,
-                     FPValue &max_share_LF_RB,
-                     FPValue &max_share_DB_UF,
-                     FPValue &max_share_DF_UB,
-                     FPValue &max_share_LDB_RUF,
-                     FPValue &max_share_RDB_LUF,
-                     FPValue &max_share_RUB_LDF,
-                     FPValue &max_share_LUB_RDF,
+  void findMaxTimes (DOUBLE &max_share_LR,
+                     DOUBLE &max_share_DU,
+                     DOUBLE &max_share_BF,
+                     DOUBLE &max_share_LD_RU,
+                     DOUBLE &max_share_LU_RD,
+                     DOUBLE &max_share_LB_RF,
+                     DOUBLE &max_share_LF_RB,
+                     DOUBLE &max_share_DB_UF,
+                     DOUBLE &max_share_DF_UB,
+                     DOUBLE &max_share_LDB_RUF,
+                     DOUBLE &max_share_RDB_LUF,
+                     DOUBLE &max_share_RUB_LDF,
+                     DOUBLE &max_share_LUB_RDF,
                      const std::vector<grid_coord> &spreadX,
                      int axisStart1,
                      int axisSize1
