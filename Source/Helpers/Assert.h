@@ -121,6 +121,9 @@ extern void program_fail ();
 #define EXIT_ERROR 0xa
 #define EXIT_UNKNOWN_OPTION 0xb
 
+/*
+ * This should correspond to MPI_DOUBLE!
+ */
 typedef double DOUBLE;
 
 #endif /* ASSERT_H */

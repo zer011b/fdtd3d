@@ -1760,35 +1760,9 @@ ParallelGrid::SendRawBuffer (BufferPosition buffer, /**< buffer's position to se
 
   FieldValue* rawBuffer = buffersSend[buffer].data ();
 
-  MPI_Datatype datatype;
-
-#ifdef FLOAT_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_FLOAT;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* FLOAT_VALUES */
-
-#ifdef DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* DOUBLE_VALUES */
-
-#ifdef LONG_DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_LONG_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_LONG_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* LONG_DOUBLE_VALUES */
-
   int retCode = MPI_Send (rawBuffer,
                           buffersSend[buffer].size (),
-                          datatype,
+                          MPI_FPVALUE,
                           processTo,
                           parallelGridCore->getProcessId (),
                           ParallelGrid::getParallelCore ()->getCommunicator ());
@@ -1812,35 +1786,9 @@ ParallelGrid::ReceiveRawBuffer (BufferPosition buffer, /**< buffer's position to
 
   FieldValue* rawBuffer = buffersReceive[buffer].data ();
 
-  MPI_Datatype datatype;
-
-#ifdef FLOAT_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_FLOAT;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* FLOAT_VALUES */
-
-#ifdef DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* DOUBLE_VALUES */
-
-#ifdef LONG_DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_LONG_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_LONG_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* LONG_DOUBLE_VALUES */
-
   int retCode = MPI_Recv (rawBuffer,
                           buffersReceive[buffer].size (),
-                          datatype,
+                          MPI_FPVALUE,
                           processFrom,
                           processFrom,
                           ParallelGrid::getParallelCore ()->getCommunicator (),
@@ -1870,40 +1818,14 @@ ParallelGrid::SendReceiveRawBuffer (BufferPosition bufferSend, /**< buffer's pos
   FieldValue* rawBufferSend = buffersSend[bufferSend].data ();
   FieldValue* rawBufferReceive = buffersReceive[bufferReceive].data ();
 
-  MPI_Datatype datatype;
-
-#ifdef FLOAT_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_FLOAT;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* FLOAT_VALUES */
-
-#ifdef DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* DOUBLE_VALUES */
-
-#ifdef LONG_DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_LONG_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_LONG_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* LONG_DOUBLE_VALUES */
-
   int retCode = MPI_Sendrecv (rawBufferSend,
                               buffersSend[bufferSend].size (),
-                              datatype,
+                              MPI_FPVALUE,
                               processTo,
                               parallelGridCore->getProcessId (),
                               rawBufferReceive,
                               buffersReceive[bufferReceive].size (),
-                              datatype,
+                              MPI_FPVALUE,
                               processFrom,
                               processFrom,
                               ParallelGrid::getParallelCore ()->getCommunicator (),
@@ -2750,44 +2672,18 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 #endif /* GRID_1D || GRID_2D || GRID_3D */
     }
 
-    MPI_Datatype datatype;
-
-#ifdef FLOAT_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-    datatype = MPI_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-    datatype = MPI_FLOAT;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* FLOAT_VALUES */
-
-#ifdef DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-    datatype = MPI_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-    datatype = MPI_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* DOUBLE_VALUES */
-
-#ifdef LONG_DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-    datatype = MPI_LONG_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-    datatype = MPI_LONG_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* LONG_DOUBLE_VALUES */
-
     /*
      * Broadcast data
      */
 
-    MPI_Bcast (current.data (), current.size (), datatype, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+    MPI_Bcast (current.data (), current.size (), MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    MPI_Bcast (previous.data (), previous.size (), datatype, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+    MPI_Bcast (previous.data (), previous.size (), MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 
 #if defined (TWO_TIME_STEPS)
-    MPI_Bcast (previousPrev.data (), previousPrev.size (), datatype, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+    MPI_Bcast (previousPrev.data (), previousPrev.size (), MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
 #endif /* TWO_TIME_STEPS */
 
     grid_coord index = 0;
