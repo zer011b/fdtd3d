@@ -2,7 +2,7 @@
 #define CLOCK_H
 
 #include "Assert.h"
-#include "FieldValue.h"
+//#include "FieldValue.h"
 #include "Settings.h"
 
 #ifdef MPI_CLOCK
@@ -10,7 +10,7 @@
 #error Parallel Grid should be used with mpi clock
 #endif /* !PARALLEL_GRID */
 #include <mpi.h>
-typedef FPValue ClockValue;
+typedef DOUBLE ClockValue;
 #else /* MPI_CLOCK */
 typedef timespec ClockValue;
 #endif /* !MPI_CLOCK */
@@ -52,14 +52,14 @@ public:
    *
    * @return floating point value of clock in seconds
    */
-  FPValue getFP () const
+  DOUBLE getFP () const
   {
     ASSERT (!isZero ());
 
 #ifdef MPI_CLOCK
-    FPValue val = value;
+    DOUBLE val = value;
 #else /* MPI_CLOCK */
-    FPValue val = FPValue (value.tv_sec) + FPValue (value.tv_nsec) / FPValue (1000000000);
+    DOUBLE val = DOUBLE (value.tv_sec) + DOUBLE (value.tv_nsec) / DOUBLE (1000000000);
 #endif /* !MPI_CLOCK */
 
     return val;
@@ -187,7 +187,7 @@ public:
   bool isZero () const
   {
 #ifdef MPI_CLOCK
-    return value == FPValue (0);
+    return value == DOUBLE (0);
 #else /* MPI_CLOCK */
     return value.tv_sec == 0 && value.tv_nsec == 0;
 #endif /* !MPI_CLOCK */
@@ -250,7 +250,7 @@ public:
     Clock clock;
 
 #ifdef MPI_CLOCK
-    clock.value = (lhs.value + rhs.value) / FPValue (2);
+    clock.value = (lhs.value + rhs.value) / DOUBLE (2);
 #else /* MPI_CLOCK */
     timespec_avg (&lhs.value, &rhs.value, &clock.value);
 #endif /* !MPI_CLOCK */

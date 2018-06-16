@@ -579,31 +579,31 @@ public:
 #ifdef DYNAMIC_GRID
 private:
 
-  void setTotalSumPerfPointsPerProcess (int pid, FPValue val)
+  void setTotalSumPerfPointsPerProcess (int pid, DOUBLE val)
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumPerfPointsPerProcess.size ());
     ASSERT (pid >= 0 && pid < totalProcCount);
     dynamicInfo.totalSumPerfPointsPerProcess[pid] = val;
   }
 
-  void increaseTotalSumPerfPointsPerProcess (int pid, FPValue val)
+  void increaseTotalSumPerfPointsPerProcess (int pid, DOUBLE val)
   {
     setTotalSumPerfPointsPerProcess (pid, getTotalSumPerfPointsPerProcess (pid) + val);
   }
 
-  void setTotalSumPerfTimePerProcess (int pid, FPValue val)
+  void setTotalSumPerfTimePerProcess (int pid, DOUBLE val)
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumPerfTimePerProcess.size ());
     ASSERT (pid >= 0 && pid < totalProcCount);
     dynamicInfo.totalSumPerfTimePerProcess[pid] = val;
   }
 
-  void increaseTotalSumPerfTimePerProcess (int pid, FPValue val)
+  void increaseTotalSumPerfTimePerProcess (int pid, DOUBLE val)
   {
     setTotalSumPerfTimePerProcess (pid, getTotalSumPerfTimePerProcess (pid) + val);
   }
 
-  void setTotalSumLatencyPerConnection (int pid1, int pid2, FPValue val)
+  void setTotalSumLatencyPerConnection (int pid1, int pid2, DOUBLE val)
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumLatencyPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
@@ -612,12 +612,12 @@ private:
     dynamicInfo.totalSumLatencyPerConnection[pid1][pid2] = val;
   }
 
-  void increaseTotalSumLatencyPerConnection (int pid1, int pid2, FPValue val)
+  void increaseTotalSumLatencyPerConnection (int pid1, int pid2, DOUBLE val)
   {
     setTotalSumLatencyPerConnection (pid1, pid2, getTotalSumLatencyPerConnection (pid1, pid2) + val);
   }
 
-  void setTotalSumLatencyCountPerConnection (int pid1, int pid2, FPValue val)
+  void setTotalSumLatencyCountPerConnection (int pid1, int pid2, DOUBLE val)
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumLatencyCountPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
@@ -626,12 +626,12 @@ private:
     dynamicInfo.totalSumLatencyCountPerConnection[pid1][pid2] = val;
   }
 
-  void increaseTotalSumLatencyCountPerConnection (int pid1, int pid2, FPValue val)
+  void increaseTotalSumLatencyCountPerConnection (int pid1, int pid2, DOUBLE val)
   {
     setTotalSumLatencyCountPerConnection (pid1, pid2, getTotalSumLatencyCountPerConnection (pid1, pid2) + val);
   }
 
-  void setTotalSumBandwidthPerConnection (int pid1, int pid2, FPValue val)
+  void setTotalSumBandwidthPerConnection (int pid1, int pid2, DOUBLE val)
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
@@ -640,12 +640,12 @@ private:
     dynamicInfo.totalSumBandwidthPerConnection[pid1][pid2] = val;
   }
 
-  void increaseTotalSumBandwidthPerConnection (int pid1, int pid2, FPValue val)
+  void increaseTotalSumBandwidthPerConnection (int pid1, int pid2, DOUBLE val)
   {
     setTotalSumBandwidthPerConnection (pid1, pid2, getTotalSumBandwidthPerConnection (pid1, pid2) + val);
   }
 
-  void setTotalSumBandwidthCountPerConnection (int pid1, int pid2, FPValue val)
+  void setTotalSumBandwidthCountPerConnection (int pid1, int pid2, DOUBLE val)
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthCountPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
@@ -654,7 +654,7 @@ private:
     dynamicInfo.totalSumBandwidthCountPerConnection[pid1][pid2] = val;
   }
 
-  void increaseTotalSumBandwidthCountPerConnection (int pid1, int pid2, FPValue val)
+  void increaseTotalSumBandwidthCountPerConnection (int pid1, int pid2, DOUBLE val)
   {
     setTotalSumBandwidthCountPerConnection (pid1, pid2, getTotalSumBandwidthCountPerConnection (pid1, pid2) + val);
   }
@@ -664,10 +664,10 @@ private:
    *
    * @return overall latency of share operations between pid1 and pid2 computational nodes
    */
-  FPValue calcLatencyForConnection (int pid1, /**< id of first computational node */
-                                    int pid2) /**< id of second computational node */
+  DOUBLE calcLatencyForConnection (int pid1, /**< id of first computational node */
+                                   int pid2) /**< id of second computational node */
   {
-    FPValue count = getTotalSumLatencyCountPerConnection (pid1, pid2);
+    DOUBLE count = getTotalSumLatencyCountPerConnection (pid1, pid2);
     if (count == 0)
     {
       /*
@@ -684,10 +684,10 @@ private:
    *
    * @return overall bandwidth of share operations between pid1 and pid2 computational nodes
    */
-  FPValue calcBandwidthForConnection (int pid1, /**< id of first computational node */
-                                      int pid2) /**< id of second computational node */
+  DOUBLE calcBandwidthForConnection (int pid1, /**< id of first computational node */
+                                     int pid2) /**< id of second computational node */
   {
-    FPValue count = getTotalSumBandwidthCountPerConnection (pid1, pid2);
+    DOUBLE count = getTotalSumBandwidthCountPerConnection (pid1, pid2);
     if (count == 0)
     {
       /*
@@ -713,13 +713,13 @@ public:
   void ClearCalcClocks ();
   void ClearShareClocks ();
 
-  FPValue getPerf (int pid) const
+  DOUBLE getPerf (int pid) const
   {
     ASSERT (totalProcCount == dynamicInfo.speed.size ());
     ASSERT (pid >= 0 && pid < totalProcCount);
     return dynamicInfo.speed[pid];
   }
-  FPValue getLatency (int pid1, int pid2) const
+  DOUBLE getLatency (int pid1, int pid2) const
   {
     ASSERT (totalProcCount == dynamicInfo.latency.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
@@ -728,7 +728,7 @@ public:
     ASSERT (dynamicInfo.latency[pid1][pid2] == dynamicInfo.latency[pid2][pid1]);
     return dynamicInfo.latency[pid1][pid2];
   }
-  FPValue getBandwidth (int pid1, int pid2) const
+  DOUBLE getBandwidth (int pid1, int pid2) const
   {
     ASSERT (totalProcCount == dynamicInfo.bandwidth.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
@@ -738,21 +738,21 @@ public:
     return dynamicInfo.bandwidth[pid1][pid2];
   }
 
-  FPValue getTotalSumPerfPointsPerProcess (int pid) const
+  DOUBLE getTotalSumPerfPointsPerProcess (int pid) const
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumPerfPointsPerProcess.size ());
     ASSERT (pid >= 0 && pid < totalProcCount);
     return dynamicInfo.totalSumPerfPointsPerProcess[pid];
   }
 
-  FPValue getTotalSumPerfTimePerProcess (int pid) const
+  DOUBLE getTotalSumPerfTimePerProcess (int pid) const
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumPerfTimePerProcess.size ());
     ASSERT (pid >= 0 && pid < totalProcCount);
     return dynamicInfo.totalSumPerfTimePerProcess[pid];
   }
 
-  FPValue getTotalSumLatencyPerConnection (int pid1, int pid2)
+  DOUBLE getTotalSumLatencyPerConnection (int pid1, int pid2)
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumLatencyPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
@@ -761,7 +761,7 @@ public:
     return dynamicInfo.totalSumLatencyPerConnection[pid1][pid2];
   }
 
-  FPValue getTotalSumLatencyCountPerConnection (int pid1, int pid2)
+  DOUBLE getTotalSumLatencyCountPerConnection (int pid1, int pid2)
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumLatencyCountPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
@@ -770,7 +770,7 @@ public:
     return dynamicInfo.totalSumLatencyCountPerConnection[pid1][pid2];
   }
 
-  FPValue getTotalSumBandwidthPerConnection (int pid1, int pid2)
+  DOUBLE getTotalSumBandwidthPerConnection (int pid1, int pid2)
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
@@ -779,7 +779,7 @@ public:
     return dynamicInfo.totalSumBandwidthPerConnection[pid1][pid2];
   }
 
-  FPValue getTotalSumBandwidthCountPerConnection (int pid1, int pid2)
+  DOUBLE getTotalSumBandwidthCountPerConnection (int pid1, int pid2)
   {
     ASSERT (totalProcCount == dynamicInfo.totalSumBandwidthCountPerConnection.size ());
     ASSERT (pid1 >= 0 && pid1 < totalProcCount);
@@ -893,11 +893,11 @@ public:
   int getNodeForDirectionForProcess (int, BufferPosition) const;
 
   void updateCurrentPerfValues (time_step);
-  void approximateWithLinearRegression (FPValue &, FPValue &, const ShareClock_t &);
+  void approximateWithLinearRegression (DOUBLE &, DOUBLE &, const ShareClock_t &);
   void updateCurrentShareValues ();
   void doAdditionalShareMeasurements (uint32_t, uint32_t, uint32_t, uint32_t);
   void initializeIterationCounters (time_step);
-  FPValue calcTotalPerf (time_step);
+  DOUBLE calcTotalPerf (time_step);
   void calcTotalLatencyAndBandwidth (time_step);
 #endif /* DYNAMIC_GRID */
 }; /* ParallelGridCore */

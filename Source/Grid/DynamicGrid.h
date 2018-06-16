@@ -73,41 +73,41 @@ struct DynamicGridInfo
   /**
    * Total values for performance: perf is totalSumPerfPointsPerProcess/totalSumPerfTimePerProcess then
    */
-  std::vector<FPValue> totalSumPerfPointsPerProcess;
-  std::vector<FPValue> totalSumPerfTimePerProcess;
+  std::vector<DOUBLE> totalSumPerfPointsPerProcess;
+  std::vector<DOUBLE> totalSumPerfTimePerProcess;
 
   /**
    * Total values for latency: latency is totalSumLatencyPerConnection/totalSumLatencyCountPerConnection then
    */
-  std::vector< std::vector<FPValue> > totalSumLatencyPerConnection;
-  std::vector< std::vector<FPValue> > totalSumLatencyCountPerConnection;
+  std::vector< std::vector<DOUBLE> > totalSumLatencyPerConnection;
+  std::vector< std::vector<DOUBLE> > totalSumLatencyCountPerConnection;
 
   /**
    * Total values of bandwidth: latency is totalSumBandwidthPerConnection/totalSumBandwidthCountPerConnection then
    */
-  std::vector< std::vector<FPValue> > totalSumBandwidthPerConnection;
-  std::vector< std::vector<FPValue> > totalSumBandwidthCountPerConnection;
+  std::vector< std::vector<DOUBLE> > totalSumBandwidthPerConnection;
+  std::vector< std::vector<DOUBLE> > totalSumBandwidthCountPerConnection;
 
   /**
    * Value for number of grid point between rebalances
    */
-  std::vector<FPValue> curPoints;
+  std::vector<DOUBLE> curPoints;
   /**
    * Value for calculation time between rebalances
    */
-  std::vector<FPValue> curTimes;
+  std::vector<DOUBLE> curTimes;
 
   std::vector< std::vector<int> > skipCurShareMeasurement;
 
   /**
    * Values of current latency and bandwidth between rebalance
    */
-  std::vector< std::vector<FPValue> > curShareLatency;
-  std::vector< std::vector<FPValue> > curShareBandwidth;
+  std::vector< std::vector<DOUBLE> > curShareLatency;
+  std::vector< std::vector<DOUBLE> > curShareBandwidth;
 
-  std::vector<FPValue> speed;
-  std::vector< std::vector<FPValue> > latency;
-  std::vector< std::vector<FPValue> > bandwidth;
+  std::vector<DOUBLE> speed;
+  std::vector< std::vector<DOUBLE> > latency;
+  std::vector< std::vector<DOUBLE> > bandwidth;
 
   /*
    * TODO: Use this
@@ -122,7 +122,7 @@ struct DynamicGridInfo
    * TODO: remove this buffers and add MPI data type
    */
  #ifdef MPI_CLOCK
-   FPValue *shareClockSec_buf;
+   DOUBLE *shareClockSec_buf;
  #else /* MPI_CLOCK */
    uint64_t *shareClockSec_buf;
    uint64_t *shareClockNSec_buf;

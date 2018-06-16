@@ -463,7 +463,7 @@ void ParallelGridCore::ShareCalcClocks ()
   for (int process = 0; process < getTotalProcCount (); ++process)
   {
 #ifdef MPI_CLOCK
-    FPValue calcClockSec;
+    DOUBLE calcClockSec;
 #else /* MPI_CLOCK */
     uint64_t calcClockSec;
     uint64_t calcClockNSec;
@@ -610,7 +610,7 @@ void ParallelGridCore::ShareShareClocks ()
           Clock clock;
 
 #ifdef MPI_CLOCK
-          FPValue val = dynamicInfo.shareClockSec_buf[index];
+          DOUBLE val = dynamicInfo.shareClockSec_buf[index];
           clock.setVal (val);
 #else /* MPI_CLOCK */
           timespec val;
@@ -734,11 +734,11 @@ ParallelGridCore::updateCurrentPerfValues (time_step difft) /**< number of elaps
 #ifdef ENABLE_ASSERTS
     if (getNodeState ()[i] == 0)
     {
-      ASSERT (dynamicInfo.curPoints[i] == 0 && dynamicInfo.curTimes[i] == 0);
+      ASSERT (dynamicInfo.curPoints[i] == DOUBLE (0) && dynamicInfo.curTimes[i] == DOUBLE (0));
     }
     else
     {
-      ASSERT (dynamicInfo.curPoints[i] != 0 && dynamicInfo.curTimes[i] != 0);
+      ASSERT (dynamicInfo.curPoints[i] != DOUBLE (0) && dynamicInfo.curTimes[i] != DOUBLE (0));
     }
 #endif
   }
@@ -748,21 +748,21 @@ ParallelGridCore::updateCurrentPerfValues (time_step difft) /**< number of elaps
  * Approximate latency and bandwidth using linear regression
  */
 void
-ParallelGridCore::approximateWithLinearRegression (FPValue &latency, /**< out: value of latency */
-                                                   FPValue &bandwidth, /**< out: value of bandwidth */
+ParallelGridCore::approximateWithLinearRegression (DOUBLE &latency, /**< out: value of latency */
+                                                   DOUBLE &bandwidth, /**< out: value of bandwidth */
                                                    const ShareClock_t &clockMap) /**< map of times for different buffer sizes */
 {
-  FPValue avg_sum_x = 0;
-  FPValue avg_sum_y = 0;
-  FPValue avg_sum_x2 = 0;
-  FPValue avg_sum_xy = 0;
+  DOUBLE avg_sum_x = DOUBLE (0);
+  DOUBLE avg_sum_y = DOUBLE (0);
+  DOUBLE avg_sum_x2 = DOUBLE (0);
+  DOUBLE avg_sum_xy = DOUBLE (0);
 
   int index = 0;
 
   for (ShareClock_t::const_iterator it = clockMap.begin (); it != clockMap.end (); ++it)
   {
-    FPValue bufSize = it->first;
-    FPValue clocks = it->second.getFP ();
+    DOUBLE bufSize = it->first;
+    DOUBLE clocks = it->second.getFP ();
 
     avg_sum_x += bufSize;
     avg_sum_y += clocks;
@@ -807,8 +807,8 @@ ParallelGridCore::updateCurrentShareValues ()
           || getNodeState ()[i] == 0
           || getNodeState ()[j] == 0)
       {
-        dynamicInfo.curShareLatency[i][j] = 0;
-        dynamicInfo.curShareBandwidth[i][j] = 0;
+        dynamicInfo.curShareLatency[i][j] = DOUBLE (0);
+        dynamicInfo.curShareBandwidth[i][j] = DOUBLE (0);
 
         continue;
       }
@@ -822,7 +822,7 @@ ParallelGridCore::updateCurrentShareValues ()
 
       approximateWithLinearRegression (dynamicInfo.curShareLatency[i][j], dynamicInfo.curShareBandwidth[i][j], clockMap);
 
-      if (dynamicInfo.curShareBandwidth[i][j] <= 0 || dynamicInfo.curShareLatency[i][j] < 0)
+      if (dynamicInfo.curShareBandwidth[i][j] <= DOUBLE (0) || dynamicInfo.curShareLatency[i][j] < DOUBLE (0))
       {
         // TODO: continue measurements if current data is not enough to produce correct latency and bandwidth
         printf ("INCORRECT: %d %d -> %f %f\n", i, j, dynamicInfo.curShareLatency[i][j], dynamicInfo.curShareBandwidth[i][j]);
@@ -833,7 +833,7 @@ ParallelGridCore::updateCurrentShareValues ()
       if (getNodeState ()[i] == 0
           || getNodeState ()[j] == 0)
       {
-        ASSERT (dynamicInfo.curShareLatency[i][j] == 0 && dynamicInfo.curShareBandwidth[i][j] == 0);
+        ASSERT (dynamicInfo.curShareLatency[i][j] == DOUBLE (0) && dynamicInfo.curShareBandwidth[i][j] == DOUBLE (0));
       }
 #endif
     }
@@ -1047,14 +1047,14 @@ ParallelGridCore::initializeIterationCounters (time_step difft) /**< elapsed num
  *
  * @return sum performance of all enabled computational nodes
  */
-FPValue
+DOUBLE
 ParallelGridCore::calcTotalPerf (time_step difft) /**< elapsed number of time steps */
 {
   ShareCalcClocks ();
 
   updateCurrentPerfValues (difft);
 
-  FPValue sumSpeedEnabled = 0;
+  DOUBLE sumSpeedEnabled = DOUBLE (0);
 
   for (int process = 0; process < getTotalProcCount (); ++process)
   {
@@ -1064,8 +1064,8 @@ ParallelGridCore::calcTotalPerf (time_step difft) /**< elapsed number of time st
       increaseTotalSumPerfTimePerProcess (process, dynamicInfo.curTimes[process]);
     }
 
-    FPValue sumTime = getTotalSumPerfTimePerProcess (process);
-    FPValue sumPoints = getTotalSumPerfPointsPerProcess (process);
+    DOUBLE sumTime = getTotalSumPerfTimePerProcess (process);
+    DOUBLE sumPoints = getTotalSumPerfPointsPerProcess (process);
 
     ASSERT (sumTime != 0 && sumPoints != 0);
 
@@ -1118,10 +1118,10 @@ ParallelGridCore::calcTotalLatencyAndBandwidth (time_step difft) /**< elapsed nu
           && dynamicInfo.skipCurShareMeasurement[process][i] == 0)
       {
         increaseTotalSumLatencyPerConnection (process, i, dynamicInfo.curShareLatency[process][i]);
-        increaseTotalSumLatencyCountPerConnection (process, i, 1);
+        increaseTotalSumLatencyCountPerConnection (process, i, DOUBLE (1));
 
         increaseTotalSumBandwidthPerConnection (process, i, dynamicInfo.curShareBandwidth[process][i]);
-        increaseTotalSumBandwidthCountPerConnection (process, i, 1);
+        increaseTotalSumBandwidthCountPerConnection (process, i, DOUBLE (1));
       }
 
       dynamicInfo.latency[process][i] = calcLatencyForConnection (process, i);
