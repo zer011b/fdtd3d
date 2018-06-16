@@ -29,12 +29,12 @@ function build
           continue
         fi
 
-        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=ReleaseWithAsserts \
+        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=Debug \
           -DVALUE_TYPE=${VALUE_TYPE} \
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
           -DTIME_STEPS=${TIME_STEPS} \
           -DPARALLEL_GRID_DIMENSION=3 \
-          -DPRINT_MESSAGE=OFF \
+          -DPRINT_MESSAGE=ON \
           -DPARALLEL_GRID=ON \
           -DPARALLEL_BUFFER_DIMENSION=x \
           -DCXX11_ENABLED=${CXX11_ENABLED} \

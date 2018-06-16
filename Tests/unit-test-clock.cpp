@@ -52,7 +52,7 @@ int main (int argc, char** argv)
 #ifdef MPI_CLOCK
   ASSERT (clock_3.getVal () == clock_3.getFP ());
 #else /* MPI_CLOCK */
-  ASSERT ((clock_3.getVal ().tv_sec + clock_3.getVal ().tv_nsec / 1000000000.0) == clock_3.getFP ());
+  ASSERT ((DOUBLE)((clock_3.getVal ().tv_sec + clock_3.getVal ().tv_nsec / 1000000000.0)) == clock_3.getFP ());
 #endif /* !MPI_CLOCK */
 
   ASSERT ((clock_3 + clock_1).getFP () == clock_3.getFP ());
@@ -62,7 +62,9 @@ int main (int argc, char** argv)
   /*
    * Loop to sleep for a bit
    */
-  for (int i = 0; i < 1000; ++i) {}
+  for (int i = 0; i < 1000; ++i)
+  for (int i = 0; i < 1000; ++i)
+  {}
 
   Clock clock_4 = Clock::getNewClock ();
   clock_4.print ();
@@ -71,7 +73,7 @@ int main (int argc, char** argv)
   ASSERT (clock_4 > clock_3);
   ASSERT (clock_3 <= clock_4);
   ASSERT (clock_3 < clock_4);
-  ASSERT (clock_4.getFP () > clock_3.getFP ());
+  ASSERT (clock_4.getFP () >= clock_3.getFP ());
 
   Clock clock_5 = clock_4 - clock_3;
   Clock clock_6 = clock_4 + clock_3;
@@ -129,7 +131,7 @@ int main (int argc, char** argv)
 
   Clock clock_7 = Clock::average (clock_3, clock_4);
 #ifdef MPI_CLOCK
-  ASSERT (clock_7.getVal () == (clock_3.getVal () + clock_4.getVal ()) / FPValue (2));
+  ASSERT (clock_7.getVal () == (clock_3.getVal () + clock_4.getVal ()) / DOUBLE (2));
 #else /* MPI_CLOCK */
   ClockValue val7 = clock_7.getVal ();
   ASSERT (val7.tv_sec == (val3.tv_sec + val4.tv_sec) / 2);

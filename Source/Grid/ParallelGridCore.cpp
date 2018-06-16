@@ -667,7 +667,7 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
   }
 
 #ifdef MPI_CLOCK
-  dynamicInfo.shareClockSec_buf = new FPValue [CLOCK_BUF_SIZE * totalProcCount];
+  dynamicInfo.shareClockSec_buf = new DOUBLE [CLOCK_BUF_SIZE * totalProcCount];
 #else /* MPI_CLOCK */
   dynamicInfo.shareClockSec_buf = new uint64_t [CLOCK_BUF_SIZE * totalProcCount];
   dynamicInfo.shareClockNSec_buf = new uint64_t [CLOCK_BUF_SIZE * totalProcCount];

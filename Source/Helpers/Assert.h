@@ -121,4 +121,6 @@ extern void program_fail ();
 #define EXIT_ERROR 0xa
 #define EXIT_UNKNOWN_OPTION 0xb
 
+typedef double DOUBLE;
+
 #endif /* ASSERT_H */

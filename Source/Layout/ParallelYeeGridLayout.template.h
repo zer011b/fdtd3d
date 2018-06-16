@@ -12,7 +12,7 @@
  *         0, if share time can't be estimated
  */
 template <SchemeType_t Type, LayoutType layout_type>
-FPValue
+DOUBLE
 ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisX (int pidX1, /**< x coordinate of first process plane */
                                                                    int pidX2) const /**< x coordinate of second process plane */
 {
@@ -60,33 +60,33 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisX (int pidX1, /*
 
   int tmpCounter = 0;
 
-  FPValue latencyX = 0;
-  FPValue bandwidthX = 0;
+  DOUBLE latencyX = DOUBLE (0);
+  DOUBLE bandwidthX = DOUBLE (0);
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue latencyX_diag_up = 0;
-  FPValue latencyX_diag_down = 0;
-  FPValue bandwidthX_diag_up = 0;
-  FPValue bandwidthX_diag_down = 0;
+  DOUBLE latencyX_diag_up = DOUBLE (0);
+  DOUBLE latencyX_diag_down = DOUBLE (0);
+  DOUBLE bandwidthX_diag_up = DOUBLE (0);
+  DOUBLE bandwidthX_diag_down = DOUBLE (0);
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue latencyX_diag_back = 0;
-  FPValue latencyX_diag_front = 0;
-  FPValue bandwidthX_diag_back = 0;
-  FPValue bandwidthX_diag_front = 0;
+  DOUBLE latencyX_diag_back = DOUBLE (0);
+  DOUBLE latencyX_diag_front = DOUBLE (0);
+  DOUBLE bandwidthX_diag_back = DOUBLE (0);
+  DOUBLE bandwidthX_diag_front = DOUBLE (0);
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue latencyX_diag_up_back = 0;
-  FPValue latencyX_diag_up_front = 0;
-  FPValue latencyX_diag_down_back = 0;
-  FPValue latencyX_diag_down_front = 0;
+  DOUBLE latencyX_diag_up_back = DOUBLE (0);
+  DOUBLE latencyX_diag_up_front = DOUBLE (0);
+  DOUBLE latencyX_diag_down_back = DOUBLE (0);
+  DOUBLE latencyX_diag_down_front = DOUBLE (0);
 
-  FPValue bandwidthX_diag_up_back = 0;
-  FPValue bandwidthX_diag_up_front = 0;
-  FPValue bandwidthX_diag_down_back = 0;
-  FPValue bandwidthX_diag_down_front = 0;
+  DOUBLE bandwidthX_diag_up_back = DOUBLE (0);
+  DOUBLE bandwidthX_diag_up_front = DOUBLE (0);
+  DOUBLE bandwidthX_diag_down_back = DOUBLE (0);
+  DOUBLE bandwidthX_diag_down_front = DOUBLE (0);
 #endif
 
   tmpCounter = 0;
@@ -413,18 +413,18 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisX (int pidX1, /*
   }
 #endif
 
-  FPValue val = 0;
+  DOUBLE val = DOUBLE (0);
 
   ParallelGridCoordinate size = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size;
 
 #ifdef GRID_1D
-  FPValue sizeX = 1.0;
+  DOUBLE sizeX = DOUBLE (1);
 #endif
 #ifdef GRID_2D
-  FPValue sizeX = size.get2 ();
+  DOUBLE sizeX = DOUBLE (size.get2 ());
 #endif
 #ifdef GRID_3D
-  FPValue sizeX = size.get2 () * size.get3 ();
+  DOUBLE sizeX = DOUBLE (size.get2 () * size.get3 ());
 #endif
 
   if (latencyX >= 0 && bandwidthX > 0)
@@ -434,12 +434,12 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisX (int pidX1, /*
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 #ifdef GRID_2D
-  FPValue sizeX_diag_down = 1.0;
-  FPValue sizeX_diag_up = 1.0;
+  DOUBLE sizeX_diag_down = DOUBLE (1);
+  DOUBLE sizeX_diag_up = DOUBLE (1);
 #endif
 #ifdef GRID_3D
-  FPValue sizeX_diag_down = size.get3 ();
-  FPValue sizeX_diag_up = size.get3 ();
+  DOUBLE sizeX_diag_down = DOUBLE (size.get3 ());
+  DOUBLE sizeX_diag_up = DOUBLE (size.get3 ());
 #endif
 
   if (latencyX_diag_up >= 0 && latencyX_diag_down >= 0 && bandwidthX_diag_up > 0 && bandwidthX_diag_down > 0)
@@ -450,8 +450,8 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisX (int pidX1, /*
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue sizeX_diag_back = size.get2 ();
-  FPValue sizeX_diag_front = size.get2 ();
+  DOUBLE sizeX_diag_back = DOUBLE (size.get2 ());
+  DOUBLE sizeX_diag_front = DOUBLE (size.get2 ());
 
   if (latencyX_diag_back >= 0 && latencyX_diag_front >= 0 && bandwidthX_diag_back > 0 && bandwidthX_diag_front > 0)
   {
@@ -499,8 +499,8 @@ ParallelYeeGridLayout<Type, layout_type>::estimateBorderX (std::vector<NodeBorde
     /*
      * Checking border between i and j
      */
-    FPValue timeVal = estimateTimeAcrossAxisX (i, j);
-    if (timeVal == 0.0)
+    DOUBLE timeVal = estimateTimeAcrossAxisX (i, j);
+    if (timeVal == DOUBLE (0))
     {
       /*
        * No time estimation is available
@@ -522,7 +522,7 @@ ParallelYeeGridLayout<Type, layout_type>::estimateBorderX (std::vector<NodeBorde
  *         0, if share time can't be estimated
  */
 template <SchemeType_t Type, LayoutType layout_type>
-FPValue
+DOUBLE
 ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisY (int pidY1, /**< y coordinate of first process plane */
                                                                    int pidY2) const /**< y coordinate of second process plane */
 {
@@ -564,33 +564,33 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisY (int pidY1, /*
 
   int tmpCounter = 0;
 
-  FPValue latencyY = 0;
-  FPValue bandwidthY = 0;
+  DOUBLE latencyY = DOUBLE (0);
+  DOUBLE bandwidthY = DOUBLE (0);
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue latencyY_diag_right = 0;
-  FPValue latencyY_diag_left = 0;
-  FPValue bandwidthY_diag_right = 0;
-  FPValue bandwidthY_diag_left = 0;
+  DOUBLE latencyY_diag_right = DOUBLE (0);
+  DOUBLE latencyY_diag_left = DOUBLE (0);
+  DOUBLE bandwidthY_diag_right = DOUBLE (0);
+  DOUBLE bandwidthY_diag_left = DOUBLE (0);
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue latencyY_diag_back = 0;
-  FPValue latencyY_diag_front = 0;
-  FPValue bandwidthY_diag_back = 0;
-  FPValue bandwidthY_diag_front = 0;
+  DOUBLE latencyY_diag_back = DOUBLE (0);
+  DOUBLE latencyY_diag_front = DOUBLE (0);
+  DOUBLE bandwidthY_diag_back = DOUBLE (0);
+  DOUBLE bandwidthY_diag_front = DOUBLE (0);
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue latencyY_diag_left_back = 0;
-  FPValue latencyY_diag_left_front = 0;
-  FPValue latencyY_diag_right_back = 0;
-  FPValue latencyY_diag_right_front = 0;
+  DOUBLE latencyY_diag_left_back = DOUBLE (0);
+  DOUBLE latencyY_diag_left_front = DOUBLE (0);
+  DOUBLE latencyY_diag_right_back = DOUBLE (0);
+  DOUBLE latencyY_diag_right_front = DOUBLE (0);
 
-  FPValue bandwidthY_diag_left_back = 0;
-  FPValue bandwidthY_diag_left_front = 0;
-  FPValue bandwidthY_diag_right_back = 0;
-  FPValue bandwidthY_diag_right_front = 0;
+  DOUBLE bandwidthY_diag_left_back = DOUBLE (0);
+  DOUBLE bandwidthY_diag_left_front = DOUBLE (0);
+  DOUBLE bandwidthY_diag_right_back = DOUBLE (0);
+  DOUBLE bandwidthY_diag_right_front = DOUBLE (0);
 #endif
 
   tmpCounter = 0;
@@ -911,15 +911,15 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisY (int pidY1, /*
   }
 #endif
 
-  FPValue val = 0;
+  DOUBLE val = DOUBLE (0);
 
   ParallelGridCoordinate size = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size;
 
 #ifdef GRID_2D
-  FPValue sizeY = size.get1 ();
+  DOUBLE sizeY = DOUBLE (size.get1 ());
 #endif
 #ifdef GRID_3D
-  FPValue sizeY = size.get1 () * size.get3 ();
+  DOUBLE sizeY = DOUBLE (size.get1 () * size.get3 ());
 #endif
 
   if (latencyY >= 0 && bandwidthY > 0)
@@ -929,12 +929,12 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisY (int pidY1, /*
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
 #ifdef GRID_2D
-  FPValue sizeY_diag_left = 1.0;
-  FPValue sizeY_diag_right = 1.0;
+  DOUBLE sizeY_diag_left = DOUBLE (1);
+  DOUBLE sizeY_diag_right = DOUBLE (1);
 #endif
 #ifdef GRID_3D
-  FPValue sizeY_diag_left = size.get3 ();
-  FPValue sizeY_diag_right = size.get3 ();
+  DOUBLE sizeY_diag_left = DOUBLE (size.get3 ());
+  DOUBLE sizeY_diag_right = DOUBLE (size.get3 ());
 #endif
 
   if (latencyY_diag_left >= 0 && latencyY_diag_right >= 0 && bandwidthY_diag_left > 0 && bandwidthY_diag_right > 0)
@@ -945,8 +945,8 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisY (int pidY1, /*
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue sizeY_diag_back = size.get1 ();
-  FPValue sizeY_diag_front = size.get1 ();
+  DOUBLE sizeY_diag_back = DOUBLE (size.get1 ());
+  DOUBLE sizeY_diag_front = DOUBLE (size.get1 ());
 
   if (latencyY_diag_back >= 0 && latencyY_diag_front >= 0 && bandwidthY_diag_back > 0 && bandwidthY_diag_front > 0)
   {
@@ -994,8 +994,8 @@ ParallelYeeGridLayout<Type, layout_type>::estimateBorderY (std::vector<NodeBorde
     /*
      * Checking border between i and j
      */
-    FPValue timeVal = estimateTimeAcrossAxisY (i, j);
-    if (timeVal == 0.0)
+    DOUBLE timeVal = estimateTimeAcrossAxisY (i, j);
+    if (timeVal == DOUBLE (0))
     {
       /*
        * No time estimation is available
@@ -1017,7 +1017,7 @@ ParallelYeeGridLayout<Type, layout_type>::estimateBorderY (std::vector<NodeBorde
  *         0, if share time can't be estimated
  */
 template <SchemeType_t Type, LayoutType layout_type>
-FPValue
+DOUBLE
 ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisZ (int pidZ1, /**< z coordinate of first process plane */
                                                                    int pidZ2) const /**< z coordinate of second process plane */
 {
@@ -1051,33 +1051,33 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisZ (int pidZ1, /*
 
   int tmpCounter = 0;
 
-  FPValue latencyZ = 0;
-  FPValue bandwidthZ = 0;
+  DOUBLE latencyZ = DOUBLE (0);
+  DOUBLE bandwidthZ = DOUBLE (0);
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue latencyZ_diag_right = 0;
-  FPValue latencyZ_diag_left = 0;
-  FPValue bandwidthZ_diag_right = 0;
-  FPValue bandwidthZ_diag_left = 0;
+  DOUBLE latencyZ_diag_right = DOUBLE (0);
+  DOUBLE latencyZ_diag_left = DOUBLE (0);
+  DOUBLE bandwidthZ_diag_right = DOUBLE (0);
+  DOUBLE bandwidthZ_diag_left = DOUBLE (0);
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue latencyZ_diag_down = 0;
-  FPValue latencyZ_diag_up = 0;
-  FPValue bandwidthZ_diag_down = 0;
-  FPValue bandwidthZ_diag_up = 0;
+  DOUBLE latencyZ_diag_down = DOUBLE (0);
+  DOUBLE latencyZ_diag_up = DOUBLE (0);
+  DOUBLE bandwidthZ_diag_down = DOUBLE (0);
+  DOUBLE bandwidthZ_diag_up = DOUBLE (0);
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue latencyZ_diag_left_down = 0;
-  FPValue latencyZ_diag_left_up = 0;
-  FPValue latencyZ_diag_right_down = 0;
-  FPValue latencyZ_diag_right_up = 0;
+  DOUBLE latencyZ_diag_left_down = DOUBLE (0);
+  DOUBLE latencyZ_diag_left_up = DOUBLE (0);
+  DOUBLE latencyZ_diag_right_down = DOUBLE (0);
+  DOUBLE latencyZ_diag_right_up = DOUBLE (0);
 
-  FPValue bandwidthZ_diag_left_down = 0;
-  FPValue bandwidthZ_diag_left_up = 0;
-  FPValue bandwidthZ_diag_right_down = 0;
-  FPValue bandwidthZ_diag_right_up = 0;
+  DOUBLE bandwidthZ_diag_left_down = DOUBLE (0);
+  DOUBLE bandwidthZ_diag_left_up = DOUBLE (0);
+  DOUBLE bandwidthZ_diag_right_down = DOUBLE (0);
+  DOUBLE bandwidthZ_diag_right_up = DOUBLE (0);
 #endif
 
   tmpCounter = 0;
@@ -1374,11 +1374,11 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisZ (int pidZ1, /*
   }
 #endif
 
-  FPValue val = 0;
+  DOUBLE val = DOUBLE (0);
 
   ParallelGridCoordinate size = YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size;
 
-  FPValue sizeZ = size.get1 () * size.get2 ();
+  DOUBLE sizeZ = DOUBLE (size.get1 () * size.get2 ());
 
   if (latencyZ >= 0 && bandwidthZ > 0)
   {
@@ -1386,8 +1386,8 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisZ (int pidZ1, /*
   }
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue sizeZ_diag_left = size.get2 ();
-  FPValue sizeZ_diag_right = size.get2 ();
+  DOUBLE sizeZ_diag_left = DOUBLE (size.get2 ());
+  DOUBLE sizeZ_diag_right = DOUBLE (size.get2 ());
 
   if (latencyZ_diag_left >= 0 && latencyZ_diag_right >= 0 && bandwidthZ_diag_left > 0 && bandwidthZ_diag_right > 0)
   {
@@ -1397,8 +1397,8 @@ ParallelYeeGridLayout<Type, layout_type>::estimateTimeAcrossAxisZ (int pidZ1, /*
 #endif
 
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  FPValue sizeZ_diag_down = size.get1 ();
-  FPValue sizeZ_diag_up = size.get1 ();
+  DOUBLE sizeZ_diag_down = DOUBLE (size.get1 ());
+  DOUBLE sizeZ_diag_up = DOUBLE (size.get1 ());
 
   if (latencyZ_diag_down >= 0 && latencyZ_diag_up >= 0 && bandwidthZ_diag_down > 0 && bandwidthZ_diag_up > 0)
   {
@@ -1446,8 +1446,8 @@ ParallelYeeGridLayout<Type, layout_type>::estimateBorderZ (std::vector<NodeBorde
     /*
      * Checking border between i and j
      */
-    FPValue timeVal = estimateTimeAcrossAxisZ (i, j);
-    if (timeVal == 0.0)
+    DOUBLE timeVal = estimateTimeAcrossAxisZ (i, j);
+    if (timeVal == DOUBLE (0))
     {
       /*
        * No time estimation is available
@@ -1476,8 +1476,8 @@ void ParallelYeeGridLayout<Type, layout_type>::estimatePerfLRAxis (int startXL,
                                                                    int startZR,
                                                                    int endZR,
 #endif
-                                                                   FPValue &perf_left,
-                                                                   FPValue &perf_right)
+                                                                   DOUBLE &perf_left,
+                                                                   DOUBLE &perf_right)
 {
   perf_left = 0;
   perf_right = 0;
@@ -1533,8 +1533,8 @@ void ParallelYeeGridLayout<Type, layout_type>::estimatePerfLRAxis (int startXL,
 
 template <SchemeType_t Type, LayoutType layout_type>
 void ParallelYeeGridLayout<Type, layout_type>::estimatePerfLR (NodeBorder_t border,
-                                                               FPValue &perf_left,
-                                                               FPValue &perf_right)
+                                                               DOUBLE &perf_left,
+                                                               DOUBLE &perf_right)
 {
   if (border.axis == OX)
   {
@@ -1608,71 +1608,71 @@ bool ParallelYeeGridLayout<Type, layout_type>::disableAxisLR (NodeBorder_t borde
                                                               int endZR,
                                                               int sizeZ,
 #endif
-                                                              FPValue perf_left,
-                                                              FPValue perf_right,
-                                                              FPValue perf_all,
-                                                              FPValue overallSize)
+                                                              DOUBLE perf_left,
+                                                              DOUBLE perf_right,
+                                                              DOUBLE perf_all,
+                                                              DOUBLE overallSize)
 {
   bool disabled = false;
 
-  FPValue max_share_LR_left = 0;
-  FPValue max_share_DU_left = 0;
-  FPValue max_share_BF_left = 0;
+  DOUBLE max_share_LR_left = DOUBLE (0);
+  DOUBLE max_share_DU_left = DOUBLE (0);
+  DOUBLE max_share_BF_left = DOUBLE (0);
 
-  FPValue max_share_LD_RU_left = 0;
-  FPValue max_share_LU_RD_left = 0;
-  FPValue max_share_LB_RF_left = 0;
-  FPValue max_share_LF_RB_left = 0;
-  FPValue max_share_DB_UF_left = 0;
-  FPValue max_share_DF_UB_left = 0;
+  DOUBLE max_share_LD_RU_left = DOUBLE (0);
+  DOUBLE max_share_LU_RD_left = DOUBLE (0);
+  DOUBLE max_share_LB_RF_left = DOUBLE (0);
+  DOUBLE max_share_LF_RB_left = DOUBLE (0);
+  DOUBLE max_share_DB_UF_left = DOUBLE (0);
+  DOUBLE max_share_DF_UB_left = DOUBLE (0);
 
-  FPValue max_share_LDB_RUF_left = 0;
-  FPValue max_share_RDB_LUF_left = 0;
-  FPValue max_share_RUB_LDF_left = 0;
-  FPValue max_share_LUB_RDF_left = 0;
+  DOUBLE max_share_LDB_RUF_left = DOUBLE (0);
+  DOUBLE max_share_RDB_LUF_left = DOUBLE (0);
+  DOUBLE max_share_RUB_LDF_left = DOUBLE (0);
+  DOUBLE max_share_LUB_RDF_left = DOUBLE (0);
 
-  FPValue max_share_time_left = 0;
-  FPValue valueLeft = 0;
-
-
-  FPValue max_share_LR_right = 0;
-  FPValue max_share_DU_right = 0;
-  FPValue max_share_BF_right = 0;
-
-  FPValue max_share_LD_RU_right = 0;
-  FPValue max_share_LU_RD_right = 0;
-  FPValue max_share_LB_RF_right = 0;
-  FPValue max_share_LF_RB_right = 0;
-  FPValue max_share_DB_UF_right = 0;
-  FPValue max_share_DF_UB_right = 0;
-
-  FPValue max_share_LDB_RUF_right = 0;
-  FPValue max_share_RDB_LUF_right = 0;
-  FPValue max_share_RUB_LDF_right = 0;
-  FPValue max_share_LUB_RDF_right = 0;
-
-  FPValue max_share_time_right = 0;
-  FPValue valueRight = 0;
+  DOUBLE max_share_time_left = DOUBLE (0);
+  DOUBLE valueLeft = DOUBLE (0);
 
 
-  FPValue max_share_LR_all = 0;
-  FPValue max_share_DU_all = 0;
-  FPValue max_share_BF_all = 0;
+  DOUBLE max_share_LR_right = DOUBLE (0);
+  DOUBLE max_share_DU_right = DOUBLE (0);
+  DOUBLE max_share_BF_right = DOUBLE (0);
 
-  FPValue max_share_LD_RU_all = 0;
-  FPValue max_share_LU_RD_all = 0;
-  FPValue max_share_LB_RF_all = 0;
-  FPValue max_share_LF_RB_all = 0;
-  FPValue max_share_DB_UF_all = 0;
-  FPValue max_share_DF_UB_all = 0;
+  DOUBLE max_share_LD_RU_right = DOUBLE (0);
+  DOUBLE max_share_LU_RD_right = DOUBLE (0);
+  DOUBLE max_share_LB_RF_right = DOUBLE (0);
+  DOUBLE max_share_LF_RB_right = DOUBLE (0);
+  DOUBLE max_share_DB_UF_right = DOUBLE (0);
+  DOUBLE max_share_DF_UB_right = DOUBLE (0);
 
-  FPValue max_share_LDB_RUF_all = 0;
-  FPValue max_share_RDB_LUF_all = 0;
-  FPValue max_share_RUB_LDF_all = 0;
-  FPValue max_share_LUB_RDF_all = 0;
+  DOUBLE max_share_LDB_RUF_right = DOUBLE (0);
+  DOUBLE max_share_RDB_LUF_right = DOUBLE (0);
+  DOUBLE max_share_RUB_LDF_right = DOUBLE (0);
+  DOUBLE max_share_LUB_RDF_right = DOUBLE (0);
 
-  FPValue max_share_time_all = 0;
-  FPValue valueAll = 0;
+  DOUBLE max_share_time_right = DOUBLE (0);
+  DOUBLE valueRight = DOUBLE (0);
+
+
+  DOUBLE max_share_LR_all = DOUBLE (0);
+  DOUBLE max_share_DU_all = DOUBLE (0);
+  DOUBLE max_share_BF_all = DOUBLE (0);
+
+  DOUBLE max_share_LD_RU_all = DOUBLE (0);
+  DOUBLE max_share_LU_RD_all = DOUBLE (0);
+  DOUBLE max_share_LB_RF_all = DOUBLE (0);
+  DOUBLE max_share_LF_RB_all = DOUBLE (0);
+  DOUBLE max_share_DB_UF_all = DOUBLE (0);
+  DOUBLE max_share_DF_UB_all = DOUBLE (0);
+
+  DOUBLE max_share_LDB_RUF_all = DOUBLE (0);
+  DOUBLE max_share_RDB_LUF_all = DOUBLE (0);
+  DOUBLE max_share_RUB_LDF_all = DOUBLE (0);
+  DOUBLE max_share_LUB_RDF_all = DOUBLE (0);
+
+  DOUBLE max_share_time_all = DOUBLE (0);
+  DOUBLE valueAll = DOUBLE (0);
 
   {
     std::vector<grid_coord> tmp_spread;
@@ -1877,7 +1877,7 @@ bool ParallelYeeGridLayout<Type, layout_type>::disableAxisLR (NodeBorder_t borde
 
   valueAll = overallSize / perf_all + max_share_time_all;
 
-  FPValue new_perf_all;
+  DOUBLE new_perf_all;
 
   if (parallelGridCore->getProcessId () == 0)
   {
@@ -2022,17 +2022,17 @@ bool ParallelYeeGridLayout<Type, layout_type>::disableLR (NodeBorder_t border,
 #if defined (GRID_3D)
                                                           std::vector<grid_coord> &spreadZ,
 #endif
-                                                          FPValue perf_left,
-                                                          FPValue perf_right)
+                                                          DOUBLE perf_left,
+                                                          DOUBLE perf_right)
 {
   bool disabled = false;
 
-  FPValue perf_all = perf_left + perf_right;
+  DOUBLE perf_all = perf_left + perf_right;
 
   /*
    * Get total number of grid points
    */
-  FPValue overallSize = (FPValue) YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.calculateTotalCoord ();
+  DOUBLE overallSize = (DOUBLE) YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.calculateTotalCoord ();
 
   if (border.axis == OX)
   {
@@ -2125,8 +2125,8 @@ void ParallelYeeGridLayout<Type, layout_type>::checkDisablingConditions (std::ve
        */
       NodeBorder_t entry = borders[index];
 
-      FPValue perf_left;
-      FPValue perf_right;
+      DOUBLE perf_left;
+      DOUBLE perf_right;
 
       estimatePerfLR (entry, perf_left, perf_right);
 
@@ -2153,7 +2153,7 @@ void ParallelYeeGridLayout<Type, layout_type>::spreadGridPoints (std::vector<gri
 #if defined (GRID_3D)
                                                                  , std::vector<grid_coord> &spreadZ
 #endif
-                                                                 , FPValue sumSpeedEnabled)
+                                                                 , DOUBLE sumSpeedEnabled)
 {
 #ifdef GRID_1D
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X)
@@ -2289,7 +2289,7 @@ void ParallelYeeGridLayout<Type, layout_type>::disableNodesAfterSpread (const st
  */
 template <SchemeType_t Type, LayoutType layout_type>
 void ParallelYeeGridLayout<Type, layout_type>::spreadGridPointsPerAxis (std::vector<grid_coord> &spread,
-                                                                        FPValue sumSpeedEnabled,
+                                                                        DOUBLE sumSpeedEnabled,
                                                                         int axisStart1,
                                                                         int axisSize1,
                                                                         Axis_t axis1
@@ -2339,7 +2339,7 @@ void ParallelYeeGridLayout<Type, layout_type>::spreadGridPointsPerAxis (std::vec
   for (int processAxis1 = axisStart1; processAxis1 < axisSize1; ++processAxis1)
   {
     bool enabled = false;
-    FPValue sumSpeedEnabledAxis = 0;
+    DOUBLE sumSpeedEnabledAxis = DOUBLE (0);
 
 #if defined (GRID_2D) || defined (GRID_3D)
     for (int processAxis2 = axisStart2; processAxis2 < axisSize2; ++processAxis2)
@@ -2434,7 +2434,7 @@ void ParallelYeeGridLayout<Type, layout_type>::spreadGridPointsPerAxis (std::vec
       }
     }
 
-    spread[processAxis1] = ((FPValue) totalSize) * sumSpeedEnabledAxis / (sumSpeedEnabled);
+    spread[processAxis1] = ((DOUBLE) totalSize) * sumSpeedEnabledAxis / (sumSpeedEnabled);
 
     if (spread[processAxis1] < 1
         || !enabled)
@@ -2464,19 +2464,19 @@ void ParallelYeeGridLayout<Type, layout_type>::spreadGridPointsPerAxis (std::vec
 }
 
 template <SchemeType_t Type, LayoutType layout_type>
-void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_LR,
-                                                             FPValue &max_share_DU,
-                                                             FPValue &max_share_BF,
-                                                             FPValue &max_share_LD_RU,
-                                                             FPValue &max_share_LU_RD,
-                                                             FPValue &max_share_LB_RF,
-                                                             FPValue &max_share_LF_RB,
-                                                             FPValue &max_share_DB_UF,
-                                                             FPValue &max_share_DF_UB,
-                                                             FPValue &max_share_LDB_RUF,
-                                                             FPValue &max_share_RDB_LUF,
-                                                             FPValue &max_share_RUB_LDF,
-                                                             FPValue &max_share_LUB_RDF,
+void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (DOUBLE &max_share_LR,
+                                                             DOUBLE &max_share_DU,
+                                                             DOUBLE &max_share_BF,
+                                                             DOUBLE &max_share_LD_RU,
+                                                             DOUBLE &max_share_LU_RD,
+                                                             DOUBLE &max_share_LB_RF,
+                                                             DOUBLE &max_share_LF_RB,
+                                                             DOUBLE &max_share_DB_UF,
+                                                             DOUBLE &max_share_DF_UB,
+                                                             DOUBLE &max_share_LDB_RUF,
+                                                             DOUBLE &max_share_RDB_LUF,
+                                                             DOUBLE &max_share_RUB_LDF,
+                                                             DOUBLE &max_share_LUB_RDF,
                                                              const std::vector<grid_coord> &spreadX,
                                                              int axisStartX,
                                                              int axisSizeX
@@ -2502,22 +2502,22 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
 #endif
     {
 #ifdef GRID_1D
-      FPValue size = 1.0;
+      DOUBLE size = DOUBLE (1);
       int pid1 = parallelGridCore->getNodeGrid (i);
       int pid2 = parallelGridCore->getNodeGrid (i + 1);
 #endif
 #ifdef GRID_2D
-      FPValue size = spreadY[j];
+      DOUBLE size = DOUBLE (spreadY[j]);
       int pid1 = parallelGridCore->getNodeGrid (i, j);
       int pid2 = parallelGridCore->getNodeGrid (i + 1, j);
 #endif
 #ifdef GRID_3D
-      FPValue size = spreadY[j] * spreadZ[k];
+      DOUBLE size = DOUBLE (spreadY[j] * spreadZ[k]);
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i + 1, j, k);
 #endif
 
-      FPValue time_LR = parallelGridCore->getLatency (pid1, pid2) + size / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_LR = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (size) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_LR > max_share_LR)
       {
         max_share_LR = time_LR;
@@ -2531,17 +2531,17 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
 #endif
     {
 #ifdef GRID_2D
-      FPValue size = 1.0;
+      DOUBLE size = DOUBLE (1);
       int pid1 = parallelGridCore->getNodeGrid (i, j);
       int pid2 = parallelGridCore->getNodeGrid (i + 1, j + 1);
 #endif
 #ifdef GRID_3D
-      FPValue size = spreadZ[k];
+      DOUBLE size = DOUBLE (spreadZ[k]);
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i + 1, j + 1, k);
 #endif
 
-      FPValue time_LD_RU = parallelGridCore->getLatency (pid1, pid2) + size / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_LD_RU = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (size) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_LD_RU > max_share_LD_RU)
       {
         max_share_LD_RU = time_LD_RU;
@@ -2554,17 +2554,17 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
 #endif
     {
 #ifdef GRID_2D
-      FPValue size = 1.0;
+      DOUBLE size = DOUBLE (1);
       int pid1 = parallelGridCore->getNodeGrid (i, j);
       int pid2 = parallelGridCore->getNodeGrid (i + 1, j - 1);
 #endif
 #ifdef GRID_3D
-      FPValue size = spreadZ[k];
+      DOUBLE size = DOUBLE (spreadZ[k]);
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i + 1, j - 1, k);
 #endif
 
-      FPValue time_LU_RD = parallelGridCore->getLatency (pid1, pid2) + size / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_LU_RD = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (size) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_LU_RD > max_share_LU_RD)
       {
         max_share_LU_RD = time_LU_RD;
@@ -2579,7 +2579,7 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i + 1, j, k + 1);
 
-      FPValue time_LB_RF = parallelGridCore->getLatency (pid1, pid2) + spreadY[j] / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_LB_RF = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (spreadY[j]) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_LB_RF > max_share_LB_RF)
       {
         max_share_LB_RF = time_LB_RF;
@@ -2592,7 +2592,7 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i + 1, j, k - 1);
 
-      FPValue time_LF_RB = parallelGridCore->getLatency (pid1, pid2) + spreadY[j] / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_LF_RB = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (spreadY[j]) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_LF_RB > max_share_LF_RB)
       {
         max_share_LF_RB = time_LF_RB;
@@ -2605,7 +2605,7 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i + 1, j + 1, k + 1);
 
-      FPValue time_LDB_RUF = parallelGridCore->getLatency (pid1, pid2) + 1.0 / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_LDB_RUF = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (1) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_LDB_RUF > max_share_LDB_RUF)
       {
         max_share_LDB_RUF = time_LDB_RUF;
@@ -2618,7 +2618,7 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i + 1, j - 1, k + 1);
 
-      FPValue time_LUB_RDF = parallelGridCore->getLatency (pid1, pid2) + 1.0 / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_LUB_RDF = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (1) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_LUB_RDF > max_share_LUB_RDF)
       {
         max_share_LUB_RDF = time_LUB_RDF;
@@ -2636,17 +2636,17 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
 #endif
     {
 #ifdef GRID_2D
-      FPValue size = spreadX[i];
+      DOUBLE size = DOUBLE (spreadX[i]);
       int pid1 = parallelGridCore->getNodeGrid (i, j);
       int pid2 = parallelGridCore->getNodeGrid (i, j + 1);
 #endif
 #ifdef GRID_3D
-      FPValue size = spreadX[i] * spreadZ[k];
+      DOUBLE size = DOUBLE (spreadX[i] * spreadZ[k]);
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i, j + 1, k);
 #endif
 
-      FPValue time_DU = parallelGridCore->getLatency (pid1, pid2) + size / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_DU = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (size) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_DU > max_share_DU)
       {
         max_share_DU = time_DU;
@@ -2661,7 +2661,7 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i, j, k + 1);
 
-      FPValue time_BF = parallelGridCore->getLatency (pid1, pid2) + spreadX[i] * spreadY[j] / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_BF = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (spreadX[i] * spreadY[j]) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_BF > max_share_BF)
       {
         max_share_BF = time_BF;
@@ -2674,7 +2674,7 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i, j + 1, k + 1);
 
-      FPValue time_DB_UF = parallelGridCore->getLatency (pid1, pid2) + spreadX[i] / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_DB_UF = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (spreadX[i]) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_DB_UF > max_share_DB_UF)
       {
         max_share_DB_UF = time_DB_UF;
@@ -2687,7 +2687,7 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i, j + 1, k - 1);
 
-      FPValue time_DF_UB = parallelGridCore->getLatency (pid1, pid2) + spreadX[i] / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_DF_UB = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (spreadX[i]) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_DF_UB > max_share_DF_UB)
       {
         max_share_DF_UB = time_DF_UB;
@@ -2703,7 +2703,7 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i - 1, j + 1, k + 1);
 
-      FPValue time_RDB_LUF = parallelGridCore->getLatency (pid1, pid2) + 1.0 / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_RDB_LUF = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (1) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_RDB_LUF > max_share_RDB_LUF)
       {
         max_share_RDB_LUF = time_RDB_LUF;
@@ -2716,7 +2716,7 @@ void ParallelYeeGridLayout<Type, layout_type>::findMaxTimes (FPValue &max_share_
       int pid1 = parallelGridCore->getNodeGrid (i, j, k);
       int pid2 = parallelGridCore->getNodeGrid (i - 1, j - 1, k + 1);
 
-      FPValue time_RUB_LDF = parallelGridCore->getLatency (pid1, pid2) + 1.0 / parallelGridCore->getBandwidth (pid1, pid2);
+      DOUBLE time_RUB_LDF = parallelGridCore->getLatency (pid1, pid2) + DOUBLE (1) / parallelGridCore->getBandwidth (pid1, pid2);
       if (time_RUB_LDF > max_share_RUB_LDF)
       {
         max_share_RUB_LDF = time_RUB_LDF;
@@ -2741,7 +2741,7 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
   /*
    * ==== Calculate total perf, latency and bandwidth ====
    */
-  FPValue sumSpeedEnabled = parallelGridCore->calcTotalPerf (difft);
+  DOUBLE sumSpeedEnabled = parallelGridCore->calcTotalPerf (difft);
   parallelGridCore->calcTotalLatencyAndBandwidth (difft);
 
   /*
@@ -2822,7 +2822,7 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
           parallelGridCore->getPerf (parallelGridCore->getProcessId ()),
           parallelGridCore->getTotalSumPerfPointsPerProcess (parallelGridCore->getProcessId ()),
           parallelGridCore->getTotalSumPerfTimePerProcess (parallelGridCore->getProcessId ()),
-          (FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
+          (DOUBLE)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
           difft,
           sumSpeedEnabled);
 #endif
@@ -2834,8 +2834,8 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
           parallelGridCore->getPerf (parallelGridCore->getProcessId ()),
           parallelGridCore->getTotalSumPerfPointsPerProcess (parallelGridCore->getProcessId ()),
           parallelGridCore->getTotalSumPerfTimePerProcess (parallelGridCore->getProcessId ()),
-          (FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
-          (FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 (),
+          (DOUBLE)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
+          (DOUBLE)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 (),
           difft,
           sumSpeedEnabled);
 #endif
@@ -2847,9 +2847,9 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
           parallelGridCore->getPerf (parallelGridCore->getProcessId ()),
           parallelGridCore->getTotalSumPerfPointsPerProcess (parallelGridCore->getProcessId ()),
           parallelGridCore->getTotalSumPerfTimePerProcess (parallelGridCore->getProcessId ()),
-          (FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
-          (FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 (),
-          (FPValue)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get3 (),
+          (DOUBLE)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get1 (),
+          (DOUBLE)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get2 (),
+          (DOUBLE)YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::size.get3 (),
           difft,
           sumSpeedEnabled);
 #endif
