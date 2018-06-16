@@ -6,21 +6,39 @@
  */
 #ifdef FLOAT_VALUES
 typedef float FPValue;
+
+#ifdef COMPLEX_FIELD_VALUES
+#define MPI_FPVALUE MPI_COMPLEX
+#else /* COMPLEX_FIELD_VALUES */
 #define MPI_FPVALUE MPI_FLOAT
+#endif /* !COMPLEX_FIELD_VALUES */
+
 #define FP_MOD "%f"
 #define FP_MOD_ACC "%.20f"
 #endif /* FLOAT_VALUES */
 
 #ifdef DOUBLE_VALUES
 typedef double FPValue;
+
+#ifdef COMPLEX_FIELD_VALUES
+#define MPI_FPVALUE MPI_DOUBLE_COMPLEX
+#else /* COMPLEX_FIELD_VALUES */
 #define MPI_FPVALUE MPI_DOUBLE
+#endif /* !COMPLEX_FIELD_VALUES */
+
 #define FP_MOD "%f"
 #define FP_MOD_ACC "%.20f"
 #endif /* DOUBLE_VALUES */
 
 #ifdef LONG_DOUBLE_VALUES
 typedef long double FPValue;
+
+#ifdef COMPLEX_FIELD_VALUES
+#define MPI_FPVALUE MPI_LONG_DOUBLE_COMPLEX
+#else /* COMPLEX_FIELD_VALUES */
 #define MPI_FPVALUE MPI_LONG_DOUBLE
+#endif /* !COMPLEX_FIELD_VALUES */
+
 #define FP_MOD "%Lf"
 #define FP_MOD_ACC "%.20Lf"
 #endif /* LONG_DOUBLE_VALUES */

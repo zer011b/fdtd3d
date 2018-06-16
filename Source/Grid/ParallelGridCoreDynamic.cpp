@@ -483,7 +483,7 @@ void ParallelGridCore::ShareCalcClocks ()
     }
 
 #ifdef MPI_CLOCK
-    MPI_Bcast (&calcClockSec, 1, MPI_FPVALUE, process, communicator);
+    MPI_Bcast (&calcClockSec, 1, MPI_DOUBLE, process, communicator);
 #else /* MPI_CLOCK */
     MPI_Bcast (&calcClockSec, 1, MPI_LONG_LONG, process, communicator);
     MPI_Bcast (&calcClockNSec, 1, MPI_LONG_LONG, process, communicator);
@@ -588,7 +588,7 @@ void ParallelGridCore::ShareShareClocks ()
 
     MPI_Bcast (dynamicInfo.shareClockBufSize_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_UNSIGNED, process, communicator);
 #ifdef MPI_CLOCK
-    MPI_Bcast (dynamicInfo.shareClockSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_FPVALUE, process, communicator);
+    MPI_Bcast (dynamicInfo.shareClockSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_DOUBLE, process, communicator);
 #else /* MPI_CLOCK */
     MPI_Bcast (dynamicInfo.shareClockSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_LONG_LONG, process, communicator);
     MPI_Bcast (dynamicInfo.shareClockNSec_buf, CLOCK_BUF_SIZE * totalProcCount, MPI_LONG_LONG, process, communicator);
@@ -884,32 +884,6 @@ ParallelGridCore::doAdditionalShareMeasurements (uint32_t latency_measure_count,
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
-  MPI_Datatype datatype;
-
-#ifdef FLOAT_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_FLOAT;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* FLOAT_VALUES */
-
-#ifdef DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* DOUBLE_VALUES */
-
-#ifdef LONG_DOUBLE_VALUES
-#ifdef COMPLEX_FIELD_VALUES
-  datatype = MPI_LONG_DOUBLE_COMPLEX;
-#else /* COMPLEX_FIELD_VALUES */
-  datatype = MPI_LONG_DOUBLE;
-#endif /* !COMPLEX_FIELD_VALUES */
-#endif /* LONG_DOUBLE_VALUES */
-
   std::vector<FieldValue> tmp_buffer (latency_buf_size);
 
   for (uint32_t buf_size = latency_buf_start; buf_size < latency_buf_size; buf_size += latency_buf_step)
@@ -955,7 +929,7 @@ ParallelGridCore::doAdditionalShareMeasurements (uint32_t latency_measure_count,
     {
       StartShareClock (processTo, ssize);
 
-      int retCode = MPI_Send (tmp_buffer.data(), ssize, datatype, processTo, getProcessId (), getCommunicator ());
+      int retCode = MPI_Send (tmp_buffer.data(), ssize, MPI_FPVALUE, processTo, getProcessId (), getCommunicator ());
       ASSERT (retCode == MPI_SUCCESS);
 
       StopShareClock (processTo, ssize);
@@ -966,7 +940,7 @@ ParallelGridCore::doAdditionalShareMeasurements (uint32_t latency_measure_count,
       StartShareClock (processFrom, rsize);
 
       MPI_Status status;
-      int retCode = MPI_Recv (tmp_buffer.data(), rsize, datatype, processFrom, processFrom, getCommunicator (), &status);
+      int retCode = MPI_Recv (tmp_buffer.data(), rsize, MPI_FPVALUE, processFrom, processFrom, getCommunicator (), &status);
       ASSERT (retCode == MPI_SUCCESS);
 
       StopShareClock (processFrom, rsize);
@@ -982,14 +956,14 @@ ParallelGridCore::doAdditionalShareMeasurements (uint32_t latency_measure_count,
       {
         StartShareClock (processTo, ssize);
 
-        int retCode = MPI_Send (tmp_buffer.data(), ssize, datatype, processTo, getProcessId (), getCommunicator ());
+        int retCode = MPI_Send (tmp_buffer.data(), ssize, MPI_FPVALUE, processTo, getProcessId (), getCommunicator ());
         ASSERT (retCode == MPI_SUCCESS);
 
         StopShareClock (processTo, ssize);
         StartShareClock (processFrom, rsize);
 
         MPI_Status status;
-        retCode = MPI_Recv (tmp_buffer.data(), rsize, datatype, processFrom, processFrom, getCommunicator (), &status);
+        retCode = MPI_Recv (tmp_buffer.data(), rsize, MPI_FPVALUE, processFrom, processFrom, getCommunicator (), &status);
         ASSERT (retCode == MPI_SUCCESS);
 
         StopShareClock (processFrom, rsize);
@@ -999,13 +973,13 @@ ParallelGridCore::doAdditionalShareMeasurements (uint32_t latency_measure_count,
         StartShareClock (processFrom, rsize);
 
         MPI_Status status;
-        int retCode = MPI_Recv (tmp_buffer.data(), rsize, datatype, processFrom, processFrom, getCommunicator (), &status);
+        int retCode = MPI_Recv (tmp_buffer.data(), rsize, MPI_FPVALUE, processFrom, processFrom, getCommunicator (), &status);
         ASSERT (retCode == MPI_SUCCESS);
 
         StopShareClock (processFrom, rsize);
         StartShareClock (processTo, ssize);
 
-        retCode = MPI_Send (tmp_buffer.data(), ssize, datatype, processTo, getProcessId (), getCommunicator ());
+        retCode = MPI_Send (tmp_buffer.data(), ssize, MPI_FPVALUE, processTo, getProcessId (), getCommunicator ());
         ASSERT (retCode == MPI_SUCCESS);
 
         StopShareClock (processTo, ssize);
