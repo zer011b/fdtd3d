@@ -19,6 +19,9 @@ include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/Loader")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/Dumper")
 
+add_executable (unit-test-settings unit-test-settings.cpp)
+target_link_libraries (unit-test-settings Helpers Settings Kernels)
+
 add_executable (unit-test-clock unit-test-clock.cpp)
 target_link_libraries (unit-test-clock Helpers Settings Kernels)
 
