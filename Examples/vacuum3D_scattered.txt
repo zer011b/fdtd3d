@@ -20,13 +20,9 @@
 
 --save-res
 --save-as-bmp
+--save-scattered-field-res
 --orth-axis-z
 --palette-rgb
-
---pml-sizex 10
---pml-sizey 10
---pml-sizez 10
---use-pml
 
 --use-tfsf
 --tfsf-sizex 12
