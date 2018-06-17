@@ -623,6 +623,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTem
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
 #endif
 }
 
@@ -653,6 +656,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTem
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
 #endif
 }
 
@@ -683,6 +689,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTem
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
 #endif
 }
 
@@ -713,6 +722,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTem
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
 #endif
 }
 
@@ -743,6 +755,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTem
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
 #endif
 }
 
@@ -773,6 +788,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTem
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
 #endif
 }
 
@@ -803,6 +821,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemp
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
 #endif
 }
 
@@ -833,6 +854,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemp
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
 #endif
 }
 
@@ -863,6 +887,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemp
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
 #endif
 }
 
@@ -893,6 +920,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemp
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
 #endif
 }
 
@@ -923,6 +953,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemp
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
 #endif
 }
 
@@ -953,6 +986,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemp
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
 #endif
 }
 
@@ -983,6 +1019,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate
                                        (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
                                        (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
                                        (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                  "Recompile it with -DPARALLEL_GRID_DIMENSION=3.");
 #endif
 }
 #endif
@@ -1106,7 +1145,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
 #if defined (PARALLEL_GRID)
     allocateParallelGrids ();
 #else /* PARALLEL_GRID */
-    UNREACHABLE;
+    ALWAYS_ASSERT (false);
 #endif /* !PARALLEL_GRID */
   }
   else
@@ -3211,7 +3250,8 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StartCalcClock ();
 #else
-      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. "
+                      "Recompile it with -DPARALLEL_GRID=ON and -DDYNAMIC_GRID=ON.");
 #endif
     }
 
@@ -3238,7 +3278,8 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StopCalcClock ();
 #else
-      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. "
+                      "Recompile it with -DPARALLEL_GRID=ON and -DDYNAMIC_GRID=ON.");
 #endif
     }
 
@@ -3292,7 +3333,8 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StartCalcClock ();
 #else
-      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. "
+                      "Recompile it with -DPARALLEL_GRID=ON and -DDYNAMIC_GRID=ON.");
 #endif
     }
 
@@ -3319,7 +3361,8 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StopCalcClock ();
 #else
-      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. "
+                      "Recompile it with -DPARALLEL_GRID=ON and -DDYNAMIC_GRID=ON.");
 #endif
     }
 
@@ -3983,6 +4026,8 @@ Scheme<Type, TCoord, layout_type>::initMaterialFromFile (GridType gridType, Grid
       FieldPointValue *val = grid->getFieldPointValue (pos);
       *val = *totalGrid->getFieldPointValue (posAbs);
     }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
   }
 }
@@ -6410,7 +6455,8 @@ Scheme<Type, TCoord, layout_type>::additionalUpdateOfGrids (time_step t, time_st
       }
     }
 #else
-    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. "
+                    "Recompile it with -DPARALLEL_GRID=ON and -DDYNAMIC_GRID=ON.");
 #endif
   }
 }
