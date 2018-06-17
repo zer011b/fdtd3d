@@ -648,6 +648,9 @@ ParallelGridCore::ParallelGridCore (int process, /**< id of computational node *
 
   ASSERT (totalProcCount > 1);
 
+  /*
+   * Initialize communicator for all enabled computational nodes
+   */
   int retCode = MPI_Comm_split (MPI_COMM_WORLD, process < totalProcCount ? 0 : MPI_UNDEFINED, process, &communicator);
   ASSERT (retCode == MPI_SUCCESS);
 
