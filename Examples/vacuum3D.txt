@@ -24,7 +24,7 @@
 
 --pml-sizex 10
 --pml-sizey 10
---pml-sizey 10
+--pml-sizez 10
 --use-pml
 
 --use-tfsf
