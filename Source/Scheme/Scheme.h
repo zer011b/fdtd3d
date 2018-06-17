@@ -418,7 +418,7 @@ public:
     }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                    "Recompile it with -DPARALLEL_GRID=ON.");
+                    "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
 #endif
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
@@ -447,7 +447,7 @@ public:
     }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                    "Recompile it with -DPARALLEL_GRID=ON.");
+                    "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
 #endif
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
@@ -476,7 +476,7 @@ public:
     }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                    "Recompile it with -DPARALLEL_GRID=ON.");
+                    "Recompile it with -DPARALLEL_GRID_DIMENSION=3.");
 #endif
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
@@ -554,7 +554,7 @@ public:
     }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                    "Recompile it with -DPARALLEL_GRID=ON.");
+                    "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
 #endif
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
@@ -632,7 +632,7 @@ public:
     }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                    "Recompile it with -DPARALLEL_GRID=ON.");
+                    "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
 #endif
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
@@ -710,7 +710,7 @@ public:
     }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                    "Recompile it with -DPARALLEL_GRID=ON.");
+                    "Recompile it with -DPARALLEL_GRID_DIMENSION=3.");
 #endif
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
