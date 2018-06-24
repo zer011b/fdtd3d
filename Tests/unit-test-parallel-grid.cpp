@@ -235,7 +235,8 @@ int main (int argc, char** argv)
 #ifdef GRID_1D
   GridCoordinate1D overallSize (gridSizeX, CoordinateType::X);
   GridCoordinate1D pmlSize (10, CoordinateType::X);
-  GridCoordinate1D tfsfSize (20, CoordinateType::X);
+  GridCoordinate1D tfsfSizeLeft (20, CoordinateType::X);
+  GridCoordinate1D tfsfSizeRight (20, CoordinateType::X);
   GridCoordinate1D bufferSize (bufSize, CoordinateType::X);
   GridCoordinate1D topologySize (0, CoordinateType::X);
 
@@ -246,7 +247,8 @@ int main (int argc, char** argv)
 #ifdef GRID_2D
   GridCoordinate2D overallSize (gridSizeX, gridSizeY, CoordinateType::X, CoordinateType::Y);
   GridCoordinate2D pmlSize (10, 10, CoordinateType::X, CoordinateType::Y);
-  GridCoordinate2D tfsfSize (20, 20, CoordinateType::X, CoordinateType::Y);
+  GridCoordinate2D tfsfSizeLeft (20, 20, CoordinateType::X, CoordinateType::Y);
+  GridCoordinate2D tfsfSizeRight (20, 20, CoordinateType::X, CoordinateType::Y);
   GridCoordinate2D bufferSize (bufSize, bufSize, CoordinateType::X, CoordinateType::Y);
   GridCoordinate2D topologySize (0, 0, CoordinateType::X, CoordinateType::Y);
 
@@ -257,7 +259,8 @@ int main (int argc, char** argv)
 #ifdef GRID_3D
   GridCoordinate3D overallSize (gridSizeX, gridSizeY, gridSizeZ, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
   GridCoordinate3D pmlSize (10, 10, 10, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-  GridCoordinate3D tfsfSize (20, 20, 20, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  GridCoordinate3D tfsfSizeLeft (20, 20, 20, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  GridCoordinate3D tfsfSizeRight (20, 20, 20, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
   GridCoordinate3D bufferSize (bufSize, bufSize, bufSize, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
   GridCoordinate3D topologySize (0, 0, 0, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 
@@ -270,7 +273,7 @@ int main (int argc, char** argv)
 
   bool isDoubleMaterialPrecision = false;
 
-  ParallelYeeGridLayout<SCHEME_TYPE, E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSize, ANGLES, isDoubleMaterialPrecision);
+  ParallelYeeGridLayout<SCHEME_TYPE, E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ANGLES, isDoubleMaterialPrecision);
   yeeLayout.Initialize (&parallelGridCore);
 
   ParallelGrid *grid = initGrid (overallSize, bufferSize, yeeLayout.getSizeForCurNode (), false);

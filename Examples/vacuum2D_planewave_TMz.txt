@@ -25,5 +25,7 @@
 --use-pml
 
 --use-tfsf
---tfsf-sizex 30
---tfsf-sizey 30
+--tfsf-sizex-left 30
+--tfsf-sizex-right 30
+--tfsf-sizey-left 30
+--tfsf-sizey-right 30

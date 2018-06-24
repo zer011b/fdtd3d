@@ -128,11 +128,12 @@ Settings::parseArg (int &index, /**< out: current argument index */
   }
   else if (strcmp (argv[index], "--same-size-tfsf") == 0)
   {
-    tfsfSizeZ = tfsfSizeY = tfsfSizeX;
+    tfsfSizeZLeft = tfsfSizeYLeft = tfsfSizeXLeft;
+    tfsfSizeZRight = tfsfSizeYRight = tfsfSizeXRight;
   }
   else if (strcmp (argv[index], "--same-size-ntff") == 0)
   {
-    ntffSizeZ = tfsfSizeY = tfsfSizeX;
+    ntffSizeZ = ntffSizeY = ntffSizeX;
   }
   else if (strcmp (argv[index], "--1d-exhy") == 0)
   {

@@ -59,9 +59,13 @@ SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-pml", "Use size of PML area by x coo
 /*
  * Size of tfsf area
  */
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeX, getTFSFSizeX, grid_coord, 4, "--tfsf-sizex", "Size of TF/SF scattered area by x coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by x coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeY, getTFSFSizeY, grid_coord, 4, "--tfsf-sizey", "Size of TF/SF scattered area by y coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by y coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeZ, getTFSFSizeZ, grid_coord, 4, "--tfsf-sizez", "Size of TF/SF scattered area by z coordinate. Border of TF/SF will be placed at this distance from both left and right borders of area by z coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeXLeft, getTFSFSizeXLeft, grid_coord, 4, "--tfsf-sizex-left", "Size of TF/SF scattered area by x coordinate (left). Border of TF/SF will be placed at this distance from left border of area by x coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeXRight, getTFSFSizeXRight, grid_coord, 4, "--tfsf-sizex-right", "Size of TF/SF scattered area by x coordinate (right). Border of TF/SF will be placed at this distance from right border of area by x coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeYLeft, getTFSFSizeYLeft, grid_coord, 4, "--tfsf-sizey-left", "Size of TF/SF scattered area by y coordinate (left). Border of TF/SF will be placed at this distance from left border of area by y coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeYRight, getTFSFSizeYRight, grid_coord, 4, "--tfsf-sizey-right", "Size of TF/SF scattered area by y coordinate (right). Border of TF/SF will be placed at this distance from right border of area by y coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeZLeft, getTFSFSizeZLeft, grid_coord, 4, "--tfsf-sizez-left", "Size of TF/SF scattered area by z coordinate (left). Border of TF/SF will be placed at this distance from left border of area by z coordinate")
+SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeZRight, getTFSFSizeZRight, grid_coord, 4, "--tfsf-sizez-right", "Size of TF/SF scattered area by z coordinate (right). Border of TF/SF will be placed at this distance from right border of area by z coordinate")
+
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-tfsf", "Use size of TF/SF scattered area by x coordinate for y and z coordinates too")
 
 /*

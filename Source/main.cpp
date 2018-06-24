@@ -37,7 +37,8 @@ void initParallel (ParallelYeeGridLayout<Type, layout_type> **yeeLayout,
                    bool *skipProcess,
                    ParallelGridCoordinate overallSize,
                    ParallelGridCoordinate pmlSize,
-                   ParallelGridCoordinate tfsfSize,
+                   ParallelGridCoordinate tfsfSizeLeft,
+                   ParallelGridCoordinate tfsfSizeRight,
                    int argc, char** argv)
 {
   ParallelGridCoordinate topology (solverSettings.getTopologySizeX (),
@@ -74,7 +75,8 @@ void initParallel (ParallelYeeGridLayout<Type, layout_type> **yeeLayout,
     *yeeLayout = new ParallelYeeGridLayout<Type, layout_type> (
                  overallSize,
                  pmlSize,
-                 tfsfSize,
+                 tfsfSizeLeft,
+                 tfsfSizeRight,
                  solverSettings.getIncidentWaveAngle1 () * PhysicsConst::Pi / 180.0,
                  solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
                  solverSettings.getIncidentWaveAngle3 () * PhysicsConst::Pi / 180.0,
@@ -90,13 +92,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ex
                    bool *skipProcess,
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
-                   GridCoordinate1D tfsfSize,
+                   GridCoordinate1D tfsfSizeLeft,
+                   GridCoordinate1D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                 skipProcess, overallSize, pmlSize,
+                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -107,13 +112,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ex
                    bool *skipProcess,
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
-                   GridCoordinate1D tfsfSize,
+                   GridCoordinate1D tfsfSizeLeft,
+                   GridCoordinate1D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                 skipProcess, overallSize, pmlSize,
+                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -124,13 +132,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ey
                    bool *skipProcess,
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
-                   GridCoordinate1D tfsfSize,
+                   GridCoordinate1D tfsfSizeLeft,
+                   GridCoordinate1D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                 skipProcess, overallSize, pmlSize,
+                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -141,13 +152,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ey
                    bool *skipProcess,
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
-                   GridCoordinate1D tfsfSize,
+                   GridCoordinate1D tfsfSizeLeft,
+                   GridCoordinate1D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                 skipProcess, overallSize, pmlSize,
+                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -158,13 +172,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ez
                    bool *skipProcess,
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
-                   GridCoordinate1D tfsfSize,
+                   GridCoordinate1D tfsfSizeLeft,
+                   GridCoordinate1D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                 skipProcess, overallSize, pmlSize,
+                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -175,13 +192,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ez
                    bool *skipProcess,
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
-                   GridCoordinate1D tfsfSize,
+                   GridCoordinate1D tfsfSizeLeft,
+                   GridCoordinate1D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                 skipProcess, overallSize, pmlSize,
+                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -192,13 +212,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                    bool *skipProcess,
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
-                   GridCoordinate2D tfsfSize,
+                   GridCoordinate2D tfsfSizeLeft,
+                   GridCoordinate2D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                skipProcess, overallSize, pmlSize,
+                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -209,13 +232,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                    bool *skipProcess,
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
-                   GridCoordinate2D tfsfSize,
+                   GridCoordinate2D tfsfSizeLeft,
+                   GridCoordinate2D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                skipProcess, overallSize, pmlSize,
+                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -226,13 +252,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                    bool *skipProcess,
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
-                   GridCoordinate2D tfsfSize,
+                   GridCoordinate2D tfsfSizeLeft,
+                   GridCoordinate2D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                skipProcess, overallSize, pmlSize,
+                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -243,13 +272,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                    bool *skipProcess,
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
-                   GridCoordinate2D tfsfSize,
+                   GridCoordinate2D tfsfSizeLeft,
+                   GridCoordinate2D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                skipProcess, overallSize, pmlSize,
+                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -260,13 +292,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                    bool *skipProcess,
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
-                   GridCoordinate2D tfsfSize,
+                   GridCoordinate2D tfsfSizeLeft,
+                   GridCoordinate2D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                skipProcess, overallSize, pmlSize,
+                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -277,13 +312,16 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                    bool *skipProcess,
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
-                   GridCoordinate2D tfsfSize,
+                   GridCoordinate2D tfsfSizeLeft,
+                   GridCoordinate2D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                                skipProcess, overallSize, pmlSize,
+                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 
@@ -294,26 +332,30 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)),
                    bool *skipProcess,
                    GridCoordinate3D overallSize,
                    GridCoordinate3D pmlSize,
-                   GridCoordinate3D tfsfSize,
+                   GridCoordinate3D tfsfSizeLeft,
+                   GridCoordinate3D tfsfSizeRight,
                    int argc, char** argv)
 {
 #ifdef GRID_3D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> **) layout;
-  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs, skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+  initParallel<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
+                                                                            skipProcess, overallSize, pmlSize,
+                                                                            tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
 #endif
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-void initSettings (TCoord<grid_coord, true> &, TCoord<grid_coord, true> &, TCoord<grid_coord, true> &);
+void initSettings (TCoord<grid_coord, true> &, TCoord<grid_coord, true> &, TCoord<grid_coord, true> &, TCoord<grid_coord, true> &);
 
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>
   (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
    GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeZ ()
 #ifdef DEBUG_INFO
@@ -325,11 +367,16 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate
                                                         , CoordinateType::Z
 #endif
                                                         );
-  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeZ ()
+  tfsfSizeLeft = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeZLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::Z
+                                                             , CoordinateType::Z
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeZRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::Z
+#endif
+                                                              );
 }
 
 template <>
@@ -337,7 +384,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>
   (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
    GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeY ()
 #ifdef DEBUG_INFO
@@ -349,11 +397,16 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate
                                                         , CoordinateType::Y
 #endif
                                                         );
-  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeY ()
+  tfsfSizeLeft = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeYLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::Y
+                                                             , CoordinateType::Y
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeYRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::Y
+#endif
+                                                              );
 }
 
 template <>
@@ -361,7 +414,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>
   (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
    GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeZ ()
 #ifdef DEBUG_INFO
@@ -373,11 +427,16 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate
                                                         , CoordinateType::Z
 #endif
                                                         );
-  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeZ ()
+  tfsfSizeLeft = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeZLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::Z
+                                                             , CoordinateType::Z
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeZRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::Z
+#endif
+                                                              );
 }
 
 template <>
@@ -385,7 +444,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>
   (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
    GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeX ()
 #ifdef DEBUG_INFO
@@ -397,11 +457,16 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate
                                                         , CoordinateType::X
 #endif
                                                         );
-  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX ()
+  tfsfSizeLeft = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::X
+                                                             , CoordinateType::X
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::X
+#endif
+                                                              );
 }
 
 template <>
@@ -409,7 +474,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>
   (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
    GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeY ()
 #ifdef DEBUG_INFO
@@ -421,11 +487,16 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate
                                                         , CoordinateType::Y
 #endif
                                                         );
-  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeY ()
+  tfsfSizeLeft = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeYLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::Y
+                                                             , CoordinateType::Y
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeYRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::Y
+#endif
+                                                              );
 }
 
 template <>
@@ -433,7 +504,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>
   (GridCoordinate1DTemplate<grid_coord, true> &overallSize,
    GridCoordinate1DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate1DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate1DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getSizeX ()
 #ifdef DEBUG_INFO
@@ -445,11 +517,16 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate
                                                         , CoordinateType::X
 #endif
                                                         );
-  tfsfSize = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX ()
+  tfsfSizeLeft = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::X
+                                                             , CoordinateType::X
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate1DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::X
+#endif
+                                                              );
 }
 
 template <>
@@ -457,7 +534,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>
   (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
    GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeY (),
                                                             solverSettings.getSizeZ ()
@@ -473,13 +551,20 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2
                                                         , CoordinateType::Z
 #endif
                                                         );
-  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeY (),
-                                                         solverSettings.getTFSFSizeZ ()
+  tfsfSizeLeft = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeYLeft (),
+                                                             solverSettings.getTFSFSizeZLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::Y
-                                                         , CoordinateType::Z
+                                                             , CoordinateType::Y
+                                                             , CoordinateType::Z
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeYRight (),
+                                                              solverSettings.getTFSFSizeZRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::Y
+                                                              , CoordinateType::Z
+#endif
+                                                              );
 }
 
 template <>
@@ -487,7 +572,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>
   (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
    GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeX (),
                                                             solverSettings.getSizeZ ()
@@ -503,13 +589,20 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2
                                                         , CoordinateType::Z
 #endif
                                                         );
-  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX (),
-                                                         solverSettings.getTFSFSizeZ ()
+  tfsfSizeLeft = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXLeft (),
+                                                             solverSettings.getTFSFSizeZLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::X
-                                                         , CoordinateType::Z
+                                                             , CoordinateType::X
+                                                             , CoordinateType::Z
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXRight (),
+                                                              solverSettings.getTFSFSizeZRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::X
+                                                              , CoordinateType::Z
+#endif
+                                                              );
 }
 
 template <>
@@ -517,7 +610,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>
   (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
    GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeX (),
                                                             solverSettings.getSizeY ()
@@ -533,13 +627,20 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2
                                                         , CoordinateType::Y
 #endif
                                                         );
-  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX (),
-                                                         solverSettings.getTFSFSizeY ()
+  tfsfSizeLeft = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXLeft (),
+                                                             solverSettings.getTFSFSizeYLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::X
-                                                         , CoordinateType::Y
+                                                             , CoordinateType::X
+                                                             , CoordinateType::Y
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXRight (),
+                                                              solverSettings.getTFSFSizeYRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::X
+                                                              , CoordinateType::Y
+#endif
+                                                              );
 }
 
 template <>
@@ -547,7 +648,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>
   (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
    GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeY (),
                                                             solverSettings.getSizeZ ()
@@ -563,13 +665,20 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2
                                                         , CoordinateType::Z
 #endif
                                                         );
-  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeY (),
-                                                         solverSettings.getTFSFSizeZ ()
+  tfsfSizeLeft = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeYLeft (),
+                                                             solverSettings.getTFSFSizeZLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::Y
-                                                         , CoordinateType::Z
+                                                             , CoordinateType::Y
+                                                             , CoordinateType::Z
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeYRight (),
+                                                              solverSettings.getTFSFSizeZRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::Y
+                                                              , CoordinateType::Z
+#endif
+                                                              );
 }
 
 template <>
@@ -577,7 +686,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>
   (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
    GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeX (),
                                                             solverSettings.getSizeZ ()
@@ -593,13 +703,20 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2
                                                         , CoordinateType::Z
 #endif
                                                         );
-  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX (),
-                                                         solverSettings.getTFSFSizeZ ()
+  tfsfSizeLeft = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXLeft (),
+                                                             solverSettings.getTFSFSizeZLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::X
-                                                         , CoordinateType::Z
+                                                             , CoordinateType::X
+                                                             , CoordinateType::Z
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXRight (),
+                                                              solverSettings.getTFSFSizeZRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::X
+                                                              , CoordinateType::Z
+#endif
+                                                              );
 }
 
 template <>
@@ -607,7 +724,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>
   (GridCoordinate2DTemplate<grid_coord, true> &overallSize,
    GridCoordinate2DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate2DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate2DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getSizeX (),
                                                             solverSettings.getSizeY ()
@@ -623,13 +741,20 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2
                                                         , CoordinateType::Y
 #endif
                                                         );
-  tfsfSize = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX (),
-                                                         solverSettings.getTFSFSizeY ()
+  tfsfSizeLeft = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXLeft (),
+                                                             solverSettings.getTFSFSizeYLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::X
-                                                         , CoordinateType::Y
+                                                             , CoordinateType::X
+                                                             , CoordinateType::Y
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate2DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXRight (),
+                                                              solverSettings.getTFSFSizeYRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::X
+                                                              , CoordinateType::Y
+#endif
+                                                              );
 }
 
 template <>
@@ -637,7 +762,8 @@ void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>
   (GridCoordinate3DTemplate<grid_coord, true> &overallSize,
    GridCoordinate3DTemplate<grid_coord, true> &pmlSize,
-   GridCoordinate3DTemplate<grid_coord, true> &tfsfSize)
+   GridCoordinate3DTemplate<grid_coord, true> &tfsfSizeLeft,
+   GridCoordinate3DTemplate<grid_coord, true> &tfsfSizeRight)
 {
   overallSize = GridCoordinate3DTemplate<grid_coord, true> (solverSettings.getSizeX (),
                                                             solverSettings.getSizeY (),
@@ -657,15 +783,24 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTem
                                                         , CoordinateType::Z
 #endif
                                                         );
-  tfsfSize = GridCoordinate3DTemplate<grid_coord, true> (solverSettings.getTFSFSizeX (),
-                                                         solverSettings.getTFSFSizeY (),
-                                                         solverSettings.getTFSFSizeZ ()
+  tfsfSizeLeft = GridCoordinate3DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXLeft (),
+                                                             solverSettings.getTFSFSizeYLeft (),
+                                                             solverSettings.getTFSFSizeZLeft ()
 #ifdef DEBUG_INFO
-                                                         , CoordinateType::X
-                                                         , CoordinateType::Y
-                                                         , CoordinateType::Z
+                                                             , CoordinateType::X
+                                                             , CoordinateType::Y
+                                                             , CoordinateType::Z
 #endif
-                                                         );
+                                                             );
+  tfsfSizeRight = GridCoordinate3DTemplate<grid_coord, true> (solverSettings.getTFSFSizeXRight (),
+                                                              solverSettings.getTFSFSizeYRight (),
+                                                              solverSettings.getTFSFSizeZRight ()
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::X
+                                                              , CoordinateType::Y
+                                                              , CoordinateType::Z
+#endif
+                                                              );
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -683,8 +818,9 @@ int runMode (int argc, char** argv)
 
   TCoord<grid_coord, true> overallSize;
   TCoord<grid_coord, true> pmlSize;
-  TCoord<grid_coord, true> tfsfSize;
-  initSettings<Type, TCoord, layout_type> (overallSize, pmlSize, tfsfSize);
+  TCoord<grid_coord, true> tfsfSizeLeft;
+  TCoord<grid_coord, true> tfsfSizeRight;
+  initSettings<Type, TCoord, layout_type> (overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight);
 
   YeeGridLayout<Type, TCoord, layout_type> *yeeLayout = NULLPTR;
 
@@ -701,7 +837,7 @@ int runMode (int argc, char** argv)
     else
     {
       isParallel = true;
-      initParallel (&yeeLayout, &parallelGridCore, &rank, &numProcs, &skipProcess, overallSize, pmlSize, tfsfSize, argc, argv);
+      initParallel (&yeeLayout, &parallelGridCore, &rank, &numProcs, &skipProcess, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, argc, argv);
     }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
@@ -712,7 +848,8 @@ int runMode (int argc, char** argv)
     yeeLayout = new YeeGridLayout<Type, TCoord, layout_type> (
                 overallSize,
                 pmlSize,
-                tfsfSize,
+                tfsfSizeLeft,
+                tfsfSizeRight,
                 solverSettings.getIncidentWaveAngle1 () * PhysicsConst::Pi / 180.0,
                 solverSettings.getIncidentWaveAngle2 () * PhysicsConst::Pi / 180.0,
                 solverSettings.getIncidentWaveAngle3 () * PhysicsConst::Pi / 180.0,
