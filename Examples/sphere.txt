@@ -26,8 +26,8 @@
 10
 --same-size-pml
 --use-tfsf
---tfsf-sizex
-12
+--tfsf-sizex-left 12
+--tfsf-sizex-right 12
 --same-size-tfsf
 --eps-sphere 4
 --eps-sphere-center-x 50

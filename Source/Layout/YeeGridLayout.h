@@ -141,10 +141,6 @@ public:
   {
     return leftBorderPML;
   }
-  TC getSizeTFSF () const
-  {
-    return leftBorderTotalField;
-  }
 
   /*
    * Get start coordinate of field component
@@ -461,7 +457,8 @@ public:
    */
   YeeGridLayout (TC coordSize,
                  TC sizePML,
-                 TC sizeScatteredZone,
+                 TC sizeScatteredZoneLeft,
+                 TC sizeScatteredZoneRight,
                  FPValue incWaveAngle1, /**< teta */
                  FPValue incWaveAngle2, /**< phi */
                  FPValue incWaveAngle3, /**< psi */

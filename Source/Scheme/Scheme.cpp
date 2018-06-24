@@ -1225,7 +1225,9 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
   }
 
   ASSERT (!solverSettings.getDoUseTFSF ()
-          || (solverSettings.getDoUseTFSF () && yeeLayout->getSizeTFSF () != TC (0, 0, 0, ct1, ct2, ct3)));
+          || (solverSettings.getDoUseTFSF ()
+              && (yeeLayout->getLeftBorderTFSF () != TC (0, 0, 0, ct1, ct2, ct3)
+                  || yeeLayout->getRightBorderTFSF () != yeeLayout->getSize ())));
 
   ASSERT (!solverSettings.getDoUsePML ()
           || (solverSettings.getDoUsePML () && (yeeLayout->getSizePML () != TC (0, 0, 0, ct1, ct2, ct3))));
@@ -5712,9 +5714,6 @@ Scheme<Type, TCoord, layout_type>::makeGridScattered (Grid<TC> *grid, GridType g
         UNREACHABLE;
       }
     }
-
-    TCFP leftTFSF = convertCoord (yeeLayout->getLeftBorderTFSF ());
-    TCFP rightTFSF = convertCoord (yeeLayout->getRightBorderTFSF ());
 
     if (doSkipMakeScattered (realCoord))
     {

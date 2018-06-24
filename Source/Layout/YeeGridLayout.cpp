@@ -117,17 +117,17 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
                                  false,
-                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
                                  && YeeGridLayoutHelper::tfsfBorder<-5> (getExCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
                                  && YeeGridLayoutHelper::tfsfBorder<5> (getExCoordFP (coord).get2 (), rightBorderTotalFieldFP.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
                                  && YeeGridLayoutHelper::tfsfBorder<-5> (getExCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getExCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getExCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
                                  && YeeGridLayoutHelper::tfsfBorder<5> (getExCoordFP (coord).get3 (), rightBorderTotalFieldFP.get3 ()));
 }
 
@@ -243,18 +243,18 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder<-5> (getEyCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
                                  YeeGridLayoutHelper::tfsfBorder<5> (getEyCoordFP (coord).get1 (), rightBorderTotalFieldFP.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
                                  false,
                                  false,
-                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
                                  && YeeGridLayoutHelper::tfsfBorder<-5> (getEyCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEyCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEyCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
                                  && YeeGridLayoutHelper::tfsfBorder<5> (getEyCoordFP (coord).get3 (), rightBorderTotalFieldFP.get3 ()));
 }
 
@@ -369,17 +369,17 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder<-5> (getEzCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
                                  YeeGridLayoutHelper::tfsfBorder<5> (getEzCoordFP (coord).get1 (), rightBorderTotalFieldFP.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
                                  && YeeGridLayoutHelper::tfsfBorder<-5> (getEzCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getEzCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
                                  && YeeGridLayoutHelper::tfsfBorder<5> (getEzCoordFP (coord).get2 (), rightBorderTotalFieldFP.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getEzCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
                                  false,
                                  false);
 }
@@ -496,17 +496,17 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  false,
                                  false,
-                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
                                  && YeeGridLayoutHelper::tfsfBorder<0> (getHxCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
                                  && YeeGridLayoutHelper::tfsfBorder<0> (getHxCoordFP (coord).get2 (), rightBorderTotalFieldFP.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
                                  && YeeGridLayoutHelper::tfsfBorder<0> (getHxCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 YeeGridLayoutHelper::tfsfBorder<4, -4> (getHxCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHxCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
                                  && YeeGridLayoutHelper::tfsfBorder<0> (getHxCoordFP (coord).get3 (), rightBorderTotalFieldFP.get3 ()));
 }
 
@@ -621,18 +621,18 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder<0> (getHyCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
                                  YeeGridLayoutHelper::tfsfBorder<0> (getHyCoordFP (coord).get1 (), rightBorderTotalFieldFP.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
                                  false,
                                  false,
-                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
                                  && YeeGridLayoutHelper::tfsfBorder<0> (getHyCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHyCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHyCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
                                  && YeeGridLayoutHelper::tfsfBorder<0> (getHyCoordFP (coord).get3 (), rightBorderTotalFieldFP.get3 ()));
 }
 
@@ -747,17 +747,17 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
                                  YeeGridLayoutHelper::tfsfBorder<0> (getHzCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
                                  YeeGridLayoutHelper::tfsfBorder<0> (getHzCoordFP (coord).get1 (), rightBorderTotalFieldFP.get1 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get2 (), leftBorderTotalField.get2 (), rightBorderTotalField.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
                                  && YeeGridLayoutHelper::tfsfBorder<0> (getHzCoordFP (coord).get2 (), leftBorderTotalFieldFP.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
-                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get1 (), leftBorderTotalField.get1 (), rightBorderTotalField.get1 ())
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
+                                 YeeGridLayoutHelper::tfsfBorder<-1, 1> (getHzCoordFP (coord).get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
                                  && YeeGridLayoutHelper::tfsfBorder<0> (getHzCoordFP (coord).get2 (), rightBorderTotalFieldFP.get2 ())
-                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalField.get3 (), rightBorderTotalField.get3 ()),
+                                 && YeeGridLayoutHelper::tfsfBorder<4, -4> (getHzCoordFP (coord).get3 (), leftBorderTotalFieldFP.get3 (), rightBorderTotalFieldFP.get3 ()),
                                  false,
                                  false);
 }
@@ -858,8 +858,8 @@ bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3
   , sizeHz (coordSize) \
   , leftBorderPML (sizePML) \
   , rightBorderPML (coordSize - sizePML) \
-  , leftBorderTotalField (sizeScatteredZone) \
-  , rightBorderTotalField (coordSize - sizeScatteredZone) \
+  , leftBorderTotalField (sizeScatteredZoneLeft) \
+  , rightBorderTotalField (coordSize - sizeScatteredZoneRight) \
   , leftBorderTotalFieldFP (zeroCoordFP + convertCoord (leftBorderTotalField)) \
   , rightBorderTotalFieldFP (zeroCoordFP + convertCoord (rightBorderTotalField)) \
   , incidentWaveAngle1 (incWaveAngle1) \
@@ -871,7 +871,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
-   GridCoordinate1D sizeScatteredZone,
+   GridCoordinate1D sizeScatteredZoneLeft,
+   GridCoordinate1D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -895,7 +896,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
-   GridCoordinate1D sizeScatteredZone,
+   GridCoordinate1D sizeScatteredZoneLeft,
+   GridCoordinate1D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -919,7 +921,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
-   GridCoordinate1D sizeScatteredZone,
+   GridCoordinate1D sizeScatteredZoneLeft,
+   GridCoordinate1D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -943,7 +946,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
-   GridCoordinate1D sizeScatteredZone,
+   GridCoordinate1D sizeScatteredZoneLeft,
+   GridCoordinate1D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -967,7 +971,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
-   GridCoordinate1D sizeScatteredZone,
+   GridCoordinate1D sizeScatteredZoneLeft,
+   GridCoordinate1D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -991,7 +996,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
-   GridCoordinate1D sizeScatteredZone,
+   GridCoordinate1D sizeScatteredZoneLeft,
+   GridCoordinate1D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -1015,7 +1021,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
-   GridCoordinate2D sizeScatteredZone,
+   GridCoordinate2D sizeScatteredZoneLeft,
+   GridCoordinate2D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -1043,7 +1050,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
-   GridCoordinate2D sizeScatteredZone,
+   GridCoordinate2D sizeScatteredZoneLeft,
+   GridCoordinate2D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -1071,7 +1079,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
-   GridCoordinate2D sizeScatteredZone,
+   GridCoordinate2D sizeScatteredZoneLeft,
+   GridCoordinate2D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -1099,7 +1108,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
-   GridCoordinate2D sizeScatteredZone,
+   GridCoordinate2D sizeScatteredZoneLeft,
+   GridCoordinate2D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -1127,7 +1137,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
-   GridCoordinate2D sizeScatteredZone,
+   GridCoordinate2D sizeScatteredZoneLeft,
+   GridCoordinate2D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -1155,7 +1166,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
-   GridCoordinate2D sizeScatteredZone,
+   GridCoordinate2D sizeScatteredZoneLeft,
+   GridCoordinate2D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */
@@ -1183,7 +1195,8 @@ template <>
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate3D coordSize,
    GridCoordinate3D sizePML,
-   GridCoordinate3D sizeScatteredZone,
+   GridCoordinate3D sizeScatteredZoneLeft,
+   GridCoordinate3D sizeScatteredZoneRight,
    FPValue incWaveAngle1, /**< teta */
    FPValue incWaveAngle2, /**< phi */
    FPValue incWaveAngle3, /**< psi */

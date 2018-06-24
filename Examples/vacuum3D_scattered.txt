@@ -25,6 +25,9 @@
 --palette-rgb
 
 --use-tfsf
---tfsf-sizex 12
---tfsf-sizey 12
---tfsf-sizez 12
+--tfsf-sizex-left 12
+--tfsf-sizex-right 12
+--tfsf-sizey-left 12
+--tfsf-sizey-right 12
+--tfsf-sizez-left 12
+--tfsf-sizez-right 12

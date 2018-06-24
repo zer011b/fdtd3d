@@ -120,11 +120,13 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
 
   TCoord<grid_coord, true> size = TCoord<grid_coord, true>::initAxesCoordinate (sizex, sizey, sizez, ct1, ct2, ct3);
   TCoord<grid_coord, true> sizePML = TCoord<grid_coord, true>::initAxesCoordinate (sx, sy, sz, ct1, ct2, ct3);
-  TCoord<grid_coord, true> sizeTFSF = TCoord<grid_coord, true>::initAxesCoordinate (sizex_tfsf, sizey_tfsf, sizez_tfsf, ct1, ct2, ct3);
+  TCoord<grid_coord, true> sizeTFSFLeft = TCoord<grid_coord, true>::initAxesCoordinate (sizex_tfsf, sizey_tfsf, sizez_tfsf, ct1, ct2, ct3);
+  TCoord<grid_coord, true> sizeTFSFRight = TCoord<grid_coord, true>::initAxesCoordinate (sizex_tfsf * 2, sizey_tfsf * 2, sizez_tfsf * 2, ct1, ct2, ct3);
 
   YeeGridLayout<Type, TCoord, layout_type> layout (size,
                                                    sizePML,
-                                                   sizeTFSF,
+                                                   sizeTFSFLeft,
+                                                   sizeTFSFRight,
                                                    incAngle1,
                                                    incAngle2,
                                                    incAngle3,
@@ -140,7 +142,8 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   ALWAYS_ASSERT (layout.getHzSize () == size);
 
   ALWAYS_ASSERT (layout.getSizePML () == sizePML);
-  ALWAYS_ASSERT (layout.getSizeTFSF () == sizeTFSF);
+  ALWAYS_ASSERT (layout.getLeftBorderTFSF () == sizeTFSFLeft);
+  ALWAYS_ASSERT (layout.getRightBorderTFSF () == size - sizeTFSFRight);
 
   ALWAYS_ASSERT ((layout.getExStartDiff () == TCoord<grid_coord, true>::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3)));
   ALWAYS_ASSERT ((layout.getEyStartDiff () == TCoord<grid_coord, true>::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3)));
@@ -173,9 +176,6 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
 
   ALWAYS_ASSERT (layout.getLeftBorderPML () == layout.getSizePML ());
   ALWAYS_ASSERT (layout.getRightBorderPML () + layout.getSizePML () == layout.getSize ());
-
-  ALWAYS_ASSERT (layout.getLeftBorderTFSF () == layout.getSizeTFSF ());
-  ALWAYS_ASSERT (layout.getRightBorderTFSF () + layout.getSizeTFSF () == layout.getSize ());
 
   ALWAYS_ASSERT (layout.getIncidentWaveAngle1 () == incAngle1);
   ALWAYS_ASSERT (layout.getIncidentWaveAngle2 () == incAngle2);
@@ -375,11 +375,13 @@ void testFuncDim1_ExHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
 
   GridCoordinate1D size (sizez, ct1);
   GridCoordinate1D sizePML (sz, ct1);
-  GridCoordinate1D sizeTFSF (sizez_tfsf, ct1);
+  GridCoordinate1D sizeTFSFLeft (sizez_tfsf, ct1);
+  GridCoordinate1D sizeTFSFRight (sizez_tfsf, ct1);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
-                                                                                      sizeTFSF,
+                                                                                      sizeTFSFLeft,
+                                                                                      sizeTFSFRight,
                                                                                       incAngle1,
                                                                                       incAngle2,
                                                                                       incAngle3,
@@ -468,11 +470,13 @@ void testFuncDim1_ExHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
 
   GridCoordinate1D size (sizey, ct1);
   GridCoordinate1D sizePML (sy, ct1);
-  GridCoordinate1D sizeTFSF (sizey_tfsf, ct1);
+  GridCoordinate1D sizeTFSFLeft (sizey_tfsf, ct1);
+  GridCoordinate1D sizeTFSFRight (sizey_tfsf, ct1);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
-                                                                                      sizeTFSF,
+                                                                                      sizeTFSFLeft,
+                                                                                      sizeTFSFRight,
                                                                                       incAngle1,
                                                                                       incAngle2,
                                                                                       incAngle3,
@@ -561,11 +565,13 @@ void testFuncDim1_EyHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
 
   GridCoordinate1D size (sizez, ct1);
   GridCoordinate1D sizePML (sz, ct1);
-  GridCoordinate1D sizeTFSF (sizez_tfsf, ct1);
+  GridCoordinate1D sizeTFSFLeft (sizez_tfsf, ct1);
+  GridCoordinate1D sizeTFSFRight (sizez_tfsf, ct1);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
-                                                                                      sizeTFSF,
+                                                                                      sizeTFSFLeft,
+                                                                                      sizeTFSFRight,
                                                                                       incAngle1,
                                                                                       incAngle2,
                                                                                       incAngle3,
@@ -654,11 +660,13 @@ void testFuncDim1_EyHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
 
   GridCoordinate1D size (sizex, ct1);
   GridCoordinate1D sizePML (sx, ct1);
-  GridCoordinate1D sizeTFSF (sizex_tfsf, ct1);
+  GridCoordinate1D sizeTFSFLeft (sizex_tfsf, ct1);
+  GridCoordinate1D sizeTFSFRight (sizex_tfsf, ct1);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
-                                                                                      sizeTFSF,
+                                                                                      sizeTFSFLeft,
+                                                                                      sizeTFSFRight,
                                                                                       incAngle1,
                                                                                       incAngle2,
                                                                                       incAngle3,
@@ -747,11 +755,13 @@ void testFuncDim1_EzHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
 
   GridCoordinate1D size (sizey, ct1);
   GridCoordinate1D sizePML (sy, ct1);
-  GridCoordinate1D sizeTFSF (sizey_tfsf, ct1);
+  GridCoordinate1D sizeTFSFLeft (sizey_tfsf, ct1);
+  GridCoordinate1D sizeTFSFRight (sizey_tfsf, ct1);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
-                                                                                      sizeTFSF,
+                                                                                      sizeTFSFLeft,
+                                                                                      sizeTFSFRight,
                                                                                       incAngle1,
                                                                                       incAngle2,
                                                                                       incAngle3,
@@ -840,11 +850,13 @@ void testFuncDim1_EzHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
 
   GridCoordinate1D size (sizex, ct1);
   GridCoordinate1D sizePML (sx, ct1);
-  GridCoordinate1D sizeTFSF (sizex_tfsf, ct1);
+  GridCoordinate1D sizeTFSFLeft (sizex_tfsf, ct1);
+  GridCoordinate1D sizeTFSFRight (sizex_tfsf, ct1);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, layout_type> layout (size,
                                                                                       sizePML,
-                                                                                      sizeTFSF,
+                                                                                      sizeTFSFLeft,
+                                                                                      sizeTFSFRight,
                                                                                       incAngle1,
                                                                                       incAngle2,
                                                                                       incAngle3,
@@ -936,11 +948,13 @@ void testFuncDim2_TEx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
 
   GridCoordinate2D size (sizey, sizez, ct1, ct2);
   GridCoordinate2D sizePML (sy, sz, ct1, ct2);
-  GridCoordinate2D sizeTFSF (sizey_tfsf, sizez_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFLeft (sizey_tfsf, sizez_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFRight (sizey_tfsf, sizez_tfsf, ct1, ct2);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
-                                                                                     sizeTFSF,
+                                                                                     sizeTFSFLeft,
+                                                                                     sizeTFSFRight,
                                                                                      incAngle1,
                                                                                      incAngle2,
                                                                                      incAngle3,
@@ -1091,11 +1105,13 @@ void testFuncDim2_TEy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
 
   GridCoordinate2D size (sizex, sizez, ct1, ct2);
   GridCoordinate2D sizePML (sx, sz, ct1, ct2);
-  GridCoordinate2D sizeTFSF (sizex_tfsf, sizez_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFLeft (sizex_tfsf, sizez_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFRight (sizex_tfsf, sizez_tfsf, ct1, ct2);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
-                                                                                     sizeTFSF,
+                                                                                     sizeTFSFLeft,
+                                                                                     sizeTFSFRight,
                                                                                      incAngle1,
                                                                                      incAngle2,
                                                                                      incAngle3,
@@ -1246,11 +1262,13 @@ void testFuncDim2_TEz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
 
   GridCoordinate2D size (sizex, sizey, ct1, ct2);
   GridCoordinate2D sizePML (sx, sy, ct1, ct2);
-  GridCoordinate2D sizeTFSF (sizex_tfsf, sizey_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFLeft (sizex_tfsf, sizey_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFRight (sizex_tfsf, sizey_tfsf, ct1, ct2);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
-                                                                                     sizeTFSF,
+                                                                                     sizeTFSFLeft,
+                                                                                     sizeTFSFRight,
                                                                                      incAngle1,
                                                                                      incAngle2,
                                                                                      incAngle3,
@@ -1401,11 +1419,13 @@ void testFuncDim2_TMx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
 
   GridCoordinate2D size (sizey, sizez, ct1, ct2);
   GridCoordinate2D sizePML (sy, sz, ct1, ct2);
-  GridCoordinate2D sizeTFSF (sizey_tfsf, sizez_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFLeft (sizey_tfsf, sizez_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFRight (sizey_tfsf, sizez_tfsf, ct1, ct2);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
-                                                                                     sizeTFSF,
+                                                                                     sizeTFSFLeft,
+                                                                                     sizeTFSFRight,
                                                                                      incAngle1,
                                                                                      incAngle2,
                                                                                      incAngle3,
@@ -1557,11 +1577,13 @@ void testFuncDim2_TMy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
 
   GridCoordinate2D size (sizex, sizez, ct1, ct2);
   GridCoordinate2D sizePML (sx, sz, ct1, ct2);
-  GridCoordinate2D sizeTFSF (sizex_tfsf, sizez_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFLeft (sizex_tfsf, sizez_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFRight (sizex_tfsf, sizez_tfsf, ct1, ct2);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
-                                                                                     sizeTFSF,
+                                                                                     sizeTFSFLeft,
+                                                                                     sizeTFSFRight,
                                                                                      incAngle1,
                                                                                      incAngle2,
                                                                                      incAngle3,
@@ -1713,11 +1735,13 @@ void testFuncDim2_TMz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
 
   GridCoordinate2D size (sizex, sizey, ct1, ct2);
   GridCoordinate2D sizePML (sx, sy, ct1, ct2);
-  GridCoordinate2D sizeTFSF (sizex_tfsf, sizey_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFLeft (sizex_tfsf, sizey_tfsf, ct1, ct2);
+  GridCoordinate2D sizeTFSFRight (sizex_tfsf, sizey_tfsf, ct1, ct2);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, layout_type> layout (size,
                                                                                      sizePML,
-                                                                                     sizeTFSF,
+                                                                                     sizeTFSFLeft,
+                                                                                     sizeTFSFRight,
                                                                                      incAngle1,
                                                                                      incAngle2,
                                                                                      incAngle3,
@@ -1872,11 +1896,13 @@ void testFuncDim3 (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool
 
   GridCoordinate3D size (sizex, sizey, sizez, ct1, ct2, ct3);
   GridCoordinate3D sizePML (sx, sy, sz, ct1, ct2, ct3);
-  GridCoordinate3D sizeTFSF (sizex_tfsf, sizey_tfsf, sizez_tfsf, ct1, ct2, ct3);
+  GridCoordinate3D sizeTFSFLeft (sizex_tfsf, sizey_tfsf, sizez_tfsf, ct1, ct2, ct3);
+  GridCoordinate3D sizeTFSFRight (sizex_tfsf, sizey_tfsf, sizez_tfsf, ct1, ct2, ct3);
 
   YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, layout_type> layout (size,
                                                                                  sizePML,
-                                                                                 sizeTFSF,
+                                                                                 sizeTFSFLeft,
+                                                                                 sizeTFSFRight,
                                                                                  incAngle1,
                                                                                  incAngle2,
                                                                                  incAngle3,

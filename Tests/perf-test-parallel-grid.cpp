@@ -45,8 +45,10 @@ int main (int argc, char** argv)
                                       CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
   ParallelGridCoordinate pmlSize (2, 2, 2,
                                   CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-  ParallelGridCoordinate tfsfSize (4, 4, 4,
-                                   CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  ParallelGridCoordinate tfsfSizeLeft (4, 4, 4,
+                                       CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  ParallelGridCoordinate tfsfSizeRight (4, 4, 4,
+                                        CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
   ParallelGridCoordinate bufferSize (bufSize, bufSize, bufSize,
                                      CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
   ParallelGridCoordinate topologySize (2, 2, 2,
@@ -72,7 +74,7 @@ int main (int argc, char** argv)
 
   bool isDoubleMaterialPrecision = false;
 
-  ParallelYeeGridLayout<SCHEME_TYPE, E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSize, ANGLES, isDoubleMaterialPrecision);
+  ParallelYeeGridLayout<SCHEME_TYPE, E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSizeLetf, tfsfSizeRight, ANGLES, isDoubleMaterialPrecision);
   yeeLayout.Initialize (&parallelGridCore);
 
   ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode ());

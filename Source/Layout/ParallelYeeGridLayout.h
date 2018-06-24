@@ -126,14 +126,16 @@ public:
    */
   ParallelYeeGridLayout<Type, layout_type> (ParallelGridCoordinate coordSize,
                                             ParallelGridCoordinate sizePML,
-                                            ParallelGridCoordinate sizeScatteredZone,
+                                            ParallelGridCoordinate sizeScatteredZoneLeft,
+                                            ParallelGridCoordinate sizeScatteredZoneRight,
                                             FPValue incidentWaveAngle1, /**< teta */
                                             FPValue incidentWaveAngle2, /**< phi */
                                             FPValue incidentWaveAngle3, /**< psi */
                                             bool isDoubleMaterialPrecision)
     : YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type> (coordSize,
                                                                         sizePML,
-                                                                        sizeScatteredZone,
+                                                                        sizeScatteredZoneLeft,
+                                                                        sizeScatteredZoneRight,
                                                                         incidentWaveAngle1,
                                                                         incidentWaveAngle2,
                                                                         incidentWaveAngle3,
