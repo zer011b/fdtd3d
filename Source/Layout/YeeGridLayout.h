@@ -427,30 +427,12 @@ public:
     return isDoubleMaterialPrecision;
   }
 
-  FieldValue getExFromIncidentE (FieldValue valE) const
-  {
-    return valE * (FPValue) (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-  }
-  FieldValue getEyFromIncidentE (FieldValue valE) const
-  {
-    return valE * (FPValue) ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-  }
-  FieldValue getEzFromIncidentE (FieldValue valE) const
-  {
-    return valE * (FPValue) (sin (incidentWaveAngle3) * sin (incidentWaveAngle1));
-  }
-  FieldValue getHxFromIncidentH (FieldValue valH) const
-  {
-    return valH * (FPValue) (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
-  }
-  FieldValue getHyFromIncidentH (FieldValue valH) const
-  {
-    return valH * (FPValue) (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
-  }
-  FieldValue getHzFromIncidentH (FieldValue valH) const
-  {
-    return - valH * (FPValue) (cos (incidentWaveAngle3) * sin (incidentWaveAngle1));
-  }
+  FieldValue getExFromIncidentE (FieldValue valE) const;
+  FieldValue getEyFromIncidentE (FieldValue valE) const;
+  FieldValue getEzFromIncidentE (FieldValue valE) const;
+  FieldValue getHxFromIncidentH (FieldValue valH) const;
+  FieldValue getHyFromIncidentH (FieldValue valH) const;
+  FieldValue getHzFromIncidentH (FieldValue valH) const;
 
   /**
    * Constructor of Yee grid
@@ -1541,5 +1523,541 @@ typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCo
 typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TMz;
 
 typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED> YL3D_Dim3;
+
+/* Dim1_ExHy */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+/* Dim1_ExHz */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+
+/* Dim1_EyHx */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+/* Dim1_EyHz */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+
+/* Dim1_EzHx */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+/* Dim1_EzHy */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+/* Dim2_TEx */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) ( - cos (incidentWaveAngle1));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (sin (incidentWaveAngle1));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+/* Dim2_TEy */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (- cos (incidentWaveAngle1));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (sin (incidentWaveAngle1));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+/* Dim2_TEz */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (sin (incidentWaveAngle2));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) ( - cos (incidentWaveAngle2));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+
+/* Dim2_TMx */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (cos (incidentWaveAngle1));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return - valH * (FPValue) (sin (incidentWaveAngle1));
+}
+
+/* Dim2_TMy */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (cos (incidentWaveAngle1));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return - valH * (FPValue) (sin (incidentWaveAngle1));
+}
+
+/* Dim2_TMz */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (sin (incidentWaveAngle2));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (- cos (incidentWaveAngle2));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+/* Dim3 */
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (sin (incidentWaveAngle3) * sin (incidentWaveAngle1));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+}
+template <>
+inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return - valH * (FPValue) (cos (incidentWaveAngle3) * sin (incidentWaveAngle1));
+}
 
 #endif /* YEE_GRID_LAYOUT_H */
