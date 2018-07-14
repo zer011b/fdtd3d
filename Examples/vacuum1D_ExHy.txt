@@ -17,10 +17,18 @@
 
 --save-res
 --save-as-bmp
+--save-as-txt
 --palette-rgb
 
---pml-sizez 20
---use-pml
+#--pml-sizez 20
+#--use-pml
 
---point-source-pos-z 100
---point-source-ex
+--use-tfsf
+--tfsf-sizez-left 50
+--tfsf-sizez-right 50
+
+#--point-source-pos-z 100
+#--point-source-ex
+
+#--save-materials
+#--load-eps-from-file eps.txt
