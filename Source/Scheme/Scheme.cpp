@@ -3016,7 +3016,16 @@ SchemeHelper::approximateIncidentWave<GridCoordinate1DTemplate> (GridCoordinateF
                                                    FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
 {
   FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
-  FPValue d = x * sin (incAngle1) * cos (incAngle2) - dDiff;
+
+  FPValue modifier = sin (incAngle1) * cos (incAngle2);
+  if (modifier == FPValue (0))
+  {
+    ASSERT (incAngle1 == FPValue (0) || incAngle2 == PhysicsConst::Pi / FPValue (2));
+    modifier = FPValue (1);
+  }
+
+  FPValue d = x * modifier - dDiff;
+  ASSERT (d > 0);
 
   return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
@@ -3027,7 +3036,16 @@ SchemeHelper::approximateIncidentWave<GridCoordinate2DTemplate> (GridCoordinateF
 {
   FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
   FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
-  FPValue d = x * sin (incAngle1) * cos (incAngle2) + y * sin (incAngle1) * sin (incAngle2) - dDiff;
+
+  FPValue modifier = sin (incAngle1);
+  if (modifier == FPValue (0))
+  {
+    ASSERT (incAngle1 == FPValue (0));
+    modifier = FPValue (1);
+  }
+
+  FPValue d = x * modifier * cos (incAngle2) + y * modifier * sin (incAngle2) - dDiff;
+  ASSERT (d > 0);
 
   return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
@@ -3039,7 +3057,9 @@ SchemeHelper::approximateIncidentWave<GridCoordinate3DTemplate> (GridCoordinateF
   FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
   FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
   FPValue z = realCoord.get3 () - zeroCoordFP.get3 ();
+
   FPValue d = x * sin (incAngle1) * cos (incAngle2) + y * sin (incAngle1) * sin (incAngle2) + z * cos (incAngle1) - dDiff;
+  ASSERT (d > 0);
 
   return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
