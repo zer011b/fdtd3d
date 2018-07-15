@@ -20,6 +20,7 @@
 
 --save-res
 --save-as-bmp
+--save-as-txt
 --orth-axis-z
 --palette-rgb
 
