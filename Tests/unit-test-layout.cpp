@@ -269,25 +269,153 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   ALWAYS_ASSERT (layout.getHzCircuitElement (coordHz, LayoutDirection::UP) == coordExU);
   ALWAYS_ASSERT ((layout.getMinHzCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 1, 0.5, ct1, ct2, ct3)));
 
-  ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (sizex_tfsf - 2.5 * sin (incAngle1) * cos (incAngle2),
-                                                                                     sizey_tfsf - 2.5 * sin (incAngle1) * sin (incAngle2),
-                                                                                     sizez_tfsf - 2.5 * cos (incAngle1), ct1, ct2, ct3)));
+  switch (Type)
+  {
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.0,
+                                                                                         0.0,
+                                                                                         sizez_tfsf - 2.5, ct1, ct2, ct3)));
 
-#ifdef COMPLEX_VALUES
-  ALWAYS_ASSERT (layout.getExFromIncidentE (FieldValue (17.0, 53.0)) == FieldValue (17.0, 53.0) * (FPValue) (cos (incAngle3) * sin (incAngle2) - sin (incAngle3) * cos (incAngle1) * cos (incAngle2)));
-  ALWAYS_ASSERT (layout.getEyFromIncidentE (FieldValue (17.0, 53.0)) == FieldValue (17.0, 53.0) * (FPValue) ( - cos (incAngle3) * cos (incAngle2) - sin (incAngle3) * cos (incAngle1) * sin (incAngle2)));
-  ALWAYS_ASSERT (layout.getEzFromIncidentE (FieldValue (17.0, 53.0)) == FieldValue (17.0, 53.0) * (FPValue) (sin (incAngle3) * sin (incAngle1)));
-  ALWAYS_ASSERT (layout.getHxFromIncidentH (FieldValue (17.0, 53.0)) == FieldValue (17.0, 53.0) * (FPValue) (sin (incAngle3) * sin (incAngle2) + cos (incAngle3) * cos (incAngle1) * cos (incAngle2)));
-  ALWAYS_ASSERT (layout.getHyFromIncidentH (FieldValue (17.0, 53.0)) == FieldValue (17.0, 53.0) * (FPValue) (- sin (incAngle3) * cos (incAngle2) + cos (incAngle3) * cos (incAngle1) * sin (incAngle2)));
-  ALWAYS_ASSERT (layout.getHzFromIncidentH (FieldValue (17.0, 53.0)) == FieldValue (17.0, 53.0) * (FPValue) (cos (incAngle3) * sin (incAngle1)));
-#else
-  ALWAYS_ASSERT (layout.getExFromIncidentE (FieldValue (17.0)) == FieldValue (17.0) * (FPValue) (cos (incAngle3) * sin (incAngle2) - sin (incAngle3) * cos (incAngle1) * cos (incAngle2)));
-  ALWAYS_ASSERT (layout.getEyFromIncidentE (FieldValue (17.0)) == FieldValue (17.0) * (FPValue) ( - cos (incAngle3) * cos (incAngle2) - sin (incAngle3) * cos (incAngle1) * sin (incAngle2)));
-  ALWAYS_ASSERT (layout.getEzFromIncidentE (FieldValue (17.0)) == FieldValue (17.0) * (FPValue) (sin (incAngle3) * sin (incAngle1)));
-  ALWAYS_ASSERT (layout.getHxFromIncidentH (FieldValue (17.0)) == FieldValue (17.0) * (FPValue) (sin (incAngle3) * sin (incAngle2) + cos (incAngle3) * cos (incAngle1) * cos (incAngle2)));
-  ALWAYS_ASSERT (layout.getHyFromIncidentH (FieldValue (17.0)) == FieldValue (17.0) * (FPValue) (- sin (incAngle3) * cos (incAngle2) + cos (incAngle3) * cos (incAngle1) * sin (incAngle2)));
-  ALWAYS_ASSERT (layout.getHzFromIncidentH (FieldValue (17.0)) == - FieldValue (17.0) * (FPValue) (cos (incAngle3) * sin (incAngle1)));
-#endif
+      ALWAYS_ASSERT (layout.getExFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.0,
+                                                                                         sizey_tfsf - 2.5,
+                                                                                         0.0, ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getExFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.0,
+                                                                                         0.0,
+                                                                                         sizez_tfsf - 2.5, ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHxFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (sizex_tfsf - 2.5,
+                                                                                         0.0,
+                                                                                         0.0, ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.0,
+                                                                                         sizey_tfsf - 2.5,
+                                                                                         0.0, ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getEzFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHxFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (sizex_tfsf - 2.5,
+                                                                                         0.0,
+                                                                                         0.0, ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getEzFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.0,
+                                                                                         sizey_tfsf - 2.5 * sin (incAngle1),
+                                                                                         sizez_tfsf - 2.5 * cos (incAngle1), ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (- cos (incAngle1)));
+      ALWAYS_ASSERT (layout.getEzFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (sin (incAngle1)));
+      ALWAYS_ASSERT (layout.getHxFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (sizex_tfsf - 2.5 * sin (incAngle1),
+                                                                                         0.0,
+                                                                                         sizez_tfsf - 2.5 * cos (incAngle1), ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getExFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (- cos (incAngle1)));
+      ALWAYS_ASSERT (layout.getEzFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (sin (incAngle1)));
+      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (sizex_tfsf - 2.5 * cos (incAngle2),
+                                                                                         sizey_tfsf - 2.5 * sin (incAngle2),
+                                                                                         0.0, ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getExFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (sin (incAngle2)));
+      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) ( - cos (incAngle2)));
+      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.0,
+                                                                                         sizey_tfsf - 2.5 * sin (incAngle1),
+                                                                                         sizez_tfsf - 2.5 * cos (incAngle1), ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getExFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (cos (incAngle1)));
+      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (- sin (incAngle1)));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (sizex_tfsf - 2.5 * sin (incAngle1),
+                                                                                         0.0,
+                                                                                         sizez_tfsf - 2.5 * cos (incAngle1), ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHxFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (cos (incAngle1)));
+      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (- sin (incAngle1)));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (sizex_tfsf - 2.5 * cos (incAngle2),
+                                                                                         sizey_tfsf - 2.5 * sin (incAngle2),
+                                                                                         0.0, ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getEzFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHxFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (sin (incAngle2)));
+      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (- cos (incAngle2)));
+      break;
+    }
+    case (static_cast<SchemeType_t> (SchemeType::Dim3)):
+    {
+      ALWAYS_ASSERT ((layout.getZeroIncCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (sizex_tfsf - 2.5 * sin (incAngle1) * cos (incAngle2),
+                                                                                         sizey_tfsf - 2.5 * sin (incAngle1) * sin (incAngle2),
+                                                                                         sizez_tfsf - 2.5 * cos (incAngle1), ct1, ct2, ct3)));
+
+      ALWAYS_ASSERT (layout.getExFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (cos (incAngle3) * sin (incAngle2) - sin (incAngle3) * cos (incAngle1) * cos (incAngle2)));
+      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) ( - cos (incAngle3) * cos (incAngle2) - sin (incAngle3) * cos (incAngle1) * sin (incAngle2)));
+      ALWAYS_ASSERT (layout.getEzFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (sin (incAngle3) * sin (incAngle1)));
+      ALWAYS_ASSERT (layout.getHxFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (sin (incAngle3) * sin (incAngle2) + cos (incAngle3) * cos (incAngle1) * cos (incAngle2)));
+      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (- sin (incAngle3) * cos (incAngle2) + cos (incAngle3) * cos (incAngle1) * sin (incAngle2)));
+      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (- cos (incAngle3) * sin (incAngle1)));
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
 
   /*
    * TODO: add next
