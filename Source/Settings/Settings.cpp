@@ -295,6 +295,12 @@ Settings::loadCmdFromFile (std::string fileName) /**< name of file to load from 
   std::ifstream infile;
   infile.open (fileName.c_str ());
 
+  if ((infile.rdstate() & std::ifstream::failbit) != 0)
+  {
+    printf ("Unable to open file: %s\n", fileName.c_str ());
+    return EXIT_ERROR;
+  }
+
   std::string line;
   std::string cmd;
   int argc = 0;
