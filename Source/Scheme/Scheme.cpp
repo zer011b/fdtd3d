@@ -4472,37 +4472,77 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
       if (processId == 0)
       {
+        TC startEps, startMu, startOmegaPE, startOmegaPM, startGammaE, startGammaM;
+        TC endEps, endMu, endOmegaPE, endOmegaPM, endGammaE, endGammaM;
+
+        if (solverSettings.getDoUseManualStartEndDumpCoord ())
+        {
+          TC start = TC::initAxesCoordinate (solverSettings.getSaveStartCoordX (),
+                                            solverSettings.getSaveStartCoordY (),
+                                            solverSettings.getSaveStartCoordZ (),
+                                            ct1, ct2, ct3);
+          TC end = TC::initAxesCoordinate (solverSettings.getSaveEndCoordX (),
+                                          solverSettings.getSaveEndCoordY (),
+                                          solverSettings.getSaveEndCoordZ (),
+                                          ct1, ct2, ct3);
+          startEps = startMu = startOmegaPE = startOmegaPM = startGammaE = startGammaM = start;
+          endEps = endMu = endOmegaPE = endOmegaPM = endGammaE = endGammaM = end;
+        }
+        else
+        {
+          startEps = getStartCoord (GridType::EPS, totalEps->getSize ());
+          endEps = getEndCoord (GridType::EPS, totalEps->getSize ());
+
+          startMu = getStartCoord (GridType::MU, totalMu->getSize ());
+          endMu = getEndCoord (GridType::MU, totalMu->getSize ());
+
+          if (solverSettings.getDoUseMetamaterials ())
+          {
+            startOmegaPE = getStartCoord (GridType::OMEGAPE, totalOmegaPE->getSize ());
+            endOmegaPE = getEndCoord (GridType::OMEGAPE, totalOmegaPE->getSize ());
+
+            startOmegaPM = getStartCoord (GridType::OMEGAPM, totalOmegaPM->getSize ());
+            endOmegaPM = getEndCoord (GridType::OMEGAPM, totalOmegaPM->getSize ());
+
+            startGammaE = getStartCoord (GridType::GAMMAE, totalGammaE->getSize ());
+            endGammaE = getEndCoord (GridType::GAMMAE, totalGammaE->getSize ());
+
+            startGammaM = getStartCoord (GridType::GAMMAM, totalGammaM->getSize ());
+            endGammaM = getEndCoord (GridType::GAMMAM, totalGammaM->getSize ());
+          }
+        }
+
         dumper[type]->init (0, CURRENT, processId, "Eps");
         dumper[type]->dumpGrid (totalEps,
-                                getStartCoord (GridType::EPS, totalEps->getSize ()),
-                                getEndCoord (GridType::EPS, totalEps->getSize ()));
+                                startEps,
+                                endEps);
 
         dumper[type]->init (0, CURRENT, processId, "Mu");
         dumper[type]->dumpGrid (totalMu,
-                                getStartCoord (GridType::MU, totalMu->getSize ()),
-                                getEndCoord (GridType::MU, totalMu->getSize ()));
+                                startMu,
+                                endMu);
 
         if (solverSettings.getDoUseMetamaterials ())
         {
           dumper[type]->init (0, CURRENT, processId, "OmegaPE");
           dumper[type]->dumpGrid (totalOmegaPE,
-                                  getStartCoord (GridType::OMEGAPE, totalOmegaPE->getSize ()),
-                                  getEndCoord (GridType::OMEGAPE, totalOmegaPE->getSize ()));
+                                  startOmegaPE,
+                                  endOmegaPE);
 
           dumper[type]->init (0, CURRENT, processId, "OmegaPM");
           dumper[type]->dumpGrid (totalOmegaPM,
-                                  getStartCoord (GridType::OMEGAPM, totalOmegaPM->getSize ()),
-                                  getEndCoord (GridType::OMEGAPM, totalOmegaPM->getSize ()));
+                                  startOmegaPM,
+                                  endOmegaPM);
 
           dumper[type]->init (0, CURRENT, processId, "GammaE");
           dumper[type]->dumpGrid (totalGammaE,
-                                  getStartCoord (GridType::GAMMAE, totalGammaE->getSize ()),
-                                  getEndCoord (GridType::GAMMAE, totalGammaE->getSize ()));
+                                  startGammaE,
+                                  endGammaE);
 
           dumper[type]->init (0, CURRENT, processId, "GammaM");
           dumper[type]->dumpGrid (totalGammaM,
-                                  getStartCoord (GridType::GAMMAM, totalGammaM->getSize ()),
-                                  getEndCoord (GridType::GAMMAM, totalGammaM->getSize ()));
+                                  startGammaM,
+                                  endGammaM);
         }
         //
         // if (solverSettings.getDoUsePML ())
