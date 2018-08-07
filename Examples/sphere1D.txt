@@ -15,8 +15,10 @@
 
 --log-level 2
 
+--save-materials
 --save-res
 --save-as-bmp
+--save-as-txt
 --palette-rgb
 
 --pml-sizez 20
@@ -24,12 +26,12 @@
 
 --use-tfsf
 --tfsf-sizez-left 30
---tfsf-sizez-right 30
+--tfsf-sizez-right 0
 
 --eps-sphere 4
 --eps-sphere-center-z 100
---eps-sphere-radius 40
---save-scattered-field-res
+--eps-sphere-radius 50
+#--save-scattered-field-res
 
 #--save-interm-res
 #--interm-save-step 50

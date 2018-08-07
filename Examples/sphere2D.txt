@@ -1,14 +1,12 @@
 // Plane wave scattering on dielectric sphere (watch for Ex)
 
 --time-steps
-300
+1
 --sizex
 100
 --sizey
 100
---sizez
-70
---3d
+--2d-tmz
 --angle-phi
 0
 --dx
@@ -17,22 +15,12 @@
 0.02
 --log-level
 2
-
 --save-materials
 --save-res
 --save-as-txt
 --save-as-bmp
 --palette-rgb
 --orth-axis-z
---save-start-coord-x 0
---save-end-coord-x 100
---save-start-coord-y 0
---save-end-coord-y 100
---save-start-coord-z 10
---save-end-coord-z 30
---manual-save-coords
---save-scattered-field-res
-
 --pml-sizex
 10
 --same-size-pml
@@ -43,6 +31,6 @@
 --eps-sphere 4
 --eps-sphere-center-x 50
 --eps-sphere-center-y 50
---eps-sphere-center-z 35
 --eps-sphere-radius 20
---sphere-accuracy 100
+--sphere-accuracy 1000
+--save-scattered-field-res
