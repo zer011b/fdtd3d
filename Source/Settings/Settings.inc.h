@@ -196,6 +196,8 @@ SETTINGS_ELEM_FIELD_TYPE_STRING(gammaMFileName, getGammaMFileName, std::string, 
 SETTINGS_ELEM_FIELD_TYPE_NONE(useEpsAllNorm, getUseEpsAllNorm, bool, false, "--eps-normed", "Permittivity of Eps material set to 1/eps0")
 SETTINGS_ELEM_FIELD_TYPE_NONE(useMuAllNorm, getUseMuAllNorm, bool, false, "--mu-normed", "Permittivity of Mu material set to 1/mu0")
 
+SETTINGS_ELEM_FIELD_TYPE_INT(sphereAccuracy, getSphereAccuracy, int, 100, "--sphere-accuracy", "Sphere approximation accuracy (number of points per grid step)")
+
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphere, getEpsSphere, int, 1, "--eps-sphere", "Permittivity of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterX, getEpsSphereCenterX, int, 0, "--eps-sphere-center-x", "Center position by x coordinate of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterY, getEpsSphereCenterY, int, 0, "--eps-sphere-center-y", "Center position by y coordinate of Eps material sphere")

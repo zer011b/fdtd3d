@@ -4377,13 +4377,12 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                              solverSettings.getEpsSphereCenterY (),
                                              solverSettings.getEpsSphereCenterZ (),
                                              ct1, ct2, ct3);
-      val->setCurValue (Approximation::approximateSphereAccurate (expandTo3D (posAbs, ct1, ct2, ct3),
-                                                                  expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5
+      val->setCurValue (Approximation::approximateSphereAccurate (posAbs,
+                                                                  center * modifier + TCFP (0.5, 0.5, 0.5
 #ifdef DEBUG_INFO
                                                                                                         , ct1, ct2, ct3
 #endif
                                                                                                         ),
-                                                                              ct1, ct2, ct3),
                                                                   solverSettings.getEpsSphereRadius () * modifier,
                                                                   epsVal));
     }

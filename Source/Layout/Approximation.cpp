@@ -307,6 +307,183 @@ Approximation::approximateSphereFast (GridCoordinateFP3D midPos,
   return proportion * eps + (1 - proportion) * eps_vacuum;
 }
 
+#define SPHERE_VOL_ACC_CUTOFF (1.0001)
+
+FieldValue
+Approximation::approximateSphereAccurate (GridCoordinateFP1D midPos,
+                                          GridCoordinateFP1D center,
+                                          FPValue radius,
+                                          FieldValue eps)
+{
+  GridCoordinateFP1D start (midPos.get1 () - 0.5
+#ifdef DEBUG_INFO
+                            , midPos.getType1 ()
+#endif
+                            );
+  GridCoordinateFP1D end (midPos.get1 () + 0.5
+#ifdef DEBUG_INFO
+                          , midPos.getType1 ()
+#endif
+                          );
+
+  /*
+   * If this check is removed, be sure to support center of sphere not in the middle of cell at all usages of midPos
+   */
+  ASSERT (center.get1 () - FPValue (0.5) == (grid_coord) (center.get1 () - FPValue (0.5)));
+
+  FPValue volume = 0;
+  FPValue left = center.get1 () - radius;
+  FPValue right = center.get1 () + radius;
+
+  if (end.get1 () <= left
+      || start.get1 () >= right)
+  {
+    /*
+     * not in sphere
+     */
+  }
+  else if (start.get1 () >= left
+           || end.get1 () <= right)
+  {
+    /*
+     * fully in sphere
+     */
+    volume = FPValue (1);
+  }
+  else if (start.get1 () < left)
+  {
+    ASSERT (end.get1 () >= left);
+    volume = end.get1 () - left;
+  }
+  else if (end.get1 () > right)
+  {
+    ASSERT (start.get1 () < right);
+    volume = right - start.get1 ();
+  }
+
+  ASSERT (volume >= FPValue (0) && volume <= FPValue (SPHERE_VOL_ACC_CUTOFF));
+  if (volume > FPValue (1))
+  {
+    volume = FPValue (1);
+  }
+
+  FieldValue eps_vacuum = getFieldValueRealOnly (1.0);
+
+  return volume * eps + (1 - volume) * eps_vacuum;
+}
+
+FieldValue
+Approximation::approximateSphereAccurate (GridCoordinateFP2D midPos,
+                                          GridCoordinateFP2D center,
+                                          FPValue radius,
+                                          FieldValue eps)
+{
+  GridCoordinateFP2D start (midPos.get1 () - 0.5, midPos.get2 () - 0.5
+  #ifdef DEBUG_INFO
+                            , midPos.getType1 (), midPos.getType2 ()
+  #endif
+                            );
+  GridCoordinateFP2D end (midPos.get1 () + 0.5, midPos.get2 () + 0.5
+  #ifdef DEBUG_INFO
+                          , midPos.getType1 (), midPos.getType2 ()
+  #endif
+                          );
+
+  /*
+   * If this check is removed, be sure to support center of sphere not in the middle of cell at all usages of midPos,
+   * for example:
+   *
+   *   if (midPos.get2 () > center.get2 ())
+   */
+  ASSERT (center.get1 () - FPValue (0.5) == (grid_coord) (center.get1 () - FPValue (0.5)));
+  ASSERT (center.get2 () - FPValue (0.5) == (grid_coord) (center.get2 () - FPValue (0.5)));
+
+  /*
+   * TODO: use better approximation
+   */
+
+  int numSteps = solverSettings.getSphereAccuracy ();
+  FPValue step = 1.0 / numSteps;
+  FPValue elemS = step;
+  FPValue volume = 0;
+  for (int i = 0; i < numSteps; ++i)
+  {
+    GridCoordinateFP2D pos (start.get1 () + i * step, 0.0
+  #ifdef DEBUG_INFO
+                            , midPos.getType1 (), midPos.getType2 ()
+  #endif
+                            );
+    /*
+     * temp = R^2 - (x-x0)^2
+     * Compare temp and (y-y0)^2
+     */
+    FPValue temp = SQR (radius) - SQR (pos.get1 () - center.get1 ());
+
+    /*
+     * This check cuts out all the points, which are not in the sphere or on the surface of sphere
+     */
+    if (temp < 0)
+    {
+      pos.set2 (0.0);
+    }
+    else
+    {
+      bool isAbove = true;
+
+      /*
+       * Obtain the actual y-axis coordinate of this point (pos):
+       * check whether point is below or above line y=0, in order to identify sign of |y-y0|
+       */
+      if (midPos.get2 () > center.get2 ())
+      {
+        isAbove = true;
+        pos.set2 (center.get2 () + sqrt (temp));
+      }
+      else
+      {
+        isAbove = false;
+        pos.set2 (center.get2 () - sqrt (temp));
+      }
+
+      /*
+       * Check if pos point is in cube for which volume is calculated. Truncate it if not.
+       */
+      if (pos.get2 () < start.get2 ())
+      {
+        pos.set2 (start.get2 ());
+      }
+      else if (pos.get2 () > end.get2 ())
+      {
+        pos.set2 (end.get2 ());
+      }
+
+      /*
+       * Get relative value of height
+       */
+      if (isAbove)
+      {
+        pos.set2 (pos.get2 () - start.get2 ());
+      }
+      else
+      {
+        pos.set2 (end.get2 () - pos.get2 ());
+      }
+    }
+
+    volume += pos.get2 () * elemS;
+  }
+
+  ASSERT (volume >= FPValue (0) && volume <= FPValue (SPHERE_VOL_ACC_CUTOFF));
+  if (volume > FPValue (1))
+  {
+    volume = FPValue (1);
+  }
+
+  FieldValue eps_vacuum = getFieldValueRealOnly (1.0);
+
+  return volume * eps + (1 - volume) * eps_vacuum;
+}
+
 FieldValue
 Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
                                           GridCoordinateFP3D center,
@@ -315,16 +492,30 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
 {
   GridCoordinateFP3D start (midPos.get1 () - 0.5, midPos.get2 () - 0.5, midPos.get3 () - 0.5
 #ifdef DEBUG_INFO
-                            , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+                            , midPos.getType1 (), midPos.getType2 (), midPos.getType3 ()
 #endif
                             );
   GridCoordinateFP3D end (midPos.get1 () + 0.5, midPos.get2 () + 0.5, midPos.get3 () + 0.5
 #ifdef DEBUG_INFO
-                          , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+                          , midPos.getType1 (), midPos.getType2 (), midPos.getType3 ()
 #endif
                           );
 
-  int numSteps = 100;
+  /*
+   * If this check is removed, be sure to support center of sphere not in the middle of cell at all usages of midPos,
+   * for example:
+   *
+   *   if (midPos.get3 () > center.get3 ())
+   */
+  ASSERT (center.get1 () - FPValue (0.5) == (grid_coord) (center.get1 () - FPValue (0.5)));
+  ASSERT (center.get2 () - FPValue (0.5) == (grid_coord) (center.get2 () - FPValue (0.5)));
+  ASSERT (center.get3 () - FPValue (0.5) == (grid_coord) (center.get3 () - FPValue (0.5)));
+
+  /*
+   * TODO: use better approximation
+   */
+
+  int numSteps = solverSettings.getSphereAccuracy ();
   FPValue step = 1.0 / numSteps;
   FPValue elemS = step * step;
   FPValue volume = 0;
@@ -334,44 +525,75 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
     {
       GridCoordinateFP3D pos (start.get1 () + i * step, start.get2 () + j * step, 0.0
 #ifdef DEBUG_INFO
-                              , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+                              , midPos.getType1 (), midPos.getType2 (), midPos.getType3 ()
 #endif
                               );
+      /*
+       * temp = R^2 - (x-x0)^2 - (y-y0)^2
+       * Compare temp and (z-z0)^2
+       */
       FPValue temp = SQR (radius) - SQR (pos.get1 () - center.get1 ()) - SQR (pos.get2 () - center.get2 ());
 
+      /*
+       * This check cuts out all the points, which are not in the sphere or on the surface of sphere
+       */
       if (temp < 0)
       {
         pos.set3 (0.0);
       }
       else
       {
+        bool isAbove = true;
+
+        /*
+         * Obtain the actual z-axis coordinate of this point (pos):
+         * check whether point is below or above plane z=0, in order to identify sign of |z-z0|
+         */
         if (midPos.get3 () > center.get3 ())
         {
+          isAbove = true;
           pos.set3 (center.get3 () + sqrt (temp));
         }
         else
         {
+          isAbove = false;
           pos.set3 (center.get3 () - sqrt (temp));
         }
 
+        /*
+         * Check if pos point is in cube for which volume is calculated. Truncate it if not.
+         */
         if (pos.get3 () < start.get3 ())
         {
-          pos.set3 (1.0);
+          pos.set3 (start.get3 ());
         }
         else if (pos.get3 () > end.get3 ())
         {
-          pos.set3 (0.0);
+          pos.set3 (end.get3 ());
         }
-        else
+
+        /*
+         * Get relative value of height
+         */
+        if (isAbove)
         {
           pos.set3 (pos.get3 () - start.get3 ());
         }
+        else
+        {
+          pos.set3 (end.get3 () - pos.get3 ());
+        }
       }
+
       volume += pos.get3 () * elemS;
     }
   }
 
-  ASSERT (volume <= 1.0);
+  ASSERT (volume >= FPValue (0) && volume <= FPValue (SPHERE_VOL_ACC_CUTOFF));
+  if (volume > FPValue (1))
+  {
+    volume = FPValue (1);
+  }
 
   FieldValue eps_vacuum = getFieldValueRealOnly (1.0);
 
