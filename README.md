@@ -97,12 +97,14 @@ You can find some examples in `./Examples`. See [Input & Output](Docs/Input-Outp
 
 # Documentation
 
-Doxygen documentation is available with config in `./Doxyfile`. To generate it run next commands:
+Doxygen documentation is available at [Documentation](http://zer011b.github.io/fdtd3d/).
+
+To generate it manually from config in `./Doxyfile` run next commands:
 
 ```sh
 sudo apt-get install doxygen
 doxygen
-firefox Docs/doxygen/html/index.html
+firefox docs/index.html
 ```
 
 # How to cite
