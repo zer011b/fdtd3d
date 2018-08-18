@@ -95,6 +95,16 @@ cd Release/Source
 
 You can find some examples in `./Examples`. See [Input & Output](Docs/Input-Output.md) for details about load and save of files.
 
+# Documentation
+
+Doxygen documentation is available with config in `./Doxyfile`. To generate it run next commands:
+
+```sh
+sudo apt-get install doxygen
+doxygen
+firefox Docs/doxygen/html/index.html
+```
+
 # How to cite
 
 You can site the following paper about the techniques used in fdtd3d:
