@@ -1,0 +1,28 @@
+digraph "Scheme&lt; Type, TCoord, layout_type &gt;"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Scheme\< Type, TCoord,\l layout_type \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" loader" ,fontname="Helvetica"];
+  Node2 [label="Loader\< TC \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classLoader.html"];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="GridFileManager",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridFileManager.html"];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" HInc\nEInc" ,fontname="Helvetica"];
+  Node4 [label="Grid\< GridCoordinate1DTemplate \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGrid.html"];
+  Node5 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" size" ,fontname="Helvetica"];
+  Node5 [label="GridCoordinate1DTemplate\l\< TcoordType, doSignChecks \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridCoordinate1DTemplate.html"];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" EyAmplitude\nEx\nEzAmplitude\nB1x\nDx\nEy\nOmegaPM\nSigmaX\nHxAmplitude\nB1y\n..." ,fontname="Helvetica"];
+  Node6 [label="Grid\< TC \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGrid.html"];
+  Node7 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" HxInitial\nExBorder\nHyInitial\nEyBorder\nHzInitial\nEzBorder\nExInitial\nEyInitial\nEzInitial\nMx\n..." ,fontname="Helvetica"];
+  Node7 [label="GridCoordinate3DTemplate\l\< TcoordType, doSignChecks \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridCoordinate3DTemplate.html"];
+  Node8 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="GridCoordinate2DTemplate\l\< TcoordType, doSignChecks \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classGridCoordinate2DTemplate.html"];
+  Node5 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" dumper" ,fontname="Helvetica"];
+  Node9 [label="Dumper\< TC \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDumper.html"];
+  Node3 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" dumper1D" ,fontname="Helvetica"];
+  Node10 [label="Dumper\< GridCoordinate1DTemplate \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classDumper.html"];
+  Node3 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}
