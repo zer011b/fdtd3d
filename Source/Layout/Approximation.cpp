@@ -223,42 +223,67 @@ Approximation::getMaterial (const FieldPointValue *val)
 }
 
 FPValue
-Approximation::phaseVelocityIncidentWave (FPValue delta,
-                                            FPValue freeSpaceWaveLentgh,
-                                            FPValue courantNum,
-                                            FPValue N_lambda,
-                                            FPValue incidentWaveAngle1,
-                                            FPValue incidentWaveAngle2)
+Approximation::approximateWaveNumber (FPValue delta,
+                                      FPValue freeSpaceWaveLentgh,
+                                      FPValue courantNum,
+                                      FPValue N_lambda,
+                                      FPValue incidentWaveAngle1,
+                                      FPValue incidentWaveAngle2)
 {
-  if (incidentWaveAngle1 = PhysicsConst::Pi / 2
+  if ((incidentWaveAngle1 == 0
+       || incidentWaveAngle1 == PhysicsConst::Pi / 2
+       || incidentWaveAngle1 == PhysicsConst::Pi
+       || incidentWaveAngle1 == 3 * PhysicsConst::Pi / 2)
       && (incidentWaveAngle2 == 0
           || incidentWaveAngle2 == PhysicsConst::Pi / 2
           || incidentWaveAngle2 == PhysicsConst::Pi
           || incidentWaveAngle2 == 3 * PhysicsConst::Pi / 2))
   {
+
     /*
      * Special case of propagation along some axes
      */
-    return PhysicsConst::SpeedOfLight * PhysicsConst::Pi /
-           (N_lambda * asin (sin (PhysicsConst::Pi * courantNum / N_lambda) / courantNum));
+    return FPValue (2) / delta
+           * asin (sin (PhysicsConst::Pi * courantNum / N_lambda) / courantNum);
   }
 
-  if (incidentWaveAngle1 = PhysicsConst::Pi / 2
+  if ((incidentWaveAngle1 == 0
+       || incidentWaveAngle1 == PhysicsConst::Pi / 2
+       || incidentWaveAngle1 == PhysicsConst::Pi
+       || incidentWaveAngle1 == 3 * PhysicsConst::Pi / 2)
       && (incidentWaveAngle2 == PhysicsConst::Pi / 4
           || incidentWaveAngle2 == 3 * PhysicsConst::Pi / 4
           || incidentWaveAngle2 == 5 * PhysicsConst::Pi / 4
-          || incidentWaveAngle2 == 7 * PhysicsConst::Pi / 4))
+          || incidentWaveAngle2 == 7 * PhysicsConst::Pi / 4)
+      || (incidentWaveAngle1 == PhysicsConst::Pi / 4
+          || incidentWaveAngle1 == 3 * PhysicsConst::Pi / 4
+          || incidentWaveAngle1 == 5 * PhysicsConst::Pi / 4
+          || incidentWaveAngle1 == 7 * PhysicsConst::Pi / 4)
+          && (incidentWaveAngle2 == 0
+              || incidentWaveAngle2 == PhysicsConst::Pi / 2
+              || incidentWaveAngle2 == PhysicsConst::Pi
+              || incidentWaveAngle2 == 3 * PhysicsConst::Pi / 2))
   {
     /*
      * Special case of propagation at angle of Pi/4
      */
-    return PhysicsConst::SpeedOfLight * PhysicsConst::Pi /
-           (N_lambda * sqrt(2.0) * asin (sin (PhysicsConst::Pi * courantNum / N_lambda) / (courantNum * sqrt(2.0))));
+    return FPValue (2) * sqrt (FPValue (2)) / delta
+           * asin (sin (PhysicsConst::Pi * courantNum / N_lambda) / (courantNum * sqrt (FPValue (2))));
   }
 
+  return approximateWaveNumberGeneral (delta, freeSpaceWaveLentgh, courantNum, N_lambda, incidentWaveAngle1, incidentWaveAngle2);
+}
 
+FPValue
+Approximation::approximateWaveNumberGeneral (FPValue delta,
+                                             FPValue freeSpaceWaveLentgh,
+                                             FPValue courantNum,
+                                             FPValue N_lambda,
+                                             FPValue incidentWaveAngle1,
+                                             FPValue incidentWaveAngle2)
+{
   FPValue k = 2 * PhysicsConst::Pi;
-  FPValue k_prev = k + Approximation::getAccuracy ();
+  FPValue k_prev = k + 2 * sqrt (Approximation::getAccuracy ());
 
   FPValue normalized_delta = delta / freeSpaceWaveLentgh;
 
@@ -267,7 +292,7 @@ Approximation::phaseVelocityIncidentWave (FPValue delta,
   FPValue C = normalized_delta * cos (incidentWaveAngle1) / 2;
   FPValue D = SQR (sin (PhysicsConst::Pi * courantNum / N_lambda)) / SQR (courantNum);
 
-  while (SQR (k_prev - k) >= Approximation::getAccuracy ())
+  while (SQR (k_prev - k) >= SQR(Approximation::getAccuracy ()))
   {
     k_prev = k;
 
@@ -278,7 +303,19 @@ Approximation::phaseVelocityIncidentWave (FPValue delta,
     k -= diff;
   }
 
-  return PhysicsConst::SpeedOfLight * 2 * PhysicsConst::Pi / k;
+  return k / freeSpaceWaveLentgh;
+}
+
+FPValue
+Approximation::phaseVelocityIncidentWave (FPValue delta,
+                                          FPValue freeSpaceWaveLentgh,
+                                          FPValue courantNum,
+                                          FPValue N_lambda,
+                                          FPValue incidentWaveAngle1,
+                                          FPValue incidentWaveAngle2)
+{
+  return PhysicsConst::SpeedOfLight * 2 * PhysicsConst::Pi / freeSpaceWaveLentgh
+         / approximateWaveNumber (delta, freeSpaceWaveLentgh, courantNum, N_lambda, incidentWaveAngle1, incidentWaveAngle2);
 }
 
 FieldValue
