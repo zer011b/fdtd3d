@@ -8,4 +8,4 @@ else ()
   add_library (Layout ${LAYOUT_SOURCES})
 endif ()
 
-target_link_libraries (Layout Coordinate)
+target_link_libraries (Layout Coordinate Kernels)
