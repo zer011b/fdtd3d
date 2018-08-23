@@ -702,6 +702,22 @@ jobs:
       - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-settings.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
 
+# ---- Unit test for Approximation ----
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_APPROXIMATION=""
+        - CXX11=ON
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_APPROXIMATION=""
+        - CXX11=OFF
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+
 # ==== Test suite stage ====
     - stage: test-suite
       script:
