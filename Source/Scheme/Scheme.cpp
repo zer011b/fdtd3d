@@ -1082,6 +1082,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
   , totalGammaE (NULLPTR)
   , totalGammaM (NULLPTR)
   , sourceWaveLength (0)
+  , sourceWaveLengthNumerical (0)
   , sourceFrequency (0)
   , courantNum (0)
   , gridStep (0)
@@ -1948,6 +1949,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationExact (time_step t
   FPValue modExact = sqrt (SQR (exact.real ()) + SQR (exact.imag ()));
   FPValue modNumerical = sqrt (SQR (numerical.real ()) + SQR (numerical.imag ()));
 
+  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName ().c_str (), exact.real (), numerical.real ());
+
   normRe += SQR (exact.real () - numerical.real ());
   normIm += SQR (exact.imag () - numerical.imag ());
   normMod += SQR (modExact - modNumerical);
@@ -1971,6 +1974,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationExact (time_step t
   }
 #else
   normRe += SQR (exact - numerical);
+
+  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName ().c_str (), exact, numerical);
 
   FPValue exactAbs = fabs (exact);
   if (maxRe < exactAbs)
@@ -2309,10 +2314,10 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
   }
 
   // TODO: separate previous grid and current
-  FieldValue prev11;
-  FieldValue prev12;
-  FieldValue prev21;
-  FieldValue prev22;
+  FieldValue prev11 = FIELDVALUE (0, 0);
+  FieldValue prev12 = FIELDVALUE (0, 0);
+  FieldValue prev21 = FIELDVALUE (0, 0);
+  FieldValue prev22 = FIELDVALUE (0, 0);
 
   if (oppositeGrid1)
   {
@@ -2850,13 +2855,48 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
     FPValue maxIm = 0.0;
     FPValue maxMod = 0.0;
 
-    for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+    GridCoordinate3D startNorm = start3D;
+    GridCoordinate3D endNorm = end3D;
+
+    if (solverSettings.getExactSolutionCompareStartX () != 0)
+    {
+      startNorm.set1 (solverSettings.getExactSolutionCompareStartX ());
+    }
+    if (solverSettings.getExactSolutionCompareStartY () != 0)
+    {
+      startNorm.set2 (solverSettings.getExactSolutionCompareStartY ());
+    }
+    if (solverSettings.getExactSolutionCompareStartZ () != 0)
+    {
+      startNorm.set3 (solverSettings.getExactSolutionCompareStartZ ());
+    }
+
+    if (solverSettings.getExactSolutionCompareEndX () != 0)
+    {
+      endNorm.set1 (solverSettings.getExactSolutionCompareEndX ());
+    }
+    if (solverSettings.getExactSolutionCompareEndY () != 0)
+    {
+      endNorm.set2 (solverSettings.getExactSolutionCompareEndY ());
+    }
+    if (solverSettings.getExactSolutionCompareEndZ () != 0)
+    {
+      endNorm.set3 (solverSettings.getExactSolutionCompareEndZ ());
+    }
+
+    Grid<TC> *normGrid = grid;
+    if (usePML)
+    {
+      grid = gridPML2;
+    }
+
+    for (grid_coord i = startNorm.get1 (); i < endNorm.get1 (); ++i)
     {
       // TODO: check that this loop is optimized out
-      for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+      for (grid_coord j = startNorm.get2 (); j < endNorm.get2 (); ++j)
       {
         // TODO: check that this loop is optimized out
-        for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
+        for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
         {
           TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
           calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
@@ -3861,10 +3901,28 @@ Scheme<Type, TCoord, layout_type>::initScheme (FPValue dx, FPValue sourceWaveLen
   gridTimeStep = gridStep * courantNum / PhysicsConst::SpeedOfLight;
 
   FPValue N_lambda = sourceWaveLength / gridStep;
+  ALWAYS_ASSERT (SQR (round (N_lambda) - N_lambda) < Approximation::getAccuracy ());
+
   FPValue phaseVelocity0 = Approximation::phaseVelocityIncidentWave (gridStep, sourceWaveLength, courantNum, N_lambda, PhysicsConst::Pi / 2, 0);
   FPValue phaseVelocity = Approximation::phaseVelocityIncidentWave (gridStep, sourceWaveLength, courantNum, N_lambda, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ());
+  FPValue k = 2 * PhysicsConst::Pi * PhysicsConst::SpeedOfLight / sourceWaveLength / phaseVelocity0;
 
   relPhaseVelocity = phaseVelocity0 / phaseVelocity;
+  sourceWaveLengthNumerical = 2 * PhysicsConst::Pi / k;
+
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "initScheme: "
+                                      "\n\tphase velocity relation -> %f "
+                                      "\n\tphase velosity 0 -> %f "
+                                      "\n\tphase velocity -> %f "
+                                      "\n\tanalytical wave number -> %.20f "
+                                      "\n\tnumerical wave number -> %.20f"
+                                      "\n\tanalytical wave length -> %.20f"
+                                      "\n\tnumerical wave length -> %.20f"
+                                      "\n\tnumerical grid step -> %.20f"
+                                      "\n\tnumerical time step -> %.20f"
+                                      "\n",
+           relPhaseVelocity, phaseVelocity0, phaseVelocity, 2*PhysicsConst::Pi/sourceWaveLength, k,
+           sourceWaveLength, sourceWaveLengthNumerical, gridStep, gridTimeStep);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -3971,6 +4029,22 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     HyExact = CallBack::sin1_hy;
   }
 #endif
+
+  if (solverSettings.getDoCalculateExp1DiffNorm ())
+  {
+    ExExact = CallBack::exp1_ex;
+    HyExact = CallBack::exp1_hy;
+  }
+  else if (solverSettings.getDoCalculateExp2DiffNorm ())
+  {
+    ExExact = CallBack::exp2_ex;
+    HyExact = CallBack::exp2_hy;
+  }
+  else if (solverSettings.getDoCalculateExp3DiffNorm ())
+  {
+    ExExact = CallBack::exp3_ex;
+    HyExact = CallBack::exp3_hy;
+  }
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -4399,6 +4473,32 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   Mu->initialize (getFieldValueRealOnly (1.0));
   initMaterialFromFile (GridType::MU, Mu, totalMu);
 
+  if (solverSettings.getMuSphere () != 1)
+  {
+    for (grid_coord i = 0; i < Mu->getSize ().calculateTotalCoord (); ++i)
+    {
+      TC pos = Mu->calculatePositionFromIndex (i);
+      TCFP posAbs = yeeLayout->getMuCoordFP (Mu->getTotalPosition (pos));
+      FieldPointValue *val = Mu->getFieldPointValue (pos);
+
+      FieldValue muVal = getFieldValueRealOnly (solverSettings.getMuSphere ());
+
+      FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
+
+      TCFP center = TCFP::initAxesCoordinate(solverSettings.getMuSphereCenterX (),
+                                             solverSettings.getMuSphereCenterY (),
+                                             solverSettings.getMuSphereCenterZ (),
+                                             ct1, ct2, ct3);
+      val->setCurValue (Approximation::approximateSphereAccurate (posAbs,
+                                                                  center * modifier + TCFP (0.5, 0.5, 0.5
+  #ifdef DEBUG_INFO
+                                                                                                        , ct1, ct2, ct3
+  #endif
+                                                                                                        ),
+                                                                  solverSettings.getMuSphereRadius () * modifier,
+                                                                  muVal));
+    }
+  }
   if (solverSettings.getUseMuAllNorm ())
   {
     for (grid_coord i = 0; i < Mu->getSize ().calculateTotalCoord (); ++i)
@@ -5614,7 +5714,7 @@ SchemeHelper::ntffN3D (FPValue angleTeta, FPValue anglePhi,
                        GridCoordinate3D rightNTFF,
                        YL3D_Dim3 *yeeLayout,
                        FPValue gridStep,
-                       FPValue sourceWaveLength,
+                       FPValue sourceWaveLength, // TODO: check sourceWaveLengthNumerical
                        Grid<GridCoordinate1D> *HInc,
                        Grid<GridCoordinate3D> *curEz,
                        Grid<GridCoordinate3D> *curHx,
@@ -5637,7 +5737,7 @@ SchemeHelper::ntffL3D (FPValue angleTeta, FPValue anglePhi,
                        GridCoordinate3D rightNTFF,
                        YL3D_Dim3 *yeeLayout,
                        FPValue gridStep,
-                       FPValue sourceWaveLength,
+                       FPValue sourceWaveLength, // TODO: check sourceWaveLengthNumerical
                        Grid<GridCoordinate1D> *EInc,
                        Grid<GridCoordinate3D> *curEx,
                        Grid<GridCoordinate3D> *curEy,
@@ -5659,7 +5759,7 @@ Scheme<Type, TCoord, layout_type>::Pointing_scat (FPValue angleTeta, FPValue ang
                        Grid<TC> *curHx, Grid<TC> *curHy, Grid<TC> *curHz)
 {
 #ifdef COMPLEX_FIELD_VALUES
-  FPValue k = 2 * PhysicsConst::Pi / sourceWaveLength;
+  FPValue k = 2 * PhysicsConst::Pi / sourceWaveLength; // TODO: check numerical here
 
   NPair N = ntffN (angleTeta, anglePhi, curEz, curHx, curHy, curHz);
   NPair L = ntffL (angleTeta, anglePhi, curEx, curEy, curEz);

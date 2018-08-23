@@ -105,6 +105,8 @@ private:
 
   // Wave parameters
   FPValue sourceWaveLength;
+  FPValue sourceWaveLengthNumerical;
+
   FPValue sourceFrequency;
   FPValue relPhaseVelocity;
 
