@@ -140,6 +140,18 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doUseSin1BorderCondition, getDoUseSin1BorderCondit
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseSin1StartValues, getDoUseSin1StartValues, bool, false, "--use-sin1-start-values", "Sin 1 start values")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateSin1DiffNorm, getDoCalculateSin1DiffNorm, bool, false, "--calc-sin1-diff-norm", "Calculate test norm of difference with exact solution: Sin1")
 
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp1DiffNorm, getDoCalculateExp1DiffNorm, bool, false, "--calc-exp1-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp1")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp2DiffNorm, getDoCalculateExp2DiffNorm, bool, false, "--calc-exp2-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp2")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp3DiffNorm, getDoCalculateExp3DiffNorm, bool, false, "--calc-exp3-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp3")
+
+SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareStartX, getExactSolutionCompareStartX, grid_coord, 0, "--norm-start-x", "Start of norm calculation area by Ox axis")
+SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareStartY, getExactSolutionCompareStartY, grid_coord, 0, "--norm-start-y", "Start of norm calculation area by Oy axis")
+SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareStartZ, getExactSolutionCompareStartZ, grid_coord, 0, "--norm-start-z", "Start of norm calculation area by Oz axis")
+
+SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareEndX, getExactSolutionCompareEndX, grid_coord, 0, "--norm-end-x", "End of norm calculation area by Ox axis")
+SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareEndY, getExactSolutionCompareEndY, grid_coord, 0, "--norm-end-y", "End of norm calculation area by Oy axis")
+SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareEndZ, getExactSolutionCompareEndZ, grid_coord, 0, "--norm-end-z", "End of norm calculation area by Oz axis")
+
 /*
  * NTFF
  */
@@ -203,6 +215,12 @@ SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterX, getEpsSphereCenterX, int, 0, "--e
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterY, getEpsSphereCenterY, int, 0, "--eps-sphere-center-y", "Center position by y coordinate of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterZ, getEpsSphereCenterZ, int, 0, "--eps-sphere-center-z", "Center position by z coordinate of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereRadius, getEpsSphereRadius, int, 0, "--eps-sphere-radius", "Radius of Eps material sphere")
+
+SETTINGS_ELEM_FIELD_TYPE_INT(muSphere, getMuSphere, int, 1, "--mu-sphere", "Permittivity of Mu material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(muSphereCenterX, getMuSphereCenterX, int, 0, "--mu-sphere-center-x", "Center position by x coordinate of Mu material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(muSphereCenterY, getMuSphereCenterY, int, 0, "--mu-sphere-center-y", "Center position by y coordinate of Mu material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(muSphereCenterZ, getMuSphereCenterZ, int, 0, "--mu-sphere-center-z", "Center position by z coordinate of Mu material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(muSphereRadius, getMuSphereRadius, int, 0, "--mu-sphere-radius", "Radius of Mu material sphere")
 
 SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphere, getOmegaPESphere, int, 0, "--omegape-sphere", "Electric plasma frequency material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereCenterX, getOmegaPESphereCenterX, int, 0, "--omegape-sphere-center-x", "Center position by x coordinate of electric plasma frequency material sphere")
