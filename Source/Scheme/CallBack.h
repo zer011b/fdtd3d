@@ -36,6 +36,13 @@ public:
 
   static FieldValue sin1_ez (GridCoordinateFP3D, FPValue);
   static FieldValue sin1_hy (GridCoordinateFP3D, FPValue);
+
+  static FieldValue exp1_ex (GridCoordinateFP3D, FPValue);
+  static FieldValue exp2_ex (GridCoordinateFP3D, FPValue);
+  static FieldValue exp3_ex (GridCoordinateFP3D, FPValue);
+  static FieldValue exp1_hy (GridCoordinateFP3D, FPValue);
+  static FieldValue exp2_hy (GridCoordinateFP3D, FPValue);
+  static FieldValue exp3_hy (GridCoordinateFP3D, FPValue);
 };
 
 #endif /* CALLBACK_H */
