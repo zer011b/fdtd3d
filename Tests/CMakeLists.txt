@@ -42,3 +42,6 @@ target_link_libraries (unit-test-coordinate Helpers Settings Coordinate)
 
 add_executable (unit-test-layout unit-test-layout.cpp)
 target_link_libraries (unit-test-layout Helpers Settings Coordinate Layout)
+
+add_executable (unit-test-approximation unit-test-approximation.cpp)
+target_link_libraries (unit-test-approximation Helpers Settings Layout)
