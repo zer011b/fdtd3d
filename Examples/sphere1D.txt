@@ -12,6 +12,7 @@
 
 --dx 0.0005
 --wavelength 0.02
+--courant-factor 0.5
 
 --log-level 2
 
@@ -28,11 +29,15 @@
 --tfsf-sizez-left 30
 --tfsf-sizez-right 0
 
---eps-sphere 4
---eps-sphere-center-z 100
---eps-sphere-radius 50
+#--eps-sphere 4
+#--eps-sphere-center-z 150
+#--eps-sphere-radius 50
 #--save-scattered-field-res
 
 #--save-interm-res
 #--interm-save-step 50
 #--save-scattered--field-interm
+
+--norm-start-z 35
+--norm-end-z 175
+--calc-exp1-diff-norm
