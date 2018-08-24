@@ -25,7 +25,7 @@ int main (int argc, char** argv)
         for (FPValue delta = FPValue (0.0002); delta <= FPValue (0.002); delta *= 2)
         {
           FPValue N_lambda = lambda / delta;
-          ALWAYS_ASSERT (((FPValue)((int)N_lambda)) == N_lambda);
+          ALWAYS_ASSERT (SQR (round (N_lambda) - N_lambda) < Approximation::getAccuracy ());
 
           FPValue general_k = Approximation::approximateWaveNumberGeneral (delta, lambda, courantNum,
                                                                            N_lambda, angle1, angle2);
