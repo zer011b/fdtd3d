@@ -1,8 +1,8 @@
 // Plane wave scattering on dielectric sphere for 1D ExHy
 
---time-steps 1000
+--time-steps 10000
 
---sizez 200
+--sizez 600
 
 --1d-exhy
 
@@ -10,7 +10,7 @@
 --angle-phi 0
 --angle-psi 0
 
---dx 0.0005
+--dx 0.0001
 --wavelength 0.02
 --courant-factor 0.5
 
@@ -22,22 +22,22 @@
 --save-as-txt
 --palette-rgb
 
---pml-sizez 20
+--pml-sizez 50
 --use-pml
 
 --use-tfsf
---tfsf-sizez-left 30
+--tfsf-sizez-left 150
 --tfsf-sizez-right 0
 
-#--eps-sphere 4
-#--eps-sphere-center-z 150
-#--eps-sphere-radius 50
+--eps-sphere 4
+--eps-sphere-center-z 450
+--eps-sphere-radius 150
 #--save-scattered-field-res
 
 #--save-interm-res
 #--interm-save-step 50
 #--save-scattered--field-interm
 
---norm-start-z 35
---norm-end-z 175
---calc-exp1-diff-norm
+--norm-start-z 305
+--norm-end-z 545
+--calc-exp3-diff-norm
