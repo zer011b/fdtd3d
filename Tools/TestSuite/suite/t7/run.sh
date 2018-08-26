@@ -5,52 +5,55 @@ SOURCE_DIR=$2
 
 function launch ()
 {
-  ./fdtd3d --cmd-from-file ${SOURCE_DIR}/Examples/vacuum3D.txt &> /tmp/fdtd3d.txt
+  local num_time_steps=$1
+  local sizez=$2
+  local dz=$3
+  local wavelen=$4
+  local pmlsize=$5
+  local tfsfsize=$6
+  local sphere_center=$7
+  local sphere_radius=$8
+
+  local norm_start=$9
+  local norm_end=${10}
+  local exp_type=${11}
+
+  local accuracy_percent=${12}
+
+  local eps_sphere=${13}
+
+  time_step_before=$((num_time_steps - 1))
+
+  ./fdtd3d --time-steps $num_time_steps --sizez $sizez --1d-exhy --angle-teta 0 --angle-phi 0 --angle-psi 0 \
+    --dx $dz --wavelength $4 --courant-factor 0.5 --log-level 2 --pml-sizez $pmlsize --use-pml \
+    --use-tfsf --tfsf-sizez-left $tfsfsize --tfsf-sizez-right 0 \
+    --eps-sphere $eps_sphere --eps-sphere-center-z $sphere_center --eps-sphere-radius $sphere_radius \
+    --norm-start-z $norm_start --norm-end-z $norm_end --calc-${exp_type}-diff-norm &> /tmp/fdtd3d.txt
 
   local ret=$?
 
-  val_max=$(cat current[100]_rank-0_Ey-Mod.bmp.txt | awk '{print $1}')
-  val_min=$(cat current[100]_rank-0_Ey-Mod.bmp.txt | awk '{print $2}')
-  is_ok=$(echo $val_max $val_min | awk '
-            {
-              if (1.01 <= $1 && $1 <= 1.02 && 0.0 == $2)
-              {
-                print 1;
-              }
-              else
-              {
-                print 0;
-              }
-            }')
+  local max_diff_real=$(cat /tmp/fdtd3d.txt | grep "Timestep $time_step_before" | awk '{if (max < $16) {max = $16}} END{printf "%.20f", max}')
+  local max_diff_imag=$(cat /tmp/fdtd3d.txt | grep "Timestep $time_step_before" | awk '{if (max < $19) {max = $19}} END{printf "%.20f", max}')
+  local max_diff_mod=$(cat /tmp/fdtd3d.txt | grep "Timestep $time_step_before" | awk '{if (max < $27) {max = $27}} END{printf "%.20f", max}')
+
+  #echo "!!! $max_diff_real, $max_diff_imag, $max_diff_mod"
+
+  local is_ok=$(echo $max_diff_real $accuracy_percent | awk '{if ($1 > $2) {print 0} else {print 1}}')
   if [ "$is_ok" != "1" ]; then
-    echo "Test result is incorrect for Examples/vacuum3D.txt"
-    ret=$((2))
+    echo "Failed real"
+    ret=$((1))
   fi
 
-  if [ "$ret" != "0" ]; then
-    return $ret
+  local is_ok=$(echo $max_diff_imag $accuracy_percent | awk '{if ($1 > $2) {print 0} else {print 1}}')
+  if [ "$is_ok" != "1" ]; then
+    echo "Failed imag"
+    ret=$((1))
   fi
 
-  ./fdtd3d --cmd-from-file ${SOURCE_DIR}/Examples/vacuum3D_scattered.txt &> /tmp/fdtd3d.txt
-
-  ret=$?
-
-  val_max=$(cat current[100]_rank-0_Ey-Mod.bmp.txt | awk '{print $1}')
-  val_min=$(cat current[100]_rank-0_Ey-Mod.bmp.txt | awk '{print $2}')
-  is_ok=$(echo $val_max $val_min | awk '
-            {
-              if (0.0 == $1 && 0.0 == $2)
-              {
-                print 1;
-              }
-              else
-              {
-                print 0;
-              }
-            }')
+  local is_ok=$(echo $max_diff_mod $accuracy_percent | awk '{if ($1 > $2) {print 0} else {print 1}}')
   if [ "$is_ok" != "1" ]; then
-    echo "Test result is incorrect for Examples/vacuum3D_scattered.txt"
-    ret=$((2))
+    echo "Failed mod"
+    ret=$((1))
   fi
 
   return $ret
@@ -61,7 +64,17 @@ TEST_DIR=$(dirname $(readlink -f $0))
 cd $TEST_DIR
 
 retval=$((0))
-launch
+launch 10000 600 0.0001 0.02 50 150 450 150 155 545 exp1 0.12 1
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+
+launch 10000 600 0.0001 0.02 50 150 450 150 305 545 exp3 0.12 4
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+
+launch 10000 600 0.0001 0.02 50 150 450 150 55 145 exp2 0.17 4
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
