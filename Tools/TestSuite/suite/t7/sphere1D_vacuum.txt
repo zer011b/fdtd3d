@@ -22,7 +22,7 @@
 --save-as-txt
 --palette-rgb
 
---pml-sizez 20
+--pml-sizez 50
 --use-pml
 
 --use-tfsf
@@ -34,5 +34,5 @@
 --eps-sphere-radius 150
 
 --norm-start-z 155
---norm-end-z 575
+--norm-end-z 545
 --calc-exp1-diff-norm

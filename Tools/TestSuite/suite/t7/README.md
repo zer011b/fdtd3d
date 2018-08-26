@@ -51,7 +51,7 @@ H = k/(Mu*Mu0*w) * E = k/(Mu0 * w) * E
 
 # Numerical Result
 
-Norm of difference between exact and numerical solution is calculated. For both cases amplitude and real/imaginary parts accuracy is less than 0.5% for PML size 20 and less than 0.08% for PML size 50.
+Norm of difference between exact and numerical solution is calculated. For both cases amplitude and real/imaginary parts accuracy is less than 0.7% for PML size 20 and less than 0.17% for PML size 50 (see next configs for examples: ![vacuum](sphere1D_vacuum.txt) and ![material](sphere1D_eps4.txt))
 
 ## Case of material with `Eps=1`
 
