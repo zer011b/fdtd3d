@@ -13,13 +13,15 @@ function launch ()
 
   local lambda="0.02"
 
+  output_file=$(mktemp /tmp/fdtd3d.$size.$dx.XXXXXXXX)
+
   ./fdtd3d --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
     --log-level 0 --use-sin1-border-condition --use-sin1-start-values --calc-sin1-diff-norm \
-    --eps-normed --mu-normed --courant-factor 149896229 &> /tmp/$size.$dx.txt
+    --eps-normed --mu-normed --courant-factor 149896229 &> $output_file
 
   local ret=$?
 
-  max_diff=$(cat /tmp/$size.$dx.txt | grep "DIFF NORM Ez" | awk '{if ($10>max){max=$10}}END{print max}')
+  max_diff=$(cat $output_file | grep "DIFF NORM Ez" | awk '{if ($10>max){max=$10}}END{print max}')
 
   return $ret
 }
