@@ -5,7 +5,9 @@ SOURCE_DIR=$2
 
 function launch ()
 {
-  ./fdtd3d --cmd-from-file ${SOURCE_DIR}/Examples/vacuum3D.txt &> /tmp/fdtd3d.txt
+  output_file=$(mktemp /tmp/fdtd3d.vacuum3D.XXXXXXXX)
+
+  ./fdtd3d --cmd-from-file ${SOURCE_DIR}/Examples/vacuum3D.txt &> $output_file
 
   local ret=$?
 
@@ -31,7 +33,7 @@ function launch ()
     return $ret
   fi
 
-  ./fdtd3d --cmd-from-file ${SOURCE_DIR}/Examples/vacuum3D_scattered.txt &> /tmp/fdtd3d.txt
+  ./fdtd3d --cmd-from-file ${SOURCE_DIR}/Examples/vacuum3D_scattered.txt &> $output_file
 
   ret=$?
 
