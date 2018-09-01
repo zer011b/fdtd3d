@@ -24,17 +24,19 @@ function launch ()
 
   time_step_before=$((num_time_steps - 1))
 
+  output_file=$(mktemp /tmp/fdtd3d.vacuum3D.XXXXXXXX)
+
   ./fdtd3d --time-steps $num_time_steps --sizez $sizez --1d-exhy --angle-teta 0 --angle-phi 0 --angle-psi 0 \
     --dx $dz --wavelength $4 --courant-factor 0.5 --log-level 2 --pml-sizez $pmlsize --use-pml \
     --use-tfsf --tfsf-sizez-left $tfsfsize --tfsf-sizez-right 0 \
     --eps-sphere $eps_sphere --eps-sphere-center-z $sphere_center --eps-sphere-radius $sphere_radius \
-    --norm-start-z $norm_start --norm-end-z $norm_end --calc-${exp_type}-diff-norm &> /tmp/fdtd3d.txt
+    --norm-start-z $norm_start --norm-end-z $norm_end --calc-${exp_type}-diff-norm &> $output_file
 
   local ret=$?
 
-  local max_diff_real=$(cat /tmp/fdtd3d.txt | grep "Timestep $time_step_before" | awk '{if (max < $16) {max = $16}} END{printf "%.20f", max}')
-  local max_diff_imag=$(cat /tmp/fdtd3d.txt | grep "Timestep $time_step_before" | awk '{if (max < $19) {max = $19}} END{printf "%.20f", max}')
-  local max_diff_mod=$(cat /tmp/fdtd3d.txt | grep "Timestep $time_step_before" | awk '{if (max < $27) {max = $27}} END{printf "%.20f", max}')
+  local max_diff_real=$(cat $output_file | grep "Timestep $time_step_before" | awk '{if (max < $16) {max = $16}} END{printf "%.20f", max}')
+  local max_diff_imag=$(cat $output_file | grep "Timestep $time_step_before" | awk '{if (max < $19) {max = $19}} END{printf "%.20f", max}')
+  local max_diff_mod=$(cat $output_file | grep "Timestep $time_step_before" | awk '{if (max < $27) {max = $27}} END{printf "%.20f", max}')
 
   #echo "!!! $max_diff_real, $max_diff_imag, $max_diff_mod"
 
