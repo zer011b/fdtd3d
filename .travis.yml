@@ -833,4 +833,14 @@ jobs:
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t7/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - $CUR_DIR/Tools/TestSuite/suite/t7/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
 
+    - stage: test-suite
+      script:
+      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
+      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
+      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - export CUR_DIR=`pwd`
+      - $CUR_DIR/Tools/TestSuite/suite/t8/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t8/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tools/TestSuite/suite/t8/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+
 dist: trusty
