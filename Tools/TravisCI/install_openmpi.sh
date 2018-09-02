@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # for macOS builds use OpenMPI from homebrew
 if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     cd openmpi
@@ -35,4 +37,3 @@ else
     test -n $CC && unset CC
     test -n $CXX && unset CXX
 fi
-

@@ -2,6 +2,8 @@
 
 # Run script
 
+set -e
+
 BUILD_DIR="${1}"
 EXECUTABLE="${2}"
 PARALLEL_RUN="${3}"

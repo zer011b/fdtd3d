@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # check exit code
 function check_res ()
 {
