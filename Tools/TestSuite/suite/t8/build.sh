@@ -13,13 +13,13 @@ $BASE_DIR/build-base.sh "$TEST_DIR" "$BUILD_DIR" "$BUILD_SCRIPT"
 if [ $? -ne 0 ]; then
   exit 1
 fi
-mv fdtd3d fdtd3d_complex
+mv $TEST_DIR/fdtd3d $TEST_DIR/fdtd3d_complex
 
 BUILD_SCRIPT="cmake $SOURCE_DIR -DPARALLEL_GRID_DIMENSION=3 -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=OFF -DTIME_STEPS=1 -DPRINT_MESSAGE=ON -DCXX11_ENABLED=ON; make fdtd3d"
 $BASE_DIR/build-base.sh "$TEST_DIR" "$BUILD_DIR" "$BUILD_SCRIPT"
 if [ $? -ne 0 ]; then
   exit 1
 fi
-mv fdtd3d fdtd3d_real
+mv $TEST_DIR/fdtd3d $TEST_DIR/fdtd3d_real
 
 exit 0
