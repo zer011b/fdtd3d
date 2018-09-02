@@ -33,6 +33,6 @@
 --eps-sphere-center-z 450
 --eps-sphere-radius 150
 
---norm-start-z 305
+--norm-start-z 155
 --norm-end-z 545
---calc-exp3-diff-norm
+--calc-exp1-exhy-diff-norm

@@ -32,7 +32,7 @@ function launch ()
     --dx $dz --wavelength $4 --courant-factor 0.5 --log-level 2 --pml-sizez $pmlsize --use-pml \
     --use-tfsf --tfsf-sizez-left $tfsfsize --tfsf-sizez-right 0 \
     --eps-sphere $eps_sphere --eps-sphere-center-z $sphere_center --eps-sphere-radius $sphere_radius \
-    --norm-start-z $norm_start --norm-end-z $norm_end --calc-${exp_type}-diff-norm &> $output_file
+    --norm-start-z $norm_start --norm-end-z $norm_end --calc-${exp_type}-exhy-diff-norm &> $output_file
 
   local ret=$?
 
