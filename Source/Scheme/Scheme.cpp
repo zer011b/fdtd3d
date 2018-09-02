@@ -3066,7 +3066,7 @@ SchemeHelper::approximateIncidentWave<GridCoordinate1DTemplate> (GridCoordinateF
   FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
 
   FPValue modifier = sin (incAngle1) * cos (incAngle2);
-  if (modifier == FPValue (0))
+  if (IS_FP_EXACT(modifier, FPValue (0)))
   {
     ASSERT (incAngle1 == FPValue (0) || incAngle2 == PhysicsConst::Pi / FPValue (2));
     modifier = FPValue (1);
