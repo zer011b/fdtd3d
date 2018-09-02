@@ -720,6 +720,8 @@ jobs:
 
 # ==== Test suite stage ====
     - stage: test-suite
+      env:
+        - TEST="t1.1"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -729,6 +731,8 @@ jobs:
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t1.1/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - $CUR_DIR/Tools/TestSuite/suite/t1.1/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
     - stage: test-suite
+      env:
+        - TEST="t1.2"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -739,6 +743,8 @@ jobs:
       - $CUR_DIR/Tools/TestSuite/suite/t1.2/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
 
     - stage: test-suite
+      env:
+        - TEST="t2.1"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -748,6 +754,8 @@ jobs:
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t2.1/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - $CUR_DIR/Tools/TestSuite/suite/t2.1/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
     - stage: test-suite
+      env:
+        - TEST="t2.2"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -757,6 +765,8 @@ jobs:
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t2.2/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - $CUR_DIR/Tools/TestSuite/suite/t2.2/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
     - stage: test-suite
+      env:
+        - TEST="t2.3"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -767,6 +777,8 @@ jobs:
       - $CUR_DIR/Tools/TestSuite/suite/t2.3/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
 
     - stage: test-suite
+      env:
+        - TEST="t3"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -777,6 +789,8 @@ jobs:
       - $CUR_DIR/Tools/TestSuite/suite/t3/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
 
     - stage: test-suite
+      env:
+        - TEST="t4.1"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -786,6 +800,8 @@ jobs:
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t4.1/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - $CUR_DIR/Tools/TestSuite/suite/t4.1/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
     - stage: test-suite
+      env:
+        - TEST="t4.2"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -795,6 +811,8 @@ jobs:
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t4.2/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - $CUR_DIR/Tools/TestSuite/suite/t4.2/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
     - stage: test-suite
+      env:
+        - TEST="t4.3"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -805,6 +823,8 @@ jobs:
       - $CUR_DIR/Tools/TestSuite/suite/t4.3/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
 
     - stage: test-suite
+      env:
+        - TEST="t5"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -813,7 +833,10 @@ jobs:
       - $CUR_DIR/Tools/TestSuite/suite/t5/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t5/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - $CUR_DIR/Tools/TestSuite/suite/t5/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
+
     - stage: test-suite
+      env:
+        - TEST="t6"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -824,6 +847,8 @@ jobs:
       - $CUR_DIR/Tools/TestSuite/suite/t6/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
 
     - stage: test-suite
+      env:
+        - TEST="t7"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
@@ -834,6 +859,8 @@ jobs:
       - $CUR_DIR/Tools/TestSuite/suite/t7/cleanup.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
 
     - stage: test-suite
+      env:
+        - TEST="t8"
       script:
       - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
       - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
