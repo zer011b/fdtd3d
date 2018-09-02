@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 BASE_DIR=$1
 SOURCE_DIR=$2
 
