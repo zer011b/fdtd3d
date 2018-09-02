@@ -4038,20 +4038,100 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   }
 #endif
 
-  if (solverSettings.getDoCalculateExp1DiffNorm ())
+  if (solverSettings.getDoCalculateExp1ExHyDiffNorm ())
   {
-    ExExact = CallBack::exp1_ex;
-    HyExact = CallBack::exp1_hy;
+    ExExact = CallBack::exp1_ex_exhy;
+    HyExact = CallBack::exp1_hy_exhy;
   }
-  else if (solverSettings.getDoCalculateExp2DiffNorm ())
+  else if (solverSettings.getDoCalculateExp2ExHyDiffNorm ())
   {
-    ExExact = CallBack::exp2_ex;
-    HyExact = CallBack::exp2_hy;
+    ExExact = CallBack::exp2_ex_exhy;
+    HyExact = CallBack::exp2_hy_exhy;
   }
-  else if (solverSettings.getDoCalculateExp3DiffNorm ())
+  else if (solverSettings.getDoCalculateExp3ExHyDiffNorm ())
   {
-    ExExact = CallBack::exp3_ex;
-    HyExact = CallBack::exp3_hy;
+    ExExact = CallBack::exp3_ex_exhy;
+    HyExact = CallBack::exp3_hy_exhy;
+  }
+
+  if (solverSettings.getDoCalculateExp1ExHzDiffNorm ())
+  {
+    ExExact = CallBack::exp1_ex_exhz;
+    HzExact = CallBack::exp1_hz_exhz;
+  }
+  else if (solverSettings.getDoCalculateExp2ExHzDiffNorm ())
+  {
+    ExExact = CallBack::exp2_ex_exhz;
+    HzExact = CallBack::exp2_hz_exhz;
+  }
+  else if (solverSettings.getDoCalculateExp3ExHzDiffNorm ())
+  {
+    ExExact = CallBack::exp3_ex_exhz;
+    HzExact = CallBack::exp3_hz_exhz;
+  }
+
+  if (solverSettings.getDoCalculateExp1EyHxDiffNorm ())
+  {
+    EyExact = CallBack::exp1_ey_eyhx;
+    HxExact = CallBack::exp1_hx_eyhx;
+  }
+  else if (solverSettings.getDoCalculateExp2EyHxDiffNorm ())
+  {
+    EyExact = CallBack::exp2_ey_eyhx;
+    HxExact = CallBack::exp2_hx_eyhx;
+  }
+  else if (solverSettings.getDoCalculateExp3EyHxDiffNorm ())
+  {
+    EyExact = CallBack::exp3_ey_eyhx;
+    HxExact = CallBack::exp3_hx_eyhx;
+  }
+
+  if (solverSettings.getDoCalculateExp1EyHzDiffNorm ())
+  {
+    EyExact = CallBack::exp1_ey_eyhz;
+    HzExact = CallBack::exp1_hz_eyhz;
+  }
+  else if (solverSettings.getDoCalculateExp2EyHzDiffNorm ())
+  {
+    EyExact = CallBack::exp2_ey_eyhz;
+    HzExact = CallBack::exp2_hz_eyhz;
+  }
+  else if (solverSettings.getDoCalculateExp3EyHzDiffNorm ())
+  {
+    EyExact = CallBack::exp3_ey_eyhz;
+    HzExact = CallBack::exp3_hz_eyhz;
+  }
+
+  if (solverSettings.getDoCalculateExp1EzHxDiffNorm ())
+  {
+    EzExact = CallBack::exp1_ez_ezhx;
+    HxExact = CallBack::exp1_hx_ezhx;
+  }
+  else if (solverSettings.getDoCalculateExp2EzHxDiffNorm ())
+  {
+    EzExact = CallBack::exp2_ez_ezhx;
+    HxExact = CallBack::exp2_hx_ezhx;
+  }
+  else if (solverSettings.getDoCalculateExp3EzHxDiffNorm ())
+  {
+    EzExact = CallBack::exp3_ez_ezhx;
+    HxExact = CallBack::exp3_hx_ezhx;
+  }
+
+  if (solverSettings.getDoCalculateExp1EzHyDiffNorm ())
+  {
+    EzExact = CallBack::exp1_ez_ezhy;
+    HyExact = CallBack::exp1_hy_ezhy;
+  }
+  else if (solverSettings.getDoCalculateExp2EzHyDiffNorm ())
+  {
+    EzExact = CallBack::exp2_ez_ezhy;
+    HyExact = CallBack::exp2_hy_ezhy;
+  }
+  else if (solverSettings.getDoCalculateExp3EzHyDiffNorm ())
+  {
+    EzExact = CallBack::exp3_ez_ezhy;
+    HyExact = CallBack::exp3_hy_ezhy;
   }
 }
 
