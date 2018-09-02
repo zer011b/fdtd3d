@@ -2,7 +2,7 @@
 
 This is test with plane wave in vacuum in 1D mode with PML border condition and optional dielectric in total field area.
 
-Numerical solution is compared with analytical both in terms of amplitude and phase.
+Numerical solution is compared with analytical both in terms of amplitude and phase. `ExHy` 1D mode is used.
 
 # Detailed Description
 
@@ -51,7 +51,7 @@ H = k/(Mu*Mu0*w) * E = k/(Mu0 * w) * E
 
 # Numerical Result
 
-Norm of difference between exact and numerical solution is calculated. For both cases amplitude and real/imaginary parts accuracy is less than 0.7% for PML size 20 and less than 0.17% for PML size 50 (see next configs for examples: ![vacuum](sphere1D_vacuum.txt) and ![material](sphere1D_eps4.txt))
+Norm of difference between exact and numerical solution is calculated. For both cases amplitude and real/imaginary parts accuracy is less than 0.7% for PML size 20 and less than 0.17% for PML size 50 (see next configs for examples: [vacuum](sphere1D_vacuum.txt) and [material](sphere1D_eps4.txt))
 
 ## Case of material with `Eps=1`
 
