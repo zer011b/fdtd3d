@@ -28,7 +28,7 @@ function launch ()
 
   output_file=$(mktemp /tmp/fdtd3d.vacuum3D.XXXXXXXX)
 
-  ./fdtd3d --time-steps $num_time_steps --sizey $sizez --1d-exhz --angle-teta 0 --angle-phi 0 --angle-psi 0 \
+  ./fdtd3d --time-steps $num_time_steps --sizey $sizez --1d-exhz --angle-teta 90 --angle-phi 90 --angle-psi 0 \
     --dx $dz --wavelength $4 --courant-factor 0.5 --log-level 2 --pml-sizey $pmlsize --use-pml \
     --use-tfsf --tfsf-sizey-left $tfsfsize --tfsf-sizey-right 0 \
     --eps-sphere $eps_sphere --eps-sphere-center-y $sphere_center --eps-sphere-radius $sphere_radius \
