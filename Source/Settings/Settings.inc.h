@@ -140,9 +140,29 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doUseSin1BorderCondition, getDoUseSin1BorderCondit
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseSin1StartValues, getDoUseSin1StartValues, bool, false, "--use-sin1-start-values", "Sin 1 start values")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateSin1DiffNorm, getDoCalculateSin1DiffNorm, bool, false, "--calc-sin1-diff-norm", "Calculate test norm of difference with exact solution: Sin1")
 
-SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp1DiffNorm, getDoCalculateExp1DiffNorm, bool, false, "--calc-exp1-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp1")
-SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp2DiffNorm, getDoCalculateExp2DiffNorm, bool, false, "--calc-exp2-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp2")
-SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp3DiffNorm, getDoCalculateExp3DiffNorm, bool, false, "--calc-exp3-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp3")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp1ExHyDiffNorm, getDoCalculateExp1ExHyDiffNorm, bool, false, "--calc-exp1-exhy-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp1")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp2ExHyDiffNorm, getDoCalculateExp2ExHyDiffNorm, bool, false, "--calc-exp2-exhy-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp2")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp3ExHyDiffNorm, getDoCalculateExp3ExHyDiffNorm, bool, false, "--calc-exp3-exhy-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp3")
+
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp1ExHzDiffNorm, getDoCalculateExp1ExHzDiffNorm, bool, false, "--calc-exp1-exhz-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp1")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp2ExHzDiffNorm, getDoCalculateExp2ExHzDiffNorm, bool, false, "--calc-exp2-exhz-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp2")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp3ExHzDiffNorm, getDoCalculateExp3ExHzDiffNorm, bool, false, "--calc-exp3-exhz-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp3")
+
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp1EyHxDiffNorm, getDoCalculateExp1EyHxDiffNorm, bool, false, "--calc-exp1-eyhx-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp1")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp2EyHxDiffNorm, getDoCalculateExp2EyHxDiffNorm, bool, false, "--calc-exp2-eyhx-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp2")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp3EyHxDiffNorm, getDoCalculateExp3EyHxDiffNorm, bool, false, "--calc-exp3-eyhx-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp3")
+
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp1EyHzDiffNorm, getDoCalculateExp1EyHzDiffNorm, bool, false, "--calc-exp1-eyhz-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp1")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp2EyHzDiffNorm, getDoCalculateExp2EyHzDiffNorm, bool, false, "--calc-exp2-eyhz-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp2")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp3EyHzDiffNorm, getDoCalculateExp3EyHzDiffNorm, bool, false, "--calc-exp3-eyhz-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp3")
+
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp1EzHxDiffNorm, getDoCalculateExp1EzHxDiffNorm, bool, false, "--calc-exp1-ezhx-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp1")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp2EzHxDiffNorm, getDoCalculateExp2EzHxDiffNorm, bool, false, "--calc-exp2-ezhx-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp2")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp3EzHxDiffNorm, getDoCalculateExp3EzHxDiffNorm, bool, false, "--calc-exp3-ezhx-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp3")
+
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp1EzHyDiffNorm, getDoCalculateExp1EzHyDiffNorm, bool, false, "--calc-exp1-ezhy-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp1")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp2EzHyDiffNorm, getDoCalculateExp2EzHyDiffNorm, bool, false, "--calc-exp2-ezhy-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp2")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp3EzHyDiffNorm, getDoCalculateExp3EzHyDiffNorm, bool, false, "--calc-exp3-ezhy-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp3")
 
 SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareStartX, getExactSolutionCompareStartX, grid_coord, 0, "--norm-start-x", "Start of norm calculation area by Ox axis")
 SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareStartY, getExactSolutionCompareStartY, grid_coord, 0, "--norm-start-y", "Start of norm calculation area by Oy axis")
