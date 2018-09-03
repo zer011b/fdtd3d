@@ -1,14 +1,14 @@
-# Plane wave launched in vacuum, 1D ExHy
+# Plane wave launched in vacuum, EyHx
 # NOTE! THIS CONFIG IS USED FOR TESTING PURPOSES. CHANGE TESTS IF THIS CONFIG IS CHANGED.
 
 --time-steps 100
 
 --sizez 40
 
---1d-exhy
+--1d-eyhx
 
 --angle-teta 0
---angle-phi 0
+--angle-phi 90
 --angle-psi 90
 
 --dx 0.0005
@@ -18,11 +18,8 @@
 
 --save-res
 --save-as-bmp
---save-as-txt
+--save-scattered-field-res
 --palette-rgb
-
---pml-sizez 10
---use-pml
 
 --use-tfsf
 --tfsf-sizez-left 12
