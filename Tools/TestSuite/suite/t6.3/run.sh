@@ -43,7 +43,7 @@ function launch ()
   val_min=$(cat current[100]_rank-0_Ex-Mod.bmp.txt | awk '{print $2}')
   is_ok=$(echo $val_max $val_min | awk '
             {
-              if (0.0 == $1 && 0.0 == $2)
+              if (0.0 <= $1 && $1 <= 1e-14 && 0.0 == $2)
               {
                 print 1;
               }
