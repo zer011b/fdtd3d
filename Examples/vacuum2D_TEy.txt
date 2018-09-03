@@ -1,4 +1,4 @@
-# Plane wave launched in vacuum, TMy
+# Plane wave launched in vacuum, TEy
 # NOTE! THIS CONFIG IS USED FOR TESTING PURPOSES. CHANGE TESTS IF THIS CONFIG IS CHANGED.
 
 --time-steps 100
@@ -6,11 +6,11 @@
 --sizex 40
 --sizez 40
 
---2d-tmy
+--2d-tey
 
 --angle-teta 0
 --angle-phi 0
---angle-psi 0
+--angle-psi 90
 
 --dx 0.0005
 --wavelength 0.02

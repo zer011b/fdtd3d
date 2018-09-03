@@ -1,9 +1,10 @@
-// Point source launched in vacuum, TMx
+# Plane wave launched in vacuum, TMx
+# NOTE! THIS CONFIG IS USED FOR TESTING PURPOSES. CHANGE TESTS IF THIS CONFIG IS CHANGED.
 
 --time-steps 100
 
---sizey 200
---sizez 200
+--sizey 40
+--sizez 40
 
 --2d-tmx
 
@@ -18,12 +19,16 @@
 
 --save-res
 --save-as-bmp
+--save-as-txt
+--orth-axis-x
 --palette-rgb
 
---pml-sizey 20
---pml-sizez 20
+--pml-sizey 10
+--pml-sizez 10
 --use-pml
 
---point-source-pos-y 100
---point-source-pos-z 100
---point-source-ex
+--use-tfsf
+--tfsf-sizey-left 12
+--tfsf-sizey-right 12
+--tfsf-sizez-left 12
+--tfsf-sizez-right 12

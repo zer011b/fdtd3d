@@ -1,16 +1,16 @@
-# Plane wave launched in vacuum, TMy
+# Plane wave launched in vacuum, TEx
 # NOTE! THIS CONFIG IS USED FOR TESTING PURPOSES. CHANGE TESTS IF THIS CONFIG IS CHANGED.
 
 --time-steps 100
 
---sizex 40
+--sizey 40
 --sizez 40
 
---2d-tmy
+--2d-tex
 
 --angle-teta 0
---angle-phi 0
---angle-psi 0
+--angle-phi 90
+--angle-psi 90
 
 --dx 0.0005
 --wavelength 0.02
@@ -19,16 +19,12 @@
 
 --save-res
 --save-as-bmp
---save-as-txt
---orth-axis-y
+--save-scattered-field-res
+--orth-axis-x
 --palette-rgb
 
---pml-sizex 10
---pml-sizez 10
---use-pml
-
 --use-tfsf
---tfsf-sizex-left 12
---tfsf-sizex-right 12
+--tfsf-sizey-left 12
+--tfsf-sizey-right 12
 --tfsf-sizez-left 12
 --tfsf-sizez-right 12
