@@ -132,41 +132,41 @@ FieldValue CallBack::sin1_hy (GridCoordinateFP3D coord, FPValue t)
 FieldValue CallBack::exp1_ex_exhy (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue z0 = solverSettings.getTFSFSizeZLeft () - FPValue (2.5);
-  return exp1_e (coord.get3 (), t, z0);
+  return - exp1_e (coord.get3 (), t, z0);
 }
 
 FieldValue CallBack::exp1_hy_exhy (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue z0 = solverSettings.getTFSFSizeZLeft () - FPValue (2.5);
-  return exp1_h (coord.get3 (), t, z0);
+  return - exp1_h (coord.get3 (), t, z0);
 }
 
 FieldValue CallBack::exp2_ex_exhy (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue z0 = solverSettings.getTFSFSizeZLeft () - FPValue (2.5);
   FPValue zb = solverSettings.getEpsSphereCenterZ () - solverSettings.getEpsSphereRadius ();
-  return exp2_e (coord.get3 (), t, z0, zb);
+  return - exp2_e (coord.get3 (), t, z0, zb);
 }
 
 FieldValue CallBack::exp2_hy_exhy (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue z0 = solverSettings.getTFSFSizeZLeft () - FPValue (2.5);
   FPValue zb = solverSettings.getEpsSphereCenterZ () - solverSettings.getEpsSphereRadius ();
-  return exp2_h (coord.get3 (), t, z0, zb);
+  return - exp2_h (coord.get3 (), t, z0, zb);
 }
 
 FieldValue CallBack::exp3_ex_exhy (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue z0 = solverSettings.getTFSFSizeZLeft () - FPValue (2.5);
   FPValue zb = solverSettings.getEpsSphereCenterZ () - solverSettings.getEpsSphereRadius ();
-  return exp3_e (coord.get3 (), t, z0, zb);
+  return - exp3_e (coord.get3 (), t, z0, zb);
 }
 
 FieldValue CallBack::exp3_hy_exhy (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue z0 = solverSettings.getTFSFSizeZLeft () - FPValue (2.5);
   FPValue zb = solverSettings.getEpsSphereCenterZ () - solverSettings.getEpsSphereRadius ();
-  return exp3_h (coord.get3 (), t, z0, zb);
+  return - exp3_h (coord.get3 (), t, z0, zb);
 }
 
 /*
@@ -182,7 +182,7 @@ FieldValue CallBack::exp1_ex_exhz (GridCoordinateFP3D coord, FPValue t)
 FieldValue CallBack::exp1_hz_exhz (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue y0 = solverSettings.getTFSFSizeYLeft () - FPValue (2.5);
-  return exp1_h (coord.get2 (), t, y0);
+  return - exp1_h (coord.get2 (), t, y0);
 }
 
 FieldValue CallBack::exp2_ex_exhz (GridCoordinateFP3D coord, FPValue t)
@@ -196,7 +196,7 @@ FieldValue CallBack::exp2_hz_exhz (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue y0 = solverSettings.getTFSFSizeYLeft () - FPValue (2.5);
   FPValue yb = solverSettings.getEpsSphereCenterY () - solverSettings.getEpsSphereRadius ();
-  return exp2_h (coord.get2 (), t, y0, yb);
+  return - exp2_h (coord.get2 (), t, y0, yb);
 }
 
 FieldValue CallBack::exp3_ex_exhz (GridCoordinateFP3D coord, FPValue t)
@@ -210,7 +210,7 @@ FieldValue CallBack::exp3_hz_exhz (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue y0 = solverSettings.getTFSFSizeYLeft () - FPValue (2.5);
   FPValue yb = solverSettings.getEpsSphereCenterY () - solverSettings.getEpsSphereRadius ();
-  return exp3_h (coord.get2 (), t, y0, yb);
+  return - exp3_h (coord.get2 (), t, y0, yb);
 }
 
 /*
@@ -224,7 +224,8 @@ FieldValue CallBack::exp1_ey_eyhx (GridCoordinateFP3D coord, FPValue t)
 
 FieldValue CallBack::exp1_hx_eyhx (GridCoordinateFP3D coord, FPValue t)
 {
-  return exp1_hy_exhy (coord, t);
+  FPValue z0 = solverSettings.getTFSFSizeZLeft () - FPValue (2.5);
+  return exp1_h (coord.get3 (), t, z0);
 }
 
 FieldValue CallBack::exp2_ey_eyhx (GridCoordinateFP3D coord, FPValue t)
@@ -234,7 +235,9 @@ FieldValue CallBack::exp2_ey_eyhx (GridCoordinateFP3D coord, FPValue t)
 
 FieldValue CallBack::exp2_hx_eyhx (GridCoordinateFP3D coord, FPValue t)
 {
-  return exp2_hy_exhy (coord, t);
+  FPValue z0 = solverSettings.getTFSFSizeZLeft () - FPValue (2.5);
+  FPValue zb = solverSettings.getEpsSphereCenterZ () - solverSettings.getEpsSphereRadius ();
+  return exp2_h (coord.get3 (), t, z0, zb);
 }
 
 FieldValue CallBack::exp3_ey_eyhx (GridCoordinateFP3D coord, FPValue t)
@@ -244,7 +247,9 @@ FieldValue CallBack::exp3_ey_eyhx (GridCoordinateFP3D coord, FPValue t)
 
 FieldValue CallBack::exp3_hx_eyhx (GridCoordinateFP3D coord, FPValue t)
 {
-  return exp3_hy_exhy (coord, t);
+  FPValue z0 = solverSettings.getTFSFSizeZLeft () - FPValue (2.5);
+  FPValue zb = solverSettings.getEpsSphereCenterZ () - solverSettings.getEpsSphereRadius ();
+  return exp3_h (coord.get3 (), t, z0, zb);
 }
 
 /*
@@ -254,41 +259,41 @@ FieldValue CallBack::exp3_hx_eyhx (GridCoordinateFP3D coord, FPValue t)
 FieldValue CallBack::exp1_ey_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue x0 = solverSettings.getTFSFSizeXLeft () - FPValue (2.5);
-  return exp1_e (coord.get1 (), t, x0);
+  return - exp1_e (coord.get1 (), t, x0);
 }
 
 FieldValue CallBack::exp1_hz_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue x0 = solverSettings.getTFSFSizeXLeft () - FPValue (2.5);
-  return exp1_h (coord.get1 (), t, x0);
+  return - exp1_h (coord.get1 (), t, x0);
 }
 
 FieldValue CallBack::exp2_ey_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue x0 = solverSettings.getTFSFSizeXLeft () - FPValue (2.5);
   FPValue xb = solverSettings.getEpsSphereCenterX () - solverSettings.getEpsSphereRadius ();
-  return exp2_e (coord.get1 (), t, x0, xb);
+  return - exp2_e (coord.get1 (), t, x0, xb);
 }
 
 FieldValue CallBack::exp2_hz_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue x0 = solverSettings.getTFSFSizeXLeft () - FPValue (2.5);
   FPValue xb = solverSettings.getEpsSphereCenterX () - solverSettings.getEpsSphereRadius ();
-  return exp2_h (coord.get1 (), t, x0, xb);
+  return - exp2_h (coord.get1 (), t, x0, xb);
 }
 
 FieldValue CallBack::exp3_ey_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue x0 = solverSettings.getTFSFSizeXLeft () - FPValue (2.5);
   FPValue xb = solverSettings.getEpsSphereCenterX () - solverSettings.getEpsSphereRadius ();
-  return exp3_e (coord.get1 (), t, x0, xb);
+  return - exp3_e (coord.get1 (), t, x0, xb);
 }
 
 FieldValue CallBack::exp3_hz_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
   FPValue x0 = solverSettings.getTFSFSizeXLeft () - FPValue (2.5);
   FPValue xb = solverSettings.getEpsSphereCenterX () - solverSettings.getEpsSphereRadius ();
-  return exp3_h (coord.get1 (), t, x0, xb);
+  return - exp3_h (coord.get1 (), t, x0, xb);
 }
 
 /*
@@ -302,7 +307,8 @@ FieldValue CallBack::exp1_ez_ezhx (GridCoordinateFP3D coord, FPValue t)
 
 FieldValue CallBack::exp1_hx_ezhx (GridCoordinateFP3D coord, FPValue t)
 {
-  return exp1_hz_exhz (coord, t);
+  FPValue y0 = solverSettings.getTFSFSizeYLeft () - FPValue (2.5);
+  return exp1_h (coord.get2 (), t, y0);
 }
 
 FieldValue CallBack::exp2_ez_ezhx (GridCoordinateFP3D coord, FPValue t)
@@ -312,7 +318,9 @@ FieldValue CallBack::exp2_ez_ezhx (GridCoordinateFP3D coord, FPValue t)
 
 FieldValue CallBack::exp2_hx_ezhx (GridCoordinateFP3D coord, FPValue t)
 {
-  return exp2_hz_exhz (coord, t);
+  FPValue y0 = solverSettings.getTFSFSizeYLeft () - FPValue (2.5);
+  FPValue yb = solverSettings.getEpsSphereCenterY () - solverSettings.getEpsSphereRadius ();
+  return exp2_h (coord.get2 (), t, y0, yb);
 }
 
 FieldValue CallBack::exp3_ez_ezhx (GridCoordinateFP3D coord, FPValue t)
@@ -322,7 +330,9 @@ FieldValue CallBack::exp3_ez_ezhx (GridCoordinateFP3D coord, FPValue t)
 
 FieldValue CallBack::exp3_hx_ezhx (GridCoordinateFP3D coord, FPValue t)
 {
-  return exp3_hz_exhz (coord, t);
+  FPValue y0 = solverSettings.getTFSFSizeYLeft () - FPValue (2.5);
+  FPValue yb = solverSettings.getEpsSphereCenterY () - solverSettings.getEpsSphereRadius ();
+  return exp3_h (coord.get2 (), t, y0, yb);
 }
 
 /*
@@ -331,7 +341,8 @@ FieldValue CallBack::exp3_hx_ezhx (GridCoordinateFP3D coord, FPValue t)
 
 FieldValue CallBack::exp1_ez_ezhy (GridCoordinateFP3D coord, FPValue t)
 {
-  return exp1_ey_eyhz (coord, t);
+  FPValue x0 = solverSettings.getTFSFSizeXLeft () - FPValue (2.5);
+  return exp1_e (coord.get1 (), t, x0);
 }
 
 FieldValue CallBack::exp1_hy_ezhy (GridCoordinateFP3D coord, FPValue t)
@@ -341,7 +352,9 @@ FieldValue CallBack::exp1_hy_ezhy (GridCoordinateFP3D coord, FPValue t)
 
 FieldValue CallBack::exp2_ez_ezhy (GridCoordinateFP3D coord, FPValue t)
 {
-  return exp2_ey_eyhz (coord, t);
+  FPValue x0 = solverSettings.getTFSFSizeXLeft () - FPValue (2.5);
+  FPValue xb = solverSettings.getEpsSphereCenterX () - solverSettings.getEpsSphereRadius ();
+  return exp2_e (coord.get1 (), t, x0, xb);
 }
 
 FieldValue CallBack::exp2_hy_ezhy (GridCoordinateFP3D coord, FPValue t)
@@ -351,7 +364,9 @@ FieldValue CallBack::exp2_hy_ezhy (GridCoordinateFP3D coord, FPValue t)
 
 FieldValue CallBack::exp3_ez_ezhy (GridCoordinateFP3D coord, FPValue t)
 {
-  return exp3_ey_eyhz (coord, t);
+  FPValue x0 = solverSettings.getTFSFSizeXLeft () - FPValue (2.5);
+  FPValue xb = solverSettings.getEpsSphereCenterX () - solverSettings.getEpsSphereRadius ();
+  return exp3_e (coord.get1 (), t, x0, xb);
 }
 
 FieldValue CallBack::exp3_hy_ezhy (GridCoordinateFP3D coord, FPValue t)
@@ -360,7 +375,7 @@ FieldValue CallBack::exp3_hy_ezhy (GridCoordinateFP3D coord, FPValue t)
 }
 
 /**
- * Incident wave E1 = i * e^(i*k*(z-z0) - i*w*(t-t0))
+ * Incident wave (EInc) E1 = i * e^(i*k*(z-z0) - i*w*(t-t0))
  *
  * @return value of E1
  */
@@ -394,7 +409,7 @@ FieldValue CallBack::exp1_e (FPValue coord, /**< real floating point coordinate 
 } /* CallBack::exp1_e */
 
 /**
- * Incident wave H1 = E1 * (k / (mu0 * w))
+ * Incident wave (HInc) H1 = E1 * (k / (mu0 * w))
  *
  * @return value of H1
  */

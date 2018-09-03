@@ -1529,7 +1529,7 @@ template <>
 inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
-  return valE;
+  return - valE;
 }
 template <>
 inline FieldValue
@@ -1556,7 +1556,7 @@ template <>
 inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
-  return valH;
+  return - valH;
 }
 template <>
 inline FieldValue
@@ -1605,7 +1605,7 @@ template <>
 inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
-  return valH;
+  return - valH;
 }
 
 /* Dim1_EyHx */
@@ -1620,7 +1620,7 @@ template <>
 inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
-  return valE;
+  return - valE;
 }
 template <>
 inline FieldValue
@@ -1662,7 +1662,7 @@ template <>
 inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
-  return valE;
+  return - valE;
 }
 template <>
 inline FieldValue
@@ -1689,7 +1689,7 @@ template <>
 inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
-  return valH;
+  return - valH;
 }
 
 /* Dim1_EzHx */
@@ -1766,7 +1766,7 @@ template <>
 inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
-  return valH;
+  return - valH;
 }
 template <>
 inline FieldValue
@@ -1848,7 +1848,7 @@ template <>
 inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
-  return valH;
+  return - valH;
 }
 template <>
 inline FieldValue
@@ -1896,7 +1896,7 @@ template <>
 inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
-  return valH;
+  return - valH;
 }
 
 /* Dim2_TMx */
@@ -1952,7 +1952,7 @@ template <>
 inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
-  return valE;
+  return - valE;
 }
 template <>
 inline FieldValue

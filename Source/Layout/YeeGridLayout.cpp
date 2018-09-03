@@ -889,7 +889,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1
                   )
 {
   ASSERT (size.get1 () > 0);
-  ASSERT (incWaveAngle1 == incWaveAngle2 == incWaveAngle3 == 0);
+  ASSERT (incWaveAngle1 == 0 && incWaveAngle2 == 0 && incWaveAngle3 == PhysicsConst::Pi / 2);
 }
 
 template <>
@@ -939,7 +939,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1
                   )
 {
   ASSERT (size.get1 () > 0);
-  ASSERT (incWaveAngle1 == incWaveAngle2 == incWaveAngle3 == 0);
+  ASSERT (incWaveAngle1 == 0 && incWaveAngle2 == PhysicsConst::Pi / 2 && incWaveAngle3 == PhysicsConst::Pi / 2);
 }
 
 template <>
