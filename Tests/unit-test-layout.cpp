@@ -277,8 +277,8 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
                                                                                          0.0,
                                                                                          sizez_tfsf - 2.5, ct1, ct2, ct3)));
 
-      ALWAYS_ASSERT (layout.getExFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
-      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getExFromIncidentE (FIELDVALUE (17.0, 53.0)) == - FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == - FIELDVALUE (17.0, 53.0));
       break;
     }
     case (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)):
@@ -288,7 +288,7 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
                                                                                          0.0, ct1, ct2, ct3)));
 
       ALWAYS_ASSERT (layout.getExFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
-      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == - FIELDVALUE (17.0, 53.0));
       break;
     }
     case (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)):
@@ -297,7 +297,7 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
                                                                                          0.0,
                                                                                          sizez_tfsf - 2.5, ct1, ct2, ct3)));
 
-      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == - FIELDVALUE (17.0, 53.0));
       ALWAYS_ASSERT (layout.getHxFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
       break;
     }
@@ -307,8 +307,8 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
                                                                                          0.0,
                                                                                          0.0, ct1, ct2, ct3)));
 
-      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
-      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == - FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == - FIELDVALUE (17.0, 53.0));
       break;
     }
     case (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)):
@@ -328,7 +328,7 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
                                                                                          0.0, ct1, ct2, ct3)));
 
       ALWAYS_ASSERT (layout.getEzFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
-      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == - FIELDVALUE (17.0, 53.0));
       break;
     }
     case (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)):
@@ -350,7 +350,7 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
 
       ALWAYS_ASSERT (layout.getExFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (- cos (incAngle1)));
       ALWAYS_ASSERT (layout.getEzFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (sin (incAngle1)));
-      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHyFromIncidentH (FIELDVALUE (17.0, 53.0)) == - FIELDVALUE (17.0, 53.0));
       break;
     }
     case (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)):
@@ -361,7 +361,7 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
 
       ALWAYS_ASSERT (layout.getExFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (sin (incAngle2)));
       ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) ( - cos (incAngle2)));
-      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == - FIELDVALUE (17.0, 53.0));
       break;
     }
     case (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)):
@@ -381,7 +381,7 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
                                                                                          0.0,
                                                                                          sizez_tfsf - 2.5 * cos (incAngle1), ct1, ct2, ct3)));
 
-      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0));
+      ALWAYS_ASSERT (layout.getEyFromIncidentE (FIELDVALUE (17.0, 53.0)) == - FIELDVALUE (17.0, 53.0));
       ALWAYS_ASSERT (layout.getHxFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (cos (incAngle1)));
       ALWAYS_ASSERT (layout.getHzFromIncidentH (FIELDVALUE (17.0, 53.0)) == FIELDVALUE (17.0, 53.0) * (FPValue) (- sin (incAngle1)));
       break;
@@ -2427,9 +2427,9 @@ int main (int argc, char** argv)
 
   for (int dMaterialPrecision = 0; dMaterialPrecision <= 1; ++dMaterialPrecision)
   {
-    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED> (0, 0, 0, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED> (0, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, 0, dMaterialPrecision);
-    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED> (0, 0, 0, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED> (0, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, 0, 0, dMaterialPrecision);
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
@@ -2438,8 +2438,8 @@ int main (int argc, char** argv)
     {
       for (grid_coord sz = SIZEZ; sz <= 2*SIZEZ; sz += SIZEZ)
       {
-        testFuncDim1_ExHy<E_CENTERED> (0, 0, 0, dMaterialPrecision, mult, sz);
-        testFuncDim1_EyHx<E_CENTERED> (0, 0, 0, dMaterialPrecision, mult, sz);
+        testFuncDim1_ExHy<E_CENTERED> (0, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sz);
+        testFuncDim1_EyHx<E_CENTERED> (0, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sz);
       }
 
       for (grid_coord sy = SIZEY; sy <= 2*SIZEY; sy += SIZEY)
