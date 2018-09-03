@@ -8,7 +8,7 @@
 
 --angle-teta 0
 --angle-phi 0
---angle-psi 0
+--angle-psi 90
 
 --dx 0.0001
 --wavelength 0.02
