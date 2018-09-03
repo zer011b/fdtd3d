@@ -1054,112 +1054,20 @@ public:
 
   static GridCoordinate1D getStartCoordRes1D (OrthogonalAxis orthogonalAxis, GridCoordinate1D start, GridCoordinate1D size)
   {
-    if (orthogonalAxis == OrthogonalAxis::Z)
-    {
-      return GridCoordinate1D (start.get1 ()
-#ifdef DEBUG_INFO
-             , start.getType1 ()
-#endif
-             );
-    }
-    else if (orthogonalAxis == OrthogonalAxis::Y)
-    {
-      return GridCoordinate1D (start.get1 ()
-#ifdef DEBUG_INFO
-             , start.getType1 ()
-#endif
-             );
-    }
-    else if (orthogonalAxis == OrthogonalAxis::X)
-    {
-      return GridCoordinate1D (SchemeHelper::getStartCoordOrthX (size)
-#ifdef DEBUG_INFO
-             , start.getType1 ()
-#endif
-             );
-    }
+    return start;
   }
   static GridCoordinate1D getEndCoordRes1D (OrthogonalAxis orthogonalAxis, GridCoordinate1D end, GridCoordinate1D size)
   {
-    if (orthogonalAxis == OrthogonalAxis::Z)
-    {
-      return GridCoordinate1D (end.get1 ()
-#ifdef DEBUG_INFO
-             , end.getType1 ()
-#endif
-             );
-    }
-    else if (orthogonalAxis == OrthogonalAxis::Y)
-    {
-      return GridCoordinate1D (end.get1 ()
-#ifdef DEBUG_INFO
-             , end.getType1 ()
-#endif
-             );
-    }
-    else if (orthogonalAxis == OrthogonalAxis::X)
-    {
-      return GridCoordinate1D (SchemeHelper::getEndCoordOrthX (size)
-#ifdef DEBUG_INFO
-             , end.getType1 ()
-#endif
-             );
-    }
+    return end;
   }
 
   static GridCoordinate2D getStartCoordRes2D (OrthogonalAxis orthogonalAxis, GridCoordinate2D start, GridCoordinate2D size)
   {
-    if (orthogonalAxis == OrthogonalAxis::Z)
-    {
-      return GridCoordinate2D (start.get1 (), start.get2 ()
-#ifdef DEBUG_INFO
-             , start.getType1 (), start.getType2 ()
-#endif
-             );
-    }
-    else if (orthogonalAxis == OrthogonalAxis::Y)
-    {
-      return GridCoordinate2D (start.get1 (), SchemeHelper::getStartCoordOrthY (size)
-#ifdef DEBUG_INFO
-             , start.getType1 (), start.getType2 ()
-#endif
-             );
-    }
-    else if (orthogonalAxis == OrthogonalAxis::X)
-    {
-      return GridCoordinate2D (SchemeHelper::getStartCoordOrthX (size), start.get2 ()
-#ifdef DEBUG_INFO
-             , start.getType1 (), start.getType2 ()
-#endif
-             );
-    }
+    return start;
   }
   static GridCoordinate2D getEndCoordRes2D (OrthogonalAxis orthogonalAxis, GridCoordinate2D end, GridCoordinate2D size)
   {
-    if (orthogonalAxis == OrthogonalAxis::Z)
-    {
-      return GridCoordinate2D (end.get1 (), end.get2 ()
-#ifdef DEBUG_INFO
-             , end.getType1 (), end.getType2 ()
-#endif
-             );
-    }
-    else if (orthogonalAxis == OrthogonalAxis::Y)
-    {
-      return GridCoordinate2D (end.get1 (), SchemeHelper::getEndCoordOrthY (size)
-#ifdef DEBUG_INFO
-             , end.getType1 (), end.getType2 ()
-#endif
-             );
-    }
-    else if (orthogonalAxis == OrthogonalAxis::X)
-    {
-      return GridCoordinate2D (SchemeHelper::getEndCoordOrthX (size), end.get2 ()
-#ifdef DEBUG_INFO
-             , end.getType1 (), end.getType2 ()
-#endif
-             );
-    }
+    return end;
   }
 
   static GridCoordinate3D getStartCoordRes3D (OrthogonalAxis orthogonalAxis, GridCoordinate3D start, GridCoordinate3D size)
