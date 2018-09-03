@@ -24,8 +24,6 @@
 --pml-sizey 20
 --use-pml
 
---use-tfsf
---tfsf-sizex-left 30
---tfsf-sizex-right 30
---tfsf-sizey-left 30
---tfsf-sizey-right 30
+---point-source-pos-x 100
+---point-source-pos-y 100
+---point-source-ez
