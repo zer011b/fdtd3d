@@ -12,6 +12,7 @@ cd $TEST_DIR
 rm fdtd3d
 rm -rf build
 rm *.bmp*
+rm current*
 
 cd $CUR_DIR
 
