@@ -1125,15 +1125,15 @@ public:
     }
   }
 
-  template <template <typename, bool> class TCoord>
+  template <SchemeType_t Type, template <typename, bool> class TCoord>
   static
   FieldValue approximateIncidentWave (TCoord<FPValue, true>, TCoord<FPValue, true>, FPValue, Grid<GridCoordinate1D> *, FPValue, FPValue);
 
-  template <template <typename, bool> class TCoord>
+  template <SchemeType_t Type, template <typename, bool> class TCoord>
   static
   FieldValue approximateIncidentWaveE (TCoord<FPValue, true>, TCoord<FPValue, true>, Grid<GridCoordinate1D> *, FPValue, FPValue);
 
-  template <template <typename, bool> class TCoord>
+  template <SchemeType_t Type, template <typename, bool> class TCoord>
   static
   FieldValue approximateIncidentWaveH (TCoord<FPValue, true>, TCoord<FPValue, true>, Grid<GridCoordinate1D> *, FPValue, FPValue);
 
