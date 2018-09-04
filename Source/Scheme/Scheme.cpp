@@ -3145,7 +3145,7 @@ SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Di
   FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
   ASSERT (incAngle2 == PhysicsConst::Pi / 2);
 
-  FPValue d = y * sin (incAngle1) + z * cos (incAngle1);
+  FPValue d = y * sin (incAngle1) + z * cos (incAngle1) - dDiff;
   ASSERT (d > 0);
 
   return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
@@ -3159,7 +3159,7 @@ SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Di
   FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
   ASSERT (incAngle2 == 0);
 
-  FPValue d = x * sin (incAngle1) + z * cos (incAngle1);
+  FPValue d = x * sin (incAngle1) + z * cos (incAngle1) - dDiff;
   ASSERT (d > 0);
 
   return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
@@ -3173,7 +3173,7 @@ SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Di
   FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
   ASSERT (incAngle1 == PhysicsConst::Pi / 2);
 
-  FPValue d = x * cos (incAngle2) + y * sin (incAngle2);
+  FPValue d = x * cos (incAngle2) + y * sin (incAngle2) - dDiff;
   ASSERT (d > 0);
 
   return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
@@ -3187,7 +3187,7 @@ SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Di
   FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
   ASSERT (incAngle2 == PhysicsConst::Pi / 2);
 
-  FPValue d = y * sin (incAngle1) + z * cos (incAngle1);
+  FPValue d = y * sin (incAngle1) + z * cos (incAngle1) - dDiff;
   ASSERT (d > 0);
 
   return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
@@ -3201,7 +3201,7 @@ SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Di
   FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
   ASSERT (incAngle2 == 0);
 
-  FPValue d = x * sin (incAngle1) + z * cos (incAngle1);
+  FPValue d = x * sin (incAngle1) + z * cos (incAngle1) - dDiff;
   ASSERT (d > 0);
 
   return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
@@ -3215,7 +3215,7 @@ SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Di
   FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
   ASSERT (incAngle1 == PhysicsConst::Pi / 2);
 
-  FPValue d = x * cos (incAngle2) + y * sin (incAngle2);
+  FPValue d = x * cos (incAngle2) + y * sin (incAngle2) - dDiff;
   ASSERT (d > 0);
 
   return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
