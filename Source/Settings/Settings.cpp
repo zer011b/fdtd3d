@@ -50,7 +50,7 @@ Settings::parseArg (int &index, /**< out: current argument index */
   }
   else if (strcmp (argv[index], "--version") == 0)
   {
-    printf ("Version: %f\n", SOLVER_VERSION);
+    printf ("Version: %.1f\n", SOLVER_VERSION);
 
     return EXIT_BREAK_ARG_PARSING;
   }
