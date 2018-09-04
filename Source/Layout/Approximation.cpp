@@ -94,34 +94,34 @@ Approximation::approximateDrudeModel (FPValue &omega,
 
   ASSERT (permittivity1 == 1 && permittivity2 == 1 && permittivity3 == 1 && permittivity4 == 1);
 
-  if (omega2 == omega3 == omega4 == 0 && gamma2 == gamma3 == gamma4 == 0
-      || omega1 == omega3 == omega4 == 0 && gamma1 == gamma3 == gamma4 == 0
-      || omega1 == omega2 == omega4 == 0 && gamma1 == gamma2 == gamma4 == 0
-      || omega1 == omega2 == omega3 == 0 && gamma1 == gamma2 == gamma3 == 0)
+  if (omega2 == 0 && omega3 == 0 && omega4 == 0 && gamma2 == 0 && gamma3 == 0 && gamma4 == 0
+      || omega1 == 0 && omega3 == 0 && omega4 == 0 && gamma1 == 0 && gamma3 == 0 && gamma4 == 0
+      || omega1 == 0 && omega2 == 0 && omega4 == 0 && gamma1 == 0 && gamma2 == 0 && gamma4 == 0
+      || omega1 == 0 && omega2 == 0 && omega3 == 0 && gamma1 == 0 && gamma2 == 0 && gamma3 == 0)
   {
     dividerOmega = 2.0;
     dividerGamma = 1.0;
   }
-  else if (omega1 == omega2 == 0 && omega3 == omega4 && gamma1 == gamma2 == 0 && gamma3 == gamma4
-           || omega2 == omega4 == 0 && omega1 == omega3 && gamma2 == gamma4 == 0 && gamma1 == gamma3
-           || omega3 == omega4 == 0 && omega1 == omega2 && gamma3 == gamma4 == 0 && gamma1 == gamma2
-           || omega1 == omega3 == 0 && omega2 == omega4 && gamma1 == gamma3 == 0 && gamma2 == gamma4)
+  else if (omega1 == 0 && omega2 == 0 && omega3 == omega4 && gamma1 == 0 && gamma2 == 0 && gamma3 == gamma4
+           || omega2 == 0 && omega4 == 0 && omega1 == omega3 && gamma2 == 0 && gamma4 == 0 && gamma1 == gamma3
+           || omega3 == 0 && omega4 == 0 && omega1 == omega2 && gamma3 == 0 && gamma4 == 0 && gamma1 == gamma2
+           || omega1 == 0 && omega3 == 0 && omega2 == omega4 && gamma1 == 0 && gamma3 == 0 && gamma2 == gamma4)
   {
     dividerOmega = sqrt (2.0);
     dividerGamma = 2.0;
   }
-  else if (omega1 == 0 && omega2 == omega3 == omega4 && gamma1 == 0 && gamma2 == gamma3 == gamma4
-           || omega2 == 0 && omega1 == omega3 == omega4 && gamma2 == 0 && gamma1 == gamma3 == gamma4
-           || omega3 == 0 && omega1 == omega2 == omega4 && gamma3 == 0 && gamma1 == gamma2 == gamma4
-           || omega4 == 0 && omega1 == omega2 == omega3 && gamma4 == 0 && gamma1 == gamma2 == gamma3)
+  else if (omega1 == 0 && omega2 == omega3 && omega3 == omega4 && gamma1 == 0 && gamma2 == gamma3 && gamma3 == gamma4
+           || omega2 == 0 && omega1 == omega3 && omega3 == omega4 && gamma2 == 0 && gamma1 == gamma3 && gamma3 == gamma4
+           || omega3 == 0 && omega1 == omega2 && omega2 == omega4 && gamma3 == 0 && gamma1 == gamma2 && gamma2 == gamma4
+           || omega4 == 0 && omega1 == omega2 && omega2 == omega3 && gamma4 == 0 && gamma1 == gamma2 && gamma2 == gamma3)
   {
     dividerOmega = 2 / sqrt (3.0);
     dividerGamma = 3.0;
   }
   else
   {
-    ASSERT (omega1 == omega2 == omega3 == omega4
-            && gamma1 == gamma2 == gamma3 == gamma4);
+    ASSERT (omega1 == omega2 && omega2 == omega3 && omega3 == omega4
+            && gamma1 == gamma2 && gamma2 == gamma3 && gamma3 == gamma4);
 
     dividerOmega = 4.0;
     dividerOmega = 4.0;
