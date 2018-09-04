@@ -26,7 +26,7 @@ Settings::parseArg (int &index, /**< out: current argument index */
 
   if (strcmp (argv[index], "--help") == 0)
   {
-    printf ("fdtd3d is an open source 1D [NYI], 2D, 3D FDTD electromagnetics solver with MPI, OpenMP [NYI] and CUDA [WIP] support.\n");
+    printf ("fdtd3d is an open source 1D, 2D, 3D FDTD electromagnetics solver with MPI, OpenMP [NYI] and CUDA [WIP] support.\n");
     printf ("Usage: fdtd3d [options]\n\n");
     printf ("Options:\n");
 
