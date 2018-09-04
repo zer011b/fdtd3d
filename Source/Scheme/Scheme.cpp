@@ -3048,58 +3048,181 @@ FieldValue
 Scheme<Type, TCoord, layout_type>::approximateIncidentWaveE (TCFP pos)
 {
   YeeGridLayout<Type, TCoord, layout_type> *layout = Scheme<Type, TCoord, layout_type>::yeeLayout;
-  return SchemeHelper::approximateIncidentWaveE<TCoord> (pos, layout->getZeroIncCoordFP (), EInc, layout->getIncidentWaveAngle1 (), layout->getIncidentWaveAngle2 ());
+  return SchemeHelper::approximateIncidentWaveE<Type, TCoord> (pos, layout->getZeroIncCoordFP (), EInc, layout->getIncidentWaveAngle1 (), layout->getIncidentWaveAngle2 ());
 }
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FieldValue
 Scheme<Type, TCoord, layout_type>::approximateIncidentWaveH (TCFP pos)
 {
   YeeGridLayout<Type, TCoord, layout_type> *layout = Scheme<Type, TCoord, layout_type>::yeeLayout;
-  return SchemeHelper::approximateIncidentWaveH<TCoord> (pos, layout->getZeroIncCoordFP (), HInc, layout->getIncidentWaveAngle1 (), layout->getIncidentWaveAngle2 ());
+  return SchemeHelper::approximateIncidentWaveH<Type, TCoord> (pos, layout->getZeroIncCoordFP (), HInc, layout->getIncidentWaveAngle1 (), layout->getIncidentWaveAngle2 ());
 }
 
 template <>
 FieldValue
-SchemeHelper::approximateIncidentWave<GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
                                                    FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
 {
-  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue z = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == 0 && incAngle2 == 0);
 
-  FPValue modifier = sin (incAngle1) * cos (incAngle2);
-  if (IS_FP_EXACT(modifier, FPValue (0)))
-  {
-    ASSERT (incAngle1 == FPValue (0) || incAngle2 == PhysicsConst::Pi / FPValue (2));
-    modifier = FPValue (1);
-  }
-
-  FPValue d = x * modifier - dDiff;
+  FPValue d = z - dDiff;
   ASSERT (d > 0);
 
   return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
 template <>
 FieldValue
-SchemeHelper::approximateIncidentWave<GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == PhysicsConst::Pi / 2);
+
+  FPValue d = y - dDiff;
+  ASSERT (d > 0);
+
+  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+FieldValue
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue z = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == 0 && incAngle2 == PhysicsConst::Pi / 2);
+
+  FPValue d = z - dDiff;
+  ASSERT (d > 0);
+
+  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+FieldValue
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == 0);
+
+  FPValue d = x - dDiff;
+  ASSERT (d > 0);
+
+  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+FieldValue
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == PhysicsConst::Pi / 2);
+
+  FPValue d = y - dDiff;
+  ASSERT (d > 0);
+
+  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+FieldValue
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == 0);
+
+  FPValue d = x - dDiff;
+  ASSERT (d > 0);
+
+  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+FieldValue
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle2 == PhysicsConst::Pi / 2);
+
+  FPValue d = y * sin (incAngle1) + z * cos (incAngle1);
+  ASSERT (d > 0);
+
+  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+FieldValue
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle2 == 0);
+
+  FPValue d = x * sin (incAngle1) + z * cos (incAngle1);
+  ASSERT (d > 0);
+
+  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+FieldValue
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
                                                    FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
 {
   FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
   FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2);
 
-  FPValue modifier = sin (incAngle1);
-  if (modifier == FPValue (0))
-  {
-    ASSERT (incAngle1 == FPValue (0));
-    modifier = FPValue (1);
-  }
-
-  FPValue d = x * modifier * cos (incAngle2) + y * modifier * sin (incAngle2) - dDiff;
+  FPValue d = x * cos (incAngle2) + y * sin (incAngle2);
   ASSERT (d > 0);
 
   return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
 template <>
 FieldValue
-SchemeHelper::approximateIncidentWave<GridCoordinate3DTemplate> (GridCoordinateFP3D realCoord, GridCoordinateFP3D zeroCoordFP,
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle2 == PhysicsConst::Pi / 2);
+
+  FPValue d = y * sin (incAngle1) + z * cos (incAngle1);
+  ASSERT (d > 0);
+
+  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+FieldValue
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle2 == 0);
+
+  FPValue d = x * sin (incAngle1) + z * cos (incAngle1);
+  ASSERT (d > 0);
+
+  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+FieldValue
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2);
+
+  FPValue d = x * cos (incAngle2) + y * sin (incAngle2);
+  ASSERT (d > 0);
+
+  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+FieldValue
+SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (GridCoordinateFP3D realCoord, GridCoordinateFP3D zeroCoordFP,
                                                    FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
 {
   FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
@@ -3204,18 +3327,18 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E
   SchemeHelper::initSigmaZ<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaZ);
 };
 
-template <template <typename, bool> class TCoord>
+template <SchemeType_t Type, template <typename, bool> class TCoord>
 FieldValue
 SchemeHelper::approximateIncidentWaveE (TCoord<FPValue, true> realCoord, TCoord<FPValue, true> zeroCoord, Grid<GridCoordinate1D> *EInc, FPValue incAngle1, FPValue incAngle2)
 {
-  return approximateIncidentWave<TCoord> (realCoord, zeroCoord, 0.0, EInc, incAngle1, incAngle2);
+  return approximateIncidentWave<Type, TCoord> (realCoord, zeroCoord, 0.0, EInc, incAngle1, incAngle2);
 }
 
-template <template <typename, bool> class TCoord>
+template <SchemeType_t Type, template <typename, bool> class TCoord>
 FieldValue
 SchemeHelper::approximateIncidentWaveH (TCoord<FPValue, true> realCoord, TCoord<FPValue, true> zeroCoord, Grid<GridCoordinate1D> *HInc, FPValue incAngle1, FPValue incAngle2)
 {
-  return approximateIncidentWave<TCoord> (realCoord, zeroCoord, 0.5, HInc, incAngle1, incAngle2);
+  return approximateIncidentWave<Type, TCoord> (realCoord, zeroCoord, 0.5, HInc, incAngle1, incAngle2);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -5007,10 +5130,10 @@ SchemeHelper::ntffN3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
 
       if (solverSettings.getDoCalcScatteredNTFF ())
       {
-        Hz1 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hz2 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hy1 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hy2 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hz1 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hz2 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hy1 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hy2 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
       }
 
       FPValue arg = (x0 - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
@@ -5132,10 +5255,10 @@ SchemeHelper::ntffN3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
 
       if (solverSettings.getDoCalcScatteredNTFF ())
       {
-        Hz1 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hz2 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hx1 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hx2 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hz1 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hz2 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hx1 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hx2 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
       }
 
       FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (y0 - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
@@ -5257,10 +5380,10 @@ SchemeHelper::ntffN3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
 
       if (solverSettings.getDoCalcScatteredNTFF ())
       {
-        Hy1 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hy2 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hx1 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hx2 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hy1 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hy2 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hx1 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Hx2 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
       }
 
       FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (z0 - diffz0) * cos (angleTeta);
@@ -5428,10 +5551,10 @@ SchemeHelper::ntffL3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
 
       if (solverSettings.getDoCalcScatteredNTFF ())
       {
-        Ey1 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ey2 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ez1 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ez2 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ey1 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ey2 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ez1 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ez2 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
       }
 
       FPValue arg = (x0 - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
@@ -5598,10 +5721,10 @@ SchemeHelper::ntffL3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
 
       if (solverSettings.getDoCalcScatteredNTFF ())
       {
-        Ex1 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ex2 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ez1 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ez2 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ex1 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ex2 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ez1 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ez2 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
       }
 
       FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (y0 - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
@@ -5769,10 +5892,10 @@ SchemeHelper::ntffL3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
 
       if (solverSettings.getDoCalcScatteredNTFF ())
       {
-        Ex1 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ex2 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ey1 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ey2 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ex1 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ex2 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ey1 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
+        Ey2 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
       }
 
       FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (z0 - diffz0) * cos (angleTeta);
