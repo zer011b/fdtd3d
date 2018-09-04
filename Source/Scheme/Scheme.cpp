@@ -343,8 +343,8 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemp
   (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
 {
   ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
+  ASSERT (pos21.get1 () == pos22.get1 ());
+  ASSERT (pos11.get2 () < pos12.get2 ());
   ASSERT (pos21.get2 () == pos22.get2 ());
 }
 template <>
