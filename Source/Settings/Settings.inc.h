@@ -230,23 +230,29 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(useMuAllNorm, getUseMuAllNorm, bool, false, "--mu-
 
 SETTINGS_ELEM_FIELD_TYPE_INT(sphereAccuracy, getSphereAccuracy, int, 100, "--sphere-accuracy", "Sphere approximation accuracy (number of points per grid step)")
 
-SETTINGS_ELEM_FIELD_TYPE_INT(epsSphere, getEpsSphere, int, 1, "--eps-sphere", "Permittivity of Eps material sphere")
+SETTINGS_ELEM_FIELD_TYPE_FLOAT(epsSphere, getEpsSphere, FPValue, 1.0, "--eps-sphere", "Permittivity of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterX, getEpsSphereCenterX, int, 0, "--eps-sphere-center-x", "Center position by x coordinate of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterY, getEpsSphereCenterY, int, 0, "--eps-sphere-center-y", "Center position by y coordinate of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterZ, getEpsSphereCenterZ, int, 0, "--eps-sphere-center-z", "Center position by z coordinate of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereRadius, getEpsSphereRadius, int, 0, "--eps-sphere-radius", "Radius of Eps material sphere")
 
-SETTINGS_ELEM_FIELD_TYPE_INT(muSphere, getMuSphere, int, 1, "--mu-sphere", "Permittivity of Mu material sphere")
+SETTINGS_ELEM_FIELD_TYPE_FLOAT(muSphere, getMuSphere, FPValue, 1.0, "--mu-sphere", "Permittivity of Mu material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(muSphereCenterX, getMuSphereCenterX, int, 0, "--mu-sphere-center-x", "Center position by x coordinate of Mu material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(muSphereCenterY, getMuSphereCenterY, int, 0, "--mu-sphere-center-y", "Center position by y coordinate of Mu material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(muSphereCenterZ, getMuSphereCenterZ, int, 0, "--mu-sphere-center-z", "Center position by z coordinate of Mu material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(muSphereRadius, getMuSphereRadius, int, 0, "--mu-sphere-radius", "Radius of Mu material sphere")
 
-SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphere, getOmegaPESphere, int, 0, "--omegape-sphere", "Electric plasma frequency material sphere")
+SETTINGS_ELEM_FIELD_TYPE_FLOAT(omegaPESphere, getOmegaPESphere, FPValue, 0.0, "--omegape-sphere", "Electric plasma frequency material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereCenterX, getOmegaPESphereCenterX, int, 0, "--omegape-sphere-center-x", "Center position by x coordinate of electric plasma frequency material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereCenterY, getOmegaPESphereCenterY, int, 0, "--omegape-sphere-center-y", "Center position by y coordinate of electric plasma frequency material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereCenterZ, getOmegaPESphereCenterZ, int, 0, "--omegape-sphere-center-z", "Center position by z coordinate of electric plasma frequency material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereRadius, getOmegaPESphereRadius, int, 0, "--omegape-sphere-radius", "Radius of electric plasma frequency material sphere")
+
+SETTINGS_ELEM_FIELD_TYPE_FLOAT(omegaPMSphere, getOmegaPMSphere, FPValue, 0.0, "--omegapm-sphere", "Magnetic plasma frequency material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(omegaPMSphereCenterX, getOmegaPMSphereCenterX, int, 0, "--omegapm-sphere-center-x", "Center position by x coordinate of magnetic plasma frequency material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(omegaPMSphereCenterY, getOmegaPMSphereCenterY, int, 0, "--omegapm-sphere-center-y", "Center position by y coordinate of magnetic plasma frequency material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(omegaPMSphereCenterZ, getOmegaPMSphereCenterZ, int, 0, "--omegapm-sphere-center-z", "Center position by z coordinate of magnetic plasma frequency material sphere")
+SETTINGS_ELEM_FIELD_TYPE_INT(omegaPMSphereRadius, getOmegaPMSphereRadius, int, 0, "--omegapm-sphere-radius", "Radius of magnetic plasma frequency material sphere")
 
 /*
 SETTINGS_ELEM_FIELD_TYPE_STRING(exFileName, getExFileName, std::string, "", "--load-ex-from-file", "File name to load Ex from")
