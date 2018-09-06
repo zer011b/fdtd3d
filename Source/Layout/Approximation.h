@@ -31,9 +31,9 @@ public:
 
   static FieldValue approximateSphereFast (GridCoordinateFP3D, GridCoordinateFP3D, FPValue, FieldValue);
 
-  static FieldValue approximateSphereAccurate (GridCoordinateFP1D, GridCoordinateFP1D, FPValue, FieldValue);
-  static FieldValue approximateSphereAccurate (GridCoordinateFP2D, GridCoordinateFP2D, FPValue, FieldValue);
-  static FieldValue approximateSphereAccurate (GridCoordinateFP3D, GridCoordinateFP3D, FPValue, FieldValue);
+  static FieldValue approximateSphereAccurate (GridCoordinateFP1D, GridCoordinateFP1D, FPValue, FieldValue, FieldValue);
+  static FieldValue approximateSphereAccurate (GridCoordinateFP2D, GridCoordinateFP2D, FPValue, FieldValue, FieldValue);
+  static FieldValue approximateSphereAccurate (GridCoordinateFP3D, GridCoordinateFP3D, FPValue, FieldValue, FieldValue);
 };
 
 #endif /* APPROXIMATION_H */

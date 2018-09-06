@@ -49,19 +49,22 @@ Approximation::approximateDrudeModel (FPValue &omega,
 
   ASSERT (permittivity1 == 1 && permittivity2 == 1);
 
-  if (omega1 == 0 && gamma1 == 0
-      || omega2 == 0 && gamma2 == 0)
-  {
-    dividerOmega = sqrtf (2.0);
-    dividerGamma = 1.0;
-  }
-  else
-  {
-    ASSERT (omega1 == omega2 && gamma1 == gamma2);
+  // if (omega1 == 0 && gamma1 == 0
+  //     || omega2 == 0 && gamma2 == 0)
+  // {
+  //   dividerOmega = sqrtf (2.0);
+  //   dividerGamma = 1.0;
+  // }
+  // else
+  // {
+  //   ASSERT (omega1 == omega2 && gamma1 == gamma2);
+  //
+  //   dividerOmega = 2.0;
+  //   dividerGamma = 2.0;
+  // }
 
-    dividerOmega = 2.0;
-    dividerGamma = 2.0;
-  }
+  dividerOmega = 2.0;
+  dividerGamma = 2.0;
 
   ASSERT (dividerOmega != 0);
   ASSERT (dividerGamma != 0);
@@ -94,38 +97,41 @@ Approximation::approximateDrudeModel (FPValue &omega,
 
   ASSERT (permittivity1 == 1 && permittivity2 == 1 && permittivity3 == 1 && permittivity4 == 1);
 
-  if (omega2 == 0 && omega3 == 0 && omega4 == 0 && gamma2 == 0 && gamma3 == 0 && gamma4 == 0
-      || omega1 == 0 && omega3 == 0 && omega4 == 0 && gamma1 == 0 && gamma3 == 0 && gamma4 == 0
-      || omega1 == 0 && omega2 == 0 && omega4 == 0 && gamma1 == 0 && gamma2 == 0 && gamma4 == 0
-      || omega1 == 0 && omega2 == 0 && omega3 == 0 && gamma1 == 0 && gamma2 == 0 && gamma3 == 0)
-  {
-    dividerOmega = 2.0;
-    dividerGamma = 1.0;
-  }
-  else if (omega1 == 0 && omega2 == 0 && omega3 == omega4 && gamma1 == 0 && gamma2 == 0 && gamma3 == gamma4
-           || omega2 == 0 && omega4 == 0 && omega1 == omega3 && gamma2 == 0 && gamma4 == 0 && gamma1 == gamma3
-           || omega3 == 0 && omega4 == 0 && omega1 == omega2 && gamma3 == 0 && gamma4 == 0 && gamma1 == gamma2
-           || omega1 == 0 && omega3 == 0 && omega2 == omega4 && gamma1 == 0 && gamma3 == 0 && gamma2 == gamma4)
-  {
-    dividerOmega = sqrt (2.0);
-    dividerGamma = 2.0;
-  }
-  else if (omega1 == 0 && omega2 == omega3 && omega3 == omega4 && gamma1 == 0 && gamma2 == gamma3 && gamma3 == gamma4
-           || omega2 == 0 && omega1 == omega3 && omega3 == omega4 && gamma2 == 0 && gamma1 == gamma3 && gamma3 == gamma4
-           || omega3 == 0 && omega1 == omega2 && omega2 == omega4 && gamma3 == 0 && gamma1 == gamma2 && gamma2 == gamma4
-           || omega4 == 0 && omega1 == omega2 && omega2 == omega3 && gamma4 == 0 && gamma1 == gamma2 && gamma2 == gamma3)
-  {
-    dividerOmega = 2 / sqrt (3.0);
-    dividerGamma = 3.0;
-  }
-  else
-  {
-    ASSERT (omega1 == omega2 && omega2 == omega3 && omega3 == omega4
-            && gamma1 == gamma2 && gamma2 == gamma3 && gamma3 == gamma4);
+  // if (omega2 == 0 && omega3 == 0 && omega4 == 0 && gamma2 == 0 && gamma3 == 0 && gamma4 == 0
+  //     || omega1 == 0 && omega3 == 0 && omega4 == 0 && gamma1 == 0 && gamma3 == 0 && gamma4 == 0
+  //     || omega1 == 0 && omega2 == 0 && omega4 == 0 && gamma1 == 0 && gamma2 == 0 && gamma4 == 0
+  //     || omega1 == 0 && omega2 == 0 && omega3 == 0 && gamma1 == 0 && gamma2 == 0 && gamma3 == 0)
+  // {
+  //   dividerOmega = 2.0;
+  //   dividerGamma = 1.0;
+  // }
+  // else if (omega1 == 0 && omega2 == 0 && omega3 == omega4 && gamma1 == 0 && gamma2 == 0 && gamma3 == gamma4
+  //          || omega2 == 0 && omega4 == 0 && omega1 == omega3 && gamma2 == 0 && gamma4 == 0 && gamma1 == gamma3
+  //          || omega3 == 0 && omega4 == 0 && omega1 == omega2 && gamma3 == 0 && gamma4 == 0 && gamma1 == gamma2
+  //          || omega1 == 0 && omega3 == 0 && omega2 == omega4 && gamma1 == 0 && gamma3 == 0 && gamma2 == gamma4)
+  // {
+  //   dividerOmega = sqrt (2.0);
+  //   dividerGamma = 2.0;
+  // }
+  // else if (omega1 == 0 && omega2 == omega3 && omega3 == omega4 && gamma1 == 0 && gamma2 == gamma3 && gamma3 == gamma4
+  //          || omega2 == 0 && omega1 == omega3 && omega3 == omega4 && gamma2 == 0 && gamma1 == gamma3 && gamma3 == gamma4
+  //          || omega3 == 0 && omega1 == omega2 && omega2 == omega4 && gamma3 == 0 && gamma1 == gamma2 && gamma2 == gamma4
+  //          || omega4 == 0 && omega1 == omega2 && omega2 == omega3 && gamma4 == 0 && gamma1 == gamma2 && gamma2 == gamma3)
+  // {
+  //   dividerOmega = 2 / sqrt (3.0);
+  //   dividerGamma = 3.0;
+  // }
+  // else
+  // {
+  //   ASSERT (omega1 == omega2 && omega2 == omega3 && omega3 == omega4
+  //           && gamma1 == gamma2 && gamma2 == gamma3 && gamma3 == gamma4);
+  //
+  //   dividerOmega = 4.0;
+  //   dividerGamma = 4.0;
+  // }
 
-    dividerOmega = 4.0;
-    dividerOmega = 4.0;
-  }
+  dividerOmega = 4.0;
+  dividerGamma = 4.0;
 
   ASSERT (dividerOmega != 0);
   ASSERT (dividerGamma != 0);
@@ -355,7 +361,8 @@ FieldValue
 Approximation::approximateSphereAccurate (GridCoordinateFP1D midPos,
                                           GridCoordinateFP1D center,
                                           FPValue radius,
-                                          FieldValue eps)
+                                          FieldValue eps,
+                                          FieldValue outsideEps)
 {
   GridCoordinateFP1D start (midPos.get1 () - 0.5
 #ifdef DEBUG_INFO
@@ -409,16 +416,15 @@ Approximation::approximateSphereAccurate (GridCoordinateFP1D midPos,
     volume = FPValue (1);
   }
 
-  FieldValue eps_vacuum = getFieldValueRealOnly (1.0);
-
-  return volume * eps + (1 - volume) * eps_vacuum;
+  return volume * eps + (1 - volume) * outsideEps;
 }
 
 FieldValue
 Approximation::approximateSphereAccurate (GridCoordinateFP2D midPos,
                                           GridCoordinateFP2D center,
                                           FPValue radius,
-                                          FieldValue eps)
+                                          FieldValue eps,
+                                          FieldValue outsideEps)
 {
   GridCoordinateFP2D start (midPos.get1 () - 0.5, midPos.get2 () - 0.5
   #ifdef DEBUG_INFO
@@ -521,16 +527,15 @@ Approximation::approximateSphereAccurate (GridCoordinateFP2D midPos,
     volume = FPValue (1);
   }
 
-  FieldValue eps_vacuum = getFieldValueRealOnly (1.0);
-
-  return volume * eps + (1 - volume) * eps_vacuum;
+  return volume * eps + (1 - volume) * outsideEps;
 }
 
 FieldValue
 Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
                                           GridCoordinateFP3D center,
                                           FPValue radius,
-                                          FieldValue eps)
+                                          FieldValue eps,
+                                          FieldValue outsideEps)
 {
   GridCoordinateFP3D start (midPos.get1 () - 0.5, midPos.get2 () - 0.5, midPos.get3 () - 0.5
 #ifdef DEBUG_INFO
@@ -637,7 +642,5 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
     volume = FPValue (1);
   }
 
-  FieldValue eps_vacuum = getFieldValueRealOnly (1.0);
-
-  return volume * eps + (1 - volume) * eps_vacuum;
+  return volume * eps + (1 - volume) * outsideEps;
 }

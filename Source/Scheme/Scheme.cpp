@@ -2137,8 +2137,6 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationPMLMetamaterials (
   FPValue material1;
   FPValue material2;
 
-  // TODO: fix this
-  ASSERT(0);
   FPValue material = yeeLayout->getMetaMaterial (posAbs, gridType,
                                                  materialGrid1, materialGridType1,
                                                  materialGrid2, materialGridType2,
@@ -4051,9 +4049,10 @@ Scheme<Type, TCoord, layout_type>::initScheme (FPValue dx, FPValue sourceWaveLen
                                       "\n\tnumerical wave length -> %.20f"
                                       "\n\tnumerical grid step -> %.20f"
                                       "\n\tnumerical time step -> %.20f"
+                                      "\n\twave length -> %.20f"
                                       "\n",
            relPhaseVelocity, phaseVelocity0, phaseVelocity, 2*PhysicsConst::Pi/sourceWaveLength, k,
-           sourceWaveLength, sourceWaveLengthNumerical, gridStep, gridTimeStep);
+           sourceWaveLength, sourceWaveLengthNumerical, gridStep, gridTimeStep, sourceFrequency);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -4669,7 +4668,8 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 #endif
                                                                                                         ),
                                                                   solverSettings.getEpsSphereRadius () * modifier,
-                                                                  epsVal));
+                                                                  epsVal,
+                                                                  getFieldValueRealOnly (1.0)));
     }
   }
   if (solverSettings.getUseEpsAllNorm ())
@@ -4707,7 +4707,8 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   #endif
                                                                                                         ),
                                                                   solverSettings.getMuSphereRadius () * modifier,
-                                                                  muVal));
+                                                                  muVal,
+                                                                  getFieldValueRealOnly (1.0)));
     }
   }
   if (solverSettings.getUseMuAllNorm ())
@@ -4740,20 +4741,48 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                 solverSettings.getOmegaPESphereCenterY (),
                                                 solverSettings.getOmegaPESphereCenterZ (),
                                                 ct1, ct2, ct3);
-        val->setCurValue (Approximation::approximateSphereAccurate (expandTo3D (posAbs, ct1, ct2, ct3),
-                                                                    expandTo3D (center * modifier + TCFP (0.5, 0.5, 0.5
+        val->setCurValue (Approximation::approximateSphereAccurate (posAbs,
+                                                                    center * modifier + TCFP (0.5, 0.5, 0.5
 #ifdef DEBUG_INFO
                                                                                                           , ct1, ct2, ct3
 #endif
                                                                                                           ),
-                                                                                ct1, ct2, ct3),
                                                                     solverSettings.getOmegaPESphereRadius () * modifier,
-                                                                    omegapeVal));
+                                                                    omegapeVal,
+                                                                    getFieldValueRealOnly (0.0)));
       }
     }
 
     OmegaPM->initialize ();
     initMaterialFromFile (GridType::OMEGAPM, OmegaPM, totalOmegaPM);
+
+    if (solverSettings.getOmegaPMSphere () != 0)
+    {
+      for (grid_coord i = 0; i < OmegaPM->getSize ().calculateTotalCoord (); ++i)
+      {
+        TC pos = OmegaPM->calculatePositionFromIndex (i);
+        TCFP posAbs = yeeLayout->getEpsCoordFP (OmegaPM->getTotalPosition (pos));
+        FieldPointValue *val = OmegaPM->getFieldPointValue (pos);
+
+        FieldValue omegapmVal = getFieldValueRealOnly (solverSettings.getOmegaPMSphere () * 2 * PhysicsConst::Pi * sourceFrequency);
+
+        FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
+
+        TCFP center = TCFP::initAxesCoordinate (solverSettings.getOmegaPMSphereCenterX (),
+                                                solverSettings.getOmegaPMSphereCenterY (),
+                                                solverSettings.getOmegaPMSphereCenterZ (),
+                                                ct1, ct2, ct3);
+        val->setCurValue (Approximation::approximateSphereAccurate (posAbs,
+                                                                    center * modifier + TCFP (0.5, 0.5, 0.5
+#ifdef DEBUG_INFO
+                                                                                                          , ct1, ct2, ct3
+#endif
+                                                                                                          ),
+                                                                    solverSettings.getOmegaPMSphereRadius () * modifier,
+                                                                    omegapmVal,
+                                                                    getFieldValueRealOnly (0.0)));
+      }
+    }
 
     GammaE->initialize ();
     initMaterialFromFile (GridType::GAMMAE, GammaE, totalGammaE);
