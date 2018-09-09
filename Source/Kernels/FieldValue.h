@@ -84,12 +84,12 @@ typedef FPValue FieldValue;
  */
 #ifndef LARGE_COORDINATES
 typedef int32_t grid_coord;
-#define COORD_MOD "%" PRId32
+#define COORD_MOD "%d"
 #define MPI_COORD MPI_INT
 //#define MAX_COORD (2048*1048576) // 2^31, coord should be less than this
 #else /* !LARGE_COORDINATES */
 typedef int64_t grid_coord;
-#define COORD_MOD "%" PRId64
+#define COORD_MOD "%lld"
 #define MPI_COORD MPI_LONG_LONG_INT
 //#define MAX_COORD (8*1048576*1048576*1048576) // 2^63, coord should be less than this
 #endif /* LARGE_COORDINATES */
