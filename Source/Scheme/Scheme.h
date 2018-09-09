@@ -744,12 +744,12 @@ public:
     FPValue proportionD2 = d - coordD1;
     FPValue proportionD1 = 1 - proportionD2;
 
-    GridCoordinate1D pos1 (coordD1
+    GridCoordinate1D pos1 ((grid_coord) coordD1
 #ifdef DEBUG_INFO
                               , FieldInc->getSize ().getType1 ()
 #endif
                           );
-    GridCoordinate1D pos2 (coordD2
+    GridCoordinate1D pos2 ((grid_coord) coordD2
 #ifdef DEBUG_INFO
                               , FieldInc->getSize ().getType1 ()
 #endif
