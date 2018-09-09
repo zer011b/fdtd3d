@@ -193,6 +193,7 @@ SETTINGS_ELEM_FIELD_TYPE_FLOAT(courantNum, getCourantNum, FPValue, 0.5, "--coura
  * Dump flags
  */
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveRes, getDoSaveRes, bool, false, "--save-res", "Save results to files")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveResPerProcess, getDoSaveResPerProcess, bool, false, "--save-res-per-process", "Save results to files for each process separately")
 // SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveAllRes, getDoSaveAllRes, bool, false, "--save-all-res", "Save all results to files")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveMaterials, getDoSaveMaterials, bool, false, "--save-materials", "Save materials to files")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveIntermediateRes, getDoSaveIntermediateRes, bool, false, "--save-interm-res", "Save intermediate results to files")
