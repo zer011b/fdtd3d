@@ -770,7 +770,8 @@ public:
   void initSigmaX (YeeGridLayout<Type, TCoord, layout_type> *layout, FPValue dx, Grid< TCoord<grid_coord, true> > *sigma)
   {
     TCoord<grid_coord, true> PMLSize = layout->getLeftBorderPML () * (layout->getIsDoubleMaterialPrecision () ? 2 : 1);
-    FPValue boundary = PMLSize.get1 () * dx;
+    FPValue PMLSizeX = FPValue (PMLSize.get1 ());
+    FPValue boundary = PMLSizeX * dx;
 
     for (grid_coord i = 0; i < sigma->getSize ().calculateTotalCoord (); ++i)
     {
@@ -780,21 +781,26 @@ public:
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
 
       TCoord<FPValue, true> size = layout->getEpsCoordFP (sigma->getTotalSize ());
-      grid_coord dist;
 
       /*
        * TODO: add layout coordinates for material: sigma, eps, etc.
        */
-      if (posAbs.get1 () < PMLSize.get1 ())
+      ASSERT (FPValue (grid_coord (posAbs.get1 () - FPValue (0.5))) == posAbs.get1 () - FPValue (0.5));
+      if (posAbs.get1 () < PMLSizeX)
       {
-        dist = PMLSize.get1 () - posAbs.get1 ();
+        grid_coord dist = (grid_coord) (PMLSizeX - posAbs.get1 ());
+        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
       }
-      else if (posAbs.get1 () >= size.get1 () - PMLSize.get1 ())
+      else if (posAbs.get1 () >= size.get1 () - PMLSizeX)
       {
-        dist = posAbs.get1 () - (size.get1 () - PMLSize.get1 ());
+        grid_coord dist = (grid_coord) (posAbs.get1 () - (size.get1 () - PMLSizeX));
+        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
+      }
+      else
+      {
+        valSigma->setCurValue (getFieldValueRealOnly (FPValue (0)));
       }
 
-      SchemeHelper::initSigma (valSigma, dist, boundary, dx);
       sigma->setFieldPointValue (valSigma, pos);
     }
   }
@@ -804,7 +810,8 @@ public:
   void initSigmaY (YeeGridLayout<Type, TCoord, layout_type> *layout, FPValue dx, Grid< TCoord<grid_coord, true> > *sigma)
   {
     TCoord<grid_coord, true> PMLSize = layout->getLeftBorderPML () * (layout->getIsDoubleMaterialPrecision () ? 2 : 1);
-    FPValue boundary = PMLSize.get2 () * dx;
+    FPValue PMLSizeY = FPValue (PMLSize.get2 ());
+    FPValue boundary = PMLSizeY * dx;
 
     for (grid_coord i = 0; i < sigma->getSize ().calculateTotalCoord (); ++i)
     {
@@ -814,21 +821,26 @@ public:
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
 
       TCoord<FPValue, true> size = layout->getEpsCoordFP (sigma->getTotalSize ());
-      grid_coord dist;
 
       /*
        * TODO: add layout coordinates for material: sigma, eps, etc.
        */
-      if (posAbs.get2 () < PMLSize.get2 ())
+      ASSERT (FPValue (grid_coord (posAbs.get2 () - FPValue (0.5))) == posAbs.get2 () - FPValue (0.5));
+      if (posAbs.get2 () < PMLSizeY)
       {
-        dist = PMLSize.get2 () - posAbs.get2 ();
+        grid_coord dist = (grid_coord) (PMLSizeY - posAbs.get2 ());
+        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
       }
-      else if (posAbs.get2 () >= size.get2 () - PMLSize.get2 ())
+      else if (posAbs.get2 () >= size.get2 () - PMLSizeY)
       {
-        dist = posAbs.get2 () - (size.get2 () - PMLSize.get2 ());
+        grid_coord dist = (grid_coord) (posAbs.get2 () - (size.get2 () - PMLSizeY));
+        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
+      }
+      else
+      {
+        valSigma->setCurValue (getFieldValueRealOnly (FPValue (0)));
       }
 
-      SchemeHelper::initSigma (valSigma, dist, boundary, dx);
       sigma->setFieldPointValue (valSigma, pos);
     }
   }
@@ -838,7 +850,8 @@ public:
   void initSigmaZ (YeeGridLayout<Type, TCoord, layout_type> *layout, FPValue dx, Grid< TCoord<grid_coord, true> > *sigma)
   {
     TCoord<grid_coord, true> PMLSize = layout->getLeftBorderPML () * (layout->getIsDoubleMaterialPrecision () ? 2 : 1);
-    FPValue boundary = PMLSize.get3 () * dx;
+    FPValue PMLSizeZ = FPValue (PMLSize.get3 ());
+    FPValue boundary = PMLSizeZ * dx;
 
     for (grid_coord i = 0; i < sigma->getSize ().calculateTotalCoord (); ++i)
     {
@@ -848,21 +861,26 @@ public:
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
 
       TCoord<FPValue, true> size = layout->getEpsCoordFP (sigma->getTotalSize ());
-      grid_coord dist;
 
       /*
        * TODO: add layout coordinates for material: sigma, eps, etc.
        */
-      if (posAbs.get3 () < PMLSize.get3 ())
+      ASSERT (FPValue (grid_coord (posAbs.get3 () - FPValue (0.5))) == posAbs.get3 () - FPValue (0.5));
+      if (posAbs.get3 () < PMLSizeZ)
       {
-        dist = PMLSize.get3 () - posAbs.get3 ();
+        grid_coord dist = (grid_coord) (PMLSizeZ - posAbs.get3 ());
+        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
       }
-      else if (posAbs.get3 () >= size.get3 () - PMLSize.get3 ())
+      else if (posAbs.get3 () >= size.get3 () - PMLSizeZ)
       {
-        dist = posAbs.get3 () - (size.get3 () - PMLSize.get3 ());
+        grid_coord dist = (grid_coord) (posAbs.get3 () - (size.get3 () - PMLSizeZ));
+        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
+      }
+      else
+      {
+        valSigma->setCurValue (getFieldValueRealOnly (FPValue (0)));
       }
 
-      SchemeHelper::initSigma (valSigma, dist, boundary, dx);
       sigma->setFieldPointValue (valSigma, pos);
     }
   }
