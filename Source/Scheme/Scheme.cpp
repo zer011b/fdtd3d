@@ -6427,6 +6427,14 @@ void
 Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
 {
   int processId = 0;
+  if (solverSettings.getDoSaveResPerProcess ())
+  {
+#ifdef PARALLEL_GRID
+    processId = ParallelGrid::getParallelCore ()->getProcessId ();
+#else
+    UNREACHABLE;
+#endif
+  }
 
   TC startEx;
   TC endEx;
@@ -6524,6 +6532,12 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
                                                                              );
   }
 
+  TC zero (0, 0, 0
+#ifdef DEBUG_INFO
+           , ct1, ct2, ct3
+#endif
+           );
+
   for (int type = FILE_TYPE_BMP; type < FILE_TYPE_COUNT; ++type)
   {
     if (!dumper[type])
@@ -6534,37 +6548,85 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     if (doNeedEx)
     {
       dumper[type]->init (t, CURRENT, processId, totalEx->getName ().c_str ());
-      dumper[type]->dumpGrid (totalEx, startEx, endEx);
+
+      if (solverSettings.getDoSaveResPerProcess ())
+      {
+        dumper[type]->dumpGrid (Ex, zero, Ex->getSize ());
+      }
+      else
+      {
+        dumper[type]->dumpGrid (totalEx, startEx, endEx);
+      }
     }
 
     if (doNeedEy)
     {
       dumper[type]->init (t, CURRENT, processId, totalEy->getName ().c_str ());
-      dumper[type]->dumpGrid (totalEy, startEy, endEy);
+
+      if (solverSettings.getDoSaveResPerProcess ())
+      {
+        dumper[type]->dumpGrid (Ey, zero, Ey->getSize ());
+      }
+      else
+      {
+        dumper[type]->dumpGrid (totalEy, startEy, endEy);
+      }
     }
 
     if (doNeedEz)
     {
       dumper[type]->init (t, CURRENT, processId, totalEz->getName ().c_str ());
-      dumper[type]->dumpGrid (totalEz, startEz, endEz);
+
+      if (solverSettings.getDoSaveResPerProcess ())
+      {
+        dumper[type]->dumpGrid (Ez, zero, Ez->getSize ());
+      }
+      else
+      {
+        dumper[type]->dumpGrid (totalEz, startEz, endEz);
+      }
     }
 
     if (doNeedHx)
     {
       dumper[type]->init (t, CURRENT, processId, totalHx->getName ().c_str ());
-      dumper[type]->dumpGrid (totalHx, startHx, endHx);
+
+      if (solverSettings.getDoSaveResPerProcess ())
+      {
+        dumper[type]->dumpGrid (Hx, zero, Hx->getSize ());
+      }
+      else
+      {
+        dumper[type]->dumpGrid (totalHx, startHx, endHx);
+      }
     }
 
     if (doNeedHy)
     {
       dumper[type]->init (t, CURRENT, processId, totalHy->getName ().c_str ());
-      dumper[type]->dumpGrid (totalHy, startHy, endHy);
+
+      if (solverSettings.getDoSaveResPerProcess ())
+      {
+        dumper[type]->dumpGrid (Hy, zero, Hy->getSize ());
+      }
+      else
+      {
+        dumper[type]->dumpGrid (totalHy, startHy, endHy);
+      }
     }
 
     if (doNeedHz)
     {
       dumper[type]->init (t, CURRENT, processId, totalHz->getName ().c_str ());
-      dumper[type]->dumpGrid (totalHz, startHz, endHz);
+
+      if (solverSettings.getDoSaveResPerProcess ())
+      {
+        dumper[type]->dumpGrid (Hz, zero, Hz->getSize ());
+      }
+      else
+      {
+        dumper[type]->dumpGrid (totalHz, startHz, endHz);
+      }
     }
 
     if (solverSettings.getDoSaveTFSFEInc ())
