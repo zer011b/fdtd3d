@@ -36,23 +36,41 @@ int main (int argc, char** argv)
   MPI_Comm_rank (MPI_COMM_WORLD, &rank);
   MPI_Comm_size (MPI_COMM_WORLD, &numProcs);
 
-  printf ("X: PID %d of %d, grid size (" COORD_MOD "," COORD_MOD "," COORD_MOD "\n",
+  printf ("X: PID %d of %d, grid size (" COORD_MOD "," COORD_MOD "," COORD_MOD ")\n",
     rank, numProcs, gridSizeX, gridSizeY, gridSizeZ);
 
   printf ("Start process %d of %d\n", rank, numProcs);
 
-  ParallelGridCoordinate overallSize (gridSizeX, gridSizeY, gridSizeZ,
-                                      CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-  ParallelGridCoordinate pmlSize (2, 2, 2,
-                                  CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-  ParallelGridCoordinate tfsfSizeLeft (4, 4, 4,
-                                       CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-  ParallelGridCoordinate tfsfSizeRight (4, 4, 4,
-                                        CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-  ParallelGridCoordinate bufferSize (bufSize, bufSize, bufSize,
-                                     CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-  ParallelGridCoordinate topologySize (2, 2, 2,
-                                       CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  ParallelGridCoordinate overallSize (gridSizeX, gridSizeY, gridSizeZ
+#ifdef DEBUG_INFO
+                                      , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+                                      );
+  ParallelGridCoordinate pmlSize (2, 2, 2
+#ifdef DEBUG_INFO
+                                  , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+                                  );
+  ParallelGridCoordinate tfsfSizeLeft (4, 4, 4
+#ifdef DEBUG_INFO
+                                       , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+                                       );
+  ParallelGridCoordinate tfsfSizeRight (4, 4, 4
+#ifdef DEBUG_INFO
+                                        , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+                                        );
+  ParallelGridCoordinate bufferSize (bufSize, bufSize, bufSize
+#ifdef DEBUG_INFO
+                                     , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+                                     );
+  ParallelGridCoordinate topologySize (2, 2, 2
+#ifdef DEBUG_INFO
+                                       , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+                                       );
 
 #if defined (GRID_1D)
 #define SCHEME_TYPE (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy))
@@ -74,7 +92,7 @@ int main (int argc, char** argv)
 
   bool isDoubleMaterialPrecision = false;
 
-  ParallelYeeGridLayout<SCHEME_TYPE, E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSizeLetf, tfsfSizeRight, ANGLES, isDoubleMaterialPrecision);
+  ParallelYeeGridLayout<SCHEME_TYPE, E_CENTERED> yeeLayout (overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ANGLES, isDoubleMaterialPrecision);
   yeeLayout.Initialize (&parallelGridCore);
 
   ParallelGrid grid (overallSize, bufferSize, 0, yeeLayout.getSizeForCurNode ());
@@ -98,13 +116,25 @@ int main (int argc, char** argv)
 #endif
 
 #ifdef GRID_1D
-    GridCoordinate1D pos (i, CoordinateType::X);
+        GridCoordinate1D pos (i
+#ifdef DEBUG_INFO
+          , CoordinateType::X
+#endif
+        );
 #endif
 #ifdef GRID_2D
-    GridCoordinate2D pos (i, j, CoordinateType::X, CoordinateType::Y);
+        GridCoordinate2D pos (i, j
+#ifdef DEBUG_INFO
+          , CoordinateType::X, CoordinateType::Y
+#endif
+        );
 #endif
 #ifdef GRID_3D
-    GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+        GridCoordinate3D pos (i, j, k
+#ifdef DEBUG_INFO
+          , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+        );
 #endif
 
     grid.setFieldPointValue (val, pos);
@@ -144,13 +174,25 @@ int main (int argc, char** argv)
 #endif
       {
 #ifdef GRID_1D
-        GridCoordinate1D pos (i, CoordinateType::X);
+        GridCoordinate1D pos (i
+#ifdef DEBUG_INFO
+          , CoordinateType::X
+#endif
+        );
 #endif
 #ifdef GRID_2D
-        GridCoordinate2D pos (i, j, CoordinateType::X, CoordinateType::Y);
+        GridCoordinate2D pos (i, j
+#ifdef DEBUG_INFO
+          , CoordinateType::X, CoordinateType::Y
+#endif
+        );
 #endif
 #ifdef GRID_3D
-        GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+        GridCoordinate3D pos (i, j, k
+#ifdef DEBUG_INFO
+          , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+        );
 #endif
 
         FieldPointValue *value = grid.getFieldPointValue (pos);
@@ -172,12 +214,12 @@ int main (int argc, char** argv)
 
 #ifdef DYNAMIC_GRID
 #ifdef MPI_CLOCK
-    printf ("#### %d : %f\n", ParallelGrid::getParallelCore ()->getProcessId (),
-      ParallelGrid::getParallelCore ()->getCalcClock (ParallelGrid::getParallelCore ()->getProcessId ()).getFP ());
+    //printf ("#### %d : %f\n", ParallelGrid::getParallelCore ()->getProcessId (),
+    //  ParallelGrid::getParallelCore ()->getCalcClock (ParallelGrid::getParallelCore ()->getProcessId ()).getFP ());
 #else
-    printf ("#### %d : %d %d\n", ParallelGrid::getParallelCore ()->getProcessId (),
-      ParallelGrid::getParallelCore ()->getCalcClock (ParallelGrid::getParallelCore ()->getProcessId ()).getVal ().tv_sec,
-      ParallelGrid::getParallelCore ()->getCalcClock (ParallelGrid::getParallelCore ()->getProcessId ()).getVal ().tv_nsec);
+    //printf ("#### %d : %d %d\n", ParallelGrid::getParallelCore ()->getProcessId (),
+    //  ParallelGrid::getParallelCore ()->getCalcClock (ParallelGrid::getParallelCore ()->getProcessId ()).getVal ().tv_sec,
+    //  ParallelGrid::getParallelCore ()->getCalcClock (ParallelGrid::getParallelCore ()->getProcessId ()).getVal ().tv_nsec);
 #endif
 #endif
 
