@@ -10,6 +10,20 @@ For additional info on current project development status and future plans check
 
 Build is done using cmake. Also there are build and run scripts you could find useful.
 
+## Prerequisites
+
+Cuda build requires `cmake >= 3.8`. Cuda builds with older versions of cmake are not supported. To manually build `cmake` run next commands:
+
+```sh
+./install-cmake.sh
+export PATH=`pwd`/Third-party/cmake/bin:$PATH
+```
+
+Non-cuda builds support `cmake >= 3.0.2`, but `CMakeLists.txt` will still require 3.8 version. To build with older versions run next commands:
+```sh
+sed -i 's/cmake_minimum_required(VERSION 3\.8)/cmake_minimum_required(VERSION 3\.0\.2)/' CMakeLists.txt
+```
+
 ## Build
 
 ```sh

@@ -90,54 +90,54 @@ public:
   /*
    * Get coordinate of circut field component
    */
-  TC getExCircuitElement (TC, LayoutDirection) const;
-  TC getEyCircuitElement (TC, LayoutDirection) const;
-  TC getEzCircuitElement (TC, LayoutDirection) const;
-  TC getHxCircuitElement (TC, LayoutDirection) const;
-  TC getHyCircuitElement (TC, LayoutDirection) const;
-  TC getHzCircuitElement (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TC getExCircuitElement (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TC getEyCircuitElement (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TC getEzCircuitElement (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TC getHxCircuitElement (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TC getHyCircuitElement (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TC getHzCircuitElement (TC, LayoutDirection) const;
 
   /*
    * Get size of field component grid
    */
-  TC getSize () const
+  CUDA_DEVICE CUDA_HOST TC getSize () const
   {
     return size;
   }
-  TC getEpsSize () const
+  CUDA_DEVICE CUDA_HOST TC getEpsSize () const
   {
     return sizeEps;
   }
-  TC getMuSize () const
+  CUDA_DEVICE CUDA_HOST TC getMuSize () const
   {
     return sizeEps;
   }
-  TC getExSize () const
+  CUDA_DEVICE CUDA_HOST TC getExSize () const
   {
     return sizeEx;
   }
-  TC getEySize () const
+  CUDA_DEVICE CUDA_HOST TC getEySize () const
   {
     return sizeEy;
   }
-  TC getEzSize () const
+  CUDA_DEVICE CUDA_HOST TC getEzSize () const
   {
     return sizeEz;
   }
-  TC getHxSize () const
+  CUDA_DEVICE CUDA_HOST TC getHxSize () const
   {
     return sizeHx;
   }
-  TC getHySize () const
+  CUDA_DEVICE CUDA_HOST TC getHySize () const
   {
     return sizeHy;
   }
-  TC getHzSize () const
+  CUDA_DEVICE CUDA_HOST TC getHzSize () const
   {
     return sizeHz;
   }
 
-  TC getSizePML () const
+  CUDA_DEVICE CUDA_HOST TC getSizePML () const
   {
     return leftBorderPML;
   }
@@ -145,27 +145,27 @@ public:
   /*
    * Get start coordinate of field component
    */
-  TC getExStartDiff () const
+  CUDA_DEVICE CUDA_HOST TC getExStartDiff () const
   {
     return minExCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
-  TC getEyStartDiff () const
+  CUDA_DEVICE CUDA_HOST TC getEyStartDiff () const
   {
     return minEyCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
-  TC getEzStartDiff () const
+  CUDA_DEVICE CUDA_HOST TC getEzStartDiff () const
   {
     return minEzCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
-  TC getHxStartDiff () const
+  CUDA_DEVICE CUDA_HOST TC getHxStartDiff () const
   {
     return minHxCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
-  TC getHyStartDiff () const
+  CUDA_DEVICE CUDA_HOST TC getHyStartDiff () const
   {
     return minHyCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
-  TC getHzStartDiff () const
+  CUDA_DEVICE CUDA_HOST TC getHzStartDiff () const
   {
     return minHzCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
@@ -173,27 +173,27 @@ public:
   /*
    * Get end coordinate of field component
    */
-  TC getExEndDiff () const
+  CUDA_DEVICE CUDA_HOST TC getExEndDiff () const
   {
     return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minExCoord;
   }
-  TC getEyEndDiff () const
+  CUDA_DEVICE CUDA_HOST TC getEyEndDiff () const
   {
     return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minEyCoord;
   }
-  TC getEzEndDiff () const
+  CUDA_DEVICE CUDA_HOST TC getEzEndDiff () const
   {
     return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minEzCoord;
   }
-  TC getHxEndDiff () const
+  CUDA_DEVICE CUDA_HOST TC getHxEndDiff () const
   {
     return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minHxCoord;
   }
-  TC getHyEndDiff () const
+  CUDA_DEVICE CUDA_HOST TC getHyEndDiff () const
   {
     return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minHyCoord;
   }
-  TC getHzEndDiff () const
+  CUDA_DEVICE CUDA_HOST TC getHzEndDiff () const
   {
     return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minHzCoord;
   }
@@ -201,39 +201,39 @@ public:
   /*
    * Get minimum coordinate of field component
    */
-  TC getZeroCoord () const
+  CUDA_DEVICE CUDA_HOST TC getZeroCoord () const
   {
     return zeroCoord;
   }
-  TC getMinEpsCoord () const
+  CUDA_DEVICE CUDA_HOST TC getMinEpsCoord () const
   {
     return minEpsCoord;
   }
-  TC getMinMuCoord () const
+  CUDA_DEVICE CUDA_HOST TC getMinMuCoord () const
   {
     return minMuCoord;
   }
-  TC getMinExCoord () const
+  CUDA_DEVICE CUDA_HOST TC getMinExCoord () const
   {
     return minExCoord;
   }
-  TC getMinEyCoord () const
+  CUDA_DEVICE CUDA_HOST TC getMinEyCoord () const
   {
     return minEyCoord;
   }
-  TC getMinEzCoord () const
+  CUDA_DEVICE CUDA_HOST TC getMinEzCoord () const
   {
     return minEzCoord;
   }
-  TC getMinHxCoord () const
+  CUDA_DEVICE CUDA_HOST TC getMinHxCoord () const
   {
     return minHxCoord;
   }
-  TC getMinHyCoord () const
+  CUDA_DEVICE CUDA_HOST TC getMinHyCoord () const
   {
     return minHyCoord;
   }
-  TC getMinHzCoord () const
+  CUDA_DEVICE CUDA_HOST TC getMinHzCoord () const
   {
     return minHzCoord;
   }
@@ -241,39 +241,39 @@ public:
   /*
    * Get minimum real coordinate of field component
    */
-  TCFP getZeroCoordFP () const
+  CUDA_DEVICE CUDA_HOST TCFP getZeroCoordFP () const
   {
     return zeroCoordFP;
   }
-  TCFP getMinEpsCoordFP () const
+  CUDA_DEVICE CUDA_HOST TCFP getMinEpsCoordFP () const
   {
     return minEpsCoordFP;
   }
-  TCFP getMinMuCoordFP () const
+  CUDA_DEVICE CUDA_HOST TCFP getMinMuCoordFP () const
   {
     return minMuCoordFP;
   }
-  TCFP getMinExCoordFP () const
+  CUDA_DEVICE CUDA_HOST TCFP getMinExCoordFP () const
   {
     return minExCoordFP;
   }
-  TCFP getMinEyCoordFP () const
+  CUDA_DEVICE CUDA_HOST TCFP getMinEyCoordFP () const
   {
     return minEyCoordFP;
   }
-  TCFP getMinEzCoordFP () const
+  CUDA_DEVICE CUDA_HOST TCFP getMinEzCoordFP () const
   {
     return minEzCoordFP;
   }
-  TCFP getMinHxCoordFP () const
+  CUDA_DEVICE CUDA_HOST TCFP getMinHxCoordFP () const
   {
     return minHxCoordFP;
   }
-  TCFP getMinHyCoordFP () const
+  CUDA_DEVICE CUDA_HOST TCFP getMinHyCoordFP () const
   {
     return minHyCoordFP;
   }
-  TCFP getMinHzCoordFP () const
+  CUDA_DEVICE CUDA_HOST TCFP getMinHzCoordFP () const
   {
     return minHzCoordFP;
   }
@@ -281,35 +281,35 @@ public:
   /*
    * Get real coordinate of field component by its coordinate
    */
-  TCFP getEpsCoordFP (TC coord) const
+  CUDA_DEVICE CUDA_HOST TCFP getEpsCoordFP (TC coord) const
   {
     return convertCoord (coord - minEpsCoord) + minEpsCoordFP;
   }
-  TCFP getMuCoordFP (TC coord) const
+  CUDA_DEVICE CUDA_HOST TCFP getMuCoordFP (TC coord) const
   {
     return convertCoord (coord - minMuCoord) + minMuCoordFP;
   }
-  TCFP getExCoordFP (TC coord) const
+  CUDA_DEVICE CUDA_HOST TCFP getExCoordFP (TC coord) const
   {
     return convertCoord (coord - minExCoord) + minExCoordFP;
   }
-  TCFP getEyCoordFP (TC coord) const
+  CUDA_DEVICE CUDA_HOST TCFP getEyCoordFP (TC coord) const
   {
     return convertCoord (coord - minEyCoord) + minEyCoordFP;
   }
-  TCFP getEzCoordFP (TC coord) const
+  CUDA_DEVICE CUDA_HOST TCFP getEzCoordFP (TC coord) const
   {
     return convertCoord (coord - minEzCoord) + minEzCoordFP;
   }
-  TCFP getHxCoordFP (TC coord) const
+  CUDA_DEVICE CUDA_HOST TCFP getHxCoordFP (TC coord) const
   {
     return convertCoord (coord - minHxCoord) + minHxCoordFP;
   }
-  TCFP getHyCoordFP (TC coord) const
+  CUDA_DEVICE CUDA_HOST TCFP getHyCoordFP (TC coord) const
   {
     return convertCoord (coord - minHyCoord) + minHyCoordFP;
   }
-  TCFP getHzCoordFP (TC coord) const
+  CUDA_DEVICE CUDA_HOST TCFP getHzCoordFP (TC coord) const
   {
     return convertCoord (coord - minHzCoord) + minHzCoordFP;
   }
@@ -317,35 +317,35 @@ public:
   /*
    * Get coordinate of field component by its real coordinate
    */
-  TC getEpsCoord (TCFP coord) const
+  CUDA_DEVICE CUDA_HOST TC getEpsCoord (TCFP coord) const
   {
     return convertCoord (coord - minEpsCoordFP) + minEpsCoord;
   }
-  TC getMuCoord (TCFP coord) const
+  CUDA_DEVICE CUDA_HOST TC getMuCoord (TCFP coord) const
   {
     return convertCoord (coord - minMuCoordFP) + minMuCoord;
   }
-  TC getExCoord (TCFP coord) const
+  CUDA_DEVICE CUDA_HOST TC getExCoord (TCFP coord) const
   {
     return convertCoord (coord - minExCoordFP) + minExCoord;
   }
-  TC getEyCoord (TCFP coord) const
+  CUDA_DEVICE CUDA_HOST TC getEyCoord (TCFP coord) const
   {
     return convertCoord (coord - minEyCoordFP) + minEyCoord;
   }
-  TC getEzCoord (TCFP coord) const
+  CUDA_DEVICE CUDA_HOST TC getEzCoord (TCFP coord) const
   {
     return convertCoord (coord - minEzCoordFP) + minEzCoord;
   }
-  TC getHxCoord (TCFP coord) const
+  CUDA_DEVICE CUDA_HOST TC getHxCoord (TCFP coord) const
   {
     return convertCoord (coord - minHxCoordFP) + minHxCoord;
   }
-  TC getHyCoord (TCFP coord) const
+  CUDA_DEVICE CUDA_HOST TC getHyCoord (TCFP coord) const
   {
     return convertCoord (coord - minHyCoordFP) + minHyCoord;
   }
-  TC getHzCoord (TCFP coord) const
+  CUDA_DEVICE CUDA_HOST TC getHzCoord (TCFP coord) const
   {
     return convertCoord (coord - minHzCoordFP) + minHzCoord;
   }
@@ -353,36 +353,36 @@ public:
   /*
    * PML
    */
-  TC getLeftBorderPML () const
+  CUDA_DEVICE CUDA_HOST TC getLeftBorderPML () const
   {
     return leftBorderPML;
   }
-  TC getRightBorderPML () const
+  CUDA_DEVICE CUDA_HOST TC getRightBorderPML () const
   {
     return rightBorderPML;
   }
 
-  bool isExInPML (TC coord) const
+  CUDA_DEVICE CUDA_HOST bool isExInPML (TC coord) const
   {
     return isInPML (getExCoordFP (coord));
   }
-  bool isEyInPML (TC coord) const
+  CUDA_DEVICE CUDA_HOST bool isEyInPML (TC coord) const
   {
     return isInPML (getEyCoordFP (coord));
   }
-  bool isEzInPML (TC coord) const
+  CUDA_DEVICE CUDA_HOST bool isEzInPML (TC coord) const
   {
     return isInPML (getEzCoordFP (coord));
   }
-  bool isHxInPML (TC coord) const
+  CUDA_DEVICE CUDA_HOST bool isHxInPML (TC coord) const
   {
     return isInPML (getHxCoordFP (coord));
   }
-  bool isHyInPML (TC coord) const
+  CUDA_DEVICE CUDA_HOST bool isHyInPML (TC coord) const
   {
     return isInPML (getHyCoordFP (coord));
   }
-  bool isHzInPML (TC coord) const
+  CUDA_DEVICE CUDA_HOST bool isHzInPML (TC coord) const
   {
     return isInPML (getHzCoordFP (coord));
   }
@@ -390,54 +390,54 @@ public:
   /*
    * Total field / scattered field
    */
-  TC getLeftBorderTFSF () const
+  CUDA_DEVICE CUDA_HOST TC getLeftBorderTFSF () const
   {
     return leftBorderTotalField;
   }
-  TC getRightBorderTFSF () const
+  CUDA_DEVICE CUDA_HOST TC getRightBorderTFSF () const
   {
     return rightBorderTotalField;
   }
-  TCFP getZeroIncCoordFP () const
+  CUDA_DEVICE CUDA_HOST TCFP getZeroIncCoordFP () const
   {
     return zeroIncCoordFP;
   }
-  bool doNeedTFSFUpdateExBorder (TC, LayoutDirection) const;
-  bool doNeedTFSFUpdateEyBorder (TC, LayoutDirection) const;
-  bool doNeedTFSFUpdateEzBorder (TC, LayoutDirection) const;
-  bool doNeedTFSFUpdateHxBorder (TC, LayoutDirection) const;
-  bool doNeedTFSFUpdateHyBorder (TC, LayoutDirection) const;
-  bool doNeedTFSFUpdateHzBorder (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST bool doNeedTFSFUpdateExBorder (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST bool doNeedTFSFUpdateEyBorder (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST bool doNeedTFSFUpdateEzBorder (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST bool doNeedTFSFUpdateHxBorder (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST bool doNeedTFSFUpdateHyBorder (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST bool doNeedTFSFUpdateHzBorder (TC, LayoutDirection) const;
 
-  FPValue getIncidentWaveAngle1 () const
+  CUDA_DEVICE CUDA_HOST FPValue getIncidentWaveAngle1 () const
   {
     return incidentWaveAngle1;
   }
-  FPValue getIncidentWaveAngle2 () const
+  CUDA_DEVICE CUDA_HOST FPValue getIncidentWaveAngle2 () const
   {
     return incidentWaveAngle2;
   }
-  FPValue getIncidentWaveAngle3 () const
+  CUDA_DEVICE CUDA_HOST FPValue getIncidentWaveAngle3 () const
   {
     return incidentWaveAngle3;
   }
 
-  bool getIsDoubleMaterialPrecision () const
+  CUDA_DEVICE CUDA_HOST bool getIsDoubleMaterialPrecision () const
   {
     return isDoubleMaterialPrecision;
   }
 
-  FieldValue getExFromIncidentE (FieldValue valE) const;
-  FieldValue getEyFromIncidentE (FieldValue valE) const;
-  FieldValue getEzFromIncidentE (FieldValue valE) const;
-  FieldValue getHxFromIncidentH (FieldValue valH) const;
-  FieldValue getHyFromIncidentH (FieldValue valH) const;
-  FieldValue getHzFromIncidentH (FieldValue valH) const;
+  CUDA_DEVICE CUDA_HOST FieldValue getExFromIncidentE (FieldValue valE) const;
+  CUDA_DEVICE CUDA_HOST FieldValue getEyFromIncidentE (FieldValue valE) const;
+  CUDA_DEVICE CUDA_HOST FieldValue getEzFromIncidentE (FieldValue valE) const;
+  CUDA_DEVICE CUDA_HOST FieldValue getHxFromIncidentH (FieldValue valH) const;
+  CUDA_DEVICE CUDA_HOST FieldValue getHyFromIncidentH (FieldValue valH) const;
+  CUDA_DEVICE CUDA_HOST FieldValue getHzFromIncidentH (FieldValue valH) const;
 
   /**
    * Constructor of Yee grid
    */
-  YeeGridLayout (TC coordSize,
+  CUDA_DEVICE CUDA_HOST YeeGridLayout (TC coordSize,
                  TC sizePML,
                  TC sizeScatteredZoneLeft,
                  TC sizeScatteredZoneRight,
@@ -446,27 +446,27 @@ public:
                  FPValue incWaveAngle3, /**< psi */
                  bool doubleMaterialPrecision);
 
-  ~YeeGridLayout ()
+  CUDA_DEVICE CUDA_HOST ~YeeGridLayout ()
   {
   } /* ~YeeGridLayout */
 
-  FPValue getApproximateMaterial (Grid<TC> *, TC, TC);
-  FPValue getApproximateMaterial (Grid<TC> *, TC, TC, TC, TC);
-  FPValue getApproximateMaterial (Grid<TC> *, TC, TC, TC, TC, TC, TC, TC, TC);
-  FPValue getApproximateMetaMaterial (Grid<TC> *, Grid<TC> *, Grid<TC> *, TC, TC, FPValue &, FPValue &);
-  FPValue getApproximateMetaMaterial (Grid<TC> *, Grid<TC> *, Grid<TC> *, TC, TC, TC, TC, FPValue &, FPValue &);
-  FPValue getApproximateMetaMaterial (Grid<TC> *, Grid<TC> *, Grid<TC> *, TC, TC, TC, TC, TC, TC, TC, TC,
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (Grid<TC> *, TC, TC);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (Grid<TC> *, TC, TC, TC, TC);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (Grid<TC> *, TC, TC, TC, TC, TC, TC, TC, TC);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (Grid<TC> *, Grid<TC> *, Grid<TC> *, TC, TC, FPValue &, FPValue &);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (Grid<TC> *, Grid<TC> *, Grid<TC> *, TC, TC, TC, TC, FPValue &, FPValue &);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (Grid<TC> *, Grid<TC> *, Grid<TC> *, TC, TC, TC, TC, TC, TC, TC, TC,
                                       FPValue &, FPValue &);
-  FPValue getMetaMaterial (const TC &, GridType, Grid<TC> *, GridType, Grid<TC> *, GridType, Grid<TC> *, GridType,
+  CUDA_DEVICE CUDA_HOST FPValue getMetaMaterial (const TC &, GridType, Grid<TC> *, GridType, Grid<TC> *, GridType, Grid<TC> *, GridType,
                            FPValue &, FPValue &);
-  FPValue getMaterial (const TC &, GridType, Grid<TC> *, GridType);
+  CUDA_DEVICE CUDA_HOST FPValue getMaterial (const TC &, GridType, Grid<TC> *, GridType);
 
   template <bool isMetaMaterial>
-  void initCoordinates (const TC &, GridType, TC &, TC &, TC &, TC &, TC &, TC &, TC &, TC &);
+  CUDA_DEVICE CUDA_HOST void initCoordinates (const TC &, GridType, TC &, TC &, TC &, TC &, TC &, TC &, TC &, TC &);
 
 private:
 
-  bool isInPML (TCFP realCoordFP) const;
+  CUDA_DEVICE CUDA_HOST bool isInPML (TCFP realCoordFP) const;
 }; /* YeeGridLayout */
 
 class YeeGridLayoutHelper
@@ -477,14 +477,14 @@ class YeeGridLayoutHelper
 private:
 
   template<int8_t Offset>
-  static bool tfsfBorder (FPValue coordFP, FPValue borderFP)
+  CUDA_DEVICE CUDA_HOST static bool tfsfBorder (FPValue coordFP, FPValue borderFP)
   {
     ASSERT (Offset > -10 && Offset < 10);
     return IS_FP_EXACT (coordFP, borderFP + Offset * FPValue (1) / FPValue (10));
   }
 
   template<int8_t Offset1, int8_t Offset2>
-  static bool tfsfBorder (FPValue coordFP, FPValue firstBorderFP, FPValue secondBorderFP)
+  CUDA_DEVICE CUDA_HOST static bool tfsfBorder (FPValue coordFP, FPValue firstBorderFP, FPValue secondBorderFP)
   {
     ASSERT (Offset1 > -10 && Offset1 < 10);
     ASSERT (Offset2 > -10 && Offset2 < 10);
@@ -493,41 +493,41 @@ private:
   }
 
   template<int8_t T>
-  static bool tfsfBorder1DFirst__1 (GridCoordinateFP1D coord, GridCoordinateFP1D leftBorderTotalFieldFP)
+  CUDA_DEVICE CUDA_HOST static bool tfsfBorder1DFirst__1 (GridCoordinateFP1D coord, GridCoordinateFP1D leftBorderTotalFieldFP)
   {
     return YeeGridLayoutHelper::tfsfBorder<T> (coord.get1 (), leftBorderTotalFieldFP.get1 ());
   }
   template<int8_t T>
-  static bool tfsfBorder1DSecond__1 (GridCoordinateFP1D coord, GridCoordinateFP1D rightBorderTotalFieldFP)
+  CUDA_DEVICE CUDA_HOST static bool tfsfBorder1DSecond__1 (GridCoordinateFP1D coord, GridCoordinateFP1D rightBorderTotalFieldFP)
   {
     return YeeGridLayoutHelper::tfsfBorder<T> (coord.get1 (), rightBorderTotalFieldFP.get1 ());
   }
   template<int8_t T1, int8_t T2>
-  static bool tfsfBorder2DFirst__1 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
+  CUDA_DEVICE CUDA_HOST static bool tfsfBorder2DFirst__1 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
   {
     return YeeGridLayoutHelper::tfsfBorder<T1, -T1> (coord.get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
            && YeeGridLayoutHelper::tfsfBorder<T2> (coord.get2 (), leftBorderTotalFieldFP.get2 ());
   }
   template<int8_t T1, int8_t T2>
-  static bool tfsfBorder2DSecond__1 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
+  CUDA_DEVICE CUDA_HOST static bool tfsfBorder2DSecond__1 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
   {
     return YeeGridLayoutHelper::tfsfBorder<T1, -T1> (coord.get1 (), leftBorderTotalFieldFP.get1 (), rightBorderTotalFieldFP.get1 ())
            && YeeGridLayoutHelper::tfsfBorder<T2> (coord.get2 (), rightBorderTotalFieldFP.get2 ());
   }
   template<int8_t T1, int8_t T2>
-  static bool tfsfBorder2DFirst__2 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
+  CUDA_DEVICE CUDA_HOST static bool tfsfBorder2DFirst__2 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
   {
     return YeeGridLayoutHelper::tfsfBorder<T2> (coord.get1 (), leftBorderTotalFieldFP.get1 ())
            && YeeGridLayoutHelper::tfsfBorder<T1, -T1> (coord.get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ());
   }
   template<int8_t T1, int8_t T2>
-  static bool tfsfBorder2DSecond__2 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
+  CUDA_DEVICE CUDA_HOST static bool tfsfBorder2DSecond__2 (GridCoordinateFP2D coord, GridCoordinateFP2D leftBorderTotalFieldFP, GridCoordinateFP2D rightBorderTotalFieldFP)
   {
     return YeeGridLayoutHelper::tfsfBorder<T2> (coord.get1 (), rightBorderTotalFieldFP.get1 ())
            && YeeGridLayoutHelper::tfsfBorder<T1, -T1> (coord.get2 (), leftBorderTotalFieldFP.get2 (), rightBorderTotalFieldFP.get2 ());
   }
 
-  static bool doNeedTFSFUpdateBorder (LayoutDirection dir,
+  CUDA_DEVICE CUDA_HOST static bool doNeedTFSFUpdateBorder (LayoutDirection dir,
                                       bool condL,
                                       bool condR,
                                       bool condD,
@@ -578,7 +578,7 @@ private:
     return match;
   }
 
-  static bool isInPML1D (GridCoordinateFP1D realCoordFP, GridCoordinateFP1D zeroCoordFP,
+  CUDA_DEVICE CUDA_HOST static bool isInPML1D (GridCoordinateFP1D realCoordFP, GridCoordinateFP1D zeroCoordFP,
                          GridCoordinate1D leftBorderPML, GridCoordinate1D rightBorderPML)
   {
     GridCoordinateFP1D coordLeftBorderPMLFP = convertCoord (leftBorderPML) + zeroCoordFP;
@@ -594,7 +594,7 @@ private:
     return isInXPML;
   }
 
-  static bool isInPML2D (GridCoordinateFP2D realCoordFP, GridCoordinateFP2D zeroCoordFP,
+  CUDA_DEVICE CUDA_HOST static bool isInPML2D (GridCoordinateFP2D realCoordFP, GridCoordinateFP2D zeroCoordFP,
                          GridCoordinate2D leftBorderPML, GridCoordinate2D rightBorderPML)
   {
     GridCoordinateFP2D coordLeftBorderPMLFP = convertCoord (leftBorderPML) + zeroCoordFP;
@@ -612,7 +612,7 @@ private:
     return isInXPML || isInYPML;
   }
 
-  static bool isInPML3D (GridCoordinateFP3D realCoordFP, GridCoordinateFP3D zeroCoordFP,
+  CUDA_DEVICE CUDA_HOST static bool isInPML3D (GridCoordinateFP3D realCoordFP, GridCoordinateFP3D zeroCoordFP,
                          GridCoordinate3D leftBorderPML, GridCoordinate3D rightBorderPML)
   {
     GridCoordinateFP3D coordLeftBorderPMLFP = convertCoord (leftBorderPML) + zeroCoordFP;
@@ -634,7 +634,7 @@ private:
 };
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-FPValue
+CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<YeeGridLayout::TC> *gridMaterial,
                                        TC coord1,
                                        TC coord2)
@@ -647,7 +647,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<YeeGridLa
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-FPValue
+CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMaterial,
                                        TC coord1,
                                        TC coord2,
@@ -666,7 +666,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *grid
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-FPValue
+CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMaterial,
                                        TC coord1,
                                        TC coord2,
@@ -697,7 +697,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *grid
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-FPValue
+CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
                                            Grid<TC> *gridMaterialOmega,
                                            Grid<TC> *gridMaterialGamma,
@@ -731,7 +731,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-FPValue
+CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
                                            Grid<TC> *gridMaterialOmega,
                                            Grid<TC> *gridMaterialGamma,
@@ -781,7 +781,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-FPValue
+CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
                                            Grid<TC> *gridMaterialOmega,
                                            Grid<TC> *gridMaterialGamma,
@@ -863,7 +863,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-FPValue
+CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getMetaMaterial (const TC &posAbs,
                                 GridType typeOfField,
                                 Grid<TC> *gridMaterial,
@@ -947,7 +947,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getMetaMaterial (const TC &posAbs,
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-FPValue
+CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
                             GridType typeOfField,
                             Grid<TC> *gridMaterial,
@@ -1034,7 +1034,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
  */
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template <bool isMetaMaterial>
-void
+CUDA_DEVICE CUDA_HOST void
 YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
                                      GridType typeOfField,
                                      TC &absPos11,
@@ -1251,7 +1251,7 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-typename YeeGridLayout<Type, TCoord, layout_type>::TC
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getExCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minExCoord) + minExCoordFP;
@@ -1294,7 +1294,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getExCircuitElement (TC coord, LayoutD
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-typename YeeGridLayout<Type, TCoord, layout_type>::TC
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getEyCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minEyCoord) + minEyCoordFP;
@@ -1337,7 +1337,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getEyCircuitElement (TC coord, LayoutD
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-typename YeeGridLayout<Type, TCoord, layout_type>::TC
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getEzCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minEzCoord) + minEzCoordFP;
@@ -1380,7 +1380,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getEzCircuitElement (TC coord, LayoutD
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-typename YeeGridLayout<Type, TCoord, layout_type>::TC
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getHxCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minHxCoord) + minHxCoordFP;
@@ -1423,7 +1423,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getHxCircuitElement (TC coord, LayoutD
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-typename YeeGridLayout<Type, TCoord, layout_type>::TC
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getHyCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minHyCoord) + minHyCoordFP;
@@ -1466,7 +1466,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getHyCircuitElement (TC coord, LayoutD
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-typename YeeGridLayout<Type, TCoord, layout_type>::TC
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
 YeeGridLayout<Type, TCoord, layout_type>::getHzCircuitElement (TC coord, LayoutDirection dir) const
 {
   TCFP coordFP = convertCoord (coord - minHzCoord) + minHzCoordFP;
@@ -1526,40 +1526,40 @@ typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordi
 
 /* Dim1_ExHy */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   return - valE;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   return - valH;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
@@ -1568,41 +1568,41 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1
 
 /* Dim1_ExHz */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   return valE;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH;
@@ -1610,40 +1610,40 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1
 
 /* Dim1_EyHx */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return - valE;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
@@ -1652,41 +1652,41 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1
 
 /* Dim1_EyHz */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return - valE;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH;
@@ -1694,40 +1694,40 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1
 
 /* Dim1_EzHx */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   return valE;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
@@ -1736,40 +1736,40 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1
 
 /* Dim1_EzHy */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   return valE;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   return - valH;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
@@ -1778,39 +1778,39 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1
 
 /* Dim2_TEx */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) ( - cos (incidentWaveAngle1));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) (sin (incidentWaveAngle1));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
@@ -1819,39 +1819,39 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2D
 
 /* Dim2_TEy */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) (- cos (incidentWaveAngle1));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) (sin (incidentWaveAngle1));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   return - valH;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
@@ -1860,40 +1860,40 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2D
 
 /* Dim2_TEz */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) (sin (incidentWaveAngle2));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) ( - cos (incidentWaveAngle2));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH;
@@ -1901,40 +1901,40 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2D
 
 /* Dim2_TMx */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   return valE;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   return valH * (FPValue) (cos (incidentWaveAngle1));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH * (FPValue) (sin (incidentWaveAngle1));
@@ -1942,40 +1942,40 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2D
 
 /* Dim2_TMy */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return - valE;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH * (FPValue) (cos (incidentWaveAngle1));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH * (FPValue) (sin (incidentWaveAngle1));
@@ -1983,39 +1983,39 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2D
 
 /* Dim2_TMz */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   return valE;
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH * (FPValue) (sin (incidentWaveAngle2));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   return valH * (FPValue) (- cos (incidentWaveAngle2));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
@@ -2024,37 +2024,37 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2D
 
 /* Dim3 */
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getExFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) (sin (incidentWaveAngle3) * sin (incidentWaveAngle1));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH * (FPValue) (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   return valH * (FPValue) (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
 }
 template <>
-inline FieldValue
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH * (FPValue) (cos (incidentWaveAngle3) * sin (incidentWaveAngle1));

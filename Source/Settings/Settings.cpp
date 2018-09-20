@@ -12,10 +12,35 @@
 Settings solverSettings;
 
 /**
+ * Perform initialization of settings
+ */
+CUDA_HOST
+void
+Settings::Initialize ()
+{
+#ifdef CUDA_ENABLED
+  prepareDeviceSettings ();
+#endif /* CUDA_ENABLED */
+} /* Settings::Initialize */
+
+/**
+ * Perform uninitialization of settings
+ */
+CUDA_HOST
+void
+Settings::Uninitialize ()
+{
+#ifdef CUDA_ENABLED
+  freeDeviceSettings ();
+#endif /* CUDA_ENABLED */
+} /* Settings::Uninitialize */
+
+/**
  * Parse single command line argument
  *
  * @return exit code
  */
+CUDA_HOST
 int
 Settings::parseArg (int &index, /**< out: current argument index */
                     int argc, /**< total number of indexes */
@@ -245,6 +270,7 @@ Settings::parseArg (int &index, /**< out: current argument index */
  *
  * @return exit code
  */
+CUDA_HOST
 int
 Settings::setFromCmd (int argc, /**< number of arguments */
                       char **argv, /**< arguments */
@@ -287,6 +313,7 @@ Settings::setFromCmd (int argc, /**< number of arguments */
  *
  * @return exit code
  */
+CUDA_HOST
 int
 Settings::loadCmdFromFile (std::string fileName) /**< name of file to load from */
 {
@@ -392,6 +419,7 @@ Settings::loadCmdFromFile (std::string fileName) /**< name of file to load from 
  *
  * @return exit code
  */
+CUDA_HOST
 int
 Settings::saveCmdToFile (int argc, /**< number of arguments */
                          char **argv, /**< arguments */
@@ -422,11 +450,14 @@ Settings::saveCmdToFile (int argc, /**< number of arguments */
 /**
  * Set settings from command line arguments
  */
+CUDA_HOST
 void
 Settings::SetupFromCmd (int argc, /**< number of arguments */
                         char **argv) /**< arguments */
 {
   int status = setFromCmd (argc, argv, true);
+
+  Initialize ();
 
   switch (status)
   {

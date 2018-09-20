@@ -48,6 +48,8 @@ class Settings
 {
 private:
 
+  Settings *d_cudaSolverSettings;
+
   /**
    * Number of dimensions
    */
@@ -74,16 +76,22 @@ private:
 
 private:
 
-  int parseArg (int &, int, char **, bool);
-  int setFromCmd (int, char **, bool);
-  int loadCmdFromFile (std::string);
-  int saveCmdToFile (int, char **, std::string);
+  CUDA_HOST int parseArg (int &, int, char **, bool);
+  CUDA_HOST int setFromCmd (int, char **, bool);
+  CUDA_HOST int loadCmdFromFile (std::string);
+  CUDA_HOST int saveCmdToFile (int, char **, std::string);
+
+#ifdef CUDA_ENABLED
+  CUDA_HOST void prepareDeviceSettings ();
+  CUDA_HOST void freeDeviceSettings ();
+#endif /* CUDA_ENABLED */
 
 public:
 
   /**
    * Default constructor
    */
+  CUDA_HOST
   Settings ()
     : dimension (0)
     , schemeType (SchemeType::NONE)
@@ -103,17 +111,16 @@ public:
   {
   } /* Settings */
 
-  /**
-   * Destructor
-   */
-  ~Settings ()
-  {
-  } /* ~Settings */
+  CUDA_HOST ~Settings () {}
 
+  CUDA_HOST void Initialize ();
+  CUDA_HOST void Uninitialize ();
+
+  CUDA_HOST
   void SetupFromCmd (int, char **);
 
 #define SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
-  fieldType getterName () \
+  CUDA_DEVICE CUDA_HOST fieldType getterName () \
   { \
     return fieldName; \
   }
@@ -130,10 +137,21 @@ public:
 #include "Settings.inc.h"
 
   /**
+   * Get pointer to settings object, which is allocated on GPU
+   *
+   * @return pointer to settings object, which is allocated on GPU
+   */
+  Settings *getCudaSettings () const
+  {
+    return d_cudaSolverSettings;
+  } /* Settings::getCudaSettings */
+
+  /**
    * Get number of dimensions
    *
    * @return number of dimensions
    */
+  CUDA_DEVICE CUDA_HOST
   int getDimension () const
   {
     return dimension;
@@ -144,11 +162,18 @@ public:
    *
    * @return scheme type
    */
+  CUDA_DEVICE CUDA_HOST
   SchemeType getSchemeType () const
   {
     return schemeType;
   } /* Settings::getSchemeType */
 }; /* Settings */
+
+#ifdef CUDA_ENABLED
+#if ! defined (SETTINGS_CU) && defined (CUDA_SOURCES)
+extern __constant__ Settings *cudaSolverSettings;
+#endif
+#endif /* CUDA_ENABLED */
 
 extern Settings solverSettings;
 

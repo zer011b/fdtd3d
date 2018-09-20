@@ -2509,7 +2509,7 @@ ParallelGrid::nextTimeStep ()
 ParallelGridBase *
 ParallelGrid::gatherFullGrid () const
 {
-  ParallelGridBase *grid = new ParallelGridBase (totalSize, ParallelGridBase::timeStep, getName ().c_str ());
+  ParallelGridBase *grid = new ParallelGridBase (totalSize, ParallelGridBase::timeStep, getName ());
 
   /*
    * Fill new grid with values

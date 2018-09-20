@@ -604,9 +604,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -637,9 +637,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -670,9 +670,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -703,9 +703,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -736,9 +736,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -769,9 +769,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTem
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -802,9 +802,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -835,9 +835,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -868,9 +868,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -901,9 +901,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -934,9 +934,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -967,9 +967,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemp
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -1000,9 +1000,9 @@ Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> *pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> *) yeeLayout;
 
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
-                                                                               solverSettings.getBufferSize (),
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
                                                                                ct1, ct2, ct3);
 
   SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
@@ -1116,9 +1116,9 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
 {
   initCoordTypes ();
 
-  if (solverSettings.getDoUseNTFF ())
+  if (SOLVER_SETTINGS.getDoUseNTFF ())
   {
-    leftNTFF = TC::initAxesCoordinate (solverSettings.getNTFFSizeX (), solverSettings.getNTFFSizeY (), solverSettings.getNTFFSizeZ (),
+    leftNTFF = TC::initAxesCoordinate (SOLVER_SETTINGS.getNTFFSizeX (), SOLVER_SETTINGS.getNTFFSizeY (), SOLVER_SETTINGS.getNTFFSizeZ (),
                                        ct1, ct2, ct3);
     rightNTFF = layout->getEzSize () - leftNTFF + TC (1, 1, 1
 #ifdef DEBUG_INFO
@@ -1127,7 +1127,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
                                                       );
   }
 
-  if (solverSettings.getDoUseParallelGrid ())
+  if (SOLVER_SETTINGS.getDoUseParallelGrid ())
   {
 #ifndef PARALLEL_GRID
     ALWAYS_ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.")
@@ -1161,7 +1161,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
     Hy = doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "Hy") : NULLPTR;
     Hz = doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "Hz") : NULLPTR;
 
-    if (solverSettings.getDoUsePML ())
+    if (SOLVER_SETTINGS.getDoUsePML ())
     {
       Dx = doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "Dx") : NULLPTR;
       Dy = doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "Dy") : NULLPTR;
@@ -1170,7 +1170,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
       By = doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "By") : NULLPTR;
       Bz = doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "Bz") : NULLPTR;
 
-      if (solverSettings.getDoUseMetamaterials ())
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         D1x = doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "D1x") : NULLPTR;
         D1y = doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "D1y") : NULLPTR;
@@ -1185,7 +1185,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
       SigmaZ = doNeedSigmaZ ? new Grid<TC> (layout->getEpsSize (), 0, "SigmaZ") : NULLPTR;
     }
 
-    if (solverSettings.getDoUseAmplitudeMode ())
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
     {
       ExAmplitude = doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "ExAmp") : NULLPTR;
       EyAmplitude = doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "EyAmp") : NULLPTR;
@@ -1195,7 +1195,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
       HzAmplitude = doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "HzAmp") : NULLPTR;
     }
 
-    if (solverSettings.getDoUseMetamaterials ())
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
       OmegaPE = new Grid<TC> (layout->getEpsSize (), 0, "OmegaPE");
       GammaE = new Grid<TC> (layout->getEpsSize (), 0, "GammaE");
@@ -1211,7 +1211,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
     totalGammaM = GammaM;
   }
 
-  if (solverSettings.getDoUseTFSF ())
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
     EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(totSize.get1 ())
 #ifdef DEBUG_INFO
@@ -1225,44 +1225,44 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
                                                               ), 0, "HInc");
   }
 
-  ASSERT (!solverSettings.getDoUseTFSF ()
-          || (solverSettings.getDoUseTFSF ()
+  ASSERT (!SOLVER_SETTINGS.getDoUseTFSF ()
+          || (SOLVER_SETTINGS.getDoUseTFSF ()
               && (yeeLayout->getLeftBorderTFSF () != TC (0, 0, 0, ct1, ct2, ct3)
                   || yeeLayout->getRightBorderTFSF () != yeeLayout->getSize ())));
 
-  ASSERT (!solverSettings.getDoUsePML ()
-          || (solverSettings.getDoUsePML () && (yeeLayout->getSizePML () != TC (0, 0, 0, ct1, ct2, ct3))));
+  ASSERT (!SOLVER_SETTINGS.getDoUsePML ()
+          || (SOLVER_SETTINGS.getDoUsePML () && (yeeLayout->getSizePML () != TC (0, 0, 0, ct1, ct2, ct3))));
 
-  ASSERT (!solverSettings.getDoUseAmplitudeMode ()
-          || solverSettings.getDoUseAmplitudeMode () && solverSettings.getNumAmplitudeSteps () != 0);
+  ASSERT (!SOLVER_SETTINGS.getDoUseAmplitudeMode ()
+          || SOLVER_SETTINGS.getDoUseAmplitudeMode () && SOLVER_SETTINGS.getNumAmplitudeSteps () != 0);
 
 #ifdef COMPLEX_FIELD_VALUES
-  ASSERT (!solverSettings.getDoUseAmplitudeMode ());
+  ASSERT (!SOLVER_SETTINGS.getDoUseAmplitudeMode ());
 #endif /* COMPLEX_FIELD_VALUES */
 
-  if (solverSettings.getDoSaveAsBMP ())
+  if (SOLVER_SETTINGS.getDoSaveAsBMP ())
   {
     PaletteType palette = PaletteType::PALETTE_GRAY;
     OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
 
-    if (solverSettings.getDoUsePaletteGray ())
+    if (SOLVER_SETTINGS.getDoUsePaletteGray ())
     {
       palette = PaletteType::PALETTE_GRAY;
     }
-    else if (solverSettings.getDoUsePaletteRGB ())
+    else if (SOLVER_SETTINGS.getDoUsePaletteRGB ())
     {
       palette = PaletteType::PALETTE_BLUE_GREEN_RED;
     }
 
-    if (solverSettings.getDoUseOrthAxisX ())
+    if (SOLVER_SETTINGS.getDoUseOrthAxisX ())
     {
       orthogonalAxis = OrthogonalAxis::X;
     }
-    else if (solverSettings.getDoUseOrthAxisY ())
+    else if (SOLVER_SETTINGS.getDoUseOrthAxisY ())
     {
       orthogonalAxis = OrthogonalAxis::Y;
     }
-    else if (solverSettings.getDoUseOrthAxisZ ())
+    else if (SOLVER_SETTINGS.getDoUseOrthAxisZ ())
     {
       orthogonalAxis = OrthogonalAxis::Z;
     }
@@ -1279,7 +1279,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
     dumper1D[FILE_TYPE_BMP] = NULLPTR;
   }
 
-  if (solverSettings.getDoSaveAsDAT ())
+  if (SOLVER_SETTINGS.getDoSaveAsDAT ())
   {
     dumper[FILE_TYPE_DAT] = new DATDumper<TC> ();
     dumper1D[FILE_TYPE_DAT] = new DATDumper<GridCoordinate1D> ();
@@ -1290,7 +1290,7 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
     dumper1D[FILE_TYPE_DAT] = NULLPTR;
   }
 
-  if (solverSettings.getDoSaveAsTXT ())
+  if (SOLVER_SETTINGS.getDoSaveAsTXT ())
   {
     dumper[FILE_TYPE_TXT] = new TXTDumper<TC> ();
     dumper1D[FILE_TYPE_TXT] = new TXTDumper<GridCoordinate1D> ();
@@ -1301,12 +1301,12 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
     dumper1D[FILE_TYPE_TXT] = NULLPTR;
   }
 
-  if (!solverSettings.getEpsFileName ().empty ()
-      || !solverSettings.getMuFileName ().empty ()
-      || !solverSettings.getOmegaPEFileName ().empty ()
-      || !solverSettings.getOmegaPMFileName ().empty ()
-      || !solverSettings.getGammaEFileName ().empty ()
-      || !solverSettings.getGammaMFileName ().empty ())
+  if (!SOLVER_SETTINGS.getEpsFileName ().empty ()
+      || !SOLVER_SETTINGS.getMuFileName ().empty ()
+      || !SOLVER_SETTINGS.getOmegaPEFileName ().empty ()
+      || !SOLVER_SETTINGS.getOmegaPMFileName ().empty ()
+      || !SOLVER_SETTINGS.getGammaEFileName ().empty ()
+      || !SOLVER_SETTINGS.getGammaMFileName ().empty ())
   {
     {
       loader[FILE_TYPE_BMP] = new BMPLoader<TC> ();
@@ -1314,24 +1314,24 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
       PaletteType palette = PaletteType::PALETTE_GRAY;
       OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
 
-      if (solverSettings.getDoUsePaletteGray ())
+      if (SOLVER_SETTINGS.getDoUsePaletteGray ())
       {
         palette = PaletteType::PALETTE_GRAY;
       }
-      else if (solverSettings.getDoUsePaletteRGB ())
+      else if (SOLVER_SETTINGS.getDoUsePaletteRGB ())
       {
         palette = PaletteType::PALETTE_BLUE_GREEN_RED;
       }
 
-      if (solverSettings.getDoUseOrthAxisX ())
+      if (SOLVER_SETTINGS.getDoUseOrthAxisX ())
       {
         orthogonalAxis = OrthogonalAxis::X;
       }
-      else if (solverSettings.getDoUseOrthAxisY ())
+      else if (SOLVER_SETTINGS.getDoUseOrthAxisY ())
       {
         orthogonalAxis = OrthogonalAxis::Y;
       }
-      else if (solverSettings.getDoUseOrthAxisZ ())
+      else if (SOLVER_SETTINGS.getDoUseOrthAxisZ ())
       {
         orthogonalAxis = OrthogonalAxis::Z;
       }
@@ -1367,7 +1367,7 @@ Scheme<Type, TCoord, layout_type>::~Scheme ()
   delete Hy;
   delete Hz;
 
-  if (solverSettings.getDoUsePML ())
+  if (SOLVER_SETTINGS.getDoUsePML ())
   {
     delete Dx;
     delete Dy;
@@ -1377,7 +1377,7 @@ Scheme<Type, TCoord, layout_type>::~Scheme ()
     delete By;
     delete Bz;
 
-    if (solverSettings.getDoUseMetamaterials ())
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
       delete D1x;
       delete D1y;
@@ -1393,7 +1393,7 @@ Scheme<Type, TCoord, layout_type>::~Scheme ()
     delete SigmaZ;
   }
 
-  if (solverSettings.getDoUseAmplitudeMode ())
+  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
   {
     delete ExAmplitude;
     delete EyAmplitude;
@@ -1403,7 +1403,7 @@ Scheme<Type, TCoord, layout_type>::~Scheme ()
     delete HzAmplitude;
   }
 
-  if (solverSettings.getDoUseMetamaterials ())
+  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
   {
     delete OmegaPE;
     delete OmegaPM;
@@ -1411,7 +1411,7 @@ Scheme<Type, TCoord, layout_type>::~Scheme ()
     delete GammaM;
   }
 
-  if (solverSettings.getDoUseTFSF ())
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
     delete EInc;
     delete HInc;
@@ -1509,9 +1509,9 @@ Scheme<Type, TCoord, layout_type>::performPointSourceCalc (time_step t)
 
   ASSERT (grid != NULLPTR);
 
-  TC pos = TC::initAxesCoordinate (solverSettings.getPointSourcePositionX (),
-                                   solverSettings.getPointSourcePositionY (),
-                                   solverSettings.getPointSourcePositionZ (),
+  TC pos = TC::initAxesCoordinate (SOLVER_SETTINGS.getPointSourcePositionX (),
+                                   SOLVER_SETTINGS.getPointSourcePositionY (),
+                                   SOLVER_SETTINGS.getPointSourcePositionZ (),
                                    ct1, ct2, ct3);
 
   FieldPointValue* pointVal = grid->getFieldPointValueOrNullByAbsolutePos (pos);
@@ -1949,7 +1949,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationExact (time_step t
   FPValue modExact = sqrt (SQR (exact.real ()) + SQR (exact.imag ()));
   FPValue modNumerical = sqrt (SQR (numerical.real ()) + SQR (numerical.imag ()));
 
-  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName ().c_str (), exact.real (), numerical.real ());
+  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact.real (), numerical.real ());
 
   normRe += SQR (exact.real () - numerical.real ());
   normIm += SQR (exact.imag () - numerical.imag ());
@@ -1975,7 +1975,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationExact (time_step t
 #else
   normRe += SQR (exact - numerical);
 
-  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName ().c_str (), exact, numerical);
+  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact, numerical);
 
   FPValue exactAbs = fabs (exact);
   if (maxRe < exactAbs)
@@ -2343,7 +2343,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
 #endif
   }
 
-  if (solverSettings.getDoUseTFSF ())
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
     calculateTFSF<grid_type> (posAbs, prev11, prev12, prev21, prev22, pos11, pos12, pos21, pos22);
   }
@@ -2856,30 +2856,30 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
     GridCoordinate3D startNorm = start3D;
     GridCoordinate3D endNorm = end3D;
 
-    if (solverSettings.getExactSolutionCompareStartX () != 0)
+    if (SOLVER_SETTINGS.getExactSolutionCompareStartX () != 0)
     {
-      startNorm.set1 (solverSettings.getExactSolutionCompareStartX ());
+      startNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareStartX ());
     }
-    if (solverSettings.getExactSolutionCompareStartY () != 0)
+    if (SOLVER_SETTINGS.getExactSolutionCompareStartY () != 0)
     {
-      startNorm.set2 (solverSettings.getExactSolutionCompareStartY ());
+      startNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareStartY ());
     }
-    if (solverSettings.getExactSolutionCompareStartZ () != 0)
+    if (SOLVER_SETTINGS.getExactSolutionCompareStartZ () != 0)
     {
-      startNorm.set3 (solverSettings.getExactSolutionCompareStartZ ());
+      startNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareStartZ ());
     }
 
-    if (solverSettings.getExactSolutionCompareEndX () != 0)
+    if (SOLVER_SETTINGS.getExactSolutionCompareEndX () != 0)
     {
-      endNorm.set1 (solverSettings.getExactSolutionCompareEndX ());
+      endNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareEndX ());
     }
-    if (solverSettings.getExactSolutionCompareEndY () != 0)
+    if (SOLVER_SETTINGS.getExactSolutionCompareEndY () != 0)
     {
-      endNorm.set2 (solverSettings.getExactSolutionCompareEndY ());
+      endNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareEndY ());
     }
-    if (solverSettings.getExactSolutionCompareEndZ () != 0)
+    if (SOLVER_SETTINGS.getExactSolutionCompareEndZ () != 0)
     {
-      endNorm.set3 (solverSettings.getExactSolutionCompareEndZ ());
+      endNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareEndZ ());
     }
 
     Grid<TC> *normGrid = grid;
@@ -2911,7 +2911,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
      * NOTE: do not change this! test suite depdends on the order of values in output
      */
     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
-      grid->getName ().c_str (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
+      grid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
 #else
     normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
 
@@ -2919,7 +2919,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC
      * NOTE: do not change this! test suite depdends on the order of values in output
      */
     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
-      grid->getName ().c_str (), t, normRe, normRe * 100.0 / maxRe);
+      grid->getName (), t, normRe, normRe * 100.0 / maxRe);
 #endif
   }
 }
@@ -3343,7 +3343,7 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 void
 Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step numberTimeSteps)
 {
-  time_step diffT = solverSettings.getRebalanceStep ();
+  time_step diffT = SOLVER_SETTINGS.getRebalanceStep ();
 
   int processId = 0;
 
@@ -3436,7 +3436,12 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 #endif
                                                                                    );
 
-    if (useParallel && solverSettings.getDoUseDynamicGrid ())
+    if (SOLVER_SETTINGS.getDoUseTFSF ())
+    {
+      performPlaneWaveESteps (t);
+    }
+
+    if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
     {
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StartCalcClock ();
@@ -3444,11 +3449,6 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. "
                       "Recompile it with -DPARALLEL_GRID=ON and -DDYNAMIC_GRID=ON.");
 #endif
-    }
-
-    if (solverSettings.getDoUseTFSF ())
-    {
-      performPlaneWaveESteps (t);
     }
 
     if (doNeedEx)
@@ -3464,7 +3464,7 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       performFieldSteps<static_cast<uint8_t> (GridType::EZ)> (t, EzStart, EzEnd);
     }
 
-    if (useParallel && solverSettings.getDoUseDynamicGrid ())
+    if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
     {
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StopCalcClock ();
@@ -3487,7 +3487,7 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       Ez->nextTimeStep ();
     }
 
-    if (solverSettings.getDoUsePML ())
+    if (SOLVER_SETTINGS.getDoUsePML ())
     {
       if (doNeedEx)
       {
@@ -3503,7 +3503,7 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       }
     }
 
-    if (solverSettings.getDoUseMetamaterials ())
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
       if (doNeedEx)
       {
@@ -3519,7 +3519,12 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       }
     }
 
-    if (useParallel && solverSettings.getDoUseDynamicGrid ())
+    if (SOLVER_SETTINGS.getDoUseTFSF ())
+    {
+      performPlaneWaveHSteps (t);
+    }
+
+    if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
     {
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StartCalcClock ();
@@ -3527,11 +3532,6 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. "
                       "Recompile it with -DPARALLEL_GRID=ON and -DDYNAMIC_GRID=ON.");
 #endif
-    }
-
-    if (solverSettings.getDoUseTFSF ())
-    {
-      performPlaneWaveHSteps (t);
     }
 
     if (doNeedHx)
@@ -3547,7 +3547,7 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       performFieldSteps<static_cast<uint8_t> (GridType::HZ)> (t, HzStart, HzEnd);
     }
 
-    if (useParallel && solverSettings.getDoUseDynamicGrid ())
+    if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
     {
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StopCalcClock ();
@@ -3570,7 +3570,7 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       Hz->nextTimeStep ();
     }
 
-    if (solverSettings.getDoUsePML ())
+    if (SOLVER_SETTINGS.getDoUsePML ())
     {
       if (doNeedHx)
       {
@@ -3586,7 +3586,7 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       }
     }
 
-    if (solverSettings.getDoUseMetamaterials ())
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
       if (doNeedHx)
       {
@@ -3602,25 +3602,25 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       }
     }
 
-    if (solverSettings.getDoSaveIntermediateRes ()
-        && t % solverSettings.getIntermediateSaveStep () == 0)
+    if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
+        && t % SOLVER_SETTINGS.getIntermediateSaveStep () == 0)
     {
-      gatherFieldsTotal (solverSettings.getDoSaveScatteredFieldIntermediate ());
+      gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
       saveGrids (t);
     }
 
-    if (solverSettings.getDoUseNTFF ()
-        && t > 0 && t % solverSettings.getIntermediateNTFFStep () == 0)
+    if (SOLVER_SETTINGS.getDoUseNTFF ()
+        && t > 0 && t % SOLVER_SETTINGS.getIntermediateNTFFStep () == 0)
     {
-      saveNTFF (solverSettings.getDoCalcReverseNTFF (), t);
+      saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), t);
     }
 
     additionalUpdateOfGrids (t, diffT);
   }
 
-  if (solverSettings.getDoSaveRes ())
+  if (SOLVER_SETTINGS.getDoSaveRes ())
   {
-    gatherFieldsTotal (solverSettings.getDoSaveScatteredFieldRes ());
+    gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
     saveGrids (stepLimit);
   }
 }
@@ -3637,7 +3637,7 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //
 //   int processId = 0;
 //
-//   if (solverSettings.getDoUseParallelGrid ())
+//   if (SOLVER_SETTINGS.getDoUseParallelGrid ())
 //   {
 // #ifdef PARALLEL_GRID
 //     processId = ParallelGrid::getParallelCore ()->getProcessId ();
@@ -3652,7 +3652,7 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //
 //   time_step t = startStep;
 //
-//   while (is_stable_state == 0 && t < solverSettings.getNumAmplitudeSteps ())
+//   while (is_stable_state == 0 && t < SOLVER_SETTINGS.getNumAmplitudeSteps ())
 //   {
 //     FPValue maxAccuracy = -1;
 //
@@ -3676,7 +3676,7 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //     GridCoordinate3D HzStart = Hz->getComputationStart (yeeLayout->getHzStartDiff ());
 //     GridCoordinate3D HzEnd = Hz->getComputationEnd (yeeLayout->getHzEndDiff ());
 //
-//     if (solverSettings.getDoUseTFSF ())
+//     if (SOLVER_SETTINGS.getDoUseTFSF ())
 //     {
 //       performPlaneWaveESteps (t);
 //     }
@@ -3776,14 +3776,14 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //     Ey->nextTimeStep ();
 //     Ez->nextTimeStep ();
 //
-//     if (solverSettings.getDoUsePML ())
+//     if (SOLVER_SETTINGS.getDoUsePML ())
 //     {
 //       Dx->nextTimeStep ();
 //       Dy->nextTimeStep ();
 //       Dz->nextTimeStep ();
 //     }
 //
-//     if (solverSettings.getDoUseTFSF ())
+//     if (SOLVER_SETTINGS.getDoUseTFSF ())
 //     {
 //       performPlaneWaveHSteps (t);
 //     }
@@ -3883,7 +3883,7 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //     Hy->nextTimeStep ();
 //     Hz->nextTimeStep ();
 //
-//     if (solverSettings.getDoUsePML ())
+//     if (SOLVER_SETTINGS.getDoUsePML ())
 //     {
 //       Bx->nextTimeStep ();
 //       By->nextTimeStep ();
@@ -3951,12 +3951,18 @@ Scheme<Type, TCoord, layout_type>::updateAmplitude (FPValue val, FieldPointValue
 #endif /* !COMPLEX_FIELD_VALUES */
 }
 
+#ifdef CUDA_ENABLED
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void
-Scheme<Type, TCoord, layout_type>::performSteps ()
+Scheme<Type, TCoord, layout_type>::performCudaSteps ()
 {
-#if defined (CUDA_ENABLED)
+  ALWAYS_ASSERT (0);
+}
 
+template <>
+void
+Scheme<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::performCudaSteps ()
+{
   int processId = 0;
 
   if (useParallel)
@@ -3968,29 +3974,39 @@ Scheme<Type, TCoord, layout_type>::performSteps ()
 #endif /* !PARALLEL_GRID */
   }
 
-  if (solverSettings.getDoUsePML ()
-      || solverSettings.getDoUseTFSF ()
-      || solverSettings.getDoUseAmplitudeMode ()
-      || solverSettings.getDoUseMetamaterials ())
+  if (SOLVER_SETTINGS.getDoUsePML ()
+      || SOLVER_SETTINGS.getDoUseTFSF ()
+      || SOLVER_SETTINGS.getDoUseAmplitudeMode ()
+      || SOLVER_SETTINGS.getDoUseMetamaterials ())
   {
     ASSERT_MESSAGE ("Cuda GPU calculations with these parameters are not implemented");
   }
 
   CudaExitStatus status;
 
-  cudaExecute3DSteps (&status, yeeLayout, gridTimeStep, gridStep, Ex, Ey, Ez, Hx, Hy, Hz, Eps, Mu, totalStep, processId);
+  cudaExecute3DSteps (useParallel, &status, yeeLayout, gridTimeStep, gridStep, Ex, Ey, Ez, Hx, Hy, Hz, Eps, Mu, totalStep, processId);
 
   ASSERT (status == CUDA_OK);
 
-  if (solverSettings.getDoSaveRes ())
+  if (SOLVER_SETTINGS.getDoSaveRes ())
   {
-    gatherFieldsTotal (solverSettings.getDoSaveScatteredFieldRes ());
+    gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
     saveGrids (totalStep);
   }
+}
+#endif
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+void
+Scheme<Type, TCoord, layout_type>::performSteps ()
+{
+#if defined (CUDA_ENABLED)
+
+  performCudaSteps ();
 
 #else /* CUDA_ENABLED */
 
-  if (solverSettings.getDoUseMetamaterials () && !solverSettings.getDoUsePML ())
+  if (SOLVER_SETTINGS.getDoUseMetamaterials () && !SOLVER_SETTINGS.getDoUsePML ())
   {
     ASSERT_MESSAGE ("Metamaterials without pml are not implemented");
   }
@@ -3998,7 +4014,7 @@ Scheme<Type, TCoord, layout_type>::performSteps ()
   if (useParallel)
   {
 #ifdef PARALLEL_GRID
-    if (solverSettings.getDoUseAmplitudeMode ())
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
     {
       ASSERT_MESSAGE ("Parallel amplitude mode is not implemented");
     }
@@ -4009,7 +4025,7 @@ Scheme<Type, TCoord, layout_type>::performSteps ()
 
   performNSteps (0, totalStep);
 
-  if (solverSettings.getDoUseAmplitudeMode ())
+  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
   {
     UNREACHABLE;
     //performAmplitudeSteps (totalStep);
@@ -4026,7 +4042,7 @@ Scheme<Type, TCoord, layout_type>::initScheme (FPValue dx, FPValue sourceWaveLen
   sourceFrequency = PhysicsConst::SpeedOfLight / sourceWaveLength;
 
   gridStep = dx;
-  courantNum = solverSettings.getCourantNum ();
+  courantNum = SOLVER_SETTINGS.getCourantNum ();
   gridTimeStep = gridStep * courantNum / PhysicsConst::SpeedOfLight;
 
   FPValue N_lambda = sourceWaveLength / gridStep;
@@ -4060,12 +4076,12 @@ void
 Scheme<Type, TCoord, layout_type>::initCallBacks ()
 {
 #ifndef COMPLEX_FIELD_VALUES
-  if (solverSettings.getDoUsePolinom1BorderCondition ())
+  if (SOLVER_SETTINGS.getDoUsePolinom1BorderCondition ())
   {
     EzBorder = CallBack::polinom1_ez;
     HyBorder = CallBack::polinom1_hy;
   }
-  else if (solverSettings.getDoUsePolinom2BorderCondition ())
+  else if (SOLVER_SETTINGS.getDoUsePolinom2BorderCondition ())
   {
     ExBorder = CallBack::polinom2_ex;
     EyBorder = CallBack::polinom2_ey;
@@ -4075,23 +4091,23 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     HyBorder = CallBack::polinom2_hy;
     HzBorder = CallBack::polinom2_hz;
   }
-  else if (solverSettings.getDoUsePolinom3BorderCondition ())
+  else if (SOLVER_SETTINGS.getDoUsePolinom3BorderCondition ())
   {
     EzBorder = CallBack::polinom3_ez;
     HyBorder = CallBack::polinom3_hy;
   }
-  else if (solverSettings.getDoUseSin1BorderCondition ())
+  else if (SOLVER_SETTINGS.getDoUseSin1BorderCondition ())
   {
     EzBorder = CallBack::sin1_ez;
     HyBorder = CallBack::sin1_hy;
   }
 
-  if (solverSettings.getDoUsePolinom1StartValues ())
+  if (SOLVER_SETTINGS.getDoUsePolinom1StartValues ())
   {
     EzInitial = CallBack::polinom1_ez;
     HyInitial = CallBack::polinom1_hy;
   }
-  else if (solverSettings.getDoUsePolinom2StartValues ())
+  else if (SOLVER_SETTINGS.getDoUsePolinom2StartValues ())
   {
     ExInitial = CallBack::polinom2_ex;
     EyInitial = CallBack::polinom2_ey;
@@ -4101,23 +4117,23 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     HyInitial = CallBack::polinom2_hy;
     HzInitial = CallBack::polinom2_hz;
   }
-  else if (solverSettings.getDoUsePolinom3StartValues ())
+  else if (SOLVER_SETTINGS.getDoUsePolinom3StartValues ())
   {
     EzInitial = CallBack::polinom3_ez;
     HyInitial = CallBack::polinom3_hy;
   }
-  else if (solverSettings.getDoUseSin1StartValues ())
+  else if (SOLVER_SETTINGS.getDoUseSin1StartValues ())
   {
     EzInitial = CallBack::sin1_ez;
     HyInitial = CallBack::sin1_hy;
   }
 
-  if (solverSettings.getDoUsePolinom1RightSide ())
+  if (SOLVER_SETTINGS.getDoUsePolinom1RightSide ())
   {
     Jz = CallBack::polinom1_jz;
     My = CallBack::polinom1_my;
   }
-  else if (solverSettings.getDoUsePolinom2RightSide ())
+  else if (SOLVER_SETTINGS.getDoUsePolinom2RightSide ())
   {
     Jx = CallBack::polinom2_jx;
     Jy = CallBack::polinom2_jy;
@@ -4127,18 +4143,18 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     My = CallBack::polinom2_my;
     Mz = CallBack::polinom2_mz;
   }
-  else if (solverSettings.getDoUsePolinom3RightSide ())
+  else if (SOLVER_SETTINGS.getDoUsePolinom3RightSide ())
   {
     Jz = CallBack::polinom3_jz;
     My = CallBack::polinom3_my;
   }
 
-  if (solverSettings.getDoCalculatePolinom1DiffNorm ())
+  if (SOLVER_SETTINGS.getDoCalculatePolinom1DiffNorm ())
   {
     EzExact = CallBack::polinom1_ez;
     HyExact = CallBack::polinom1_hy;
   }
-  else if (solverSettings.getDoCalculatePolinom2DiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculatePolinom2DiffNorm ())
   {
     ExExact = CallBack::polinom2_ex;
     EyExact = CallBack::polinom2_ey;
@@ -4148,109 +4164,109 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     HyExact = CallBack::polinom2_hy;
     HzExact = CallBack::polinom2_hz;
   }
-  else if (solverSettings.getDoCalculatePolinom3DiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculatePolinom3DiffNorm ())
   {
     EzExact = CallBack::polinom3_ez;
     HyExact = CallBack::polinom3_hy;
   }
-  else if (solverSettings.getDoCalculateSin1DiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateSin1DiffNorm ())
   {
     EzExact = CallBack::sin1_ez;
     HyExact = CallBack::sin1_hy;
   }
 #endif
 
-  if (solverSettings.getDoCalculateExp1ExHyDiffNorm ())
+  if (SOLVER_SETTINGS.getDoCalculateExp1ExHyDiffNorm ())
   {
     ExExact = CallBack::exp1_ex_exhy;
     HyExact = CallBack::exp1_hy_exhy;
   }
-  else if (solverSettings.getDoCalculateExp2ExHyDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp2ExHyDiffNorm ())
   {
     ExExact = CallBack::exp2_ex_exhy;
     HyExact = CallBack::exp2_hy_exhy;
   }
-  else if (solverSettings.getDoCalculateExp3ExHyDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp3ExHyDiffNorm ())
   {
     ExExact = CallBack::exp3_ex_exhy;
     HyExact = CallBack::exp3_hy_exhy;
   }
 
-  if (solverSettings.getDoCalculateExp1ExHzDiffNorm ())
+  if (SOLVER_SETTINGS.getDoCalculateExp1ExHzDiffNorm ())
   {
     ExExact = CallBack::exp1_ex_exhz;
     HzExact = CallBack::exp1_hz_exhz;
   }
-  else if (solverSettings.getDoCalculateExp2ExHzDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp2ExHzDiffNorm ())
   {
     ExExact = CallBack::exp2_ex_exhz;
     HzExact = CallBack::exp2_hz_exhz;
   }
-  else if (solverSettings.getDoCalculateExp3ExHzDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp3ExHzDiffNorm ())
   {
     ExExact = CallBack::exp3_ex_exhz;
     HzExact = CallBack::exp3_hz_exhz;
   }
 
-  if (solverSettings.getDoCalculateExp1EyHxDiffNorm ())
+  if (SOLVER_SETTINGS.getDoCalculateExp1EyHxDiffNorm ())
   {
     EyExact = CallBack::exp1_ey_eyhx;
     HxExact = CallBack::exp1_hx_eyhx;
   }
-  else if (solverSettings.getDoCalculateExp2EyHxDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp2EyHxDiffNorm ())
   {
     EyExact = CallBack::exp2_ey_eyhx;
     HxExact = CallBack::exp2_hx_eyhx;
   }
-  else if (solverSettings.getDoCalculateExp3EyHxDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp3EyHxDiffNorm ())
   {
     EyExact = CallBack::exp3_ey_eyhx;
     HxExact = CallBack::exp3_hx_eyhx;
   }
 
-  if (solverSettings.getDoCalculateExp1EyHzDiffNorm ())
+  if (SOLVER_SETTINGS.getDoCalculateExp1EyHzDiffNorm ())
   {
     EyExact = CallBack::exp1_ey_eyhz;
     HzExact = CallBack::exp1_hz_eyhz;
   }
-  else if (solverSettings.getDoCalculateExp2EyHzDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp2EyHzDiffNorm ())
   {
     EyExact = CallBack::exp2_ey_eyhz;
     HzExact = CallBack::exp2_hz_eyhz;
   }
-  else if (solverSettings.getDoCalculateExp3EyHzDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp3EyHzDiffNorm ())
   {
     EyExact = CallBack::exp3_ey_eyhz;
     HzExact = CallBack::exp3_hz_eyhz;
   }
 
-  if (solverSettings.getDoCalculateExp1EzHxDiffNorm ())
+  if (SOLVER_SETTINGS.getDoCalculateExp1EzHxDiffNorm ())
   {
     EzExact = CallBack::exp1_ez_ezhx;
     HxExact = CallBack::exp1_hx_ezhx;
   }
-  else if (solverSettings.getDoCalculateExp2EzHxDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp2EzHxDiffNorm ())
   {
     EzExact = CallBack::exp2_ez_ezhx;
     HxExact = CallBack::exp2_hx_ezhx;
   }
-  else if (solverSettings.getDoCalculateExp3EzHxDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp3EzHxDiffNorm ())
   {
     EzExact = CallBack::exp3_ez_ezhx;
     HxExact = CallBack::exp3_hx_ezhx;
   }
 
-  if (solverSettings.getDoCalculateExp1EzHyDiffNorm ())
+  if (SOLVER_SETTINGS.getDoCalculateExp1EzHyDiffNorm ())
   {
     EzExact = CallBack::exp1_ez_ezhy;
     HyExact = CallBack::exp1_hy_ezhy;
   }
-  else if (solverSettings.getDoCalculateExp2EzHyDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp2EzHyDiffNorm ())
   {
     EzExact = CallBack::exp2_ez_ezhy;
     HyExact = CallBack::exp2_hy_ezhy;
   }
-  else if (solverSettings.getDoCalculateExp3EzHyDiffNorm ())
+  else if (SOLVER_SETTINGS.getDoCalculateExp3EzHyDiffNorm ())
   {
     EzExact = CallBack::exp3_ez_ezhy;
     HyExact = CallBack::exp3_hy_ezhy;
@@ -4278,32 +4294,32 @@ Scheme<Type, TCoord, layout_type>::initMaterialFromFile (GridType gridType, Grid
   {
     case GridType::EPS:
     {
-      filename = solverSettings.getEpsFileName ();
+      filename = SOLVER_SETTINGS.getEpsFileName ();
       break;
     }
     case GridType::MU:
     {
-      filename = solverSettings.getMuFileName ();
+      filename = SOLVER_SETTINGS.getMuFileName ();
       break;
     }
     case GridType::OMEGAPE:
     {
-      filename = solverSettings.getOmegaPEFileName ();
+      filename = SOLVER_SETTINGS.getOmegaPEFileName ();
       break;
     }
     case GridType::OMEGAPM:
     {
-      filename = solverSettings.getOmegaPMFileName ();
+      filename = SOLVER_SETTINGS.getOmegaPMFileName ();
       break;
     }
     case GridType::GAMMAE:
     {
-      filename = solverSettings.getGammaEFileName ();
+      filename = SOLVER_SETTINGS.getGammaEFileName ();
       break;
     }
     case GridType::GAMMAM:
     {
-      filename = solverSettings.getGammaMFileName ();
+      filename = SOLVER_SETTINGS.getGammaMFileName ();
       break;
     }
     default:
@@ -4609,30 +4625,30 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   if (useParallel)
   {
 #ifdef PARALLEL_GRID
-    if (!solverSettings.getEpsFileName ().empty () || solverSettings.getDoSaveMaterials ())
+    if (!SOLVER_SETTINGS.getEpsFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
     {
       totalEps->initialize ();
     }
-    if (!solverSettings.getMuFileName ().empty () || solverSettings.getDoSaveMaterials ())
+    if (!SOLVER_SETTINGS.getMuFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
     {
       totalMu->initialize ();
     }
 
-    if (solverSettings.getDoUseMetamaterials ())
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      if (!solverSettings.getOmegaPEFileName ().empty () || solverSettings.getDoSaveMaterials ())
+      if (!SOLVER_SETTINGS.getOmegaPEFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
       {
         totalOmegaPE->initialize ();
       }
-      if (!solverSettings.getOmegaPMFileName ().empty () || solverSettings.getDoSaveMaterials ())
+      if (!SOLVER_SETTINGS.getOmegaPMFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
       {
         totalOmegaPM->initialize ();
       }
-      if (!solverSettings.getGammaEFileName ().empty () || solverSettings.getDoSaveMaterials ())
+      if (!SOLVER_SETTINGS.getGammaEFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
       {
         totalGammaE->initialize ();
       }
-      if (!solverSettings.getGammaMFileName ().empty () || solverSettings.getDoSaveMaterials ())
+      if (!SOLVER_SETTINGS.getGammaMFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
       {
         totalGammaM->initialize ();
       }
@@ -4645,7 +4661,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   Eps->initialize (getFieldValueRealOnly (1.0));
   initMaterialFromFile (GridType::EPS, Eps, totalEps);
 
-  if (solverSettings.getEpsSphere () != 1)
+  if (SOLVER_SETTINGS.getEpsSphere () != 1)
   {
     for (grid_coord i = 0; i < Eps->getSize ().calculateTotalCoord (); ++i)
     {
@@ -4653,13 +4669,13 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       TCFP posAbs = yeeLayout->getEpsCoordFP (Eps->getTotalPosition (pos));
       FieldPointValue *val = Eps->getFieldPointValue (pos);
 
-      FieldValue epsVal = getFieldValueRealOnly (solverSettings.getEpsSphere ());
+      FieldValue epsVal = getFieldValueRealOnly (SOLVER_SETTINGS.getEpsSphere ());
 
       FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
 
-      TCFP center = TCFP::initAxesCoordinate(solverSettings.getEpsSphereCenterX (),
-                                             solverSettings.getEpsSphereCenterY (),
-                                             solverSettings.getEpsSphereCenterZ (),
+      TCFP center = TCFP::initAxesCoordinate(SOLVER_SETTINGS.getEpsSphereCenterX (),
+                                             SOLVER_SETTINGS.getEpsSphereCenterY (),
+                                             SOLVER_SETTINGS.getEpsSphereCenterZ (),
                                              ct1, ct2, ct3);
       val->setCurValue (Approximation::approximateSphereAccurate (posAbs,
                                                                   center * modifier + TCFP (0.5, 0.5, 0.5
@@ -4667,12 +4683,12 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                                                                         , ct1, ct2, ct3
 #endif
                                                                                                         ),
-                                                                  solverSettings.getEpsSphereRadius () * modifier,
+                                                                  SOLVER_SETTINGS.getEpsSphereRadius () * modifier,
                                                                   epsVal,
                                                                   getFieldValueRealOnly (1.0)));
     }
   }
-  if (solverSettings.getUseEpsAllNorm ())
+  if (SOLVER_SETTINGS.getUseEpsAllNorm ())
   {
     for (grid_coord i = 0; i < Eps->getSize ().calculateTotalCoord (); ++i)
     {
@@ -4684,7 +4700,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   Mu->initialize (getFieldValueRealOnly (1.0));
   initMaterialFromFile (GridType::MU, Mu, totalMu);
 
-  if (solverSettings.getMuSphere () != 1)
+  if (SOLVER_SETTINGS.getMuSphere () != 1)
   {
     for (grid_coord i = 0; i < Mu->getSize ().calculateTotalCoord (); ++i)
     {
@@ -4692,13 +4708,13 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       TCFP posAbs = yeeLayout->getMuCoordFP (Mu->getTotalPosition (pos));
       FieldPointValue *val = Mu->getFieldPointValue (pos);
 
-      FieldValue muVal = getFieldValueRealOnly (solverSettings.getMuSphere ());
+      FieldValue muVal = getFieldValueRealOnly (SOLVER_SETTINGS.getMuSphere ());
 
       FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
 
-      TCFP center = TCFP::initAxesCoordinate(solverSettings.getMuSphereCenterX (),
-                                             solverSettings.getMuSphereCenterY (),
-                                             solverSettings.getMuSphereCenterZ (),
+      TCFP center = TCFP::initAxesCoordinate(SOLVER_SETTINGS.getMuSphereCenterX (),
+                                             SOLVER_SETTINGS.getMuSphereCenterY (),
+                                             SOLVER_SETTINGS.getMuSphereCenterZ (),
                                              ct1, ct2, ct3);
       val->setCurValue (Approximation::approximateSphereAccurate (posAbs,
                                                                   center * modifier + TCFP (0.5, 0.5, 0.5
@@ -4706,12 +4722,12 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                                                                         , ct1, ct2, ct3
   #endif
                                                                                                         ),
-                                                                  solverSettings.getMuSphereRadius () * modifier,
+                                                                  SOLVER_SETTINGS.getMuSphereRadius () * modifier,
                                                                   muVal,
                                                                   getFieldValueRealOnly (1.0)));
     }
   }
-  if (solverSettings.getUseMuAllNorm ())
+  if (SOLVER_SETTINGS.getUseMuAllNorm ())
   {
     for (grid_coord i = 0; i < Mu->getSize ().calculateTotalCoord (); ++i)
     {
@@ -4720,12 +4736,12 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     }
   }
 
-  if (solverSettings.getDoUseMetamaterials ())
+  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
   {
     OmegaPE->initialize ();
     initMaterialFromFile (GridType::OMEGAPE, OmegaPE, totalOmegaPE);
 
-    if (solverSettings.getOmegaPESphere () != 0)
+    if (SOLVER_SETTINGS.getOmegaPESphere () != 0)
     {
       for (grid_coord i = 0; i < OmegaPE->getSize ().calculateTotalCoord (); ++i)
       {
@@ -4733,13 +4749,13 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         TCFP posAbs = yeeLayout->getEpsCoordFP (OmegaPE->getTotalPosition (pos));
         FieldPointValue *val = OmegaPE->getFieldPointValue (pos);
 
-        FieldValue omegapeVal = getFieldValueRealOnly (solverSettings.getOmegaPESphere () * 2 * PhysicsConst::Pi * sourceFrequency);
+        FieldValue omegapeVal = getFieldValueRealOnly (SOLVER_SETTINGS.getOmegaPESphere () * 2 * PhysicsConst::Pi * sourceFrequency);
 
         FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
 
-        TCFP center = TCFP::initAxesCoordinate (solverSettings.getOmegaPESphereCenterX (),
-                                                solverSettings.getOmegaPESphereCenterY (),
-                                                solverSettings.getOmegaPESphereCenterZ (),
+        TCFP center = TCFP::initAxesCoordinate (SOLVER_SETTINGS.getOmegaPESphereCenterX (),
+                                                SOLVER_SETTINGS.getOmegaPESphereCenterY (),
+                                                SOLVER_SETTINGS.getOmegaPESphereCenterZ (),
                                                 ct1, ct2, ct3);
         val->setCurValue (Approximation::approximateSphereAccurate (posAbs,
                                                                     center * modifier + TCFP (0.5, 0.5, 0.5
@@ -4747,7 +4763,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                                                                           , ct1, ct2, ct3
 #endif
                                                                                                           ),
-                                                                    solverSettings.getOmegaPESphereRadius () * modifier,
+                                                                    SOLVER_SETTINGS.getOmegaPESphereRadius () * modifier,
                                                                     omegapeVal,
                                                                     getFieldValueRealOnly (0.0)));
       }
@@ -4756,7 +4772,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     OmegaPM->initialize ();
     initMaterialFromFile (GridType::OMEGAPM, OmegaPM, totalOmegaPM);
 
-    if (solverSettings.getOmegaPMSphere () != 0)
+    if (SOLVER_SETTINGS.getOmegaPMSphere () != 0)
     {
       for (grid_coord i = 0; i < OmegaPM->getSize ().calculateTotalCoord (); ++i)
       {
@@ -4764,13 +4780,13 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         TCFP posAbs = yeeLayout->getEpsCoordFP (OmegaPM->getTotalPosition (pos));
         FieldPointValue *val = OmegaPM->getFieldPointValue (pos);
 
-        FieldValue omegapmVal = getFieldValueRealOnly (solverSettings.getOmegaPMSphere () * 2 * PhysicsConst::Pi * sourceFrequency);
+        FieldValue omegapmVal = getFieldValueRealOnly (SOLVER_SETTINGS.getOmegaPMSphere () * 2 * PhysicsConst::Pi * sourceFrequency);
 
         FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
 
-        TCFP center = TCFP::initAxesCoordinate (solverSettings.getOmegaPMSphereCenterX (),
-                                                solverSettings.getOmegaPMSphereCenterY (),
-                                                solverSettings.getOmegaPMSphereCenterZ (),
+        TCFP center = TCFP::initAxesCoordinate (SOLVER_SETTINGS.getOmegaPMSphereCenterX (),
+                                                SOLVER_SETTINGS.getOmegaPMSphereCenterY (),
+                                                SOLVER_SETTINGS.getOmegaPMSphereCenterZ (),
                                                 ct1, ct2, ct3);
         val->setCurValue (Approximation::approximateSphereAccurate (posAbs,
                                                                     center * modifier + TCFP (0.5, 0.5, 0.5
@@ -4778,7 +4794,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                                                                           , ct1, ct2, ct3
 #endif
                                                                                                           ),
-                                                                    solverSettings.getOmegaPMSphereRadius () * modifier,
+                                                                    SOLVER_SETTINGS.getOmegaPMSphereRadius () * modifier,
                                                                     omegapmVal,
                                                                     getFieldValueRealOnly (0.0)));
       }
@@ -4791,7 +4807,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     initMaterialFromFile (GridType::GAMMAM, GammaM, totalGammaM);
   }
 
-  if (solverSettings.getDoUsePML ())
+  if (SOLVER_SETTINGS.getDoUsePML ())
   {
     initSigmas ();
   }
@@ -4803,7 +4819,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       continue;
     }
 
-    if (solverSettings.getDoSaveMaterials ())
+    if (SOLVER_SETTINGS.getDoSaveMaterials ())
     {
       if (useParallel)
       {
@@ -4815,15 +4831,15 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         TC startEps, startMu, startOmegaPE, startOmegaPM, startGammaE, startGammaM;
         TC endEps, endMu, endOmegaPE, endOmegaPM, endGammaE, endGammaM;
 
-        if (solverSettings.getDoUseManualStartEndDumpCoord ())
+        if (SOLVER_SETTINGS.getDoUseManualStartEndDumpCoord ())
         {
-          TC start = TC::initAxesCoordinate (solverSettings.getSaveStartCoordX (),
-                                            solverSettings.getSaveStartCoordY (),
-                                            solverSettings.getSaveStartCoordZ (),
+          TC start = TC::initAxesCoordinate (SOLVER_SETTINGS.getSaveStartCoordX (),
+                                            SOLVER_SETTINGS.getSaveStartCoordY (),
+                                            SOLVER_SETTINGS.getSaveStartCoordZ (),
                                             ct1, ct2, ct3);
-          TC end = TC::initAxesCoordinate (solverSettings.getSaveEndCoordX (),
-                                          solverSettings.getSaveEndCoordY (),
-                                          solverSettings.getSaveEndCoordZ (),
+          TC end = TC::initAxesCoordinate (SOLVER_SETTINGS.getSaveEndCoordX (),
+                                          SOLVER_SETTINGS.getSaveEndCoordY (),
+                                          SOLVER_SETTINGS.getSaveEndCoordZ (),
                                           ct1, ct2, ct3);
           startEps = startMu = startOmegaPE = startOmegaPM = startGammaE = startGammaM = start;
           endEps = endMu = endOmegaPE = endOmegaPM = endGammaE = endGammaM = end;
@@ -4836,7 +4852,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
           startMu = getStartCoord (GridType::MU, totalMu->getSize ());
           endMu = getEndCoord (GridType::MU, totalMu->getSize ());
 
-          if (solverSettings.getDoUseMetamaterials ())
+          if (SOLVER_SETTINGS.getDoUseMetamaterials ())
           {
             startOmegaPE = getStartCoord (GridType::OMEGAPE, totalOmegaPE->getSize ());
             endOmegaPE = getEndCoord (GridType::OMEGAPE, totalOmegaPE->getSize ());
@@ -4862,7 +4878,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                 startMu,
                                 endMu);
 
-        if (solverSettings.getDoUseMetamaterials ())
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
         {
           dumper[type]->init (0, CURRENT, processId, "OmegaPE");
           dumper[type]->dumpGrid (totalOmegaPE,
@@ -4885,7 +4901,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                   endGammaM);
         }
         //
-        // if (solverSettings.getDoUsePML ())
+        // if (SOLVER_SETTINGS.getDoUsePML ())
         // {
         //   dumper[type]->init (0, CURRENT, processId, "SigmaX");
         //   dumper[type]->dumpGrid (SigmaX,
@@ -4938,7 +4954,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     initGridWithInitialVals (GridType::HZ, Hz, gridTimeStep);
   }
 
-  if (solverSettings.getDoUsePML ())
+  if (SOLVER_SETTINGS.getDoUsePML ())
   {
     if (doNeedEx)
     {
@@ -4966,7 +4982,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       Bz->initialize ();
     }
 
-    if (solverSettings.getDoUseMetamaterials ())
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
       if (doNeedEx)
       {
@@ -4996,7 +5012,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     }
   }
 
-  if (solverSettings.getDoUseAmplitudeMode ())
+  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
   {
     if (doNeedEx)
     {
@@ -5025,7 +5041,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     }
   }
 
-  if (solverSettings.getDoUseTFSF ())
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
     EInc->initialize ();
     HInc->initialize ();
@@ -5039,7 +5055,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     ((ParallelGrid *) Eps)->share ();
     ((ParallelGrid *) Mu)->share ();
 
-    if (solverSettings.getDoUsePML ())
+    if (SOLVER_SETTINGS.getDoUsePML ())
     {
       if (doNeedSigmaX)
       {
@@ -5157,7 +5173,7 @@ SchemeHelper::ntffN3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
       FieldValue Hy1 = valHy1->getCurValue ();
       FieldValue Hy2 = valHy2->getCurValue ();
 
-      if (solverSettings.getDoCalcScatteredNTFF ())
+      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
       {
         Hz1 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
         Hz2 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
@@ -5282,7 +5298,7 @@ SchemeHelper::ntffN3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
       FieldValue Hx1 = valHx1->getCurValue ();
       FieldValue Hx2 = valHx2->getCurValue ();
 
-      if (solverSettings.getDoCalcScatteredNTFF ())
+      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
       {
         Hz1 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
         Hz2 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
@@ -5407,7 +5423,7 @@ SchemeHelper::ntffN3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
       FieldValue Hx1 = valHx1->getCurValue ();
       FieldValue Hx2 = valHx2->getCurValue ();
 
-      if (solverSettings.getDoCalcScatteredNTFF ())
+      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
       {
         Hy1 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
         Hy2 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
@@ -5578,7 +5594,7 @@ SchemeHelper::ntffL3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
       FieldValue Ez1 = (valEz11->getCurValue () + valEz12->getCurValue ()) / FPValue(2.0);
       FieldValue Ez2 = (valEz21->getCurValue () + valEz22->getCurValue ()) / FPValue(2.0);
 
-      if (solverSettings.getDoCalcScatteredNTFF ())
+      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
       {
         Ey1 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
         Ey2 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
@@ -5748,7 +5764,7 @@ SchemeHelper::ntffL3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
       FieldValue Ez1 = (valEz11->getCurValue () + valEz12->getCurValue ()) / FPValue(2.0);
       FieldValue Ez2 = (valEz21->getCurValue () + valEz22->getCurValue ()) / FPValue(2.0);
 
-      if (solverSettings.getDoCalcScatteredNTFF ())
+      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
       {
         Ex1 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
         Ex2 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
@@ -5919,7 +5935,7 @@ SchemeHelper::ntffL3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
       FieldValue Ey1 = (valEy11->getCurValue () + valEy12->getCurValue ()) / FPValue(2.0);
       FieldValue Ey2 = (valEy21->getCurValue () + valEy22->getCurValue ()) / FPValue(2.0);
 
-      if (solverSettings.getDoCalcScatteredNTFF ())
+      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
       {
         Ex1 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
         Ex2 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
@@ -6427,7 +6443,7 @@ void
 Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
 {
   int processId = 0;
-  if (solverSettings.getDoSaveResPerProcess ())
+  if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
   {
 #ifdef PARALLEL_GRID
     processId = ParallelGrid::getParallelCore ()->getProcessId ();
@@ -6449,15 +6465,15 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
   TC startHz;
   TC endHz;
 
-  if (solverSettings.getDoUseManualStartEndDumpCoord ())
+  if (SOLVER_SETTINGS.getDoUseManualStartEndDumpCoord ())
   {
-    TC start = TC::initAxesCoordinate (solverSettings.getSaveStartCoordX (),
-                                       solverSettings.getSaveStartCoordY (),
-                                       solverSettings.getSaveStartCoordZ (),
+    TC start = TC::initAxesCoordinate (SOLVER_SETTINGS.getSaveStartCoordX (),
+                                       SOLVER_SETTINGS.getSaveStartCoordY (),
+                                       SOLVER_SETTINGS.getSaveStartCoordZ (),
                                        ct1, ct2, ct3);
-    TC end = TC::initAxesCoordinate (solverSettings.getSaveEndCoordX (),
-                                     solverSettings.getSaveEndCoordY (),
-                                     solverSettings.getSaveEndCoordZ (),
+    TC end = TC::initAxesCoordinate (SOLVER_SETTINGS.getSaveEndCoordX (),
+                                     SOLVER_SETTINGS.getSaveEndCoordY (),
+                                     SOLVER_SETTINGS.getSaveEndCoordZ (),
                                      ct1, ct2, ct3);
 
     startEx = startEy = startEz = startHx = startHy = startHz = start;
@@ -6547,9 +6563,9 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
 
     if (doNeedEx)
     {
-      dumper[type]->init (t, CURRENT, processId, totalEx->getName ().c_str ());
+      dumper[type]->init (t, CURRENT, processId, totalEx->getName ());
 
-      if (solverSettings.getDoSaveResPerProcess ())
+      if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
         dumper[type]->dumpGrid (Ex, zero, Ex->getSize ());
       }
@@ -6561,9 +6577,9 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
 
     if (doNeedEy)
     {
-      dumper[type]->init (t, CURRENT, processId, totalEy->getName ().c_str ());
+      dumper[type]->init (t, CURRENT, processId, totalEy->getName ());
 
-      if (solverSettings.getDoSaveResPerProcess ())
+      if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
         dumper[type]->dumpGrid (Ey, zero, Ey->getSize ());
       }
@@ -6575,9 +6591,9 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
 
     if (doNeedEz)
     {
-      dumper[type]->init (t, CURRENT, processId, totalEz->getName ().c_str ());
+      dumper[type]->init (t, CURRENT, processId, totalEz->getName ());
 
-      if (solverSettings.getDoSaveResPerProcess ())
+      if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
         dumper[type]->dumpGrid (Ez, zero, Ez->getSize ());
       }
@@ -6589,9 +6605,9 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
 
     if (doNeedHx)
     {
-      dumper[type]->init (t, CURRENT, processId, totalHx->getName ().c_str ());
+      dumper[type]->init (t, CURRENT, processId, totalHx->getName ());
 
-      if (solverSettings.getDoSaveResPerProcess ())
+      if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
         dumper[type]->dumpGrid (Hx, zero, Hx->getSize ());
       }
@@ -6603,9 +6619,9 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
 
     if (doNeedHy)
     {
-      dumper[type]->init (t, CURRENT, processId, totalHy->getName ().c_str ());
+      dumper[type]->init (t, CURRENT, processId, totalHy->getName ());
 
-      if (solverSettings.getDoSaveResPerProcess ())
+      if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
         dumper[type]->dumpGrid (Hy, zero, Hy->getSize ());
       }
@@ -6617,9 +6633,9 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
 
     if (doNeedHz)
     {
-      dumper[type]->init (t, CURRENT, processId, totalHz->getName ().c_str ());
+      dumper[type]->init (t, CURRENT, processId, totalHz->getName ());
 
-      if (solverSettings.getDoSaveResPerProcess ())
+      if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
         dumper[type]->dumpGrid (Hz, zero, Hz->getSize ());
       }
@@ -6629,7 +6645,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       }
     }
 
-    if (solverSettings.getDoSaveTFSFEInc ())
+    if (SOLVER_SETTINGS.getDoSaveTFSFEInc ())
     {
       if (!dumper1D[type])
       {
@@ -6645,7 +6661,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
                                 EInc->getSize ());
     }
 
-    if (solverSettings.getDoSaveTFSFHInc ())
+    if (SOLVER_SETTINGS.getDoSaveTFSFHInc ())
     {
       if (!dumper1D[type])
       {
@@ -6697,18 +6713,18 @@ Scheme<Type, TCoord, layout_type>::saveNTFF (bool isReverse, time_step t)
     strName = "Forward diagram";
     start = 0.0;
     end = 2 * PhysicsConst::Pi + PhysicsConst::Pi / 180;
-    step = PhysicsConst::Pi * solverSettings.getAngleStepNTFF () / 180;
+    step = PhysicsConst::Pi * SOLVER_SETTINGS.getAngleStepNTFF () / 180;
   }
 
   if (processId == 0)
   {
-    if (solverSettings.getDoSaveNTFFToStdout ())
+    if (SOLVER_SETTINGS.getDoSaveNTFFToStdout ())
     {
       outs = &std::cout;
     }
     else
     {
-      outfile.open (solverSettings.getFileNameNTFF ().c_str ());
+      outfile.open (SOLVER_SETTINGS.getFileNameNTFF ().c_str ());
       outs = &outfile;
     }
     (*outs) << strName << std::endl << std::endl;
@@ -6743,7 +6759,7 @@ Scheme<Type, TCoord, layout_type>::saveNTFF (bool isReverse, time_step t)
 
   if (processId == 0)
   {
-    if (!solverSettings.getDoSaveNTFFToStdout ())
+    if (!SOLVER_SETTINGS.getDoSaveNTFFToStdout ())
     {
       outfile.close ();
     }
@@ -6754,10 +6770,10 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 void
 Scheme<Type, TCoord, layout_type>::additionalUpdateOfGrids (time_step t, time_step &diffT)
 {
-  if (useParallel && solverSettings.getDoUseDynamicGrid ())
+  if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
   {
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
-    //if (false && t % solverSettings.getRebalanceStep () == 0)
+    //if (false && t % SOLVER_SETTINGS.getRebalanceStep () == 0)
     if (t % diffT == 0 && t > 0)
     {
       if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
@@ -6802,7 +6818,7 @@ Scheme<Type, TCoord, layout_type>::additionalUpdateOfGrids (time_step t, time_st
           ((ParallelGrid *) Hz)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
         }
 
-        if (solverSettings.getDoUsePML ())
+        if (SOLVER_SETTINGS.getDoUsePML ())
         {
           if (doNeedEx)
           {
@@ -6830,7 +6846,7 @@ Scheme<Type, TCoord, layout_type>::additionalUpdateOfGrids (time_step t, time_st
             ((ParallelGrid *) Bz)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
           }
 
-          if (solverSettings.getDoUseMetamaterials ())
+          if (SOLVER_SETTINGS.getDoUseMetamaterials ())
           {
             if (doNeedEx)
             {
@@ -6873,7 +6889,7 @@ Scheme<Type, TCoord, layout_type>::additionalUpdateOfGrids (time_step t, time_st
           }
         }
 
-        if (solverSettings.getDoUseAmplitudeMode ())
+        if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
         {
           if (doNeedEx)
           {
@@ -6902,7 +6918,7 @@ Scheme<Type, TCoord, layout_type>::additionalUpdateOfGrids (time_step t, time_st
           }
         }
 
-        if (solverSettings.getDoUseMetamaterials ())
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
         {
           ((ParallelGrid *) OmegaPE)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
           ((ParallelGrid *) GammaE)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
@@ -6931,8 +6947,8 @@ Scheme<Type, TCoord, layout_type>::getStartCoord (GridType gridType, TC size)
 #endif
             );
 
-  if (solverSettings.getDoSaveWithoutPML ()
-      && solverSettings.getDoUsePML ())
+  if (SOLVER_SETTINGS.getDoSaveWithoutPML ()
+      && SOLVER_SETTINGS.getDoUsePML ())
   {
     TCFP leftBorder = convertCoord (yeeLayout->getLeftBorderPML ());
     TCFP min;
@@ -6983,15 +6999,15 @@ Scheme<Type, TCoord, layout_type>::getStartCoord (GridType gridType, TC size)
   }
 
   OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
-  if (solverSettings.getDoUseOrthAxisX ())
+  if (SOLVER_SETTINGS.getDoUseOrthAxisX ())
   {
     orthogonalAxis = OrthogonalAxis::X;
   }
-  else if (solverSettings.getDoUseOrthAxisY ())
+  else if (SOLVER_SETTINGS.getDoUseOrthAxisY ())
   {
     orthogonalAxis = OrthogonalAxis::Y;
   }
-  else if (solverSettings.getDoUseOrthAxisZ ())
+  else if (SOLVER_SETTINGS.getDoUseOrthAxisZ ())
   {
     orthogonalAxis = OrthogonalAxis::Z;
   }
@@ -7004,8 +7020,8 @@ typename Scheme<Type, TCoord, layout_type>::TC
 Scheme<Type, TCoord, layout_type>::getEndCoord (GridType gridType, TC size)
 {
   TC end = size;
-  if (solverSettings.getDoSaveWithoutPML ()
-      && solverSettings.getDoUsePML ())
+  if (SOLVER_SETTINGS.getDoSaveWithoutPML ()
+      && SOLVER_SETTINGS.getDoUsePML ())
   {
     TCFP rightBorder = convertCoord (yeeLayout->getRightBorderPML ());
     TCFP min;
@@ -7052,15 +7068,15 @@ Scheme<Type, TCoord, layout_type>::getEndCoord (GridType gridType, TC size)
   }
 
   OrthogonalAxis orthogonalAxis = OrthogonalAxis::Z;
-  if (solverSettings.getDoUseOrthAxisX ())
+  if (SOLVER_SETTINGS.getDoUseOrthAxisX ())
   {
     orthogonalAxis = OrthogonalAxis::X;
   }
-  else if (solverSettings.getDoUseOrthAxisY ())
+  else if (SOLVER_SETTINGS.getDoUseOrthAxisY ())
   {
     orthogonalAxis = OrthogonalAxis::Y;
   }
-  else if (solverSettings.getDoUseOrthAxisZ ())
+  else if (SOLVER_SETTINGS.getDoUseOrthAxisZ ())
   {
     orthogonalAxis = OrthogonalAxis::Z;
   }

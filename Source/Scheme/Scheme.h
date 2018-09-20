@@ -296,9 +296,9 @@ private:
     /*
      * TODO: remove check performed on each iteration
      */
-    if (solverSettings.getDoUsePML ())
+    if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      if (solverSettings.getDoUseMetamaterials ())
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         calculateFieldStep<grid_type, true, true> (t, Start, End);
       }
@@ -309,7 +309,7 @@ private:
     }
     else
     {
-      if (solverSettings.getDoUseMetamaterials ())
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         calculateFieldStep<grid_type, false, true> (t, Start, End);
       }
@@ -324,32 +324,32 @@ private:
     {
       case (static_cast<uint8_t> (GridType::EX)):
       {
-        doUsePointSource = solverSettings.getDoUsePointSourceEx ();
+        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceEx ();
         break;
       }
       case (static_cast<uint8_t> (GridType::EY)):
       {
-        doUsePointSource = solverSettings.getDoUsePointSourceEy ();
+        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceEy ();
         break;
       }
       case (static_cast<uint8_t> (GridType::EZ)):
       {
-        doUsePointSource = solverSettings.getDoUsePointSourceEz ();
+        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceEz ();
         break;
       }
       case (static_cast<uint8_t> (GridType::HX)):
       {
-        doUsePointSource = solverSettings.getDoUsePointSourceHx ();
+        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceHx ();
         break;
       }
       case (static_cast<uint8_t> (GridType::HY)):
       {
-        doUsePointSource = solverSettings.getDoUsePointSourceHy ();
+        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceHy ();
         break;
       }
       case (static_cast<uint8_t> (GridType::HZ)):
       {
-        doUsePointSource = solverSettings.getDoUsePointSourceHz ();
+        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceHz ();
         break;
       }
       default:
@@ -367,6 +367,7 @@ private:
 public:
 
   void performSteps ();
+  void performCudaSteps ();
 
   void initScheme (FPValue, FPValue);
   void initCallBacks ();
@@ -411,7 +412,7 @@ public:
     ((ParallelGrid *) Eps)->gatherFullGridPlacement (totalEps);
     ((ParallelGrid *) Mu)->gatherFullGridPlacement (totalMu);
 
-    if (solverSettings.getDoUseMetamaterials ())
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
       ((ParallelGrid *) OmegaPE)->gatherFullGridPlacement (totalOmegaPE);
       ((ParallelGrid *) OmegaPM)->gatherFullGridPlacement (totalOmegaPM);
@@ -440,7 +441,7 @@ public:
     ((ParallelGrid *) Eps)->gatherFullGridPlacement (totalEps);
     ((ParallelGrid *) Mu)->gatherFullGridPlacement (totalMu);
 
-    if (solverSettings.getDoUseMetamaterials ())
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
       ((ParallelGrid *) OmegaPE)->gatherFullGridPlacement (totalOmegaPE);
       ((ParallelGrid *) OmegaPM)->gatherFullGridPlacement (totalOmegaPM);
@@ -469,7 +470,7 @@ public:
     ((ParallelGrid *) Eps)->gatherFullGridPlacement (totalEps);
     ((ParallelGrid *) Mu)->gatherFullGridPlacement (totalMu);
 
-    if (solverSettings.getDoUseMetamaterials ())
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
       ((ParallelGrid *) OmegaPE)->gatherFullGridPlacement (totalOmegaPE);
       ((ParallelGrid *) OmegaPM)->gatherFullGridPlacement (totalOmegaPM);
@@ -1185,7 +1186,7 @@ public:
     *Hy = doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "Hy") : NULLPTR;
     *Hz = doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "Hz") : NULLPTR;
 
-    if (solverSettings.getDoUsePML ())
+    if (SOLVER_SETTINGS.getDoUsePML ())
     {
       *Dx = doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "Dx") : NULLPTR;
       *Dy = doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "Dy") : NULLPTR;
@@ -1194,7 +1195,7 @@ public:
       *By = doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "By") : NULLPTR;
       *Bz = doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "Bz") : NULLPTR;
 
-      if (solverSettings.getDoUseMetamaterials ())
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         *D1x = doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "D1x") : NULLPTR;
         *D1y = doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "D1y") : NULLPTR;
@@ -1209,7 +1210,7 @@ public:
       *SigmaZ = doNeedSigmaZ ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaZ") : NULLPTR;
     }
 
-    if (solverSettings.getDoUseAmplitudeMode ())
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
     {
       *ExAmplitude = doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "ExAmp") : NULLPTR;
       *EyAmplitude = doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "EyAmp") : NULLPTR;
@@ -1219,7 +1220,7 @@ public:
       *HzAmplitude = doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "HzAmp") : NULLPTR;
     }
 
-    if (solverSettings.getDoUseMetamaterials ())
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
       *OmegaPE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "OmegaPE");
       *GammaE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "GammaE");

@@ -7,6 +7,7 @@
 #include "CudaDefines.h"
 
 #include "GridCoordinate3D.h"
+#include "YeeGridLayout.h"
 
 __global__ void cudaCalculateTMzEzStep (CudaExitStatus *, FieldValue *, FieldValue *, FieldValue *, FieldValue *,
                                         FieldValue *,
