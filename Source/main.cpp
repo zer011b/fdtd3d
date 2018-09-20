@@ -1086,5 +1086,7 @@ int main (int argc, char** argv)
     exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (argc, argv);
   }
 
+  solverSettings.Uninitialize ();
+
   return exit_code;
 }

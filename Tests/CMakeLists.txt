@@ -45,3 +45,9 @@ target_link_libraries (unit-test-layout Helpers Settings Coordinate Layout)
 
 add_executable (unit-test-approximation unit-test-approximation.cpp)
 target_link_libraries (unit-test-approximation Helpers Settings Layout)
+
+if ("${CUDA_ENABLED}")
+  add_executable (unit-test-cuda-grid unit-test-cuda-grid.cu)
+  set_target_properties (unit-test-cuda-grid PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  target_link_libraries (unit-test-cuda-grid PRIVATE Grid Helpers Settings Kernels Coordinate)
+endif ()

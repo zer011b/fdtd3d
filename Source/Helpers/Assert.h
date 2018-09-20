@@ -4,9 +4,39 @@
 #include <cstdio>
 
 /*
+ * CUDA notes.
+ *
+ * 1. CUDA_SOURCES should be defined for all cuda sources (.cu files) in order to include GPU related stuff.
+ *    All the stuff that should be defined for Cuda, but both for CPU and GPU code, should be under #ifdef CUDA_SOURCES
+ * 2. __CUDA_ARCH__ allows to define stuff separately for CPU and GPU even in the same .cu file (because the file will
+ *    be preprocessed for CPU and GPU separately)
+ */
+
+/*
  * This function is used to exit and debugging purposes.
  */
+#ifndef __CUDA_ARCH__
 extern void program_fail ();
+#endif /* !__CUDA_ARCH__ */
+
+#ifdef CUDA_ENABLED
+#ifdef CUDA_SOURCES
+extern __device__ void cuda_program_fail ();
+#endif /* CUDA_SOURCES */
+#endif /* CUDA_ENABLED */
+
+#ifdef __CUDA_ARCH__
+#define PROGRAM_FAIL cuda_program_fail
+#define SOLVER_SETTINGS (*cudaSolverSettings)
+//#define PROGRAM_FAIL_EXIT *retval = CUDA_ERROR; return;
+#define PROGRAM_FAIL_EXIT
+#define PROGRAM_OK_EXIT *retval = CUDA_OK; return;
+#else /* __CUDA_ARCH__ */
+#define PROGRAM_FAIL program_fail
+#define SOLVER_SETTINGS solverSettings
+#define PROGRAM_FAIL_EXIT
+#define PROGRAM_OK_EXIT
+#endif /* !__CUDA_ARCH__ */
 
 /*
  * Printf used for logging
@@ -14,7 +44,7 @@ extern void program_fail ();
 #if PRINT_MESSAGE
 #define DPRINTF(logLevel, ...) \
   { \
-    if (solverSettings.getLogLevel () >= logLevel) \
+    if (SOLVER_SETTINGS.getLogLevel () >= logLevel) \
     { \
       printf (__VA_ARGS__); \
     } \
@@ -23,6 +53,7 @@ extern void program_fail ();
 #define DPRINTF(...)
 #endif /* !PRINT_MESSAGE */
 
+
 #ifdef ENABLE_ASSERTS
 /*
  * Indicates program point, which should not be reached.
@@ -30,7 +61,8 @@ extern void program_fail ();
 #define UNREACHABLE \
 { \
   DPRINTF (LOG_LEVEL_NONE, "Unreachable executed at %s:%d.\n", __FILE__, __LINE__); \
-  program_fail (); \
+  PROGRAM_FAIL (); \
+  PROGRAM_FAIL_EXIT \
 }
 
 /*
@@ -39,7 +71,8 @@ extern void program_fail ();
 #define ASSERT_MESSAGE(x) \
 { \
   DPRINTF (LOG_LEVEL_NONE, "Assert '%s' at %s:%d.\n", x, __FILE__, __LINE__); \
-  program_fail (); \
+  PROGRAM_FAIL (); \
+  PROGRAM_FAIL_EXIT \
 }
 
 /*
@@ -50,7 +83,8 @@ extern void program_fail ();
   if (!(x)) \
   { \
     DPRINTF (LOG_LEVEL_NONE, "Assert at %s:%d.\n", __FILE__, __LINE__); \
-    program_fail (); \
+    PROGRAM_FAIL (); \
+    PROGRAM_FAIL_EXIT \
   } \
 }
 #else /* ENABLE_ASSERTS */
@@ -64,14 +98,16 @@ extern void program_fail ();
   if (!(x)) \
   { \
     DPRINTF (LOG_LEVEL_NONE, "Assert at %s:%d.\n", __FILE__, __LINE__); \
-    program_fail (); \
+    PROGRAM_FAIL (); \
+    PROGRAM_FAIL_EXIT \
   } \
 }
 
 #define ALWAYS_ASSERT_MESSAGE(x) \
 { \
   DPRINTF (LOG_LEVEL_NONE, "Assert '%s' at %s:%d.\n", x, __FILE__, __LINE__); \
-  program_fail (); \
+  PROGRAM_FAIL (); \
+  PROGRAM_FAIL_EXIT \
 }
 
 /*
@@ -125,5 +161,7 @@ extern void program_fail ();
  * This should correspond to MPI_DOUBLE!
  */
 typedef double DOUBLE;
+
+#include "CudaInclude.h"
 
 #endif /* ASSERT_H */

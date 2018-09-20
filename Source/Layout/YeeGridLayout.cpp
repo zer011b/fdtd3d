@@ -7,7 +7,7 @@ const bool YeeGridLayout<Type, TCoord, layout_type>::isParallel = false;
  * Ex
  */
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -19,7 +19,7 @@ YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinat
                                  YeeGridLayoutHelper::tfsfBorder1DSecond__1<5> (getExCoordFP (coord), rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -31,38 +31,38 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -74,7 +74,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2D
                                  YeeGridLayoutHelper::tfsfBorder2DSecond__1<-1, 5> (getExCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -86,7 +86,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2D
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -98,20 +98,20 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2D
                                  YeeGridLayoutHelper::tfsfBorder2DSecond__1<4, 5> (getExCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateExBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -135,19 +135,19 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
  * Ey
  */
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -159,7 +159,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1
                                  YeeGridLayoutHelper::tfsfBorder1DSecond__1<5> (getEyCoordFP (coord), rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -171,20 +171,20 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -196,13 +196,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2D
                                  YeeGridLayoutHelper::tfsfBorder2DSecond__1<-1, 5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -214,13 +214,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2D
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -232,13 +232,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2D
                                  YeeGridLayoutHelper::tfsfBorder2DSecond__1<4, 5> (getEyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateEyBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -262,31 +262,31 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
  * Ez
  */
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -298,7 +298,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -310,7 +310,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -322,7 +322,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2D
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -334,25 +334,25 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2D
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -364,7 +364,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2D
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateEzBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -388,19 +388,19 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
  * Hx
  */
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -412,13 +412,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1
                                  YeeGridLayoutHelper::tfsfBorder1DSecond__1<0> (getHxCoordFP (coord), rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -430,13 +430,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -448,25 +448,25 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2D
                                  YeeGridLayoutHelper::tfsfBorder2DSecond__1<-1, 0> (getHxCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -478,7 +478,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2D
                                  YeeGridLayoutHelper::tfsfBorder2DSecond__1<4, 0> (getHxCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -490,7 +490,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2D
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateHxBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -514,7 +514,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
  * Hy
  */
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -526,31 +526,31 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1
                                  YeeGridLayoutHelper::tfsfBorder1DSecond__1<0> (getHyCoordFP (coord), rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -562,13 +562,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -580,13 +580,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2D
                                  YeeGridLayoutHelper::tfsfBorder2DSecond__1<-1, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -598,13 +598,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2D
                                  YeeGridLayoutHelper::tfsfBorder2DSecond__1<4, 0> (getHyCoordFP (coord), leftBorderTotalFieldFP, rightBorderTotalFieldFP));
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -616,7 +616,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2D
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateHyBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -640,13 +640,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
  * Hz
  */
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -658,13 +658,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -676,31 +676,31 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate1D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -712,7 +712,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2D
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -724,7 +724,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2D
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -736,13 +736,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2D
                                  false);
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate2D coord, LayoutDirection dir) const
 {
   return false;
 }
 template <>
-bool
+CUDA_DEVICE CUDA_HOST bool
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::doNeedTFSFUpdateHzBorder (GridCoordinate3D coord, LayoutDirection dir) const
 {
   return YeeGridLayoutHelper::doNeedTFSFUpdateBorder (dir,
@@ -763,67 +763,80 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
 }
 
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::isInPML (GridCoordinateFP1D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML1D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::isInPML (GridCoordinateFP2D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML2D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
 template <>
-bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::isInPML (GridCoordinateFP3D realCoordFP) const
+CUDA_DEVICE CUDA_HOST bool
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::isInPML (GridCoordinateFP3D realCoordFP) const
 {
   return YeeGridLayoutHelper::isInPML3D (realCoordFP, zeroCoordFP, leftBorderPML, rightBorderPML);
 }
@@ -868,6 +881,7 @@ bool YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3
   , isDoubleMaterialPrecision (doubleMaterialPrecision)
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
@@ -893,6 +907,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
@@ -918,6 +933,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
@@ -943,6 +959,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
@@ -968,6 +985,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
@@ -993,6 +1011,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate1D coordSize,
    GridCoordinate1D sizePML,
@@ -1018,6 +1037,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
@@ -1047,6 +1067,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2D
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
@@ -1076,6 +1097,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2D
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
@@ -1105,6 +1127,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2D
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
@@ -1134,6 +1157,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2D
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
@@ -1163,6 +1187,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2D
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate2D coordSize,
    GridCoordinate2D sizePML,
@@ -1192,6 +1217,7 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2D
 }
 
 template <>
+CUDA_DEVICE CUDA_HOST
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::YeeGridLayout
   (GridCoordinate3D coordSize,
    GridCoordinate3D sizePML,

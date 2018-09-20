@@ -271,6 +271,48 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
       ALWAYS_ASSERT (coord3D_4.get1 () == 10 * i && coord3D_4.get2 () == 17 * i && coord3D_4.get3 () == 22 * i);
     }
 
+    if (i > 0)
+    {
+      GridCoordinate1DTemplate<TcoordType, doSignChecks> pos1D_1 (10 * i, t1);
+      GridCoordinate1DTemplate<TcoordType, doSignChecks> pos1D_2 (4 * i, t1);
+      GridCoordinate1DTemplate<TcoordType, doSignChecks> pos1D_3 (2 * i, t1);
+      GridCoordinate1DTemplate<TcoordType, doSignChecks> pos1D_4 (7 * i, t1);
+
+      ALWAYS_ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::subWithBorder (pos1D_1, pos1D_2, pos1D_4) == pos1D_4));
+      ALWAYS_ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::subWithBorder (pos1D_1, pos1D_3, pos1D_4) == (pos1D_1 - pos1D_3)));
+
+      ALWAYS_ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::addWithBorder (pos1D_2, pos1D_4, pos1D_1) == pos1D_1));
+      ALWAYS_ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::addWithBorder (pos1D_3, pos1D_4, pos1D_1) == (pos1D_3 + pos1D_4)));
+
+      if (correct2D)
+      {
+        GridCoordinate2DTemplate<TcoordType, doSignChecks> pos2D_1 (41 * i, 10 * i, t1, t2);
+        GridCoordinate2DTemplate<TcoordType, doSignChecks> pos2D_2 (18 * i, 4 * i, t1, t2);
+        GridCoordinate2DTemplate<TcoordType, doSignChecks> pos2D_3 (11 * i, 2 * i, t1, t2);
+        GridCoordinate2DTemplate<TcoordType, doSignChecks> pos2D_4 (25 * i, 7 * i, t1, t2);
+
+        ALWAYS_ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks>::subWithBorder (pos2D_1, pos2D_2, pos2D_4) == pos2D_4));
+        ALWAYS_ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks>::subWithBorder (pos2D_1, pos2D_3, pos2D_4) == (pos2D_1 - pos2D_3)));
+
+        ALWAYS_ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks>::addWithBorder (pos2D_2, pos2D_4, pos2D_1) == pos2D_1));
+        ALWAYS_ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::addWithBorder (pos2D_3, pos2D_4, pos2D_1) == (pos2D_3 + pos2D_4)));
+      }
+
+      if (correct3D)
+      {
+        GridCoordinate3DTemplate<TcoordType, doSignChecks> pos3D_1 (123 * i, 41 * i, 10 * i, t1, t2, t3);
+        GridCoordinate3DTemplate<TcoordType, doSignChecks> pos3D_2 (100 * i, 18 * i, 4 * i, t1, t2, t3);
+        GridCoordinate3DTemplate<TcoordType, doSignChecks> pos3D_3 (50 * i, 11 * i, 2 * i, t1, t2, t3);
+        GridCoordinate3DTemplate<TcoordType, doSignChecks> pos3D_4 (50 * i, 25 * i, 7 * i, t1, t2, t3);
+
+        ALWAYS_ASSERT ((GridCoordinate3DTemplate<TcoordType, doSignChecks>::subWithBorder (pos3D_1, pos3D_2, pos3D_4) == pos3D_4));
+        ALWAYS_ASSERT ((GridCoordinate3DTemplate<TcoordType, doSignChecks>::subWithBorder (pos3D_1, pos3D_3, pos3D_4) == (pos3D_1 - pos3D_3)));
+
+        ALWAYS_ASSERT ((GridCoordinate3DTemplate<TcoordType, doSignChecks>::addWithBorder (pos3D_2, pos3D_4, pos3D_1) == pos3D_1));
+        ALWAYS_ASSERT ((GridCoordinate3DTemplate<TcoordType, doSignChecks>::addWithBorder (pos3D_3, pos3D_4, pos3D_1) == (pos3D_3 + pos3D_4)));
+      }
+    }
+
     delete coord1D;
     delete coord2D;
     delete coord3D;

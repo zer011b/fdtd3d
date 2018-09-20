@@ -2768,7 +2768,7 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
   /*
    * ==== Check if some nodes are better to be disabled
    */
-  if (solverSettings.getDoCheckDisablingConditions ())
+  if (SOLVER_SETTINGS.getDoCheckDisablingConditions ())
   {
 #ifdef GRID_1D
     checkDisablingConditions (spreadX);
@@ -2784,7 +2784,7 @@ bool ParallelYeeGridLayout<Type, layout_type>::Rebalance (time_step difft) /**< 
   /*
    * ==== Check if some nodes are better to be enabled
    */
-  if (solverSettings.getDoCheckEnablingConditions ())
+  if (SOLVER_SETTINGS.getDoCheckEnablingConditions ())
   {
     // TODO: add enabling conditions check
   }

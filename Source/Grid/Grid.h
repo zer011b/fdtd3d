@@ -54,7 +54,6 @@ protected:
 
 private:
 
-  VectorFieldPointValues& getValues ();
   void shiftInTime ();
 
   void deleteGrid ();
@@ -74,7 +73,7 @@ public:
 
   Grid<TCoord> & operator = (const Grid<TCoord> &);
 
-  const TCoord &getSize () const;
+  const TCoord & getSize () const;
   virtual TCoord getTotalPosition (TCoord) const;
   virtual TCoord getTotalSize () const;
   virtual TCoord getRelativePosition (TCoord) const;
@@ -84,15 +83,16 @@ public:
   TCoord calculatePositionFromIndex (grid_coord) const;
 
   void setFieldPointValue (FieldPointValue *, const TCoord &);
-  FieldPointValue *getFieldPointValue (const TCoord &);
-  FieldPointValue *getFieldPointValue (grid_coord);
+  FieldPointValue * getFieldPointValue (const TCoord &);
+  FieldPointValue * getFieldPointValue (grid_coord);
 
-  virtual FieldPointValue *getFieldPointValueByAbsolutePos (const TCoord &);
-  virtual FieldPointValue *getFieldPointValueOrNullByAbsolutePos (const TCoord &);
+  virtual FieldPointValue * getFieldPointValueByAbsolutePos (const TCoord &);
+  virtual FieldPointValue * getFieldPointValueOrNullByAbsolutePos (const TCoord &);
 
   virtual void nextTimeStep ();
 
-  const std::string &getName () const;
+  const char * getName () const;
+  time_step getTimeStep () const;
 
   void initialize ();
   void initialize (FieldValue);
@@ -206,18 +206,6 @@ Grid<TCoord>::operator = (const Grid<TCoord> &grid) /**< grid to assign */
 } /* Grid<TCoord>::operator= */
 
 /**
- * Get values of the grid
- *
- * @return values of the grid
- */
-template <class TCoord>
-VectorFieldPointValues&
-Grid<TCoord>::getValues ()
-{
-  return gridValues;
-} /* Grid<TCoord>::getValues */
-
-/**
  * Replace previous time layer with current and so on
  */
 template <class TCoord>
@@ -263,7 +251,7 @@ Grid<TCoord>::calculateIndexFromPosition (const TCoord& position) const /**< coo
  * @return size of the grid
  */
 template <class TCoord>
-const TCoord&
+const TCoord &
 Grid<TCoord>::getSize () const
 {
   return size;
@@ -409,11 +397,23 @@ Grid<TCoord>::getRelativePosition (TCoord pos) const /**< position in grid */
  * @return name of grid
  */
 template <class TCoord>
-const std::string &
+const char *
 Grid<TCoord>::getName () const
 {
-  return gridName;
+  return gridName.c_str ();
 } /* Grid<TCoord>::getName */
+
+/**
+ * Get time step
+ *
+ * @return time step
+ */
+template <class TCoord>
+time_step
+Grid<TCoord>::getTimeStep () const
+{
+  return timeStep;
+} /* Grid<TCoord>::getTimeStep */
 
 /**
  * Initialize grid field values with default values

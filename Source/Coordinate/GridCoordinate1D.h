@@ -29,19 +29,26 @@ extern const char * coordinateTypeNames[];
 template<class TcoordType, bool doSignChecks>
 class GridCoordinate1DTemplate;
 
+/*
+ * These functions are not compiled for CUDA_DEVICE because these type of functions are not supported for
+ * gcc version 5.4.0, which CUDA 10.0 supports on ubuntu 16.04 (same for ubuntu 14.04 and gcc 4.8.4).
+ * gcc >= 5.5 is required for this.
+ */
+
 template<class TcoordType, bool doSignChecks>
-GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST
+CUDA_HOST
+GridCoordinate1DTemplate<TcoordType, doSignChecks>
 operator* (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs);
 
 template<class TcoordType, bool doSignChecks>
-GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST
-operator+ (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs,
-           const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
+CUDA_HOST
+GridCoordinate1DTemplate<TcoordType, doSignChecks>
+operator+ (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
 
 template<class TcoordType, bool doSignChecks>
-GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST
-operator- (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs,
-           const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
+CUDA_HOST
+GridCoordinate1DTemplate<TcoordType, doSignChecks>
+operator- (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
 
 /**
  * 1-dimensional coordinate in the grid
@@ -151,7 +158,8 @@ public:
    *
    * @return total-dimensional coordinate
    */
-  TcoordType CUDA_DEVICE CUDA_HOST calculateTotalCoord () const
+  CUDA_DEVICE CUDA_HOST
+  TcoordType calculateTotalCoord () const
   {
     return coord1;
   } /* GridCoordinate1DTemplate::calculateTotalCoord */
@@ -161,7 +169,8 @@ public:
    *
    * @return first coordinate
    */
-  const TcoordType& CUDA_DEVICE CUDA_HOST get1 () const
+  CUDA_DEVICE CUDA_HOST
+  const TcoordType & get1 () const
   {
     return coord1;
   } /* GridCoordinate1DTemplate::get1 */
@@ -169,7 +178,8 @@ public:
   /**
    * Set first coordinate
    */
-  void CUDA_DEVICE CUDA_HOST set1 (const TcoordType& new_c1) /**< new first coordinate */
+  CUDA_DEVICE CUDA_HOST
+  void set1 (const TcoordType& new_c1) /**< new first coordinate */
   {
     coord1 = new_c1;
     if (doSignChecks)
@@ -184,7 +194,8 @@ public:
    *
    * @return type of first coordinate
    */
-  CoordinateType CUDA_DEVICE CUDA_HOST getType1 () const
+  CUDA_DEVICE CUDA_HOST
+  CoordinateType getType1 () const
   {
     return type1;
   } /* GridCoordinate1DTemplate::getType1 */
@@ -195,7 +206,8 @@ public:
    *
    * @return maximum coordinate
    */
-  TcoordType CUDA_DEVICE CUDA_HOST getMax () const
+  CUDA_DEVICE CUDA_HOST
+  TcoordType getMax () const
   {
     return coord1;
   } /* GridCoordinate1DTemplate::getMax */
@@ -205,7 +217,8 @@ public:
    *
    * @return sum of two grid coordinates
    */
-  GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate1DTemplate<TcoordType, doSignChecks>
   operator+ (const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs) const /**< operand */
   {
 #ifdef DEBUG_INFO
@@ -223,7 +236,8 @@ public:
    *
    * @return sum of two grid coordinates
    */
-  GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate1DTemplate<TcoordType, doSignChecks>
   operator- (const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs) const /**< operand */
   {
 #ifdef DEBUG_INFO
@@ -242,7 +256,8 @@ public:
    * @return true, if grid coordinates are equal
    *         false, otherwise
    */
-  bool CUDA_DEVICE CUDA_HOST
+  CUDA_DEVICE CUDA_HOST
+  bool
   operator== (const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs) const /**< operand */
   {
 #ifdef DEBUG_INFO
@@ -257,7 +272,8 @@ public:
    * @return true, if grid coordinates are not equal
    *         false, otherwise
    */
-  bool CUDA_DEVICE CUDA_HOST
+  CUDA_DEVICE CUDA_HOST
+  bool
   operator!= (const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs) const /**< operand */
   {
 #ifdef DEBUG_INFO
@@ -272,7 +288,8 @@ public:
    * @return true, if first grid coordinates is greater than second
    *         false, otherwise
    */
-  bool CUDA_DEVICE CUDA_HOST
+  CUDA_DEVICE CUDA_HOST
+  bool
   operator> (const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs) const /**< operand */
   {
 #ifdef DEBUG_INFO
@@ -287,7 +304,8 @@ public:
    * @return true, if first grid coordinates is less than second
    *         false, otherwise
    */
-  bool CUDA_DEVICE CUDA_HOST
+  CUDA_DEVICE CUDA_HOST
+  bool
   operator< (const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs) const /**< operand */
   {
 #ifdef DEBUG_INFO
@@ -302,7 +320,8 @@ public:
    * @return true, if first grid coordinates is greater or equal than second
    *         false, otherwise
    */
-  bool CUDA_DEVICE CUDA_HOST
+  CUDA_DEVICE CUDA_HOST
+  bool
   operator>= (const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs) const /**< operand */
   {
 #ifdef DEBUG_INFO
@@ -317,7 +336,8 @@ public:
    * @return true, if first grid coordinates is less or equal than second
    *         false, otherwise
    */
-  bool CUDA_DEVICE CUDA_HOST
+  CUDA_DEVICE CUDA_HOST
+  bool
   operator<= (const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs) const /**< operand */
   {
 #ifdef DEBUG_INFO
@@ -331,7 +351,8 @@ public:
    *
    * @return grid coordinate wuth each coordinate multiplied by coordinate
    */
-  GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate1DTemplate<TcoordType, doSignChecks>
   operator* (TcoordType rhs) const /**< operand */
   {
     return GridCoordinate1DTemplate<TcoordType, doSignChecks> (get1 () * rhs
@@ -346,7 +367,8 @@ public:
    *
    * @return grid coordinate wuth each coordinate divided by coordinate
    */
-  GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate1DTemplate<TcoordType, doSignChecks>
   operator/ (TcoordType rhs) const /**< operand */
   {
     return GridCoordinate1DTemplate<TcoordType, doSignChecks> (get1 () / rhs
@@ -364,7 +386,9 @@ public:
    *
    * @return initialized grid coordinate
    */
-  static GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST
+  static
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate1DTemplate<TcoordType, doSignChecks>
   initAxesCoordinate (const TcoordType& c1, /**< first coordinate */
                       const TcoordType& c2, /**< second coordinate */
                       const TcoordType& c3, /**< third coordinate */
@@ -404,25 +428,81 @@ public:
     }
   } /* GridCoordinate1DTemplate::initAxesCoordinate */
 
-  /*
-   * Friend operators *,+,- declaration
+  /**
+   * Substract and check for border (if gets below border, then cut off by border)
+   *
+   * @return substraction result cut off by border
    */
-  friend GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST
-  (::operator* <TcoordType, doSignChecks>)
-    (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs);
-  friend GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST
-  (::operator+ <TcoordType, doSignChecks>)
-    (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs,
-     const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
-  friend GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST
-  (::operator- <TcoordType, doSignChecks>)
-    (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs,
-     const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
+  static
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate1DTemplate<TcoordType, doSignChecks>
+  subWithBorder (GridCoordinate1DTemplate<TcoordType, doSignChecks> coord1, /**< first operand of substraction */
+                 GridCoordinate1DTemplate<TcoordType, doSignChecks> coord2, /**< second operand of substraction */
+                 GridCoordinate1DTemplate<TcoordType, doSignChecks> border) /**< border to cut off */
+  {
+#ifdef DEBUG_INFO
+    ASSERT (coord1.getType1 () == coord2.getType1 ()
+            && coord1.getType1 () == border.getType1 ());
+#endif /* DEBUG_INFO */
+
+    TcoordType c1 = coord1.get1 () - coord2.get1 ();
+    if (c1 < border.get1 ())
+    {
+      c1 = border.get1 ();
+    }
+
+    return GridCoordinate1DTemplate<TcoordType, doSignChecks> (c1
+#ifdef DEBUG_INFO
+                                                               , coord1.getType1 ()
+#endif /* DEBUG_INFO */
+                                                               );
+  } /* GridCoordinate1DTemplate::subWithBorder */
 
   /**
-   * Print coordinate
+   * Add and check for border (if gets above border, then cut off by border)
+   *
+   * @return addition result cut off by border
    */
-  void print () const
+  static
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate1DTemplate<TcoordType, doSignChecks>
+  addWithBorder (GridCoordinate1DTemplate<TcoordType, doSignChecks> coord1, /**< first operand of addition */
+                 GridCoordinate1DTemplate<TcoordType, doSignChecks> coord2, /**< second operand of addition */
+                 GridCoordinate1DTemplate<TcoordType, doSignChecks> border) /**< border to cut off */
+  {
+#ifdef DEBUG_INFO
+    ASSERT (coord1.getType1 () == coord2.getType1 ()
+            && coord1.getType1 () == border.getType1 ());
+#endif /* DEBUG_INFO */
+
+    TcoordType c1 = coord1.get1 () + coord2.get1 ();
+    if (c1 > border.get1 ())
+    {
+      c1 = border.get1 ();
+    }
+
+    return GridCoordinate1DTemplate<TcoordType, doSignChecks> (c1
+#ifdef DEBUG_INFO
+                                                               , coord1.getType1 ()
+#endif /* DEBUG_INFO */
+                                                               );
+  } /* GridCoordinate1DTemplate::addWithBorder */
+
+#ifndef CUDA_HOST
+  friend CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks> (::operator* <TcoordType, doSignChecks>)
+    (TcoordType lhs, const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs);
+  friend CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks> (::operator+ <TcoordType, doSignChecks>)
+    (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
+  friend CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks> (::operator- <TcoordType, doSignChecks>)
+    (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs);
+#endif
+
+  /**
+   * Print coordinate to console
+   */
+  CUDA_DEVICE CUDA_HOST
+  void
+  print () const
   {
     printf ("Coord ("
 #ifdef DEBUG_INFO
@@ -442,9 +522,9 @@ public:
  * @return grid coordinate, which is the result of multiplication of number and grid coordinate
  */
 template<class TcoordType, bool doSignChecks>
-GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator*
-  (TcoordType lhs, /**< first operand (number) */
-   const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs) /**< second operand */
+CUDA_HOST
+GridCoordinate1DTemplate<TcoordType, doSignChecks> operator*
+(TcoordType lhs, const GridCoordinate1DTemplate<TcoordType, doSignChecks>& rhs)
 {
   return GridCoordinate1DTemplate<TcoordType, doSignChecks> (lhs * rhs.get1 ()
 #ifdef DEBUG_INFO
@@ -459,9 +539,9 @@ GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operato
  * @return result of addition of two grid coordinates
  */
 template<class TcoordType, bool doSignChecks>
-GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator+
-  (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, /**< first operand */
-   const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs) /**< second operand */
+CUDA_HOST
+GridCoordinate1DTemplate<TcoordType, doSignChecks> operator+
+(GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs)
 {
 #ifdef DEBUG_INFO
   ASSERT (lhs.getType1 () == rhs.getType1 ());
@@ -479,9 +559,9 @@ GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operato
  * @return result of substraction of two grid coordinates
  */
 template<class TcoordType, bool doSignChecks>
-GridCoordinate1DTemplate<TcoordType, doSignChecks> CUDA_DEVICE CUDA_HOST operator-
-  (GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, /**< first operand */
-   const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs) /**< second operand */
+CUDA_HOST
+GridCoordinate1DTemplate<TcoordType, doSignChecks> operator-
+(GridCoordinate1DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs)
 {
 #ifdef DEBUG_INFO
   ASSERT (lhs.getType1 () == rhs.getType1 ());
@@ -519,7 +599,8 @@ typedef GridCoordinate1DTemplate<FPValue, false> GridCoordinateSignedFP1D;
  * @return integer coodinate, corresponding to floating point coordinate
  */
 template<bool doSignChecks>
-GridCoordinate1DTemplate<grid_coord, doSignChecks> CUDA_DEVICE CUDA_HOST
+CUDA_DEVICE CUDA_HOST
+GridCoordinate1DTemplate<grid_coord, doSignChecks>
 convertCoord (GridCoordinate1DTemplate<FPValue, doSignChecks> coord) /**< floating point coordinate */
 {
   ASSERT (((grid_coord) coord.get1 ()) == coord.get1 ());
@@ -536,7 +617,8 @@ convertCoord (GridCoordinate1DTemplate<FPValue, doSignChecks> coord) /**< floati
  * @return floating point coodinate, corresponding to integer coordinate
  */
 template<bool doSignChecks>
-GridCoordinate1DTemplate<FPValue, doSignChecks> CUDA_DEVICE CUDA_HOST
+CUDA_DEVICE CUDA_HOST
+GridCoordinate1DTemplate<FPValue, doSignChecks>
 convertCoord (GridCoordinate1DTemplate<grid_coord, doSignChecks> coord) /**< integer coordinate */
 {
   return GridCoordinate1DTemplate<FPValue, doSignChecks> (coord.get1 ()

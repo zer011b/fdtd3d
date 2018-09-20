@@ -19,7 +19,7 @@ BMPDumper<GridCoordinate1D>::dumpGrid (Grid<GridCoordinate1D> *grid,
 
   grid_coord sx = size.get1 ();
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 1D Grid <%s> to BMP image. Size: " COORD_MOD "x1x1\n",
-    grid->getName ().c_str (), sx);
+    grid->getName (), sx);
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);
@@ -43,7 +43,7 @@ BMPDumper<GridCoordinate2D>::dumpGrid (Grid<GridCoordinate2D> *grid,
   grid_coord sy = size.get2 ();
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 2D Grid <%s> to BMP image. Size: " COORD_MOD "x" COORD_MOD "x1\n",
-    grid->getName ().c_str (), sx, sy);
+    grid->getName (), sx, sy);
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);
@@ -68,7 +68,7 @@ BMPDumper<GridCoordinate3D>::dumpGrid (Grid<GridCoordinate3D> *grid,
   grid_coord sz = size.get3 ();
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving 3D Grid <%s> to BMP image. Size: " COORD_MOD "x" COORD_MOD "x" COORD_MOD "\n",
-    grid->getName ().c_str (), sx, sy, sz);
+    grid->getName (), sx, sy, sz);
 #endif /* PRINT_MESSAGE */
 
   writeToFile (grid, startCoord, endCoord);

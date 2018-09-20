@@ -450,7 +450,7 @@ Approximation::approximateSphereAccurate (GridCoordinateFP2D midPos,
    * TODO: use better approximation
    */
 
-  int numSteps = solverSettings.getSphereAccuracy ();
+  int numSteps = SOLVER_SETTINGS.getSphereAccuracy ();
   FPValue step = 1.0 / numSteps;
   FPValue elemS = step;
   FPValue volume = 0;
@@ -562,7 +562,7 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
    * TODO: use better approximation
    */
 
-  int numSteps = solverSettings.getSphereAccuracy ();
+  int numSteps = SOLVER_SETTINGS.getSphereAccuracy ();
   FPValue step = 1.0 / numSteps;
   FPValue elemS = step * step;
   FPValue volume = 0;
