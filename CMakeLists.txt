@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-project (fdtd3d LANGUAGES CXX CUDA)
+project (fdtd3d LANGUAGES CXX)
 
 option(PRINT_MESSAGE "Print all messages" OFF)
 option(PARALLEL_GRID "Use parallel grid" OFF)
@@ -24,6 +24,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORCE_INLINES")
 add_definitions (-DSOLVER_VERSION=0.5)
 
 if ("${CUDA_ENABLED}")
+  enable_language (CUDA)
   set(CUDA_SEPARABLE_COMPILATION ON)
   #set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 endif ()
