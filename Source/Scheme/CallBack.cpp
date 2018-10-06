@@ -4,7 +4,6 @@
 #include "Settings.h"
 
 #include <cmath>
-#include <complex>
 
 #ifndef COMPLEX_FIELD_VALUES
 
@@ -402,7 +401,7 @@ FieldValue CallBack::exp1_e (FPValue coord, /**< real floating point coordinate 
 
 #ifdef COMPLEX_FIELD_VALUES
   FieldValue i (0, 1);
-  return i * exp (i * arg);
+  return i * exponent (i * arg);
 #else /* COMPLEX_FIELD_VALUES */
   return - sin (arg);
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -462,7 +461,7 @@ FieldValue CallBack::exp2_e (FPValue coord, /**< real floating point coordinate 
 
 #ifdef COMPLEX_FIELD_VALUES
   FieldValue i (0, 1);
-  return - FPValue (1) / FPValue (3) * i * exp (i * arg);
+  return - FPValue (1) / FPValue (3) * i * exponent (i * arg);
 #else /* COMPLEX_FIELD_VALUES */
   return FPValue (1) / FPValue (3) * sin (arg);
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -525,7 +524,7 @@ FieldValue CallBack::exp3_e (FPValue coord, /**< real floating point coordinate 
 
 #ifdef COMPLEX_FIELD_VALUES
   FieldValue i (0, 1);
-  return FPValue (2) / FPValue (3) * i * exp (i * arg);
+  return FPValue (2) / FPValue (3) * i * exponent (i * arg);
 #else /* COMPLEX_FIELD_VALUES */
   return - FPValue (2) / FPValue (3) * sin (arg);
 #endif /* !COMPLEX_FIELD_VALUES */

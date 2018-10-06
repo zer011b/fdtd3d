@@ -43,12 +43,20 @@ typedef long double FPValue;
 #define FP_MOD_ACC "%.20Lf"
 #endif /* LONG_DOUBLE_VALUES */
 
+#ifdef __CUDACC__
+#define CUDA_DEVICE __device__
+#define CUDA_HOST __host__
+#else /* __CUDACC__ */
+#define CUDA_DEVICE
+#define CUDA_HOST
+#endif /* !__CUDACC__ */
+
 /**
  * Type of field values
  */
 #ifdef COMPLEX_FIELD_VALUES
-#include <complex>
-typedef std::complex<FPValue> FieldValue;
+#include "Complex.h"
+typedef CComplex<FPValue> FieldValue;
 #define FIELDVALUE(real,imag) FieldValue(real,imag)
 #else /* COMPLEX_FIELD_VALUES */
 typedef FPValue FieldValue;
@@ -70,14 +78,6 @@ typedef FPValue FieldValue;
 #define CXX11_OVERRIDE_FINAL
 #define NULLPTR NULL
 #endif /* !CXX11_ENABLED */
-
-#ifdef __CUDACC__
-#define CUDA_DEVICE __device__
-#define CUDA_HOST __host__
-#else /* __CUDACC__ */
-#define CUDA_DEVICE
-#define CUDA_HOST
-#endif /* !__CUDACC__ */
 
 /**
  * Type of one-dimensional coordinate.
@@ -109,11 +109,15 @@ typedef uint32_t time_step;
  */
 #define CUBE(x) (SQR(x) * (x))
 
-extern FieldValue getFieldValueRealOnly (FPValue);
-extern FPValue getRealOnlyFromFieldValue (const FieldValue &);
+extern CUDA_DEVICE CUDA_HOST FieldValue getFieldValueRealOnly (FPValue);
+extern CUDA_DEVICE CUDA_HOST FPValue getRealOnlyFromFieldValue (const FieldValue &);
 
 #define FPEXACT_ACCURACY (FPValue(0.0000001))
 #define IS_FP_EXACT(a,b) \
   (((a) > (b) ? (a) - (b) : (b) - (a)) < FPEXACT_ACCURACY)
+
+template<class T>
+CUDA_DEVICE CUDA_HOST
+T exponent (T arg);
 
 #endif /* FIELD_VALUES_H */
