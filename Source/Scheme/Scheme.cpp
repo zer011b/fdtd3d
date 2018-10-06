@@ -1735,7 +1735,7 @@ void Scheme<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
         if (doNeedEy)
         {
           TCFP realCoord = yeeLayout->getEyCoordFP (Ey->getTotalPosition (auxPos1));
-          diff1 = FPValue (-1.0) * yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord));
+          diff1 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
         }
 
         break;
@@ -1745,7 +1745,7 @@ void Scheme<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
         if (doNeedEz)
         {
           TCFP realCoord = yeeLayout->getEzCoordFP (Ez->getTotalPosition (auxPos1));
-          diff1 = FPValue (-1.0) * yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord));
+          diff1 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
         }
 
         break;
@@ -1755,7 +1755,7 @@ void Scheme<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
         if (doNeedEx)
         {
           TCFP realCoord = yeeLayout->getExCoordFP (Ex->getTotalPosition (auxPos1));
-          diff1 = FPValue (-1.0) * yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord));
+          diff1 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
         }
 
         break;
@@ -1806,7 +1806,7 @@ void Scheme<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
         if (doNeedEz)
         {
           TCFP realCoord = yeeLayout->getEzCoordFP (Ez->getTotalPosition (auxPos2));
-          diff2 = FPValue (-1.0) * yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord));
+          diff2 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
         }
 
         break;
@@ -1816,7 +1816,7 @@ void Scheme<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
         if (doNeedEx)
         {
           TCFP realCoord = yeeLayout->getExCoordFP (Ex->getTotalPosition (auxPos2));
-          diff2 = FPValue (-1.0) * yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord));
+          diff2 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
         }
 
         break;
@@ -1826,7 +1826,7 @@ void Scheme<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
         if (doNeedEy)
         {
           TCFP realCoord = yeeLayout->getEyCoordFP (Ey->getTotalPosition (auxPos2));
-          diff2 = FPValue (-1.0) * yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord));
+          diff2 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
         }
 
         break;
@@ -2959,7 +2959,7 @@ Scheme<Type, TCoord, layout_type>::performPlaneWaveESteps (time_step t)
     FieldPointValue *valH2 = HInc->getFieldPointValue (posRight);
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    FieldValue val = valE->getPrevValue () + modifier * (valH1->getPrevValue () - valH2->getPrevValue ());
+    FieldValue val = valE->getPrevValue () + (valH1->getPrevValue () - valH2->getPrevValue ()) * modifier;
 #else
     ALWAYS_ASSERT (0);
 #endif
@@ -3025,7 +3025,7 @@ Scheme<Type, TCoord, layout_type>::performPlaneWaveHSteps (time_step t)
     FieldPointValue *valE2 = EInc->getFieldPointValue (posRight);
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    FieldValue val = valH->getPrevValue () + modifier * (valE1->getPrevValue () - valE2->getPrevValue ());
+    FieldValue val = valH->getPrevValue () + (valE1->getPrevValue () - valE2->getPrevValue ()) * modifier;
 #else
     ALWAYS_ASSERT (0);
 #endif
@@ -5188,10 +5188,10 @@ SchemeHelper::ntffN3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1) * ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
-                                  + (Hy1 + Hy2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
+      sum_teta += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
+                   + (Hy1 + Hy2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1);
 
-      sum_phi += SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1) * ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
+      sum_phi += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1);
     }
   }
 
@@ -5313,10 +5313,10 @@ SchemeHelper::ntffN3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (y0==rightNTFF.get2 ()?1:-1) * ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                                  + (Hx1 + Hx2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
+      sum_teta += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                   + (Hx1 + Hx2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (y0==rightNTFF.get2 ()?1:-1);
 
-      sum_phi += SQR (gridStep) * (-1) * (y0==rightNTFF.get2 ()?1:-1) * ((Hz1 + Hz2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent;
+      sum_phi += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (-1) * (y0==rightNTFF.get2 ()?1:-1);
     }
   }
 
@@ -5438,11 +5438,11 @@ SchemeHelper::ntffN3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1) * (-(Hy1 + Hy2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                                  + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent;
+      sum_teta += (-(Hy1 + Hy2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                   + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1);
 
-      sum_phi += SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1) * ((Hy1 + Hy2)/FPValue(2.0) * FPValue (sin (anglePhi))
-                                                + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
+      sum_phi += ((Hy1 + Hy2)/FPValue(2.0) * FPValue (sin (anglePhi))
+                  + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1);
     }
   }
 
@@ -5609,10 +5609,10 @@ SchemeHelper::ntffL3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1) * ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
-                                  + (Ey1 + Ey2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
+      sum_teta += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
+                   + (Ey1 + Ey2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1);
 
-      sum_phi += SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1) * ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
+      sum_phi += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1);
     }
   }
 
@@ -5779,10 +5779,10 @@ SchemeHelper::ntffL3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (y0==rightNTFF.get2 ()?1:-1) * ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                                  + (Ex1 + Ex2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent;
+      sum_teta += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                   + (Ex1 + Ex2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (y0==rightNTFF.get2 ()?1:-1);
 
-      sum_phi += SQR (gridStep) * (-1) * (y0==rightNTFF.get2 ()?1:-1) * ((Ez1 + Ez2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent;
+      sum_phi += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (-1) * (y0==rightNTFF.get2 ()?1:-1);
     }
   }
 
@@ -5950,11 +5950,11 @@ SchemeHelper::ntffL3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
 
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
-      sum_teta += SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1) * (-(Ey1 + Ey2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                                  + (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent;
+      sum_teta += (-(Ey1 + Ey2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
+                   + (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1);
 
-      sum_phi += SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1) * ((Ey1 + Ey2)/FPValue(2.0) * FPValue (sin (anglePhi))
-                                                + (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent;
+      sum_phi += ((Ey1 + Ey2)/FPValue(2.0) * FPValue (sin (anglePhi))
+                  + (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1);
     }
   }
 
@@ -6056,8 +6056,8 @@ Scheme<Type, TCoord, layout_type>::Pointing_scat (FPValue angleTeta, FPValue ang
   {
     FPValue n0 = sqrt (PhysicsConst::Mu0 / PhysicsConst::Eps0);
 
-    FieldValue first = -L.nPhi + n0 * N.nTeta;
-    FieldValue second = -L.nTeta - n0 * N.nPhi;
+    FieldValue first = -L.nPhi + N.nTeta * n0;
+    FieldValue second = -L.nTeta - N.nPhi * n0;
 
     FPValue first_abs2 = SQR (first.real ()) + SQR (first.imag ());
     FPValue second_abs2 = SQR (second.real ()) + SQR (second.imag ());
