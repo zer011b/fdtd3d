@@ -274,20 +274,20 @@ private:
                         FPValue Ca, FPValue Cb, FPValue delta)
   {
     FieldValue tmp = oppositeField12 - oppositeField11 - oppositeField22 + oppositeField21 + prevRightSide * delta;
-    return Ca * prev + Cb * tmp;
+    return prev * Ca + tmp * Cb;
   }
 
   FieldValue calcFieldDrude (FieldValue curDOrB, FieldValue prevDOrB, FieldValue prevPrevDOrB,
                              FieldValue prevEOrH, FieldValue prevPrevEOrH,
                              FPValue b0, FPValue b1, FPValue b2, FPValue a1, FPValue a2)
   {
-    return b0 * curDOrB + b1 * prevDOrB + b2 * prevPrevDOrB - a1 * prevEOrH - a2 * prevPrevEOrH;
+    return curDOrB * b0 + prevDOrB * b1 + prevPrevDOrB * b2 - prevEOrH * a1 - prevPrevEOrH * a2;
   }
 
   FieldValue calcFieldFromDOrB (FieldValue prevEOrH, FieldValue curDOrB, FieldValue prevDOrB,
                                 FPValue Ca, FPValue Cb, FPValue Cc)
   {
-    return Ca * prevEOrH + Cb * curDOrB - Cc * prevDOrB;
+    return prevEOrH * Ca + curDOrB * Cb - prevDOrB * Cc;
   }
 
   template <uint8_t grid_type>
@@ -760,7 +760,7 @@ public:
     FieldPointValue *val2 = FieldInc->getFieldPointValue (pos2);
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    return proportionD1 * val1->getPrevValue () + proportionD2 * val2->getPrevValue ();
+    return val1->getPrevValue () * proportionD1 + val2->getPrevValue () * proportionD2;
 #else
     ALWAYS_ASSERT (0);
 #endif

@@ -352,7 +352,7 @@ Approximation::approximateSphereFast (GridCoordinateFP3D midPos,
 
   FPValue proportion = 0.5 - diff;
 
-  return proportion * eps + (1 - proportion) * eps_vacuum;
+  return eps * proportion + eps_vacuum * (1 - proportion);
 }
 
 #define SPHERE_VOL_ACC_CUTOFF (1.0001)
@@ -416,7 +416,7 @@ Approximation::approximateSphereAccurate (GridCoordinateFP1D midPos,
     volume = FPValue (1);
   }
 
-  return volume * eps + (1 - volume) * outsideEps;
+  return eps * volume + outsideEps * (1 - volume);
 }
 
 FieldValue
@@ -527,7 +527,7 @@ Approximation::approximateSphereAccurate (GridCoordinateFP2D midPos,
     volume = FPValue (1);
   }
 
-  return volume * eps + (1 - volume) * outsideEps;
+  return eps * volume + outsideEps * (1 - volume);
 }
 
 FieldValue
@@ -642,5 +642,5 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
     volume = FPValue (1);
   }
 
-  return volume * eps + (1 - volume) * outsideEps;
+  return eps * volume + outsideEps * (1 - volume);
 }

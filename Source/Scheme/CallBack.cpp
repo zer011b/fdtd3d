@@ -428,7 +428,7 @@ FieldValue CallBack::exp1_h (FPValue coord, /**< real floating point coordinate 
   FPValue f = PhysicsConst::SpeedOfLight / lambda;
   FPValue w = 2 * PhysicsConst::Pi * f;
 
-  return (k / (PhysicsConst::Mu0 * w)) * exp1_e (coord, t, coord0);
+  return exp1_e (coord, t, coord0) * (k / (PhysicsConst::Mu0 * w));
 } /* CallBack::exp1_h */
 
 /**
@@ -461,9 +461,9 @@ FieldValue CallBack::exp2_e (FPValue coord, /**< real floating point coordinate 
 
 #ifdef COMPLEX_FIELD_VALUES
   FieldValue i (0, 1);
-  return - FPValue (1) / FPValue (3) * i * exponent (i * arg);
+  return - i * exponent (i * arg) * FPValue (1) / FPValue (3);
 #else /* COMPLEX_FIELD_VALUES */
-  return FPValue (1) / FPValue (3) * sin (arg);
+  return sin (arg) * FPValue (1) / FPValue (3);
 #endif /* !COMPLEX_FIELD_VALUES */
 } /* CallBack::exp2_e */
 
@@ -489,7 +489,7 @@ FieldValue CallBack::exp2_h (FPValue coord, /**< real floating point coordinate 
   FPValue f = PhysicsConst::SpeedOfLight / lambda;
   FPValue w = 2 * PhysicsConst::Pi * f;
 
-  return (- k / (PhysicsConst::Mu0 * w)) * exp2_e (coord, t, coord0, coordb);
+  return exp2_e (coord, t, coord0, coordb) * (- k / (PhysicsConst::Mu0 * w));
 } /* CallBack::exp2_h */
 
 /**
@@ -524,9 +524,9 @@ FieldValue CallBack::exp3_e (FPValue coord, /**< real floating point coordinate 
 
 #ifdef COMPLEX_FIELD_VALUES
   FieldValue i (0, 1);
-  return FPValue (2) / FPValue (3) * i * exponent (i * arg);
+  return i * exponent (i * arg) * FPValue (2) / FPValue (3);
 #else /* COMPLEX_FIELD_VALUES */
-  return - FPValue (2) / FPValue (3) * sin (arg);
+  return - sin (arg) * FPValue (2) / FPValue (3);
 #endif /* !COMPLEX_FIELD_VALUES */
 } /* CallBack::exp3_e */
 
@@ -553,5 +553,5 @@ FieldValue CallBack::exp3_h (FPValue coord, /**< real floating point coordinate 
   FPValue f = PhysicsConst::SpeedOfLight / lambda;
   FPValue w = 2 * PhysicsConst::Pi * f;
 
-  return (k_2 / (PhysicsConst::Mu0 * w)) * exp3_e (coord, t, coord0, coordb);
+  return exp3_e (coord, t, coord0, coordb) * (k_2 / (PhysicsConst::Mu0 * w));
 } /* CallBack::exp3_h */
