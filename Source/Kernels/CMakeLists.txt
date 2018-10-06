@@ -1,9 +1,11 @@
 message ("Kernels build.")
 
 file(GLOB_RECURSE KERNELS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE CUDA_KERNELS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cu")
 
 if ("${CUDA_ENABLED}")
-  add_library (Kernels ${KERNELS_SOURCES})
+  list(FILTER KERNELS_SOURCES EXCLUDE REGEX ".*/FieldValue.cpp$")
+  add_library (Kernels ${KERNELS_SOURCES} ${CUDA_KERNELS_SOURCES})
   set_target_properties (Kernels PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 else ()
   add_library (Kernels ${KERNELS_SOURCES})

@@ -1,5 +1,8 @@
 #include "FieldValue.h"
 
+#include <cmath>
+
+CUDA_DEVICE CUDA_HOST
 FieldValue getFieldValueRealOnly (FPValue real)
 {
 #ifdef COMPLEX_FIELD_VALUES
@@ -9,6 +12,7 @@ FieldValue getFieldValueRealOnly (FPValue real)
 #endif /* !COMPLEX_FIELD_VALUES */
 }
 
+CUDA_DEVICE CUDA_HOST
 FPValue getRealOnlyFromFieldValue (const FieldValue &val)
 {
 #ifdef COMPLEX_FIELD_VALUES
@@ -17,3 +21,19 @@ FPValue getRealOnlyFromFieldValue (const FieldValue &val)
   return val;
 #endif /* !COMPLEX_FIELD_VALUES */
 }
+
+template<>
+CUDA_DEVICE CUDA_HOST
+FPValue exponent (FPValue arg)
+{
+  return exp (arg);
+}
+
+#ifdef COMPLEX_FIELD_VALUES
+template<>
+CUDA_DEVICE CUDA_HOST
+CComplex<FPValue> exponent (CComplex<FPValue> arg)
+{
+  return arg.exp ();
+}
+#endif /* COMPLEX_FIELD_VALUES */
