@@ -26,7 +26,7 @@ add_definitions (-DSOLVER_VERSION=0.5)
 if ("${CUDA_ENABLED}")
   enable_language (CUDA)
   set(CUDA_SEPARABLE_COMPILATION ON)
-  #set(CUDA_PROPAGATE_HOST_FLAGS OFF)
+  set(CUDA_PROPAGATE_HOST_FLAGS ON)
 endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
