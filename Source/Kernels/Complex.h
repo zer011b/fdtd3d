@@ -7,14 +7,6 @@
 
 #include <cmath>
 
-// template<class T>
-// class CComplex;
-//
-// template<class T>
-// CUDA_DEVICE CUDA_HOST
-// CComplex<T>
-// operator* (T lhs, const CComplex<T> & rhs);
-
 /**
  * Complex values class (ideally, should fully match <complex>, see http://www.cplusplus.com/reference/complex/).
  * This is required for CUDA.
@@ -142,77 +134,110 @@ public:
     return re == x.re && im == x.im;
   } /* CComplex::operator== */
 
+  /**
+   * Operator *
+   *
+   * @return result of multiplication
+   */
   CUDA_DEVICE CUDA_HOST
-  CComplex<T> operator * (const T & x) const
+  CComplex<T> operator * (const T & x) const /**< multiplier */
   {
     return CComplex (re * x, im * x);
-  }
+  } /* CComplex::operator* */
 
+  /**
+   * Operator *
+   *
+   * @return result of multiplication
+   */
   CUDA_DEVICE CUDA_HOST
-  CComplex<T> operator * (const CComplex<T> & x) const
+  CComplex<T> operator * (const CComplex<T> & x) const /**< multiplier */
   {
     return CComplex (re * x.re - im * x.im, im * x.re + re * x.im);
-  }
+  } /* CComplex::operator* */
 
+  /**
+   * Operator /
+   *
+   * @return result of division
+   */
   CUDA_DEVICE CUDA_HOST
-  CComplex<T> operator / (const T & x) const
+  CComplex<T> operator / (const T & x) const /**< divider */
   {
     return CComplex (re / x, im / x);
-  }
+  } /* CComplex::operator/ */
 
+  /**
+   * Operator /
+   *
+   * @return result of division
+   */
   CUDA_DEVICE CUDA_HOST
-  CComplex<T> operator / (const CComplex<T> & x) const
+  CComplex<T> operator / (const CComplex<T> & x) const /**< divider */
   {
     T d = SQR (x.re) + SQR (x.im);
     return CComplex ((re * x.re + im * x.im) / d, (x.re * im - re * x.im) / d);
-  }
+  } /* CComplex::operator/ */
 
+  /**
+   * Operator +
+   *
+   * @return result of addition
+   */
   CUDA_DEVICE CUDA_HOST
-  CComplex<T> operator + (const CComplex<T> & x) const
+  CComplex<T> operator + (const CComplex<T> & x) const /**< operand */
   {
     return CComplex (re + x.re, im + x.im);
-  }
+  } /* CComplex::operator+ */
 
+  /**
+   * Operator -
+   *
+   * @return result of substraction
+   */
   CUDA_DEVICE CUDA_HOST
-  CComplex<T> operator - (const CComplex<T> & x) const
+  CComplex<T> operator - (const CComplex<T> & x) const /**< operand */
   {
     return CComplex (re - x.re, im - x.im);
-  }
+  } /* CComplex::operator- */
 
+  /**
+   * Operator +=
+   *
+   * @return result of addition
+   */
   CUDA_DEVICE CUDA_HOST
-  CComplex<T> & operator += (const CComplex<T> & x)
+  CComplex<T> & operator += (const CComplex<T> & x) /**< operand */
   {
     re += x.re;
     im += x.im;
     return *this;
-  }
+  } /* CComplex::operator+= */
 
+  /**
+   * Operator -=
+   *
+   * @return result of substraction
+   */
   CUDA_DEVICE CUDA_HOST
-  CComplex<T> & operator -= (const CComplex<T> & x)
+  CComplex<T> & operator -= (const CComplex<T> & x) /**< operand */
   {
     re -= x.re;
     im -= x.im;
     return *this;
-  }
+  } /* CComplex::operator-= */
 
+  /**
+   * Unary minus operator
+   *
+   * @return result of unary minus
+   */
   CUDA_DEVICE CUDA_HOST
   CComplex<T> operator - () const
   {
     return CComplex (-re, -im);
-  }
-
-  // friend CUDA_DEVICE CUDA_HOST CComplex<T> (::operator* <T>)
-  //   (T lhs, const CComplex<T> & rhs);
-};
-
-// template<class T>
-// CUDA_DEVICE CUDA_HOST
-// CComplex<T>
-// operator *
-// (T lhs, const CComplex<T> & rhs)
-// {
-//   return CComplex<T> (lhs * rhs.re, lhs * rhs.im);
-// }
+  } /* CComplex::operator- */
+}; /* CComplex */
 
 #endif /* COMPLEX_FIELD_VALUES */
 
