@@ -723,9 +723,7 @@ jobs:
       env:
         - TEST="t1.1"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t1.1/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t1.1/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -734,9 +732,7 @@ jobs:
       env:
         - TEST="t1.2"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t1.2/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t1.2/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -746,9 +742,7 @@ jobs:
       env:
         - TEST="t2.1"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t2.1/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t2.1/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -757,9 +751,7 @@ jobs:
       env:
         - TEST="t2.2"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t2.2/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t2.2/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -768,9 +760,7 @@ jobs:
       env:
         - TEST="t2.3"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t2.3/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t2.3/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -780,9 +770,7 @@ jobs:
       env:
         - TEST="t3"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t3/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t3/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -792,9 +780,7 @@ jobs:
       env:
         - TEST="t4.1"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t4.1/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t4.1/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -803,9 +789,7 @@ jobs:
       env:
         - TEST="t4.2"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t4.2/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t4.2/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -814,9 +798,7 @@ jobs:
       env:
         - TEST="t4.3"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t4.3/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t4.3/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -826,9 +808,7 @@ jobs:
       env:
         - TEST="t5"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t5/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t5/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -838,9 +818,7 @@ jobs:
       env:
         - TEST="t6.1"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.1/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.1/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -849,9 +827,7 @@ jobs:
       env:
         - TEST="t6.2"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.2/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.2/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -860,9 +836,7 @@ jobs:
       env:
         - TEST="t6.3"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.3/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.3/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -871,9 +845,7 @@ jobs:
       env:
         - TEST="t6.4"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.4/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.4/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -882,9 +854,7 @@ jobs:
       env:
         - TEST="t6.5"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.5/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.5/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -893,9 +863,7 @@ jobs:
       env:
         - TEST="t6.6"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.6/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.6/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -904,9 +872,7 @@ jobs:
       env:
         - TEST="t6.7"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.7/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.7/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -915,9 +881,7 @@ jobs:
       env:
         - TEST="t6.8"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.8/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.8/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -926,9 +890,7 @@ jobs:
       env:
         - TEST="t6.9"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.9/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.9/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -937,9 +899,7 @@ jobs:
       env:
         - TEST="t6.10"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.10/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.10/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -948,9 +908,7 @@ jobs:
       env:
         - TEST="t6.11"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.11/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.11/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -959,9 +917,7 @@ jobs:
       env:
         - TEST="t6.12"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.12/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.12/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -970,9 +926,7 @@ jobs:
       env:
         - TEST="t6.13"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t6.13/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t6.13/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -982,9 +936,7 @@ jobs:
       env:
         - TEST="t7.1"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t7.1/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t7.1/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -993,9 +945,7 @@ jobs:
       env:
         - TEST="t7.2"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t7.2/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t7.2/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -1004,9 +954,7 @@ jobs:
       env:
         - TEST="t7.3"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t7.3/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t7.3/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -1015,9 +963,7 @@ jobs:
       env:
         - TEST="t7.4"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t7.4/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t7.4/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -1026,9 +972,7 @@ jobs:
       env:
         - TEST="t7.5"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t7.5/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t7.5/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -1037,9 +981,7 @@ jobs:
       env:
         - TEST="t7.6"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t7.6/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t7.6/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
@@ -1049,9 +991,7 @@ jobs:
       env:
         - TEST="t8"
       script:
-      - sudo curl -sSL https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz | sudo tar -xzC /opt
-      - export PATH=/opt/cmake-3.5.2-Linux-x86_64/bin:$PATH
-      - export LD_LIBRARY_PATH=/opt/cmake-3.5.2-Linux-x86_64/lib:$LD_LIBRARY_PATH
+      - . Tools/travis-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/suite/t8/build.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
       - travis_wait 40 $CUR_DIR/Tools/TestSuite/suite/t8/run.sh $CUR_DIR/Tools/TestSuite $CUR_DIR
