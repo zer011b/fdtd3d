@@ -12,6 +12,7 @@ option(LARGE_COORDINATES "Use int64 for grid coordinates" OFF)
 option(COMBINED_SENDRECV "Use combined sendrecv" ON)
 option(MPI_CLOCK "Use mpi clock (MPI_Wtime) for clocks" OFF)
 option(LINK_NUMA "Link with NUMA library" OFF)
+option(STD_COMPEX "Use std::complex class instead of custom one" OFF)
 
 set(VALUE_TYPE "d" CACHE STRING "Defines type of values")
 set(TIME_STEPS "2" CACHE STRING "Defines number of time steps used")
@@ -27,6 +28,14 @@ if ("${CUDA_ENABLED}")
   enable_language (CUDA)
   set(CUDA_SEPARABLE_COMPILATION ON)
   set(CUDA_PROPAGATE_HOST_FLAGS ON)
+
+  if ("${STD_COMPEX}")
+    message(FATAL_ERROR "std::complex is not supported with Cuda, use STD_COMPLEX=OFF")
+  endif ()
+endif ()
+
+if ("${STD_COMPEX}")
+  add_definitions (-DSTD_COMPLEX)
 endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")

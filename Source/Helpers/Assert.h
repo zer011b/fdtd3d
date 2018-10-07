@@ -38,6 +38,14 @@ extern __device__ void cuda_program_fail ();
 #define PROGRAM_OK_EXIT
 #endif /* !__CUDA_ARCH__ */
 
+#ifdef __CUDACC__
+#define CUDA_DEVICE __device__
+#define CUDA_HOST __host__
+#else /* __CUDACC__ */
+#define CUDA_DEVICE
+#define CUDA_HOST
+#endif /* !__CUDACC__ */
+
 /*
  * Printf used for logging
  */
@@ -161,6 +169,16 @@ extern __device__ void cuda_program_fail ();
  * This should correspond to MPI_DOUBLE!
  */
 typedef double DOUBLE;
+
+/**
+ * Macro for square
+ */
+#define SQR(x) ((x) * (x))
+
+/**
+ * Macro for cube
+ */
+#define CUBE(x) (SQR(x) * (x))
 
 #include "CudaInclude.h"
 
