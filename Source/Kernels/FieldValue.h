@@ -43,20 +43,17 @@ typedef long double FPValue;
 #define FP_MOD_ACC "%.20Lf"
 #endif /* LONG_DOUBLE_VALUES */
 
-#ifdef __CUDACC__
-#define CUDA_DEVICE __device__
-#define CUDA_HOST __host__
-#else /* __CUDACC__ */
-#define CUDA_DEVICE
-#define CUDA_HOST
-#endif /* !__CUDACC__ */
-
 /**
  * Type of field values
  */
 #ifdef COMPLEX_FIELD_VALUES
+#ifdef STD_COMPLEX
+#include <complex>
+typedef std::complex<FPValue> FieldValue;
+#else /* STD_COMPEX */
 #include "Complex.h"
 typedef CComplex<FPValue> FieldValue;
+#endif /* !STD_COMPEX */
 #define FIELDVALUE(real,imag) FieldValue(real,imag)
 #else /* COMPLEX_FIELD_VALUES */
 typedef FPValue FieldValue;
@@ -98,16 +95,6 @@ typedef int64_t grid_coord;
  * Type of timestep
  */
 typedef uint32_t time_step;
-
-/**
- * Macro for square
- */
-#define SQR(x) ((x) * (x))
-
-/**
- * Macro for cube
- */
-#define CUBE(x) (SQR(x) * (x))
 
 extern CUDA_DEVICE CUDA_HOST FieldValue getFieldValueRealOnly (FPValue);
 extern CUDA_DEVICE CUDA_HOST FPValue getRealOnlyFromFieldValue (const FieldValue &);

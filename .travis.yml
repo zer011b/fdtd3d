@@ -718,6 +718,22 @@ jobs:
       - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
 
+# ---- Unit test for Complex ----
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_COMPLEX=""
+        - CXX11=ON
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-complex.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_COMPLEX=""
+        - CXX11=OFF
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-complex.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+
 # ---- Unit test for CudaGrid ----
     - stage: unit-tests
       env:
