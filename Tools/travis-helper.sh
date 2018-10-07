@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 sudo curl -sSL https://cmake.org/files/v3.12/cmake-3.12.3-Linux-x86_64.tar.gz | sudo tar -xzC /opt
 export PATH=/opt/cmake-3.12.3-Linux-x86_64/bin:$PATH

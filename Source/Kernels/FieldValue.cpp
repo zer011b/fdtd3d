@@ -30,10 +30,20 @@ FPValue exponent (FPValue arg)
 }
 
 #ifdef COMPLEX_FIELD_VALUES
+#ifndef STD_COMPEX
 template<>
 CUDA_DEVICE CUDA_HOST
 CComplex<FPValue> exponent (CComplex<FPValue> arg)
 {
   return arg.exp ();
 }
+#else /* !STD_COMPEX */
+template<>
+CUDA_DEVICE CUDA_HOST
+std::complex<FPValue> exponent (std::complex<FPValue> arg)
+{
+  return std::exp (arg);
+}
+#endif /* STD_COMPEX */
+
 #endif /* COMPLEX_FIELD_VALUES */

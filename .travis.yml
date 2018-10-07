@@ -725,14 +725,14 @@ jobs:
         - CXX11=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-complex.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+      - ./Tools/Tests/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
     - stage: unit-tests
       env:
         - UNIT_TEST_COMPLEX=""
         - CXX11=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-complex.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+      - ./Tools/Tests/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
 
 # ---- Unit test for CudaGrid ----
     - stage: unit-tests
@@ -743,7 +743,7 @@ jobs:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
-      - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
+      #- ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
     - stage: unit-tests
       env:
         - UNIT_TEST_CUDA_GRID=""
@@ -752,7 +752,7 @@ jobs:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
-      - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
+      #- ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
 
 # ==== Test suite stage ====
     - stage: test-suite

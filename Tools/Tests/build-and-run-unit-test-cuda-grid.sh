@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 DO_LAUNCH=$1
 shift

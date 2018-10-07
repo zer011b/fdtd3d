@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 # for macOS builds use OpenMPI from homebrew
 if [ "$TRAVIS_OS_NAME" == "osx" ]; then

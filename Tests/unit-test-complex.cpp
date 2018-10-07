@@ -14,6 +14,10 @@
 #include "cstdlib"
 #endif /* !CXX11_ENABLED */
 
+#define FPEXACT_ACCURACY (T(0.0001))
+#define IS_FP_EXACT(a,b) \
+  (((a) > (b) ? (a) - (b) : (b) - (a)) < FPEXACT_ACCURACY)
+
 template<class T>
 void test (T v1, T v2, T v3, T v4, T v5)
 {
@@ -88,10 +92,35 @@ void test (T v1, T v2, T v3, T v4, T v5)
    * Comparison with std::complex
    */
   std::complex<T> _val1 (v1, v2);
-  std::complex<T> _val2 (v3);
-  std::complex<T> _val3;
+  std::complex<T> _val2 (v3, v4);
+  std::complex<T> _val3 = _val1 + _val2;
+  std::complex<T> _val4 = _val1 - _val2;
+  std::complex<T> _val5 = _val1 * _val2;
+  std::complex<T> _val6 = _val1 / _val2;
+  std::complex<T> _val7 = _val1 * v5;
+  std::complex<T> _val8 = _val1 / v5;
 
-  assert (_val1.real () == val1.real () && _val1.imag () == val1.imag ());
+  assert (IS_FP_EXACT (_val1.real (), val1.real ()) && IS_FP_EXACT (_val1.imag (), val1.imag ()));
+  assert (IS_FP_EXACT (_val2.real (), val5.real ()) && IS_FP_EXACT (_val2.imag (), val5.imag ()));
+  assert (IS_FP_EXACT (_val3.real (), val6.real ()) && IS_FP_EXACT (_val3.imag (), val6.imag ()));
+  assert (IS_FP_EXACT (_val4.real (), val7.real ()) && IS_FP_EXACT (_val4.imag (), val7.imag ()));
+  assert (IS_FP_EXACT (_val5.real (), val9.real ()) && IS_FP_EXACT (_val5.imag (), val9.imag ()));
+  assert (IS_FP_EXACT (_val6.real (), val11.real ()) && IS_FP_EXACT (_val6.imag (), val11.imag ()));
+  assert (IS_FP_EXACT (_val7.real (), val8.real ()) && IS_FP_EXACT (_val7.imag (), val8.imag ()));
+  assert (IS_FP_EXACT (_val8.real (), val10.real ()) && IS_FP_EXACT (_val8.imag (), val10.imag ()));
+
+  assert (IS_FP_EXACT (std::abs (_val1), val1.abs ()));
+  assert (IS_FP_EXACT (std::abs (_val2), val5.abs ()));
+  assert (IS_FP_EXACT (std::abs (_val3), val6.abs ()));
+  assert (IS_FP_EXACT (std::abs (_val4), val7.abs ()));
+  assert (IS_FP_EXACT (std::abs (_val5), val9.abs ()));
+  assert (IS_FP_EXACT (std::abs (_val6), val11.abs ()));
+  assert (IS_FP_EXACT (std::abs (_val7), val8.abs ()));
+  assert (IS_FP_EXACT (std::abs (_val8), val10.abs ()));
+
+  std::complex<T> _val222 (T (2), T (3));
+  assert (std::exp (_val222).real () == val222.exp ().real ()
+          && std::exp (_val222).imag () == val222.exp ().imag ());
 }
 
 int main (int argc, char** argv)

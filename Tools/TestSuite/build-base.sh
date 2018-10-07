@@ -2,7 +2,7 @@
 
 # This is the base build script for test suite. It launches build with specified command.
 
-set -e
+set -ex
 
 TEST_DIR="$1"
 BUILD_DIR="$2"

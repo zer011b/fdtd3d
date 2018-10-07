@@ -4,7 +4,7 @@
 #include "Grid.h"
 
 #ifdef CUDA_SOURCES
-#include "cudaGrid.h"
+#include "CudaGrid.h"
 #else /* CUDA_SOURCES */
 #include "ParallelGrid.h"
 #endif /* !CUDA_SOURCES */
