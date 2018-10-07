@@ -19,20 +19,14 @@
 extern void program_fail ();
 #endif /* !__CUDA_ARCH__ */
 
-#ifdef CUDA_ENABLED
-#ifdef CUDA_SOURCES
-extern __device__ void cuda_program_fail ();
-#endif /* CUDA_SOURCES */
-#endif /* CUDA_ENABLED */
-
 #ifdef __CUDA_ARCH__
-#define PROGRAM_FAIL cuda_program_fail
+#define PROGRAM_FAIL assert(0)
 #define SOLVER_SETTINGS (*cudaSolverSettings)
 //#define PROGRAM_FAIL_EXIT *retval = CUDA_ERROR; return;
 #define PROGRAM_FAIL_EXIT
 #define PROGRAM_OK_EXIT *retval = CUDA_OK; return;
 #else /* __CUDA_ARCH__ */
-#define PROGRAM_FAIL program_fail
+#define PROGRAM_FAIL program_fail()
 #define SOLVER_SETTINGS solverSettings
 #define PROGRAM_FAIL_EXIT
 #define PROGRAM_OK_EXIT
@@ -69,7 +63,7 @@ extern __device__ void cuda_program_fail ();
 #define UNREACHABLE \
 { \
   DPRINTF (LOG_LEVEL_NONE, "Unreachable executed at %s:%d.\n", __FILE__, __LINE__); \
-  PROGRAM_FAIL (); \
+  PROGRAM_FAIL; \
   PROGRAM_FAIL_EXIT \
 }
 
@@ -79,7 +73,7 @@ extern __device__ void cuda_program_fail ();
 #define ASSERT_MESSAGE(x) \
 { \
   DPRINTF (LOG_LEVEL_NONE, "Assert '%s' at %s:%d.\n", x, __FILE__, __LINE__); \
-  PROGRAM_FAIL (); \
+  PROGRAM_FAIL; \
   PROGRAM_FAIL_EXIT \
 }
 
@@ -91,7 +85,7 @@ extern __device__ void cuda_program_fail ();
   if (!(x)) \
   { \
     DPRINTF (LOG_LEVEL_NONE, "Assert at %s:%d.\n", __FILE__, __LINE__); \
-    PROGRAM_FAIL (); \
+    PROGRAM_FAIL; \
     PROGRAM_FAIL_EXIT \
   } \
 }
@@ -106,7 +100,7 @@ extern __device__ void cuda_program_fail ();
   if (!(x)) \
   { \
     DPRINTF (LOG_LEVEL_NONE, "Assert at %s:%d.\n", __FILE__, __LINE__); \
-    PROGRAM_FAIL (); \
+    PROGRAM_FAIL; \
     PROGRAM_FAIL_EXIT \
   } \
 }
@@ -114,7 +108,7 @@ extern __device__ void cuda_program_fail ();
 #define ALWAYS_ASSERT_MESSAGE(x) \
 { \
   DPRINTF (LOG_LEVEL_NONE, "Assert '%s' at %s:%d.\n", x, __FILE__, __LINE__); \
-  PROGRAM_FAIL (); \
+  PROGRAM_FAIL; \
   PROGRAM_FAIL_EXIT \
 }
 
@@ -135,14 +129,14 @@ extern __device__ void cuda_program_fail ();
     \
     enum Temp { __VA_ARGS__ }; \
     \
-    name (Temp new_val) : temp (new_val) {} \
-    name () {} \
+    CUDA_DEVICE CUDA_HOST name (Temp new_val) : temp (new_val) {} \
+    CUDA_DEVICE CUDA_HOST name () {} \
     \
-    operator type () const { return temp; } \
-    bool operator < (name x) const { return temp < x.temp; } \
-    bool operator > (name x) const { return temp > x.temp; } \
-    bool operator == (name x) const { return temp == x.temp; } \
-    bool operator == (Temp t) const { return temp == t; } \
+    CUDA_DEVICE CUDA_HOST operator type () const { return temp; } \
+    CUDA_DEVICE CUDA_HOST bool operator < (name x) const { return temp < x.temp; } \
+    CUDA_DEVICE CUDA_HOST bool operator > (name x) const { return temp > x.temp; } \
+    CUDA_DEVICE CUDA_HOST bool operator == (name x) const { return temp == x.temp; } \
+    CUDA_DEVICE CUDA_HOST bool operator == (Temp t) const { return temp == t; } \
     \
   private: \
     Temp temp; \

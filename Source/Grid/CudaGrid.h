@@ -149,7 +149,7 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
   , endOfBlock (TCoord ())
   , bufSize (buf)
   , d_bufSize (NULLPTR)
-  , size (sizeOfBlock + 2 * bufSize)
+  , size (sizeOfBlock + bufSize * 2)
   , d_size (NULLPTR)
   , sizeGridValues (size.calculateTotalCoord ())
   , d_sizeGridValues (NULLPTR)

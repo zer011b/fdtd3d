@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 # Home directory of project where root CMakeLists.txt is placed
 HOME_DIR=$1

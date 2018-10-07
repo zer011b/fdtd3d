@@ -3,8 +3,6 @@
 
 #include "Assert.h"
 
-#ifdef COMPLEX_FIELD_VALUES
-
 #include <cmath>
 
 /**
@@ -238,7 +236,5 @@ public:
     return CComplex (-re, -im);
   } /* CComplex::operator- */
 }; /* CComplex */
-
-#endif /* COMPLEX_FIELD_VALUES */
 
 #endif /* !COMPLEX_H */

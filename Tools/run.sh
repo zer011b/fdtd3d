@@ -2,7 +2,7 @@
 
 # Run script
 
-set -e
+set -ex
 
 BUILD_DIR="${1}"
 EXECUTABLE="${2}"
