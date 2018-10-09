@@ -14,8 +14,6 @@
  *
  * TODO: add link to docs with description of yee layout
  *
- * TODO: consider removing minCoord which is always currently 0
- *
  * TODO: inline getter/setter
  */
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -38,25 +36,45 @@ protected:
   CoordinateType ct2;
   CoordinateType ct3;
 
-  const TC zeroCoord; /**< Zero coordinate of grid */
-  const TC minEpsCoord; /**< Minimum epsilon coordinate */
-  const TC minMuCoord; /**< Minimum mu coordinate */
-  const TC minExCoord; /**< Minimum Ex field coordinate */
-  const TC minEyCoord; /**< Minimum Ey field coordinate */
-  const TC minEzCoord; /**< Minimum Ez field coordinate */
-  const TC minHxCoord; /**< Minimum Hx field coordinate */
-  const TC minHyCoord; /**< Minimum Hy field coordinate */
-  const TC minHzCoord; /**< Minimum Hz field coordinate */
+  const TCS circuitExDownDiff;
+  const TCS circuitExUpDiff;
+  const TCS circuitExBackDiff;
+  const TCS circuitExFrontDiff;
 
-  const TCFP zeroCoordFP; /**< Real zero coordinate of grid (corresponding to zeroCoord) */
-  const TCFP minEpsCoordFP; /**< Minimum real epsilon coordinate (corresponding to minEpsCoord) */
-  const TCFP minMuCoordFP; /**< Minimum real mu coordinate (corresponding to minMuCoord) */
-  const TCFP minExCoordFP; /**< Minimum real Ex field coordinate (corresponding to minExCoord) */
-  const TCFP minEyCoordFP; /**< Minimum real Ey field coordinate (corresponding to minEyCoord) */
-  const TCFP minEzCoordFP; /**< Minimum real Ez field coordinate (corresponding to minEzCoord) */
-  const TCFP minHxCoordFP; /**< Minimum real Hx field coordinate (corresponding to minHxCoord) */
-  const TCFP minHyCoordFP; /**< Minimum real Hy field coordinate (corresponding to minHyCoord) */
-  const TCFP minHzCoordFP; /**< Minimum real Hz field coordinate (corresponding to minHzCoord) */
+  const TCS circuitEyLeftDiff;
+  const TCS circuitEyRightDiff;
+  const TCS circuitEyBackDiff;
+  const TCS circuitEyFrontDiff;
+
+  const TCS circuitEzLeftDiff;
+  const TCS circuitEzRightDiff;
+  const TCS circuitEzDownDiff;
+  const TCS circuitEzUpDiff;
+
+  const TCS circuitHxDownDiff;
+  const TCS circuitHxUpDiff;
+  const TCS circuitHxBackDiff;
+  const TCS circuitHxFrontDiff;
+
+  const TCS circuitHyLeftDiff;
+  const TCS circuitHyRightDiff;
+  const TCS circuitHyBackDiff;
+  const TCS circuitHyFrontDiff;
+
+  const TCS circuitHzLeftDiff;
+  const TCS circuitHzRightDiff;
+  const TCS circuitHzDownDiff;
+  const TCS circuitHzUpDiff;
+
+  const TCFP zeroCoordFP; /**< Real zero coordinate of grid */
+  const TCFP minEpsCoordFP; /**< Minimum real epsilon coordinate */
+  const TCFP minMuCoordFP; /**< Minimum real mu coordinate */
+  const TCFP minExCoordFP; /**< Minimum real Ex field coordinate */
+  const TCFP minEyCoordFP; /**< Minimum real Ey field coordinate */
+  const TCFP minEzCoordFP; /**< Minimum real Ez field coordinate */
+  const TCFP minHxCoordFP; /**< Minimum real Hx field coordinate */
+  const TCFP minHyCoordFP; /**< Minimum real Hy field coordinate */
+  const TCFP minHzCoordFP; /**< Minimum real Hz field coordinate */
 
   const TC size; /**< Size of grids */
   const TC sizeEps; /**< Size of epsilon grid */
@@ -90,12 +108,12 @@ public:
   /*
    * Get coordinate of circut field component
    */
-  CUDA_DEVICE CUDA_HOST TC getExCircuitElement (TC, LayoutDirection) const;
-  CUDA_DEVICE CUDA_HOST TC getEyCircuitElement (TC, LayoutDirection) const;
-  CUDA_DEVICE CUDA_HOST TC getEzCircuitElement (TC, LayoutDirection) const;
-  CUDA_DEVICE CUDA_HOST TC getHxCircuitElement (TC, LayoutDirection) const;
-  CUDA_DEVICE CUDA_HOST TC getHyCircuitElement (TC, LayoutDirection) const;
-  CUDA_DEVICE CUDA_HOST TC getHzCircuitElement (TC, LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TCS getExCircuitElementDiff (LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TCS getEyCircuitElementDiff (LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TCS getEzCircuitElementDiff (LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TCS getHxCircuitElementDiff (LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TCS getHyCircuitElementDiff (LayoutDirection) const;
+  CUDA_DEVICE CUDA_HOST TCS getHzCircuitElementDiff (LayoutDirection) const;
 
   /*
    * Get size of field component grid
@@ -147,27 +165,27 @@ public:
    */
   CUDA_DEVICE CUDA_HOST TC getExStartDiff () const
   {
-    return minExCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   CUDA_DEVICE CUDA_HOST TC getEyStartDiff () const
   {
-    return minEyCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   CUDA_DEVICE CUDA_HOST TC getEzStartDiff () const
   {
-    return minEzCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   CUDA_DEVICE CUDA_HOST TC getHxStartDiff () const
   {
-    return minHxCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   CUDA_DEVICE CUDA_HOST TC getHyStartDiff () const
   {
-    return minHyCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   CUDA_DEVICE CUDA_HOST TC getHzStartDiff () const
   {
-    return minHzCoord + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
 
   /*
@@ -175,67 +193,27 @@ public:
    */
   CUDA_DEVICE CUDA_HOST TC getExEndDiff () const
   {
-    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minExCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   CUDA_DEVICE CUDA_HOST TC getEyEndDiff () const
   {
-    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minEyCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   CUDA_DEVICE CUDA_HOST TC getEzEndDiff () const
   {
-    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minEzCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   CUDA_DEVICE CUDA_HOST TC getHxEndDiff () const
   {
-    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minHxCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   CUDA_DEVICE CUDA_HOST TC getHyEndDiff () const
   {
-    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minHyCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
   CUDA_DEVICE CUDA_HOST TC getHzEndDiff () const
   {
-    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3) - minHzCoord;
-  }
-
-  /*
-   * Get minimum coordinate of field component
-   */
-  CUDA_DEVICE CUDA_HOST TC getZeroCoord () const
-  {
-    return zeroCoord;
-  }
-  CUDA_DEVICE CUDA_HOST TC getMinEpsCoord () const
-  {
-    return minEpsCoord;
-  }
-  CUDA_DEVICE CUDA_HOST TC getMinMuCoord () const
-  {
-    return minMuCoord;
-  }
-  CUDA_DEVICE CUDA_HOST TC getMinExCoord () const
-  {
-    return minExCoord;
-  }
-  CUDA_DEVICE CUDA_HOST TC getMinEyCoord () const
-  {
-    return minEyCoord;
-  }
-  CUDA_DEVICE CUDA_HOST TC getMinEzCoord () const
-  {
-    return minEzCoord;
-  }
-  CUDA_DEVICE CUDA_HOST TC getMinHxCoord () const
-  {
-    return minHxCoord;
-  }
-  CUDA_DEVICE CUDA_HOST TC getMinHyCoord () const
-  {
-    return minHyCoord;
-  }
-  CUDA_DEVICE CUDA_HOST TC getMinHzCoord () const
-  {
-    return minHzCoord;
+    return TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
   }
 
   /*
@@ -283,35 +261,35 @@ public:
    */
   CUDA_DEVICE CUDA_HOST TCFP getEpsCoordFP (TC coord) const
   {
-    return convertCoord (coord - minEpsCoord) + minEpsCoordFP;
+    return convertCoord (coord) + minEpsCoordFP;
   }
   CUDA_DEVICE CUDA_HOST TCFP getMuCoordFP (TC coord) const
   {
-    return convertCoord (coord - minMuCoord) + minMuCoordFP;
+    return convertCoord (coord) + minMuCoordFP;
   }
   CUDA_DEVICE CUDA_HOST TCFP getExCoordFP (TC coord) const
   {
-    return convertCoord (coord - minExCoord) + minExCoordFP;
+    return convertCoord (coord) + minExCoordFP;
   }
   CUDA_DEVICE CUDA_HOST TCFP getEyCoordFP (TC coord) const
   {
-    return convertCoord (coord - minEyCoord) + minEyCoordFP;
+    return convertCoord (coord) + minEyCoordFP;
   }
   CUDA_DEVICE CUDA_HOST TCFP getEzCoordFP (TC coord) const
   {
-    return convertCoord (coord - minEzCoord) + minEzCoordFP;
+    return convertCoord (coord) + minEzCoordFP;
   }
   CUDA_DEVICE CUDA_HOST TCFP getHxCoordFP (TC coord) const
   {
-    return convertCoord (coord - minHxCoord) + minHxCoordFP;
+    return convertCoord (coord) + minHxCoordFP;
   }
   CUDA_DEVICE CUDA_HOST TCFP getHyCoordFP (TC coord) const
   {
-    return convertCoord (coord - minHyCoord) + minHyCoordFP;
+    return convertCoord (coord) + minHyCoordFP;
   }
   CUDA_DEVICE CUDA_HOST TCFP getHzCoordFP (TC coord) const
   {
-    return convertCoord (coord - minHzCoord) + minHzCoordFP;
+    return convertCoord (coord) + minHzCoordFP;
   }
 
   /*
@@ -319,35 +297,35 @@ public:
    */
   CUDA_DEVICE CUDA_HOST TC getEpsCoord (TCFP coord) const
   {
-    return convertCoord (coord - minEpsCoordFP) + minEpsCoord;
+    return convertCoord (coord - minEpsCoordFP);
   }
   CUDA_DEVICE CUDA_HOST TC getMuCoord (TCFP coord) const
   {
-    return convertCoord (coord - minMuCoordFP) + minMuCoord;
+    return convertCoord (coord - minMuCoordFP);
   }
   CUDA_DEVICE CUDA_HOST TC getExCoord (TCFP coord) const
   {
-    return convertCoord (coord - minExCoordFP) + minExCoord;
+    return convertCoord (coord - minExCoordFP);
   }
   CUDA_DEVICE CUDA_HOST TC getEyCoord (TCFP coord) const
   {
-    return convertCoord (coord - minEyCoordFP) + minEyCoord;
+    return convertCoord (coord - minEyCoordFP);
   }
   CUDA_DEVICE CUDA_HOST TC getEzCoord (TCFP coord) const
   {
-    return convertCoord (coord - minEzCoordFP) + minEzCoord;
+    return convertCoord (coord - minEzCoordFP);
   }
   CUDA_DEVICE CUDA_HOST TC getHxCoord (TCFP coord) const
   {
-    return convertCoord (coord - minHxCoordFP) + minHxCoord;
+    return convertCoord (coord - minHxCoordFP);
   }
   CUDA_DEVICE CUDA_HOST TC getHyCoord (TCFP coord) const
   {
-    return convertCoord (coord - minHyCoordFP) + minHyCoord;
+    return convertCoord (coord - minHyCoordFP);
   }
   CUDA_DEVICE CUDA_HOST TC getHzCoord (TCFP coord) const
   {
-    return convertCoord (coord - minHzCoordFP) + minHzCoord;
+    return convertCoord (coord - minHzCoordFP);
   }
 
   /*
@@ -1251,36 +1229,26 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
-YeeGridLayout<Type, TCoord, layout_type>::getExCircuitElement (TC coord, LayoutDirection dir) const
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TCS
+YeeGridLayout<Type, TCoord, layout_type>::getExCircuitElementDiff (LayoutDirection dir) const
 {
-  TCFP coordFP = convertCoord (coord - minExCoord) + minExCoordFP;
-
   switch (dir)
   {
     case LayoutDirection::DOWN:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minHzCoordFP;
-      break;
+      return circuitExDownDiff;
     }
     case LayoutDirection::UP:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minHzCoordFP;
-      break;
+      return circuitExUpDiff;
     }
     case LayoutDirection::BACK:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
-      coordFP = coordFP - minHyCoordFP;
-      break;
+      return circuitExBackDiff;
     }
     case LayoutDirection::FRONT:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
-      coordFP = coordFP - minHyCoordFP;
-      break;
+      return circuitExFrontDiff;
     }
     case LayoutDirection::LEFT:
     case LayoutDirection::RIGHT:
@@ -1289,41 +1257,29 @@ YeeGridLayout<Type, TCoord, layout_type>::getExCircuitElement (TC coord, LayoutD
       UNREACHABLE;
     }
   }
-
-  return convertCoord (coordFP);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
-YeeGridLayout<Type, TCoord, layout_type>::getEyCircuitElement (TC coord, LayoutDirection dir) const
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TCS
+YeeGridLayout<Type, TCoord, layout_type>::getEyCircuitElementDiff (LayoutDirection dir) const
 {
-  TCFP coordFP = convertCoord (coord - minEyCoord) + minEyCoordFP;
-
   switch (dir)
   {
     case LayoutDirection::LEFT:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minHzCoordFP;
-      break;
+      return circuitEyLeftDiff;
     }
     case LayoutDirection::RIGHT:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minHzCoordFP;
-      break;
+      return circuitEyRightDiff;
     }
     case LayoutDirection::BACK:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
-      coordFP = coordFP - minHxCoordFP;
-      break;
+      return circuitEyBackDiff;
     }
     case LayoutDirection::FRONT:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
-      coordFP = coordFP - minHxCoordFP;
-      break;
+      return circuitEyFrontDiff;
     }
     case LayoutDirection::DOWN:
     case LayoutDirection::UP:
@@ -1332,41 +1288,29 @@ YeeGridLayout<Type, TCoord, layout_type>::getEyCircuitElement (TC coord, LayoutD
       UNREACHABLE;
     }
   }
-
-  return convertCoord (coordFP);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
-YeeGridLayout<Type, TCoord, layout_type>::getEzCircuitElement (TC coord, LayoutDirection dir) const
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TCS
+YeeGridLayout<Type, TCoord, layout_type>::getEzCircuitElementDiff (LayoutDirection dir) const
 {
-  TCFP coordFP = convertCoord (coord - minEzCoord) + minEzCoordFP;
-
   switch (dir)
   {
     case LayoutDirection::LEFT:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minHyCoordFP;
-      break;
+      return circuitEzLeftDiff;
     }
     case LayoutDirection::RIGHT:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minHyCoordFP;
-      break;
+      return circuitEzRightDiff;
     }
     case LayoutDirection::DOWN:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minHxCoordFP;
-      break;
+      return circuitEzDownDiff;
     }
     case LayoutDirection::UP:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minHxCoordFP;
-      break;
+      return circuitEzUpDiff;
     }
     case LayoutDirection::BACK:
     case LayoutDirection::FRONT:
@@ -1375,41 +1319,29 @@ YeeGridLayout<Type, TCoord, layout_type>::getEzCircuitElement (TC coord, LayoutD
       UNREACHABLE;
     }
   }
-
-  return convertCoord (coordFP);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
-YeeGridLayout<Type, TCoord, layout_type>::getHxCircuitElement (TC coord, LayoutDirection dir) const
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TCS
+YeeGridLayout<Type, TCoord, layout_type>::getHxCircuitElementDiff (LayoutDirection dir) const
 {
-  TCFP coordFP = convertCoord (coord - minHxCoord) + minHxCoordFP;
-
   switch (dir)
   {
     case LayoutDirection::DOWN:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minEzCoordFP;
-      break;
+      return circuitHxDownDiff;
     }
     case LayoutDirection::UP:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minEzCoordFP;
-      break;
+      return circuitHxUpDiff;
     }
     case LayoutDirection::BACK:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
-      coordFP = coordFP - minEyCoordFP;
-      break;
+      return circuitHxBackDiff;
     }
     case LayoutDirection::FRONT:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
-      coordFP = coordFP - minEyCoordFP;
-      break;
+      return circuitHxFrontDiff;
     }
     case LayoutDirection::LEFT:
     case LayoutDirection::RIGHT:
@@ -1418,41 +1350,29 @@ YeeGridLayout<Type, TCoord, layout_type>::getHxCircuitElement (TC coord, LayoutD
       UNREACHABLE;
     }
   }
-
-  return convertCoord (coordFP);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
-YeeGridLayout<Type, TCoord, layout_type>::getHyCircuitElement (TC coord, LayoutDirection dir) const
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TCS
+YeeGridLayout<Type, TCoord, layout_type>::getHyCircuitElementDiff (LayoutDirection dir) const
 {
-  TCFP coordFP = convertCoord (coord - minHyCoord) + minHyCoordFP;
-
   switch (dir)
   {
     case LayoutDirection::LEFT:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minEzCoordFP;
-      break;
+      return circuitHyLeftDiff;
     }
     case LayoutDirection::RIGHT:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minEzCoordFP;
-      break;
+      return circuitHyRightDiff;
     }
     case LayoutDirection::BACK:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
-      coordFP = coordFP - minExCoordFP;
-      break;
+      return circuitHyBackDiff;
     }
     case LayoutDirection::FRONT:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3);
-      coordFP = coordFP - minExCoordFP;
-      break;
+      return circuitHyFrontDiff;
     }
     case LayoutDirection::DOWN:
     case LayoutDirection::UP:
@@ -1461,41 +1381,29 @@ YeeGridLayout<Type, TCoord, layout_type>::getHyCircuitElement (TC coord, LayoutD
       UNREACHABLE;
     }
   }
-
-  return convertCoord (coordFP);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TC
-YeeGridLayout<Type, TCoord, layout_type>::getHzCircuitElement (TC coord, LayoutDirection dir) const
+CUDA_DEVICE CUDA_HOST typename YeeGridLayout<Type, TCoord, layout_type>::TCS
+YeeGridLayout<Type, TCoord, layout_type>::getHzCircuitElementDiff (LayoutDirection dir) const
 {
-  TCFP coordFP = convertCoord (coord - minHzCoord) + minHzCoordFP;
-
   switch (dir)
   {
     case LayoutDirection::LEFT:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minEyCoordFP;
-      break;
+      return circuitHzLeftDiff;
     }
     case LayoutDirection::RIGHT:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minEyCoordFP;
-      break;
+      return circuitHzRightDiff;
     }
     case LayoutDirection::DOWN:
     {
-      coordFP = coordFP - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minExCoordFP;
-      break;
+      return circuitHzDownDiff;
     }
     case LayoutDirection::UP:
     {
-      coordFP = coordFP + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3);
-      coordFP = coordFP - minExCoordFP;
-      break;
+      return circuitHzUpDiff;
     }
     case LayoutDirection::BACK:
     case LayoutDirection::FRONT:
@@ -1504,8 +1412,6 @@ YeeGridLayout<Type, TCoord, layout_type>::getHzCircuitElement (TC coord, LayoutD
       UNREACHABLE;
     }
   }
-
-  return convertCoord (coordFP);
 }
 
 typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_ExHy;

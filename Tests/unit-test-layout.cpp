@@ -159,17 +159,6 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   ALWAYS_ASSERT ((layout.getHyEndDiff () == TCoord<grid_coord, true>::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3)));
   ALWAYS_ASSERT ((layout.getHzEndDiff () == TCoord<grid_coord, true>::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3)));
 
-  ALWAYS_ASSERT ((layout.getZeroCoord () == TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)));
-  ALWAYS_ASSERT ((layout.getMinEpsCoord () == TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)));
-  ALWAYS_ASSERT ((layout.getMinMuCoord () == TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)));
-
-  ALWAYS_ASSERT ((layout.getMinExCoord () == TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)));
-  ALWAYS_ASSERT ((layout.getMinEyCoord () == TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)));
-  ALWAYS_ASSERT ((layout.getMinEzCoord () == TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)));
-  ALWAYS_ASSERT ((layout.getMinHxCoord () == TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)));
-  ALWAYS_ASSERT ((layout.getMinHyCoord () == TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)));
-  ALWAYS_ASSERT ((layout.getMinHzCoord () == TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)));
-
   ALWAYS_ASSERT ((layout.getZeroCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)));
   ALWAYS_ASSERT ((layout.getMinEpsCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 0.5, 0.5, ct1, ct2, ct3)));
   ALWAYS_ASSERT ((layout.getMinMuCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 0.5, 0.5, ct1, ct2, ct3)));
@@ -198,10 +187,10 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   TCoord<grid_coord, true> coordHzU = coordEx;
   TCoord<grid_coord, true> coordHyB = coordEx - TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
   TCoord<grid_coord, true> coordHyF = coordEx;
-  ALWAYS_ASSERT (layout.getExCircuitElement (coordEx, LayoutDirection::DOWN) == coordHzD);
-  ALWAYS_ASSERT (layout.getExCircuitElement (coordEx, LayoutDirection::UP) == coordHzU);
-  ALWAYS_ASSERT (layout.getExCircuitElement (coordEx, LayoutDirection::BACK) == coordHyB);
-  ALWAYS_ASSERT (layout.getExCircuitElement (coordEx, LayoutDirection::FRONT) == coordHyF);
+  ALWAYS_ASSERT (coordEx + layout.getExCircuitElementDiff (LayoutDirection::DOWN) == coordHzD);
+  ALWAYS_ASSERT (coordEx + layout.getExCircuitElementDiff (LayoutDirection::UP) == coordHzU);
+  ALWAYS_ASSERT (coordEx + layout.getExCircuitElementDiff (LayoutDirection::BACK) == coordHyB);
+  ALWAYS_ASSERT (coordEx + layout.getExCircuitElementDiff (LayoutDirection::FRONT) == coordHyF);
   ALWAYS_ASSERT ((layout.getMinExCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 0.5, 0.5, ct1, ct2, ct3)));
 
   TCoord<grid_coord, true> coordEy = size / grid_coord (2);
@@ -211,10 +200,10 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   TCoord<grid_coord, true> coordHzR = coordEy;
   TCoord<grid_coord, true> coordHxB = coordEy - TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
   TCoord<grid_coord, true> coordHxF = coordEy;
-  ALWAYS_ASSERT (layout.getEyCircuitElement (coordEy, LayoutDirection::LEFT) == coordHzL);
-  ALWAYS_ASSERT (layout.getEyCircuitElement (coordEy, LayoutDirection::RIGHT) == coordHzR);
-  ALWAYS_ASSERT (layout.getEyCircuitElement (coordEy, LayoutDirection::BACK) == coordHxB);
-  ALWAYS_ASSERT (layout.getEyCircuitElement (coordEy, LayoutDirection::FRONT) == coordHxF);
+  ALWAYS_ASSERT (coordEy + layout.getEyCircuitElementDiff (LayoutDirection::LEFT) == coordHzL);
+  ALWAYS_ASSERT (coordEy + layout.getEyCircuitElementDiff (LayoutDirection::RIGHT) == coordHzR);
+  ALWAYS_ASSERT (coordEy + layout.getEyCircuitElementDiff (LayoutDirection::BACK) == coordHxB);
+  ALWAYS_ASSERT (coordEy + layout.getEyCircuitElementDiff (LayoutDirection::FRONT) == coordHxF);
   ALWAYS_ASSERT ((layout.getMinEyCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 1, 0.5, ct1, ct2, ct3)));
 
   TCoord<grid_coord, true> coordEz = size / grid_coord (2);
@@ -224,10 +213,10 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   TCoord<grid_coord, true> coordHyR = coordEz;
   TCoord<grid_coord, true> coordHxD = coordEz - TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
   TCoord<grid_coord, true> coordHxU = coordEz;
-  ALWAYS_ASSERT (layout.getEzCircuitElement (coordEz, LayoutDirection::LEFT) == coordHyL);
-  ALWAYS_ASSERT (layout.getEzCircuitElement (coordEz, LayoutDirection::RIGHT) == coordHyR);
-  ALWAYS_ASSERT (layout.getEzCircuitElement (coordEz, LayoutDirection::DOWN) == coordHxD);
-  ALWAYS_ASSERT (layout.getEzCircuitElement (coordEz, LayoutDirection::UP) == coordHxU);
+  ALWAYS_ASSERT (coordEz + layout.getEzCircuitElementDiff (LayoutDirection::LEFT) == coordHyL);
+  ALWAYS_ASSERT (coordEz + layout.getEzCircuitElementDiff (LayoutDirection::RIGHT) == coordHyR);
+  ALWAYS_ASSERT (coordEz + layout.getEzCircuitElementDiff (LayoutDirection::DOWN) == coordHxD);
+  ALWAYS_ASSERT (coordEz + layout.getEzCircuitElementDiff (LayoutDirection::UP) == coordHxU);
   ALWAYS_ASSERT ((layout.getMinEzCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 0.5, 1, ct1, ct2, ct3)));
 
   TCoord<grid_coord, true> coordHx = size / grid_coord (2);
@@ -237,10 +226,10 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   TCoord<grid_coord, true> coordEzU = coordHx + TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
   TCoord<grid_coord, true> coordEyB = coordHx;
   TCoord<grid_coord, true> coordEyF = coordHx + TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-  ALWAYS_ASSERT (layout.getHxCircuitElement (coordHx, LayoutDirection::DOWN) == coordEzD);
-  ALWAYS_ASSERT (layout.getHxCircuitElement (coordHx, LayoutDirection::UP) == coordEzU);
-  ALWAYS_ASSERT (layout.getHxCircuitElement (coordHx, LayoutDirection::BACK) == coordEyB);
-  ALWAYS_ASSERT (layout.getHxCircuitElement (coordHx, LayoutDirection::FRONT) == coordEyF);
+  ALWAYS_ASSERT (coordHx + layout.getHxCircuitElementDiff (LayoutDirection::DOWN) == coordEzD);
+  ALWAYS_ASSERT (coordHx + layout.getHxCircuitElementDiff (LayoutDirection::UP) == coordEzU);
+  ALWAYS_ASSERT (coordHx + layout.getHxCircuitElementDiff (LayoutDirection::BACK) == coordEyB);
+  ALWAYS_ASSERT (coordHx + layout.getHxCircuitElementDiff (LayoutDirection::FRONT) == coordEyF);
   ALWAYS_ASSERT ((layout.getMinHxCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 1, 1, ct1, ct2, ct3)));
 
   TCoord<grid_coord, true> coordHy = size / grid_coord (2);
@@ -250,10 +239,10 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   TCoord<grid_coord, true> coordEzR = coordHy + TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
   TCoord<grid_coord, true> coordExB = coordHy;
   TCoord<grid_coord, true> coordExF = coordHy + TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-  ALWAYS_ASSERT (layout.getHyCircuitElement (coordHy, LayoutDirection::LEFT) == coordEzL);
-  ALWAYS_ASSERT (layout.getHyCircuitElement (coordHy, LayoutDirection::RIGHT) == coordEzR);
-  ALWAYS_ASSERT (layout.getHyCircuitElement (coordHy, LayoutDirection::BACK) == coordExB);
-  ALWAYS_ASSERT (layout.getHyCircuitElement (coordHy, LayoutDirection::FRONT) == coordExF);
+  ALWAYS_ASSERT (coordHy + layout.getHyCircuitElementDiff (LayoutDirection::LEFT) == coordEzL);
+  ALWAYS_ASSERT (coordHy + layout.getHyCircuitElementDiff (LayoutDirection::RIGHT) == coordEzR);
+  ALWAYS_ASSERT (coordHy + layout.getHyCircuitElementDiff (LayoutDirection::BACK) == coordExB);
+  ALWAYS_ASSERT (coordHy + layout.getHyCircuitElementDiff (LayoutDirection::FRONT) == coordExF);
   ALWAYS_ASSERT ((layout.getMinHyCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 0.5, 1, ct1, ct2, ct3)));
 
   TCoord<grid_coord, true> coordHz = size / grid_coord (2);
@@ -263,10 +252,10 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   TCoord<grid_coord, true> coordEyR = coordHz + TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
   TCoord<grid_coord, true> coordExD = coordHz;
   TCoord<grid_coord, true> coordExU = coordHz + TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-  ALWAYS_ASSERT (layout.getHzCircuitElement (coordHz, LayoutDirection::LEFT) == coordEyL);
-  ALWAYS_ASSERT (layout.getHzCircuitElement (coordHz, LayoutDirection::RIGHT) == coordEyR);
-  ALWAYS_ASSERT (layout.getHzCircuitElement (coordHz, LayoutDirection::DOWN) == coordExD);
-  ALWAYS_ASSERT (layout.getHzCircuitElement (coordHz, LayoutDirection::UP) == coordExU);
+  ALWAYS_ASSERT (coordHz + layout.getHzCircuitElementDiff (LayoutDirection::LEFT) == coordEyL);
+  ALWAYS_ASSERT (coordHz + layout.getHzCircuitElementDiff (LayoutDirection::RIGHT) == coordEyR);
+  ALWAYS_ASSERT (coordHz + layout.getHzCircuitElementDiff (LayoutDirection::DOWN) == coordExD);
+  ALWAYS_ASSERT (coordHz + layout.getHzCircuitElementDiff (LayoutDirection::UP) == coordExU);
   ALWAYS_ASSERT ((layout.getMinHzCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 1, 0.5, ct1, ct2, ct3)));
 
   switch (Type)

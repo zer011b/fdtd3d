@@ -255,6 +255,31 @@ public:
   } /* GridCoordinate2DTemplate::operator+ */
 
   /**
+   * Operator + for grid coordinates
+   *
+   * @return sum of two grid coordinates
+   */
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate2DTemplate<TcoordType, !doSignChecks>
+  operator+ (const GridCoordinate2DTemplate<TcoordType, !doSignChecks>& rhs) const /**< operand */
+  {
+#ifdef DEBUG_INFO
+    CoordinateType cct1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ();
+    CoordinateType cct2 = rhs.GridCoordinate1DTemplate<TcoordType, !doSignChecks>::getType1 ();
+    ASSERT (cct1 == cct2);
+    ASSERT (getType2 () == rhs.getType2 ());
+#endif /* DEBUG_INFO */
+    TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+    TcoordType rhs_c1 = rhs.GridCoordinate1DTemplate<TcoordType, !doSignChecks>::get1 ();
+
+    return GridCoordinate2DTemplate (coord1 + rhs_c1, get2 () + rhs.get2 ()
+#ifdef DEBUG_INFO
+      , GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 (), getType2 ()
+#endif /* DEBUG_INFO */
+      );
+  } /* GridCoordinate2DTemplate::operator+ */
+
+  /**
    * Operator - for grid coordinates
    *
    * @return sum of two grid coordinates

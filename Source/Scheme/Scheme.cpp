@@ -2193,10 +2193,10 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
 
   FPValue material = materialGrid ? yeeLayout->getMaterial (posAbs, gridType, materialGrid, materialGridType) : 0;
 
-  TC pos11;
-  TC pos12;
-  TC pos21;
-  TC pos22;
+  TC pos11 = pos;
+  TC pos12 = pos;
+  TC pos21 = pos;
+  TC pos22 = pos;
 
   TCFP coordFP;
   FPValue timestep;
@@ -2205,20 +2205,20 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
   FPValue Ca;
   FPValue Cb;
 
-  // TODO: add circuitElementDiff here, which will be called before loop
-  // TODO: add coordFPDiff here, which will be called before loop
   switch (grid_type)
   {
     case (static_cast<uint8_t> (GridType::EX)):
     {
-      pos11 = yeeLayout->getExCircuitElement (pos, LayoutDirection::DOWN);
-      pos12 = yeeLayout->getExCircuitElement (pos, LayoutDirection::UP);
-      pos21 = yeeLayout->getExCircuitElement (pos, LayoutDirection::BACK);
-      pos22 = yeeLayout->getExCircuitElement (pos, LayoutDirection::FRONT);
+      pos11 = pos11 + yeeLayout->getExCircuitElementDiff (LayoutDirection::DOWN);
+      pos12 = pos12 + yeeLayout->getExCircuitElementDiff (LayoutDirection::UP);
+      pos21 = pos21 + yeeLayout->getExCircuitElementDiff (LayoutDirection::BACK);
+      pos22 = pos22 + yeeLayout->getExCircuitElementDiff (LayoutDirection::FRONT);
 
-      // TODO: do not invoke in case no right side
-      coordFP = yeeLayout->getExCoordFP (posAbs);
-      timestep = t;
+      if (rightSideFunc != NULLPTR)
+      {
+        coordFP = yeeLayout->getExCoordFP (posAbs);
+        timestep = t;
+      }
 
       FPValue k_y = 1;
       k_mod = k_y;
@@ -2226,13 +2226,16 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
     }
     case (static_cast<uint8_t> (GridType::EY)):
     {
-      pos11 = yeeLayout->getEyCircuitElement (pos, LayoutDirection::BACK);
-      pos12 = yeeLayout->getEyCircuitElement (pos, LayoutDirection::FRONT);
-      pos21 = yeeLayout->getEyCircuitElement (pos, LayoutDirection::LEFT);
-      pos22 = yeeLayout->getEyCircuitElement (pos, LayoutDirection::RIGHT);
+      pos11 = pos11 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::BACK);
+      pos12 = pos12 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::FRONT);
+      pos21 = pos21 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::LEFT);
+      pos22 = pos22 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::RIGHT);
 
-      coordFP = yeeLayout->getEyCoordFP (posAbs);
-      timestep = t;
+      if (rightSideFunc != NULLPTR)
+      {
+        coordFP = yeeLayout->getEyCoordFP (posAbs);
+        timestep = t;
+      }
 
       FPValue k_z = 1;
       k_mod = k_z;
@@ -2240,13 +2243,16 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
     }
     case (static_cast<uint8_t> (GridType::EZ)):
     {
-      pos11 = yeeLayout->getEzCircuitElement (pos, LayoutDirection::LEFT);
-      pos12 = yeeLayout->getEzCircuitElement (pos, LayoutDirection::RIGHT);
-      pos21 = yeeLayout->getEzCircuitElement (pos, LayoutDirection::DOWN);
-      pos22 = yeeLayout->getEzCircuitElement (pos, LayoutDirection::UP);
+      pos11 = pos11 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::LEFT);
+      pos12 = pos12 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::RIGHT);
+      pos21 = pos21 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::DOWN);
+      pos22 = pos22 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::UP);
 
-      coordFP = yeeLayout->getEzCoordFP (posAbs);
-      timestep = t;
+      if (rightSideFunc != NULLPTR)
+      {
+        coordFP = yeeLayout->getEzCoordFP (posAbs);
+        timestep = t;
+      }
 
       FPValue k_x = 1;
       k_mod = k_x;
@@ -2254,13 +2260,16 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
     }
     case (static_cast<uint8_t> (GridType::HX)):
     {
-      pos11 = yeeLayout->getHxCircuitElement (pos, LayoutDirection::BACK);
-      pos12 = yeeLayout->getHxCircuitElement (pos, LayoutDirection::FRONT);
-      pos21 = yeeLayout->getHxCircuitElement (pos, LayoutDirection::DOWN);
-      pos22 = yeeLayout->getHxCircuitElement (pos, LayoutDirection::UP);
+      pos11 = pos11 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::BACK);
+      pos12 = pos12 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::FRONT);
+      pos21 = pos21 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::DOWN);
+      pos22 = pos22 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::UP);
 
-      coordFP = yeeLayout->getHxCoordFP (posAbs);
-      timestep = t + 0.5;
+      if (rightSideFunc != NULLPTR)
+      {
+        coordFP = yeeLayout->getHxCoordFP (posAbs);
+        timestep = t + 0.5;
+      }
 
       FPValue k_y = 1;
       k_mod = k_y;
@@ -2268,13 +2277,16 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
     }
     case (static_cast<uint8_t> (GridType::HY)):
     {
-      pos11 = yeeLayout->getHyCircuitElement (pos, LayoutDirection::LEFT);
-      pos12 = yeeLayout->getHyCircuitElement (pos, LayoutDirection::RIGHT);
-      pos21 = yeeLayout->getHyCircuitElement (pos, LayoutDirection::BACK);
-      pos22 = yeeLayout->getHyCircuitElement (pos, LayoutDirection::FRONT);
+      pos11 = pos11 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::LEFT);
+      pos12 = pos12 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::RIGHT);
+      pos21 = pos21 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::BACK);
+      pos22 = pos22 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::FRONT);
 
-      coordFP = yeeLayout->getHyCoordFP (posAbs);
-      timestep = t + 0.5;
+      if (rightSideFunc != NULLPTR)
+      {
+        coordFP = yeeLayout->getHyCoordFP (posAbs);
+        timestep = t + 0.5;
+      }
 
       FPValue k_z = 1;
       k_mod = k_z;
@@ -2282,13 +2294,16 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
     }
     case (static_cast<uint8_t> (GridType::HZ)):
     {
-      pos11 = yeeLayout->getHzCircuitElement (pos, LayoutDirection::DOWN);
-      pos12 = yeeLayout->getHzCircuitElement (pos, LayoutDirection::UP);
-      pos21 = yeeLayout->getHzCircuitElement (pos, LayoutDirection::LEFT);
-      pos22 = yeeLayout->getHzCircuitElement (pos, LayoutDirection::RIGHT);
+      pos11 = pos11 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::DOWN);
+      pos12 = pos12 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::UP);
+      pos21 = pos21 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::LEFT);
+      pos22 = pos22 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::RIGHT);
 
-      coordFP = yeeLayout->getHzCoordFP (posAbs);
-      timestep = t + 0.5;
+      if (rightSideFunc != NULLPTR)
+      {
+        coordFP = yeeLayout->getHzCoordFP (posAbs);
+        timestep = t + 0.5;
+      }
 
       FPValue k_x = 1;
       k_mod = k_x;

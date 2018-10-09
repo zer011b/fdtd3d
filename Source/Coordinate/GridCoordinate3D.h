@@ -248,6 +248,38 @@ public:
   } /* GridCoordinate3DTemplate::operator+ */
 
   /**
+   * Operator + for grid coordinates
+   *
+   * @return sum of two grid coordinates
+   */
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate3DTemplate<TcoordType, doSignChecks>
+  operator+ (const GridCoordinate3DTemplate<TcoordType, !doSignChecks>& rhs) const /**< operand */
+  {
+#ifdef DEBUG_INFO
+    CoordinateType cct1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ();
+    CoordinateType cct2 = rhs.GridCoordinate1DTemplate<TcoordType, !doSignChecks>::getType1 ();
+    ASSERT (cct1 == cct2);
+    cct1 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ();
+    cct2 = rhs.GridCoordinate2DTemplate<TcoordType, !doSignChecks>::getType2 ();
+    ASSERT (cct1 == cct2);
+    ASSERT (getType3 () == rhs.getType3 ());
+#endif /* DEBUG_INFO */
+    TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+    TcoordType rhs_c1 = rhs.GridCoordinate1DTemplate<TcoordType, !doSignChecks>::get1 ();
+    TcoordType coord2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+    TcoordType rhs_c2 = rhs.GridCoordinate2DTemplate<TcoordType, !doSignChecks>::get2 ();
+
+    return GridCoordinate3DTemplate (coord1 + rhs_c1, coord2 + rhs_c2, get3 () + rhs.get3 ()
+#ifdef DEBUG_INFO
+      , GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
+      , GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
+      , getType3 ()
+#endif /* DEBUG_INFO */
+      );
+  } /* GridCoordinate3DTemplate::operator+ */
+
+  /**
    * Operator - for grid coordinates
    *
    * @return sum of two grid coordinates
