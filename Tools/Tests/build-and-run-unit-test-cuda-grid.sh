@@ -19,12 +19,14 @@ C_COMPILER=$4
 
 CXX11_ENABLED=$5
 
+DEVICE=$6
+
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
 function build
 {
-  for VALUE_TYPE in f d ld; do
+  for VALUE_TYPE in f d; do
     for TIME_STEPS in 1 2; do
       for COMPLEX_FIELD_VALUES in ON OFF; do
       for LARGE_COORDINATES in ON OFF; do
@@ -66,7 +68,7 @@ function build
         fi
 
         if [[ DO_LAUNCH -eq 1 ]]; then
-          ./Tests/unit-test-cuda-grid
+          ./Tests/unit-test-cuda-grid $DEVICE
 
           res=$(echo $?)
 

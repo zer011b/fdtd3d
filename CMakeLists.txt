@@ -90,6 +90,10 @@ elseif ("${VALUE_TYPE}" STREQUAL "ld")
     message(FATAL_ERROR "Complex long double values are not supported")
   endif ()
 
+  if ("${CUDA_ENABLED}")
+    messsage(FATAL_ERROR "Long double values are not supported with Cuda")
+  endif ()
+
   message ("Floating point values: long double.")
   add_definitions (-DLONG_DOUBLE_VALUES)
 else ()
