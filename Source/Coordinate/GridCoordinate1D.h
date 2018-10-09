@@ -232,6 +232,25 @@ public:
   } /* GridCoordinate1DTemplate::operator+ */
 
   /**
+   * Operator + for grid coordinates
+   *
+   * @return sum of two grid coordinates
+   */
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate1DTemplate<TcoordType, doSignChecks>
+  operator+ (const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& rhs) const /**< operand */
+  {
+#ifdef DEBUG_INFO
+    ASSERT (getType1 () == rhs.getType1 ());
+#endif /* DEBUG_INFO */
+    return GridCoordinate1DTemplate<TcoordType, doSignChecks> (get1 () + rhs.get1 ()
+#ifdef DEBUG_INFO
+      , getType1 ()
+#endif /* DEBUG_INFO */
+      );
+  } /* GridCoordinate1DTemplate::operator+ */
+
+  /**
    * Operator - for grid coordinates
    *
    * @return sum of two grid coordinates

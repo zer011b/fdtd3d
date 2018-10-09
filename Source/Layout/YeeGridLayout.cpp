@@ -842,18 +842,33 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
 }
 
 #define DEFAULT_VALS_LIST \
-  zeroCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
-  , minEpsCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
-  , minMuCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
-  , minExCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
-  , minEyCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
-  , minEzCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
-  , minHxCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
-  , minHyCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
-  , minHzCoord (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  circuitExDownDiff (TCS::initAxesCoordinate (0, -1, 0, ct1, ct2, ct3)) \
+  , circuitExUpDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitExBackDiff (TCS::initAxesCoordinate (0, 0, -1, ct1, ct2, ct3)) \
+  , circuitExFrontDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitEyLeftDiff (TCS::initAxesCoordinate (-1, 0, 0, ct1, ct2, ct3)) \
+  , circuitEyRightDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitEyBackDiff (TCS::initAxesCoordinate (0, 0, -1, ct1, ct2, ct3)) \
+  , circuitEyFrontDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitEzLeftDiff (TCS::initAxesCoordinate (-1, 0, 0, ct1, ct2, ct3)) \
+  , circuitEzRightDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitEzDownDiff (TCS::initAxesCoordinate (0, -1, 0, ct1, ct2, ct3)) \
+  , circuitEzUpDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitHxDownDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitHxUpDiff (TCS::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3)) \
+  , circuitHxBackDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitHxFrontDiff (TCS::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3)) \
+  , circuitHyLeftDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitHyRightDiff (TCS::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3)) \
+  , circuitHyBackDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitHyFrontDiff (TCS::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3)) \
+  , circuitHzLeftDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitHzRightDiff (TCS::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3)) \
+  , circuitHzDownDiff (TCS::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3)) \
+  , circuitHzUpDiff (TCS::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3)) \
+  , zeroCoordFP (TCFP::initAxesCoordinate (0.0, 0.0, 0.0, ct1, ct2, ct3)) \
   , minEpsCoordFP (TCFP::initAxesCoordinate (0.5, 0.5, 0.5, ct1, ct2, ct3)) \
   , minMuCoordFP (TCFP::initAxesCoordinate (0.5, 0.5, 0.5, ct1, ct2, ct3)) \
-  , zeroCoordFP (TCFP::initAxesCoordinate (0.0, 0.0, 0.0, ct1, ct2, ct3)) \
   , minExCoordFP (TCFP::initAxesCoordinate (1.0, 0.5, 0.5, ct1, ct2, ct3)) \
   , minEyCoordFP (TCFP::initAxesCoordinate (0.5, 1.0, 0.5, ct1, ct2, ct3)) \
   , minEzCoordFP (TCFP::initAxesCoordinate (0.5, 0.5, 1.0, ct1, ct2, ct3)) \
