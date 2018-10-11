@@ -73,13 +73,6 @@ SPECIALIZE_TEMPLATE(NPair, NPair, NPair,
                     (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, EInc, curEx, curEy, curEz)) // TODO: check sourceWaveLengthNumerical here
 
 SPECIALIZE_TEMPLATE(bool, bool, bool,
-                    doSkipBorderFunc,
-                    (GridCoordinate1D pos, Grid<GridCoordinate1D> *grid),
-                    (GridCoordinate2D pos, Grid<GridCoordinate2D> *grid),
-                    (GridCoordinate3D pos, Grid<GridCoordinate3D> *grid),
-                    (pos, grid))
-
-SPECIALIZE_TEMPLATE(bool, bool, bool,
                     doSkipMakeScattered,
                     (GridCoordinateFP1D pos),
                     (GridCoordinateFP2D pos),
@@ -87,987 +80,16 @@ SPECIALIZE_TEMPLATE(bool, bool, bool,
                     (pos, yeeLayout->getLeftBorderTFSF (), yeeLayout->getRightBorderTFSF ()))
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-const bool Scheme<Type, TCoord, layout_type>::doNeedEx = Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHy) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-const bool Scheme<Type, TCoord, layout_type>::doNeedEy = Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHx) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-const bool Scheme<Type, TCoord, layout_type>::doNeedEz = Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHx) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMz) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-const bool Scheme<Type, TCoord, layout_type>::doNeedHx = Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHx) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMz)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-const bool Scheme<Type, TCoord, layout_type>::doNeedHy = Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHy) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMz)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-const bool Scheme<Type, TCoord, layout_type>::doNeedHz = Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHz) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz) || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-const bool Scheme<Type, TCoord, layout_type>::doNeedSigmaX = Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHz) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMz)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-const bool Scheme<Type, TCoord, layout_type>::doNeedSigmaY = Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHz) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMz)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-const bool Scheme<Type, TCoord, layout_type>::doNeedSigmaZ = Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHy) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy)
-                                                    || Type == static_cast<SchemeType_t> (SchemeType::Dim3);
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFExAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFExAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFExAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () < pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFExAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () < pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFExAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () < pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFExAsserts
-  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () < pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-  ASSERT (pos11.get3 () == pos12.get3 ());
-  ASSERT (pos21.get3 () < pos22.get3 ());
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEyAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEyAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEyAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () < pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEyAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEyAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-  ASSERT (pos11.get2 () < pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFEyAsserts
-  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-  ASSERT (pos11.get3 () < pos12.get3 ());
-  ASSERT (pos21.get3 () == pos22.get3 ());
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEzAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEzAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEzAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEzAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEzAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () < pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFEzAsserts
-  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () < pos22.get2 ());
-  ASSERT (pos11.get3 () == pos12.get3 ());
-  ASSERT (pos21.get3 () == pos22.get3 ());
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHxAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHxAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHxAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-  ASSERT (pos11.get2 () < pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHxAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () < pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHxAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () < pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFHxAsserts
-  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () < pos22.get2 ());
-  ASSERT (pos11.get3 () < pos12.get3 ());
-  ASSERT (pos21.get3 () == pos22.get3 ());
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHyAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHyAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHyAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () < pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHyAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () < pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHyAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFHyAsserts
-  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-  ASSERT (pos11.get3 () == pos12.get3 ());
-  ASSERT (pos21.get3 () < pos22.get3 ());
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHzAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHzAsserts
-  (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHzAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-  ASSERT (pos11.get2 () < pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHzAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () < pos12.get1 ());
-  ASSERT (pos21.get1 () == pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHzAsserts
-  (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-  ASSERT (pos11.get2 () == pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFHzAsserts
-  (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22)
-{
-  ASSERT (pos11.get1 () == pos12.get1 ());
-  ASSERT (pos21.get1 () < pos22.get1 ());
-  ASSERT (pos11.get2 () < pos12.get2 ());
-  ASSERT (pos21.get2 () == pos22.get2 ());
-  ASSERT (pos11.get3 () == pos12.get3 ());
-  ASSERT (pos21.get3 () == pos22.get3 ());
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Z;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Y;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Z;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Y;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Y;
-  ct2 = CoordinateType::Z;
-  ct3 = CoordinateType::NONE;
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::Z;
-  ct3 = CoordinateType::NONE;
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::Y;
-  ct3 = CoordinateType::NONE;
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Y;
-  ct2 = CoordinateType::Z;
-  ct3 = CoordinateType::NONE;
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::Z;
-  ct3 = CoordinateType::NONE;
-}
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::Y;
-  ct3 = CoordinateType::NONE;
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::Y;
-  ct3 = CoordinateType::Z;
-}
-
-#ifdef PARALLEL_GRID
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_1D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_1D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_1D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_1D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_1D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_1D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_2D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_2D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_2D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_2D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_2D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_2D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
-#endif
-}
-
-template <>
-void
-Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::allocateParallelGrids ()
-{
-#ifdef GRID_3D
-  ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> *pLayout =
-    (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  SchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=3.");
-#endif
-}
-#endif
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_type> *layout,
                                            bool parallelLayout,
                                            const TC& totSize,
                                            time_step tStep)
-  : yeeLayout (layout)
-  , isParallelLayout (parallelLayout)
-  , Ex (NULLPTR)
-  , Ey (NULLPTR)
-  , Ez (NULLPTR)
-  , Hx (NULLPTR)
-  , Hy (NULLPTR)
-  , Hz (NULLPTR)
-  , Dx (NULLPTR)
-  , Dy (NULLPTR)
-  , Dz (NULLPTR)
-  , Bx (NULLPTR)
-  , By (NULLPTR)
-  , Bz (NULLPTR)
-  , D1x (NULLPTR)
-  , D1y (NULLPTR)
-  , D1z (NULLPTR)
-  , B1x (NULLPTR)
-  , B1y (NULLPTR)
-  , B1z (NULLPTR)
-  , ExAmplitude (NULLPTR)
-  , EyAmplitude (NULLPTR)
-  , EzAmplitude (NULLPTR)
-  , HxAmplitude (NULLPTR)
-  , HyAmplitude (NULLPTR)
-  , HzAmplitude (NULLPTR)
-  , Eps (NULLPTR)
-  , Mu (NULLPTR)
-  , OmegaPE (NULLPTR)
-  , OmegaPM (NULLPTR)
-  , GammaE (NULLPTR)
-  , GammaM (NULLPTR)
-  , SigmaX (NULLPTR)
-  , SigmaY (NULLPTR)
-  , SigmaZ (NULLPTR)
-  , EInc (NULLPTR)
-  , HInc (NULLPTR)
+  : useParallel (false)
+  , internalScheme ()
+#ifdef CUDA_ENABLED
+  , intGPUScheme ()
+  , d_intGPUScheme (NULLPTR)
+#endif /* CUDA_ENABLED */
   , totalEx (NULLPTR)
   , totalEy (NULLPTR)
   , totalEz (NULLPTR)
@@ -1081,150 +103,10 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
   , totalOmegaPM (NULLPTR)
   , totalGammaE (NULLPTR)
   , totalGammaM (NULLPTR)
-  , sourceWaveLength (0)
-  , sourceWaveLengthNumerical (0)
-  , sourceFrequency (0)
-  , courantNum (0)
-  , gridStep (0)
-  , gridTimeStep (0)
   , totalStep (tStep)
-  , ExBorder (NULLPTR)
-  , ExInitial (NULLPTR)
-  , EyBorder (NULLPTR)
-  , EyInitial (NULLPTR)
-  , EzBorder (NULLPTR)
-  , EzInitial (NULLPTR)
-  , HxBorder (NULLPTR)
-  , HxInitial (NULLPTR)
-  , HyBorder (NULLPTR)
-  , HyInitial (NULLPTR)
-  , HzBorder (NULLPTR)
-  , HzInitial (NULLPTR)
-  , Jx (NULLPTR)
-  , Jy (NULLPTR)
-  , Jz (NULLPTR)
-  , Mx (NULLPTR)
-  , My (NULLPTR)
-  , Mz (NULLPTR)
-  , ExExact (NULLPTR)
-  , EyExact (NULLPTR)
-  , EzExact (NULLPTR)
-  , HxExact (NULLPTR)
-  , HyExact (NULLPTR)
-  , HzExact (NULLPTR)
-  , useParallel (false)
+  , process (-1)
+  , numProcs (-1)
 {
-  initCoordTypes ();
-
-  if (SOLVER_SETTINGS.getDoUseNTFF ())
-  {
-    leftNTFF = TC::initAxesCoordinate (SOLVER_SETTINGS.getNTFFSizeX (), SOLVER_SETTINGS.getNTFFSizeY (), SOLVER_SETTINGS.getNTFFSizeZ (),
-                                       ct1, ct2, ct3);
-    rightNTFF = layout->getEzSize () - leftNTFF + TC (1, 1, 1
-#ifdef DEBUG_INFO
-                                                      , ct1, ct2, ct3
-#endif
-                                                      );
-  }
-
-  if (SOLVER_SETTINGS.getDoUseParallelGrid ())
-  {
-#ifndef PARALLEL_GRID
-    ALWAYS_ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.")
-#endif
-
-    ALWAYS_ASSERT (isParallelLayout);
-#ifdef PARALLEL_GRID
-    ALWAYS_ASSERT ((TCoord<grid_coord, false>::dimension == ParallelGridCoordinateTemplate<grid_coord, false>::dimension));
-#endif
-
-    useParallel = true;
-  }
-
-  if (useParallel)
-  {
-#if defined (PARALLEL_GRID)
-    allocateParallelGrids ();
-#else /* PARALLEL_GRID */
-    ALWAYS_ASSERT (false);
-#endif /* !PARALLEL_GRID */
-  }
-  else
-  {
-    Eps = new Grid<TC> (layout->getEpsSize (), 0, "Eps");
-    Mu = new Grid<TC> (layout->getEpsSize (), 0, "Mu");
-
-    Ex = doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "Ex") : NULLPTR;
-    Ey = doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "Ey") : NULLPTR;
-    Ez = doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, "Ez") : NULLPTR;
-    Hx = doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, "Hx") : NULLPTR;
-    Hy = doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "Hy") : NULLPTR;
-    Hz = doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "Hz") : NULLPTR;
-
-    if (SOLVER_SETTINGS.getDoUsePML ())
-    {
-      Dx = doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "Dx") : NULLPTR;
-      Dy = doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "Dy") : NULLPTR;
-      Dz = doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, "Dz") : NULLPTR;
-      Bx = doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, "Bx") : NULLPTR;
-      By = doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "By") : NULLPTR;
-      Bz = doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "Bz") : NULLPTR;
-
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        D1x = doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "D1x") : NULLPTR;
-        D1y = doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "D1y") : NULLPTR;
-        D1z = doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, "D1z") : NULLPTR;
-        B1x = doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, "B1x") : NULLPTR;
-        B1y = doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "B1y") : NULLPTR;
-        B1z = doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "B1z") : NULLPTR;
-      }
-
-      SigmaX = doNeedSigmaX ? new Grid<TC> (layout->getEpsSize (), 0, "SigmaX") : NULLPTR;
-      SigmaY = doNeedSigmaY ? new Grid<TC> (layout->getEpsSize (), 0, "SigmaY") : NULLPTR;
-      SigmaZ = doNeedSigmaZ ? new Grid<TC> (layout->getEpsSize (), 0, "SigmaZ") : NULLPTR;
-    }
-
-    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-    {
-      ExAmplitude = doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "ExAmp") : NULLPTR;
-      EyAmplitude = doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "EyAmp") : NULLPTR;
-      EzAmplitude = doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, "EzAmp") : NULLPTR;
-      HxAmplitude = doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, "HxAmp") : NULLPTR;
-      HyAmplitude = doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "HyAmp") : NULLPTR;
-      HzAmplitude = doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "HzAmp") : NULLPTR;
-    }
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      OmegaPE = new Grid<TC> (layout->getEpsSize (), 0, "OmegaPE");
-      GammaE = new Grid<TC> (layout->getEpsSize (), 0, "GammaE");
-      OmegaPM = new Grid<TC> (layout->getEpsSize (), 0, "OmegaPM");
-      GammaM = new Grid<TC> (layout->getEpsSize (), 0, "GammaM");
-    }
-
-    totalEps = Eps;
-    totalMu = Mu;
-    totalOmegaPE = OmegaPE;
-    totalOmegaPM = OmegaPM;
-    totalGammaE = GammaE;
-    totalGammaM = GammaM;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseTFSF ())
-  {
-    EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(totSize.get1 ())
-#ifdef DEBUG_INFO
-                                                              , CoordinateType::X
-#endif
-                                                              ), 0, "EInc");
-    HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(totSize.get1 ())
-#ifdef DEBUG_INFO
-                                                              , CoordinateType::X
-#endif
-                                                              ), 0, "HInc");
-  }
-
   ASSERT (!SOLVER_SETTINGS.getDoUseTFSF ()
           || (SOLVER_SETTINGS.getDoUseTFSF ()
               && (yeeLayout->getLeftBorderTFSF () != TC (0, 0, 0, ct1, ct2, ct3)
@@ -1239,6 +121,42 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
 #ifdef COMPLEX_FIELD_VALUES
   ASSERT (!SOLVER_SETTINGS.getDoUseAmplitudeMode ());
 #endif /* COMPLEX_FIELD_VALUES */
+
+  if (SOLVER_SETTINGS.getDoUseParallelGrid ())
+  {
+#ifndef PARALLEL_GRID
+    ALWAYS_ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.")
+#endif
+
+    ALWAYS_ASSERT (parallelLayout);
+#ifdef PARALLEL_GRID
+    ALWAYS_ASSERT ((TCoord<grid_coord, false>::dimension == ParallelGridCoordinateTemplate<grid_coord, false>::dimension));
+#endif
+
+    useParallel = true;
+  }
+
+  internalScheme.init (layout, useParallel);
+
+#ifdef CUDA_ENABLED
+  intGPUScheme.initFromCPU (&internalScheme);
+#endif /* CUDA_ENABLED */
+
+  if (!useParallel)
+  {
+    totalEps = internalScheme.Eps;
+    totalMu = internalScheme.Mu;
+    totalOmegaPE = internalScheme.OmegaPE;
+    totalOmegaPM = internalScheme.OmegaPM;
+    totalGammaE = internalScheme.GammaE;
+    totalGammaM = internalScheme.GammaM;
+  }
+  else
+  {
+    /*
+     * In parallel mode total grids will be allocated if required
+     */
+  }
 
   if (SOLVER_SETTINGS.getDoSaveAsBMP ())
   {
@@ -1356,67 +274,6 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 Scheme<Type, TCoord, layout_type>::~Scheme ()
 {
-  delete Eps;
-  delete Mu;
-
-  delete Ex;
-  delete Ey;
-  delete Ez;
-
-  delete Hx;
-  delete Hy;
-  delete Hz;
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
-  {
-    delete Dx;
-    delete Dy;
-    delete Dz;
-
-    delete Bx;
-    delete By;
-    delete Bz;
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      delete D1x;
-      delete D1y;
-      delete D1z;
-
-      delete B1x;
-      delete B1y;
-      delete B1z;
-    }
-
-    delete SigmaX;
-    delete SigmaY;
-    delete SigmaZ;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  {
-    delete ExAmplitude;
-    delete EyAmplitude;
-    delete EzAmplitude;
-    delete HxAmplitude;
-    delete HyAmplitude;
-    delete HzAmplitude;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-  {
-    delete OmegaPE;
-    delete OmegaPM;
-    delete GammaE;
-    delete GammaM;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseTFSF ())
-  {
-    delete EInc;
-    delete HInc;
-  }
-
   if (totalInitialized)
   {
     delete totalEx;
@@ -1456,1798 +313,6 @@ Scheme<Type, TCoord, layout_type>::~Scheme ()
   delete dumper1D[FILE_TYPE_TXT];
 }
 
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template<uint8_t EnumVal>
-void
-Scheme<Type, TCoord, layout_type>::performPointSourceCalc (time_step t)
-{
-  Grid<TC> *grid = NULLPTR;
-
-  switch (EnumVal)
-  {
-    case (static_cast<uint8_t> (GridType::EX)):
-    {
-      grid = Ex;
-      ASSERT (doNeedEx);
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EY)):
-    {
-      grid = Ey;
-      ASSERT (doNeedEy);
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EZ)):
-    {
-      grid = Ez;
-      ASSERT (doNeedEz);
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HX)):
-    {
-      grid = Hx;
-      ASSERT (doNeedHx);
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HY)):
-    {
-      grid = Hy;
-      ASSERT (doNeedHy);
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HZ)):
-    {
-      grid = Hz;
-      ASSERT (doNeedHz);
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  ASSERT (grid != NULLPTR);
-
-  TC pos = TC::initAxesCoordinate (SOLVER_SETTINGS.getPointSourcePositionX (),
-                                   SOLVER_SETTINGS.getPointSourcePositionY (),
-                                   SOLVER_SETTINGS.getPointSourcePositionZ (),
-                                   ct1, ct2, ct3);
-
-  FieldPointValue* pointVal = grid->getFieldPointValueOrNullByAbsolutePos (pos);
-
-  if (pointVal)
-  {
-#ifdef COMPLEX_FIELD_VALUES
-    pointVal->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
-                                       cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency)));
-#else /* COMPLEX_FIELD_VALUES */
-    pointVal->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
-#endif /* !COMPLEX_FIELD_VALUES */
-  }
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <uint8_t grid_type>
-void Scheme<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
-                                                       FieldValue &valOpposite11,
-                                                       FieldValue &valOpposite12,
-                                                       FieldValue &valOpposite21,
-                                                       FieldValue &valOpposite22,
-                                                       TC pos11,
-                                                       TC pos12,
-                                                       TC pos21,
-                                                       TC pos22)
-{
-  bool doNeedUpdate11;
-  bool doNeedUpdate12;
-  bool doNeedUpdate21;
-  bool doNeedUpdate22;
-
-  bool isRevertVals;
-
-  switch (grid_type)
-  {
-    case (static_cast<uint8_t> (GridType::EX)):
-    {
-#ifdef ENABLE_ASSERTS
-      calculateTFSFExAsserts (pos11, pos12, pos21, pos22);
-#endif
-      ASSERT (doNeedEx);
-
-      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::DOWN);
-      doNeedUpdate12 = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::UP);
-
-      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::BACK);
-      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT);
-
-      isRevertVals = true;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EY)):
-    {
-#ifdef ENABLE_ASSERTS
-      calculateTFSFEyAsserts (pos11, pos12, pos21, pos22);
-#endif
-      ASSERT (doNeedEy);
-
-      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::BACK);
-      doNeedUpdate12 = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::FRONT);
-
-      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::LEFT);
-      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::RIGHT);
-
-      isRevertVals = true;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EZ)):
-    {
-#ifdef ENABLE_ASSERTS
-      calculateTFSFEzAsserts (pos11, pos12, pos21, pos22);
-#endif
-      ASSERT (doNeedEz);
-
-      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::LEFT);
-      doNeedUpdate12 = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::RIGHT);
-
-      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN);
-      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP);
-
-      isRevertVals = true;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HX)):
-    {
-#ifdef ENABLE_ASSERTS
-      calculateTFSFHxAsserts (pos11, pos12, pos21, pos22);
-#endif
-      ASSERT (doNeedHx);
-
-      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::BACK);
-      doNeedUpdate12 = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::FRONT);
-
-      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN);
-      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP);
-
-      isRevertVals = false;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HY)):
-    {
-#ifdef ENABLE_ASSERTS
-      calculateTFSFHyAsserts (pos11, pos12, pos21, pos22);
-#endif
-      ASSERT (doNeedHy);
-
-      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::LEFT);
-      doNeedUpdate12 = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::RIGHT);
-
-      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::BACK);
-      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::FRONT);
-
-      isRevertVals = false;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HZ)):
-    {
-#ifdef ENABLE_ASSERTS
-      calculateTFSFHzAsserts (pos11, pos12, pos21, pos22);
-#endif
-      ASSERT (doNeedHz);
-
-      doNeedUpdate11 = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::DOWN);
-      doNeedUpdate12 = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::UP);
-
-      doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::LEFT);
-      doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT);
-
-      isRevertVals = false;
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  TC auxPos1;
-  TC auxPos2;
-  FieldValue diff1;
-  FieldValue diff2;
-
-  if (isRevertVals)
-  {
-    if (doNeedUpdate11)
-    {
-      auxPos1 = pos12;
-    }
-    else if (doNeedUpdate12)
-    {
-      auxPos1 = pos11;
-    }
-
-    if (doNeedUpdate21)
-    {
-      auxPos2 = pos22;
-    }
-    else if (doNeedUpdate22)
-    {
-      auxPos2 = pos21;
-    }
-  }
-  else
-  {
-    if (doNeedUpdate11)
-    {
-      auxPos1 = pos11;
-    }
-    else if (doNeedUpdate12)
-    {
-      auxPos1 = pos12;
-    }
-
-    if (doNeedUpdate21)
-    {
-      auxPos2 = pos21;
-    }
-    else if (doNeedUpdate22)
-    {
-      auxPos2 = pos22;
-    }
-  }
-
-  if (doNeedUpdate11 || doNeedUpdate12)
-  {
-    switch (grid_type)
-    {
-      case (static_cast<uint8_t> (GridType::EX)):
-      {
-        if (doNeedHz)
-        {
-          TCFP realCoord = yeeLayout->getHzCoordFP (Hz->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
-        }
-
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EY)):
-      {
-        if (doNeedHx)
-        {
-          TCFP realCoord = yeeLayout->getHxCoordFP (Hx->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (realCoord));
-        }
-
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EZ)):
-      {
-        if (doNeedHy)
-        {
-          TCFP realCoord = yeeLayout->getHyCoordFP (Hy->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (realCoord));
-        }
-
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HX)):
-      {
-        if (doNeedEy)
-        {
-          TCFP realCoord = yeeLayout->getEyCoordFP (Ey->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
-        }
-
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HY)):
-      {
-        if (doNeedEz)
-        {
-          TCFP realCoord = yeeLayout->getEzCoordFP (Ez->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
-        }
-
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HZ)):
-      {
-        if (doNeedEx)
-        {
-          TCFP realCoord = yeeLayout->getExCoordFP (Ex->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
-        }
-
-        break;
-      }
-      default:
-      {
-        UNREACHABLE;
-      }
-    }
-  }
-
-  if (doNeedUpdate21 || doNeedUpdate22)
-  {
-    switch (grid_type)
-    {
-      case (static_cast<uint8_t> (GridType::EX)):
-      {
-        if (doNeedHy)
-        {
-          TCFP realCoord = yeeLayout->getHyCoordFP (Hy->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (realCoord));
-        }
-
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EY)):
-      {
-        if (doNeedHz)
-        {
-          TCFP realCoord = yeeLayout->getHzCoordFP (Hz->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
-        }
-
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EZ)):
-      {
-        if (doNeedHx)
-        {
-          TCFP realCoord = yeeLayout->getHxCoordFP (Hx->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (realCoord));
-        }
-
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HX)):
-      {
-        if (doNeedEz)
-        {
-          TCFP realCoord = yeeLayout->getEzCoordFP (Ez->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
-        }
-
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HY)):
-      {
-        if (doNeedEx)
-        {
-          TCFP realCoord = yeeLayout->getExCoordFP (Ex->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
-        }
-
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HZ)):
-      {
-        if (doNeedEy)
-        {
-          TCFP realCoord = yeeLayout->getEyCoordFP (Ey->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
-        }
-
-        break;
-      }
-      default:
-      {
-        UNREACHABLE;
-      }
-    }
-  }
-
-  if (isRevertVals)
-  {
-    if (doNeedUpdate11)
-    {
-      valOpposite12 -= diff1;
-    }
-    else if (doNeedUpdate12)
-    {
-      valOpposite11 -= diff1;
-    }
-
-    if (doNeedUpdate21)
-    {
-      valOpposite22 -= diff2;
-    }
-    else if (doNeedUpdate22)
-    {
-      valOpposite21 -= diff2;
-    }
-  }
-  else
-  {
-    if (doNeedUpdate11)
-    {
-      valOpposite11 -= diff1;
-    }
-    else if (doNeedUpdate12)
-    {
-      valOpposite12 -= diff1;
-    }
-
-    if (doNeedUpdate21)
-    {
-      valOpposite21 -= diff2;
-    }
-    else if (doNeedUpdate22)
-    {
-      valOpposite22 -= diff2;
-    }
-  }
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <uint8_t grid_type>
-void
-Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationExact (time_step t,
-                                                                     TC pos,
-                                                                     Grid<TC> *grid,
-                                                                     SourceCallBack exactFunc,
-                                                                     FPValue &normRe,
-                                                                     FPValue &normIm,
-                                                                     FPValue &normMod,
-                                                                     FPValue &maxRe,
-                                                                     FPValue &maxIm,
-                                                                     FPValue &maxMod)
-{
-  TC posAbs = grid->getTotalPosition (pos);
-
-  TCFP realCoord;
-  FPValue timestep;
-  switch (grid_type)
-  {
-    case (static_cast<uint8_t> (GridType::EX)):
-    {
-      realCoord = yeeLayout->getExCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EY)):
-    {
-      realCoord = yeeLayout->getEyCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EZ)):
-    {
-      realCoord = yeeLayout->getEzCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HX)):
-    {
-      realCoord = yeeLayout->getHxCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HY)):
-    {
-      realCoord = yeeLayout->getHyCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HZ)):
-    {
-      realCoord = yeeLayout->getHzCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  FieldValue numerical = grid->getFieldPointValue (pos)->getCurValue ();
-  FieldValue exact = exactFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
-
-#ifdef COMPLEX_FIELD_VALUES
-  FPValue modExact = sqrt (SQR (exact.real ()) + SQR (exact.imag ()));
-  FPValue modNumerical = sqrt (SQR (numerical.real ()) + SQR (numerical.imag ()));
-
-  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact.real (), numerical.real ());
-
-  normRe += SQR (exact.real () - numerical.real ());
-  normIm += SQR (exact.imag () - numerical.imag ());
-  normMod += SQR (modExact - modNumerical);
-
-  FPValue exactAbs = fabs (exact.real ());
-  if (maxRe < exactAbs)
-  {
-    maxRe = exactAbs;
-  }
-
-  exactAbs = fabs (exact.imag ());
-  if (maxIm < exactAbs)
-  {
-    maxIm = exactAbs;
-  }
-
-  exactAbs = modExact;
-  if (maxMod < exactAbs)
-  {
-    maxMod = exactAbs;
-  }
-#else
-  normRe += SQR (exact - numerical);
-
-  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact, numerical);
-
-  FPValue exactAbs = fabs (exact);
-  if (maxRe < exactAbs)
-  {
-    maxRe = exactAbs;
-  }
-#endif
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <uint8_t grid_type>
-void
-Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationBorder (time_step t,
-                                                                      TC pos,
-                                                                      Grid<TC> *grid,
-                                                                      SourceCallBack borderFunc)
-{
-  TC posAbs = grid->getTotalPosition (pos);
-
-  if (doSkipBorderFunc (posAbs, grid))
-  {
-    return;
-  }
-
-  TCFP realCoord;
-  FPValue timestep;
-  switch (grid_type)
-  {
-    case (static_cast<uint8_t> (GridType::EX)):
-    {
-      realCoord = yeeLayout->getExCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EY)):
-    {
-      realCoord = yeeLayout->getEyCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EZ)):
-    {
-      realCoord = yeeLayout->getEzCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HX)):
-    {
-      realCoord = yeeLayout->getHxCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HY)):
-    {
-      realCoord = yeeLayout->getHyCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HZ)):
-    {
-      realCoord = yeeLayout->getHzCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  grid->getFieldPointValue (pos)->setCurValue (borderFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep));
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <bool useMetamaterials>
-void
-Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationPML (time_step t,
-                                                                   TC pos,
-                                                                   Grid<TC> *grid,
-                                                                   Grid<TC> *gridPML1,
-                                                                   Grid<TC> *gridPML2,
-                                                                   GridType gridType,
-                                                                   GridType gridPMLType1,
-                                                                   Grid<TC> *materialGrid1,
-                                                                   GridType materialGridType1,
-                                                                   Grid<TC> *materialGrid4,
-                                                                   GridType materialGridType4,
-                                                                   Grid<TC> *materialGrid5,
-                                                                   GridType materialGridType5,
-                                                                   FPValue materialModifier)
-{
-  FPValue eps0 = PhysicsConst::Eps0;
-
-  TC posAbs = gridPML2->getTotalPosition (pos);
-
-  FieldPointValue *valField = gridPML2->getFieldPointValue (pos);
-
-  FieldPointValue *valField1;
-
-  if (useMetamaterials)
-  {
-    valField1 = gridPML1->getFieldPointValue (pos);
-  }
-  else
-  {
-    valField1 = grid->getFieldPointValue (pos);
-  }
-
-  FPValue material1 = materialGrid1 ? yeeLayout->getMaterial (posAbs, gridPMLType1, materialGrid1, materialGridType1) : 0;
-  FPValue material4 = materialGrid4 ? yeeLayout->getMaterial (posAbs, gridPMLType1, materialGrid4, materialGridType4) : 0;
-  FPValue material5 = materialGrid5 ? yeeLayout->getMaterial (posAbs, gridPMLType1, materialGrid5, materialGridType5) : 0;
-
-  FPValue modifier = material1 * materialModifier;
-  if (useMetamaterials)
-  {
-    modifier = 1;
-  }
-
-  FPValue k_mod1 = 1;
-  FPValue k_mod2 = 1;
-
-  FPValue Ca = (2 * eps0 * k_mod2 - material5 * gridTimeStep) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
-  FPValue Cb = ((2 * eps0 * k_mod1 + material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
-  FPValue Cc = ((2 * eps0 * k_mod1 - material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  FieldValue val = calcFieldFromDOrB (valField->getPrevValue (),
-                                      valField1->getCurValue (),
-                                      valField1->getPrevValue (),
-                                      Ca,
-                                      Cb,
-                                      Cc);
-#else
-  ALWAYS_ASSERT (0);
-#endif
-
-  valField->setCurValue (val);
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-void
-Scheme<Type, TCoord, layout_type>::calculateFieldStepIterationPMLMetamaterials (time_step t,
-                                                                               TC pos,
-                                                                               Grid<TC> *grid,
-                                                                               Grid<TC> *gridPML,
-                                                                               GridType gridType,
-                                                                               Grid<TC> *materialGrid1,
-                                                                               GridType materialGridType1,
-                                                                               Grid<TC> *materialGrid2,
-                                                                               GridType materialGridType2,
-                                                                               Grid<TC> *materialGrid3,
-                                                                               GridType materialGridType3,
-                                                                               FPValue materialModifier)
-{
-  TC posAbs = grid->getTotalPosition (pos);
-  FieldPointValue *valField = grid->getFieldPointValue (pos);
-  FieldPointValue *valField1 = gridPML->getFieldPointValue (pos);
-
-  FPValue material1;
-  FPValue material2;
-
-  FPValue material = yeeLayout->getMetaMaterial (posAbs, gridType,
-                                                 materialGrid1, materialGridType1,
-                                                 materialGrid2, materialGridType2,
-                                                 materialGrid3, materialGridType3,
-                                                 material1, material2);
-
-  /*
-   * TODO: precalculate coefficients
-   */
-  FPValue A = 4*materialModifier*material + 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1);
-  FPValue a1 = (4 + 2*gridTimeStep*material2) / A;
-  FPValue a2 = -8 / A;
-  FPValue a3 = (4 - 2*gridTimeStep*material2) / A;
-  FPValue a4 = (2*materialModifier*SQR(gridTimeStep*material1) - 8*materialModifier*material) / A;
-  FPValue a5 = (4*materialModifier*material - 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1)) / A;
-
-#if defined (TWO_TIME_STEPS)
-  FieldValue val = calcFieldDrude (valField->getCurValue (),
-                                   valField->getPrevValue (),
-                                   valField->getPrevPrevValue (),
-                                   valField1->getPrevValue (),
-                                   valField1->getPrevPrevValue (),
-                                   a1,
-                                   a2,
-                                   a3,
-                                   a4,
-                                   a5);
-  valField1->setCurValue (val);
-#else
-  ALWAYS_ASSERT (0);
-#endif
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template<uint8_t grid_type, bool usePML>
-void
-Scheme<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
-                                                               TC pos,
-                                                               Grid<TC> *grid,
-                                                               GridType gridType,
-                                                               Grid<TC> *materialGrid,
-                                                               GridType materialGridType,
-                                                               Grid<TC> *oppositeGrid1,
-                                                               Grid<TC> *oppositeGrid2,
-                                                               SourceCallBack rightSideFunc,
-                                                               FPValue materialModifier)
-{
-  FPValue eps0 = PhysicsConst::Eps0;
-
-  // TODO: add getTotalPositionDiff here, which will be called before loop
-  TC posAbs = grid->getTotalPosition (pos);
-  // TODO: [possible] move 1D gridValues to 3D gridValues array
-  FieldPointValue *valField = grid->getFieldPointValue (pos);
-
-  FPValue material = materialGrid ? yeeLayout->getMaterial (posAbs, gridType, materialGrid, materialGridType) : 0;
-
-  TC pos11 = pos;
-  TC pos12 = pos;
-  TC pos21 = pos;
-  TC pos22 = pos;
-
-  TCFP coordFP;
-  FPValue timestep;
-
-  FPValue k_mod;
-  FPValue Ca;
-  FPValue Cb;
-
-  switch (grid_type)
-  {
-    case (static_cast<uint8_t> (GridType::EX)):
-    {
-      pos11 = pos11 + yeeLayout->getExCircuitElementDiff (LayoutDirection::DOWN);
-      pos12 = pos12 + yeeLayout->getExCircuitElementDiff (LayoutDirection::UP);
-      pos21 = pos21 + yeeLayout->getExCircuitElementDiff (LayoutDirection::BACK);
-      pos22 = pos22 + yeeLayout->getExCircuitElementDiff (LayoutDirection::FRONT);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getExCoordFP (posAbs);
-        timestep = t;
-      }
-
-      FPValue k_y = 1;
-      k_mod = k_y;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EY)):
-    {
-      pos11 = pos11 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::BACK);
-      pos12 = pos12 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::FRONT);
-      pos21 = pos21 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::LEFT);
-      pos22 = pos22 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::RIGHT);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getEyCoordFP (posAbs);
-        timestep = t;
-      }
-
-      FPValue k_z = 1;
-      k_mod = k_z;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EZ)):
-    {
-      pos11 = pos11 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::LEFT);
-      pos12 = pos12 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::RIGHT);
-      pos21 = pos21 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::DOWN);
-      pos22 = pos22 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::UP);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getEzCoordFP (posAbs);
-        timestep = t;
-      }
-
-      FPValue k_x = 1;
-      k_mod = k_x;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HX)):
-    {
-      pos11 = pos11 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::BACK);
-      pos12 = pos12 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::FRONT);
-      pos21 = pos21 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::DOWN);
-      pos22 = pos22 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::UP);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getHxCoordFP (posAbs);
-        timestep = t + 0.5;
-      }
-
-      FPValue k_y = 1;
-      k_mod = k_y;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HY)):
-    {
-      pos11 = pos11 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::LEFT);
-      pos12 = pos12 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::RIGHT);
-      pos21 = pos21 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::BACK);
-      pos22 = pos22 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::FRONT);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getHyCoordFP (posAbs);
-        timestep = t + 0.5;
-      }
-
-      FPValue k_z = 1;
-      k_mod = k_z;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HZ)):
-    {
-      pos11 = pos11 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::DOWN);
-      pos12 = pos12 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::UP);
-      pos21 = pos21 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::LEFT);
-      pos22 = pos22 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::RIGHT);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getHzCoordFP (posAbs);
-        timestep = t + 0.5;
-      }
-
-      FPValue k_x = 1;
-      k_mod = k_x;
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  if (usePML)
-  {
-    Ca = (2 * eps0 * k_mod - material * gridTimeStep) / (2 * eps0 * k_mod + material * gridTimeStep);
-    Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_mod + material * gridTimeStep);
-  }
-  else
-  {
-    Ca = 1.0;
-    Cb = gridTimeStep / (material * materialModifier * gridStep);
-  }
-
-  // TODO: separate previous grid and current
-  FieldValue prev11 = FIELDVALUE (0, 0);
-  FieldValue prev12 = FIELDVALUE (0, 0);
-  FieldValue prev21 = FIELDVALUE (0, 0);
-  FieldValue prev22 = FIELDVALUE (0, 0);
-
-  if (oppositeGrid1)
-  {
-    FieldPointValue *val11 = oppositeGrid1->getFieldPointValue (pos11);
-    FieldPointValue *val12 = oppositeGrid1->getFieldPointValue (pos12);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    prev11 = val11->getPrevValue ();
-    prev12 = val12->getPrevValue ();
-#else
-    ALWAYS_ASSERT (0);
-#endif
-  }
-
-  if (oppositeGrid2)
-  {
-    FieldPointValue *val21 = oppositeGrid2->getFieldPointValue (pos21);
-    FieldPointValue *val22 = oppositeGrid2->getFieldPointValue (pos22);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    prev21 = val21->getPrevValue ();
-    prev22 = val22->getPrevValue ();
-#else
-    ALWAYS_ASSERT (0);
-#endif
-  }
-
-  if (SOLVER_SETTINGS.getDoUseTFSF ())
-  {
-    calculateTFSF<grid_type> (posAbs, prev11, prev12, prev21, prev22, pos11, pos12, pos21, pos22);
-  }
-
-  FieldValue prevRightSide = 0;
-  if (rightSideFunc != NULLPTR)
-  {
-    prevRightSide = rightSideFunc (expandTo3D (coordFP * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
-  }
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  // TODO: precalculate Ca,Cb
-  FieldValue val = calcField (valField->getPrevValue (),
-                              prev12,
-                              prev11,
-                              prev22,
-                              prev21,
-                              prevRightSide,
-                              Ca,
-                              Cb,
-                              gridStep);
-#else
-  ALWAYS_ASSERT (0);
-#endif
-
-  valField->setCurValue (val);
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template<uint8_t grid_type, bool usePML, bool useMetamaterials>
-void
-Scheme<Type, TCoord, layout_type>::calculateFieldStepInit (Grid<TC> **grid, GridType *gridType, Grid<TC> **materialGrid, GridType *materialGridType, Grid<TC> **materialGrid1, GridType *materialGridType1,
-Grid<TC> **materialGrid2, GridType *materialGridType2, Grid<TC> **materialGrid3, GridType *materialGridType3, Grid<TC> **materialGrid4, GridType *materialGridType4,
-Grid<TC> **materialGrid5, GridType *materialGridType5, Grid<TC> **oppositeGrid1, Grid<TC> **oppositeGrid2, Grid<TC> **gridPML1, GridType *gridPMLType1, Grid<TC> **gridPML2, GridType *gridPMLType2,
-SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exactFunc, FPValue *materialModifier)
-{
-  switch (grid_type)
-  {
-    case (static_cast<uint8_t> (GridType::EX)):
-    {
-      ASSERT (doNeedEx);
-      *grid = Ex;
-      *gridType = GridType::EX;
-
-      *materialGrid = Eps;
-      *materialGridType = GridType::EPS;
-      *materialModifier = PhysicsConst::Eps0;
-
-      *oppositeGrid1 = Hz;
-      *oppositeGrid2 = Hy;
-
-      *rightSideFunc = Jx;
-      *borderFunc = ExBorder;
-      *exactFunc = ExExact;
-
-      if (usePML)
-      {
-        *grid = Dx;
-        *gridType = GridType::DX;
-
-        *gridPML1 = D1x;
-        *gridPMLType1 = GridType::DX;
-
-        *gridPML2 = Ex;
-        *gridPMLType2 = GridType::EX;
-
-        *materialGrid = SigmaY;
-        *materialGridType = GridType::SIGMAY;
-
-        *materialGrid1 = Eps;
-        *materialGridType1 = GridType::EPS;
-
-        *materialGrid4 = SigmaX;
-        *materialGridType4 = GridType::SIGMAX;
-
-        *materialGrid5 = SigmaZ;
-        *materialGridType5 = GridType::SIGMAZ;
-
-        if (useMetamaterials)
-        {
-          *materialGrid2 = OmegaPE;
-          *materialGridType2 = GridType::OMEGAPE;
-
-          *materialGrid3 = GammaE;
-          *materialGridType3 = GridType::GAMMAE;
-        }
-      }
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EY)):
-    {
-      ASSERT (doNeedEy);
-      *grid = Ey;
-      *gridType = GridType::EY;
-
-      *materialGrid = Eps;
-      *materialGridType = GridType::EPS;
-      *materialModifier = PhysicsConst::Eps0;
-
-      *oppositeGrid1 = Hx;
-      *oppositeGrid2 = Hz;
-
-      *rightSideFunc = Jy;
-      *borderFunc = EyBorder;
-      *exactFunc = EyExact;
-
-      if (usePML)
-      {
-        *grid = Dy;
-        *gridType = GridType::DY;
-
-        *gridPML1 = D1y;
-        *gridPMLType1 = GridType::DY;
-
-        *gridPML2 = Ey;
-        *gridPMLType2 = GridType::EY;
-
-        *materialGrid = SigmaZ;
-        *materialGridType = GridType::SIGMAZ;
-
-        *materialGrid1 = Eps;
-        *materialGridType1 = GridType::EPS;
-
-        *materialGrid4 = SigmaY;
-        *materialGridType4 = GridType::SIGMAY;
-
-        *materialGrid5 = SigmaX;
-        *materialGridType5 = GridType::SIGMAX;
-
-        if (useMetamaterials)
-        {
-          *materialGrid2 = OmegaPE;
-          *materialGridType2 = GridType::OMEGAPE;
-
-          *materialGrid3 = GammaE;
-          *materialGridType3 = GridType::GAMMAE;
-        }
-      }
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EZ)):
-    {
-      ASSERT (doNeedEz);
-      *grid = Ez;
-      *gridType = GridType::EZ;
-
-      *materialGrid = Eps;
-      *materialGridType = GridType::EPS;
-      *materialModifier = PhysicsConst::Eps0;
-
-      *oppositeGrid1 = Hy;
-      *oppositeGrid2 = Hx;
-
-      *rightSideFunc = Jz;
-      *borderFunc = EzBorder;
-      *exactFunc = EzExact;
-
-      if (usePML)
-      {
-        *grid = Dz;
-        *gridType = GridType::DZ;
-
-        *gridPML1 = D1z;
-        *gridPMLType1 = GridType::DZ;
-
-        *gridPML2 = Ez;
-        *gridPMLType2 = GridType::EZ;
-
-        *materialGrid = SigmaX;
-        *materialGridType = GridType::SIGMAX;
-
-        *materialGrid1 = Eps;
-        *materialGridType1 = GridType::EPS;
-
-        *materialGrid4 = SigmaZ;
-        *materialGridType4 = GridType::SIGMAZ;
-
-        *materialGrid5 = SigmaY;
-        *materialGridType5 = GridType::SIGMAY;
-
-        if (useMetamaterials)
-        {
-          *materialGrid2 = OmegaPE;
-          *materialGridType2 = GridType::OMEGAPE;
-
-          *materialGrid3 = GammaE;
-          *materialGridType3 = GridType::GAMMAE;
-        }
-      }
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HX)):
-    {
-      ASSERT (doNeedHx);
-      *grid = Hx;
-      *gridType = GridType::HX;
-
-      *materialGrid = Mu;
-      *materialGridType = GridType::MU;
-      *materialModifier = PhysicsConst::Mu0;
-
-      *oppositeGrid1 = Ey;
-      *oppositeGrid2 = Ez;
-
-      *rightSideFunc = Mx;
-      *borderFunc = HxBorder;
-      *exactFunc = HxExact;
-
-      if (usePML)
-      {
-        *grid = Bx;
-        *gridType = GridType::BX;
-
-        *gridPML1 = B1x;
-        *gridPMLType1 = GridType::BX;
-
-        *gridPML2 = Hx;
-        *gridPMLType2 = GridType::HX;
-
-        *materialGrid = SigmaY;
-        *materialGridType = GridType::SIGMAY;
-
-        *materialGrid1 = Mu;
-        *materialGridType1 = GridType::MU;
-
-        *materialGrid4 = SigmaX;
-        *materialGridType4 = GridType::SIGMAX;
-
-        *materialGrid5 = SigmaZ;
-        *materialGridType5 = GridType::SIGMAZ;
-
-        if (useMetamaterials)
-        {
-          *materialGrid2 = OmegaPM;
-          *materialGridType2 = GridType::OMEGAPM;
-
-          *materialGrid3 = GammaM;
-          *materialGridType3 = GridType::GAMMAM;
-        }
-      }
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HY)):
-    {
-      ASSERT (doNeedHy);
-      *grid = Hy;
-      *gridType = GridType::HY;
-
-      *materialGrid = Mu;
-      *materialGridType = GridType::MU;
-      *materialModifier = PhysicsConst::Mu0;
-
-      *oppositeGrid1 = Ez;
-      *oppositeGrid2 = Ex;
-
-      *rightSideFunc = My;
-      *borderFunc = HyBorder;
-      *exactFunc = HyExact;
-
-      if (usePML)
-      {
-        *grid = By;
-        *gridType = GridType::BY;
-
-        *gridPML1 = B1y;
-        *gridPMLType1 = GridType::BY;
-
-        *gridPML2 = Hy;
-        *gridPMLType2 = GridType::HY;
-
-        *materialGrid = SigmaZ;
-        *materialGridType = GridType::SIGMAZ;
-
-        *materialGrid1 = Mu;
-        *materialGridType1 = GridType::MU;
-
-        *materialGrid4 = SigmaY;
-        *materialGridType4 = GridType::SIGMAY;
-
-        *materialGrid5 = SigmaX;
-        *materialGridType5 = GridType::SIGMAX;
-
-        if (useMetamaterials)
-        {
-          *materialGrid2 = OmegaPM;
-          *materialGridType2 = GridType::OMEGAPM;
-
-          *materialGrid3 = GammaM;
-          *materialGridType3 = GridType::GAMMAM;
-        }
-      }
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HZ)):
-    {
-      ASSERT (doNeedHz);
-      *grid = Hz;
-      *gridType = GridType::HZ;
-      *materialGrid = Mu;
-      *materialGridType = GridType::MU;
-      *materialModifier = PhysicsConst::Mu0;
-
-      *oppositeGrid1 = Ex;
-      *oppositeGrid2 = Ey;
-
-      *rightSideFunc = Mz;
-      *borderFunc = HzBorder;
-      *exactFunc = HzExact;
-
-      if (usePML)
-      {
-        *grid = Bz;
-        *gridType = GridType::BZ;
-
-        *gridPML1 = B1z;
-        *gridPMLType1 = GridType::BZ;
-
-        *gridPML2 = Hz;
-        *gridPMLType2 = GridType::HZ;
-
-        *materialGrid = SigmaX;
-        *materialGridType = GridType::SIGMAX;
-
-        *materialGrid1 = Mu;
-        *materialGridType1 = GridType::MU;
-
-        *materialGrid4 = SigmaZ;
-        *materialGridType4 = GridType::SIGMAZ;
-
-        *materialGrid5 = SigmaY;
-        *materialGridType5 = GridType::SIGMAY;
-
-        if (useMetamaterials)
-        {
-          *materialGrid2 = OmegaPM;
-          *materialGridType2 = GridType::OMEGAPM;
-
-          *materialGrid3 = GammaM;
-          *materialGridType3 = GridType::GAMMAM;
-        }
-      }
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template<uint8_t grid_type, bool usePML, bool useMetamaterials>
-void
-Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC end)
-{
-  // TODO: add metamaterials without pml
-  if (!usePML && useMetamaterials)
-  {
-    UNREACHABLE;
-  }
-
-  FPValue eps0 = PhysicsConst::Eps0;
-
-  Grid<TC> *grid = NULLPTR;
-  GridType gridType = GridType::NONE;
-
-  Grid<TC> *materialGrid = NULLPTR;
-  GridType materialGridType = GridType::NONE;
-
-  Grid<TC> *materialGrid1 = NULLPTR;
-  GridType materialGridType1 = GridType::NONE;
-
-  Grid<TC> *materialGrid2 = NULLPTR;
-  GridType materialGridType2 = GridType::NONE;
-
-  Grid<TC> *materialGrid3 = NULLPTR;
-  GridType materialGridType3 = GridType::NONE;
-
-  Grid<TC> *materialGrid4 = NULLPTR;
-  GridType materialGridType4 = GridType::NONE;
-
-  Grid<TC> *materialGrid5 = NULLPTR;
-  GridType materialGridType5 = GridType::NONE;
-
-  Grid<TC> *oppositeGrid1 = NULLPTR;
-  Grid<TC> *oppositeGrid2 = NULLPTR;
-
-  Grid<TC> *gridPML1 = NULLPTR;
-  GridType gridPMLType1 = GridType::NONE;
-
-  Grid<TC> *gridPML2 = NULLPTR;
-  GridType gridPMLType2 = GridType::NONE;
-
-  SourceCallBack rightSideFunc = NULLPTR;
-  SourceCallBack borderFunc = NULLPTR;
-  SourceCallBack exactFunc = NULLPTR;
-
-  /*
-   * TODO: remove this, multiply on this at initialization
-   */
-  FPValue materialModifier;
-  calculateFieldStepInit<grid_type, usePML, useMetamaterials> (&grid, &gridType,
-    &materialGrid, &materialGridType, &materialGrid1, &materialGridType1, &materialGrid2, &materialGridType2,
-    &materialGrid3, &materialGridType3, &materialGrid4, &materialGridType4, &materialGrid5, &materialGridType5,
-    &oppositeGrid1, &oppositeGrid2, &gridPML1, &gridPMLType1, &gridPML2, &gridPMLType2,
-    &rightSideFunc, &borderFunc, &exactFunc, &materialModifier);
-
-  GridCoordinate3D start3D;
-  GridCoordinate3D end3D;
-
-  expandTo3DStartEnd (start, end, start3D, end3D, ct1, ct2, ct3);
-
-  // TODO: remove this check for each iteration
-  if (t > 0)
-  {
-    for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
-    {
-      // TODO: check that this loop is optimized out
-      for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-      {
-        // TODO: check that this is optimized out in case 2D mode
-        for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-        {
-          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          calculateFieldStepIteration<grid_type, usePML> (t, pos, grid, gridType, materialGrid, materialGridType,
-                                                          oppositeGrid1, oppositeGrid2, rightSideFunc, materialModifier);
-        }
-      }
-    }
-
-    if (usePML)
-    {
-      if (useMetamaterials)
-      {
-#ifdef TWO_TIME_STEPS
-        for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
-        {
-          // TODO: check that this loop is optimized out
-          for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-          {
-            // TODO: check that this loop is optimized out
-            for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-            {
-              TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-              calculateFieldStepIterationPMLMetamaterials (t, pos, grid, gridPML1, gridType,
-                materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
-                materialModifier);
-            }
-          }
-        }
-#else
-        ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
-#endif
-      }
-
-      for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
-      {
-        // TODO: check that this loop is optimized out
-        for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-        {
-          // TODO: check that this loop is optimized out
-          for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-          {
-            TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-            calculateFieldStepIterationPML<useMetamaterials> (t, pos, grid, gridPML1, gridPML2, gridType, gridPMLType1,
-              materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
-              materialModifier);
-          }
-        }
-      }
-    }
-  }
-
-  if (borderFunc != NULLPTR)
-  {
-    GridCoordinate3D startBorder;
-    GridCoordinate3D endBorder;
-
-    expandTo3DStartEnd (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3),
-                        grid->getSize (),
-                        startBorder,
-                        endBorder,
-                        ct1, ct2, ct3);
-
-    for (grid_coord i = startBorder.get1 (); i < endBorder.get1 (); ++i)
-    {
-      // TODO: check that this loop is optimized out
-      for (grid_coord j = startBorder.get2 (); j < endBorder.get2 (); ++j)
-      {
-        // TODO: check that this loop is optimized out
-        for (grid_coord k = startBorder.get3 (); k < endBorder.get3 (); ++k)
-        {
-          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          calculateFieldStepIterationBorder<grid_type> (t, pos, grid, borderFunc);
-        }
-      }
-    }
-  }
-
-  if (exactFunc != NULLPTR)
-  {
-    FPValue normRe = 0.0;
-    FPValue normIm = 0.0;
-    FPValue normMod = 0.0;
-
-    FPValue maxRe = 0.0;
-    FPValue maxIm = 0.0;
-    FPValue maxMod = 0.0;
-
-    GridCoordinate3D startNorm = start3D;
-    GridCoordinate3D endNorm = end3D;
-
-    if (SOLVER_SETTINGS.getExactSolutionCompareStartX () != 0)
-    {
-      startNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareStartX ());
-    }
-    if (SOLVER_SETTINGS.getExactSolutionCompareStartY () != 0)
-    {
-      startNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareStartY ());
-    }
-    if (SOLVER_SETTINGS.getExactSolutionCompareStartZ () != 0)
-    {
-      startNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareStartZ ());
-    }
-
-    if (SOLVER_SETTINGS.getExactSolutionCompareEndX () != 0)
-    {
-      endNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareEndX ());
-    }
-    if (SOLVER_SETTINGS.getExactSolutionCompareEndY () != 0)
-    {
-      endNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareEndY ());
-    }
-    if (SOLVER_SETTINGS.getExactSolutionCompareEndZ () != 0)
-    {
-      endNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareEndZ ());
-    }
-
-    Grid<TC> *normGrid = grid;
-    if (usePML)
-    {
-      grid = gridPML2;
-    }
-
-    for (grid_coord i = startNorm.get1 (); i < endNorm.get1 (); ++i)
-    {
-      // TODO: check that this loop is optimized out
-      for (grid_coord j = startNorm.get2 (); j < endNorm.get2 (); ++j)
-      {
-        // TODO: check that this loop is optimized out
-        for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
-        {
-          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
-        }
-      }
-    }
-
-#ifdef COMPLEX_FIELD_VALUES
-    normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
-    normIm = sqrt (normIm / grid->getSize ().calculateTotalCoord ());
-    normMod = sqrt (normMod / grid->getSize ().calculateTotalCoord ());
-
-    /*
-     * NOTE: do not change this! test suite depdends on the order of values in output
-     */
-    printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
-      grid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
-#else
-    normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
-
-    /*
-     * NOTE: do not change this! test suite depdends on the order of values in output
-     */
-    printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
-      grid->getName (), t, normRe, normRe * 100.0 / maxRe);
-#endif
-  }
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-void
-Scheme<Type, TCoord, layout_type>::performPlaneWaveESteps (time_step t)
-{
-  grid_coord size = EInc->getSize ().get1 ();
-
-  ASSERT (size > 0);
-
-  FPValue modifier = gridTimeStep / (relPhaseVelocity * PhysicsConst::Eps0 * gridStep);
-
-  for (grid_coord i = 1; i < size; ++i)
-  {
-    GridCoordinate1D pos (i
-#ifdef DEBUG_INFO
-                          , CoordinateType::X
-#endif
-                          );
-
-    FieldPointValue *valE = EInc->getFieldPointValue (pos);
-
-    GridCoordinate1D posLeft (i - 1
-#ifdef DEBUG_INFO
-                              , CoordinateType::X
-#endif
-                              );
-    GridCoordinate1D posRight (i
-#ifdef DEBUG_INFO
-                               , CoordinateType::X
-#endif
-                               );
-
-    FieldPointValue *valH1 = HInc->getFieldPointValue (posLeft);
-    FieldPointValue *valH2 = HInc->getFieldPointValue (posRight);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    FieldValue val = valE->getPrevValue () + (valH1->getPrevValue () - valH2->getPrevValue ()) * modifier;
-#else
-    ALWAYS_ASSERT (0);
-#endif
-
-    valE->setCurValue (val);
-  }
-
-  GridCoordinate1D pos (0
-#ifdef DEBUG_INFO
-                        , CoordinateType::X
-#endif
-                        );
-  FieldPointValue *valE = EInc->getFieldPointValue (pos);
-
-  FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
-
-#ifdef COMPLEX_FIELD_VALUES
-  valE->setCurValue (FieldValue (sin (arg), cos (arg)));
-#else /* COMPLEX_FIELD_VALUES */
-  valE->setCurValue (sin (arg));
-#endif /* !COMPLEX_FIELD_VALUES */
-
-#ifdef ENABLE_ASSERTS
-  GridCoordinate1D posEnd (size - 1, CoordinateType::X);
-  ALWAYS_ASSERT (EInc->getFieldPointValue (posEnd)->getCurValue () == getFieldValueRealOnly (0.0));
-#endif
-
-  EInc->nextTimeStep ();
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-void
-Scheme<Type, TCoord, layout_type>::performPlaneWaveHSteps (time_step t)
-{
-  grid_coord size = HInc->getSize ().get1 ();
-
-  ASSERT (size > 1);
-
-  FPValue modifier = gridTimeStep / (relPhaseVelocity * PhysicsConst::Mu0 * gridStep);
-
-  for (grid_coord i = 0; i < size - 1; ++i)
-  {
-    GridCoordinate1D pos (i
-#ifdef DEBUG_INFO
-                          , CoordinateType::X
-#endif
-                          );
-
-    FieldPointValue *valH = HInc->getFieldPointValue (pos);
-
-    GridCoordinate1D posLeft (i
-#ifdef DEBUG_INFO
-                              , CoordinateType::X
-#endif
-                              );
-    GridCoordinate1D posRight (i + 1
-#ifdef DEBUG_INFO
-                               , CoordinateType::X
-#endif
-                               );
-
-    FieldPointValue *valE1 = EInc->getFieldPointValue (posLeft);
-    FieldPointValue *valE2 = EInc->getFieldPointValue (posRight);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    FieldValue val = valH->getPrevValue () + (valE1->getPrevValue () - valE2->getPrevValue ()) * modifier;
-#else
-    ALWAYS_ASSERT (0);
-#endif
-
-    valH->setCurValue (val);
-  }
-
-#ifdef ENABLE_ASSERTS
-  GridCoordinate1D pos (size - 2, CoordinateType::X);
-  ALWAYS_ASSERT (HInc->getFieldPointValue (pos)->getCurValue () == getFieldValueRealOnly (0.0));
-#endif
-
-  HInc->nextTimeStep ();
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-FieldValue
-Scheme<Type, TCoord, layout_type>::approximateIncidentWaveE (TCFP pos)
-{
-  YeeGridLayout<Type, TCoord, layout_type> *layout = Scheme<Type, TCoord, layout_type>::yeeLayout;
-  return SchemeHelper::approximateIncidentWaveE<Type, TCoord> (pos, layout->getZeroIncCoordFP (), EInc, layout->getIncidentWaveAngle1 (), layout->getIncidentWaveAngle2 ());
-}
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-FieldValue
-Scheme<Type, TCoord, layout_type>::approximateIncidentWaveH (TCFP pos)
-{
-  YeeGridLayout<Type, TCoord, layout_type> *layout = Scheme<Type, TCoord, layout_type>::yeeLayout;
-  return SchemeHelper::approximateIncidentWaveH<Type, TCoord> (pos, layout->getZeroIncCoordFP (), HInc, layout->getIncidentWaveAngle1 (), layout->getIncidentWaveAngle2 ());
-}
-
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue z = realCoord.get1 () - zeroCoordFP.get1 ();
-  ASSERT (incAngle1 == 0 && incAngle2 == 0);
-
-  FPValue d = z - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
-  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == PhysicsConst::Pi / 2);
-
-  FPValue d = y - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue z = realCoord.get1 () - zeroCoordFP.get1 ();
-  ASSERT (incAngle1 == 0 && incAngle2 == PhysicsConst::Pi / 2);
-
-  FPValue d = z - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
-  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == 0);
-
-  FPValue d = x - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
-  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == PhysicsConst::Pi / 2);
-
-  FPValue d = y - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
-  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == 0);
-
-  FPValue d = x - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
-  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
-  ASSERT (incAngle2 == PhysicsConst::Pi / 2);
-
-  FPValue d = y * sin (incAngle1) + z * cos (incAngle1) - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
-  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
-  ASSERT (incAngle2 == 0);
-
-  FPValue d = x * sin (incAngle1) + z * cos (incAngle1) - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
-  FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
-  ASSERT (incAngle1 == PhysicsConst::Pi / 2);
-
-  FPValue d = x * cos (incAngle2) + y * sin (incAngle2) - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
-  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
-  ASSERT (incAngle2 == PhysicsConst::Pi / 2);
-
-  FPValue d = y * sin (incAngle1) + z * cos (incAngle1) - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
-  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
-  ASSERT (incAngle2 == 0);
-
-  FPValue d = x * sin (incAngle1) + z * cos (incAngle1) - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
-  FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
-  ASSERT (incAngle1 == PhysicsConst::Pi / 2);
-
-  FPValue d = x * cos (incAngle2) + y * sin (incAngle2) - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-template <>
-FieldValue
-SchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (GridCoordinateFP3D realCoord, GridCoordinateFP3D zeroCoordFP,
-                                                   FPValue dDiff, Grid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
-{
-  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
-  FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
-  FPValue z = realCoord.get3 () - zeroCoordFP.get3 ();
-
-  FPValue d = x * sin (incAngle1) * cos (incAngle2) + y * sin (incAngle1) * sin (incAngle2) + z * cos (incAngle1) - dDiff;
-  ASSERT (d > 0);
-
-  return SchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
-}
-
 /*
  * Specialization for Sigma
  */
@@ -3255,104 +320,90 @@ template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaZ);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaZ);
 };
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaY);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaY);
 };
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaZ);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaZ);
 };
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaX);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaX);
 };
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaY);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaY);
 };
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaX);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaX);
 };
 
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaY);
-  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaZ);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaY);
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaZ);
 };
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaX);
-  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaZ);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaX);
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaZ);
 };
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaX);
-  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaY);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaX);
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaY);
 };
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaY);
-  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaZ);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaY);
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaZ);
 };
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaX);
-  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaZ);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaX);
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaZ);
 };
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaX);
-  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaY);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaX);
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaY);
 };
 
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::initSigmas ()
 {
-  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaX);
-  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaY);
-  SchemeHelper::initSigmaZ<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (yeeLayout, gridStep, SigmaZ);
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaX);
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaY);
+  SchemeHelper::initSigmaZ<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (yeeLayout, gridStep, internalScheme.SigmaZ);
 };
-
-template <SchemeType_t Type, template <typename, bool> class TCoord>
-FieldValue
-SchemeHelper::approximateIncidentWaveE (TCoord<FPValue, true> realCoord, TCoord<FPValue, true> zeroCoord, Grid<GridCoordinate1D> *EInc, FPValue incAngle1, FPValue incAngle2)
-{
-  return approximateIncidentWave<Type, TCoord> (realCoord, zeroCoord, 0.0, EInc, incAngle1, incAngle2);
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord>
-FieldValue
-SchemeHelper::approximateIncidentWaveH (TCoord<FPValue, true> realCoord, TCoord<FPValue, true> zeroCoord, Grid<GridCoordinate1D> *HInc, FPValue incAngle1, FPValue incAngle2)
-{
-  return approximateIncidentWave<Type, TCoord> (realCoord, zeroCoord, 0.5, HInc, incAngle1, incAngle2);
-}
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void
@@ -3385,67 +436,67 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
       DPRINTF (LOG_LEVEL_STAGES, "Calculating time step %u...\n", t);
     }
 
-    TC ExStart = doNeedEx ? Ex->getComputationStart (yeeLayout->getExStartDiff ()) : TC (0, 0, 0
+    TC ExStart = internalScheme.doNeedEx ? internalScheme.Ex->getComputationStart (yeeLayout->getExStartDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                          , ct1, ct2, ct3
 #endif
                                                                                          );
-    TC ExEnd = doNeedEx ? Ex->getComputationEnd (yeeLayout->getExEndDiff ()) : TC (0, 0, 0
+    TC ExEnd = internalScheme.doNeedEx ? internalScheme.Ex->getComputationEnd (yeeLayout->getExEndDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                    , ct1, ct2, ct3
 #endif
                                                                                    );
 
-    TC EyStart = doNeedEy ? Ey->getComputationStart (yeeLayout->getEyStartDiff ()) : TC (0, 0, 0
+    TC EyStart = internalScheme.doNeedEy ? internalScheme.Ey->getComputationStart (yeeLayout->getEyStartDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                          , ct1, ct2, ct3
 #endif
                                                                                          );
-    TC EyEnd = doNeedEy ? Ey->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC (0, 0, 0
+    TC EyEnd = internalScheme.doNeedEy ? internalScheme.Ey->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                    , ct1, ct2, ct3
 #endif
                                                                                    );
 
-    TC EzStart = doNeedEz ? Ez->getComputationStart (yeeLayout->getEzStartDiff ()) : TC (0, 0, 0
+    TC EzStart = internalScheme.doNeedEz ? internalScheme.Ez->getComputationStart (yeeLayout->getEzStartDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                          , ct1, ct2, ct3
 #endif
                                                                                          );
-    TC EzEnd = doNeedEz ? Ez->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC (0, 0, 0
+    TC EzEnd = internalScheme.doNeedEz ? internalScheme.Ez->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                    , ct1, ct2, ct3
 #endif
                                                                                    );
 
-    TC HxStart = doNeedHx ? Hx->getComputationStart (yeeLayout->getHxStartDiff ()) : TC (0, 0, 0
+    TC HxStart = internalScheme.doNeedHx ? internalScheme.Hx->getComputationStart (yeeLayout->getHxStartDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                          , ct1, ct2, ct3
 #endif
                                                                                          );
-    TC HxEnd = doNeedHx ? Hx->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC (0, 0, 0
+    TC HxEnd = internalScheme.doNeedHx ? internalScheme.Hx->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                    , ct1, ct2, ct3
 #endif
                                                                                    );
 
-    TC HyStart = doNeedHy ? Hy->getComputationStart (yeeLayout->getHyStartDiff ()) : TC (0, 0, 0
+    TC HyStart = internalScheme.doNeedHy ? internalScheme.Hy->getComputationStart (yeeLayout->getHyStartDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                          , ct1, ct2, ct3
 #endif
                                                                                          );
-    TC HyEnd = doNeedHy ? Hy->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC (0, 0, 0
+    TC HyEnd = internalScheme.doNeedHy ? internalScheme.Hy->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                    , ct1, ct2, ct3
 #endif
                                                                                    );
 
-    TC HzStart = doNeedHz ? Hz->getComputationStart (yeeLayout->getHzStartDiff ()) : TC (0, 0, 0
+    TC HzStart = internalScheme.doNeedHz ? internalScheme.Hz->getComputationStart (yeeLayout->getHzStartDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                          , ct1, ct2, ct3
 #endif
                                                                                          );
-    TC HzEnd = doNeedHz ? Hz->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC (0, 0, 0
+    TC HzEnd = internalScheme.doNeedHz ? internalScheme.Hz->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                    , ct1, ct2, ct3
 #endif
@@ -3466,17 +517,17 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 #endif
     }
 
-    if (doNeedEx)
+    if (internalScheme.doNeedEx)
     {
-      performFieldSteps<static_cast<uint8_t> (GridType::EX)> (t, ExStart, ExEnd);
+      internalScheme.performFieldSteps<static_cast<uint8_t> (GridType::EX)> (t, ExStart, ExEnd);
     }
-    if (doNeedEy)
+    if (internalScheme.doNeedEy)
     {
-      performFieldSteps<static_cast<uint8_t> (GridType::EY)> (t, EyStart, EyEnd);
+      internalScheme.performFieldSteps<static_cast<uint8_t> (GridType::EY)> (t, EyStart, EyEnd);
     }
-    if (doNeedEz)
+    if (internalScheme.doNeedEz)
     {
-      performFieldSteps<static_cast<uint8_t> (GridType::EZ)> (t, EzStart, EzEnd);
+      internalScheme.performFieldSteps<static_cast<uint8_t> (GridType::EZ)> (t, EzStart, EzEnd);
     }
 
     if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
@@ -3489,48 +540,48 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 #endif
     }
 
-    if (doNeedEx)
+    if (internalScheme.doNeedEx)
     {
-      Ex->nextTimeStep ();
+      internalScheme.Ex->nextTimeStep ();
     }
-    if (doNeedEy)
+    if (internalScheme.doNeedEy)
     {
-      Ey->nextTimeStep ();
+      internalScheme.Ey->nextTimeStep ();
     }
-    if (doNeedEz)
+    if (internalScheme.doNeedEz)
     {
-      Ez->nextTimeStep ();
+      internalScheme.Ez->nextTimeStep ();
     }
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      if (doNeedEx)
+      if (internalScheme.doNeedEx)
       {
-        Dx->nextTimeStep ();
+        internalScheme.Dx->nextTimeStep ();
       }
-      if (doNeedEy)
+      if (internalScheme.doNeedEy)
       {
-        Dy->nextTimeStep ();
+        internalScheme.Dy->nextTimeStep ();
       }
-      if (doNeedEz)
+      if (internalScheme.doNeedEz)
       {
-        Dz->nextTimeStep ();
+        internalScheme.Dz->nextTimeStep ();
       }
     }
 
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      if (doNeedEx)
+      if (internalScheme.doNeedEx)
       {
-        D1x->nextTimeStep ();
+        internalScheme.D1x->nextTimeStep ();
       }
-      if (doNeedEy)
+      if (internalScheme.doNeedEy)
       {
-        D1y->nextTimeStep ();
+        internalScheme.D1y->nextTimeStep ();
       }
-      if (doNeedEz)
+      if (internalScheme.doNeedEz)
       {
-        D1z->nextTimeStep ();
+        internalScheme.D1z->nextTimeStep ();
       }
     }
 
@@ -3549,17 +600,17 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 #endif
     }
 
-    if (doNeedHx)
+    if (internalScheme.doNeedHx)
     {
-      performFieldSteps<static_cast<uint8_t> (GridType::HX)> (t, HxStart, HxEnd);
+      internalScheme.performFieldSteps<static_cast<uint8_t> (GridType::HX)> (t, HxStart, HxEnd);
     }
-    if (doNeedHy)
+    if (internalScheme.doNeedHy)
     {
-      performFieldSteps<static_cast<uint8_t> (GridType::HY)> (t, HyStart, HyEnd);
+      internalScheme.performFieldSteps<static_cast<uint8_t> (GridType::HY)> (t, HyStart, HyEnd);
     }
-    if (doNeedHz)
+    if (internalScheme.doNeedHz)
     {
-      performFieldSteps<static_cast<uint8_t> (GridType::HZ)> (t, HzStart, HzEnd);
+      internalScheme.performFieldSteps<static_cast<uint8_t> (GridType::HZ)> (t, HzStart, HzEnd);
     }
 
     if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
@@ -3572,48 +623,48 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 #endif
     }
 
-    if (doNeedHx)
+    if (internalScheme.doNeedHx)
     {
-      Hx->nextTimeStep ();
+      internalScheme.Hx->nextTimeStep ();
     }
-    if (doNeedHy)
+    if (internalScheme.doNeedHy)
     {
-      Hy->nextTimeStep ();
+      internalScheme.Hy->nextTimeStep ();
     }
-    if (doNeedHz)
+    if (internalScheme.doNeedHz)
     {
-      Hz->nextTimeStep ();
+      internalScheme.Hz->nextTimeStep ();
     }
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      if (doNeedHx)
+      if (internalScheme.doNeedHx)
       {
-        Bx->nextTimeStep ();
+        internalScheme.Bx->nextTimeStep ();
       }
-      if (doNeedHy)
+      if (internalScheme.doNeedHy)
       {
-        By->nextTimeStep ();
+        internalScheme.By->nextTimeStep ();
       }
-      if (doNeedHz)
+      if (internalScheme.doNeedHz)
       {
-        Bz->nextTimeStep ();
+        internalScheme.Bz->nextTimeStep ();
       }
     }
 
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      if (doNeedHx)
+      if (internalScheme.doNeedHx)
       {
-        B1x->nextTimeStep ();
+        internalScheme.B1x->nextTimeStep ();
       }
-      if (doNeedHy)
+      if (internalScheme.doNeedHy)
       {
-        B1y->nextTimeStep ();
+        internalScheme.B1y->nextTimeStep ();
       }
-      if (doNeedHz)
+      if (internalScheme.doNeedHz)
       {
-        B1z->nextTimeStep ();
+        internalScheme.B1z->nextTimeStep ();
       }
     }
 
@@ -3663,7 +714,7 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //
 //   int is_stable_state = 0;
 //
-//   GridCoordinate3D EzSize = Ez->getSize ();
+//   GridCoordinate3D EzSize = internalScheme.Ez->getSize ();
 //
 //   time_step t = startStep;
 //
@@ -3673,23 +724,23 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //
 //     //is_stable_state = 1;
 //
-//     GridCoordinate3D ExStart = Ex->getComputationStart (yeeLayout->getExStartDiff ());
-//     GridCoordinate3D ExEnd = Ex->getComputationEnd (yeeLayout->getExEndDiff ());
+//     GridCoordinate3D ExStart = internalScheme.Ex->getComputationStart (yeeLayout->getExStartDiff ());
+//     GridCoordinate3D ExEnd = internalScheme.Ex->getComputationEnd (yeeLayout->getExEndDiff ());
 //
-//     GridCoordinate3D EyStart = Ey->getComputationStart (yeeLayout->getEyStartDiff ());
-//     GridCoordinate3D EyEnd = Ey->getComputationEnd (yeeLayout->getEyEndDiff ());
+//     GridCoordinate3D EyStart = internalScheme.Ey->getComputationStart (yeeLayout->getEyStartDiff ());
+//     GridCoordinate3D EyEnd = internalScheme.Ey->getComputationEnd (yeeLayout->getEyEndDiff ());
 //
-//     GridCoordinate3D EzStart = Ez->getComputationStart (yeeLayout->getEzStartDiff ());
-//     GridCoordinate3D EzEnd = Ez->getComputationEnd (yeeLayout->getEzEndDiff ());
+//     GridCoordinate3D EzStart = internalScheme.Ez->getComputationStart (yeeLayout->getEzStartDiff ());
+//     GridCoordinate3D EzEnd = internalScheme.Ez->getComputationEnd (yeeLayout->getEzEndDiff ());
 //
-//     GridCoordinate3D HxStart = Hx->getComputationStart (yeeLayout->getHxStartDiff ());
-//     GridCoordinate3D HxEnd = Hx->getComputationEnd (yeeLayout->getHxEndDiff ());
+//     GridCoordinate3D HxStart = internalScheme.Hx->getComputationStart (yeeLayout->getHxStartDiff ());
+//     GridCoordinate3D HxEnd = internalScheme.Hx->getComputationEnd (yeeLayout->getHxEndDiff ());
 //
-//     GridCoordinate3D HyStart = Hy->getComputationStart (yeeLayout->getHyStartDiff ());
-//     GridCoordinate3D HyEnd = Hy->getComputationEnd (yeeLayout->getHyEndDiff ());
+//     GridCoordinate3D HyStart = internalScheme.Hy->getComputationStart (yeeLayout->getHyStartDiff ());
+//     GridCoordinate3D HyEnd = internalScheme.Hy->getComputationEnd (yeeLayout->getHyEndDiff ());
 //
-//     GridCoordinate3D HzStart = Hz->getComputationStart (yeeLayout->getHzStartDiff ());
-//     GridCoordinate3D HzEnd = Hz->getComputationEnd (yeeLayout->getHzEndDiff ());
+//     GridCoordinate3D HzStart = internalScheme.Hz->getComputationStart (yeeLayout->getHzStartDiff ());
+//     GridCoordinate3D HzEnd = internalScheme.Hz->getComputationEnd (yeeLayout->getHzEndDiff ());
 //
 //     if (SOLVER_SETTINGS.getDoUseTFSF ())
 //     {
@@ -3708,12 +759,12 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //         {
 //           GridCoordinate3D pos (i, j, k);
 //
-//           if (!yeeLayout->isExInPML (Ex->getTotalPosition (pos)))
+//           if (!yeeLayout->isExInPML (internalScheme.Ex->getTotalPosition (pos)))
 //           {
-//             FieldPointValue* tmp = Ex->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = ExAmplitude->getFieldPointValue (pos);
+//             FieldPointValue* tmp = internalScheme.Ex->getFieldPointValue (pos);
+//             FieldPointValue* tmpAmp = internalScheme.ExAmplitude->getFieldPointValue (pos);
 //
-//             GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (Ex->getTotalPosition (pos));
+//             GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (internalScheme.Ex->getTotalPosition (pos));
 //
 //             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
 //             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
@@ -3737,12 +788,12 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //         {
 //           GridCoordinate3D pos (i, j, k);
 //
-//           if (!yeeLayout->isEyInPML (Ey->getTotalPosition (pos)))
+//           if (!yeeLayout->isEyInPML (internalScheme.Ey->getTotalPosition (pos)))
 //           {
-//             FieldPointValue* tmp = Ey->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = EyAmplitude->getFieldPointValue (pos);
+//             FieldPointValue* tmp = internalScheme.Ey->getFieldPointValue (pos);
+//             FieldPointValue* tmpAmp = internalScheme.EyAmplitude->getFieldPointValue (pos);
 //
-//             GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (Ey->getTotalPosition (pos));
+//             GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (internalScheme.Ey->getTotalPosition (pos));
 //
 //             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
 //             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
@@ -3766,12 +817,12 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //         {
 //           GridCoordinate3D pos (i, j, k);
 //
-//           if (!yeeLayout->isEzInPML (Ez->getTotalPosition (pos)))
+//           if (!yeeLayout->isEzInPML (internalScheme.Ez->getTotalPosition (pos)))
 //           {
-//             FieldPointValue* tmp = Ez->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = EzAmplitude->getFieldPointValue (pos);
+//             FieldPointValue* tmp = internalScheme.Ez->getFieldPointValue (pos);
+//             FieldPointValue* tmpAmp = internalScheme.EzAmplitude->getFieldPointValue (pos);
 //
-//             GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (Ez->getTotalPosition (pos));
+//             GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (internalScheme.Ez->getTotalPosition (pos));
 //
 //             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
 //             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
@@ -3787,15 +838,15 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //       }
 //     }
 //
-//     Ex->nextTimeStep ();
-//     Ey->nextTimeStep ();
-//     Ez->nextTimeStep ();
+//     internalScheme.Ex->nextTimeStep ();
+//     internalScheme.Ey->nextTimeStep ();
+//     internalScheme.Ez->nextTimeStep ();
 //
 //     if (SOLVER_SETTINGS.getDoUsePML ())
 //     {
-//       Dx->nextTimeStep ();
-//       Dy->nextTimeStep ();
-//       Dz->nextTimeStep ();
+//       internalScheme.Dx->nextTimeStep ();
+//       internalScheme.Dy->nextTimeStep ();
+//       internalScheme.Dz->nextTimeStep ();
 //     }
 //
 //     if (SOLVER_SETTINGS.getDoUseTFSF ())
@@ -3815,12 +866,12 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //         {
 //           GridCoordinate3D pos (i, j, k);
 //
-//           if (!yeeLayout->isHxInPML (Hx->getTotalPosition (pos)))
+//           if (!yeeLayout->isHxInPML (internalScheme.Hx->getTotalPosition (pos)))
 //           {
-//             FieldPointValue* tmp = Hx->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = HxAmplitude->getFieldPointValue (pos);
+//             FieldPointValue* tmp = internalScheme.Hx->getFieldPointValue (pos);
+//             FieldPointValue* tmpAmp = internalScheme.HxAmplitude->getFieldPointValue (pos);
 //
-//             GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (Hx->getTotalPosition (pos));
+//             GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (internalScheme.Hx->getTotalPosition (pos));
 //
 //             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
 //             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
@@ -3844,12 +895,12 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //         {
 //           GridCoordinate3D pos (i, j, k);
 //
-//           if (!yeeLayout->isHyInPML (Hy->getTotalPosition (pos)))
+//           if (!yeeLayout->isHyInPML (internalScheme.Hy->getTotalPosition (pos)))
 //           {
-//             FieldPointValue* tmp = Hy->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = HyAmplitude->getFieldPointValue (pos);
+//             FieldPointValue* tmp = internalScheme.Hy->getFieldPointValue (pos);
+//             FieldPointValue* tmpAmp = internalScheme.HyAmplitude->getFieldPointValue (pos);
 //
-//             GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (Hy->getTotalPosition (pos));
+//             GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (internalScheme.Hy->getTotalPosition (pos));
 //
 //             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
 //             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
@@ -3873,12 +924,12 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //         {
 //           GridCoordinate3D pos (i, j, k);
 //
-//           if (!yeeLayout->isHzInPML (Hz->getTotalPosition (pos)))
+//           if (!yeeLayout->isHzInPML (internalScheme.Hz->getTotalPosition (pos)))
 //           {
-//             FieldPointValue* tmp = Hz->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = HzAmplitude->getFieldPointValue (pos);
+//             FieldPointValue* tmp = internalScheme.Hz->getFieldPointValue (pos);
+//             FieldPointValue* tmpAmp = internalScheme.HzAmplitude->getFieldPointValue (pos);
 //
-//             GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (Hz->getTotalPosition (pos));
+//             GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (internalScheme.Hz->getTotalPosition (pos));
 //
 //             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
 //             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
@@ -3894,15 +945,15 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 //       }
 //     }
 //
-//     Hx->nextTimeStep ();
-//     Hy->nextTimeStep ();
-//     Hz->nextTimeStep ();
+//     internalScheme.Hx->nextTimeStep ();
+//     internalScheme.Hy->nextTimeStep ();
+//     internalScheme.Hz->nextTimeStep ();
 //
 //     if (SOLVER_SETTINGS.getDoUsePML ())
 //     {
-//       Bx->nextTimeStep ();
-//       By->nextTimeStep ();
-//       Bz->nextTimeStep ();
+//       internalScheme.Bx->nextTimeStep ();
+//       internalScheme.By->nextTimeStep ();
+//       internalScheme.Bz->nextTimeStep ();
 //     }
 //
 //     ++t;
@@ -3999,7 +1050,7 @@ Scheme<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate,
 
   CudaExitStatus status;
 
-  cudaExecute3DSteps (useParallel, &status, yeeLayout, gridTimeStep, gridStep, Ex, Ey, Ez, Hx, Hy, Hz, Eps, Mu, totalStep, processId);
+  cudaExecute3DSteps (useParallel, &status, yeeLayout, gridTimeStep, gridStep, internalScheme.Ex, internalScheme.Ey, internalScheme.Ez, internalScheme.Hx, internalScheme.Hy, internalScheme.Hz, internalScheme.Eps, internalScheme.Mu, totalStep, processId);
 
   ASSERT (status == CUDA_OK);
 
@@ -4470,156 +1521,156 @@ template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids1D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids1D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids1D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids1D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids1D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids1D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids1D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids1D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids1D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids1D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids1D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids1D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids2D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids2D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids2D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids2D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids2D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids2D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids2D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids2D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids2D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids2D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids2D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids2D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::initFullMaterialGrids ()
 {
-  SchemeHelper::initFullMaterialGrids3D (Eps, totalEps,
-                                         Mu, totalMu,
-                                         OmegaPE, totalOmegaPE,
-                                         OmegaPM, totalOmegaPM,
-                                         GammaE, totalGammaE,
-                                         GammaM, totalGammaM);
+  SchemeHelper::initFullMaterialGrids3D (internalScheme.Eps, totalEps,
+                                         internalScheme.Mu, totalMu,
+                                         internalScheme.OmegaPE, totalOmegaPE,
+                                         internalScheme.OmegaPM, totalOmegaPM,
+                                         internalScheme.GammaE, totalGammaE,
+                                         internalScheme.GammaM, totalGammaM);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -4673,16 +1724,16 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 #endif /* !PARALLEL_GRID */
   }
 
-  Eps->initialize (getFieldValueRealOnly (1.0));
-  initMaterialFromFile (GridType::EPS, Eps, totalEps);
+  internalScheme.Eps->initialize (getFieldValueRealOnly (1.0));
+  initMaterialFromFile (GridType::EPS, internalScheme.Eps, totalEps);
 
   if (SOLVER_SETTINGS.getEpsSphere () != 1)
   {
-    for (grid_coord i = 0; i < Eps->getSize ().calculateTotalCoord (); ++i)
+    for (grid_coord i = 0; i < internalScheme.Eps->getSize ().calculateTotalCoord (); ++i)
     {
-      TC pos = Eps->calculatePositionFromIndex (i);
-      TCFP posAbs = yeeLayout->getEpsCoordFP (Eps->getTotalPosition (pos));
-      FieldPointValue *val = Eps->getFieldPointValue (pos);
+      TC pos = internalScheme.Eps->calculatePositionFromIndex (i);
+      TCFP posAbs = yeeLayout->getEpsCoordFP (internalScheme.Eps->getTotalPosition (pos));
+      FieldPointValue *val = internalScheme.Eps->getFieldPointValue (pos);
 
       FieldValue epsVal = getFieldValueRealOnly (SOLVER_SETTINGS.getEpsSphere ());
 
@@ -4705,23 +1756,23 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   }
   if (SOLVER_SETTINGS.getUseEpsAllNorm ())
   {
-    for (grid_coord i = 0; i < Eps->getSize ().calculateTotalCoord (); ++i)
+    for (grid_coord i = 0; i < internalScheme.Eps->getSize ().calculateTotalCoord (); ++i)
     {
-      FieldPointValue *val = Eps->getFieldPointValue (i);
+      FieldPointValue *val = internalScheme.Eps->getFieldPointValue (i);
       val->setCurValue (getFieldValueRealOnly (FPValue(1.0) / PhysicsConst::Eps0));
     }
   }
 
-  Mu->initialize (getFieldValueRealOnly (1.0));
-  initMaterialFromFile (GridType::MU, Mu, totalMu);
+  internalScheme.Mu->initialize (getFieldValueRealOnly (1.0));
+  initMaterialFromFile (GridType::MU, internalScheme.Mu, totalMu);
 
   if (SOLVER_SETTINGS.getMuSphere () != 1)
   {
-    for (grid_coord i = 0; i < Mu->getSize ().calculateTotalCoord (); ++i)
+    for (grid_coord i = 0; i < internalScheme.Mu->getSize ().calculateTotalCoord (); ++i)
     {
-      TC pos = Mu->calculatePositionFromIndex (i);
-      TCFP posAbs = yeeLayout->getMuCoordFP (Mu->getTotalPosition (pos));
-      FieldPointValue *val = Mu->getFieldPointValue (pos);
+      TC pos = internalScheme.Mu->calculatePositionFromIndex (i);
+      TCFP posAbs = yeeLayout->getMuCoordFP (internalScheme.Mu->getTotalPosition (pos));
+      FieldPointValue *val = internalScheme.Mu->getFieldPointValue (pos);
 
       FieldValue muVal = getFieldValueRealOnly (SOLVER_SETTINGS.getMuSphere ());
 
@@ -4744,25 +1795,25 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   }
   if (SOLVER_SETTINGS.getUseMuAllNorm ())
   {
-    for (grid_coord i = 0; i < Mu->getSize ().calculateTotalCoord (); ++i)
+    for (grid_coord i = 0; i < internalScheme.Mu->getSize ().calculateTotalCoord (); ++i)
     {
-      FieldPointValue *val = Mu->getFieldPointValue (i);
+      FieldPointValue *val = internalScheme.Mu->getFieldPointValue (i);
       val->setCurValue (getFieldValueRealOnly (FPValue(1.0) / PhysicsConst::Mu0));
     }
   }
 
   if (SOLVER_SETTINGS.getDoUseMetamaterials ())
   {
-    OmegaPE->initialize ();
-    initMaterialFromFile (GridType::OMEGAPE, OmegaPE, totalOmegaPE);
+    internalScheme.OmegaPE->initialize ();
+    initMaterialFromFile (GridType::OMEGAPE, internalScheme.OmegaPE, totalOmegaPE);
 
     if (SOLVER_SETTINGS.getOmegaPESphere () != 0)
     {
-      for (grid_coord i = 0; i < OmegaPE->getSize ().calculateTotalCoord (); ++i)
+      for (grid_coord i = 0; i < internalScheme.OmegaPE->getSize ().calculateTotalCoord (); ++i)
       {
-        TC pos = OmegaPE->calculatePositionFromIndex (i);
-        TCFP posAbs = yeeLayout->getEpsCoordFP (OmegaPE->getTotalPosition (pos));
-        FieldPointValue *val = OmegaPE->getFieldPointValue (pos);
+        TC pos = internalScheme.OmegaPE->calculatePositionFromIndex (i);
+        TCFP posAbs = yeeLayout->getEpsCoordFP (internalScheme.OmegaPE->getTotalPosition (pos));
+        FieldPointValue *val = internalScheme.OmegaPE->getFieldPointValue (pos);
 
         FieldValue omegapeVal = getFieldValueRealOnly (SOLVER_SETTINGS.getOmegaPESphere () * 2 * PhysicsConst::Pi * sourceFrequency);
 
@@ -4784,16 +1835,16 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       }
     }
 
-    OmegaPM->initialize ();
-    initMaterialFromFile (GridType::OMEGAPM, OmegaPM, totalOmegaPM);
+    internalScheme.OmegaPM->initialize ();
+    initMaterialFromFile (GridType::OMEGAPM, internalScheme.OmegaPM, totalOmegaPM);
 
     if (SOLVER_SETTINGS.getOmegaPMSphere () != 0)
     {
-      for (grid_coord i = 0; i < OmegaPM->getSize ().calculateTotalCoord (); ++i)
+      for (grid_coord i = 0; i < internalScheme.OmegaPM->getSize ().calculateTotalCoord (); ++i)
       {
-        TC pos = OmegaPM->calculatePositionFromIndex (i);
-        TCFP posAbs = yeeLayout->getEpsCoordFP (OmegaPM->getTotalPosition (pos));
-        FieldPointValue *val = OmegaPM->getFieldPointValue (pos);
+        TC pos = internalScheme.OmegaPM->calculatePositionFromIndex (i);
+        TCFP posAbs = yeeLayout->getEpsCoordFP (internalScheme.OmegaPM->getTotalPosition (pos));
+        FieldPointValue *val = internalScheme.OmegaPM->getFieldPointValue (pos);
 
         FieldValue omegapmVal = getFieldValueRealOnly (SOLVER_SETTINGS.getOmegaPMSphere () * 2 * PhysicsConst::Pi * sourceFrequency);
 
@@ -4815,11 +1866,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       }
     }
 
-    GammaE->initialize ();
-    initMaterialFromFile (GridType::GAMMAE, GammaE, totalGammaE);
+    internalScheme.GammaE->initialize ();
+    initMaterialFromFile (GridType::GAMMAE, internalScheme.GammaE, totalGammaE);
 
-    GammaM->initialize ();
-    initMaterialFromFile (GridType::GAMMAM, GammaM, totalGammaM);
+    internalScheme.GammaM->initialize ();
+    initMaterialFromFile (GridType::GAMMAM, internalScheme.GammaM, totalGammaM);
   }
 
   if (SOLVER_SETTINGS.getDoUsePML ())
@@ -4918,141 +1969,141 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         //
         // if (SOLVER_SETTINGS.getDoUsePML ())
         // {
-        //   dumper[type]->init (0, CURRENT, processId, "SigmaX");
-        //   dumper[type]->dumpGrid (SigmaX,
-        //                           GridCoordinate3D (0, 0, SigmaX->getSize ().get3 () / 2),
-        //                           GridCoordinate3D (SigmaX->getSize ().get1 (), SigmaX->getSize ().get2 (), SigmaX->getSize ().get3 () / 2 + 1));
+        //   dumper[type]->init (0, CURRENT, processId, "internalScheme.SigmaX");
+        //   dumper[type]->dumpGrid (internalScheme.SigmaX,
+        //                           GridCoordinate3D (0, 0, internalScheme.SigmaX->getSize ().get3 () / 2),
+        //                           GridCoordinate3D (internalScheme.SigmaX->getSize ().get1 (), internalScheme.SigmaX->getSize ().get2 (), internalScheme.SigmaX->getSize ().get3 () / 2 + 1));
         //
-        //   dumper[type]->init (0, CURRENT, processId, "SigmaY");
-        //   dumper[type]->dumpGrid (SigmaY,
-        //                           GridCoordinate3D (0, 0, SigmaY->getSize ().get3 () / 2),
-        //                           GridCoordinate3D (SigmaY->getSize ().get1 (), SigmaY->getSize ().get2 (), SigmaY->getSize ().get3 () / 2 + 1));
+        //   dumper[type]->init (0, CURRENT, processId, "internalScheme.SigmaY");
+        //   dumper[type]->dumpGrid (internalScheme.SigmaY,
+        //                           GridCoordinate3D (0, 0, internalScheme.SigmaY->getSize ().get3 () / 2),
+        //                           GridCoordinate3D (internalScheme.SigmaY->getSize ().get1 (), internalScheme.SigmaY->getSize ().get2 (), internalScheme.SigmaY->getSize ().get3 () / 2 + 1));
         //
-        //   dumper[type]->init (0, CURRENT, processId, "SigmaZ");
-        //   dumper[type]->dumpGrid (SigmaZ,
-        //                           GridCoordinate3D (0, 0, SigmaZ->getSize ().get3 () / 2),
-        //                           GridCoordinate3D (SigmaZ->getSize ().get1 (), SigmaZ->getSize ().get2 (), SigmaZ->getSize ().get3 () / 2 + 1));
+        //   dumper[type]->init (0, CURRENT, processId, "internalScheme.SigmaZ");
+        //   dumper[type]->dumpGrid (internalScheme.SigmaZ,
+        //                           GridCoordinate3D (0, 0, internalScheme.SigmaZ->getSize ().get3 () / 2),
+        //                           GridCoordinate3D (internalScheme.SigmaZ->getSize ().get1 (), internalScheme.SigmaZ->getSize ().get2 (), internalScheme.SigmaZ->getSize ().get3 () / 2 + 1));
         // }
       }
     }
   }
 
-  if (doNeedEx)
+  if (internalScheme.doNeedEx)
   {
-    Ex->initialize ();
-    initGridWithInitialVals (GridType::EX, Ex, 0.5 * gridTimeStep);
+    internalScheme.Ex->initialize ();
+    initGridWithInitialVals (GridType::EX, internalScheme.Ex, 0.5 * gridTimeStep);
   }
-  if (doNeedEy)
+  if (internalScheme.doNeedEy)
   {
-    Ey->initialize ();
-    initGridWithInitialVals (GridType::EY, Ey, 0.5 * gridTimeStep);
+    internalScheme.Ey->initialize ();
+    initGridWithInitialVals (GridType::EY, internalScheme.Ey, 0.5 * gridTimeStep);
   }
-  if (doNeedEz)
+  if (internalScheme.doNeedEz)
   {
-    Ez->initialize ();
-    initGridWithInitialVals (GridType::EZ, Ez, 0.5 * gridTimeStep);
+    internalScheme.Ez->initialize ();
+    initGridWithInitialVals (GridType::EZ, internalScheme.Ez, 0.5 * gridTimeStep);
   }
 
-  if (doNeedHx)
+  if (internalScheme.doNeedHx)
   {
-    Hx->initialize ();
-    initGridWithInitialVals (GridType::HX, Hx, gridTimeStep);
+    internalScheme.Hx->initialize ();
+    initGridWithInitialVals (GridType::HX, internalScheme.Hx, gridTimeStep);
   }
-  if (doNeedHy)
+  if (internalScheme.doNeedHy)
   {
-    Hy->initialize ();
-    initGridWithInitialVals (GridType::HY, Hy, gridTimeStep);
+    internalScheme.Hy->initialize ();
+    initGridWithInitialVals (GridType::HY, internalScheme.Hy, gridTimeStep);
   }
-  if (doNeedHz)
+  if (internalScheme.doNeedHz)
   {
-    Hz->initialize ();
-    initGridWithInitialVals (GridType::HZ, Hz, gridTimeStep);
+    internalScheme.Hz->initialize ();
+    initGridWithInitialVals (GridType::HZ, internalScheme.Hz, gridTimeStep);
   }
 
   if (SOLVER_SETTINGS.getDoUsePML ())
   {
-    if (doNeedEx)
+    if (internalScheme.doNeedEx)
     {
-      Dx->initialize ();
+      internalScheme.Dx->initialize ();
     }
-    if (doNeedEy)
+    if (internalScheme.doNeedEy)
     {
-      Dy->initialize ();
+      internalScheme.Dy->initialize ();
     }
-    if (doNeedEz)
+    if (internalScheme.doNeedEz)
     {
-      Dz->initialize ();
+      internalScheme.Dz->initialize ();
     }
 
-    if (doNeedHx)
+    if (internalScheme.doNeedHx)
     {
-      Bx->initialize ();
+      internalScheme.Bx->initialize ();
     }
-    if (doNeedHy)
+    if (internalScheme.doNeedHy)
     {
-      By->initialize ();
+      internalScheme.By->initialize ();
     }
-    if (doNeedHz)
+    if (internalScheme.doNeedHz)
     {
-      Bz->initialize ();
+      internalScheme.Bz->initialize ();
     }
 
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      if (doNeedEx)
+      if (internalScheme.doNeedEx)
       {
-        D1x->initialize ();
+        internalScheme.D1x->initialize ();
       }
-      if (doNeedEy)
+      if (internalScheme.doNeedEy)
       {
-        D1y->initialize ();
+        internalScheme.D1y->initialize ();
       }
-      if (doNeedEz)
+      if (internalScheme.doNeedEz)
       {
-        D1z->initialize ();
+        internalScheme.D1z->initialize ();
       }
 
-      if (doNeedHx)
+      if (internalScheme.doNeedHx)
       {
-        B1x->initialize ();
+        internalScheme.B1x->initialize ();
       }
-      if (doNeedHy)
+      if (internalScheme.doNeedHy)
       {
-        B1y->initialize ();
+        internalScheme.B1y->initialize ();
       }
-      if (doNeedHz)
+      if (internalScheme.doNeedHz)
       {
-        B1z->initialize ();
+        internalScheme.B1z->initialize ();
       }
     }
   }
 
   if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
   {
-    if (doNeedEx)
+    if (internalScheme.doNeedEx)
     {
-      ExAmplitude->initialize ();
+      internalScheme.ExAmplitude->initialize ();
     }
-    if (doNeedEy)
+    if (internalScheme.doNeedEy)
     {
-      EyAmplitude->initialize ();
+      internalScheme.EyAmplitude->initialize ();
     }
-    if (doNeedEz)
+    if (internalScheme.doNeedEz)
     {
-      EzAmplitude->initialize ();
+      internalScheme.EzAmplitude->initialize ();
     }
 
-    if (doNeedHx)
+    if (internalScheme.doNeedHx)
     {
-      HxAmplitude->initialize ();
+      internalScheme.HxAmplitude->initialize ();
     }
-    if (doNeedHy)
+    if (internalScheme.doNeedHy)
     {
-      HyAmplitude->initialize ();
+      internalScheme.HyAmplitude->initialize ();
     }
-    if (doNeedHz)
+    if (internalScheme.doNeedHz)
     {
-      HzAmplitude->initialize ();
+      internalScheme.HzAmplitude->initialize ();
     }
   }
 
@@ -5067,961 +2118,28 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 #if defined (PARALLEL_GRID)
     MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
 
-    ((ParallelGrid *) Eps)->share ();
-    ((ParallelGrid *) Mu)->share ();
+    ((ParallelGrid *) internalScheme.Eps)->share ();
+    ((ParallelGrid *) internalScheme.Mu)->share ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      if (doNeedSigmaX)
+      if (internalScheme.doNeedSigmaX)
       {
-        ((ParallelGrid *) SigmaX)->share ();
+        ((ParallelGrid *) internalScheme.SigmaX)->share ();
       }
-      if (doNeedSigmaY)
+      if (internalScheme.doNeedSigmaY)
       {
-        ((ParallelGrid *) SigmaY)->share ();
+        ((ParallelGrid *) internalScheme.SigmaY)->share ();
       }
-      if (doNeedSigmaZ)
+      if (internalScheme.doNeedSigmaZ)
       {
-        ((ParallelGrid *) SigmaZ)->share ();
+        ((ParallelGrid *) internalScheme.SigmaZ)->share ();
       }
     }
 #else
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
   }
-}
-
-NPair
-SchemeHelper::ntffN3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
-                         GridCoordinate3D leftNTFF,
-                         GridCoordinate3D rightNTFF,
-                         YL3D_Dim3 *yeeLayout,
-                         FPValue gridStep,
-                         FPValue sourceWaveLength,
-                         Grid<GridCoordinate1D> *HInc,
-                         Grid<GridCoordinate3D> *curEz,
-                         Grid<GridCoordinate3D> *curHy,
-                         Grid<GridCoordinate3D> *curHz)
-{
-#ifdef COMPLEX_FIELD_VALUES
-  FPValue diffx0 = curEz->getTotalSize ().get1 () / 2;
-  FPValue diffy0 = curEz->getTotalSize ().get2 () / 2;
-  FPValue diffz0 = curEz->getTotalSize ().get3 () / 2;
-
-  CoordinateType ct1, ct2, ct3;
-#ifdef DEBUG_INFO
-  ct1 = leftNTFF.getType1 ();
-  ct2 = leftNTFF.getType2 ();
-  ct3 = leftNTFF.getType3 ();
-#endif
-
-  GridCoordinateFP3D coordStart (x0, leftNTFF.get2 () + 0.5, leftNTFF.get3 () + 0.5
-#ifdef DEBUG_INFO
-                                 , ct1, ct2, ct3
-#endif
-                                 );
-  GridCoordinateFP3D coordEnd (x0, rightNTFF.get2 () - 0.5, rightNTFF.get3 () - 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-
-  FieldValue sum_teta (0.0, 0.0);
-  FieldValue sum_phi (0.0, 0.0);
-
-  for (FPValue coordY = coordStart.get2 (); coordY <= coordEnd.get2 (); ++coordY)
-  {
-    for (FPValue coordZ = coordStart.get3 (); coordZ <= coordEnd.get3 (); ++coordZ)
-    {
-      GridCoordinateFP3D pos1 (x0, coordY - 0.5, coordZ
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos2 (x0, coordY + 0.5, coordZ
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos3 (x0, coordY, coordZ - 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos4 (x0, coordY, coordZ + 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-
-      pos1 = pos1 - yeeLayout->getMinHzCoordFP ();
-      pos2 = pos2 - yeeLayout->getMinHzCoordFP ();
-
-      pos3 = pos3 - yeeLayout->getMinHyCoordFP ();
-      pos4 = pos4 - yeeLayout->getMinHyCoordFP ();
-
-      GridCoordinate3D pos11 = convertCoord (pos1);
-      GridCoordinate3D pos21 = convertCoord (pos2);
-      GridCoordinate3D pos31 = convertCoord (pos3);
-      GridCoordinate3D pos41 = convertCoord (pos4);
-
-      FieldPointValue *valHz1 = curHz->getFieldPointValueOrNullByAbsolutePos (pos11);
-      FieldPointValue *valHz2 = curHz->getFieldPointValueOrNullByAbsolutePos (pos21);
-
-      FieldPointValue *valHy1 = curHy->getFieldPointValueOrNullByAbsolutePos (pos31);
-      FieldPointValue *valHy2 = curHy->getFieldPointValueOrNullByAbsolutePos (pos41);
-
-#ifdef PARALLEL_GRID
-      if (valHz1 == NULL || ((ParallelGrid*) curHz)->isBufferLeftPosition (pos11)
-          || valHz2 == NULL || ((ParallelGrid*) curHz)->isBufferLeftPosition (pos21)
-          || valHy1 == NULL || ((ParallelGrid*) curHy)->isBufferLeftPosition (pos31)
-          || valHy2 == NULL || ((ParallelGrid*) curHy)->isBufferLeftPosition (pos41))
-      {
-        continue;
-      }
-#endif
-
-      ASSERT (valHz1 != NULL && valHz2 != NULL && valHy1 != NULL && valHy2 != NULL);
-
-      FieldValue Hz1 = valHz1->getCurValue ();
-      FieldValue Hz2 = valHz2->getCurValue ();
-      FieldValue Hy1 = valHy1->getCurValue ();
-      FieldValue Hy2 = valHy2->getCurValue ();
-
-      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
-      {
-        Hz1 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hz2 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hy1 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hy2 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-      }
-
-      FPValue arg = (x0 - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
-      arg *= gridStep;
-
-      FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
-
-      FieldValue exponent (cos(k*arg), sin(k*arg));
-
-      sum_teta += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
-                   + (Hy1 + Hy2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1);
-
-      sum_phi += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1);
-    }
-  }
-
-  return NPair (sum_teta, sum_phi);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
-#endif
-}
-
-NPair
-SchemeHelper::ntffN3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
-                         GridCoordinate3D leftNTFF,
-                         GridCoordinate3D rightNTFF,
-                         YL3D_Dim3 *yeeLayout,
-                         FPValue gridStep,
-                         FPValue sourceWaveLength,
-                         Grid<GridCoordinate1D> *HInc,
-                         Grid<GridCoordinate3D> *curEz,
-                         Grid<GridCoordinate3D> *curHx,
-                         Grid<GridCoordinate3D> *curHz)
-{
-#ifdef COMPLEX_FIELD_VALUES
-  FPValue diffx0 = curEz->getTotalSize ().get1 () / 2;
-  FPValue diffy0 = curEz->getTotalSize ().get2 () / 2;
-  FPValue diffz0 = curEz->getTotalSize ().get3 () / 2;
-
-  CoordinateType ct1, ct2, ct3;
-#ifdef DEBUG_INFO
-  ct1 = leftNTFF.getType1 ();
-  ct2 = leftNTFF.getType2 ();
-  ct3 = leftNTFF.getType3 ();
-#endif
-
-  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, y0, leftNTFF.get3 () + 0.5
-#ifdef DEBUG_INFO
-                                 , ct1, ct2, ct3
-#endif
-                                 );
-  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, y0, rightNTFF.get3 () - 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-
-  FieldValue sum_teta (0.0, 0.0);
-  FieldValue sum_phi (0.0, 0.0);
-
-  for (FPValue coordX = coordStart.get1 (); coordX <= coordEnd.get1 (); ++coordX)
-  {
-    for (FPValue coordZ = coordStart.get3 (); coordZ <= coordEnd.get3 (); ++coordZ)
-    {
-      GridCoordinateFP3D pos1 (coordX - 0.5, y0, coordZ
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos2 (coordX + 0.5, y0, coordZ
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos3 (coordX, y0, coordZ - 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos4 (coordX, y0, coordZ + 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-
-      pos1 = pos1 - yeeLayout->getMinHzCoordFP ();
-      pos2 = pos2 - yeeLayout->getMinHzCoordFP ();
-
-      pos3 = pos3 - yeeLayout->getMinHxCoordFP ();
-      pos4 = pos4 - yeeLayout->getMinHxCoordFP ();
-
-      GridCoordinate3D pos11 = convertCoord (pos1);
-      GridCoordinate3D pos21 = convertCoord (pos2);
-      GridCoordinate3D pos31 = convertCoord (pos3);
-      GridCoordinate3D pos41 = convertCoord (pos4);
-
-      FieldPointValue *valHz1 = curHz->getFieldPointValueOrNullByAbsolutePos (pos11);
-      FieldPointValue *valHz2 = curHz->getFieldPointValueOrNullByAbsolutePos (pos21);
-
-      FieldPointValue *valHx1 = curHx->getFieldPointValueOrNullByAbsolutePos (pos31);
-      FieldPointValue *valHx2 = curHx->getFieldPointValueOrNullByAbsolutePos (pos41);
-
-#ifdef PARALLEL_GRID
-      if (valHz1 == NULL || ((ParallelGrid*) curHz)->isBufferLeftPosition (pos11)
-          || valHz2 == NULL || ((ParallelGrid*) curHz)->isBufferLeftPosition (pos21)
-          || valHx1 == NULL || ((ParallelGrid*) curHx)->isBufferLeftPosition (pos31)
-          || valHx2 == NULL || ((ParallelGrid*) curHx)->isBufferLeftPosition (pos41))
-      {
-        continue;
-      }
-#endif
-
-      ASSERT (valHz1 != NULL && valHz2 != NULL && valHx1 != NULL && valHx2 != NULL);
-
-      FieldValue Hz1 = valHz1->getCurValue ();
-      FieldValue Hz2 = valHz2->getCurValue ();
-      FieldValue Hx1 = valHx1->getCurValue ();
-      FieldValue Hx2 = valHx2->getCurValue ();
-
-      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
-      {
-        Hz1 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hz2 -= yeeLayout->getHzFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hx1 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hx2 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-      }
-
-      FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (y0 - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
-      arg *= gridStep;
-
-      FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
-
-      FieldValue exponent (cos(k*arg), sin(k*arg));
-
-      sum_teta += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                   + (Hx1 + Hx2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (y0==rightNTFF.get2 ()?1:-1);
-
-      sum_phi += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (-1) * (y0==rightNTFF.get2 ()?1:-1);
-    }
-  }
-
-  return NPair (sum_teta, sum_phi);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
-#endif
-}
-
-NPair
-SchemeHelper::ntffN3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
-                         GridCoordinate3D leftNTFF,
-                         GridCoordinate3D rightNTFF,
-                         YL3D_Dim3 *yeeLayout,
-                         FPValue gridStep,
-                         FPValue sourceWaveLength,
-                         Grid<GridCoordinate1D> *HInc,
-                         Grid<GridCoordinate3D> *curEz,
-                         Grid<GridCoordinate3D> *curHx,
-                         Grid<GridCoordinate3D> *curHy)
-{
-#ifdef COMPLEX_FIELD_VALUES
-  FPValue diffx0 = curEz->getTotalSize ().get1 () / 2;
-  FPValue diffy0 = curEz->getTotalSize ().get2 () / 2;
-  FPValue diffz0 = curEz->getTotalSize ().get3 () / 2;
-
-  CoordinateType ct1, ct2, ct3;
-#ifdef DEBUG_INFO
-  ct1 = leftNTFF.getType1 ();
-  ct2 = leftNTFF.getType2 ();
-  ct3 = leftNTFF.getType3 ();
-#endif
-
-  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, leftNTFF.get2 () + 0.5, z0
-#ifdef DEBUG_INFO
-                                 , ct1, ct2, ct3
-#endif
-                                 );
-  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, rightNTFF.get2 () - 0.5, z0
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-
-  FieldValue sum_teta (0.0, 0.0);
-  FieldValue sum_phi (0.0, 0.0);
-
-  for (FPValue coordX = coordStart.get1 (); coordX <= coordEnd.get1 (); ++coordX)
-  {
-    for (FPValue coordY = coordStart.get2 (); coordY <= coordEnd.get2 (); ++coordY)
-    {
-      GridCoordinateFP3D pos1 (coordX - 0.5, coordY, z0
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos2 (coordX + 0.5, coordY, z0
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos3 (coordX, coordY - 0.5, z0
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos4 (coordX, coordY + 0.5, z0
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-
-      pos1 = pos1 - yeeLayout->getMinHyCoordFP ();
-      pos2 = pos2 - yeeLayout->getMinHyCoordFP ();
-
-      pos3 = pos3 - yeeLayout->getMinHxCoordFP ();
-      pos4 = pos4 - yeeLayout->getMinHxCoordFP ();
-
-      GridCoordinate3D pos11 = convertCoord (pos1);
-      GridCoordinate3D pos21 = convertCoord (pos2);
-      GridCoordinate3D pos31 = convertCoord (pos3);
-      GridCoordinate3D pos41 = convertCoord (pos4);
-
-      FieldPointValue *valHy1 = curHy->getFieldPointValueOrNullByAbsolutePos (pos11);
-      FieldPointValue *valHy2 = curHy->getFieldPointValueOrNullByAbsolutePos (pos21);
-
-      FieldPointValue *valHx1 = curHx->getFieldPointValueOrNullByAbsolutePos (pos31);
-      FieldPointValue *valHx2 = curHx->getFieldPointValueOrNullByAbsolutePos (pos41);
-
-#ifdef PARALLEL_GRID
-      if (valHy1 == NULL || ((ParallelGrid*) curHy)->isBufferLeftPosition (pos11)
-          || valHy2 == NULL || ((ParallelGrid*) curHy)->isBufferLeftPosition (pos21)
-          || valHx1 == NULL || ((ParallelGrid*) curHx)->isBufferLeftPosition (pos31)
-          || valHx2 == NULL || ((ParallelGrid*) curHx)->isBufferLeftPosition (pos41))
-      {
-        continue;
-      }
-#endif
-
-      ASSERT (valHy1 != NULL && valHy2 != NULL && valHx1 != NULL && valHx2 != NULL);
-
-      FieldValue Hy1 = valHy1->getCurValue ();
-      FieldValue Hy2 = valHy2->getCurValue ();
-      FieldValue Hx1 = valHx1->getCurValue ();
-      FieldValue Hx2 = valHx2->getCurValue ();
-
-      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
-      {
-        Hy1 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hy2 -= yeeLayout->getHyFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hx1 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Hx2 -= yeeLayout->getHxFromIncidentH (SchemeHelper::approximateIncidentWaveH<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), HInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-      }
-
-      FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (z0 - diffz0) * cos (angleTeta);
-      arg *= gridStep;
-
-      FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
-
-      FieldValue exponent (cos(k*arg), sin(k*arg));
-
-      sum_teta += (-(Hy1 + Hy2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                   + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1);
-
-      sum_phi += ((Hy1 + Hy2)/FPValue(2.0) * FPValue (sin (anglePhi))
-                  + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1);
-    }
-  }
-
-  return NPair (sum_teta, sum_phi);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
-#endif
-}
-
-NPair
-SchemeHelper::ntffL3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
-                         GridCoordinate3D leftNTFF,
-                         GridCoordinate3D rightNTFF,
-                         YL3D_Dim3 *yeeLayout,
-                         FPValue gridStep,
-                         FPValue sourceWaveLength,
-                         Grid<GridCoordinate1D> *EInc,
-                         Grid<GridCoordinate3D> *curEy,
-                         Grid<GridCoordinate3D> *curEz)
-{
-#ifdef COMPLEX_FIELD_VALUES
-  FPValue diffx0 = curEz->getTotalSize ().get1 () / 2;
-  FPValue diffy0 = curEz->getTotalSize ().get2 () / 2;
-  FPValue diffz0 = curEz->getTotalSize ().get3 () / 2;
-
-  CoordinateType ct1, ct2, ct3;
-#ifdef DEBUG_INFO
-  ct1 = leftNTFF.getType1 ();
-  ct2 = leftNTFF.getType2 ();
-  ct3 = leftNTFF.getType3 ();
-#endif
-
-  GridCoordinateFP3D coordStart (x0, leftNTFF.get2 () + 0.5, leftNTFF.get3 () + 0.5
-#ifdef DEBUG_INFO
-                                 , ct1, ct2, ct3
-#endif
-                                 );
-  GridCoordinateFP3D coordEnd (x0, rightNTFF.get2 () - 0.5, rightNTFF.get3 () - 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-
-  FieldValue sum_teta (0.0, 0.0);
-  FieldValue sum_phi (0.0, 0.0);
-
-  for (FPValue coordY = coordStart.get2 (); coordY <= coordEnd.get2 (); ++coordY)
-  {
-    for (FPValue coordZ = coordStart.get3 (); coordZ <= coordEnd.get3 (); ++coordZ)
-    {
-      GridCoordinateFP3D pos1 (x0, coordY - 0.5, coordZ
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos2 (x0, coordY + 0.5, coordZ
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos3 (x0, coordY, coordZ - 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos4 (x0, coordY, coordZ + 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-
-      pos1 = pos1 - yeeLayout->getMinEyCoordFP ();
-      pos2 = pos2 - yeeLayout->getMinEyCoordFP ();
-
-      pos3 = pos3 - yeeLayout->getMinEzCoordFP ();
-      pos4 = pos4 - yeeLayout->getMinEzCoordFP ();
-
-      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0.5, 0, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0.5, 0, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0.5, 0, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0.5, 0, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-
-      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0.5, 0, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0.5, 0, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0.5, 0, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0.5, 0, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-
-      FieldPointValue *valEy11 = curEy->getFieldPointValueOrNullByAbsolutePos (pos11);
-      FieldPointValue *valEy12 = curEy->getFieldPointValueOrNullByAbsolutePos (pos12);
-      FieldPointValue *valEy21 = curEy->getFieldPointValueOrNullByAbsolutePos (pos21);
-      FieldPointValue *valEy22 = curEy->getFieldPointValueOrNullByAbsolutePos (pos22);
-
-      FieldPointValue *valEz11 = curEz->getFieldPointValueOrNullByAbsolutePos (pos31);
-      FieldPointValue *valEz12 = curEz->getFieldPointValueOrNullByAbsolutePos (pos32);
-      FieldPointValue *valEz21 = curEz->getFieldPointValueOrNullByAbsolutePos (pos41);
-      FieldPointValue *valEz22 = curEz->getFieldPointValueOrNullByAbsolutePos (pos42);
-
-#ifdef PARALLEL_GRID
-      if (valEy11 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos11)
-          || valEy12 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos11)
-          || valEy21 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos21)
-          || valEy22 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos22)
-          || valEz11 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos31)
-          || valEz12 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos32)
-          || valEz21 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos41)
-          || valEz22 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos42))
-      {
-        continue;
-      }
-#endif
-
-      ASSERT (valEy11 != NULL && valEy12 != NULL && valEy21 != NULL && valEy22 != NULL
-              && valEz11 != NULL && valEz12 != NULL && valEz21 != NULL && valEz22 != NULL);
-
-      FieldValue Ey1 = (valEy11->getCurValue () + valEy12->getCurValue ()) / FPValue(2.0);
-      FieldValue Ey2 = (valEy21->getCurValue () + valEy22->getCurValue ()) / FPValue(2.0);
-      FieldValue Ez1 = (valEz11->getCurValue () + valEz12->getCurValue ()) / FPValue(2.0);
-      FieldValue Ez2 = (valEz21->getCurValue () + valEz22->getCurValue ()) / FPValue(2.0);
-
-      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
-      {
-        Ey1 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ey2 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ez1 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ez2 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-      }
-
-      FPValue arg = (x0 - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
-      arg *= gridStep;
-
-      FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
-
-      FieldValue exponent (cos(k*arg), sin(k*arg));
-
-      sum_teta += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
-                   + (Ey1 + Ey2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1);
-
-      sum_phi += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1);
-    }
-  }
-
-  return NPair (sum_teta, sum_phi);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
-#endif
-}
-
-NPair
-SchemeHelper::ntffL3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
-                         GridCoordinate3D leftNTFF,
-                         GridCoordinate3D rightNTFF,
-                         YL3D_Dim3 *yeeLayout,
-                         FPValue gridStep,
-                         FPValue sourceWaveLength,
-                         Grid<GridCoordinate1D> *EInc,
-                         Grid<GridCoordinate3D> *curEx,
-                         Grid<GridCoordinate3D> *curEz)
-{
-#ifdef COMPLEX_FIELD_VALUES
-  FPValue diffx0 = curEz->getTotalSize ().get1 () / 2;
-  FPValue diffy0 = curEz->getTotalSize ().get2 () / 2;
-  FPValue diffz0 = curEz->getTotalSize ().get3 () / 2;
-
-  CoordinateType ct1, ct2, ct3;
-#ifdef DEBUG_INFO
-  ct1 = leftNTFF.getType1 ();
-  ct2 = leftNTFF.getType2 ();
-  ct3 = leftNTFF.getType3 ();
-#endif
-
-  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, y0, leftNTFF.get3 () + 0.5
-#ifdef DEBUG_INFO
-                                 , ct1, ct2, ct3
-#endif
-                                 );
-  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, y0, rightNTFF.get3 () - 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-
-  FieldValue sum_teta (0.0, 0.0);
-  FieldValue sum_phi (0.0, 0.0);
-
-  for (FPValue coordX = coordStart.get1 (); coordX <= coordEnd.get1 (); ++coordX)
-  {
-    for (FPValue coordZ = coordStart.get3 (); coordZ <= coordEnd.get3 (); ++coordZ)
-    {
-      GridCoordinateFP3D pos1 (coordX - 0.5, y0, coordZ
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos2 (coordX + 0.5, y0, coordZ
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos3 (coordX, y0, coordZ - 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos4 (coordX, y0, coordZ + 0.5
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-
-      pos1 = pos1 - yeeLayout->getMinExCoordFP ();
-      pos2 = pos2 - yeeLayout->getMinExCoordFP ();
-
-      pos3 = pos3 - yeeLayout->getMinEzCoordFP ();
-      pos4 = pos4 - yeeLayout->getMinEzCoordFP ();
-
-      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0, 0.5, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0, 0.5, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0, 0.5, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0, 0.5, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-
-      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0, 0.5, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0, 0.5, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0, 0.5, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0, 0.5, 0
-#ifdef DEBUG_INFO
-                                             , ct1, ct2, ct3
-#endif
-                                             ));
-
-      FieldPointValue *valEx11 = curEx->getFieldPointValueOrNullByAbsolutePos (pos11);
-      FieldPointValue *valEx12 = curEx->getFieldPointValueOrNullByAbsolutePos (pos12);
-      FieldPointValue *valEx21 = curEx->getFieldPointValueOrNullByAbsolutePos (pos21);
-      FieldPointValue *valEx22 = curEx->getFieldPointValueOrNullByAbsolutePos (pos22);
-
-      FieldPointValue *valEz11 = curEz->getFieldPointValueOrNullByAbsolutePos (pos31);
-      FieldPointValue *valEz12 = curEz->getFieldPointValueOrNullByAbsolutePos (pos32);
-      FieldPointValue *valEz21 = curEz->getFieldPointValueOrNullByAbsolutePos (pos41);
-      FieldPointValue *valEz22 = curEz->getFieldPointValueOrNullByAbsolutePos (pos42);
-
-#ifdef PARALLEL_GRID
-      if (valEx11 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos11)
-          || valEx12 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos12)
-          || valEx21 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos21)
-          || valEx22 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos22)
-          || valEz11 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos31)
-          || valEz12 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos32)
-          || valEz21 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos41)
-          || valEz22 == NULL || ((ParallelGrid*) curEz)->isBufferLeftPosition (pos42))
-      {
-        continue;
-      }
-#endif
-
-      ASSERT (valEx11 != NULL && valEx12 != NULL && valEx21 != NULL && valEx22 != NULL
-              && valEz11 != NULL && valEz12 != NULL && valEz21 != NULL && valEz22 != NULL);
-
-      FieldValue Ex1 = (valEx11->getCurValue () + valEx12->getCurValue ()) / FPValue(2.0);
-      FieldValue Ex2 = (valEx21->getCurValue () + valEx22->getCurValue ()) / FPValue(2.0);
-      FieldValue Ez1 = (valEz11->getCurValue () + valEz12->getCurValue ()) / FPValue(2.0);
-      FieldValue Ez2 = (valEz21->getCurValue () + valEz22->getCurValue ()) / FPValue(2.0);
-
-      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
-      {
-        Ex1 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ex2 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ez1 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ez2 -= yeeLayout->getEzFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-      }
-
-      FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (y0 - diffy0) * sin(angleTeta)*sin(anglePhi) + (coordZ - diffz0) * cos (angleTeta);
-      arg *= gridStep;
-
-      FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
-
-      FieldValue exponent (cos(k*arg), sin(k*arg));
-
-      sum_teta += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                   + (Ex1 + Ex2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (y0==rightNTFF.get2 ()?1:-1);
-
-      sum_phi += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (-1) * (y0==rightNTFF.get2 ()?1:-1);
-    }
-  }
-
-  return NPair (sum_teta, sum_phi);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
-#endif
-}
-
-NPair
-SchemeHelper::ntffL3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
-                         GridCoordinate3D leftNTFF,
-                         GridCoordinate3D rightNTFF,
-                         YL3D_Dim3 *yeeLayout,
-                         FPValue gridStep,
-                         FPValue sourceWaveLength,
-                         Grid<GridCoordinate1D> *EInc,
-                         Grid<GridCoordinate3D> *curEx,
-                         Grid<GridCoordinate3D> *curEy,
-                         Grid<GridCoordinate3D> *curEz)
-{
-#ifdef COMPLEX_FIELD_VALUES
-  FPValue diffx0 = curEz->getTotalSize ().get1 () / 2;
-  FPValue diffy0 = curEz->getTotalSize ().get2 () / 2;
-  FPValue diffz0 = curEz->getTotalSize ().get3 () / 2;
-
-  CoordinateType ct1, ct2, ct3;
-#ifdef DEBUG_INFO
-  ct1 = leftNTFF.getType1 ();
-  ct2 = leftNTFF.getType2 ();
-  ct3 = leftNTFF.getType3 ();
-#endif
-
-  GridCoordinateFP3D coordStart (leftNTFF.get1 () + 0.5, leftNTFF.get2 () + 0.5, z0
-#ifdef DEBUG_INFO
-                                 , ct1, ct2, ct3
-#endif
-                                 );
-  GridCoordinateFP3D coordEnd (rightNTFF.get1 () - 0.5, rightNTFF.get2 () - 0.5, z0
-#ifdef DEBUG_INFO
-                                 , ct1, ct2, ct3
-#endif
-                                 );
-
-  FieldValue sum_teta (0.0, 0.0);
-  FieldValue sum_phi (0.0, 0.0);
-
-  for (FPValue coordX = coordStart.get1 (); coordX <= coordEnd.get1 (); ++coordX)
-  {
-    for (FPValue coordY = coordStart.get2 (); coordY <= coordEnd.get2 (); ++coordY)
-    {
-      GridCoordinateFP3D pos1 (coordX - 0.5, coordY, z0
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos2 (coordX + 0.5, coordY, z0
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos3 (coordX, coordY - 0.5, z0
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-      GridCoordinateFP3D pos4 (coordX, coordY + 0.5, z0
-#ifdef DEBUG_INFO
-                               , ct1, ct2, ct3
-#endif
-                               );
-
-      pos1 = pos1 - yeeLayout->getMinExCoordFP ();
-      pos2 = pos2 - yeeLayout->getMinExCoordFP ();
-
-      pos3 = pos3 - yeeLayout->getMinEyCoordFP ();
-      pos4 = pos4 - yeeLayout->getMinEyCoordFP ();
-
-      GridCoordinate3D pos11 = convertCoord (pos1-GridCoordinateFP3D(0, 0, 0.5
-#ifdef DEBUG_INFO
-                                                                     , ct1, ct2, ct3
-#endif
-                                                                     ));
-      GridCoordinate3D pos12 = convertCoord (pos1+GridCoordinateFP3D(0, 0, 0.5
-#ifdef DEBUG_INFO
-                                                                     , ct1, ct2, ct3
-#endif
-                                                                     ));
-      GridCoordinate3D pos21 = convertCoord (pos2-GridCoordinateFP3D(0, 0, 0.5
-#ifdef DEBUG_INFO
-                                                                     , ct1, ct2, ct3
-#endif
-                                                                     ));
-      GridCoordinate3D pos22 = convertCoord (pos2+GridCoordinateFP3D(0, 0, 0.5
-#ifdef DEBUG_INFO
-                                                                     , ct1, ct2, ct3
-#endif
-                                                                     ));
-
-      GridCoordinate3D pos31 = convertCoord (pos3-GridCoordinateFP3D(0, 0, 0.5
-#ifdef DEBUG_INFO
-                                                                     , ct1, ct2, ct3
-#endif
-                                                                     ));
-      GridCoordinate3D pos32 = convertCoord (pos3+GridCoordinateFP3D(0, 0, 0.5
-#ifdef DEBUG_INFO
-                                                                     , ct1, ct2, ct3
-#endif
-                                                                     ));
-      GridCoordinate3D pos41 = convertCoord (pos4-GridCoordinateFP3D(0, 0, 0.5
-#ifdef DEBUG_INFO
-                                                                     , ct1, ct2, ct3
-#endif
-                                                                     ));
-      GridCoordinate3D pos42 = convertCoord (pos4+GridCoordinateFP3D(0, 0, 0.5
-#ifdef DEBUG_INFO
-                                                                     , ct1, ct2, ct3
-#endif
-                                                                     ));
-
-      FieldPointValue *valEx11 = curEx->getFieldPointValueOrNullByAbsolutePos (pos11);
-      FieldPointValue *valEx12 = curEx->getFieldPointValueOrNullByAbsolutePos (pos12);
-      FieldPointValue *valEx21 = curEx->getFieldPointValueOrNullByAbsolutePos (pos21);
-      FieldPointValue *valEx22 = curEx->getFieldPointValueOrNullByAbsolutePos (pos22);
-
-      FieldPointValue *valEy11 = curEy->getFieldPointValueOrNullByAbsolutePos (pos31);
-      FieldPointValue *valEy12 = curEy->getFieldPointValueOrNullByAbsolutePos (pos32);
-      FieldPointValue *valEy21 = curEy->getFieldPointValueOrNullByAbsolutePos (pos41);
-      FieldPointValue *valEy22 = curEy->getFieldPointValueOrNullByAbsolutePos (pos42);
-
-#ifdef PARALLEL_GRID
-      if (valEx11 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos11)
-          || valEx12 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos12)
-          || valEx21 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos21)
-          || valEx22 == NULL || ((ParallelGrid*) curEx)->isBufferLeftPosition (pos22)
-          || valEy11 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos31)
-          || valEy12 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos32)
-          || valEy21 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos41)
-          || valEy22 == NULL || ((ParallelGrid*) curEy)->isBufferLeftPosition (pos42))
-      {
-        continue;
-      }
-#endif
-
-      ASSERT (valEx11 != NULL && valEx12 != NULL && valEx21 != NULL && valEx22 != NULL
-              && valEy11 != NULL && valEy12 != NULL && valEy21 != NULL && valEy22 != NULL);
-
-      FieldValue Ex1 = (valEx11->getCurValue () + valEx12->getCurValue ()) / FPValue(2.0);
-      FieldValue Ex2 = (valEx21->getCurValue () + valEx22->getCurValue ()) / FPValue(2.0);
-      FieldValue Ey1 = (valEy11->getCurValue () + valEy12->getCurValue ()) / FPValue(2.0);
-      FieldValue Ey2 = (valEy21->getCurValue () + valEy22->getCurValue ()) / FPValue(2.0);
-
-      if (SOLVER_SETTINGS.getDoCalcScatteredNTFF ())
-      {
-        Ex1 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos1, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ex2 -= yeeLayout->getExFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos2, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ey1 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos3, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-        Ey2 -= yeeLayout->getEyFromIncidentE (SchemeHelper::approximateIncidentWaveE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (pos4, yeeLayout->getZeroIncCoordFP (), EInc, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ()));
-      }
-
-      FPValue arg = (coordX - diffx0) * sin(angleTeta)*cos(anglePhi) + (coordY - diffy0) * sin(angleTeta)*sin(anglePhi) + (z0 - diffz0) * cos (angleTeta);
-      arg *= gridStep;
-
-      FPValue k = 2*PhysicsConst::Pi / sourceWaveLength;
-
-      FieldValue exponent (cos(k*arg), sin(k*arg));
-
-      sum_teta += (-(Ey1 + Ey2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                   + (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1);
-
-      sum_phi += ((Ey1 + Ey2)/FPValue(2.0) * FPValue (sin (anglePhi))
-                  + (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1);
-    }
-  }
-
-  return NPair (sum_teta, sum_phi);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
-#endif
-}
-
-NPair
-SchemeHelper::ntffN3D (FPValue angleTeta, FPValue anglePhi,
-                       GridCoordinate3D leftNTFF,
-                       GridCoordinate3D rightNTFF,
-                       YL3D_Dim3 *yeeLayout,
-                       FPValue gridStep,
-                       FPValue sourceWaveLength, // TODO: check sourceWaveLengthNumerical
-                       Grid<GridCoordinate1D> *HInc,
-                       Grid<GridCoordinate3D> *curEz,
-                       Grid<GridCoordinate3D> *curHx,
-                       Grid<GridCoordinate3D> *curHy,
-                       Grid<GridCoordinate3D> *curHz)
-{
-  NPair nx = SchemeHelper::ntffN3D_x (leftNTFF.get1 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, HInc, curEz, curHy, curHz)
-                     + ntffN3D_x (rightNTFF.get1 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, HInc, curEz, curHy, curHz);
-  NPair ny = SchemeHelper::ntffN3D_y (leftNTFF.get2 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, HInc, curEz, curHx, curHz)
-                     + SchemeHelper::ntffN3D_y (rightNTFF.get2 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, HInc, curEz, curHx, curHz);
-  NPair nz = SchemeHelper::ntffN3D_z (leftNTFF.get3 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, HInc, curEz, curHx, curHy)
-                     + SchemeHelper::ntffN3D_z (rightNTFF.get3 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, HInc, curEz, curHx, curHy);
-
-  return nx + ny + nz;
-}
-
-NPair
-SchemeHelper::ntffL3D (FPValue angleTeta, FPValue anglePhi,
-                       GridCoordinate3D leftNTFF,
-                       GridCoordinate3D rightNTFF,
-                       YL3D_Dim3 *yeeLayout,
-                       FPValue gridStep,
-                       FPValue sourceWaveLength, // TODO: check sourceWaveLengthNumerical
-                       Grid<GridCoordinate1D> *EInc,
-                       Grid<GridCoordinate3D> *curEx,
-                       Grid<GridCoordinate3D> *curEy,
-                       Grid<GridCoordinate3D> *curEz)
-{
-  NPair lx = SchemeHelper::ntffL3D_x (leftNTFF.get1 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, EInc, curEy, curEz)
-                     + SchemeHelper::ntffL3D_x (rightNTFF.get1 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, EInc, curEy, curEz);
-  NPair ly = SchemeHelper::ntffL3D_y (leftNTFF.get2 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, EInc, curEx, curEz)
-                     + SchemeHelper::ntffL3D_y (rightNTFF.get2 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, EInc, curEx, curEz);
-  NPair lz = SchemeHelper::ntffL3D_z (leftNTFF.get3 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, EInc, curEx, curEy, curEz)
-                     + SchemeHelper::ntffL3D_z (rightNTFF.get3 (), angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, gridStep, sourceWaveLength, EInc, curEx, curEy, curEz);
-
-  return lx + ly + lz;
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -6150,18 +2268,20 @@ Scheme<Type, TCoord, layout_type>::makeGridScattered (Grid<TC> *grid, GridType g
       continue;
     }
 
+    YeeGridLayout<Type, TCoord, layout_type> *layout = Scheme<Type, TCoord, layout_type>::yeeLayout;
+
     FieldValue iVal;
     if (gridType == GridType::EX
         || gridType == GridType::EY
         || gridType == GridType::EZ)
     {
-      iVal = approximateIncidentWaveE (realCoord);
+      iVal = internalScheme.approximateIncidentWaveE (realCoord);
     }
     else if (gridType == GridType::HX
              || gridType == GridType::HY
              || gridType == GridType::HZ)
     {
-      iVal = approximateIncidentWaveH (realCoord);
+      iVal = internalScheme.approximateIncidentWaveH (realCoord);
     }
     else
     {
@@ -6216,104 +2336,104 @@ template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids1D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids1D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids2D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids2D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <>
 void
 Scheme< (static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>::initFullFieldGrids ()
 {
-  SchemeHelper::initFullFieldGrids3D (&totalInitialized, doNeedEx, &Ex, &totalEx, doNeedEy, &Ey, &totalEy, doNeedEz, &Ez, &totalEz,
-                                      doNeedHx, &Hx, &totalHx, doNeedHy, &Hy, &totalHy, doNeedHz, &Hz, &totalHz);
+  SchemeHelper::initFullFieldGrids3D (&totalInitialized, internalScheme.doNeedEx, &internalScheme.Ex, &totalEx, internalScheme.doNeedEy, &internalScheme.Ey, &totalEy, internalScheme.doNeedEz, &internalScheme.Ez, &totalEz,
+                                      internalScheme.doNeedHx, &internalScheme.Hx, &totalHx, internalScheme.doNeedHy, &internalScheme.Hy, &totalHy, internalScheme.doNeedHz, &internalScheme.Hz, &totalHz);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -6328,96 +2448,96 @@ Scheme<Type, TCoord, layout_type>::gatherFieldsTotal (bool scattered)
   {
     if (totalInitialized)
     {
-      if (doNeedEx)
+      if (internalScheme.doNeedEx)
       {
-        *totalEx = *Ex;
+        *totalEx = *internalScheme.Ex;
       }
-      if (doNeedEy)
+      if (internalScheme.doNeedEy)
       {
-        *totalEy = *Ey;
+        *totalEy = *internalScheme.Ey;
       }
-      if (doNeedEz)
+      if (internalScheme.doNeedEz)
       {
-        *totalEz = *Ez;
+        *totalEz = *internalScheme.Ez;
       }
 
-      if (doNeedHx)
+      if (internalScheme.doNeedHx)
       {
-        *totalHx = *Hx;
+        *totalHx = *internalScheme.Hx;
       }
-      if (doNeedHy)
+      if (internalScheme.doNeedHy)
       {
-        *totalHy = *Hy;
+        *totalHy = *internalScheme.Hy;
       }
-      if (doNeedHz)
+      if (internalScheme.doNeedHz)
       {
-        *totalHz = *Hz;
+        *totalHz = *internalScheme.Hz;
       }
     }
     else
     {
       if (scattered)
       {
-        if (doNeedEx)
+        if (internalScheme.doNeedEx)
         {
           totalEx = new Grid<TC> (yeeLayout->getExSize (), 0, "Ex");
-          *totalEx = *Ex;
+          *totalEx = *internalScheme.Ex;
         }
-        if (doNeedEy)
+        if (internalScheme.doNeedEy)
         {
           totalEy = new Grid<TC> (yeeLayout->getEySize (), 0, "Ey");
-          *totalEy = *Ey;
+          *totalEy = *internalScheme.Ey;
         }
-        if (doNeedEz)
+        if (internalScheme.doNeedEz)
         {
           totalEz = new Grid<TC> (yeeLayout->getEzSize (), 0, "Ez");
-          *totalEz = *Ez;
+          *totalEz = *internalScheme.Ez;
         }
 
-        if (doNeedHx)
+        if (internalScheme.doNeedHx)
         {
           totalHx = new Grid<TC> (yeeLayout->getHxSize (), 0, "Hx");
-          *totalHx = *Hx;
+          *totalHx = *internalScheme.Hx;
         }
-        if (doNeedHy)
+        if (internalScheme.doNeedHy)
         {
           totalHy = new Grid<TC> (yeeLayout->getHySize (), 0, "Hy");
-          *totalHy = *Hy;
+          *totalHy = *internalScheme.Hy;
         }
-        if (doNeedHz)
+        if (internalScheme.doNeedHz)
         {
           totalHz = new Grid<TC> (yeeLayout->getHzSize (), 0, "Hz");
-          *totalHz = *Hz;
+          *totalHz = *internalScheme.Hz;
         }
 
         totalInitialized = true;
       }
       else
       {
-        if (doNeedEx)
+        if (internalScheme.doNeedEx)
         {
-          totalEx = Ex;
+          totalEx = internalScheme.Ex;
         }
-        if (doNeedEy)
+        if (internalScheme.doNeedEy)
         {
-          totalEy = Ey;
+          totalEy = internalScheme.Ey;
         }
-        if (doNeedEz)
+        if (internalScheme.doNeedEz)
         {
-          totalEz = Ez;
+          totalEz = internalScheme.Ez;
         }
 
-        if (doNeedHx)
+        if (internalScheme.doNeedHx)
         {
-          totalHx = Hx;
+          totalHx = internalScheme.Hx;
         }
-        if (doNeedHy)
+        if (internalScheme.doNeedHy)
         {
-          totalHy = Hy;
+          totalHy = internalScheme.Hy;
         }
-        if (doNeedHz)
+        if (internalScheme.doNeedHz)
         {
-          totalHz = Hz;
+          totalHz = internalScheme.Hz;
         }
       }
     }
@@ -6425,28 +2545,28 @@ Scheme<Type, TCoord, layout_type>::gatherFieldsTotal (bool scattered)
 
   if (scattered)
   {
-    if (doNeedEx)
+    if (internalScheme.doNeedEx)
     {
       makeGridScattered (totalEx, GridType::EX);
     }
-    if (doNeedEy)
+    if (internalScheme.doNeedEy)
     {
       makeGridScattered (totalEy, GridType::EY);
     }
-    if (doNeedEz)
+    if (internalScheme.doNeedEz)
     {
       makeGridScattered (totalEz, GridType::EZ);
     }
 
-    if (doNeedHx)
+    if (internalScheme.doNeedHx)
     {
       makeGridScattered (totalHx, GridType::HX);
     }
-    if (doNeedHy)
+    if (internalScheme.doNeedHy)
     {
       makeGridScattered (totalHy, GridType::HY);
     }
-    if (doNeedHz)
+    if (internalScheme.doNeedHz)
     {
       makeGridScattered (totalHz, GridType::HZ);
     }
@@ -6496,67 +2616,67 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
   }
   else
   {
-    startEx = doNeedEx ? getStartCoord (GridType::EX, Ex->getTotalSize ()) : TC (0, 0, 0
+    startEx = internalScheme.doNeedEx ? getStartCoord (GridType::EX, internalScheme.Ex->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                  , ct1, ct2, ct3
 #endif
                                                                                  );
-    endEx = doNeedEx ? getEndCoord (GridType::EX, Ex->getTotalSize ()) : TC (0, 0, 0
+    endEx = internalScheme.doNeedEx ? getEndCoord (GridType::EX, internalScheme.Ex->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                              , ct1, ct2, ct3
 #endif
                                                                              );
 
-    startEy = doNeedEy ? getStartCoord (GridType::EY, Ey->getTotalSize ()) : TC (0, 0, 0
+    startEy = internalScheme.doNeedEy ? getStartCoord (GridType::EY, internalScheme.Ey->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                  , ct1, ct2, ct3
 #endif
                                                                                  );
-    endEy = doNeedEy ? getEndCoord (GridType::EY, Ey->getTotalSize ()) : TC (0, 0, 0
+    endEy = internalScheme.doNeedEy ? getEndCoord (GridType::EY, internalScheme.Ey->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                              , ct1, ct2, ct3
 #endif
                                                                              );
 
-    startEz = doNeedEz ? getStartCoord (GridType::EZ, Ez->getTotalSize ()) : TC (0, 0, 0
+    startEz = internalScheme.doNeedEz ? getStartCoord (GridType::EZ, internalScheme.Ez->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                  , ct1, ct2, ct3
 #endif
                                                                                  );
-    endEz = doNeedEz ? getEndCoord (GridType::EZ, Ez->getTotalSize ()) : TC (0, 0, 0
+    endEz = internalScheme.doNeedEz ? getEndCoord (GridType::EZ, internalScheme.Ez->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                              , ct1, ct2, ct3
 #endif
                                                                              );
 
-    startHx = doNeedHx ? getStartCoord (GridType::HX, Hx->getTotalSize ()) : TC (0, 0, 0
+    startHx = internalScheme.doNeedHx ? getStartCoord (GridType::HX, internalScheme.Hx->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                  , ct1, ct2, ct3
 #endif
                                                                                  );
-    endHx = doNeedHx ? getEndCoord (GridType::HX, Hx->getTotalSize ()) : TC (0, 0, 0
+    endHx = internalScheme.doNeedHx ? getEndCoord (GridType::HX, internalScheme.Hx->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                              , ct1, ct2, ct3
 #endif
                                                                              );
 
-    startHy = doNeedHy ? getStartCoord (GridType::HY, Hy->getTotalSize ()) : TC (0, 0, 0
+    startHy = internalScheme.doNeedHy ? getStartCoord (GridType::HY, internalScheme.Hy->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                  , ct1, ct2, ct3
 #endif
                                                                                  );
-    endHy = doNeedHy ? getEndCoord (GridType::HY, Hy->getTotalSize ()) : TC (0, 0, 0
+    endHy = internalScheme.doNeedHy ? getEndCoord (GridType::HY, internalScheme.Hy->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                              , ct1, ct2, ct3
 #endif
                                                                              );
 
-    startHz = doNeedHz ? getStartCoord (GridType::HZ, Hz->getTotalSize ()) : TC (0, 0, 0
+    startHz = internalScheme.doNeedHz ? getStartCoord (GridType::HZ, internalScheme.Hz->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                                  , ct1, ct2, ct3
 #endif
                                                                                  );
-    endHz = doNeedHz ? getEndCoord (GridType::HZ, Hz->getTotalSize ()) : TC (0, 0, 0
+    endHz = internalScheme.doNeedHz ? getEndCoord (GridType::HZ, internalScheme.Hz->getTotalSize ()) : TC (0, 0, 0
 #ifdef DEBUG_INFO
                                                                              , ct1, ct2, ct3
 #endif
@@ -6576,13 +2696,13 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       continue;
     }
 
-    if (doNeedEx)
+    if (internalScheme.doNeedEx)
     {
       dumper[type]->init (t, CURRENT, processId, totalEx->getName ());
 
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (Ex, zero, Ex->getSize ());
+        dumper[type]->dumpGrid (internalScheme.Ex, zero, internalScheme.Ex->getSize ());
       }
       else
       {
@@ -6590,13 +2710,13 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       }
     }
 
-    if (doNeedEy)
+    if (internalScheme.doNeedEy)
     {
       dumper[type]->init (t, CURRENT, processId, totalEy->getName ());
 
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (Ey, zero, Ey->getSize ());
+        dumper[type]->dumpGrid (internalScheme.Ey, zero, internalScheme.Ey->getSize ());
       }
       else
       {
@@ -6604,13 +2724,13 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       }
     }
 
-    if (doNeedEz)
+    if (internalScheme.doNeedEz)
     {
       dumper[type]->init (t, CURRENT, processId, totalEz->getName ());
 
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (Ez, zero, Ez->getSize ());
+        dumper[type]->dumpGrid (internalScheme.Ez, zero, internalScheme.Ez->getSize ());
       }
       else
       {
@@ -6618,13 +2738,13 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       }
     }
 
-    if (doNeedHx)
+    if (internalScheme.doNeedHx)
     {
       dumper[type]->init (t, CURRENT, processId, totalHx->getName ());
 
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (Hx, zero, Hx->getSize ());
+        dumper[type]->dumpGrid (internalScheme.Hx, zero, internalScheme.Hx->getSize ());
       }
       else
       {
@@ -6632,13 +2752,13 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       }
     }
 
-    if (doNeedHy)
+    if (internalScheme.doNeedHy)
     {
       dumper[type]->init (t, CURRENT, processId, totalHy->getName ());
 
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (Hy, zero, Hy->getSize ());
+        dumper[type]->dumpGrid (internalScheme.Hy, zero, internalScheme.Hy->getSize ());
       }
       else
       {
@@ -6646,13 +2766,13 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       }
     }
 
-    if (doNeedHz)
+    if (internalScheme.doNeedHz)
     {
       dumper[type]->init (t, CURRENT, processId, totalHz->getName ());
 
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (Hz, zero, Hz->getSize ());
+        dumper[type]->dumpGrid (internalScheme.Hz, zero, internalScheme.Hz->getSize ());
       }
       else
       {
@@ -6749,12 +2869,12 @@ Scheme<Type, TCoord, layout_type>::saveNTFF (bool isReverse, time_step t)
   {
     FPValue val = Pointing_scat (yeeLayout->getIncidentWaveAngle1 (),
                                  angle,
-                                 Ex,
-                                 Ey,
-                                 Ez,
-                                 Hx,
-                                 Hy,
-                                 Hz) / Pointing_inc (yeeLayout->getIncidentWaveAngle1 (), angle);
+                                 internalScheme.Ex,
+                                 internalScheme.Ey,
+                                 internalScheme.Ez,
+                                 internalScheme.Hx,
+                                 internalScheme.Hy,
+                                 internalScheme.Hz) / Pointing_inc (yeeLayout->getIncidentWaveAngle1 (), angle);
 
     if (processId == 0)
     {
@@ -6804,141 +2924,141 @@ Scheme<Type, TCoord, layout_type>::additionalUpdateOfGrids (time_step t, time_st
       {
         DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Rebalancing for process %d!\n", ParallelGrid::getParallelCore ()->getProcessId ());
 
-        ((ParallelGrid *) Eps)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
-        ((ParallelGrid *) Mu)->Resize (parallelYeeLayout->getMuSizeForCurNode ());
+        ((ParallelGrid *) internalScheme.Eps)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+        ((ParallelGrid *) internalScheme.Mu)->Resize (parallelYeeLayout->getMuSizeForCurNode ());
 
-        if (doNeedEx)
+        if (internalScheme.doNeedEx)
         {
-          ((ParallelGrid *) Ex)->Resize (parallelYeeLayout->getExSizeForCurNode ());
+          ((ParallelGrid *) internalScheme.Ex)->Resize (parallelYeeLayout->getExSizeForCurNode ());
         }
-        if (doNeedEy)
+        if (internalScheme.doNeedEy)
         {
-          ((ParallelGrid *) Ey)->Resize (parallelYeeLayout->getEySizeForCurNode ());
+          ((ParallelGrid *) internalScheme.Ey)->Resize (parallelYeeLayout->getEySizeForCurNode ());
         }
-        if (doNeedEz)
+        if (internalScheme.doNeedEz)
         {
-          ((ParallelGrid *) Ez)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
+          ((ParallelGrid *) internalScheme.Ez)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
         }
 
-        if (doNeedHx)
+        if (internalScheme.doNeedHx)
         {
-          ((ParallelGrid *) Hx)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
+          ((ParallelGrid *) internalScheme.Hx)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
         }
-        if (doNeedHy)
+        if (internalScheme.doNeedHy)
         {
-          ((ParallelGrid *) Hy)->Resize (parallelYeeLayout->getHySizeForCurNode ());
+          ((ParallelGrid *) internalScheme.Hy)->Resize (parallelYeeLayout->getHySizeForCurNode ());
         }
-        if (doNeedHz)
+        if (internalScheme.doNeedHz)
         {
-          ((ParallelGrid *) Hz)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
+          ((ParallelGrid *) internalScheme.Hz)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
         }
 
         if (SOLVER_SETTINGS.getDoUsePML ())
         {
-          if (doNeedEx)
+          if (internalScheme.doNeedEx)
           {
-            ((ParallelGrid *) Dx)->Resize (parallelYeeLayout->getExSizeForCurNode ());
+            ((ParallelGrid *) internalScheme.Dx)->Resize (parallelYeeLayout->getExSizeForCurNode ());
           }
-          if (doNeedEy)
+          if (internalScheme.doNeedEy)
           {
-            ((ParallelGrid *) Dy)->Resize (parallelYeeLayout->getEySizeForCurNode ());
+            ((ParallelGrid *) internalScheme.Dy)->Resize (parallelYeeLayout->getEySizeForCurNode ());
           }
-          if (doNeedEz)
+          if (internalScheme.doNeedEz)
           {
-            ((ParallelGrid *) Dz)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
+            ((ParallelGrid *) internalScheme.Dz)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
           }
 
-          if (doNeedHx)
+          if (internalScheme.doNeedHx)
           {
-            ((ParallelGrid *) Bx)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
+            ((ParallelGrid *) internalScheme.Bx)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
           }
-          if (doNeedHy)
+          if (internalScheme.doNeedHy)
           {
-            ((ParallelGrid *) By)->Resize (parallelYeeLayout->getHySizeForCurNode ());
+            ((ParallelGrid *) internalScheme.By)->Resize (parallelYeeLayout->getHySizeForCurNode ());
           }
-          if (doNeedHz)
+          if (internalScheme.doNeedHz)
           {
-            ((ParallelGrid *) Bz)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
+            ((ParallelGrid *) internalScheme.Bz)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
           }
 
           if (SOLVER_SETTINGS.getDoUseMetamaterials ())
           {
-            if (doNeedEx)
+            if (internalScheme.doNeedEx)
             {
-              ((ParallelGrid *) D1x)->Resize (parallelYeeLayout->getExSizeForCurNode ());
+              ((ParallelGrid *) internalScheme.D1x)->Resize (parallelYeeLayout->getExSizeForCurNode ());
             }
-            if (doNeedEy)
+            if (internalScheme.doNeedEy)
             {
-              ((ParallelGrid *) D1y)->Resize (parallelYeeLayout->getEySizeForCurNode ());
+              ((ParallelGrid *) internalScheme.D1y)->Resize (parallelYeeLayout->getEySizeForCurNode ());
             }
-            if (doNeedEz)
+            if (internalScheme.doNeedEz)
             {
-              ((ParallelGrid *) D1z)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
+              ((ParallelGrid *) internalScheme.D1z)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
             }
 
-            if (doNeedHx)
+            if (internalScheme.doNeedHx)
             {
-              ((ParallelGrid *) B1x)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
+              ((ParallelGrid *) internalScheme.B1x)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
             }
-            if (doNeedHy)
+            if (internalScheme.doNeedHy)
             {
-              ((ParallelGrid *) B1y)->Resize (parallelYeeLayout->getHySizeForCurNode ());
+              ((ParallelGrid *) internalScheme.B1y)->Resize (parallelYeeLayout->getHySizeForCurNode ());
             }
-            if (doNeedHz)
+            if (internalScheme.doNeedHz)
             {
-              ((ParallelGrid *) B1z)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
+              ((ParallelGrid *) internalScheme.B1z)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
             }
           }
 
-          if (doNeedSigmaX)
+          if (internalScheme.doNeedSigmaX)
           {
-            ((ParallelGrid *) SigmaX)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+            ((ParallelGrid *) internalScheme.SigmaX)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
           }
-          if (doNeedSigmaY)
+          if (internalScheme.doNeedSigmaY)
           {
-            ((ParallelGrid *) SigmaY)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+            ((ParallelGrid *) internalScheme.SigmaY)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
           }
-          if (doNeedSigmaZ)
+          if (internalScheme.doNeedSigmaZ)
           {
-            ((ParallelGrid *) SigmaZ)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+            ((ParallelGrid *) internalScheme.SigmaZ)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
           }
         }
 
         if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
         {
-          if (doNeedEx)
+          if (internalScheme.doNeedEx)
           {
-            ((ParallelGrid *) ExAmplitude)->Resize (parallelYeeLayout->getExSizeForCurNode ());
+            ((ParallelGrid *) internalScheme.ExAmplitude)->Resize (parallelYeeLayout->getExSizeForCurNode ());
           }
-          if (doNeedEy)
+          if (internalScheme.doNeedEy)
           {
-            ((ParallelGrid *) EyAmplitude)->Resize (parallelYeeLayout->getEySizeForCurNode ());
+            ((ParallelGrid *) internalScheme.EyAmplitude)->Resize (parallelYeeLayout->getEySizeForCurNode ());
           }
-          if (doNeedEz)
+          if (internalScheme.doNeedEz)
           {
-            ((ParallelGrid *) EzAmplitude)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
+            ((ParallelGrid *) internalScheme.EzAmplitude)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
           }
 
-          if (doNeedHx)
+          if (internalScheme.doNeedHx)
           {
-            ((ParallelGrid *) HxAmplitude)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
+            ((ParallelGrid *) internalScheme.HxAmplitude)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
           }
-          if (doNeedHy)
+          if (internalScheme.doNeedHy)
           {
-            ((ParallelGrid *) HyAmplitude)->Resize (parallelYeeLayout->getHySizeForCurNode ());
+            ((ParallelGrid *) internalScheme.HyAmplitude)->Resize (parallelYeeLayout->getHySizeForCurNode ());
           }
-          if (doNeedHz)
+          if (internalScheme.doNeedHz)
           {
-            ((ParallelGrid *) HzAmplitude)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
+            ((ParallelGrid *) internalScheme.HzAmplitude)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
           }
         }
 
         if (SOLVER_SETTINGS.getDoUseMetamaterials ())
         {
-          ((ParallelGrid *) OmegaPE)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
-          ((ParallelGrid *) GammaE)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
-          ((ParallelGrid *) OmegaPM)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
-          ((ParallelGrid *) GammaM)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+          ((ParallelGrid *) internalScheme.OmegaPE)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+          ((ParallelGrid *) internalScheme.GammaE)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+          ((ParallelGrid *) internalScheme.OmegaPM)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
+          ((ParallelGrid *) internalScheme.GammaM)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
         }
 
         //diffT += 1;
