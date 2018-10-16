@@ -5,9 +5,178 @@
 #include "YeeGridLayout.h"
 #include "ParallelYeeGridLayout.h"
 
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
+class InternalSchemeBase;
+
 class InternalSchemeHelper
 {
 public:
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
+  CUDA_HOST
+  static void allocateGrids (InternalSchemeBase<Type, TCoord, layout_type, TGrid> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout)
+  {
+    typedef TCoord<grid_coord, true> TC;
+    typedef TCoord<grid_coord, false> TCS;
+    typedef TCoord<FPValue, true> TCFP;
+    typedef TCoord<FPValue, false> TCSFP;
+
+    intScheme->Eps = new TGrid< TCoord<grid_coord, true> > (layout->getEpsSize (), 0, "Eps");
+    intScheme->Mu = new TGrid<TC> (layout->getEpsSize (), 0, "Mu");
+
+    intScheme->Ex = intScheme->doNeedEx ? new TGrid<TC> (layout->getExSize (), 0, "Ex") : NULLPTR;
+    intScheme->Ey = intScheme->doNeedEy ? new TGrid<TC> (layout->getEySize (), 0, "Ey") : NULLPTR;
+    intScheme->Ez = intScheme->doNeedEz ? new TGrid<TC> (layout->getEzSize (), 0, "Ez") : NULLPTR;
+    intScheme->Hx = intScheme->doNeedHx ? new TGrid<TC> (layout->getHxSize (), 0, "Hx") : NULLPTR;
+    intScheme->Hy = intScheme->doNeedHy ? new TGrid<TC> (layout->getHySize (), 0, "Hy") : NULLPTR;
+    intScheme->Hz = intScheme->doNeedHz ? new TGrid<TC> (layout->getHzSize (), 0, "Hz") : NULLPTR;
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      intScheme->Dx = intScheme->doNeedEx ? new TGrid<TC> (layout->getExSize (), 0, "Dx") : NULLPTR;
+      intScheme->Dy = intScheme->doNeedEy ? new TGrid<TC> (layout->getEySize (), 0, "Dy") : NULLPTR;
+      intScheme->Dz = intScheme->doNeedEz ? new TGrid<TC> (layout->getEzSize (), 0, "Dz") : NULLPTR;
+      intScheme->Bx = intScheme->doNeedHx ? new TGrid<TC> (layout->getHxSize (), 0, "Bx") : NULLPTR;
+      intScheme->By = intScheme->doNeedHy ? new TGrid<TC> (layout->getHySize (), 0, "By") : NULLPTR;
+      intScheme->Bz = intScheme->doNeedHz ? new TGrid<TC> (layout->getHzSize (), 0, "Bz") : NULLPTR;
+
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        intScheme->D1x = intScheme->doNeedEx ? new TGrid<TC> (layout->getExSize (), 0, "D1x") : NULLPTR;
+        intScheme->D1y = intScheme->doNeedEy ? new TGrid<TC> (layout->getEySize (), 0, "D1y") : NULLPTR;
+        intScheme->D1z = intScheme->doNeedEz ? new TGrid<TC> (layout->getEzSize (), 0, "D1z") : NULLPTR;
+        intScheme->B1x = intScheme->doNeedHx ? new TGrid<TC> (layout->getHxSize (), 0, "B1x") : NULLPTR;
+        intScheme->B1y = intScheme->doNeedHy ? new TGrid<TC> (layout->getHySize (), 0, "B1y") : NULLPTR;
+        intScheme->B1z = intScheme->doNeedHz ? new TGrid<TC> (layout->getHzSize (), 0, "B1z") : NULLPTR;
+      }
+
+      intScheme->SigmaX = intScheme->doNeedSigmaX ? new TGrid<TC> (layout->getEpsSize (), 0, "SigmaX") : NULLPTR;
+      intScheme->SigmaY = intScheme->doNeedSigmaY ? new TGrid<TC> (layout->getEpsSize (), 0, "SigmaY") : NULLPTR;
+      intScheme->SigmaZ = intScheme->doNeedSigmaZ ? new TGrid<TC> (layout->getEpsSize (), 0, "SigmaZ") : NULLPTR;
+    }
+
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+    {
+      intScheme->ExAmplitude = intScheme->doNeedEx ? new TGrid<TC> (layout->getExSize (), 0, "ExAmp") : NULLPTR;
+      intScheme->EyAmplitude = intScheme->doNeedEy ? new TGrid<TC> (layout->getEySize (), 0, "EyAmp") : NULLPTR;
+      intScheme->EzAmplitude = intScheme->doNeedEz ? new TGrid<TC> (layout->getEzSize (), 0, "EzAmp") : NULLPTR;
+      intScheme->HxAmplitude = intScheme->doNeedHx ? new TGrid<TC> (layout->getHxSize (), 0, "HxAmp") : NULLPTR;
+      intScheme->HyAmplitude = intScheme->doNeedHy ? new TGrid<TC> (layout->getHySize (), 0, "HyAmp") : NULLPTR;
+      intScheme->HzAmplitude = intScheme->doNeedHz ? new TGrid<TC> (layout->getHzSize (), 0, "HzAmp") : NULLPTR;
+    }
+
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    {
+      intScheme->OmegaPE = new TGrid<TC> (layout->getEpsSize (), 0, "OmegaPE");
+      intScheme->GammaE = new TGrid<TC> (layout->getEpsSize (), 0, "GammaE");
+      intScheme->OmegaPM = new TGrid<TC> (layout->getEpsSize (), 0, "OmegaPM");
+      intScheme->GammaM = new TGrid<TC> (layout->getEpsSize (), 0, "GammaM");
+    }
+  }
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
+  CUDA_HOST
+  static void allocateGridsInc (InternalSchemeBase<Type, TCoord, layout_type, TGrid> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout)
+  {
+    intScheme->EInc = new TGrid<GridCoordinate1D> (GridCoordinate1D (500*(layout->getSize ().get1 ())
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::X
+#endif
+                                                              ), 0, "EInc");
+    intScheme->HInc = new TGrid<GridCoordinate1D> (GridCoordinate1D (500*(layout->getSize ().get1 ())
+#ifdef DEBUG_INFO
+                                                              , CoordinateType::X
+#endif
+                                                              ), 0, "HInc");
+  }
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid1, template <typename> class TGrid2>
+  CUDA_HOST
+  static void
+  allocateGridsFromCPU (InternalSchemeBase<Type, TCoord, layout_type, TGrid1> *intScheme,
+                        InternalSchemeBase<Type, TCoord, layout_type, TGrid2> *cpuScheme, TCoord<grid_coord, true> blockSize, TCoord<grid_coord, true> bufSize)
+  {
+    typedef TCoord<grid_coord, true> TC;
+    typedef TCoord<grid_coord, false> TCS;
+    typedef TCoord<FPValue, true> TCFP;
+    typedef TCoord<FPValue, false> TCSFP;
+
+    intScheme->Eps = new TGrid1<TC> (blockSize, bufSize, cpuScheme->Eps);
+    intScheme->Mu = new TGrid1<TC> (blockSize, bufSize, cpuScheme->Mu);
+
+    intScheme->Ex = intScheme->doNeedEx ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->Ex) : NULLPTR;
+    intScheme->Ey = intScheme->doNeedEy ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->Ey) : NULLPTR;
+    intScheme->Ez = intScheme->doNeedEz ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->Ez) : NULLPTR;
+    intScheme->Hx = intScheme->doNeedHx ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->Hx) : NULLPTR;
+    intScheme->Hy = intScheme->doNeedHy ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->Hy) : NULLPTR;
+    intScheme->Hz = intScheme->doNeedHz ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->Hz) : NULLPTR;
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      intScheme->Dx = intScheme->doNeedEx ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->Dx) : NULLPTR;
+      intScheme->Dy = intScheme->doNeedEy ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->Dy) : NULLPTR;
+      intScheme->Dz = intScheme->doNeedEz ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->Dz) : NULLPTR;
+      intScheme->Bx = intScheme->doNeedHx ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->Bx) : NULLPTR;
+      intScheme->By = intScheme->doNeedHy ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->By) : NULLPTR;
+      intScheme->Bz = intScheme->doNeedHz ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->Bz) : NULLPTR;
+
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        intScheme->D1x = intScheme->doNeedEx ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->D1x) : NULLPTR;
+        intScheme->D1y = intScheme->doNeedEy ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->D1y) : NULLPTR;
+        intScheme->D1z = intScheme->doNeedEz ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->D1z) : NULLPTR;
+        intScheme->B1x = intScheme->doNeedHx ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->B1x) : NULLPTR;
+        intScheme->B1y = intScheme->doNeedHy ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->B1y) : NULLPTR;
+        intScheme->B1z = intScheme->doNeedHz ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->B1z) : NULLPTR;
+      }
+
+      intScheme->SigmaX = intScheme->doNeedSigmaX ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->SigmaX) : NULLPTR;
+      intScheme->SigmaY = intScheme->doNeedSigmaY ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->SigmaY) : NULLPTR;
+      intScheme->SigmaZ = intScheme->doNeedSigmaZ ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->SigmaZ) : NULLPTR;
+    }
+
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+    {
+      intScheme->ExAmplitude = intScheme->doNeedEx ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->ExAmplitude) : NULLPTR;
+      intScheme->EyAmplitude = intScheme->doNeedEy ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->EyAmplitude) : NULLPTR;
+      intScheme->EzAmplitude = intScheme->doNeedEz ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->EzAmplitude) : NULLPTR;
+      intScheme->HxAmplitude = intScheme->doNeedHx ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->HxAmplitude) : NULLPTR;
+      intScheme->HyAmplitude = intScheme->doNeedHy ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->HyAmplitude) : NULLPTR;
+      intScheme->HzAmplitude = intScheme->doNeedHz ? new TGrid1<TC> (blockSize, bufSize, cpuScheme->HzAmplitude) : NULLPTR;
+    }
+
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    {
+      intScheme->OmegaPE = new TGrid1<TC> (blockSize, bufSize, cpuScheme->OmegaPE);
+      intScheme->GammaE = new TGrid1<TC> (blockSize, bufSize, cpuScheme->GammaE);
+      intScheme->OmegaPM = new TGrid1<TC> (blockSize, bufSize, cpuScheme->OmegaPM);
+      intScheme->GammaM = new TGrid1<TC> (blockSize, bufSize, cpuScheme->GammaM);
+    }
+
+    if (SOLVER_SETTINGS.getDoUseTFSF ())
+    {
+      TC one (1, 1, 1
+#ifdef DEBUG_INFO
+              , intScheme->ct1, intScheme->ct2, intScheme->ct3
+#endif
+              );
+
+      intScheme->EInc = new TGrid1<GridCoordinate1D> (GridCoordinate1D (500*(cpuScheme->yeeLayout->getSize ().get1 ())
+#ifdef DEBUG_INFO
+                                                                , CoordinateType::X
+#endif
+                                                               ), one, cpuScheme->EInc);
+      intScheme->HInc = new TGrid1<GridCoordinate1D> (GridCoordinate1D (500*(cpuScheme->yeeLayout->getSize ().get1 ())
+#ifdef DEBUG_INFO
+                                                                , CoordinateType::X
+#endif
+                                                               ), one, cpuScheme->HInc);
+    }
+  }
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
+  CUDA_HOST
+  static void allocateGridsOnGPU (InternalSchemeBase<Type, TCoord, layout_type, TGrid> *gpuScheme);
 
   static FieldValue approximateIncidentWaveHelper (FPValue d, Grid<GridCoordinate1D> *FieldInc)
   {

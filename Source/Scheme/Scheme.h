@@ -7,6 +7,7 @@
 #include "ParallelYeeGridLayout.h"
 #include "CallBack.h"
 #include "SchemeHelper.h"
+#include "InternalScheme.h"
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 class Scheme
@@ -18,11 +19,11 @@ class Scheme
 
 protected:
 
-  InternalScheme<Type, TCoord, layout_type, Grid> internalScheme;
+  InternalScheme<Type, TCoord, layout_type, Grid> *internalScheme;
 
 #ifdef CUDA_ENABLED
-  InternalScheme<Type, TCoord, layout_type, CudaGrid> intGPUScheme;
-  InternalScheme<Type, TCoord, layout_type, CudaGrid> *d_intGPUScheme;
+  InternalScheme<Type, TCoord, layout_type, CudaGrid> *gpuScheme;
+  InternalScheme<Type, TCoord, layout_type, CudaGrid> *d_gpuScheme;
 #endif /* CUDA_ENABLED */
 
 private:
