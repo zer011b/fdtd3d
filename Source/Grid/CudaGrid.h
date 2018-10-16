@@ -22,45 +22,35 @@ class CudaGrid
 {
 protected:
 
-  /*
-   * TODO: remove unused fields from CPU and GPU
-   */
-
   /**
    * Size block of CPU grid, which can be stored in this Cuda grid
    */
   TCoord sizeOfBlock;
-  TCoord *d_sizeOfBlock;
 
   /**
    * Coordinate of start of this block in CPU grid
    */
   TCoord startOfBlock;
-  //TCoord *d_startOfBlock;
 
   /**
    * Coordinate of end of this block in CPU grid
    */
   TCoord endOfBlock;
-  //TCoord *d_endOfBlock;
 
   /**
    * Size of buffer
    */
   TCoord bufSize;
-  TCoord *d_bufSize;
 
   /**
    * Size of grid, which is actually allocated, i.e. sum of sizeOfBlock and bufSize
    */
   TCoord size;
-  TCoord *d_size;
 
   /**
    * Capacity of gridValues array (this should match size)
    */
   grid_coord sizeGridValues;
-  grid_coord *d_sizeGridValues;
 
   /**
    * Corresponding CPU grid
@@ -76,13 +66,11 @@ protected:
    * Current time step.
    */
   time_step timeStep;
-  time_step *d_timeStep;
 
   /**
    * Step at which to perform share operations for synchronization of computational nodes
    */
   time_step shareStep;
-  time_step *d_shareStep;
 
   /*
    * TODO: add debug uninitialized flag
@@ -144,37 +132,17 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
                             const TCoord & buf, /**< size of buffer */
                             Grid<TCoord> *grid) /**< corresponding CPU grid */
   : sizeOfBlock (s)
-  , d_sizeOfBlock (NULLPTR)
   , startOfBlock (TCoord ())
   , endOfBlock (TCoord ())
   , bufSize (buf)
-  , d_bufSize (NULLPTR)
   , size (sizeOfBlock + bufSize * 2)
-  , d_size (NULLPTR)
   , sizeGridValues (size.calculateTotalCoord ())
-  , d_sizeGridValues (NULLPTR)
   , cpuGrid (grid)
   , d_gridValues (NULLPTR)
   , timeStep (0)
-  , d_timeStep (NULLPTR)
   , shareStep (0)
-  , d_shareStep (NULLPTR)
 {
   ASSERT (checkParams ());
-
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_sizeOfBlock, sizeof (TCoord)));
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_bufSize, sizeof (TCoord)));
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_size, sizeof (TCoord)));
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_sizeGridValues, sizeof (grid_coord)));
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_timeStep, sizeof (time_step)));
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_shareStep, sizeof (time_step)));
-
-  cudaCheckErrorCmd (cudaMemcpy (d_sizeOfBlock, &sizeOfBlock, sizeof (TCoord), cudaMemcpyHostToDevice));
-  cudaCheckErrorCmd (cudaMemcpy (d_bufSize, &bufSize, sizeof (TCoord), cudaMemcpyHostToDevice));
-  cudaCheckErrorCmd (cudaMemcpy (d_size, &size, sizeof (TCoord), cudaMemcpyHostToDevice));
-  cudaCheckErrorCmd (cudaMemcpy (d_sizeGridValues, &sizeGridValues, sizeof (grid_coord), cudaMemcpyHostToDevice));
-  cudaCheckErrorCmd (cudaMemcpy (d_timeStep, &timeStep, sizeof (time_step), cudaMemcpyHostToDevice));
-  cudaCheckErrorCmd (cudaMemcpy (d_shareStep, &shareStep, sizeof (time_step), cudaMemcpyHostToDevice));
 
   cudaCheckErrorCmd (cudaMalloc ((void **) &d_gridValues, sizeGridValues * sizeof (FieldPointValue *)));
 
@@ -195,13 +163,6 @@ template <class TCoord>
 CUDA_HOST
 CudaGrid<TCoord>::~CudaGrid ()
 {
-  cudaCheckErrorCmd (cudaFree (d_sizeOfBlock));
-  cudaCheckErrorCmd (cudaFree (d_bufSize));
-  cudaCheckErrorCmd (cudaFree (d_size));
-  cudaCheckErrorCmd (cudaFree (d_sizeGridValues));
-  cudaCheckErrorCmd (cudaFree (d_timeStep));
-  cudaCheckErrorCmd (cudaFree (d_shareStep));
-
   for (grid_coord i = 0; i < sizeGridValues; ++i)
   {
     FieldPointValue *d_val = NULLPTR;
@@ -238,11 +199,7 @@ CUDA_DEVICE CUDA_HOST
 bool
 CudaGrid<TCoord>::isLegitIndex (const TCoord& position) const /**< coordinate in grid */
 {
-#ifdef __CUDA_ARCH__
-  return isLegitIndex (position, *d_size);
-#else /* __CUDA_ARCH__ */
   return isLegitIndex (position, size);
-#endif /* !__CUDA_ARCH__ */
 } /* CudaGrid<TCoord>::isLegitIndex */
 
 /**
@@ -255,11 +212,7 @@ CUDA_DEVICE CUDA_HOST
 grid_coord
 CudaGrid<TCoord>::calculateIndexFromPosition (const TCoord& position) const /**< coordinate in grid */
 {
-#ifdef __CUDA_ARCH__
-  return calculateIndexFromPosition (position, *d_size);
-#else /* __CUDA_ARCH__ */
   return calculateIndexFromPosition (position, size);
-#endif /* !__CUDA_ARCH__ */
 } /* CudaGrid<TCoord>::calculateIndexFromPosition */
 
 /**
@@ -272,11 +225,7 @@ CUDA_DEVICE CUDA_HOST
 const TCoord &
 CudaGrid<TCoord>::getSize () const
 {
-#ifdef __CUDA_ARCH__
-  return *d_size;
-#else /* __CUDA_ARCH__ */
   return size;
-#endif /* !__CUDA_ARCH__ */
 } /* CudaGrid<TCoord>::getSize */
 
 /**
@@ -289,11 +238,7 @@ CUDA_DEVICE CUDA_HOST
 const TCoord &
 CudaGrid<TCoord>::getBufSize () const
 {
-#ifdef __CUDA_ARCH__
-  return *d_bufSize;
-#else /* __CUDA_ARCH__ */
   return bufSize;
-#endif /* !__CUDA_ARCH__ */
 } /* CudaGrid<TCoord>::getBufSize */
 
 /**
@@ -306,11 +251,7 @@ CUDA_DEVICE CUDA_HOST
 grid_coord
 CudaGrid<TCoord>::getSizeGridValues () const
 {
-#ifdef __CUDA_ARCH__
-  return *d_sizeGridValues;
-#else /* __CUDA_ARCH__ */
   return sizeGridValues;
-#endif /* !__CUDA_ARCH__ */
 } /* CudaGrid<TCoord>::getSizeGridValues */
 
 /**
@@ -323,11 +264,7 @@ CUDA_DEVICE CUDA_HOST
 time_step
 CudaGrid<TCoord>::getShareStep () const
 {
-#ifdef __CUDA_ARCH__
-  return *d_shareStep;
-#else /* __CUDA_ARCH__ */
   return shareStep;
-#endif /* !__CUDA_ARCH__ */
 } /* CudaGrid<TCoord>::getSizeGridValues */
 
 /**
@@ -414,11 +351,7 @@ CUDA_DEVICE CUDA_HOST
 void
 CudaGrid<TCoord>::setTimeStep (time_step step)
 {
-#ifdef __CUDA_ARCH__
-  *d_timeStep = step;
-#else /* __CUDA_ARCH__ */
   timeStep = step;
-#endif /* !__CUDA_ARCH__ */
 } /* CudaGrid<TCoord>::setTimeStep */
 
 /**
@@ -429,7 +362,7 @@ CUDA_DEVICE
 void
 CudaGrid<TCoord>::nextShareStep ()
 {
-  *d_shareStep = *d_shareStep + 1;
+  ++shareStep;
 } /* CudaGrid<TCoord>::nextShareStep */
 
 /**
@@ -440,11 +373,7 @@ CUDA_DEVICE CUDA_HOST
 void
 CudaGrid<TCoord>::zeroShareStep ()
 {
-#ifdef __CUDA_ARCH__
-  *d_shareStep = 0;
-#else /* __CUDA_ARCH__ */
   shareStep = 0;
-#endif /* !__CUDA_ARCH__ */
 } /* CudaGrid<TCoord>::zeroShareStep */
 
 #endif /* CUDA_ENABLED */
