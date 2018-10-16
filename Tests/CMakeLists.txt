@@ -18,6 +18,7 @@ include_directories ("${PROJECT_SOURCE_DIR}/Source/Layout")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/Loader")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/Dumper")
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Scheme")
 
 add_executable (unit-test-settings unit-test-settings.cpp)
 target_link_libraries (unit-test-settings Helpers Settings Kernels)
@@ -48,6 +49,9 @@ target_link_libraries (unit-test-approximation Helpers Settings Layout)
 
 add_executable (unit-test-complex unit-test-complex.cpp)
 target_link_libraries (unit-test-complex Helpers)
+
+add_executable (unit-test-internalscheme unit-test-internalscheme.cpp)
+target_link_libraries (unit-test-internalscheme ${LIBS} Grid Helpers Settings InternalScheme)
 
 if ("${CUDA_ENABLED}")
   add_executable (unit-test-cuda-grid unit-test-cuda-grid.cu)

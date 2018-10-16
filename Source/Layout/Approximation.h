@@ -10,24 +10,24 @@ class Approximation
 
 public:
 
-  static FPValue getAccuracy ();
+  static CUDA_DEVICE CUDA_HOST FPValue getAccuracy ();
 
-  static FPValue approximateMaterial (FPValue, FPValue);
-  static FPValue approximateMaterial (FPValue, FPValue, FPValue, FPValue);
-  static FPValue approximateMaterial (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
+  static CUDA_DEVICE CUDA_HOST FPValue approximateMaterial (FPValue, FPValue);
+  static CUDA_DEVICE CUDA_HOST FPValue approximateMaterial (FPValue, FPValue, FPValue, FPValue);
+  static CUDA_DEVICE CUDA_HOST FPValue approximateMaterial (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
 
-  static void approximateDrudeModel (FPValue &, FPValue &, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
-  static void approximateDrudeModel (FPValue &, FPValue &, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue,
+  static CUDA_DEVICE CUDA_HOST void approximateDrudeModel (FPValue &, FPValue &, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
+  static CUDA_DEVICE CUDA_HOST void approximateDrudeModel (FPValue &, FPValue &, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue,
                                      FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
-  static void approximateDrudeModel (FPValue &, FPValue &, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue,
+  static CUDA_DEVICE CUDA_HOST void approximateDrudeModel (FPValue &, FPValue &, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue,
                                      FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue,
                                      FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
 
-  static FPValue getMaterial (const FieldPointValue *);
+  static CUDA_DEVICE CUDA_HOST FPValue getMaterial (const FieldPointValue *);
 
-  static FPValue phaseVelocityIncidentWave (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
-  static FPValue approximateWaveNumber (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
-  static FPValue approximateWaveNumberGeneral (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
+  static CUDA_DEVICE CUDA_HOST FPValue phaseVelocityIncidentWave (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
+  static CUDA_DEVICE CUDA_HOST FPValue approximateWaveNumber (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
+  static CUDA_DEVICE CUDA_HOST FPValue approximateWaveNumberGeneral (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
 
   static FieldValue approximateSphereFast (GridCoordinateFP3D, GridCoordinateFP3D, FPValue, FieldValue);
 

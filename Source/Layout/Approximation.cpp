@@ -6,24 +6,28 @@
 
 FPValue Approximation::accuracy = 0.0000001;
 
+CUDA_DEVICE CUDA_HOST
 FPValue
 Approximation::getAccuracy ()
 {
   return accuracy;
 }
 
+CUDA_DEVICE CUDA_HOST
 FPValue
 Approximation::approximateMaterial (FPValue val1, FPValue val2)
 {
   return (val1 + val2) / 2.0;
 }
 
+CUDA_DEVICE CUDA_HOST
 FPValue
 Approximation::approximateMaterial (FPValue val1, FPValue val2, FPValue val3, FPValue val4)
 {
   return (approximateMaterial (val1, val2) + approximateMaterial (val3, val4)) / 2.0;
 }
 
+CUDA_DEVICE CUDA_HOST
 FPValue
 Approximation::approximateMaterial (FPValue val1, FPValue val2, FPValue val3, FPValue val4,
                                     FPValue val5, FPValue val6, FPValue val7, FPValue val8)
@@ -31,6 +35,7 @@ Approximation::approximateMaterial (FPValue val1, FPValue val2, FPValue val3, FP
   return (approximateMaterial (val1, val2, val3, val4) + approximateMaterial (val5, val6, val7, val8)) / 2.0;
 }
 
+CUDA_DEVICE CUDA_HOST
 void
 Approximation::approximateDrudeModel (FPValue &omega,
                                       FPValue &gamma,
@@ -73,6 +78,7 @@ Approximation::approximateDrudeModel (FPValue &omega,
   gamma = (gamma1 + gamma2) / dividerGamma;
 }
 
+CUDA_DEVICE CUDA_HOST
 void
 Approximation::approximateDrudeModel (FPValue &omega,
                                       FPValue &gamma,
@@ -140,6 +146,7 @@ Approximation::approximateDrudeModel (FPValue &omega,
   gamma = (gamma1 + gamma2 + gamma3 + gamma4) / dividerGamma;
 }
 
+CUDA_DEVICE CUDA_HOST
 void
 Approximation::approximateDrudeModel (FPValue &omega,
                                       FPValue &gamma,
@@ -222,12 +229,14 @@ Approximation::approximateDrudeModel (FPValue &omega,
   // gamma = (gamma1 + gamma2 + gamma3 + gamma4) / dividerGamma;
 }
 
+CUDA_DEVICE CUDA_HOST
 FPValue
 Approximation::getMaterial (const FieldPointValue *val)
 {
   return getRealOnlyFromFieldValue (val->getCurValue ());
 }
 
+CUDA_DEVICE CUDA_HOST
 FPValue
 Approximation::approximateWaveNumber (FPValue delta,
                                       FPValue freeSpaceWaveLentgh,
@@ -282,6 +291,7 @@ Approximation::approximateWaveNumber (FPValue delta,
   return approximateWaveNumberGeneral (delta, freeSpaceWaveLentgh, courantNum, N_lambda, incidentWaveAngle1, incidentWaveAngle2);
 }
 
+CUDA_DEVICE CUDA_HOST
 FPValue
 Approximation::approximateWaveNumberGeneral (FPValue delta,
                                              FPValue freeSpaceWaveLentgh,
@@ -316,6 +326,7 @@ Approximation::approximateWaveNumberGeneral (FPValue delta,
   return k / freeSpaceWaveLentgh;
 }
 
+CUDA_DEVICE CUDA_HOST
 FPValue
 Approximation::phaseVelocityIncidentWave (FPValue delta,
                                           FPValue freeSpaceWaveLentgh,

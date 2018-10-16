@@ -53,6 +53,11 @@ protected:
   grid_coord sizeGridValues;
 
   /**
+   * Total size of CPU grid
+   */
+  TCoord totalSize;
+
+  /**
    * Corresponding CPU grid
    */
   Grid<TCoord> *cpuGrid;
@@ -108,6 +113,8 @@ public:
   CUDA_DEVICE CUDA_HOST grid_coord getSizeGridValues () const;
   CUDA_DEVICE CUDA_HOST time_step getShareStep () const;
 
+  CUDA_DEVICE CUDA_HOST TCoord getTotalSize () const;
+
   CUDA_DEVICE TCoord getComputationStart (TCoord) const;
   CUDA_DEVICE TCoord getComputationEnd (TCoord) const;
   CUDA_DEVICE CUDA_HOST TCoord calculatePositionFromIndex (grid_coord) const;
@@ -137,6 +144,7 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
   , bufSize (buf)
   , size (sizeOfBlock + bufSize * 2)
   , sizeGridValues (size.calculateTotalCoord ())
+  , totalSize (grid->getTotalSize ())
   , cpuGrid (grid)
   , d_gridValues (NULLPTR)
   , timeStep (0)
@@ -375,6 +383,19 @@ CudaGrid<TCoord>::zeroShareStep ()
 {
   shareStep = 0;
 } /* CudaGrid<TCoord>::zeroShareStep */
+
+/**
+ * Get total size of grid. Is equal to size in non-parallel grid
+ *
+ * @return total size of grid
+ */
+template <class TCoord>
+CUDA_DEVICE CUDA_HOST
+TCoord
+CudaGrid<TCoord>::getTotalSize () const
+{
+  return totalSize;
+} /* CudaGrid<TCoord>::getTotalSize */
 
 #endif /* CUDA_ENABLED */
 
