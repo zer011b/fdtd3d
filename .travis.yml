@@ -734,6 +734,22 @@ jobs:
       - . Tools/travis-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
 
+# ---- Unit test for InternalScheme ----
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_INTERNAL_SCHEME=""
+        - CXX11=ON
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+    - stage: unit-tests
+      env:
+        - UNIT_TEST_INTERNAL_SCHEME=""
+        - CXX11=OFF
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+
 # ---- Unit test for CudaGrid ----
     - stage: unit-tests
       env:
