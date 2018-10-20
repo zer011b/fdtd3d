@@ -22,8 +22,6 @@ void testFunc (TCoord overallSize)
    */
   Grid<TCoord> grid_1 (grid);
 
-  grid.initialize ();
-
   /*
    * Copy constructor with initialize grid
    */
@@ -46,8 +44,6 @@ void testFunc (TCoord overallSize)
   Grid<TCoord> *grid_4 = new Grid<TCoord> (overallSize, 0);
 
   *grid_3 = *grid_4;
-
-  grid_4->initialize ();
 
   *grid_3 = *grid_4;
 

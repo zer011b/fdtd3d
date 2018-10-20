@@ -1688,42 +1688,6 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 #endif /* !PARALLEL_GRID */
   }
 
-  if (useParallel)
-  {
-#ifdef PARALLEL_GRID
-    if (!SOLVER_SETTINGS.getEpsFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
-    {
-      totalEps->initialize ();
-    }
-    if (!SOLVER_SETTINGS.getMuFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
-    {
-      totalMu->initialize ();
-    }
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      if (!SOLVER_SETTINGS.getOmegaPEFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
-      {
-        totalOmegaPE->initialize ();
-      }
-      if (!SOLVER_SETTINGS.getOmegaPMFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
-      {
-        totalOmegaPM->initialize ();
-      }
-      if (!SOLVER_SETTINGS.getGammaEFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
-      {
-        totalGammaE->initialize ();
-      }
-      if (!SOLVER_SETTINGS.getGammaMFileName ().empty () || SOLVER_SETTINGS.getDoSaveMaterials ())
-      {
-        totalGammaM->initialize ();
-      }
-    }
-#else /* PARALLEL_GRID */
-    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
-#endif /* !PARALLEL_GRID */
-  }
-
   internalScheme.Eps->initialize (getFieldValueRealOnly (1.0));
   initMaterialFromFile (GridType::EPS, internalScheme.Eps, totalEps);
 
@@ -1804,7 +1768,6 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
   if (SOLVER_SETTINGS.getDoUseMetamaterials ())
   {
-    internalScheme.OmegaPE->initialize ();
     initMaterialFromFile (GridType::OMEGAPE, internalScheme.OmegaPE, totalOmegaPE);
 
     if (SOLVER_SETTINGS.getOmegaPESphere () != 0)
@@ -1835,7 +1798,6 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       }
     }
 
-    internalScheme.OmegaPM->initialize ();
     initMaterialFromFile (GridType::OMEGAPM, internalScheme.OmegaPM, totalOmegaPM);
 
     if (SOLVER_SETTINGS.getOmegaPMSphere () != 0)
@@ -1866,10 +1828,8 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       }
     }
 
-    internalScheme.GammaE->initialize ();
     initMaterialFromFile (GridType::GAMMAE, internalScheme.GammaE, totalGammaE);
 
-    internalScheme.GammaM->initialize ();
     initMaterialFromFile (GridType::GAMMAM, internalScheme.GammaM, totalGammaM);
   }
 
@@ -1990,127 +1950,28 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
   if (internalScheme.doNeedEx)
   {
-    internalScheme.Ex->initialize ();
     initGridWithInitialVals (GridType::EX, internalScheme.Ex, 0.5 * gridTimeStep);
   }
   if (internalScheme.doNeedEy)
   {
-    internalScheme.Ey->initialize ();
     initGridWithInitialVals (GridType::EY, internalScheme.Ey, 0.5 * gridTimeStep);
   }
   if (internalScheme.doNeedEz)
   {
-    internalScheme.Ez->initialize ();
     initGridWithInitialVals (GridType::EZ, internalScheme.Ez, 0.5 * gridTimeStep);
   }
 
   if (internalScheme.doNeedHx)
   {
-    internalScheme.Hx->initialize ();
     initGridWithInitialVals (GridType::HX, internalScheme.Hx, gridTimeStep);
   }
   if (internalScheme.doNeedHy)
   {
-    internalScheme.Hy->initialize ();
     initGridWithInitialVals (GridType::HY, internalScheme.Hy, gridTimeStep);
   }
   if (internalScheme.doNeedHz)
   {
-    internalScheme.Hz->initialize ();
     initGridWithInitialVals (GridType::HZ, internalScheme.Hz, gridTimeStep);
-  }
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
-  {
-    if (internalScheme.doNeedEx)
-    {
-      internalScheme.Dx->initialize ();
-    }
-    if (internalScheme.doNeedEy)
-    {
-      internalScheme.Dy->initialize ();
-    }
-    if (internalScheme.doNeedEz)
-    {
-      internalScheme.Dz->initialize ();
-    }
-
-    if (internalScheme.doNeedHx)
-    {
-      internalScheme.Bx->initialize ();
-    }
-    if (internalScheme.doNeedHy)
-    {
-      internalScheme.By->initialize ();
-    }
-    if (internalScheme.doNeedHz)
-    {
-      internalScheme.Bz->initialize ();
-    }
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      if (internalScheme.doNeedEx)
-      {
-        internalScheme.D1x->initialize ();
-      }
-      if (internalScheme.doNeedEy)
-      {
-        internalScheme.D1y->initialize ();
-      }
-      if (internalScheme.doNeedEz)
-      {
-        internalScheme.D1z->initialize ();
-      }
-
-      if (internalScheme.doNeedHx)
-      {
-        internalScheme.B1x->initialize ();
-      }
-      if (internalScheme.doNeedHy)
-      {
-        internalScheme.B1y->initialize ();
-      }
-      if (internalScheme.doNeedHz)
-      {
-        internalScheme.B1z->initialize ();
-      }
-    }
-  }
-
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  {
-    if (internalScheme.doNeedEx)
-    {
-      internalScheme.ExAmplitude->initialize ();
-    }
-    if (internalScheme.doNeedEy)
-    {
-      internalScheme.EyAmplitude->initialize ();
-    }
-    if (internalScheme.doNeedEz)
-    {
-      internalScheme.EzAmplitude->initialize ();
-    }
-
-    if (internalScheme.doNeedHx)
-    {
-      internalScheme.HxAmplitude->initialize ();
-    }
-    if (internalScheme.doNeedHy)
-    {
-      internalScheme.HyAmplitude->initialize ();
-    }
-    if (internalScheme.doNeedHz)
-    {
-      internalScheme.HzAmplitude->initialize ();
-    }
-  }
-
-  if (SOLVER_SETTINGS.getDoUseTFSF ())
-  {
-    EInc->initialize ();
-    HInc->initialize ();
   }
 
   if (useParallel)

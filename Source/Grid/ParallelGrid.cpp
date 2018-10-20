@@ -2055,15 +2055,15 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
 #endif /* GRID_3D */
 
 #if defined (TWO_TIME_STEPS)
-          FieldPointValue* val = new FieldPointValue (buffersReceive[opposite][index++],
-                                                      buffersReceive[opposite][index++],
-                                                      buffersReceive[opposite][index++]);
+          FieldPointValue val (buffersReceive[opposite][index++],
+                               buffersReceive[opposite][index++],
+                               buffersReceive[opposite][index++]);
 #else /* TWO_TIME_STEPS */
 #if defined (ONE_TIME_STEP)
-          FieldPointValue* val = new FieldPointValue (buffersReceive[opposite][index++],
-                                                      buffersReceive[opposite][index++]);
+          FieldPointValue val (buffersReceive[opposite][index++],
+                               buffersReceive[opposite][index++]);
 #else /* ONE_TIME_STEP */
-          FieldPointValue* val = new FieldPointValue (buffersReceive[opposite][index++]);
+          FieldPointValue val (buffersReceive[opposite][index++]);
 #endif /* !ONE_TIME_STEP */
 #endif /* !TWO_TIME_STEPS */
 
@@ -2510,16 +2510,6 @@ ParallelGridBase *
 ParallelGrid::gatherFullGrid () const
 {
   ParallelGridBase *grid = new ParallelGridBase (totalSize, ParallelGridBase::timeStep, getName ());
-
-  /*
-   * Fill new grid with values
-   */
-  for (grid_coord iter = 0; iter < grid->getSize ().calculateTotalCoord (); ++iter)
-  {
-    FieldPointValue *val = new FieldPointValue ();
-
-    grid->setFieldPointValue (val, grid->calculatePositionFromIndex (iter));
-  }
 
   return gatherFullGridPlacement (grid);
 } /* ParallelGrid::gatherFullGrid */

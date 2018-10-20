@@ -379,7 +379,7 @@ public:
     {
       TCoord<grid_coord, true> pos = sigma->calculatePositionFromIndex (i);
 
-      FieldPointValue* valSigma = new FieldPointValue ();
+      FieldPointValue valSigma;
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
 
       TCoord<FPValue, true> size = layout->getEpsCoordFP (sigma->getTotalSize ());
@@ -391,16 +391,16 @@ public:
       if (posAbs.get1 () < PMLSizeX)
       {
         grid_coord dist = (grid_coord) (PMLSizeX - posAbs.get1 ());
-        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
+        SchemeHelper::initSigma (&valSigma, dist, boundary, dx);
       }
       else if (posAbs.get1 () >= size.get1 () - PMLSizeX)
       {
         grid_coord dist = (grid_coord) (posAbs.get1 () - (size.get1 () - PMLSizeX));
-        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
+        SchemeHelper::initSigma (&valSigma, dist, boundary, dx);
       }
       else
       {
-        valSigma->setCurValue (getFieldValueRealOnly (FPValue (0)));
+        valSigma.setCurValue (getFieldValueRealOnly (FPValue (0)));
       }
 
       sigma->setFieldPointValue (valSigma, pos);
@@ -419,7 +419,7 @@ public:
     {
       TCoord<grid_coord, true> pos = sigma->calculatePositionFromIndex (i);
 
-      FieldPointValue* valSigma = new FieldPointValue ();
+      FieldPointValue valSigma;
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
 
       TCoord<FPValue, true> size = layout->getEpsCoordFP (sigma->getTotalSize ());
@@ -431,16 +431,16 @@ public:
       if (posAbs.get2 () < PMLSizeY)
       {
         grid_coord dist = (grid_coord) (PMLSizeY - posAbs.get2 ());
-        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
+        SchemeHelper::initSigma (&valSigma, dist, boundary, dx);
       }
       else if (posAbs.get2 () >= size.get2 () - PMLSizeY)
       {
         grid_coord dist = (grid_coord) (posAbs.get2 () - (size.get2 () - PMLSizeY));
-        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
+        SchemeHelper::initSigma (&valSigma, dist, boundary, dx);
       }
       else
       {
-        valSigma->setCurValue (getFieldValueRealOnly (FPValue (0)));
+        valSigma.setCurValue (getFieldValueRealOnly (FPValue (0)));
       }
 
       sigma->setFieldPointValue (valSigma, pos);
@@ -459,7 +459,7 @@ public:
     {
       TCoord<grid_coord, true> pos = sigma->calculatePositionFromIndex (i);
 
-      FieldPointValue* valSigma = new FieldPointValue ();
+      FieldPointValue valSigma;
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
 
       TCoord<FPValue, true> size = layout->getEpsCoordFP (sigma->getTotalSize ());
@@ -471,16 +471,16 @@ public:
       if (posAbs.get3 () < PMLSizeZ)
       {
         grid_coord dist = (grid_coord) (PMLSizeZ - posAbs.get3 ());
-        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
+        SchemeHelper::initSigma (&valSigma, dist, boundary, dx);
       }
       else if (posAbs.get3 () >= size.get3 () - PMLSizeZ)
       {
         grid_coord dist = (grid_coord) (posAbs.get3 () - (size.get3 () - PMLSizeZ));
-        SchemeHelper::initSigma (valSigma, dist, boundary, dx);
+        SchemeHelper::initSigma (&valSigma, dist, boundary, dx);
       }
       else
       {
-        valSigma->setCurValue (getFieldValueRealOnly (FPValue (0)));
+        valSigma.setCurValue (getFieldValueRealOnly (FPValue (0)));
       }
 
       sigma->setFieldPointValue (valSigma, pos);

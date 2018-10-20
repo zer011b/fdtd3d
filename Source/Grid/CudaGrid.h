@@ -65,7 +65,7 @@ protected:
   /**
    * Vector of points in grid. Owns this. Deletes all FieldPointValue* itself.
    */
-  FieldPointValue **d_gridValues;
+  FieldPointValue *d_gridValues;
 
   /**
    * Current time step.
@@ -119,7 +119,7 @@ public:
   CUDA_DEVICE TCoord getComputationEnd (TCoord) const;
   CUDA_DEVICE CUDA_HOST TCoord calculatePositionFromIndex (grid_coord) const;
 
-  CUDA_DEVICE void setFieldPointValue (FieldPointValue *, const TCoord &);
+  CUDA_DEVICE void setFieldPointValue (const FieldPointValue &, const TCoord &);
   CUDA_DEVICE FieldPointValue * getFieldPointValue (const TCoord &);
   CUDA_DEVICE FieldPointValue * getFieldPointValue (grid_coord);
 
@@ -152,14 +152,7 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
 {
   ASSERT (checkParams ());
 
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gridValues, sizeGridValues * sizeof (FieldPointValue *)));
-
-  for (grid_coord i = 0; i < sizeGridValues; ++i)
-  {
-    FieldPointValue *d_val;
-    cudaCheckErrorCmd (cudaMalloc ((void **) &(d_val), sizeof (FieldPointValue)));
-    cudaCheckErrorCmd (cudaMemcpy (&d_gridValues[i], &d_val, sizeof (FieldPointValue *), cudaMemcpyHostToDevice));
-  }
+  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gridValues, sizeGridValues * sizeof (FieldPointValue)));
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New Cuda grid '%s' with raw size: %lu.\n", grid->getName (), sizeGridValues);
 } /* CudaGrid<TCoord>::CudaGrid */
@@ -171,14 +164,6 @@ template <class TCoord>
 CUDA_HOST
 CudaGrid<TCoord>::~CudaGrid ()
 {
-  for (grid_coord i = 0; i < sizeGridValues; ++i)
-  {
-    FieldPointValue *d_val = NULLPTR;
-    cudaCheckErrorCmd (cudaMemcpy (&d_val, &d_gridValues[i], sizeof (FieldPointValue *), cudaMemcpyDeviceToHost));
-
-    ASSERT (d_val != NULLPTR);
-    cudaCheckErrorCmd (cudaFree (d_val));
-  }
   cudaCheckErrorCmd (cudaFree (d_gridValues));
 } /* CudaGrid<TCoord>::~CudaGrid */
 
@@ -192,8 +177,7 @@ CudaGrid<TCoord>::shiftInTime ()
 {
   for (grid_coord iter = 0; iter < getSizeGridValues (); ++iter)
   {
-    ASSERT (d_gridValues[iter] != NULLPTR);
-    d_gridValues[iter]->shiftInTime ();
+    d_gridValues[iter].shiftInTime ();
   }
 } /* CudaGrid<TCoord>::shiftInTime */
 
@@ -281,15 +265,13 @@ CudaGrid<TCoord>::getShareStep () const
 template <class TCoord>
 CUDA_DEVICE
 void
-CudaGrid<TCoord>::setFieldPointValue (FieldPointValue *value, /**< field point value */
+CudaGrid<TCoord>::setFieldPointValue (const FieldPointValue & value, /**< field point value */
                                       const TCoord &position) /**< coordinate in grid */
 {
   ASSERT (isLegitIndex (position));
-  ASSERT (value);
 
   grid_coord coord = calculateIndexFromPosition (position);
 
-  ASSERT (d_gridValues[coord] == NULLPTR);
   d_gridValues[coord] = value;
 } /* CudaGrid<TCoord>::setFieldPointValue */
 
@@ -322,11 +304,7 @@ CudaGrid<TCoord>::getFieldPointValue (grid_coord coord) /**< index in grid */
 {
   ASSERT (coord >= 0 && coord < getSizeGridValues ());
 
-  FieldPointValue* value = d_gridValues[coord];
-
-  ASSERT (value);
-
-  return value;
+  return d_gridValues[coord];
 } /* CudaGrid<TCoord>::getFieldPointValue */
 
 /**

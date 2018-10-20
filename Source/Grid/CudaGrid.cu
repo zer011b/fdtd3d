@@ -191,10 +191,8 @@ CudaGrid<GridCoordinate1D>::copyFromCPU (const GridCoordinate1D &start, /**< sta
                                                                      ));
 
     ASSERT (index >= 0 && index < sizeGridValues);
-
-    FieldPointValue *d_val = NULLPTR;
-    cudaCheckErrorCmd (cudaMemcpy (&d_val, &d_gridValues[index], sizeof (FieldPointValue *), cudaMemcpyDeviceToHost));
-    cudaCheckErrorCmd (cudaMemcpy (d_val, cpuGrid->getFieldPointValue (pos), sizeof (FieldPointValue), cudaMemcpyHostToDevice));
+    
+    cudaCheckErrorCmd (cudaMemcpy (&d_gridValues[index], cpuGrid->getFieldPointValue (pos), sizeof (FieldPointValue), cudaMemcpyHostToDevice));
   }
 } /* CudaGrid<GridCoordinate1D>::copyFromCPU */
 
@@ -234,9 +232,7 @@ CudaGrid<GridCoordinate1D>::copyToCPU ()
 
     ASSERT (index >= 0 && index < sizeGridValues);
 
-    FieldPointValue *d_val = NULLPTR;
-    cudaCheckErrorCmd (cudaMemcpy (&d_val, &d_gridValues[index], sizeof (FieldPointValue *), cudaMemcpyDeviceToHost));
-    cudaCheckErrorCmd (cudaMemcpy (cpuGrid->getFieldPointValue (pos), d_val, sizeof(FieldPointValue), cudaMemcpyDeviceToHost));
+    cudaCheckErrorCmd (cudaMemcpy (cpuGrid->getFieldPointValue (pos), &d_gridValues[index], sizeof (FieldPointValue), cudaMemcpyDeviceToHost));
   }
 } /* CudaGrid<GridCoordinate1D>::copyToCPU */
 
@@ -284,10 +280,8 @@ CudaGrid<GridCoordinate2D>::copyFromCPU (const GridCoordinate2D &start, /**< sta
                                                      ));
 
       ASSERT (index >= 0 && index < sizeGridValues);
-
-      FieldPointValue *d_val = NULLPTR;
-      cudaCheckErrorCmd (cudaMemcpy (&d_val, &d_gridValues[index], sizeof (FieldPointValue *), cudaMemcpyDeviceToHost));
-      cudaCheckErrorCmd (cudaMemcpy (d_val, cpuGrid->getFieldPointValue (pos), sizeof (FieldPointValue), cudaMemcpyHostToDevice));
+      
+      cudaCheckErrorCmd (cudaMemcpy (&d_gridValues[index], cpuGrid->getFieldPointValue (pos), sizeof (FieldPointValue), cudaMemcpyHostToDevice));
     }
   }
 } /* CudaGrid<GridCoordinate2D>::copyFromCPU */
@@ -333,9 +327,7 @@ CudaGrid<GridCoordinate2D>::copyToCPU ()
 
       ASSERT (index >= 0 && index < sizeGridValues);
 
-      FieldPointValue *d_val = NULLPTR;
-      cudaCheckErrorCmd (cudaMemcpy (&d_val, &d_gridValues[index], sizeof (FieldPointValue *), cudaMemcpyDeviceToHost));
-      cudaCheckErrorCmd (cudaMemcpy (cpuGrid->getFieldPointValue (pos), d_val, sizeof(FieldPointValue), cudaMemcpyDeviceToHost));
+      cudaCheckErrorCmd (cudaMemcpy (cpuGrid->getFieldPointValue (pos), &d_gridValues[index], sizeof (FieldPointValue), cudaMemcpyDeviceToHost));
     }
   }
 } /* CudaGrid<GridCoordinate2D>::copyToCPU */
@@ -390,9 +382,7 @@ CudaGrid<GridCoordinate3D>::copyFromCPU (const GridCoordinate3D &start, /**< sta
 
         ASSERT (index >= 0 && index < sizeGridValues);
 
-        FieldPointValue *d_val = NULLPTR;
-        cudaCheckErrorCmd (cudaMemcpy (&d_val, &d_gridValues[index], sizeof (FieldPointValue *), cudaMemcpyDeviceToHost));
-        cudaCheckErrorCmd (cudaMemcpy (d_val, cpuGrid->getFieldPointValue (pos), sizeof (FieldPointValue), cudaMemcpyHostToDevice));
+        cudaCheckErrorCmd (cudaMemcpy (&d_gridValues[index], cpuGrid->getFieldPointValue (pos), sizeof (FieldPointValue), cudaMemcpyHostToDevice));
       }
     }
   }
@@ -444,9 +434,7 @@ CudaGrid<GridCoordinate3D>::copyToCPU ()
 
         ASSERT (index >= 0 && index < sizeGridValues);
 
-        FieldPointValue *d_val = NULLPTR;
-        cudaCheckErrorCmd (cudaMemcpy (&d_val, &d_gridValues[index], sizeof (FieldPointValue *), cudaMemcpyDeviceToHost));
-        cudaCheckErrorCmd (cudaMemcpy (cpuGrid->getFieldPointValue (pos), d_val, sizeof(FieldPointValue), cudaMemcpyDeviceToHost));
+        cudaCheckErrorCmd (cudaMemcpy (cpuGrid->getFieldPointValue (pos), &d_gridValues[index], sizeof (FieldPointValue), cudaMemcpyDeviceToHost));
       }
     }
   }
