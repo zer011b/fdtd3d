@@ -477,6 +477,43 @@ InternalSchemeBase<Type, TCoord, layout_type, TGrid>::performPlaneWaveHSteps (ti
   HInc->nextTimeStep ();
 }
 
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
+void
+InternalSchemeBase<Type, TCoord, layout_type, TGrid>::initScheme (FPValue dx, FPValue sourceWaveLen)
+{
+  sourceWaveLength = sourceWaveLen;
+  sourceFrequency = PhysicsConst::SpeedOfLight / sourceWaveLength;
+
+  gridStep = dx;
+  courantNum = SOLVER_SETTINGS.getCourantNum ();
+  gridTimeStep = gridStep * courantNum / PhysicsConst::SpeedOfLight;
+
+  FPValue N_lambda = sourceWaveLength / gridStep;
+  ALWAYS_ASSERT (SQR (round (N_lambda) - N_lambda) < Approximation::getAccuracy ());
+
+  FPValue phaseVelocity0 = Approximation::phaseVelocityIncidentWave (gridStep, sourceWaveLength, courantNum, N_lambda, PhysicsConst::Pi / 2, 0);
+  FPValue phaseVelocity = Approximation::phaseVelocityIncidentWave (gridStep, sourceWaveLength, courantNum, N_lambda, yeeLayout->getIncidentWaveAngle1 (), yeeLayout->getIncidentWaveAngle2 ());
+  FPValue k = 2 * PhysicsConst::Pi * PhysicsConst::SpeedOfLight / sourceWaveLength / phaseVelocity0;
+
+  relPhaseVelocity = phaseVelocity0 / phaseVelocity;
+  sourceWaveLengthNumerical = 2 * PhysicsConst::Pi / k;
+
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "initScheme: "
+                                      "\n\tphase velocity relation -> %f "
+                                      "\n\tphase velosity 0 -> %f "
+                                      "\n\tphase velocity -> %f "
+                                      "\n\tanalytical wave number -> %.20f "
+                                      "\n\tnumerical wave number -> %.20f"
+                                      "\n\tanalytical wave length -> %.20f"
+                                      "\n\tnumerical wave length -> %.20f"
+                                      "\n\tnumerical grid step -> %.20f"
+                                      "\n\tnumerical time step -> %.20f"
+                                      "\n\twave length -> %.20f"
+                                      "\n",
+           relPhaseVelocity, phaseVelocity0, phaseVelocity, 2*PhysicsConst::Pi/sourceWaveLength, k,
+           sourceWaveLength, sourceWaveLengthNumerical, gridStep, gridTimeStep, sourceFrequency);
+}
+
 template class InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED, Grid>;
 template class InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED, Grid>;
 template class InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED, Grid>;
