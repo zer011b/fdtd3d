@@ -107,12 +107,12 @@ int main (int argc, char** argv)
   for (grid_coord k = 0; k < grid.getSize ().get3 (); ++k)
 #endif
   {
-    FieldPointValue* val = new FieldPointValue ();
+    FieldPointValue val;
 
 #ifdef COMPLEX_FIELD_VALUES
-    val->setCurValue (FieldValue (i * PhysicsConst::Eps0, i * PhysicsConst::SpeedOfLight));
+    val.setCurValue (FieldValue (i * PhysicsConst::Eps0, i * PhysicsConst::SpeedOfLight));
 #else
-    val->setCurValue (FieldValue (i * PhysicsConst::Eps0));
+    val.setCurValue (FieldValue (i * PhysicsConst::Eps0));
 #endif
 
 #ifdef GRID_1D

@@ -297,7 +297,7 @@ int main (int argc, char** argv)
     {
       for (grid_coord k = 0; k < gridSizeZ; ++k)
       {
-        FieldPointValue* val = new FieldPointValue ();
+        FieldPointValue val;
         GridCoordinate3D pos (i, j, k
 #ifdef DEBUG_INFO
                               , grid3D.getSize ().getType1 ()
@@ -307,12 +307,12 @@ int main (int argc, char** argv)
                               );
 
         FPValue fpval = i * j * k;
-        updateVal (val, fpval);
+        updateVal (&val, fpval);
 
         grid3D.setFieldPointValue (val, pos);
       }
 
-      FieldPointValue* val = new FieldPointValue ();
+      FieldPointValue val;
       GridCoordinate2D pos (i, j
 #ifdef DEBUG_INFO
                             , grid2D.getSize ().getType1 ()
@@ -321,12 +321,12 @@ int main (int argc, char** argv)
                             );
 
       FPValue fpval = i * j;
-      updateVal (val, fpval);
+      updateVal (&val, fpval);
 
       grid2D.setFieldPointValue (val, pos);
     }
 
-    FieldPointValue* val = new FieldPointValue ();
+    FieldPointValue val;
     GridCoordinate1D pos (i
 #ifdef DEBUG_INFO
                           , grid1D.getSize ().getType1 ()
@@ -334,7 +334,7 @@ int main (int argc, char** argv)
                           );
 
     FPValue fpval = i;
-    updateVal (val, fpval);
+    updateVal (&val, fpval);
 
     grid1D.setFieldPointValue (val, pos);
   }

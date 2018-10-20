@@ -13,7 +13,7 @@
 /**
  * Type of vector of points in grid.
  */
-typedef std::vector<FieldPointValue *> VectorFieldPointValues;
+typedef std::vector<FieldPointValue> VectorFieldPointValues;
 
 /**
  * Non-parallel grid class.
@@ -56,7 +56,6 @@ private:
 
   void shiftInTime ();
 
-  void deleteGrid ();
   void copyGrid (const Grid &);
 
 protected:
@@ -82,7 +81,7 @@ public:
   virtual TCoord getComputationEnd (TCoord) const;
   TCoord calculatePositionFromIndex (grid_coord) const;
 
-  void setFieldPointValue (FieldPointValue *, const TCoord &);
+  void setFieldPointValue (const FieldPointValue &, const TCoord &);
   FieldPointValue * getFieldPointValue (const TCoord &);
   FieldPointValue * getFieldPointValue (grid_coord);
 
@@ -94,7 +93,6 @@ public:
   const char * getName () const;
   time_step getTimeStep () const;
 
-  void initialize ();
   void initialize (FieldValue);
 }; /* Grid */
 
@@ -110,11 +108,6 @@ Grid<TCoord>::Grid (const TCoord &s, /**< size of grid */
   , timeStep (step)
   , gridName (name)
 {
-  for (int i = 0; i < gridValues.size (); ++i)
-  {
-    gridValues[i] = NULLPTR;
-  }
-
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
 } /* Grid<TCoord>::Grid */
 
@@ -147,22 +140,7 @@ Grid<TCoord>::Grid (const Grid<TCoord> &grid) /**< grid to copy */
 template <class TCoord>
 Grid<TCoord>::~Grid ()
 {
-  deleteGrid ();
 } /* Grid<TCoord>::~Grid */
-
-/**
- * Delete grid
- */
-template <class TCoord>
-void
-Grid<TCoord>::deleteGrid ()
-{
-  for (grid_coord i = 0; i < gridValues.size (); ++i)
-  {
-    delete gridValues[i];
-    gridValues[i] = NULLPTR;
-  }
-} /* Grid<TCoord>::deleteGrid */
 
 /**
  * Copy one grid to another
@@ -178,15 +156,7 @@ Grid<TCoord>::copyGrid (const Grid<TCoord> &grid) /**< grid to copy */
 
   for (grid_coord i = 0; i < grid.gridValues.size (); ++i)
   {
-    if (grid.gridValues[i])
-    {
-      gridValues[i] = new FieldPointValue ();
-      *gridValues[i] = *grid.gridValues[i];
-    }
-    else
-    {
-      gridValues[i] = NULLPTR;
-    }
+    gridValues[i] = grid.gridValues[i];
   }
 } /* Grid<TCoord>::copyGrid */
 
@@ -197,7 +167,6 @@ template <class TCoord>
 Grid<TCoord> &
 Grid<TCoord>::operator = (const Grid<TCoord> &grid) /**< grid to assign */
 {
-  deleteGrid ();
   copyGrid (grid);
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Copied grid '%s' with raw size: %lu.\n", gridName.data (), gridValues.size ());
@@ -216,8 +185,7 @@ Grid<TCoord>::shiftInTime ()
        iter != gridValues.end ();
        ++iter)
   {
-    ASSERT (*iter != NULLPTR);
-    (*iter)->shiftInTime ();
+    (*iter).shiftInTime ();
   }
 } /* Grid<TCoord>::shiftInTime */
 
@@ -274,15 +242,12 @@ Grid<TCoord>::getComputationEnd (TCoord diffPosEnd) const
  */
 template <class TCoord>
 void
-Grid<TCoord>::setFieldPointValue (FieldPointValue *value, /**< field point value */
+Grid<TCoord>::setFieldPointValue (const FieldPointValue & value, /**< field point value */
                                   const TCoord &position) /**< coordinate in grid */
 {
   ASSERT (isLegitIndex (position));
-  ASSERT (value);
 
   grid_coord coord = calculateIndexFromPosition (position);
-
-  delete gridValues[coord];
 
   gridValues[coord] = value;
 } /* Grid<TCoord>::setFieldPointValue */
@@ -314,11 +279,7 @@ Grid<TCoord>::getFieldPointValue (grid_coord coord) /**< index in grid */
 {
   ASSERT (coord >= 0 && coord < size.calculateTotalCoord ());
 
-  FieldPointValue* value = gridValues[coord];
-
-  ASSERT (value);
-
-  return value;
+  return &gridValues[coord];
 } /* Grid<TCoord>::getFieldPointValue */
 
 /**
@@ -420,25 +381,11 @@ Grid<TCoord>::getTimeStep () const
  */
 template <class TCoord>
 void
-Grid<TCoord>::initialize ()
-{
-  for (grid_coord i = 0; i < gridValues.size (); ++i)
-  {
-    gridValues[i] = new FieldPointValue ();
-  }
-} /* Grid<TCoord>::initialize */
-
-/**
- * Initialize grid field values with default values
- */
-template <class TCoord>
-void
 Grid<TCoord>::initialize (FieldValue cur)
 {
   for (grid_coord i = 0; i < gridValues.size (); ++i)
   {
-    gridValues[i] = new FieldPointValue ();
-    gridValues[i]->setCurValue (cur);
+    gridValues[i].setCurValue (cur);
   }
 } /* Grid<TCoord>::initialize */
 

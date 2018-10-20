@@ -110,7 +110,7 @@ ParallelGrid * initGrid (ParallelGridCoordinate overallSize,
       for (grid_coord k = 0; k < grid->getSize ().get3 (); ++k)
       {
 #endif /* GRID_3D */
-        FieldPointValue* val = new FieldPointValue ();
+        FieldPointValue val;
 
 #ifdef GRID_1D
         GridCoordinate1D pos (i, CoordinateType::X);
@@ -151,26 +151,26 @@ ParallelGrid * initGrid (ParallelGridCoordinate overallSize,
 
 #ifdef COMPLEX_FIELD_VALUES
 
-        val->setCurValue (FieldValue (fpval, fpval * imagMult));
+        val.setCurValue (FieldValue (fpval, fpval * imagMult));
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-        val->setPrevValue (FieldValue (fpval * prevMult, fpval * prevMult * imagMult));
+        val.setPrevValue (FieldValue (fpval * prevMult, fpval * prevMult * imagMult));
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 
 #if defined (TWO_TIME_STEPS)
-        val->setPrevPrevValue (FieldValue (fpval * prevPrevMult, fpval * prevPrevMult * imagMult));
+        val.setPrevPrevValue (FieldValue (fpval * prevPrevMult, fpval * prevPrevMult * imagMult));
 #endif /* TWO_TIME_STEPS */
 
 #else /* COMPLEX_FIELD_VALUES */
 
-        val->setCurValue (fpval);
+        val.setCurValue (fpval);
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-        val->setPrevValue (fpval * prevMult);
+        val.setPrevValue (fpval * prevMult);
 #endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 
 #if defined (TWO_TIME_STEPS)
-        val->setPrevPrevValue (fpval * prevPrevMult);
+        val.setPrevPrevValue (fpval * prevPrevMult);
 #endif /* TWO_TIME_STEPS */
 
 #endif /* !COMPLEX_FIELD_VALUES */
