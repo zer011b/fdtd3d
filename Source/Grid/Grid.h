@@ -54,8 +54,6 @@ protected:
 
 private:
 
-  void shiftInTime ();
-
   void copyGrid (const Grid &);
 
 protected:
@@ -88,6 +86,7 @@ public:
   virtual FieldPointValue * getFieldPointValueByAbsolutePos (const TCoord &);
   virtual FieldPointValue * getFieldPointValueOrNullByAbsolutePos (const TCoord &);
 
+  void shiftInTime (const TCoord &, const TCoord &);
   virtual void nextTimeStep ();
 
   const char * getName () const;
@@ -173,21 +172,6 @@ Grid<TCoord>::operator = (const Grid<TCoord> &grid) /**< grid to assign */
 
   return *this;
 } /* Grid<TCoord>::operator= */
-
-/**
- * Replace previous time layer with current and so on
- */
-template <class TCoord>
-void
-Grid<TCoord>::shiftInTime ()
-{
-  for (VectorFieldPointValues::iterator iter = gridValues.begin ();
-       iter != gridValues.end ();
-       ++iter)
-  {
-    (*iter).shiftInTime ();
-  }
-} /* Grid<TCoord>::shiftInTime */
 
 /**
  * Check whether position is appropriate to get/set value from
@@ -313,7 +297,6 @@ template <class TCoord>
 void
 Grid<TCoord>::nextTimeStep ()
 {
-  shiftInTime ();
 } /* Grid<TCoord>::nextTimeStep */
 
 /**

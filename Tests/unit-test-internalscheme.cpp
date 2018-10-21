@@ -17,10 +17,8 @@
 #define LAMBDA 0.2
 #define DX 0.02
 
-#define TIMESTEPS 100
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
-void test (InternalSchemeBase<Type, TCoord, layout_type, TGrid> *intScheme,
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+void test (InternalSchemeBase<Type, TCoord, layout_type> *intScheme,
            TCoord<grid_coord, true> overallSize,
            TCoord<grid_coord, true> pmlSize,
            TCoord<grid_coord, true> tfsfSizeLeft,
@@ -34,58 +32,157 @@ void test (InternalSchemeBase<Type, TCoord, layout_type, TGrid> *intScheme,
 
   TCoord<grid_coord, true> diff (1, 1, 1, ct1, ct2, ct3);
 
+  TCoord<grid_coord, true> zero (0, 0, 0
+#ifdef DEBUG_INFO
+                                 , ct1, ct2, ct3
+#endif /* DEBUG_INFO */
+                                 );
+
   for (time_step t = 0; t < SOLVER_SETTINGS.getNumTimeSteps (); ++t)
   {
     if (SOLVER_SETTINGS.getDoUseTFSF ())
     {
-      intScheme->performPlaneWaveESteps (t);
+      GridCoordinate1D zero1D (0
+#ifdef DEBUG_INFO
+                               , CoordinateType::X
+#endif /* DEBUG_INFO */
+                               );
+
+      intScheme->performPlaneWaveESteps (t, zero1D, intScheme->getEInc ()->getSize ());
+      intScheme->getEInc ()->shiftInTime (zero1D, intScheme->getEInc ()->getSize ());
+      intScheme->getEInc ()->nextTimeStep ();
     }
 
     if (intScheme->getDoNeedEx ())
     {
       intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::EX)> (t, diff, overallSize - diff);
+
+      intScheme->getEx ()->shiftInTime (zero, intScheme->getEx ()->getSize ());
       intScheme->getEx ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        intScheme->getDx ()->shiftInTime (zero, intScheme->getDx ()->getSize ());
+        intScheme->getDx ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        intScheme->getD1x ()->shiftInTime (zero, intScheme->getD1x ()->getSize ());
+        intScheme->getD1x ()->nextTimeStep ();
+      }
     }
 
     if (intScheme->getDoNeedEy ())
     {
       intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::EY)> (t, diff, overallSize - diff);
+
+      intScheme->getEy ()->shiftInTime (zero, intScheme->getEy ()->getSize ());
       intScheme->getEy ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        intScheme->getDy ()->shiftInTime (zero, intScheme->getDy ()->getSize ());
+        intScheme->getDy ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        intScheme->getD1y ()->shiftInTime (zero, intScheme->getD1y ()->getSize ());
+        intScheme->getD1y ()->nextTimeStep ();
+      }
     }
 
     if (intScheme->getDoNeedEz ())
     {
       intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::EZ)> (t, diff, overallSize - diff);
+
+      intScheme->getEz ()->shiftInTime (zero, intScheme->getEz ()->getSize ());
       intScheme->getEz ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        intScheme->getDz ()->shiftInTime (zero, intScheme->getDz ()->getSize ());
+        intScheme->getDz ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        intScheme->getD1z ()->shiftInTime (zero, intScheme->getD1z ()->getSize ());
+        intScheme->getD1z ()->nextTimeStep ();
+      }
     }
 
     if (SOLVER_SETTINGS.getDoUseTFSF ())
     {
-      intScheme->performPlaneWaveHSteps (t);
+      GridCoordinate1D zero1D (0
+#ifdef DEBUG_INFO
+                               , CoordinateType::X
+#endif /* DEBUG_INFO */
+                               );
+
+      intScheme->performPlaneWaveHSteps (t, zero1D, intScheme->getHInc ()->getSize ());
+      intScheme->getHInc ()->shiftInTime (zero1D, intScheme->getHInc ()->getSize ());
+      intScheme->getHInc ()->nextTimeStep ();
     }
 
     if (intScheme->getDoNeedHx ())
     {
       intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::HX)> (t, diff, overallSize - diff);
+
+      intScheme->getHx ()->shiftInTime (zero, intScheme->getHx ()->getSize ());
       intScheme->getHx ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        intScheme->getBx ()->shiftInTime (zero, intScheme->getBx ()->getSize ());
+        intScheme->getBx ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        intScheme->getB1x ()->shiftInTime (zero, intScheme->getB1x ()->getSize ());
+        intScheme->getB1x ()->nextTimeStep ();
+      }
     }
 
     if (intScheme->getDoNeedHy ())
     {
       intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::HY)> (t, diff, overallSize - diff);
+
+      intScheme->getHy ()->shiftInTime (zero, intScheme->getHy ()->getSize ());
       intScheme->getHy ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        intScheme->getBy ()->shiftInTime (zero, intScheme->getBy ()->getSize ());
+        intScheme->getBy ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        intScheme->getB1y ()->shiftInTime (zero, intScheme->getB1y ()->getSize ());
+        intScheme->getB1y ()->nextTimeStep ();
+      }
     }
 
     if (intScheme->getDoNeedHz ())
     {
       intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::HZ)> (t, diff, overallSize - diff);
+
+      intScheme->getHz ()->shiftInTime (zero, intScheme->getHz ()->getSize ());
       intScheme->getHz ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        intScheme->getBz ()->shiftInTime (zero, intScheme->getBz ()->getSize ());
+        intScheme->getBz ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        intScheme->getB1z ()->shiftInTime (zero, intScheme->getB1z ()->getSize ());
+        intScheme->getB1z ()->nextTimeStep ();
+      }
     }
   }
 }
 
-template <template <typename> class TGrid>
-void test1D (TGrid<GridCoordinate1D> *E,
+void test1D (Grid<GridCoordinate1D> *E,
              GridCoordinateFP1D diff,
              CoordinateType ct1)
 {
@@ -114,8 +211,7 @@ void test1D (TGrid<GridCoordinate1D> *E,
 #endif /* COMPLEX_FIELD_VALUES */
 }
 
-template <template <typename> class TGrid>
-void test2D (TGrid<GridCoordinate2D> *E,
+void test2D (Grid<GridCoordinate2D> *E,
              GridCoordinateFP2D diff,
              CoordinateType ct1,
              CoordinateType ct2)
@@ -149,8 +245,7 @@ void test2D (TGrid<GridCoordinate2D> *E,
 #endif /* COMPLEX_FIELD_VALUES */
 }
 
-template <template <typename> class TGrid>
-void test3D (TGrid<GridCoordinate3D> *E,
+void test3D (Grid<GridCoordinate3D> *E,
              GridCoordinateFP3D diff,
              CoordinateType ct1,
              CoordinateType ct2,
@@ -215,7 +310,7 @@ void test1D_ExHy ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_ExHy_Grid<layout_type> intScheme;
+  InternalScheme1D_ExHy<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -226,10 +321,10 @@ void test1D_ExHy ()
   ASSERT (intScheme.getDoNeedHy ());
   ASSERT (!intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D<Grid> (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1);
+  test1D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1);
 }
 
 template<LayoutType layout_type>
@@ -258,7 +353,7 @@ void test1D_ExHz ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_ExHz_Grid<layout_type> intScheme;
+  InternalScheme1D_ExHz<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -269,10 +364,10 @@ void test1D_ExHz ()
   ASSERT (!intScheme.getDoNeedHy ());
   ASSERT (intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D<Grid> (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1);
+  test1D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1);
 }
 
 template<LayoutType layout_type>
@@ -301,7 +396,7 @@ void test1D_EyHx ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_EyHx_Grid<layout_type> intScheme;
+  InternalScheme1D_EyHx<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -312,10 +407,10 @@ void test1D_EyHx ()
   ASSERT (!intScheme.getDoNeedHy ());
   ASSERT (!intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D<Grid> (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1);
+  test1D (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1);
 }
 
 template<LayoutType layout_type>
@@ -344,7 +439,7 @@ void test1D_EyHz ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_EyHz_Grid<layout_type> intScheme;
+  InternalScheme1D_EyHz<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -355,10 +450,10 @@ void test1D_EyHz ()
   ASSERT (!intScheme.getDoNeedHy ());
   ASSERT (intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D<Grid> (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1);
+  test1D (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1);
 }
 
 template<LayoutType layout_type>
@@ -387,7 +482,7 @@ void test1D_EzHx ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_EzHx_Grid<layout_type> intScheme;
+  InternalScheme1D_EzHx<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -398,10 +493,10 @@ void test1D_EzHx ()
   ASSERT (!intScheme.getDoNeedHy ());
   ASSERT (!intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D<Grid> (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1);
+  test1D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1);
 }
 
 template<LayoutType layout_type>
@@ -430,7 +525,7 @@ void test1D_EzHy ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_EzHy_Grid<layout_type> intScheme;
+  InternalScheme1D_EzHy<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -441,10 +536,10 @@ void test1D_EzHy ()
   ASSERT (intScheme.getDoNeedHy ());
   ASSERT (!intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D<Grid> (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1);
+  test1D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1);
 }
 
 template<LayoutType layout_type>
@@ -473,7 +568,7 @@ void test2D_TEx ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TEx_Grid<layout_type> intScheme;
+  InternalScheme2D_TEx<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -484,10 +579,10 @@ void test2D_TEx ()
   ASSERT (!intScheme.getDoNeedHy ());
   ASSERT (!intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, ct2, CoordinateType::NONE);
 
-  test2D<Grid> (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2);
+  test2D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2);
 }
 
 template<LayoutType layout_type>
@@ -516,7 +611,7 @@ void test2D_TEy ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TEy_Grid<layout_type> intScheme;
+  InternalScheme2D_TEy<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -527,10 +622,10 @@ void test2D_TEy ()
   ASSERT (intScheme.getDoNeedHy ());
   ASSERT (!intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, ct2, CoordinateType::NONE);
 
-  test2D<Grid> (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2);
+  test2D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2);
 }
 
 template<LayoutType layout_type>
@@ -559,7 +654,7 @@ void test2D_TEz ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TEz_Grid<layout_type> intScheme;
+  InternalScheme2D_TEz<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -570,10 +665,10 @@ void test2D_TEz ()
   ASSERT (!intScheme.getDoNeedHy ());
   ASSERT (intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, ct2, CoordinateType::NONE);
 
-  test2D<Grid> (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1, ct2);
+  test2D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1, ct2);
 }
 
 template<LayoutType layout_type>
@@ -602,7 +697,7 @@ void test2D_TMx ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TMx_Grid<layout_type> intScheme;
+  InternalScheme2D_TMx<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -613,10 +708,10 @@ void test2D_TMx ()
   ASSERT (intScheme.getDoNeedHy ());
   ASSERT (intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, ct2, CoordinateType::NONE);
 
-  test2D<Grid> (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1, ct2);
+  test2D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1, ct2);
 }
 
 template<LayoutType layout_type>
@@ -645,7 +740,7 @@ void test2D_TMy ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TMy_Grid<layout_type> intScheme;
+  InternalScheme2D_TMy<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -656,10 +751,10 @@ void test2D_TMy ()
   ASSERT (!intScheme.getDoNeedHy ());
   ASSERT (intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, ct2, CoordinateType::NONE);
 
-  test2D<Grid> (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1, ct2);
+  test2D (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1, ct2);
 }
 
 template<LayoutType layout_type>
@@ -688,7 +783,7 @@ void test2D_TMz ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TMz_Grid<layout_type> intScheme;
+  InternalScheme2D_TMz<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -699,10 +794,10 @@ void test2D_TMz ()
   ASSERT (intScheme.getDoNeedHy ());
   ASSERT (!intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, ct2, CoordinateType::NONE);
 
-  test2D<Grid> (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2);
+  test2D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2);
 }
 
 template<LayoutType layout_type>
@@ -732,7 +827,7 @@ void test3D ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme3D_3D_Grid<layout_type> intScheme;
+  InternalScheme3D_3D<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -743,10 +838,10 @@ void test3D ()
   ASSERT (intScheme.getDoNeedHy ());
   ASSERT (intScheme.getDoNeedHz ());
 
-  test<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, layout_type, Grid>
+  test<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, ct2, ct3);
 
-  test3D<Grid> (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2, ct3);
+  test3D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2, ct3);
 }
 
 int main (int argc, char** argv)

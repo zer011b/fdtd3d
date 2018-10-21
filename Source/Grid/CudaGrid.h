@@ -88,8 +88,6 @@ protected:
 
 private:
 
-  CUDA_DEVICE void shiftInTime ();
-
   CUDA_HOST CudaGrid (const CudaGrid &);
   CUDA_HOST CudaGrid<TCoord> & operator = (const CudaGrid<TCoord> &);
 
@@ -119,6 +117,7 @@ public:
   {
     return startOfBlock + pos;
   }
+  CUDA_DEVICE
   TCoord getRelativePosition (const TCoord & pos) const
   {
     ASSERT (pos >= startOfBlock);
@@ -126,6 +125,7 @@ public:
     return pos - startOfBlock;
   }
 
+  CUDA_DEVICE
   bool hasValueForCoordinate (const TCoord &position)
   {
     if (!(position >= startOfBlock)
@@ -137,11 +137,13 @@ public:
     return true;
   } /* hasValueForCoordinate */
 
+  CUDA_DEVICE
   FieldPointValue * getFieldPointValueByAbsolutePos (const TCoord &absPosition)
   {
     return getFieldPointValue (getRelativePosition (absPosition));
   }
 
+  CUDA_DEVICE
   FieldPointValue * getFieldPointValueOrNullByAbsolutePos (const TCoord &absPosition)
   {
     if (!hasValueForCoordinate (absPosition))
@@ -160,6 +162,7 @@ public:
   CUDA_DEVICE FieldPointValue * getFieldPointValue (const TCoord &);
   CUDA_DEVICE FieldPointValue * getFieldPointValue (grid_coord);
 
+  CUDA_DEVICE void shiftInTime (const TCoord & start, const TCoord & end);
   CUDA_DEVICE void nextTimeStep ();
   CUDA_DEVICE CUDA_HOST void setTimeStep (time_step);
 
@@ -191,7 +194,7 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
 
   cudaCheckErrorCmd (cudaMalloc ((void **) &d_gridValues, sizeGridValues * sizeof (FieldPointValue)));
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New Cuda grid '%s' with raw size: %lu.\n", grid->getName (), sizeGridValues);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New Cuda grid '%s' with raw size: " COORD_MOD ".\n", grid->getName (), sizeGridValues);
 } /* CudaGrid<TCoord>::CudaGrid */
 
 /**
@@ -210,7 +213,7 @@ CudaGrid<TCoord>::~CudaGrid ()
 template <class TCoord>
 CUDA_DEVICE
 void
-CudaGrid<TCoord>::shiftInTime ()
+CudaGrid<TCoord>::shiftInTime (const TCoord & start, const TCoord & end)
 {
   for (grid_coord iter = 0; iter < getSizeGridValues (); ++iter)
   {
@@ -352,7 +355,6 @@ CUDA_DEVICE
 void
 CudaGrid<TCoord>::nextTimeStep ()
 {
-  shiftInTime ();
   nextShareStep ();
 
   ASSERT (getShareStep () <= getBufSize ().get1 ());
@@ -363,6 +365,7 @@ CudaGrid<TCoord>::nextTimeStep ()
     /*
      * Time to copy back to CPU. If copy hasn't happened, assert above will fire due to increase of shareStep.
      */
+    zeroShareStep ();
   }
 } /* CudaGrid<TCoord>::nextTimeStep */
 

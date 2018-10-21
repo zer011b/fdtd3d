@@ -41,6 +41,12 @@ int main (int argc, char** argv)
 
   printf ("Start process %d of %d\n", rank, numProcs);
 
+  ParallelGridCoordinate zero (0, 0, 0
+#ifdef DEBUG_INFO
+                               , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
+#endif
+                               );
+
   ParallelGridCoordinate overallSize (gridSizeX, gridSizeY, gridSizeZ
 #ifdef DEBUG_INFO
                                       , CoordinateType::X, CoordinateType::Y, CoordinateType::Z
@@ -223,6 +229,7 @@ int main (int argc, char** argv)
 #endif
 #endif
 
+    grid.shiftInTime (zero, grid->getSize ());
     grid.nextTimeStep ();
 
 #ifdef DYNAMIC_GRID

@@ -3,88 +3,196 @@
 #ifdef CUDA_ENABLED
 
 #include "InternalScheme.h"
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
-CUDA_HOST
-void
-InternalSchemeBase<Type, TCoord, layout_type, TGrid>::initFromCPU (InternalSchemeBase<Type, TCoord, layout_type, Grid> *cpuScheme,
-                                                                  TC blockSize,
-                                                                  TC bufSize)
-{
-  ASSERT (cpuScheme->isInitialized);
-
-  cudaCheckErrorCmd (cudaMalloc ((void **) &yeeLayout, sizeof(YeeGridLayout<Type, TCoord, layout_type>)));
-  cudaCheckErrorCmd (cudaMemcpy (yeeLayout, cpuScheme->yeeLayout, sizeof(YeeGridLayout<Type, TCoord, layout_type>), cudaMemcpyHostToDevice));
-
-  useParallel = false;
-
-  initCoordTypes ();
-
-  TC one (1, 1, 1
-#ifdef DEBUG_INFO
-          , ct1, ct2, ct3
-#endif
-          );
-
-  if (SOLVER_SETTINGS.getDoUseNTFF ())
-  {
-    leftNTFF = TC::initAxesCoordinate (SOLVER_SETTINGS.getNTFFSizeX (), SOLVER_SETTINGS.getNTFFSizeY (), SOLVER_SETTINGS.getNTFFSizeZ (),
-                                       ct1, ct2, ct3);
-    rightNTFF = cpuScheme->yeeLayout->getEzSize () - leftNTFF + one;
-  }
-
-  allocateGridsFromCPU (cpuScheme, blockSize, bufSize);
-
-  isInitialized = true;
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
-CUDA_HOST
-void
-InternalSchemeBase<Type, TCoord, layout_type, TGrid>::initOnGPU ()
-{
-  ASSERT (isInitialized);
-
-  allocateGridsOnGPU ();
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
-CUDA_HOST
-void
-InternalSchemeBase<Type, TCoord, layout_type, TGrid>::copyFromCPU (TCoord<grid_coord, true> start,
-                                                                   TCoord<grid_coord, true> end)
-{
-  ASSERT (isInitialized);
-
-  copyGridsFromCPU (start, end);
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
-CUDA_HOST
-void
-InternalSchemeBase<Type, TCoord, layout_type, TGrid>::copyToGPU (InternalSchemeBase<Type, TCoord, layout_type, CudaGrid> *gpuScheme)
-{
-  ASSERT (isInitialized);
-
-  copyGridsToGPU (gpuScheme);
-}
-
 #include "InternalScheme.cpp"
 
-template class InternalScheme1D_ExHy_CudaGrid<E_CENTERED>;
-template class InternalScheme1D_ExHz_CudaGrid<E_CENTERED>;
-template class InternalScheme1D_EyHx_CudaGrid<E_CENTERED>;
-template class InternalScheme1D_EyHz_CudaGrid<E_CENTERED>;
-template class InternalScheme1D_EzHx_CudaGrid<E_CENTERED>;
-template class InternalScheme1D_EzHy_CudaGrid<E_CENTERED>;
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue z = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == 0 && incAngle2 == 0);
 
-template class InternalScheme2D_TEx_CudaGrid<E_CENTERED>;
-template class InternalScheme2D_TEy_CudaGrid<E_CENTERED>;
-template class InternalScheme2D_TEz_CudaGrid<E_CENTERED>;
-template class InternalScheme2D_TMx_CudaGrid<E_CENTERED>;
-template class InternalScheme2D_TMy_CudaGrid<E_CENTERED>;
-template class InternalScheme2D_TMz_CudaGrid<E_CENTERED>;
+  FPValue d = z - dDiff;
+  ASSERT (d > 0);
 
-template class InternalScheme3D_3D_CudaGrid<E_CENTERED>;
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == PhysicsConst::Pi / 2);
+
+  FPValue d = y - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue z = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == 0 && incAngle2 == PhysicsConst::Pi / 2);
+
+  FPValue d = z - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == 0);
+
+  FPValue d = x - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == PhysicsConst::Pi / 2);
+
+  FPValue d = y - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2 && incAngle2 == 0);
+
+  FPValue d = x - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle2 == PhysicsConst::Pi / 2);
+
+  FPValue d = y * sin (incAngle1) + z * cos (incAngle1) - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle2 == 0);
+
+  FPValue d = x * sin (incAngle1) + z * cos (incAngle1) - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2);
+
+  FPValue d = x * cos (incAngle2) + y * sin (incAngle2) - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue y = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle2 == PhysicsConst::Pi / 2);
+
+  FPValue d = y * sin (incAngle1) + z * cos (incAngle1) - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue z = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle2 == 0);
+
+  FPValue d = x * sin (incAngle1) + z * cos (incAngle1) - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
+  ASSERT (incAngle1 == PhysicsConst::Pi / 2);
+
+  FPValue d = x * cos (incAngle2) + y * sin (incAngle2) - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
+template <>
+CUDA_DEVICE
+FieldValue
+InternalSchemeHelperGPU::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (GridCoordinateFP3D realCoord, GridCoordinateFP3D zeroCoordFP,
+                                                   FPValue dDiff, CudaGrid<GridCoordinate1D> *FieldInc, FPValue incAngle1, FPValue incAngle2)
+{
+  FPValue x = realCoord.get1 () - zeroCoordFP.get1 ();
+  FPValue y = realCoord.get2 () - zeroCoordFP.get2 ();
+  FPValue z = realCoord.get3 () - zeroCoordFP.get3 ();
+
+  FPValue d = x * sin (incAngle1) * cos (incAngle2) + y * sin (incAngle1) * sin (incAngle2) + z * cos (incAngle1) - dDiff;
+  ASSERT (d > 0);
+
+  return InternalSchemeHelperGPU::approximateIncidentWaveHelper (d, FieldInc);
+}
 
 #endif /* CUDA_ENABLED */

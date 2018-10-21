@@ -5,6 +5,7 @@ file(GLOB_RECURSE CUDA_LAYOUT_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cu")
 
 if ("${CUDA_ENABLED}")
   list(FILTER LAYOUT_SOURCES EXCLUDE REGEX ".*/YeeGridLayout.cpp$")
+  list(FILTER LAYOUT_SOURCES EXCLUDE REGEX ".*/Approximation.cpp$")
   add_library (Layout ${LAYOUT_SOURCES} ${CUDA_LAYOUT_SOURCES})
   set_target_properties (Layout PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 else ()

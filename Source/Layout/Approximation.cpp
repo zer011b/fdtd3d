@@ -4,13 +4,11 @@
 
 #include <cmath>
 
-FPValue Approximation::accuracy = 0.0000001;
-
 CUDA_DEVICE CUDA_HOST
 FPValue
 Approximation::getAccuracy ()
 {
-  return accuracy;
+  return APPROXIMATION_ACCURACY;
 }
 
 CUDA_DEVICE CUDA_HOST
