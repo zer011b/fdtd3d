@@ -227,6 +227,11 @@ protected:
   virtual void allocateGridsOnGPU () { ALWAYS_ASSERT (0); }
 
   CUDA_HOST
+  virtual void copyGridsFromCPU (TC start, TC end) { ALWAYS_ASSERT (0); }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<Type, TCoord, layout_type, CudaGrid> *gpuScheme) { ALWAYS_ASSERT (0); }
+
+  CUDA_HOST
   virtual void initCoordTypes () { ALWAYS_ASSERT (0); }
 
   CUDA_DEVICE CUDA_HOST
@@ -330,6 +335,14 @@ public:
   CUDA_HOST
   void
   initOnGPU ();
+
+  CUDA_HOST
+  void
+  copyFromCPU (TCoord<grid_coord, true>, TCoord<grid_coord, true>);
+
+  CUDA_HOST
+  void
+  copyToGPU (InternalSchemeBase<Type, TCoord, layout_type, CudaGrid> *gpuScheme);
 
   CUDA_HOST
   void
@@ -1337,6 +1350,17 @@ protected:
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this);
   }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate1D start, GridCoordinate1D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, gpuScheme);
+  }
 };
 
 template <LayoutType layout_type>
@@ -1353,6 +1377,17 @@ protected:
   virtual void allocateGridsOnGPU () CXX11_OVERRIDE_FINAL
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this);
+  }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate1D start, GridCoordinate1D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, gpuScheme);
   }
 };
 
@@ -1371,6 +1406,17 @@ protected:
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this);
   }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate1D start, GridCoordinate1D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, gpuScheme);
+  }
 };
 
 template <LayoutType layout_type>
@@ -1387,6 +1433,17 @@ protected:
   virtual void allocateGridsOnGPU () CXX11_OVERRIDE_FINAL
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this);
+  }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate1D start, GridCoordinate1D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, gpuScheme);
   }
 };
 
@@ -1405,6 +1462,17 @@ protected:
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this);
   }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate1D start, GridCoordinate1D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, gpuScheme);
+  }
 };
 
 template <LayoutType layout_type>
@@ -1421,6 +1489,17 @@ protected:
   virtual void allocateGridsOnGPU () CXX11_OVERRIDE_FINAL
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this);
+  }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate1D start, GridCoordinate1D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type, CudaGrid> (this, gpuScheme);
   }
 };
 
@@ -1439,6 +1518,17 @@ protected:
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this);
   }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate2D start, GridCoordinate2D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, gpuScheme);
+  }
 };
 
 template <LayoutType layout_type>
@@ -1455,6 +1545,17 @@ protected:
   virtual void allocateGridsOnGPU () CXX11_OVERRIDE_FINAL
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this);
+  }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate2D start, GridCoordinate2D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, gpuScheme);
   }
 };
 
@@ -1473,6 +1574,17 @@ protected:
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this);
   }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate2D start, GridCoordinate2D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, gpuScheme);
+  }
 };
 
 template <LayoutType layout_type>
@@ -1489,6 +1601,17 @@ protected:
   virtual void allocateGridsOnGPU () CXX11_OVERRIDE_FINAL
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this);
+  }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate2D start, GridCoordinate2D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, gpuScheme);
   }
 };
 
@@ -1507,6 +1630,17 @@ protected:
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this);
   }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate2D start, GridCoordinate2D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, gpuScheme);
+  }
 };
 
 template <LayoutType layout_type>
@@ -1524,6 +1658,17 @@ protected:
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this);
   }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate2D start, GridCoordinate2D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, layout_type, CudaGrid> (this, gpuScheme);
+  }
 };
 
 template <LayoutType layout_type>
@@ -1540,6 +1685,17 @@ protected:
   virtual void allocateGridsOnGPU () CXX11_OVERRIDE_FINAL
   {
     InternalSchemeHelper::allocateGridsOnGPU<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, layout_type, CudaGrid> (this);
+  }
+
+  CUDA_HOST
+  virtual void copyGridsFromCPU (GridCoordinate3D start, GridCoordinate3D end) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsFromCPU<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, layout_type, CudaGrid> (this, start, end);
+  }
+  CUDA_HOST
+  virtual void copyGridsToGPU (InternalSchemeBase<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, layout_type, CudaGrid> *gpuScheme) CXX11_OVERRIDE_FINAL
+  {
+    InternalSchemeHelper::copyGridsToGPU<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, layout_type, CudaGrid> (this, gpuScheme);
   }
 };
 

@@ -50,11 +50,15 @@ target_link_libraries (unit-test-approximation Helpers Settings Layout)
 add_executable (unit-test-complex unit-test-complex.cpp)
 target_link_libraries (unit-test-complex Helpers)
 
-add_executable (unit-test-internalscheme unit-test-internalscheme.cpp)
-target_link_libraries (unit-test-internalscheme ${LIBS} Grid Helpers Settings InternalScheme)
-
 if ("${CUDA_ENABLED}")
   add_executable (unit-test-cuda-grid unit-test-cuda-grid.cu)
   set_target_properties (unit-test-cuda-grid PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
   target_link_libraries (unit-test-cuda-grid PRIVATE Grid Helpers Settings Kernels Coordinate)
+
+  add_executable (unit-test-internalscheme unit-test-internalscheme.cu)
+  set_target_properties (unit-test-cuda-grid PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  target_link_libraries (unit-test-internalscheme ${LIBS} Grid Helpers Settings InternalScheme)
+else ()
+  add_executable (unit-test-internalscheme unit-test-internalscheme.cpp)
+  target_link_libraries (unit-test-internalscheme ${LIBS} Grid Helpers Settings InternalScheme)
 endif ()

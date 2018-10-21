@@ -1,5 +1,5 @@
 /*
- * Unit test for basic operations with Grid
+ * Unit test for InternalScheme on CPU
  */
 
 #include <iostream>

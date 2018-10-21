@@ -48,6 +48,27 @@ InternalSchemeBase<Type, TCoord, layout_type, TGrid>::initOnGPU ()
   allocateGridsOnGPU ();
 }
 
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
+CUDA_HOST
+void
+InternalSchemeBase<Type, TCoord, layout_type, TGrid>::copyFromCPU (TCoord<grid_coord, true> start,
+                                                                   TCoord<grid_coord, true> end)
+{
+  ASSERT (isInitialized);
+
+  copyGridsFromCPU (start, end);
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
+CUDA_HOST
+void
+InternalSchemeBase<Type, TCoord, layout_type, TGrid>::copyToGPU (InternalSchemeBase<Type, TCoord, layout_type, CudaGrid> *gpuScheme)
+{
+  ASSERT (isInitialized);
+
+  copyGridsToGPU (gpuScheme);
+}
+
 #include "InternalScheme.cpp"
 
 template class InternalScheme1D_ExHy_CudaGrid<E_CENTERED>;

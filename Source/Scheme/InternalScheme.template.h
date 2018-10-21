@@ -368,34 +368,34 @@ InternalSchemeBase<Type, TCoord, layout_type, TGrid>::calculateFieldStep (time_s
 
   FPValue eps0 = PhysicsConst::Eps0;
 
-  Grid<TC> *grid = NULLPTR;
+  TGrid<TC> *grid = NULLPTR;
   GridType gridType = GridType::NONE;
 
-  Grid<TC> *materialGrid = NULLPTR;
+  TGrid<TC> *materialGrid = NULLPTR;
   GridType materialGridType = GridType::NONE;
 
-  Grid<TC> *materialGrid1 = NULLPTR;
+  TGrid<TC> *materialGrid1 = NULLPTR;
   GridType materialGridType1 = GridType::NONE;
 
-  Grid<TC> *materialGrid2 = NULLPTR;
+  TGrid<TC> *materialGrid2 = NULLPTR;
   GridType materialGridType2 = GridType::NONE;
 
-  Grid<TC> *materialGrid3 = NULLPTR;
+  TGrid<TC> *materialGrid3 = NULLPTR;
   GridType materialGridType3 = GridType::NONE;
 
-  Grid<TC> *materialGrid4 = NULLPTR;
+  TGrid<TC> *materialGrid4 = NULLPTR;
   GridType materialGridType4 = GridType::NONE;
 
-  Grid<TC> *materialGrid5 = NULLPTR;
+  TGrid<TC> *materialGrid5 = NULLPTR;
   GridType materialGridType5 = GridType::NONE;
 
-  Grid<TC> *oppositeGrid1 = NULLPTR;
-  Grid<TC> *oppositeGrid2 = NULLPTR;
+  TGrid<TC> *oppositeGrid1 = NULLPTR;
+  TGrid<TC> *oppositeGrid2 = NULLPTR;
 
-  Grid<TC> *gridPML1 = NULLPTR;
+  TGrid<TC> *gridPML1 = NULLPTR;
   GridType gridPMLType1 = GridType::NONE;
 
-  Grid<TC> *gridPML2 = NULLPTR;
+  TGrid<TC> *gridPML2 = NULLPTR;
   GridType gridPMLType2 = GridType::NONE;
 
   SourceCallBack rightSideFunc = NULLPTR;
@@ -505,85 +505,85 @@ InternalSchemeBase<Type, TCoord, layout_type, TGrid>::calculateFieldStep (time_s
     }
   }
 
-  if (exactFunc != NULLPTR)
-  {
-    FPValue normRe = 0.0;
-    FPValue normIm = 0.0;
-    FPValue normMod = 0.0;
-
-    FPValue maxRe = 0.0;
-    FPValue maxIm = 0.0;
-    FPValue maxMod = 0.0;
-
-    GridCoordinate3D startNorm = start3D;
-    GridCoordinate3D endNorm = end3D;
-
-    if (SOLVER_SETTINGS.getExactSolutionCompareStartX () != 0)
-    {
-      startNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareStartX ());
-    }
-    if (SOLVER_SETTINGS.getExactSolutionCompareStartY () != 0)
-    {
-      startNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareStartY ());
-    }
-    if (SOLVER_SETTINGS.getExactSolutionCompareStartZ () != 0)
-    {
-      startNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareStartZ ());
-    }
-
-    if (SOLVER_SETTINGS.getExactSolutionCompareEndX () != 0)
-    {
-      endNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareEndX ());
-    }
-    if (SOLVER_SETTINGS.getExactSolutionCompareEndY () != 0)
-    {
-      endNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareEndY ());
-    }
-    if (SOLVER_SETTINGS.getExactSolutionCompareEndZ () != 0)
-    {
-      endNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareEndZ ());
-    }
-
-    Grid<TC> *normGrid = grid;
-    if (usePML)
-    {
-      grid = gridPML2;
-    }
-
-    for (grid_coord i = startNorm.get1 (); i < endNorm.get1 (); ++i)
-    {
-      // TODO: check that this loop is optimized out
-      for (grid_coord j = startNorm.get2 (); j < endNorm.get2 (); ++j)
-      {
-        // TODO: check that this loop is optimized out
-        for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
-        {
-          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
-        }
-      }
-    }
-
-#ifdef COMPLEX_FIELD_VALUES
-    normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
-    normIm = sqrt (normIm / grid->getSize ().calculateTotalCoord ());
-    normMod = sqrt (normMod / grid->getSize ().calculateTotalCoord ());
-
-    /*
-     * NOTE: do not change this! test suite depdends on the order of values in output
-     */
-    printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
-      grid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
-#else
-    normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
-
-    /*
-     * NOTE: do not change this! test suite depdends on the order of values in output
-     */
-    printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
-      grid->getName (), t, normRe, normRe * 100.0 / maxRe);
-#endif
-  }
+//   if (exactFunc != NULLPTR)
+//   {
+//     FPValue normRe = 0.0;
+//     FPValue normIm = 0.0;
+//     FPValue normMod = 0.0;
+//
+//     FPValue maxRe = 0.0;
+//     FPValue maxIm = 0.0;
+//     FPValue maxMod = 0.0;
+//
+//     GridCoordinate3D startNorm = start3D;
+//     GridCoordinate3D endNorm = end3D;
+//
+//     if (SOLVER_SETTINGS.getExactSolutionCompareStartX () != 0)
+//     {
+//       startNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareStartX ());
+//     }
+//     if (SOLVER_SETTINGS.getExactSolutionCompareStartY () != 0)
+//     {
+//       startNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareStartY ());
+//     }
+//     if (SOLVER_SETTINGS.getExactSolutionCompareStartZ () != 0)
+//     {
+//       startNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareStartZ ());
+//     }
+//
+//     if (SOLVER_SETTINGS.getExactSolutionCompareEndX () != 0)
+//     {
+//       endNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareEndX ());
+//     }
+//     if (SOLVER_SETTINGS.getExactSolutionCompareEndY () != 0)
+//     {
+//       endNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareEndY ());
+//     }
+//     if (SOLVER_SETTINGS.getExactSolutionCompareEndZ () != 0)
+//     {
+//       endNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareEndZ ());
+//     }
+//
+//     TGrid<TC> *normGrid = grid;
+//     if (usePML)
+//     {
+//       grid = gridPML2;
+//     }
+//
+//     for (grid_coord i = startNorm.get1 (); i < endNorm.get1 (); ++i)
+//     {
+//       // TODO: check that this loop is optimized out
+//       for (grid_coord j = startNorm.get2 (); j < endNorm.get2 (); ++j)
+//       {
+//         // TODO: check that this loop is optimized out
+//         for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
+//         {
+//           TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+//           calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
+//         }
+//       }
+//     }
+//
+// #ifdef COMPLEX_FIELD_VALUES
+//     normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
+//     normIm = sqrt (normIm / grid->getSize ().calculateTotalCoord ());
+//     normMod = sqrt (normMod / grid->getSize ().calculateTotalCoord ());
+//
+//     /*
+//      * NOTE: do not change this! test suite depdends on the order of values in output
+//      */
+//     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
+//       grid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
+// #else
+//     normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
+//
+//     /*
+//      * NOTE: do not change this! test suite depdends on the order of values in output
+//      */
+//     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
+//       grid->getName (), t, normRe, normRe * 100.0 / maxRe);
+// #endif
+//   }
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
