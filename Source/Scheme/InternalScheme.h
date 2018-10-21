@@ -433,6 +433,12 @@ public:
   CUDA_DEVICE CUDA_HOST
   FieldValue approximateIncidentWaveH (TCFP pos);
 
+  CUDA_DEVICE CUDA_HOST
+  FPValue getMaterial (const TC &, GridType, TGrid<TC> *, GridType);
+  CUDA_DEVICE CUDA_HOST
+  FPValue getMetaMaterial (const TC &, GridType, TGrid<TC> *, GridType, TGrid<TC> *, GridType, TGrid<TC> *, GridType,
+                           FPValue &, FPValue &);
+
   bool getDoNeedEx () const { return doNeedEx; }
   bool getDoNeedEy () const { return doNeedEy; }
   bool getDoNeedEz () const { return doNeedEz; }
