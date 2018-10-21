@@ -428,16 +428,24 @@ public:
   {
   } /* ~YeeGridLayout */
 
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (Grid<TC> *, TC, TC);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (Grid<TC> *, TC, TC, TC, TC);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (Grid<TC> *, TC, TC, TC, TC, TC, TC, TC, TC);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (Grid<TC> *, Grid<TC> *, Grid<TC> *, TC, TC, FPValue &, FPValue &);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (Grid<TC> *, Grid<TC> *, Grid<TC> *, TC, TC, TC, TC, FPValue &, FPValue &);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (Grid<TC> *, Grid<TC> *, Grid<TC> *, TC, TC, TC, TC, TC, TC, TC, TC,
+  template <template <typename> class TGrid>
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (TGrid<TC> *, TC, TC);
+  template <template <typename> class TGrid>
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (TGrid<TC> *, TC, TC, TC, TC);
+  template <template <typename> class TGrid>
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (TGrid<TC> *, TC, TC, TC, TC, TC, TC, TC, TC);
+  template <template <typename> class TGrid>
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (TGrid<TC> *, TGrid<TC> *, TGrid<TC> *, TC, TC, FPValue &, FPValue &);
+  template <template <typename> class TGrid>
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (TGrid<TC> *, TGrid<TC> *, TGrid<TC> *, TC, TC, TC, TC, FPValue &, FPValue &);
+  template <template <typename> class TGrid>
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (TGrid<TC> *, TGrid<TC> *, TGrid<TC> *, TC, TC, TC, TC, TC, TC, TC, TC,
                                       FPValue &, FPValue &);
-  CUDA_DEVICE CUDA_HOST FPValue getMetaMaterial (const TC &, GridType, Grid<TC> *, GridType, Grid<TC> *, GridType, Grid<TC> *, GridType,
+  template <template <typename> class TGrid>
+  CUDA_DEVICE CUDA_HOST FPValue getMetaMaterial (const TC &, GridType, TGrid<TC> *, GridType, TGrid<TC> *, GridType, TGrid<TC> *, GridType,
                            FPValue &, FPValue &);
-  CUDA_DEVICE CUDA_HOST FPValue getMaterial (const TC &, GridType, Grid<TC> *, GridType);
+  template <template <typename> class TGrid>
+  CUDA_DEVICE CUDA_HOST FPValue getMaterial (const TC &, GridType, TGrid<TC> *, GridType);
 
   template <bool isMetaMaterial>
   CUDA_DEVICE CUDA_HOST void initCoordinates (const TC &, GridType, TC &, TC &, TC &, TC &, TC &, TC &, TC &, TC &);
@@ -612,8 +620,9 @@ private:
 };
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<YeeGridLayout::TC> *gridMaterial,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (TGrid<YeeGridLayout::TC> *gridMaterial,
                                        TC coord1,
                                        TC coord2)
 {
@@ -625,8 +634,9 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<YeeGridLa
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMaterial,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (TGrid<TC> *gridMaterial,
                                        TC coord1,
                                        TC coord2,
                                        TC coord3,
@@ -644,8 +654,9 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *grid
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *gridMaterial,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (TGrid<TC> *gridMaterial,
                                        TC coord1,
                                        TC coord2,
                                        TC coord3,
@@ -675,10 +686,11 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (Grid<TC> *grid
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
-                                           Grid<TC> *gridMaterialOmega,
-                                           Grid<TC> *gridMaterialGamma,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (TGrid<TC> *gridMaterial,
+                                           TGrid<TC> *gridMaterialOmega,
+                                           TGrid<TC> *gridMaterialGamma,
                                            TC coord1,
                                            TC coord2,
                                            FPValue &omega,
@@ -709,10 +721,11 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
-                                           Grid<TC> *gridMaterialOmega,
-                                           Grid<TC> *gridMaterialGamma,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (TGrid<TC> *gridMaterial,
+                                           TGrid<TC> *gridMaterialOmega,
+                                           TGrid<TC> *gridMaterialGamma,
                                            TC coord1,
                                            TC coord2,
                                            TC coord3,
@@ -759,10 +772,11 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *gridMaterial,
-                                           Grid<TC> *gridMaterialOmega,
-                                           Grid<TC> *gridMaterialGamma,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (TGrid<TC> *gridMaterial,
+                                           TGrid<TC> *gridMaterialOmega,
+                                           TGrid<TC> *gridMaterialGamma,
                                            TC coord1,
                                            TC coord2,
                                            TC coord3,
@@ -841,14 +855,15 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (Grid<TC> *
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getMetaMaterial (const TC &posAbs,
                                 GridType typeOfField,
-                                Grid<TC> *gridMaterial,
+                                TGrid<TC> *gridMaterial,
                                 GridType typeOfMaterial,
-                                Grid<TC> *gridMaterialOmega,
+                                TGrid<TC> *gridMaterialOmega,
                                 GridType typeOfMaterialOmega,
-                                Grid<TC> *gridMaterialGamma,
+                                TGrid<TC> *gridMaterialGamma,
                                 GridType typeOfMaterialGamma,
                                 FPValue &omega,
                                 FPValue &gamma)
@@ -925,10 +940,11 @@ YeeGridLayout<Type, TCoord, layout_type>::getMetaMaterial (const TC &posAbs,
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
                             GridType typeOfField,
-                            Grid<TC> *gridMaterial,
+                            TGrid<TC> *gridMaterial,
                             GridType typeOfMaterial)
 {
   TC absPos11;

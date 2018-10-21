@@ -178,6 +178,93 @@ public:
   CUDA_HOST
   static void allocateGridsOnGPU (InternalSchemeBase<Type, TCoord, layout_type, TGrid> *gpuScheme);
 
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
+  CUDA_HOST
+  static void
+  copyGridsFromCPU (InternalSchemeBase<Type, TCoord, layout_type, TGrid> *gpuScheme,
+                    TCoord<grid_coord, true> start,
+                    TCoord<grid_coord, true> end)
+  {
+    gpuScheme->Eps->copyFromCPU (start, end);
+    gpuScheme->Mu->copyFromCPU (start, end);
+
+    gpuScheme->Ex->copyFromCPU (start, end);
+    gpuScheme->Ey->copyFromCPU (start, end);
+    gpuScheme->Ez->copyFromCPU (start, end);
+    gpuScheme->Hx->copyFromCPU (start, end);
+    gpuScheme->Hy->copyFromCPU (start, end);
+    gpuScheme->Hz->copyFromCPU (start, end);
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      gpuScheme->Dx->copyFromCPU (start, end);
+      gpuScheme->Dy->copyFromCPU (start, end);
+      gpuScheme->Dz->copyFromCPU (start, end);
+      gpuScheme->Bx->copyFromCPU (start, end);
+      gpuScheme->By->copyFromCPU (start, end);
+      gpuScheme->Bz->copyFromCPU (start, end);
+
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuScheme->D1x->copyFromCPU (start, end);
+        gpuScheme->D1y->copyFromCPU (start, end);
+        gpuScheme->D1z->copyFromCPU (start, end);
+        gpuScheme->B1x->copyFromCPU (start, end);
+        gpuScheme->B1y->copyFromCPU (start, end);
+        gpuScheme->B1z->copyFromCPU (start, end);
+      }
+
+      gpuScheme->SigmaX->copyFromCPU (start, end);
+      gpuScheme->SigmaY->copyFromCPU (start, end);
+      gpuScheme->SigmaZ->copyFromCPU (start, end);
+    }
+
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+    {
+      gpuScheme->ExAmplitude->copyFromCPU (start, end);
+      gpuScheme->EyAmplitude->copyFromCPU (start, end);
+      gpuScheme->EzAmplitude->copyFromCPU (start, end);
+      gpuScheme->HxAmplitude->copyFromCPU (start, end);
+      gpuScheme->HyAmplitude->copyFromCPU (start, end);
+      gpuScheme->HzAmplitude->copyFromCPU (start, end);
+    }
+
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    {
+      gpuScheme->OmegaPE->copyFromCPU (start, end);
+      gpuScheme->GammaE->copyFromCPU (start, end);
+      gpuScheme->OmegaPM->copyFromCPU (start, end);
+      gpuScheme->GammaM->copyFromCPU (start, end);
+    }
+
+    if (SOLVER_SETTINGS.getDoUseTFSF ())
+    {
+      TCoord<grid_coord, true> zero (0, 0, 0
+#ifdef DEBUG_INFO
+              , gpuScheme->ct1, gpuScheme->ct2, gpuScheme->ct3
+#endif
+              );
+
+
+
+      gpuScheme->EInc->copyFromCPU (zero, GridCoordinate1D (500*(gpuScheme->yeeLayout->getSize ().get1 ())
+#ifdef DEBUG_INFO
+                                                                , CoordinateType::X
+#endif
+                                                               ));
+      gpuScheme->HInc->copyFromCPU (zero, GridCoordinate1D (500*(gpuScheme->yeeLayout->getSize ().get1 ())
+#ifdef DEBUG_INFO
+                                                                , CoordinateType::X
+#endif
+                                                               ));
+    }
+  }
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
+  CUDA_HOST
+  static void copyGridsToGPU (InternalSchemeBase<Type, TCoord, layout_type, TGrid> *intScheme,
+                              InternalSchemeBase<Type, TCoord, layout_type, TGrid> *gpuScheme);
+
   static FieldValue approximateIncidentWaveHelper (FPValue d, Grid<GridCoordinate1D> *FieldInc)
   {
     FPValue coordD1 = (FPValue) ((grid_coord) d);
