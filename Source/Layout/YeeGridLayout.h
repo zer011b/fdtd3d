@@ -3,7 +3,6 @@
 
 #include "Approximation.h"
 #include "Assert.h"
-#include "Grid.h"
 #include "GridLayout.h"
 #include "PhysicsConst.h"
 
@@ -429,23 +428,18 @@ public:
   } /* ~YeeGridLayout */
 
   template <template <typename> class TGrid>
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (TGrid<TC> *, TC, TC);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (FieldPointValue *, FieldPointValue *);
   template <template <typename> class TGrid>
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (TGrid<TC> *, TC, TC, TC, TC);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *);
   template <template <typename> class TGrid>
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (TGrid<TC> *, TC, TC, TC, TC, TC, TC, TC, TC);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *);
   template <template <typename> class TGrid>
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (TGrid<TC> *, TGrid<TC> *, TGrid<TC> *, TC, TC, FPValue &, FPValue &);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *, TC, TC, FPValue &, FPValue &);
   template <template <typename> class TGrid>
   CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (TGrid<TC> *, TGrid<TC> *, TGrid<TC> *, TC, TC, TC, TC, FPValue &, FPValue &);
   template <template <typename> class TGrid>
   CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (TGrid<TC> *, TGrid<TC> *, TGrid<TC> *, TC, TC, TC, TC, TC, TC, TC, TC,
                                       FPValue &, FPValue &);
-  template <template <typename> class TGrid>
-  CUDA_DEVICE CUDA_HOST FPValue getMetaMaterial (const TC &, GridType, TGrid<TC> *, GridType, TGrid<TC> *, GridType, TGrid<TC> *, GridType,
-                           FPValue &, FPValue &);
-  template <template <typename> class TGrid>
-  CUDA_DEVICE CUDA_HOST FPValue getMaterial (const TC &, GridType, TGrid<TC> *, GridType);
 
   template <bool isMetaMaterial>
   CUDA_DEVICE CUDA_HOST void initCoordinates (const TC &, GridType, TC &, TC &, TC &, TC &, TC &, TC &, TC &, TC &);
@@ -622,13 +616,8 @@ private:
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (TGrid<YeeGridLayout::TC> *gridMaterial,
-                                       TC coord1,
-                                       TC coord2)
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValue * val1, FieldPointValue * val2)
 {
-  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
-
   return Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                              Approximation::getMaterial (val2));
 }
@@ -636,17 +625,8 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (TGrid<YeeGridL
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (TGrid<TC> *gridMaterial,
-                                       TC coord1,
-                                       TC coord2,
-                                       TC coord3,
-                                       TC coord4)
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValue * val1, FieldPointValue * val2, FieldPointValue * val3, FieldPointValue * val4)
 {
-  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue* val3 = gridMaterial->getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue* val4 = gridMaterial->getFieldPointValueByAbsolutePos (coord4);
-
   return Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                              Approximation::getMaterial (val2),
                                              Approximation::getMaterial (val3),
@@ -656,25 +636,9 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (TGrid<TC> *gri
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (TGrid<TC> *gridMaterial,
-                                       TC coord1,
-                                       TC coord2,
-                                       TC coord3,
-                                       TC coord4,
-                                       TC coord5,
-                                       TC coord6,
-                                       TC coord7,
-                                       TC coord8)
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValue * val1, FieldPointValue * val2, FieldPointValue * val3, FieldPointValue * val4,
+                                                                  FieldPointValue * val5, FieldPointValue * val6, FieldPointValue * val7, FieldPointValue * val8)
 {
-  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue* val3 = gridMaterial->getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue* val4 = gridMaterial->getFieldPointValueByAbsolutePos (coord4);
-  FieldPointValue* val5 = gridMaterial->getFieldPointValueByAbsolutePos (coord5);
-  FieldPointValue* val6 = gridMaterial->getFieldPointValueByAbsolutePos (coord6);
-  FieldPointValue* val7 = gridMaterial->getFieldPointValueByAbsolutePos (coord7);
-  FieldPointValue* val8 = gridMaterial->getFieldPointValueByAbsolutePos (coord8);
-
   return Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                              Approximation::getMaterial (val2),
                                              Approximation::getMaterial (val3),
@@ -688,25 +652,14 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (TGrid<TC> *gri
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (TGrid<TC> *gridMaterial,
-                                           TGrid<TC> *gridMaterialOmega,
-                                           TGrid<TC> *gridMaterialGamma,
-                                           TC coord1,
-                                           TC coord2,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPointValue * val1, FieldPointValue * val2
+                                           FieldPointValue * val3, FieldPointValue * val4,
+                                           FieldPointValue * val5, FieldPointValue * val6,
                                            FPValue &omega,
                                            FPValue &gamma)
 {
-  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
-
   FPValue material = Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                                          Approximation::getMaterial (val2));
-
-  FieldPointValue *val3 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val4 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord2);
-
-  FieldPointValue *val5 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val6 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord2);
 
   Approximation::approximateDrudeModel (omega,
                                         gamma,
@@ -723,35 +676,19 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (TGrid<TC> 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (TGrid<TC> *gridMaterial,
-                                           TGrid<TC> *gridMaterialOmega,
-                                           TGrid<TC> *gridMaterialGamma,
-                                           TC coord1,
-                                           TC coord2,
-                                           TC coord3,
-                                           TC coord4,
-                                           FPValue &omega,
-                                           FPValue &gamma)
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPointValue * val1, FieldPointValue * val2,
+                                                                      FieldPointValue * val3, FieldPointValue * val4,
+                                                                      FieldPointValue * val5, FieldPointValue * val6,
+                                                                      FieldPointValue * val7, FieldPointValue * val8,
+                                                                      FieldPointValue * val9, FieldPointValue * val10,
+                                                                      FieldPointValue * val11, FieldPointValue * val12,
+                                                                      FPValue &omega,
+                                                                      FPValue &gamma)
 {
-  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue* val3 = gridMaterial->getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue* val4 = gridMaterial->getFieldPointValueByAbsolutePos (coord4);
-
   FPValue material = Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                                          Approximation::getMaterial (val2),
                                                          Approximation::getMaterial (val3),
                                                          Approximation::getMaterial (val4));
-
-  FieldPointValue *val5 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val6 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue *val7 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue *val8 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord4);
-
-  FieldPointValue *val9 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val10 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue *val11 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue *val12 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord4);
 
   Approximation::approximateDrudeModel (omega,
                                         gamma,
@@ -774,29 +711,21 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (TGrid<TC> 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (TGrid<TC> *gridMaterial,
-                                           TGrid<TC> *gridMaterialOmega,
-                                           TGrid<TC> *gridMaterialGamma,
-                                           TC coord1,
-                                           TC coord2,
-                                           TC coord3,
-                                           TC coord4,
-                                           TC coord5,
-                                           TC coord6,
-                                           TC coord7,
-                                           TC coord8,
-                                           FPValue &omega,
-                                           FPValue &gamma)
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPointValue * val1, FieldPointValue * val2,
+                                                                      FieldPointValue * val3, FieldPointValue * val4,
+                                                                      FieldPointValue * val5, FieldPointValue * val6,
+                                                                      FieldPointValue * val7, FieldPointValue * val8,
+                                                                      FieldPointValue * val9, FieldPointValue * val10,
+                                                                      FieldPointValue * val11, FieldPointValue * val12,
+                                                                      FieldPointValue * val13, FieldPointValue * val14,
+                                                                      FieldPointValue * val15, FieldPointValue * val16,
+                                                                      FieldPointValue * val17, FieldPointValue * val18,
+                                                                      FieldPointValue * val19, FieldPointValue * val20,
+                                                                      FieldPointValue * val21, FieldPointValue * val22,
+                                                                      FieldPointValue * val23, FieldPointValue * val24,
+                                                                      FPValue &omega,
+                                                                      FPValue &gamma)
 {
-  FieldPointValue* val1 = gridMaterial->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue* val2 = gridMaterial->getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue* val3 = gridMaterial->getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue* val4 = gridMaterial->getFieldPointValueByAbsolutePos (coord4);
-  FieldPointValue* val5 = gridMaterial->getFieldPointValueByAbsolutePos (coord5);
-  FieldPointValue* val6 = gridMaterial->getFieldPointValueByAbsolutePos (coord6);
-  FieldPointValue* val7 = gridMaterial->getFieldPointValueByAbsolutePos (coord7);
-  FieldPointValue* val8 = gridMaterial->getFieldPointValueByAbsolutePos (coord8);
-
   FPValue material = Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                                          Approximation::getMaterial (val2),
                                                          Approximation::getMaterial (val3),
@@ -805,24 +734,6 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (TGrid<TC> 
                                                          Approximation::getMaterial (val6),
                                                          Approximation::getMaterial (val7),
                                                          Approximation::getMaterial (val8));
-
-  FieldPointValue *val9 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val10 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue *val11 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue *val12 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord4);
-  FieldPointValue *val13 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord5);
-  FieldPointValue *val14 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord6);
-  FieldPointValue *val15 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord7);
-  FieldPointValue *val16 = gridMaterialOmega->getFieldPointValueByAbsolutePos (coord8);
-
-  FieldPointValue *val17 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord1);
-  FieldPointValue *val18 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord2);
-  FieldPointValue *val19 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord3);
-  FieldPointValue *val20 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord4);
-  FieldPointValue *val21 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord5);
-  FieldPointValue *val22 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord6);
-  FieldPointValue *val23 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord7);
-  FieldPointValue *val24 = gridMaterialGamma->getFieldPointValueByAbsolutePos (coord8);
 
   Approximation::approximateDrudeModel (omega,
                                         gamma,
@@ -852,173 +763,6 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (TGrid<TC> 
                                         Approximation::getMaterial (val24));
 
   return material;
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <template <typename> class TGrid>
-CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getMetaMaterial (const TC &posAbs,
-                                GridType typeOfField,
-                                TGrid<TC> *gridMaterial,
-                                GridType typeOfMaterial,
-                                TGrid<TC> *gridMaterialOmega,
-                                GridType typeOfMaterialOmega,
-                                TGrid<TC> *gridMaterialGamma,
-                                GridType typeOfMaterialGamma,
-                                FPValue &omega,
-                                FPValue &gamma)
-{
-  TC absPos11;
-  TC absPos12;
-  TC absPos21;
-  TC absPos22;
-
-  TC absPos31;
-  TC absPos32;
-  TC absPos41;
-  TC absPos42;
-
-  initCoordinates<true> (posAbs, typeOfField, absPos11, absPos12, absPos21, absPos22,
-                         absPos31, absPos32, absPos41, absPos42);
-
-  ASSERT ((typeOfMaterialOmega == GridType::OMEGAPE && typeOfMaterialGamma == GridType::GAMMAE)
-          || (typeOfMaterialOmega == GridType::OMEGAPM && typeOfMaterialGamma == GridType::GAMMAM));
-
-  if (isDoubleMaterialPrecision)
-  {
-    switch (typeOfField)
-    {
-      case GridType::EX:
-      case GridType::DX:
-      case GridType::EY:
-      case GridType::DY:
-      case GridType::HX:
-      case GridType::BX:
-      case GridType::HY:
-      case GridType::BY:
-      case GridType::HZ:
-      case GridType::BZ:
-      case GridType::EZ:
-      case GridType::DZ:
-      {
-        return getApproximateMetaMaterial (gridMaterial, gridMaterialOmega, gridMaterialGamma, absPos11, absPos12, absPos21, absPos22, absPos31, absPos32, absPos41, absPos42, omega, gamma);
-      }
-      default:
-      {
-        UNREACHABLE;
-      }
-    }
-  }
-  else
-  {
-    switch (typeOfField)
-    {
-      case GridType::EX:
-      case GridType::DX:
-      case GridType::EY:
-      case GridType::DY:
-      case GridType::EZ:
-      case GridType::DZ:
-      {
-        return getApproximateMetaMaterial (gridMaterial, gridMaterialOmega, gridMaterialGamma, absPos11, absPos12, omega, gamma);
-      }
-      case GridType::HX:
-      case GridType::BX:
-      case GridType::HY:
-      case GridType::BY:
-      case GridType::HZ:
-      case GridType::BZ:
-      {
-        return getApproximateMetaMaterial (gridMaterial, gridMaterialOmega, gridMaterialGamma, absPos11, absPos12, absPos21, absPos22, omega, gamma);
-      }
-      default:
-      {
-        UNREACHABLE;
-      }
-    }
-  }
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <template <typename> class TGrid>
-CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
-                            GridType typeOfField,
-                            TGrid<TC> *gridMaterial,
-                            GridType typeOfMaterial)
-{
-  TC absPos11;
-  TC absPos12;
-  TC absPos21;
-  TC absPos22;
-
-  TC absPos31;
-  TC absPos32;
-  TC absPos41;
-  TC absPos42;
-
-  initCoordinates<false> (posAbs, typeOfField, absPos11, absPos12, absPos21, absPos22,
-                          absPos31, absPos32, absPos41, absPos42);
-
-  ASSERT (typeOfMaterial == GridType::EPS
-          || typeOfMaterial == GridType::MU
-          || typeOfMaterial == GridType::SIGMAX
-          || typeOfMaterial == GridType::SIGMAY
-          || typeOfMaterial == GridType::SIGMAZ);
-
-  if (isDoubleMaterialPrecision)
-  {
-    switch (typeOfField)
-    {
-      case GridType::EX:
-      case GridType::DX:
-      case GridType::EY:
-      case GridType::DY:
-      case GridType::HX:
-      case GridType::BX:
-      case GridType::HY:
-      case GridType::BY:
-      case GridType::HZ:
-      case GridType::BZ:
-      case GridType::EZ:
-      case GridType::DZ:
-      {
-        return getApproximateMaterial (gridMaterial, absPos11, absPos12, absPos21, absPos22, absPos31, absPos32, absPos41, absPos42);
-      }
-      default:
-      {
-        UNREACHABLE;
-      }
-    }
-  }
-  else
-  {
-    switch (typeOfField)
-    {
-      case GridType::EX:
-      case GridType::DX:
-      case GridType::EY:
-      case GridType::DY:
-      case GridType::EZ:
-      case GridType::DZ:
-      {
-        return getApproximateMaterial (gridMaterial, absPos11, absPos12);
-      }
-      case GridType::HX:
-      case GridType::BX:
-      case GridType::HY:
-      case GridType::BY:
-      case GridType::HZ:
-      case GridType::BZ:
-      {
-        return getApproximateMaterial (gridMaterial, absPos11, absPos12, absPos21, absPos22);
-      }
-      default:
-      {
-        UNREACHABLE;
-      }
-    }
-  }
 }
 
 /*

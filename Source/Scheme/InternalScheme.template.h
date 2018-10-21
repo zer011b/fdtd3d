@@ -931,7 +931,7 @@ InternalSchemeBase<Type, TCoord, layout_type, TGrid>::calculateFieldStepIteratio
   // TODO: [possible] move 1D gridValues to 3D gridValues array
   FieldPointValue *valField = grid->getFieldPointValue (pos);
 
-  FPValue material = materialGrid ? yeeLayout->getMaterial (posAbs, gridType, materialGrid, materialGridType) : 0;
+  FPValue material = materialGrid ? getMaterial (posAbs, gridType, materialGrid, materialGridType) : 0;
 
   TC pos11 = pos;
   TC pos12 = pos;
@@ -1150,7 +1150,7 @@ InternalSchemeBase<Type, TCoord, layout_type, TGrid>::calculateFieldStepIteratio
   FPValue material1;
   FPValue material2;
 
-  FPValue material = yeeLayout->getMetaMaterial (posAbs, gridType,
+  FPValue material = getMetaMaterial (posAbs, gridType,
                                                  materialGrid1, materialGridType1,
                                                  materialGrid2, materialGridType2,
                                                  materialGrid3, materialGridType3,
@@ -1219,9 +1219,9 @@ InternalSchemeBase<Type, TCoord, layout_type, TGrid>::calculateFieldStepIteratio
     valField1 = grid->getFieldPointValue (pos);
   }
 
-  FPValue material1 = materialGrid1 ? yeeLayout->getMaterial (posAbs, gridPMLType1, materialGrid1, materialGridType1) : 0;
-  FPValue material4 = materialGrid4 ? yeeLayout->getMaterial (posAbs, gridPMLType1, materialGrid4, materialGridType4) : 0;
-  FPValue material5 = materialGrid5 ? yeeLayout->getMaterial (posAbs, gridPMLType1, materialGrid5, materialGridType5) : 0;
+  FPValue material1 = materialGrid1 ? getMaterial (posAbs, gridPMLType1, materialGrid1, materialGridType1) : 0;
+  FPValue material4 = materialGrid4 ? getMaterial (posAbs, gridPMLType1, materialGrid4, materialGridType4) : 0;
+  FPValue material5 = materialGrid5 ? getMaterial (posAbs, gridPMLType1, materialGrid5, materialGridType5) : 0;
 
   FPValue modifier = material1 * materialModifier;
   if (useMetamaterials)
@@ -1490,5 +1490,225 @@ InternalSchemeBase<Type, TCoord, layout_type, TGrid>::performPointSourceCalc (ti
 #else /* COMPLEX_FIELD_VALUES */
     pointVal->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
 #endif /* !COMPLEX_FIELD_VALUES */
+  }
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
+CUDA_DEVICE CUDA_HOST
+FPValue
+InternalSchemeBase<Type, TCoord, layout_type, TGrid>::getMaterial (const TC &posAbs,
+                            GridType typeOfField,
+                            TGrid<TC> *gridMaterial,
+                            GridType typeOfMaterial)
+{
+  TC absPos11;
+  TC absPos12;
+  TC absPos21;
+  TC absPos22;
+
+  TC absPos31;
+  TC absPos32;
+  TC absPos41;
+  TC absPos42;
+
+  initCoordinates<false> (posAbs, typeOfField, absPos11, absPos12, absPos21, absPos22,
+                          absPos31, absPos32, absPos41, absPos42);
+
+  ASSERT (typeOfMaterial == GridType::EPS
+          || typeOfMaterial == GridType::MU
+          || typeOfMaterial == GridType::SIGMAX
+          || typeOfMaterial == GridType::SIGMAY
+          || typeOfMaterial == GridType::SIGMAZ);
+
+  if (isDoubleMaterialPrecision)
+  {
+    switch (typeOfField)
+    {
+      case GridType::EX:
+      case GridType::DX:
+      case GridType::EY:
+      case GridType::DY:
+      case GridType::HX:
+      case GridType::BX:
+      case GridType::HY:
+      case GridType::BY:
+      case GridType::HZ:
+      case GridType::BZ:
+      case GridType::EZ:
+      case GridType::DZ:
+      {
+        return yeeLayout->getApproximateMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
+                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos12),
+                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos21),
+                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos22),
+                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos31),
+                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos32),
+                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos41),
+                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos42));
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+  }
+  else
+  {
+    switch (typeOfField)
+    {
+      case GridType::EX:
+      case GridType::DX:
+      case GridType::EY:
+      case GridType::DY:
+      case GridType::EZ:
+      case GridType::DZ:
+      {
+        return yeeLayout->getApproximateMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
+                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos12));
+      }
+      case GridType::HX:
+      case GridType::BX:
+      case GridType::HY:
+      case GridType::BY:
+      case GridType::HZ:
+      case GridType::BZ:
+      {
+        return yeeLayout->getApproximateMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
+                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos12),
+                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos21),
+                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos22));
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+  }
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
+CUDA_DEVICE CUDA_HOST
+FPValue
+YeeGridLayout<Type, TCoord, layout_type>::getMetaMaterial (const TC &posAbs,
+                                GridType typeOfField,
+                                TGrid<TC> *gridMaterial,
+                                GridType typeOfMaterial,
+                                TGrid<TC> *gridMaterialOmega,
+                                GridType typeOfMaterialOmega,
+                                TGrid<TC> *gridMaterialGamma,
+                                GridType typeOfMaterialGamma,
+                                FPValue &omega,
+                                FPValue &gamma)
+{
+  TC absPos11;
+  TC absPos12;
+  TC absPos21;
+  TC absPos22;
+
+  TC absPos31;
+  TC absPos32;
+  TC absPos41;
+  TC absPos42;
+
+  initCoordinates<true> (posAbs, typeOfField, absPos11, absPos12, absPos21, absPos22,
+                         absPos31, absPos32, absPos41, absPos42);
+
+  ASSERT ((typeOfMaterialOmega == GridType::OMEGAPE && typeOfMaterialGamma == GridType::GAMMAE)
+          || (typeOfMaterialOmega == GridType::OMEGAPM && typeOfMaterialGamma == GridType::GAMMAM));
+
+  if (isDoubleMaterialPrecision)
+  {
+    switch (typeOfField)
+    {
+      case GridType::EX:
+      case GridType::DX:
+      case GridType::EY:
+      case GridType::DY:
+      case GridType::HX:
+      case GridType::BX:
+      case GridType::HY:
+      case GridType::BY:
+      case GridType::HZ:
+      case GridType::BZ:
+      case GridType::EZ:
+      case GridType::DZ:
+      {
+        return getApproximateMetaMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
+                                           gridMaterial->getFieldPointValueByAbsolutePos (absPos12),
+                                           gridMaterial->getFieldPointValueByAbsolutePos (absPos21),
+                                           gridMaterial->getFieldPointValueByAbsolutePos (absPos22),
+                                           gridMaterial->getFieldPointValueByAbsolutePos (absPos31),
+                                           gridMaterial->getFieldPointValueByAbsolutePos (absPos32),
+                                           gridMaterial->getFieldPointValueByAbsolutePos (absPos41),
+                                           gridMaterial->getFieldPointValueByAbsolutePos (absPos42),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos11),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos12),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos21),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos22),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos31),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos32),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos41),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos42),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos11),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos12),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos21),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos22),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos31),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos32),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos41),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos42),
+                                           omega, gamma);
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+  }
+  else
+  {
+    switch (typeOfField)
+    {
+      case GridType::EX:
+      case GridType::DX:
+      case GridType::EY:
+      case GridType::DY:
+      case GridType::EZ:
+      case GridType::DZ:
+      {
+        return getApproximateMetaMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
+                                           gridMaterial->getFieldPointValueByAbsolutePos (absPos12),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos11),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos12),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos11),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos12),
+                                           omega, gamma);
+      }
+      case GridType::HX:
+      case GridType::BX:
+      case GridType::HY:
+      case GridType::BY:
+      case GridType::HZ:
+      case GridType::BZ:
+      {
+        return getApproximateMetaMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
+                                           gridMaterial->getFieldPointValueByAbsolutePos (absPos12),
+                                           gridMaterial->getFieldPointValueByAbsolutePos (absPos21),
+                                           gridMaterial->getFieldPointValueByAbsolutePos (absPos22),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos11),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos12),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos21),
+                                           gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos22),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos11),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos12),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos21),
+                                           gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos22),
+                                           omega, gamma);
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
   }
 }
