@@ -429,6 +429,12 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
     DPRINTF (LOG_LEVEL_STAGES, "Performing computations for [%u,%u] time steps.\n", startStep, stepLimit);
   }
 
+  TC zero (0, 0, 0
+#ifdef DEBUG_INFO
+           , ct1, ct2, ct3
+#endif /* DEBUG_INFO */
+           );
+
   for (time_step t = startStep; t < stepLimit; ++t)
   {
     if (processId == 0)
@@ -504,7 +510,15 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 
     if (SOLVER_SETTINGS.getDoUseTFSF ())
     {
-      performPlaneWaveESteps (t);
+      GridCoordinate1D zero1D (0
+#ifdef DEBUG_INFO
+                               , CoordinateType::X
+#endif /* DEBUG_INFO */
+                               );
+
+      performPlaneWaveESteps (t, zero1D, intScheme.EInc->getSize ());
+      internalScheme.EInc->shiftInTime (zero1D, EInc->getSize ());
+      internalScheme.EInc->nextTimeStep ();
     }
 
     if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
@@ -542,14 +556,17 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 
     if (internalScheme.doNeedEx)
     {
+      internalScheme.Ex->shiftInTime (zero, internalscheme.Ex->getSize ());
       internalScheme.Ex->nextTimeStep ();
     }
     if (internalScheme.doNeedEy)
     {
+      internalScheme.Ey->shiftInTime (zero, internalscheme.Ey->getSize ());
       internalScheme.Ey->nextTimeStep ();
     }
     if (internalScheme.doNeedEz)
     {
+      internalScheme.Ez->shiftInTime (zero, internalscheme.Ez->getSize ());
       internalScheme.Ez->nextTimeStep ();
     }
 
@@ -557,14 +574,17 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
     {
       if (internalScheme.doNeedEx)
       {
+        internalScheme.Dx->shiftInTime (zero, internalscheme.Dx->getSize ());
         internalScheme.Dx->nextTimeStep ();
       }
       if (internalScheme.doNeedEy)
       {
+        internalScheme.Dy->shiftInTime (zero, internalscheme.Dy->getSize ());
         internalScheme.Dy->nextTimeStep ();
       }
       if (internalScheme.doNeedEz)
       {
+        internalScheme.Dz->shiftInTime (zero, internalscheme.Dz->getSize ());
         internalScheme.Dz->nextTimeStep ();
       }
     }
@@ -573,21 +593,33 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
     {
       if (internalScheme.doNeedEx)
       {
+        internalScheme.D1x->shiftInTime (zero, internalscheme.D1x->getSize ());
         internalScheme.D1x->nextTimeStep ();
       }
       if (internalScheme.doNeedEy)
       {
+        internalScheme.D1y->shiftInTime (zero, internalscheme.D1y->getSize ());
         internalScheme.D1y->nextTimeStep ();
       }
       if (internalScheme.doNeedEz)
       {
+        internalScheme.D1z->shiftInTime (zero, internalscheme.D1z->getSize ());
         internalScheme.D1z->nextTimeStep ();
       }
     }
 
     if (SOLVER_SETTINGS.getDoUseTFSF ())
     {
-      performPlaneWaveHSteps (t);
+      GridCoordinate1D zero1D (0
+#ifdef DEBUG_INFO
+                               , CoordinateType::X
+#endif /* DEBUG_INFO */
+                               );
+
+      performPlaneWaveHSteps (t, zero1D, internalscheme.HInc->getSize ());
+
+      internalScheme.HInc->shiftInTime (zero1D, internalscheme.HInc->getSize ());
+      internalScheme.HInc->nextTimeStep ();
     }
 
     if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
@@ -625,14 +657,17 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
 
     if (internalScheme.doNeedHx)
     {
+      internalScheme.Hx->shiftInTime (zero, internalscheme.Hx->getSize ());
       internalScheme.Hx->nextTimeStep ();
     }
     if (internalScheme.doNeedHy)
     {
+      internalScheme.Hy->shiftInTime (zero, internalscheme.Hy->getSize ());
       internalScheme.Hy->nextTimeStep ();
     }
     if (internalScheme.doNeedHz)
     {
+      internalScheme.Hz->shiftInTime (zero, internalscheme.Hz->getSize ());
       internalScheme.Hz->nextTimeStep ();
     }
 
@@ -640,14 +675,17 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
     {
       if (internalScheme.doNeedHx)
       {
+        internalScheme.Bx->shiftInTime (zero, internalscheme.Bx->getSize ());
         internalScheme.Bx->nextTimeStep ();
       }
       if (internalScheme.doNeedHy)
       {
+        internalScheme.By->shiftInTime (zero, internalscheme.By->getSize ());
         internalScheme.By->nextTimeStep ();
       }
       if (internalScheme.doNeedHz)
       {
+        internalScheme.Bz->shiftInTime (zero, internalscheme.Bz->getSize ());
         internalScheme.Bz->nextTimeStep ();
       }
     }
@@ -656,14 +694,17 @@ Scheme<Type, TCoord, layout_type>::performNSteps (time_step startStep, time_step
     {
       if (internalScheme.doNeedHx)
       {
+        internalScheme.B1x->shiftInTime (zero, internalscheme.B1x->getSize ());
         internalScheme.B1x->nextTimeStep ();
       }
       if (internalScheme.doNeedHy)
       {
+        internalScheme.B1y->shiftInTime (zero, internalscheme.B1y->getSize ());
         internalScheme.B1y->nextTimeStep ();
       }
       if (internalScheme.doNeedHz)
       {
+        internalScheme.B1z->shiftInTime (zero, internalscheme.B1z->getSize ());
         internalScheme.B1z->nextTimeStep ();
       }
     }

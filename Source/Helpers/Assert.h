@@ -174,6 +174,14 @@ typedef double DOUBLE;
  */
 #define CUBE(x) (SQR(x) * (x))
 
+#ifdef DEBUG_INFO
+#define TC_COORD(x,y,z,ct1,ct2,ct3) TC(x,y,z,ct1,ct2,ct3)
+#define GRID_COORDINATE_1D(x,ct1) GridCoordinate1D(x,ct1)
+#else /* DEBUG_INFO */
+#define TC_COORD(x,y,z,ct1,ct2,ct3) TC(x,y,z)
+#define GRID_COORDINATE_1D(x,ct1) GridCoordinate1D(x)
+#endif /* !DEBUG_INFO */
+
 #include "CudaInclude.h"
 
 #endif /* ASSERT_H */

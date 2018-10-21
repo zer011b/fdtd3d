@@ -5,6 +5,83 @@
 #ifdef CUDA_ENABLED
 
 /**
+ * Replace previous time layer with current and so on
+ */
+template <>
+CUDA_DEVICE
+void
+CudaGrid<GridCoordinate1D>::shiftInTime (const GridCoordinate1D & start, const GridCoordinate1D & end)
+{
+  for (grid_coord index1 = start.get1 (); index1 < end.get1 (); ++index1)
+  {
+    GridCoordinate1D pos (index1
+#ifdef DEBUG_INFO
+                          , start.getType1 ()
+#endif /* DEBUG_INFO */
+                          );
+
+    grid_coord index = calculateIndexFromPosition (pos);
+
+    d_gridValues[index].shiftInTime ();
+  }
+} /* CudaGrid<GridCoordinate1D>::shiftInTime */
+
+/**
+ * Replace previous time layer with current and so on
+ */
+template <>
+CUDA_DEVICE
+void
+CudaGrid<GridCoordinate2D>::shiftInTime (const GridCoordinate2D & start, const GridCoordinate2D & end)
+{
+  for (grid_coord index1 = start.get1 (); index1 < end.get1 (); ++index1)
+  {
+    for (grid_coord index2 = start.get2 (); index2 < end.get2 (); ++index2)
+    {
+      GridCoordinate2D pos (index1, index2
+#ifdef DEBUG_INFO
+                            , start.getType1 ()
+                            , start.getType2 ()
+#endif /* DEBUG_INFO */
+                           );
+
+      grid_coord index = calculateIndexFromPosition (pos);
+
+      d_gridValues[index].shiftInTime ();
+    }
+  }
+} /* CudaGrid<GridCoordinate2D>::shiftInTime */
+
+/**
+ * Replace previous time layer with current and so on
+ */
+template <>
+void
+CudaGrid<GridCoordinate3D>::shiftInTime (const GridCoordinate3D & start, const GridCoordinate3D & end)
+{
+  for (grid_coord index1 = start.get1 (); index1 < end.get1 (); ++index1)
+  {
+    for (grid_coord index2 = start.get2 (); index2 < end.get2 (); ++index2)
+    {
+      for (grid_coord index3 = start.get3 (); index3 < end.get3 (); ++index3)
+      {
+        GridCoordinate3D pos (index1, index2, index3
+#ifdef DEBUG_INFO
+                              , start.getType1 ()
+                              , start.getType2 ()
+                              , start.getType3 ()
+#endif /* DEBUG_INFO */
+                             );
+
+        grid_coord index = calculateIndexFromPosition (pos);
+
+        d_gridValues[index].shiftInTime ();
+      }
+    }
+  }
+} /* CudaGrid<GridCoordinate3D>::shiftInTime */
+
+/**
  * Check params for consistency
  */
 template<>
@@ -191,7 +268,7 @@ CudaGrid<GridCoordinate1D>::copyFromCPU (const GridCoordinate1D &start, /**< sta
                                                                      ));
 
     ASSERT (index >= 0 && index < sizeGridValues);
-    
+
     cudaCheckErrorCmd (cudaMemcpy (&d_gridValues[index], cpuGrid->getFieldPointValue (pos), sizeof (FieldPointValue), cudaMemcpyHostToDevice));
   }
 } /* CudaGrid<GridCoordinate1D>::copyFromCPU */
@@ -280,7 +357,7 @@ CudaGrid<GridCoordinate2D>::copyFromCPU (const GridCoordinate2D &start, /**< sta
                                                      ));
 
       ASSERT (index >= 0 && index < sizeGridValues);
-      
+
       cudaCheckErrorCmd (cudaMemcpy (&d_gridValues[index], cpuGrid->getFieldPointValue (pos), sizeof (FieldPointValue), cudaMemcpyHostToDevice));
     }
   }
@@ -446,7 +523,7 @@ CudaGrid<GridCoordinate3D>::copyToCPU ()
  * @return flag whether position is appropriate to get/set value from
  */
 template<>
-CUDA_HOST
+CUDA_DEVICE CUDA_HOST
 bool
 CudaGrid<GridCoordinate1D>::isLegitIndex (const GridCoordinate1D &position, /**< coordinate in grid */
                                           const GridCoordinate1D &sizeCoord) /**< size of grid */
@@ -484,7 +561,7 @@ CudaGrid<GridCoordinate1D>::calculateIndexFromPosition (const GridCoordinate1D &
  * @return flag whether position is appropriate to get/set value from
  */
 template<>
-CUDA_HOST
+CUDA_DEVICE CUDA_HOST
 bool
 CudaGrid<GridCoordinate2D>::isLegitIndex (const GridCoordinate2D &position, /**< coordinate in grid */
                                           const GridCoordinate2D &sizeCoord) /**< size of grid */
@@ -532,7 +609,7 @@ CudaGrid<GridCoordinate2D>::calculateIndexFromPosition (const GridCoordinate2D &
  * @return flag whether position is appropriate to get/set value from
  */
 template<>
-CUDA_HOST
+CUDA_DEVICE CUDA_HOST
 bool
 CudaGrid<GridCoordinate3D>::isLegitIndex (const GridCoordinate3D &position, /**< coordinate in grid */
                                           const GridCoordinate3D &sizeCoord) /**< size of grid */

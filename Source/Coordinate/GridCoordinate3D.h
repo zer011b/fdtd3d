@@ -6,21 +6,6 @@
 template<class TcoordType, bool doSignChecks>
 class GridCoordinate3DTemplate;
 
-template<class TcoordType, bool doSignChecks>
-CUDA_HOST
-GridCoordinate3DTemplate<TcoordType, doSignChecks> operator*
-(TcoordType lhs, const GridCoordinate3DTemplate<TcoordType, doSignChecks>& rhs);
-
-template<class TcoordType, bool doSignChecks>
-CUDA_HOST
-GridCoordinate3DTemplate<TcoordType, doSignChecks> operator+
-(GridCoordinate3DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate3DTemplate<TcoordType, !doSignChecks>& rhs);
-
-template<class TcoordType, bool doSignChecks>
-CUDA_HOST
-GridCoordinate3DTemplate<TcoordType, doSignChecks> operator-
-(GridCoordinate3DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate3DTemplate<TcoordType, !doSignChecks>& rhs);
-
 /**
  * 3-dimensional coordinate in the grid.
  */
@@ -133,6 +118,38 @@ public:
    * Destructor
    */
   CUDA_DEVICE CUDA_HOST ~GridCoordinate3DTemplate<TcoordType, doSignChecks> () {}
+
+  /**
+   * Operator =
+   *
+   * @return updated coordinate
+   */
+  GridCoordinate3DTemplate<TcoordType, doSignChecks> & operator= (const GridCoordinate3DTemplate<TcoordType, !doSignChecks> & rhs) /**< operand */
+  {
+    GridCoordinate1DTemplate<TcoordType, doSignChecks>::coord1 = rhs.get1 ();
+    GridCoordinate2DTemplate<TcoordType, doSignChecks>::coord2 = rhs.get2 ();
+    coord3 = rhs.get3 ();
+
+#ifdef DEBUG_INFO
+    GridCoordinate1DTemplate<TcoordType, doSignChecks>::type1 = rhs.getType1 ();
+    GridCoordinate2DTemplate<TcoordType, doSignChecks>::type2 = rhs.getType2 ();
+    type3 = rhs.getType3 ();
+
+    CoordinateType cct1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ();
+    CoordinateType cct2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ();
+    ASSERT ((cct1 < cct2) || (cct1 == cct2 && cct2 == CoordinateType::NONE));
+    ASSERT ((cct2 < getType3 ()) || (cct2 == getType3 () && getType3 () == CoordinateType::NONE));
+#endif /* DEBUG_INFO */
+
+    if (doSignChecks)
+    {
+      TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+      TcoordType coord2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+      ASSERT (coord1 >= 0 && coord2 >= 0 && coord3 >= 0);
+    }
+
+    return *this;
+  } /* GridCoordinate1DTemplate::operator= */
 
   /**
    * Calculate total-dimensional coordinate
@@ -301,6 +318,38 @@ public:
     TcoordType rhs_c1 = rhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
     TcoordType coord2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
     TcoordType rhs_c2 = rhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+
+    return GridCoordinate3DTemplate (coord1 - rhs_c1, coord2 - rhs_c2, get3 () - rhs.get3 ()
+#ifdef DEBUG_INFO
+      , GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
+      , GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
+      , getType3 ()
+#endif /* DEBUG_INFO */
+      );
+  } /* GridCoordinate3DTemplate::operator- */
+
+  /**
+   * Operator - for grid coordinates
+   *
+   * @return sum of two grid coordinates
+   */
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate3DTemplate<TcoordType, doSignChecks>
+  operator- (const GridCoordinate3DTemplate<TcoordType, !doSignChecks>& rhs) const /**< operand */
+  {
+#ifdef DEBUG_INFO
+    CoordinateType cct1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ();
+    CoordinateType cct2 = rhs.GridCoordinate1DTemplate<TcoordType, !doSignChecks>::getType1 ();
+    ASSERT (cct1 == cct2);
+    cct1 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ();
+    cct2 = rhs.GridCoordinate2DTemplate<TcoordType, !doSignChecks>::getType2 ();
+    ASSERT (cct1 == cct2);
+    ASSERT (getType3 () == rhs.getType3 ());
+#endif /* DEBUG_INFO */
+    TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+    TcoordType rhs_c1 = rhs.GridCoordinate1DTemplate<TcoordType, !doSignChecks>::get1 ();
+    TcoordType coord2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+    TcoordType rhs_c2 = rhs.GridCoordinate2DTemplate<TcoordType, !doSignChecks>::get2 ();
 
     return GridCoordinate3DTemplate (coord1 - rhs_c1, coord2 - rhs_c2, get3 () - rhs.get3 ()
 #ifdef DEBUG_INFO
@@ -494,6 +543,28 @@ public:
   } /* GridCoordinate3DTemplate::operator* */
 
   /**
+   * Operator * for two grid coordinates
+   *
+   * @return grid coordinate with each coordinate multiplied by rhs coordinate
+   */
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate3DTemplate<TcoordType, doSignChecks>
+  operator* (GridCoordinate3DTemplate<TcoordType, doSignChecks> rhs) const /**< operand */
+  {
+    TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+    TcoordType rhs1 = rhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+    TcoordType coord2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+    TcoordType rhs2 = rhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+    return GridCoordinate3DTemplate<TcoordType, doSignChecks> (coord1 * rhs1, coord2 * rhs2, get3 () * rhs.get3 ()
+#ifdef DEBUG_INFO
+      , GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
+      , GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
+      , getType3 ()
+#endif /* DEBUG_INFO */
+      );
+  } /* GridCoordinate3DTemplate::operator* */
+
+  /**
    * Operator / for grid coordinate and coordinate
    *
    * @return grid coordinate wuth each coordinate divided by coordinate
@@ -633,15 +704,6 @@ public:
                                                                );
   } /* GridCoordinate3DTemplate::addWithBorder */
 
-#ifndef CUDA_HOST
-  friend CUDA_HOST GridCoordinate3DTemplate<TcoordType, doSignChecks> (::operator* <TcoordType, doSignChecks>)
-    (TcoordType lhs, const GridCoordinate3DTemplate<TcoordType, doSignChecks>& rhs);
-  friend CUDA_HOST GridCoordinate3DTemplate<TcoordType, doSignChecks> (::operator+ <TcoordType, doSignChecks>)
-    (GridCoordinate3DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate3DTemplate<TcoordType, !doSignChecks>& rhs);
-  friend CUDA_HOST GridCoordinate3DTemplate<TcoordType, doSignChecks> (::operator- <TcoordType, doSignChecks>)
-    (GridCoordinate3DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate3DTemplate<TcoordType, !doSignChecks>& rhs);
-#endif
-
   /**
    * Print coordinate to console
    */
@@ -678,94 +740,6 @@ public:
       , (FPValue) get3 ());
   } /* GridCoordinate3DTemplate::print */
 }; /* GridCoordinate3DTemplate */
-
-/**
- * Coordinate operator * for number and grid coordinate
- *
- * @return grid coordinate, which is the result of multiplication of number and grid coordinate
- */
-template<class TcoordType, bool doSignChecks>
-CUDA_HOST
-GridCoordinate3DTemplate<TcoordType, doSignChecks> operator* (TcoordType lhs, const GridCoordinate3DTemplate<TcoordType, doSignChecks>& rhs)
-{
-  TcoordType coord1 = rhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
-  TcoordType coord2 = rhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
-  return GridCoordinate3DTemplate<TcoordType, doSignChecks> (lhs * coord1, lhs * coord2, lhs * rhs.get3 ()
-#ifdef DEBUG_INFO
-    , rhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
-    , rhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
-    , rhs.getType3 ()
-#endif /* DEBUG_INFO */
-    );
-} /* GridCoordinate3DTemplate::operator* */
-
-/**
- * Coodinate operator + for two grid coordinates, only for one of which sign checks are enabled
- *
- * @return result of addition of two grid coordinates
- */
-template<class TcoordType, bool doSignChecks>
-CUDA_HOST
-GridCoordinate3DTemplate<TcoordType, doSignChecks> operator+ (GridCoordinate3DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate3DTemplate<TcoordType, !doSignChecks>& rhs)
-{
-#ifdef DEBUG_INFO
-  CoordinateType cct1 = lhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ();
-  CoordinateType cct2 = rhs.GridCoordinate1DTemplate<TcoordType, !doSignChecks>::getType1 ();
-  ASSERT (cct1 == cct2);
-  cct1 = lhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ();
-  cct2 = rhs.GridCoordinate2DTemplate<TcoordType, !doSignChecks>::getType2 ();
-  ASSERT (cct1 == cct2);
-  ASSERT (lhs.getType3 () == rhs.getType3 ());
-#endif /* DEBUG_INFO */
-  TcoordType lcoord1 = lhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
-  TcoordType rcoord1 = rhs.GridCoordinate1DTemplate<TcoordType, !doSignChecks>::get1 ();
-  TcoordType lcoord2 = lhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
-  TcoordType rcoord2 = rhs.GridCoordinate2DTemplate<TcoordType, !doSignChecks>::get2 ();
-
-  return GridCoordinate3DTemplate<TcoordType, doSignChecks> (lcoord1 + rcoord1,
-                                                             lcoord2 + rcoord2,
-                                                             lhs.get3 () + rhs.get3 ()
-#ifdef DEBUG_INFO
-    , lhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
-    , lhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
-    , lhs.getType3 ()
-#endif /* DEBUG_INFO */
-    );
-} /* GridCoordinate3DTemplate::operator+ */
-
-/**
- * Coodinate operator - for two grid coordinates, only for one of which sign checks are enabled
- *
- * @return result of substraction of two grid coordinates
- */
-template<class TcoordType, bool doSignChecks>
-CUDA_HOST
-GridCoordinate3DTemplate<TcoordType, doSignChecks> operator- (GridCoordinate3DTemplate<TcoordType, doSignChecks> &lhs, const GridCoordinate3DTemplate<TcoordType, !doSignChecks>& rhs)
-{
-#ifdef DEBUG_INFO
-  CoordinateType cct1 = lhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ();
-  CoordinateType cct2 = rhs.GridCoordinate1DTemplate<TcoordType, !doSignChecks>::getType1 ();
-  ASSERT (cct1 == cct2);
-  cct1 = lhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ();
-  cct2 = rhs.GridCoordinate2DTemplate<TcoordType, !doSignChecks>::getType2 ();
-  ASSERT (cct1 == cct2);
-  ASSERT (lhs.getType3 () == rhs.getType3 ());
-#endif /* DEBUG_INFO */
-  TcoordType lcoord1 = lhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
-  TcoordType rcoord1 = rhs.GridCoordinate1DTemplate<TcoordType, !doSignChecks>::get1 ();
-  TcoordType lcoord2 = lhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
-  TcoordType rcoord2 = rhs.GridCoordinate2DTemplate<TcoordType, !doSignChecks>::get2 ();
-
-  return GridCoordinate3DTemplate<TcoordType, doSignChecks> (lcoord1 - rcoord1,
-                                                             lcoord2 - rcoord2,
-                                                             lhs.get3 () - rhs.get3 ()
-#ifdef DEBUG_INFO
-    , lhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
-    , lhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
-    , lhs.getType3 ()
-#endif /* DEBUG_INFO */
-    );
-} /* GridCoordinate3DTemplate::operator- */
 
 /**
  * Expand 1D coordinate to 3D according to coordinate types. Basically, this is a reverse to initAxesCoordinate

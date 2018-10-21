@@ -4,10 +4,10 @@
 #include "FieldPoint.h"
 #include "GridCoordinate3D.h"
 
+#define APPROXIMATION_ACCURACY FPValue (0.0000001)
+
 class Approximation
 {
-  static FPValue accuracy;
-
 public:
 
   static CUDA_DEVICE CUDA_HOST FPValue getAccuracy ();

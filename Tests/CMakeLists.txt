@@ -56,7 +56,7 @@ if ("${CUDA_ENABLED}")
   target_link_libraries (unit-test-cuda-grid PRIVATE Grid Helpers Settings Kernels Coordinate)
 
   add_executable (unit-test-internalscheme unit-test-internalscheme.cu)
-  set_target_properties (unit-test-cuda-grid PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  set_target_properties (unit-test-internalscheme PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
   target_link_libraries (unit-test-internalscheme ${LIBS} Grid Helpers Settings InternalScheme)
 else ()
   add_executable (unit-test-internalscheme unit-test-internalscheme.cpp)

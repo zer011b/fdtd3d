@@ -427,19 +427,26 @@ public:
   {
   } /* ~YeeGridLayout */
 
-  template <template <typename> class TGrid>
   CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (FieldPointValue *, FieldPointValue *);
-  template <template <typename> class TGrid>
   CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *);
-  template <template <typename> class TGrid>
   CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *);
-  template <template <typename> class TGrid>
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *, TC, TC, FPValue &, FPValue &);
-  template <template <typename> class TGrid>
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (TGrid<TC> *, TGrid<TC> *, TGrid<TC> *, TC, TC, TC, TC, FPValue &, FPValue &);
-  template <template <typename> class TGrid>
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (TGrid<TC> *, TGrid<TC> *, TGrid<TC> *, TC, TC, TC, TC, TC, TC, TC, TC,
-                                      FPValue &, FPValue &);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FPValue &, FPValue &);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FPValue &, FPValue &);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+                                                            FPValue &, FPValue &);
 
   template <bool isMetaMaterial>
   CUDA_DEVICE CUDA_HOST void initCoordinates (const TC &, GridType, TC &, TC &, TC &, TC &, TC &, TC &, TC &, TC &);
@@ -614,7 +621,6 @@ private:
 };
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValue * val1, FieldPointValue * val2)
 {
@@ -623,7 +629,6 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValu
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValue * val1, FieldPointValue * val2, FieldPointValue * val3, FieldPointValue * val4)
 {
@@ -634,7 +639,6 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValu
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValue * val1, FieldPointValue * val2, FieldPointValue * val3, FieldPointValue * val4,
                                                                   FieldPointValue * val5, FieldPointValue * val6, FieldPointValue * val7, FieldPointValue * val8)
@@ -650,9 +654,8 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValu
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPointValue * val1, FieldPointValue * val2
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPointValue * val1, FieldPointValue * val2,
                                            FieldPointValue * val3, FieldPointValue * val4,
                                            FieldPointValue * val5, FieldPointValue * val6,
                                            FPValue &omega,
@@ -674,7 +677,6 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPoint
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPointValue * val1, FieldPointValue * val2,
                                                                       FieldPointValue * val3, FieldPointValue * val4,
@@ -709,7 +711,6 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPoint
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <template <typename> class TGrid>
 CUDA_DEVICE CUDA_HOST FPValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPointValue * val1, FieldPointValue * val2,
                                                                       FieldPointValue * val3, FieldPointValue * val4,
@@ -793,17 +794,17 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-        absPos12 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+        absPos12 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
 
-        absPos21 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos22 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+        absPos21 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos22 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
 
-        absPos31 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
-        absPos32 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+        absPos31 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+        absPos32 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
-        absPos41 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-        absPos42 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+        absPos41 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+        absPos42 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
       }
       else
       {
@@ -820,17 +821,17 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-        absPos12 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+        absPos12 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
 
-        absPos21 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos22 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+        absPos21 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos22 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
 
-        absPos31 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
-        absPos32 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+        absPos31 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+        absPos32 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
-        absPos41 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-        absPos42 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+        absPos41 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+        absPos42 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
       }
       else
       {
@@ -847,17 +848,17 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
 
       if (isDoubleMaterialPrecision)
       {
-        absPos11 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-        absPos12 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+        absPos12 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
 
-        absPos21 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
-        absPos22 = grid_coord (2) * getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+        absPos21 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+        absPos22 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
-        absPos31 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos32 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+        absPos31 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos32 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
 
-        absPos41 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-        absPos42 = grid_coord (2) * getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+        absPos41 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+        absPos42 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
       }
       else
       {
@@ -876,20 +877,20 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
       if (isDoubleMaterialPrecision)
       {
         coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, -0.5, ct1, ct2, ct3);
-        absPos11 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
-        absPos12 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+        absPos11 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+        absPos12 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
         coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, 0.5, ct1, ct2, ct3);
-        absPos21 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-        absPos22 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+        absPos21 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+        absPos22 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
 
         coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, -0.5, ct1, ct2, ct3);
-        absPos31 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-        absPos32 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+        absPos31 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+        absPos32 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
 
         coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, 0.5, ct1, ct2, ct3);
-        absPos41 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos42 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+        absPos41 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos42 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
       }
       else
       {
@@ -914,20 +915,20 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
       if (isDoubleMaterialPrecision)
       {
         coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, -0.5, ct1, ct2, ct3);
-        absPos11 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
-        absPos12 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+        absPos11 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+        absPos12 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
         coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, 0.5, ct1, ct2, ct3);
-        absPos21 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-        absPos22 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+        absPos21 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+        absPos22 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
 
         coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, -0.5, ct1, ct2, ct3);
-        absPos31 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-        absPos32 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+        absPos31 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+        absPos32 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
 
         coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, 0.5, ct1, ct2, ct3);
-        absPos41 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos42 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+        absPos41 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos42 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
       }
       else
       {
@@ -952,20 +953,20 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
       if (isDoubleMaterialPrecision)
       {
         coord = realCoord + TCSFP::initAxesCoordinate (-0.5, -0.5, 0.0, ct1, ct2, ct3);
-        absPos11 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
-        absPos12 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+        absPos11 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+        absPos12 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
         coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.5, 0.0, ct1, ct2, ct3);
-        absPos21 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-        absPos22 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+        absPos21 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+        absPos22 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
 
         coord = realCoord + TCSFP::initAxesCoordinate (0.5, -0.5, 0.0, ct1, ct2, ct3);
-        absPos31 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-        absPos32 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+        absPos31 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+        absPos32 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
 
         coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.5, 0.0, ct1, ct2, ct3);
-        absPos41 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos42 = grid_coord (2) * getEpsCoord (coord) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+        absPos41 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+        absPos42 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
       }
       else
       {
@@ -1017,6 +1018,9 @@ YeeGridLayout<Type, TCoord, layout_type>::getExCircuitElementDiff (LayoutDirecti
       UNREACHABLE;
     }
   }
+
+  UNREACHABLE;
+  return circuitExDownDiff;
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -1048,6 +1052,9 @@ YeeGridLayout<Type, TCoord, layout_type>::getEyCircuitElementDiff (LayoutDirecti
       UNREACHABLE;
     }
   }
+
+  UNREACHABLE;
+  return circuitEyLeftDiff;
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -1079,6 +1086,9 @@ YeeGridLayout<Type, TCoord, layout_type>::getEzCircuitElementDiff (LayoutDirecti
       UNREACHABLE;
     }
   }
+
+  UNREACHABLE;
+  return circuitEzLeftDiff;
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -1110,6 +1120,9 @@ YeeGridLayout<Type, TCoord, layout_type>::getHxCircuitElementDiff (LayoutDirecti
       UNREACHABLE;
     }
   }
+
+  UNREACHABLE;
+  return circuitHxDownDiff;
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -1141,6 +1154,9 @@ YeeGridLayout<Type, TCoord, layout_type>::getHyCircuitElementDiff (LayoutDirecti
       UNREACHABLE;
     }
   }
+
+  UNREACHABLE;
+  return circuitHyLeftDiff;
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -1172,6 +1188,9 @@ YeeGridLayout<Type, TCoord, layout_type>::getHzCircuitElementDiff (LayoutDirecti
       UNREACHABLE;
     }
   }
+
+  UNREACHABLE;
+  return circuitHzLeftDiff;
 }
 
 typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_ExHy;

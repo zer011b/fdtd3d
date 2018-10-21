@@ -19,67 +19,162 @@
 #define LAMBDA 0.2
 #define DX 0.02
 
-#define TIMESTEPS 100
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, template <typename> class TGrid>
-CUDA_DEVICE CUDA_HOST
-void test (InternalSchemeBase<Type, TCoord, layout_type, TGrid> *intScheme)
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+CUDA_HOST
+void test (InternalSchemeBase<Type, TCoord, layout_type> *cpuScheme,
+           InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme)
 {
-  TCoord<grid_coord, true> diff = intScheme->getEps ()->getBufSize ();
-  TCoord<grid_coord, true> overallSize = intScheme->getEps ()->getSize ();
+  TCoord<grid_coord, true> zero (0, 0, 0
+#ifdef DEBUG_INFO
+                                 , cpuScheme->getType1 ()
+                                 , cpuScheme->getType2 ()
+                                 , cpuScheme->getType3 ()
+#endif /* DEBUG_INFO */
+                                 );
+  TCoord<grid_coord, true> overallSize = cpuScheme->getEps ()->getSize ();
 
   for (time_step t = 0; t < SOLVER_SETTINGS.getNumTimeSteps (); ++t)
   {
+    printf ("calculation %d time step\n", t);
     if (SOLVER_SETTINGS.getDoUseTFSF ())
     {
-      intScheme->performPlaneWaveESteps (t);
+      GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
+      gpuScheme->performPlaneWaveEStepsKernelLaunch (t, zero1D, cpuScheme->getEInc ()->getSize ());
+      gpuScheme->shiftInTimePlaneWaveKernelLaunchEInc (zero1D, cpuScheme->getEInc ()->getSize ());
+      gpuScheme->nextTimeStepPlaneWaveKernelLaunchEInc ();
     }
 
-    if (intScheme->getDoNeedEx ())
+    if (cpuScheme->getDoNeedEx ())
     {
-      intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::EX)> (t, diff, overallSize - diff);
-      intScheme->getEx ()->nextTimeStep ();
+      gpuScheme->template performFieldStepsKernelLaunch<static_cast<uint8_t> (GridType::EX)> (t, zero, overallSize,
+        cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+
+      gpuScheme->shiftInTimeKernelLaunchEx (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+      gpuScheme->nextTimeStepKernelLaunchEx ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchDx (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchDx ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchD1x (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchD1x ();
+      }
     }
 
-    if (intScheme->getDoNeedEy ())
+    if (cpuScheme->getDoNeedEy ())
     {
-      intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::EY)> (t, diff, overallSize - diff);
-      intScheme->getEy ()->nextTimeStep ();
+      gpuScheme->template performFieldStepsKernelLaunch<static_cast<uint8_t> (GridType::EY)> (t, zero, overallSize,
+        cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+
+      gpuScheme->shiftInTimeKernelLaunchEy (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+      gpuScheme->nextTimeStepKernelLaunchEy ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchDy (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchDy ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchD1y (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchD1y ();
+      }
     }
 
-    if (intScheme->getDoNeedEz ())
+    if (cpuScheme->getDoNeedEz ())
     {
-      intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::EZ)> (t, diff, overallSize - diff);
-      intScheme->getEz ()->nextTimeStep ();
+      gpuScheme->template performFieldStepsKernelLaunch<static_cast<uint8_t> (GridType::EZ)> (t, zero, overallSize,
+        cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+
+      gpuScheme->shiftInTimeKernelLaunchEz (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+      gpuScheme->nextTimeStepKernelLaunchEz ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchDz (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchDz ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchD1z (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchD1z ();
+      }
     }
 
     if (SOLVER_SETTINGS.getDoUseTFSF ())
     {
-      intScheme->performPlaneWaveHSteps (t);
+      GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
+      gpuScheme->performPlaneWaveHStepsKernelLaunch (t, zero1D, cpuScheme->getHInc ()->getSize ());
+      gpuScheme->shiftInTimePlaneWaveKernelLaunchHInc (zero1D, cpuScheme->getHInc ()->getSize ());
+      gpuScheme->nextTimeStepPlaneWaveKernelLaunchHInc ();
     }
 
-    if (intScheme->getDoNeedHx ())
+    if (cpuScheme->getDoNeedHx ())
     {
-      intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::HX)> (t, diff, overallSize - diff);
-      intScheme->getHx ()->nextTimeStep ();
+      gpuScheme->template performFieldStepsKernelLaunch<static_cast<uint8_t> (GridType::HX)> (t, zero, overallSize,
+        cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+
+      gpuScheme->shiftInTimeKernelLaunchHx (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+      gpuScheme->nextTimeStepKernelLaunchHx ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchBx (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchBx ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchB1x (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchB1x ();
+      }
     }
 
-    if (intScheme->getDoNeedHy ())
+    if (cpuScheme->getDoNeedHy ())
     {
-      intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::HY)> (t, diff, overallSize - diff);
-      intScheme->getHy ()->nextTimeStep ();
+      gpuScheme->template performFieldStepsKernelLaunch<static_cast<uint8_t> (GridType::HY)> (t, zero, overallSize,
+        cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+
+      gpuScheme->shiftInTimeKernelLaunchHy (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+      gpuScheme->nextTimeStepKernelLaunchHy ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchBy (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchBy ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchB1y (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchB1y ();
+      }
     }
 
-    if (intScheme->getDoNeedHz ())
+    if (cpuScheme->getDoNeedHz ())
     {
-      intScheme->template performFieldSteps<static_cast<uint8_t> (GridType::HZ)> (t, diff, overallSize - diff);
-      intScheme->getHz ()->nextTimeStep ();
+      gpuScheme->template performFieldStepsKernelLaunch<static_cast<uint8_t> (GridType::HZ)> (t, zero, overallSize,
+        cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+
+      gpuScheme->shiftInTimeKernelLaunchHz (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+      gpuScheme->nextTimeStepKernelLaunchHz ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchBz (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchBz ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuScheme->shiftInTimeKernelLaunchB1z (zero, overallSize, cpuScheme->getType1 (), cpuScheme->getType2 (), cpuScheme->getType3 ());
+        gpuScheme->nextTimeStepKernelLaunchB1z ();
+      }
     }
   }
 }
 
-template <template <typename> class TGrid>
-void test1D (TGrid<GridCoordinate1D> *E,
+void test1D (Grid<GridCoordinate1D> *E,
              GridCoordinateFP1D diff,
              CoordinateType ct1)
 {
@@ -108,8 +203,7 @@ void test1D (TGrid<GridCoordinate1D> *E,
 #endif /* COMPLEX_FIELD_VALUES */
 }
 
-template <template <typename> class TGrid>
-void test2D (TGrid<GridCoordinate2D> *E,
+void test2D (Grid<GridCoordinate2D> *E,
              GridCoordinateFP2D diff,
              CoordinateType ct1,
              CoordinateType ct2)
@@ -144,7 +238,7 @@ void test2D (TGrid<GridCoordinate2D> *E,
 }
 
 template <template <typename> class TGrid>
-void test3D (TGrid<GridCoordinate3D> *E,
+void test3D (Grid<GridCoordinate3D> *E,
              GridCoordinateFP3D diff,
              CoordinateType ct1,
              CoordinateType ct2,
@@ -183,14 +277,6 @@ void test3D (TGrid<GridCoordinate3D> *E,
 #endif /* COMPLEX_FIELD_VALUES */
 }
 
-__global__ void launch1D_ExHy (CudaExitStatus *retval,
-                               InternalScheme1D_ExHy_CudaGrid<E_CENTERED> *intScheme)
-{
-  test<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED, CudaGrid> (intScheme);
-
-  *retval = CUDA_OK;
-}
-
 template<LayoutType layout_type>
 void test1D_ExHy ()
 {
@@ -217,7 +303,7 @@ void test1D_ExHy ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_ExHy_Grid<layout_type> intScheme;
+  InternalScheme1D_ExHy<layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -229,14 +315,14 @@ void test1D_ExHy ()
   /*
    * Init InternalScheme on GPU
    */
-  InternalScheme1D_ExHy_CudaGrid<layout_type> gpuScheme;
+  InternalSchemeGPU1D_ExHy<layout_type> gpuScheme;
   gpuScheme.initFromCPU (&intScheme, zero, overallSize);
 
-  InternalScheme1D_ExHy_CudaGrid<layout_type> tmpGPUScheme;
-  tmpGPUScheme.initOnGPU ();
+  InternalSchemeGPU1D_ExHy<layout_type> tmpGPUScheme;
+  tmpGPUScheme.initOnGPU (&gpuScheme);
 
-  InternalScheme1D_ExHy_CudaGrid<layout_type> *d_gpuScheme;
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gpuScheme, sizeof(InternalScheme1D_ExHy_CudaGrid<layout_type>)));
+  InternalSchemeGPU1D_ExHy<layout_type> *d_gpuScheme;
+  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gpuScheme, sizeof(InternalSchemeGPU1D_ExHy<layout_type>)));
 
   /*
    * Copy InternalScheme to GPU
@@ -245,25 +331,16 @@ void test1D_ExHy ()
 
   tmpGPUScheme.copyToGPU (&gpuScheme);
 
-  cudaCheckErrorCmd (cudaMemcpy (d_gpuScheme, &tmpGPUScheme, sizeof(InternalScheme1D_ExHy_CudaGrid<layout_type>), cudaMemcpyHostToDevice));
+  cudaCheckErrorCmd (cudaMemcpy (d_gpuScheme, &tmpGPUScheme, sizeof(InternalSchemeGPU1D_ExHy<layout_type>), cudaMemcpyHostToDevice));
+
+  test<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED> (&intScheme, d_gpuScheme);
 
   /*
-   * d_gpuScheme is now fully initialized to be used on GPU
+   * Copy back from GPU to CPU
    */
-  CudaExitStatus _retval = CUDA_ERROR;
-  CudaExitStatus *retval = &_retval;
-  CudaExitStatus exitStatus;
-  CudaExitStatus *exitStatusCuda;
-  cudaCheckErrorCmd (cudaMalloc ((void **) &exitStatusCuda, sizeof (CudaExitStatus)));
+  gpuScheme.copyBackToCPU ();
 
-  dim3 blocks (overallSize.get1 () / 4, 1, 1);
-  dim3 threads (4, 1, 1);
-
-  cudaCheckExitStatus (launch1D_ExHy <<< blocks, threads >>> (exitStatusCuda, d_gpuScheme));
-
-
-
-  // test1D<Grid> (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1);
+  test1D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1);
 }
 //
 // template<LayoutType layout_type>
@@ -785,7 +862,18 @@ void test1D_ExHy ()
 
 int main (int argc, char** argv)
 {
-  solverSettings.SetupFromCmd (argc, argv);
+  SOLVER_SETTINGS.SetupFromCmd (argc, argv);
+
+#ifdef DEBUG_INFO
+  /*
+   * This is required, because printf output is stored in a circular buffer of a fixed size.
+   * If the buffer fills, old output will be overwritten. The buffer's size defaults to 1MB.
+   * (see http://15418.courses.cs.cmu.edu/spring2013/article/15)
+   */
+  cudaDeviceSetLimit(cudaLimitPrintfFifoSize, 100*1024*1024);
+#endif /* DEBUG_INFO */
+
+  cudaCheckErrorCmd (SOLVER_SETTINGS.getNumCudaGPUs ());
 
   test1D_ExHy<E_CENTERED> ();
   // test1D_ExHz<E_CENTERED> ();
@@ -803,7 +891,7 @@ int main (int argc, char** argv)
   //
   // test3D<E_CENTERED> ();
 
-  solverSettings.Uninitialize ();
+  SOLVER_SETTINGS.Uninitialize ();
 
   return 0;
 } /* main */
