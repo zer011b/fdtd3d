@@ -28,12 +28,12 @@ protected:
   TCoord sizeOfBlock;
 
   /**
-   * Coordinate of start of this block in CPU grid
+   * Absolute coordinate of start of this block in CPU grid (not relative!) (this doesn't consider buffers)
    */
   TCoord startOfBlock;
 
   /**
-   * Coordinate of end of this block in CPU grid
+   * Absolute coordinate of end of this block in CPU grid (not relative!) (this doesn't consider buffers)
    */
   TCoord endOfBlock;
 
@@ -77,6 +77,9 @@ protected:
    */
   time_step shareStep;
 
+  TCoord hasLeft;
+  TCoord hasRight;
+
   /*
    * TODO: add debug uninitialized flag
    */
@@ -113,37 +116,20 @@ public:
 
   CUDA_DEVICE CUDA_HOST TCoord getTotalSize () const;
   CUDA_DEVICE CUDA_HOST
-  TCoord getTotalPosition (const TCoord & pos) const
-  {
-    return startOfBlock + pos;
-  }
-  CUDA_DEVICE
-  TCoord getRelativePosition (const TCoord & pos) const
-  {
-    ASSERT (pos >= startOfBlock);
+  TCoord getTotalPosition (const TCoord & pos) const;
+  CUDA_DEVICE CUDA_HOST
+  TCoord getRelativePosition (const TCoord & pos) const;
 
-    return pos - startOfBlock;
-  }
+  CUDA_DEVICE CUDA_HOST
+  bool hasValueForCoordinate (const TCoord &position) const;
 
-  CUDA_DEVICE
-  bool hasValueForCoordinate (const TCoord &position)
-  {
-    if (!(position >= startOfBlock)
-        || !(position < endOfBlock))
-    {
-      return false;
-    }
-
-    return true;
-  } /* hasValueForCoordinate */
-
-  CUDA_DEVICE
+  CUDA_DEVICE CUDA_HOST
   FieldPointValue * getFieldPointValueByAbsolutePos (const TCoord &absPosition)
   {
     return getFieldPointValue (getRelativePosition (absPosition));
   }
 
-  CUDA_DEVICE
+  CUDA_DEVICE CUDA_HOST
   FieldPointValue * getFieldPointValueOrNullByAbsolutePos (const TCoord &absPosition)
   {
     if (!hasValueForCoordinate (absPosition))
@@ -154,13 +140,13 @@ public:
     return getFieldPointValueByAbsolutePos (absPosition);
   } /* getFieldPointValueOrNullByAbsolutePos */
 
-  CUDA_DEVICE TCoord getComputationStart (TCoord) const;
-  CUDA_DEVICE TCoord getComputationEnd (TCoord) const;
+  CUDA_DEVICE CUDA_HOST TCoord getComputationStart (TCoord) const;
+  CUDA_DEVICE CUDA_HOST TCoord getComputationEnd (TCoord) const;
   CUDA_DEVICE CUDA_HOST TCoord calculatePositionFromIndex (grid_coord) const;
 
   CUDA_DEVICE void setFieldPointValue (const FieldPointValue &, const TCoord &);
-  CUDA_DEVICE FieldPointValue * getFieldPointValue (const TCoord &);
-  CUDA_DEVICE FieldPointValue * getFieldPointValue (grid_coord);
+  CUDA_DEVICE CUDA_HOST FieldPointValue * getFieldPointValue (const TCoord &);
+  CUDA_DEVICE CUDA_HOST FieldPointValue * getFieldPointValue (grid_coord);
 
   CUDA_DEVICE void shiftInTime (const TCoord & start, const TCoord & end);
   CUDA_DEVICE void nextTimeStep ();
@@ -168,6 +154,17 @@ public:
 
   CUDA_DEVICE void nextShareStep ();
   CUDA_DEVICE CUDA_HOST void zeroShareStep ();
+
+  CUDA_DEVICE CUDA_HOST
+  TCoord getHasLeft () const
+  {
+    return hasLeft;
+  }
+  CUDA_DEVICE CUDA_HOST
+  TCoord getHasRight () const
+  {
+    return hasRight;
+  }
 }; /* CudaGrid */
 
 /**
@@ -189,6 +186,8 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
   , d_gridValues (NULLPTR)
   , timeStep (0)
   , shareStep (0)
+  , hasLeft (TCoord ())
+  , hasRight (TCoord ())
 {
   ASSERT (checkParams ());
 
@@ -321,7 +320,7 @@ CudaGrid<TCoord>::setFieldPointValue (const FieldPointValue & value, /**< field 
  * @return field point value
  */
 template <class TCoord>
-CUDA_DEVICE
+CUDA_DEVICE CUDA_HOST
 FieldPointValue *
 CudaGrid<TCoord>::getFieldPointValue (const TCoord &position) /**< coordinate in grid */
 {
@@ -338,7 +337,7 @@ CudaGrid<TCoord>::getFieldPointValue (const TCoord &position) /**< coordinate in
  * @return field point value
  */
 template <class TCoord>
-CUDA_DEVICE
+CUDA_DEVICE CUDA_HOST
 FieldPointValue *
 CudaGrid<TCoord>::getFieldPointValue (grid_coord coord) /**< index in grid */
 {

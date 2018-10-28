@@ -54,6 +54,8 @@ class InternalSchemeHelperGPU;
 #define COPY_FROM_CPU
 #define COPY_TO_GPU
 #define COPY_BACK_TO_CPU
+#define UNINIT_FROM_CPU
+#define UNINIT_ON_GPU
 
 #define INTERNAL_SCHEME_1D InternalScheme1D
 #define INTERNAL_SCHEME_2D InternalScheme2D
@@ -156,6 +158,8 @@ class InternalSchemeHelperGPU;
 #define COPY_FROM_CPU ICUDA_HOST void copyFromCPU (TCoord<grid_coord, true>, TCoord<grid_coord, true>);
 #define COPY_TO_GPU ICUDA_HOST void copyToGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme);
 #define COPY_BACK_TO_CPU ICUDA_HOST void copyBackToCPU ();
+#define UNINIT_FROM_CPU ICUDA_HOST void uninitFromCPU ();
+#define UNINIT_ON_GPU ICUDA_HOST void uninitOnGPU ();
 
 #define INTERNAL_SCHEME_1D InternalSchemeGPU1D
 #define INTERNAL_SCHEME_2D InternalSchemeGPU2D
@@ -188,6 +192,16 @@ class InternalSchemeHelperGPU;
   void allocateGridsOnGPU () \
   { \
     InternalSchemeHelperGPU::allocateGridsOnGPU<Type, TCoord, layout_type> (this); \
+  } \
+  ICUDA_HOST \
+  void freeGridsFromCPU () \
+  { \
+    InternalSchemeHelperGPU::freeGridsFromCPU<Type, TCoord, layout_type> (this); \
+  } \
+  ICUDA_HOST \
+  void freeGridsOnGPU () \
+  { \
+    InternalSchemeHelperGPU::freeGridsOnGPU<Type, TCoord, layout_type> (this); \
   }
 #define COPY_GRIDS_GPU \
   ICUDA_HOST \
@@ -213,10 +227,15 @@ class InternalSchemeHelperGPU;
   ICUDA_HOST static void \
   allocateGridsFromCPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *intScheme, \
                         InternalSchemeBase<Type, TCoord, layout_type> *cpuScheme, \
-                        TCoord<grid_coord, true> blockSize, TCoord<grid_coord, true> bufSize);
+                        TCoord<grid_coord, true> blockSize, TCoord<grid_coord, true> bufSize); \
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
+  ICUDA_HOST static void \
+  freeGridsFromCPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *intScheme);
 #define HELPER_ALLOCATE_GRIDS_ON_GPU \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>  \
-  ICUDA_HOST static void allocateGridsOnGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme);
+  ICUDA_HOST static void allocateGridsOnGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme); \
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>  \
+  ICUDA_HOST static void freeGridsOnGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme);
 
 #define HELPER_COPY_GRIDS_FROM_CPU \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \

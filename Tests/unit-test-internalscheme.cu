@@ -311,12 +311,13 @@ void test1D_ExHy ()
   intScheme.getMu ()->initialize (getFieldValueRealOnly (1.0));
 
   GridCoordinate1D zero (0, ct1);
+  GridCoordinate1D one (1, ct1);
 
   /*
    * Init InternalScheme on GPU
    */
   InternalSchemeGPU1D_ExHy<layout_type> gpuScheme;
-  gpuScheme.initFromCPU (&intScheme, zero, overallSize);
+  gpuScheme.initFromCPU (&intScheme, overallSize, one);
 
   InternalSchemeGPU1D_ExHy<layout_type> tmpGPUScheme;
   tmpGPUScheme.initOnGPU (&gpuScheme);
@@ -339,6 +340,13 @@ void test1D_ExHy ()
    * Copy back from GPU to CPU
    */
   gpuScheme.copyBackToCPU ();
+
+  /*
+   * Free memory
+   */
+  cudaCheckErrorCmd (cudaFree (d_gpuScheme));
+  tmpGPUScheme.uninitOnGPU ();
+  gpuScheme.uninitFromCPU ();
 
   test1D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1);
 }

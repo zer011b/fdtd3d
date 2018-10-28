@@ -455,8 +455,149 @@ InternalSchemeHelperGPU::allocateGridsFromCPU (InternalSchemeBaseGPU<Type, TCoor
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
+void
+InternalSchemeHelperGPU::freeGridsFromCPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *intScheme)
+{
+  delete intScheme->Eps;
+  delete intScheme->Mu;
+  intScheme->Eps = NULLPTR;
+  intScheme->Mu = NULLPTR;
+
+  delete intScheme->Ex;
+  delete intScheme->Ey;
+  delete intScheme->Ez;
+  delete intScheme->Hx;
+  delete intScheme->Hy;
+  delete intScheme->Hz;
+  intScheme->Ex = NULLPTR;
+  intScheme->Ey = NULLPTR;
+  intScheme->Ez = NULLPTR;
+  intScheme->Hx = NULLPTR;
+  intScheme->Hy = NULLPTR;
+  intScheme->Hz = NULLPTR;
+
+  if (SOLVER_SETTINGS.getDoUsePML ())
+  {
+    delete intScheme->Dx;
+    delete intScheme->Dy;
+    delete intScheme->Dz;
+    delete intScheme->Bx;
+    delete intScheme->By;
+    delete intScheme->Bz;
+    intScheme->Dx = NULLPTR;
+    intScheme->Dy = NULLPTR;
+    intScheme->Dz = NULLPTR;
+    intScheme->Bx = NULLPTR;
+    intScheme->By = NULLPTR;
+    intScheme->Bz = NULLPTR;
+
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    {
+      delete intScheme->D1x;
+      delete intScheme->D1y;
+      delete intScheme->D1z;
+      delete intScheme->B1x;
+      delete intScheme->B1y;
+      delete intScheme->B1z;
+      intScheme->D1x = NULLPTR;
+      intScheme->D1y = NULLPTR;
+      intScheme->D1z = NULLPTR;
+      intScheme->B1x = NULLPTR;
+      intScheme->B1y = NULLPTR;
+      intScheme->B1z = NULLPTR;
+    }
+
+    delete intScheme->SigmaX;
+    delete intScheme->SigmaY;
+    delete intScheme->SigmaZ;
+    intScheme->SigmaX = NULLPTR;
+    intScheme->SigmaY = NULLPTR;
+    intScheme->SigmaZ = NULLPTR;
+  }
+
+  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+  {
+    delete intScheme->ExAmplitude;
+    delete intScheme->EyAmplitude;
+    delete intScheme->EzAmplitude;
+    delete intScheme->HxAmplitude;
+    delete intScheme->HyAmplitude;
+    delete intScheme->HzAmplitude;
+    intScheme->ExAmplitude = NULLPTR;
+    intScheme->EyAmplitude = NULLPTR;
+    intScheme->EzAmplitude = NULLPTR;
+    intScheme->HxAmplitude = NULLPTR;
+    intScheme->HyAmplitude = NULLPTR;
+    intScheme->HzAmplitude = NULLPTR;
+  }
+
+  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+  {
+    delete intScheme->OmegaPE;
+    delete intScheme->GammaE;
+    delete intScheme->OmegaPM;
+    delete intScheme->GammaM;
+    intScheme->OmegaPE = NULLPTR;
+    intScheme->GammaE = NULLPTR;
+    intScheme->OmegaPM = NULLPTR;
+    intScheme->GammaM = NULLPTR;
+  }
+
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  {
+    delete intScheme->EInc;
+    delete intScheme->HInc;
+    intScheme->EInc = NULLPTR;
+    intScheme->HInc = NULLPTR;
+  }
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+CUDA_HOST
 InternalSchemeBaseGPU<Type, TCoord, layout_type>::~InternalSchemeBaseGPU ()
 {
+  ASSERT (Eps == NULLPTR);
+  ASSERT (Mu == NULLPTR);
+
+  ASSERT (Ex == NULLPTR);
+  ASSERT (Ey == NULLPTR);
+  ASSERT (Ez == NULLPTR);
+  ASSERT (Hx == NULLPTR);
+  ASSERT (Hy == NULLPTR);
+  ASSERT (Hz == NULLPTR);
+
+  ASSERT (Dx == NULLPTR);
+  ASSERT (Dy == NULLPTR);
+  ASSERT (Dz == NULLPTR);
+  ASSERT (Bx == NULLPTR);
+  ASSERT (By == NULLPTR);
+  ASSERT (Bz == NULLPTR);
+
+  ASSERT (D1x == NULLPTR);
+  ASSERT (D1y == NULLPTR);
+  ASSERT (D1z == NULLPTR);
+  ASSERT (B1x == NULLPTR);
+  ASSERT (B1y == NULLPTR);
+  ASSERT (B1z == NULLPTR);
+
+  ASSERT (SigmaX == NULLPTR);
+  ASSERT (SigmaY == NULLPTR);
+  ASSERT (SigmaZ == NULLPTR);
+
+  ASSERT (ExAmplitude == NULLPTR);
+  ASSERT (EyAmplitude == NULLPTR);
+  ASSERT (EzAmplitude == NULLPTR);
+  ASSERT (HxAmplitude == NULLPTR);
+  ASSERT (HyAmplitude == NULLPTR);
+  ASSERT (HzAmplitude == NULLPTR);
+
+  ASSERT (OmegaPE == NULLPTR);
+  ASSERT (GammaE == NULLPTR);
+  ASSERT (OmegaPM == NULLPTR);
+  ASSERT (GammaM == NULLPTR);
+
+  ASSERT (EInc == NULLPTR);
+  ASSERT (HInc == NULLPTR);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -525,6 +666,106 @@ InternalSchemeHelperGPU::allocateGridsOnGPU (InternalSchemeBaseGPU<Type, TCoord,
   {
     cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->EInc, sizeof(CudaGrid<GridCoordinate1D>)));
     cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->HInc, sizeof(CudaGrid<GridCoordinate1D>)));
+  }
+}
+
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+CUDA_HOST
+void
+InternalSchemeHelperGPU::freeGridsOnGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme)
+{
+  cudaCheckErrorCmd (cudaFree (gpuScheme->Eps));
+  cudaCheckErrorCmd (cudaFree (gpuScheme->Mu));
+  gpuScheme->Eps = NULLPTR;
+  gpuScheme->Mu = NULLPTR;
+
+  cudaCheckErrorCmd (cudaFree (gpuScheme->Ex));
+  cudaCheckErrorCmd (cudaFree (gpuScheme->Ey));
+  cudaCheckErrorCmd (cudaFree (gpuScheme->Ez));
+  cudaCheckErrorCmd (cudaFree (gpuScheme->Hx));
+  cudaCheckErrorCmd (cudaFree (gpuScheme->Hy));
+  cudaCheckErrorCmd (cudaFree (gpuScheme->Hz));
+  gpuScheme->Ex = NULLPTR;
+  gpuScheme->Ey = NULLPTR;
+  gpuScheme->Ez = NULLPTR;
+  gpuScheme->Hx = NULLPTR;
+  gpuScheme->Hy = NULLPTR;
+  gpuScheme->Hz = NULLPTR;
+
+  if (SOLVER_SETTINGS.getDoUsePML ())
+  {
+    cudaCheckErrorCmd (cudaFree (gpuScheme->Dx));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->Dy));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->Dz));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->Bx));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->By));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->Bz));
+    gpuScheme->Dx = NULLPTR;
+    gpuScheme->Dy = NULLPTR;
+    gpuScheme->Dz = NULLPTR;
+    gpuScheme->Bx = NULLPTR;
+    gpuScheme->By = NULLPTR;
+    gpuScheme->Bz = NULLPTR;
+
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    {
+      cudaCheckErrorCmd (cudaFree (gpuScheme->D1x));
+      cudaCheckErrorCmd (cudaFree (gpuScheme->D1y));
+      cudaCheckErrorCmd (cudaFree (gpuScheme->D1z));
+      cudaCheckErrorCmd (cudaFree (gpuScheme->B1x));
+      cudaCheckErrorCmd (cudaFree (gpuScheme->B1y));
+      cudaCheckErrorCmd (cudaFree (gpuScheme->B1z));
+      gpuScheme->D1x = NULLPTR;
+      gpuScheme->D1y = NULLPTR;
+      gpuScheme->D1z = NULLPTR;
+      gpuScheme->B1x = NULLPTR;
+      gpuScheme->B1y = NULLPTR;
+      gpuScheme->B1z = NULLPTR;
+    }
+
+    cudaCheckErrorCmd (cudaFree (gpuScheme->SigmaX));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->SigmaY));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->SigmaZ));
+    gpuScheme->SigmaX = NULLPTR;
+    gpuScheme->SigmaY = NULLPTR;
+    gpuScheme->SigmaZ = NULLPTR;
+  }
+
+  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+  {
+    cudaCheckErrorCmd (cudaFree (gpuScheme->ExAmplitude));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->EyAmplitude));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->EzAmplitude));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->HxAmplitude));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->HyAmplitude));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->HzAmplitude));
+    gpuScheme->ExAmplitude = NULLPTR;
+    gpuScheme->EyAmplitude = NULLPTR;
+    gpuScheme->EzAmplitude = NULLPTR;
+    gpuScheme->HxAmplitude = NULLPTR;
+    gpuScheme->HyAmplitude = NULLPTR;
+    gpuScheme->HzAmplitude = NULLPTR;
+  }
+
+  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+  {
+    cudaCheckErrorCmd (cudaFree (gpuScheme->OmegaPE));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->GammaE));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->OmegaPM));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->GammaM));
+    gpuScheme->OmegaPE = NULLPTR;
+    gpuScheme->GammaE = NULLPTR;
+    gpuScheme->OmegaPM = NULLPTR;
+    gpuScheme->GammaM = NULLPTR;
+  }
+
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  {
+    cudaCheckErrorCmd (cudaFree (gpuScheme->EInc));
+    cudaCheckErrorCmd (cudaFree (gpuScheme->HInc));
+    gpuScheme->EInc = NULLPTR;
+    gpuScheme->HInc = NULLPTR;
   }
 }
 
@@ -781,6 +1022,16 @@ InternalSchemeBaseGPU<Type, TCoord, layout_type>::initFromCPU (InternalSchemeBas
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
+InternalSchemeBaseGPU<Type, TCoord, layout_type>::uninitFromCPU ()
+{
+  ASSERT (isInitialized);
+
+  freeGridsFromCPU ();
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+CUDA_HOST
+void
 InternalSchemeBaseGPU<Type, TCoord, layout_type>::initOnGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme)
 {
   yeeLayout = gpuScheme->yeeLayout;
@@ -809,6 +1060,18 @@ InternalSchemeBaseGPU<Type, TCoord, layout_type>::initOnGPU (InternalSchemeBaseG
   allocateGridsOnGPU ();
 
   isInitialized = true;
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+CUDA_HOST
+void
+InternalSchemeBaseGPU<Type, TCoord, layout_type>::uninitOnGPU ()
+{
+  ASSERT (isInitialized);
+
+  cudaCheckErrorCmd (cudaFree (yeeLayout));
+
+  freeGridsOnGPU ();
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>

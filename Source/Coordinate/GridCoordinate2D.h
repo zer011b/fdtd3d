@@ -144,6 +144,34 @@ public:
   } /* GridCoordinate2DTemplate */
 
   /**
+   * Copy constructor
+   */
+  CUDA_DEVICE CUDA_HOST GridCoordinate2DTemplate<TcoordType, doSignChecks>
+    (const GridCoordinate2DTemplate<TcoordType, !doSignChecks>& pos) /**< new coordinate */
+    : GridCoordinate1DTemplate<TcoordType, doSignChecks> (pos.get1 ()
+#ifdef DEBUG_INFO
+      , pos.getType1 ()
+#endif /* DEBUG_INFO */
+      )
+    , coord2 (pos.get2 ())
+#ifdef DEBUG_INFO
+    , type2 (pos.getType2 ())
+#endif /* DEBUG_INFO */
+  {
+#ifdef DEBUG_INFO
+    ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () < getType2 ())
+            || (GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 () == getType2 ()
+                && getType2 () == CoordinateType::NONE));
+#endif /* DEBUG_INFO */
+
+    if (doSignChecks)
+    {
+      TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+      ASSERT (coord1 >= 0 && coord2 >= 0);
+    }
+  } /* GridCoordinate2DTemplate */
+
+  /**
    * Destructor
    */
   CUDA_DEVICE CUDA_HOST ~GridCoordinate2DTemplate<TcoordType, doSignChecks> () {}

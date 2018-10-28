@@ -128,6 +128,22 @@ public:
   } /* GridCoordinate1DTemplate */
 
   /**
+   * Copy constructor
+   */
+  CUDA_DEVICE CUDA_HOST GridCoordinate1DTemplate<TcoordType, doSignChecks>
+    (const GridCoordinate1DTemplate<TcoordType, !doSignChecks>& coordinate) /**< new coordinate */
+    : coord1 (coordinate.get1 ())
+#ifdef DEBUG_INFO
+    , type1 (coordinate.getType1 ())
+#endif /* DEBUG_INFO */
+  {
+    if (doSignChecks)
+    {
+      ASSERT (coord1 >= 0);
+    }
+  } /* GridCoordinate1DTemplate */
+
+  /**
    * Destructor
    */
   CUDA_DEVICE CUDA_HOST ~GridCoordinate1DTemplate<TcoordType, doSignChecks> () {};

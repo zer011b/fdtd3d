@@ -115,6 +115,37 @@ public:
   } /* GridCoordinate3DTemplate */
 
   /**
+   * Copy constructor
+   */
+  CUDA_DEVICE CUDA_HOST GridCoordinate3DTemplate<TcoordType, doSignChecks>
+    (const GridCoordinate3DTemplate<TcoordType, !doSignChecks>& pos) /**< new coordinate */
+    : GridCoordinate2DTemplate<TcoordType, doSignChecks> (pos.get1 (), pos.get2 ()
+#ifdef DEBUG_INFO
+    , pos.getType1 ()
+    , pos.getType2 ()
+#endif /* DEBUG_INFO */
+      )
+    , coord3 (pos.get3 ())
+#ifdef DEBUG_INFO
+    , type3 (pos.getType3 ())
+#endif /* DEBUG_INFO */
+  {
+#ifdef DEBUG_INFO
+    CoordinateType cct1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ();
+    CoordinateType cct2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ();
+    ASSERT ((cct1 < cct2) || (cct1 == cct2 && cct2 == CoordinateType::NONE));
+    ASSERT ((cct2 < getType3 ()) || (cct2 == getType3 () && getType3 () == CoordinateType::NONE));
+#endif /* DEBUG_INFO */
+
+    if (doSignChecks)
+    {
+      TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
+      TcoordType coord2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
+      ASSERT (coord1 >= 0 && coord2 >= 0 && coord3 >= 0);
+    }
+  } /* GridCoordinate3DTemplate */
+
+  /**
    * Destructor
    */
   CUDA_DEVICE CUDA_HOST ~GridCoordinate3DTemplate<TcoordType, doSignChecks> () {}
