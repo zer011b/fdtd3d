@@ -18,7 +18,7 @@
 #define DX 0.02
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-void test (InternalSchemeBase<Type, TCoord, layout_type> *intScheme,
+void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
            TCoord<grid_coord, true> overallSize,
            TCoord<grid_coord, true> pmlSize,
            TCoord<grid_coord, true> tfsfSizeLeft,
@@ -310,7 +310,7 @@ void test1D_ExHy ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_ExHy<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -353,7 +353,7 @@ void test1D_ExHz ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_ExHz<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -396,7 +396,7 @@ void test1D_EyHx ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_EyHx<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -439,7 +439,7 @@ void test1D_EyHz ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_EyHz<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -482,7 +482,7 @@ void test1D_EzHx ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_EzHx<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -525,7 +525,7 @@ void test1D_EzHy ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_EzHy<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -568,7 +568,7 @@ void test2D_TEx ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TEx<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -611,7 +611,7 @@ void test2D_TEy ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TEy<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -654,7 +654,7 @@ void test2D_TEz ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TEz<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -697,7 +697,7 @@ void test2D_TMx ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TMx<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -740,7 +740,7 @@ void test2D_TMy ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TMy<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -783,7 +783,7 @@ void test2D_TMz ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme2D_TMz<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -827,7 +827,7 @@ void test3D ()
                                                                         angle3 * PhysicsConst::Pi / 180.0,
                                                                         useDoubleMaterialPrecision);
 
-  InternalScheme3D_3D<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 

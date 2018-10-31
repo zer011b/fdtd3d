@@ -8,26 +8,15 @@
 #include "CallBack.h"
 
 /**
- * Dependencies between Schemes ('|' and '<-' are used for inheritance, '!' is used for usage):
- *
- *                          Scheme1D_stype,               Scheme2D_stype,               Scheme3D_stype
- *                             |        !                    |        !                    |        !
- *                             |        !                    |        !                    |        !
- * ShemeBase           <--  Scheme1D,   !                 Scheme2D,   !                 Scheme3D    !
- *                                      !                             !                             !
- *                                      !                             !                             !
- *                          InternalScheme1D_stype,       InternalScheme2D_stype,       InternalScheme3D_stype
- *                             |                             |                             |
- *                             |                             |                             |
- * InternalSchemeBase  <--  InternalScheme1D,             InternalScheme2D,             InternalScheme3D
+ * InternalScheme is implemented without virtual functions in order to be copied to GPU (classes with vtable can't be)
  */
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-class InternalSchemeBase;
+class InternalScheme;
 class InternalSchemeHelper;
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-class InternalSchemeBaseGPU;
+class InternalSchemeGPU;
 class InternalSchemeHelperGPU;
 
 /*
@@ -35,18 +24,22 @@ class InternalSchemeHelperGPU;
  * ======== CPU InternalScheme ========
  * ====================================
  */
-#define INTERNAL_SCHEME_BASE InternalSchemeBase
+#define INTERNAL_SCHEME_BASE InternalScheme
 #define INTERNAL_SCHEME_BASE_CPU_FRIEND \
   template <SchemeType_t Type1, template <typename, bool> class TCoord1, LayoutType layout_type1> \
-  friend class InternalSchemeBaseGPU;
+  friend class InternalSchemeGPU;
 #define INTERNAL_SCHEME_BASE_HELPER_CPU_FRIEND friend class InternalSchemeHelperGPU;
 #define INTERNAL_SCHEME_HELPER InternalSchemeHelper
 #define IGRID Grid
 #define ICUDA_HOST CUDA_HOST
 #define ICUDA_DEVICE
 
-#define ALLOCATE_PARALLEL_GRIDS ICUDA_HOST virtual void allocateParallelGrids () { ALWAYS_ASSERT (0); }
-#define ALLOCATE_PARALLEL_GRIDS_OVERRIDE ICUDA_HOST virtual void allocateParallelGrids () CXX11_OVERRIDE_FINAL;
+#define ALLOCATE_PARALLEL_GRIDS \
+  ICUDA_HOST void allocateParallelGrids () \
+  { \
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. " \
+                    "Recompile it with -DPARALLEL_GRID_DIMENSION=X, where X is required dimension"); \
+  }
 
 #define INIT ICUDA_HOST void init (YeeGridLayout<Type, TCoord, layout_type> *layout, bool parallelLayout);
 #define INIT_FROM_CPU
@@ -81,13 +74,13 @@ class InternalSchemeHelperGPU;
   ICUDA_HOST \
   void allocateGrids () \
   { \
-    YeeGridLayout<Type, TCoord, layout_type> *layout = InternalSchemeBase<Type, TCoord, layout_type>::yeeLayout; \
+    YeeGridLayout<Type, TCoord, layout_type> *layout = InternalScheme<Type, TCoord, layout_type>::yeeLayout; \
     InternalSchemeHelper::allocateGrids<Type, TCoord, layout_type> (this, layout); \
   } \
   ICUDA_HOST \
   void allocateGridsInc () \
   { \
-    YeeGridLayout<Type, TCoord, layout_type> *layout = InternalSchemeBase<Type, TCoord, layout_type>::yeeLayout; \
+    YeeGridLayout<Type, TCoord, layout_type> *layout = InternalScheme<Type, TCoord, layout_type>::yeeLayout; \
     InternalSchemeHelper::allocateGridsInc<Type, TCoord, layout_type> (this, layout); \
   }
 #define ALLOCATE_GRIDS_GPU
@@ -96,11 +89,11 @@ class InternalSchemeHelperGPU;
 #define HELPER_ALLOCATE_GRIDS \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   ICUDA_HOST \
-  static void allocateGrids (InternalSchemeBase<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout);
+  static void allocateGrids (InternalScheme<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout);
 #define HELPER_ALLOCATE_GRIDS_INC \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   ICUDA_HOST \
-  static void allocateGridsInc (InternalSchemeBase<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout);
+  static void allocateGridsInc (InternalScheme<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout);
 #define HELPER_ALLOCATE_GRIDS_FROM_CPU
 #define HELPER_ALLOCATE_GRIDS_ON_GPU
 
@@ -109,23 +102,8 @@ class InternalSchemeHelperGPU;
 
 #define HELPER_ALLOCATE_PARALLEL_GRIDS \
   template <SchemeType_t Type, LayoutType layout_type> \
-  ICUDA_HOST static \
-  void allocateParallelGrids (ParallelYeeGridLayout<Type, layout_type> *pLayout, \
-                              bool doNeedEx, bool doNeedEy, bool doNeedEz, \
-                              bool doNeedHx, bool doNeedHy, bool doNeedHz, \
-                              bool doNeedSigmaX, bool doNeedSigmaY, bool doNeedSigmaZ, \
-                              ParallelGridCoordinate bufSize, ParallelGrid **Eps, ParallelGrid **Mu, \
-                              ParallelGrid **Ex, ParallelGrid **Ey, ParallelGrid **Ez, \
-                              ParallelGrid **Hx, ParallelGrid **Hy, ParallelGrid **Hz, \
-                              ParallelGrid **Dx, ParallelGrid **Dy, ParallelGrid **Dz, \
-                              ParallelGrid **Bx, ParallelGrid **By, ParallelGrid **Bz, \
-                              ParallelGrid **D1x, ParallelGrid **D1y, ParallelGrid **D1z, \
-                              ParallelGrid **B1x, ParallelGrid **B1y, ParallelGrid **B1z, \
-                              ParallelGrid **SigmaX, ParallelGrid **SigmaY, ParallelGrid **SigmaZ, \
-                              ParallelGrid **ExAmplitude, ParallelGrid **EyAmplitude, ParallelGrid **EzAmplitude, \
-                              ParallelGrid **HxAmplitude, ParallelGrid **HyAmplitude, ParallelGrid **HzAmplitude, \
-                              ParallelGrid **OmegaPE, ParallelGrid **GammaE, \
-                              ParallelGrid **OmegaPM, ParallelGrid **GammaM);
+  static \
+  void allocateParallelGrids (InternalScheme<Type, ParallelGridCoordinateTemplate, layout_type> *intScheme);
 
 #define PERFORM_FIELD_STEPS_KERNEL
 #define PERFORM_PLANE_WAVE_STEPS_KERNELS
@@ -141,7 +119,7 @@ class InternalSchemeHelperGPU;
  */
 #ifdef CUDA_ENABLED
 
-#define INTERNAL_SCHEME_BASE InternalSchemeBaseGPU
+#define INTERNAL_SCHEME_BASE InternalSchemeGPU
 #define INTERNAL_SCHEME_BASE_CPU_FRIEND
 #define INTERNAL_SCHEME_BASE_HELPER_CPU_FRIEND friend class InternalSchemeHelper;
 #define INTERNAL_SCHEME_HELPER InternalSchemeHelperGPU
@@ -150,13 +128,12 @@ class InternalSchemeHelperGPU;
 #define ICUDA_DEVICE CUDA_DEVICE
 
 #define ALLOCATE_PARALLEL_GRIDS
-#define ALLOCATE_PARALLEL_GRIDS_OVERRIDE
 
 #define INIT
-#define INIT_FROM_CPU ICUDA_HOST void initFromCPU (InternalSchemeBase<Type, TCoord, layout_type> *cpuScheme, TC, TC);
-#define INIT_ON_GPU ICUDA_HOST void initOnGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme);
+#define INIT_FROM_CPU ICUDA_HOST void initFromCPU (InternalScheme<Type, TCoord, layout_type> *cpuScheme, TC, TC);
+#define INIT_ON_GPU ICUDA_HOST void initOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
 #define COPY_FROM_CPU ICUDA_HOST void copyFromCPU (TCoord<grid_coord, true>, TCoord<grid_coord, true>);
-#define COPY_TO_GPU ICUDA_HOST void copyToGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme);
+#define COPY_TO_GPU ICUDA_HOST void copyToGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
 #define COPY_BACK_TO_CPU ICUDA_HOST void copyBackToCPU ();
 #define UNINIT_FROM_CPU ICUDA_HOST void uninitFromCPU ();
 #define UNINIT_ON_GPU ICUDA_HOST void uninitOnGPU ();
@@ -184,7 +161,7 @@ class InternalSchemeHelperGPU;
 #define ALLOCATE_GRIDS
 #define ALLOCATE_GRIDS_GPU \
   ICUDA_HOST \
-  void allocateGridsFromCPU (InternalSchemeBase<Type, TCoord, layout_type> *cpuScheme, TC blockSize, TC bufSize) \
+  void allocateGridsFromCPU (InternalScheme<Type, TCoord, layout_type> *cpuScheme, TC blockSize, TC bufSize) \
   { \
     InternalSchemeHelperGPU::allocateGridsFromCPU<Type, TCoord, layout_type> (this, cpuScheme, blockSize, bufSize); \
   } \
@@ -210,7 +187,7 @@ class InternalSchemeHelperGPU;
     InternalSchemeHelperGPU::copyGridsFromCPU<Type, TCoord, layout_type> (this, start, end); \
   } \
   ICUDA_HOST \
-  void copyGridsToGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme) \
+  void copyGridsToGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme) \
   { \
     InternalSchemeHelperGPU::copyGridsToGPU<Type, TCoord, layout_type> (this, gpuScheme); \
   } \
@@ -225,31 +202,31 @@ class InternalSchemeHelperGPU;
 #define HELPER_ALLOCATE_GRIDS_FROM_CPU \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   ICUDA_HOST static void \
-  allocateGridsFromCPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *intScheme, \
-                        InternalSchemeBase<Type, TCoord, layout_type> *cpuScheme, \
+  allocateGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme, \
+                        InternalScheme<Type, TCoord, layout_type> *cpuScheme, \
                         TCoord<grid_coord, true> blockSize, TCoord<grid_coord, true> bufSize); \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   ICUDA_HOST static void \
-  freeGridsFromCPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *intScheme);
+  freeGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme);
 #define HELPER_ALLOCATE_GRIDS_ON_GPU \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>  \
-  ICUDA_HOST static void allocateGridsOnGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme); \
+  ICUDA_HOST static void allocateGridsOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme); \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>  \
-  ICUDA_HOST static void freeGridsOnGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme);
+  ICUDA_HOST static void freeGridsOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
 
 #define HELPER_COPY_GRIDS_FROM_CPU \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   ICUDA_HOST static void \
-  copyGridsFromCPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme, \
+  copyGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme, \
                     TCoord<grid_coord, true> start, TCoord<grid_coord, true> end); \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   ICUDA_HOST static void \
-  copyGridsBackToCPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme);
+  copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
 #define HELPER_COPY_GRIDS_TO_GPU \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   ICUDA_HOST static void \
-  copyGridsToGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *intScheme, \
-                  InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme);
+  copyGridsToGPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme, \
+                  InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
 
 #define HELPER_ALLOCATE_PARALLEL_GRIDS
 
@@ -310,7 +287,7 @@ class InternalSchemeHelperGPU;
 #define SHIFT_IN_TIME_KERNEL(NAME) \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   __global__ \
-  void shiftInTimeKernel ## NAME (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme, \
+  void shiftInTimeKernel ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme, \
                                   TCoord<grid_coord, true> Start, TCoord<grid_coord, true> CoordPerKernel, \
                                   CoordinateType ct1, CoordinateType ct2, CoordinateType ct3) \
   { \
@@ -324,7 +301,7 @@ class InternalSchemeHelperGPU;
   } \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   __global__ \
-  void nextTimeStepKernel ## NAME (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme) \
+  void nextTimeStepKernel ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme) \
   { \
     gpuScheme-> get ## NAME () -> nextTimeStep (); \
   }
@@ -391,7 +368,7 @@ class InternalSchemeHelperGPU;
 #define SHIFT_IN_TIME_PLANE_WAVE_KERNEL(NAME) \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   __global__ \
-  void shiftInTimePlaneWaveKernel ## NAME (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme, \
+  void shiftInTimePlaneWaveKernel ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme, \
                                            TCoord<grid_coord, true> Start, TCoord<grid_coord, true> CoordPerKernel) \
   { \
     GridCoordinate1D posStart = GRID_COORDINATE_1D ((blockIdx.x * blockDim.x) + threadIdx.x, \
@@ -402,7 +379,7 @@ class InternalSchemeHelperGPU;
   } \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   __global__ \
-  void nextTimeStepPlaneWaveKernel ## NAME (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme) \
+  void nextTimeStepPlaneWaveKernel ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme) \
   { \
     gpuScheme-> get ## NAME () -> nextTimeStep (); \
   } \
@@ -443,7 +420,7 @@ class InternalSchemeHelperGPU;
   {
     template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, uint8_t grid_type>
     __global__
-    void performFieldStepsKernel (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme,
+    void performFieldStepsKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
                                   time_step t, TCoord<grid_coord, true> Start, TCoord<grid_coord, true> CoordPerKernel,
                                   CoordinateType ct1, CoordinateType ct2, CoordinateType ct3)
     {
@@ -458,7 +435,7 @@ class InternalSchemeHelperGPU;
 
     template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
     __global__
-    void performPlaneWaveEStepsKernel (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme,
+    void performPlaneWaveEStepsKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
                                        time_step t, GridCoordinate1D Start, GridCoordinate1D CoordPerKernel)
     {
       GridCoordinate1D posStart = GRID_COORDINATE_1D ((blockIdx.x * blockDim.x) + threadIdx.x,
@@ -469,7 +446,7 @@ class InternalSchemeHelperGPU;
     }
       template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
     __global__
-    void performPlaneWaveHStepsKernel (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme,
+    void performPlaneWaveHStepsKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
                                        time_step t, GridCoordinate1D Start, GridCoordinate1D CoordPerKernel)
     {
       GridCoordinate1D posStart = GRID_COORDINATE_1D ((blockIdx.x * blockDim.x) + threadIdx.x,
