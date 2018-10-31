@@ -21,8 +21,8 @@
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
-void test (InternalSchemeBase<Type, TCoord, layout_type> *cpuScheme,
-           InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme)
+void test (InternalScheme<Type, TCoord, layout_type> *cpuScheme,
+           InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
 {
   TCoord<grid_coord, true> zero (0, 0, 0
 #ifdef DEBUG_INFO
@@ -303,7 +303,7 @@ void test1D_ExHy ()
      angle3 * PhysicsConst::Pi / 180.0,
      useDoubleMaterialPrecision);
 
-  InternalScheme1D_ExHy<layout_type> intScheme;
+  InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
   intScheme.initScheme (DX, LAMBDA);
 
@@ -316,14 +316,14 @@ void test1D_ExHy ()
   /*
    * Init InternalScheme on GPU
    */
-  InternalSchemeGPU1D_ExHy<layout_type> gpuScheme;
+  InternalSchemeGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type> gpuScheme;
   gpuScheme.initFromCPU (&intScheme, overallSize, one);
 
-  InternalSchemeGPU1D_ExHy<layout_type> tmpGPUScheme;
+  InternalSchemeGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type> tmpGPUScheme;
   tmpGPUScheme.initOnGPU (&gpuScheme);
 
-  InternalSchemeGPU1D_ExHy<layout_type> *d_gpuScheme;
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gpuScheme, sizeof(InternalSchemeGPU1D_ExHy<layout_type>)));
+  InternalSchemeGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type> *d_gpuScheme;
+  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gpuScheme, sizeof(InternalSchemeGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type>)));
 
   /*
    * Copy InternalScheme to GPU
@@ -332,7 +332,7 @@ void test1D_ExHy ()
 
   tmpGPUScheme.copyToGPU (&gpuScheme);
 
-  cudaCheckErrorCmd (cudaMemcpy (d_gpuScheme, &tmpGPUScheme, sizeof(InternalSchemeGPU1D_ExHy<layout_type>), cudaMemcpyHostToDevice));
+  cudaCheckErrorCmd (cudaMemcpy (d_gpuScheme, &tmpGPUScheme, sizeof(InternalSchemeGPU<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type>), cudaMemcpyHostToDevice));
 
   test<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED> (&intScheme, d_gpuScheme);
 

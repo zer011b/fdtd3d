@@ -63,6 +63,25 @@ public:
 #if defined (PARALLEL_GRID)
   HELPER_ALLOCATE_PARALLEL_GRIDS
 #endif /* PARALLEL_GRID */
+
+  ICUDA_DEVICE
+  static bool doSkipBorderFunc1D (GridCoordinate1D pos, IGRID<GridCoordinate1D> *grid)
+  {
+    return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1;
+  }
+  ICUDA_DEVICE
+  static bool doSkipBorderFunc2D (GridCoordinate2D pos, IGRID<GridCoordinate2D> *grid)
+  {
+    return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1
+           && pos.get2 () != 0 && pos.get2 () != grid->getTotalSize ().get2 () - 1;
+  }
+  ICUDA_DEVICE
+  static bool doSkipBorderFunc3D (GridCoordinate3D pos, IGRID<GridCoordinate3D> *grid)
+  {
+    return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1
+           && pos.get2 () != 0 && pos.get2 () != grid->getTotalSize ().get2 () - 1
+           && pos.get3 () != 0 && pos.get3 () != grid->getTotalSize ().get3 () - 1;
+  }
 };
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -260,25 +279,23 @@ protected:
   ALLOCATE_GRIDS_GPU
   COPY_GRIDS_GPU
 
-  ICUDA_HOST
-  virtual void initCoordTypes () { ALWAYS_ASSERT (0); }
+  ICUDA_HOST void initCoordTypes ();
 
-  ICUDA_DEVICE ICUDA_HOST
-  virtual bool doSkipBorderFunc (TC, IGRID<TC> *) { ALWAYS_ASSERT (0); return false; }
+  ICUDA_DEVICE bool doSkipBorderFunc (TC, IGRID<TC> *);
 
 #ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFExAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { ALWAYS_ASSERT (0); }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { ALWAYS_ASSERT (0); }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { ALWAYS_ASSERT (0); }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHxAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { ALWAYS_ASSERT (0); }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { ALWAYS_ASSERT (0); }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { ALWAYS_ASSERT (0); }
+  ICUDA_DEVICE
+  void calculateTFSFExAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  ICUDA_DEVICE
+  void calculateTFSFEyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  ICUDA_DEVICE
+  void calculateTFSFEzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  ICUDA_DEVICE
+  void calculateTFSFHxAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  ICUDA_DEVICE
+  void calculateTFSFHyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  ICUDA_DEVICE
+  void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
 #endif /* ENABLE_ASSERTS */
 
   template <uint8_t grid_type>
@@ -351,7 +368,7 @@ public:
   INTERNAL_SCHEME_BASE ();
 
   ICUDA_HOST
-  virtual ~INTERNAL_SCHEME_BASE ();
+  ~INTERNAL_SCHEME_BASE ();
 
   INIT
   INIT_FROM_CPU
@@ -730,562 +747,6 @@ public:
     ASSERT (HInc);
     return HInc;
   }
-};
-
-/*
- * Dimension specific
- */
-
-template <SchemeType_t Type, LayoutType layout_type>
-class INTERNAL_SCHEME_1D: public INTERNAL_SCHEME_BASE<Type, GridCoordinate1DTemplate, layout_type>
-{
-protected:
-
-#ifdef PARALLEL_GRID
-  ALLOCATE_PARALLEL_GRIDS_OVERRIDE
-#endif /* PARALLEL_GRID */
-
-  ICUDA_DEVICE ICUDA_HOST
-  virtual bool doSkipBorderFunc (GridCoordinate1D pos, IGRID<GridCoordinate1D> *grid) CXX11_OVERRIDE_FINAL
-  {
-    return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1;
-  }
-};
-
-template <SchemeType_t Type, LayoutType layout_type>
-class INTERNAL_SCHEME_2D: public INTERNAL_SCHEME_BASE<Type, GridCoordinate2DTemplate, layout_type>
-{
-protected:
-
-#ifdef PARALLEL_GRID
-  ALLOCATE_PARALLEL_GRIDS_OVERRIDE
-#endif /* PARALLEL_GRID */
-
-  ICUDA_DEVICE ICUDA_HOST
-  virtual bool doSkipBorderFunc (GridCoordinate2D pos, IGRID<GridCoordinate2D> *grid) CXX11_OVERRIDE_FINAL
-  {
-    return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1
-           && pos.get2 () != 0 && pos.get2 () != grid->getTotalSize ().get2 () - 1;
-  }
-};
-
-template <SchemeType_t Type, LayoutType layout_type>
-class INTERNAL_SCHEME_3D: public INTERNAL_SCHEME_BASE<Type, GridCoordinate3DTemplate, layout_type>
-{
-protected:
-
-#ifdef PARALLEL_GRID
-  ALLOCATE_PARALLEL_GRIDS_OVERRIDE
-#endif /* PARALLEL_GRID */
-
-  ICUDA_DEVICE ICUDA_HOST
-  virtual bool doSkipBorderFunc (GridCoordinate3D pos, IGRID<GridCoordinate3D> *grid) CXX11_OVERRIDE_FINAL
-  {
-    return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1
-           && pos.get2 () != 0 && pos.get2 () != grid->getTotalSize ().get2 () - 1
-           && pos.get3 () != 0 && pos.get3 () != grid->getTotalSize ().get3 () - 1;
-  }
-};
-
-/*
- * Scheme type specific
- */
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_1D_EX_HY: public INTERNAL_SCHEME_1D<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type>::ct1 = CoordinateType::Z;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type>::ct2 = CoordinateType::NONE;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFExAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHyAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_1D_EX_HZ: public INTERNAL_SCHEME_1D<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type>::ct1 = CoordinateType::Y;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type>::ct2 = CoordinateType::NONE;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFExAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHzAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_1D_EY_HX: public INTERNAL_SCHEME_1D<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type>::ct1 = CoordinateType::Z;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type>::ct2 = CoordinateType::NONE;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEyAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHxAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_1D_EY_HZ: public INTERNAL_SCHEME_1D<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type>::ct1 = CoordinateType::X;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type>::ct2 = CoordinateType::NONE;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEyAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHzAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_1D_EZ_HX: public INTERNAL_SCHEME_1D<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type>::ct1 = CoordinateType::Y;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type>::ct2 = CoordinateType::NONE;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEzAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHxAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_1D_EZ_HY: public INTERNAL_SCHEME_1D<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type>::ct1 = CoordinateType::X;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type>::ct2 = CoordinateType::NONE;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEzAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHyAsserts (GridCoordinate1D pos11, GridCoordinate1D pos12, GridCoordinate1D pos21, GridCoordinate1D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_2D_TEX: public INTERNAL_SCHEME_2D<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, layout_type>::ct1 = CoordinateType::Y;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, layout_type>::ct2 = CoordinateType::Z;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEyAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEzAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHxAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_2D_TEY: public INTERNAL_SCHEME_2D<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, layout_type>::ct1 = CoordinateType::X;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, layout_type>::ct2 = CoordinateType::Z;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFExAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEzAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHyAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_2D_TEZ: public INTERNAL_SCHEME_2D<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, layout_type>::ct1 = CoordinateType::X;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, layout_type>::ct2 = CoordinateType::Y;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFExAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEyAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHzAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_2D_TMX: public INTERNAL_SCHEME_2D<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, layout_type>::ct1 = CoordinateType::Y;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, layout_type>::ct2 = CoordinateType::Z;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFExAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHyAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHzAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_2D_TMY: public INTERNAL_SCHEME_2D<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, layout_type>::ct1 = CoordinateType::X;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, layout_type>::ct2 = CoordinateType::Z;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEyAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHxAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHzAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_2D_TMZ: public INTERNAL_SCHEME_2D<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, layout_type>::ct1 = CoordinateType::X;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, layout_type>::ct2 = CoordinateType::Y;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, layout_type>::ct3 = CoordinateType::NONE;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEzAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHxAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHyAsserts (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-  }
-#endif /* ENABLE_ASSERTS */
-};
-
-template <LayoutType layout_type>
-class INTERNAL_SCHEME_3D_3D: public INTERNAL_SCHEME_3D<(static_cast<SchemeType_t> (SchemeType::Dim3)), layout_type>
-{
-protected:
-
-  ICUDA_HOST
-  virtual void initCoordTypes () CXX11_OVERRIDE_FINAL
-  {
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, layout_type>::ct1 = CoordinateType::X;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, layout_type>::ct2 = CoordinateType::Y;
-    INTERNAL_SCHEME_BASE<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, layout_type>::ct3 = CoordinateType::Z;
-  }
-
-#ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFExAsserts (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-    ASSERT (pos11.get3 () == pos12.get3 ());
-    ASSERT (pos21.get3 () < pos22.get3 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEyAsserts (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-    ASSERT (pos11.get3 () < pos12.get3 ());
-    ASSERT (pos21.get3 () == pos22.get3 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFEzAsserts (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-    ASSERT (pos11.get3 () == pos12.get3 ());
-    ASSERT (pos21.get3 () == pos22.get3 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHxAsserts (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () < pos22.get2 ());
-    ASSERT (pos11.get3 () < pos12.get3 ());
-    ASSERT (pos21.get3 () == pos22.get3 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHyAsserts (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () < pos12.get1 ());
-    ASSERT (pos21.get1 () == pos22.get1 ());
-    ASSERT (pos11.get2 () == pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-    ASSERT (pos11.get3 () == pos12.get3 ());
-    ASSERT (pos21.get3 () < pos22.get3 ());
-  }
-  ICUDA_DEVICE ICUDA_HOST
-  virtual void calculateTFSFHzAsserts (GridCoordinate3D pos11, GridCoordinate3D pos12, GridCoordinate3D pos21, GridCoordinate3D pos22) CXX11_OVERRIDE_FINAL
-  {
-    ASSERT (pos11.get1 () == pos12.get1 ());
-    ASSERT (pos21.get1 () < pos22.get1 ());
-    ASSERT (pos11.get2 () < pos12.get2 ());
-    ASSERT (pos21.get2 () == pos22.get2 ());
-    ASSERT (pos11.get3 () == pos12.get3 ());
-    ASSERT (pos21.get3 () == pos22.get3 ());
-  }
-#endif /* ENABLE_ASSERTS */
 };
 
 #include "InternalScheme.template.inc.h"

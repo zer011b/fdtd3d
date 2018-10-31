@@ -1,6 +1,6 @@
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
-InternalSchemeBase<Type, TCoord, layout_type>::~InternalSchemeBase ()
+InternalScheme<Type, TCoord, layout_type>::~InternalScheme ()
 {
   delete Eps;
   delete Mu;
@@ -64,113 +64,10 @@ InternalSchemeBase<Type, TCoord, layout_type>::~InternalSchemeBase ()
   }
 }
 
-#if defined (PARALLEL_GRID)
-
-template <SchemeType_t Type, LayoutType layout_type>
-CUDA_HOST
-void
-InternalScheme1D<Type, layout_type>::allocateParallelGrids ()
-{
-#ifdef GRID_1D
-  ParallelYeeGridLayout<Type, layout_type> *pLayout = (ParallelYeeGridLayout<Type, layout_type> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  InternalSchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=1.");
-#endif
-}
-
-template <SchemeType_t Type, LayoutType layout_type>
-CUDA_HOST
-void
-InternalScheme2D<Type, layout_type>::allocateParallelGrids ()
-{
-#ifdef GRID_2D
-  ParallelYeeGridLayout<Type, layout_type> *pLayout = (ParallelYeeGridLayout<Type, layout_type> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  InternalSchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=2.");
-#endif
-}
-
-template <SchemeType_t Type, LayoutType layout_type>
-CUDA_HOST
-void
-InternalScheme2D<Type, layout_type>::allocateParallelGrids ()
-{
-#ifdef GRID_3D
-  ParallelYeeGridLayout<Type, layout_type> *pLayout = (ParallelYeeGridLayout<Type, layout_type> *) yeeLayout;
-
-  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
-
-  InternalSchemeHelper::allocateParallelGrids (pLayout, doNeedEx, doNeedEy, doNeedEz, doNeedHx, doNeedHy, doNeedHz,
-                                       doNeedSigmaX, doNeedSigmaY, doNeedSigmaZ,
-                                       bufSize, (ParallelGrid **)&Eps, (ParallelGrid **)&Mu,
-                                       (ParallelGrid **)&Ex, (ParallelGrid **)&Ey, (ParallelGrid **)&Ez,
-                                       (ParallelGrid **)&Hx, (ParallelGrid **)&Hy, (ParallelGrid **)&Hz,
-                                       (ParallelGrid **)&Dx, (ParallelGrid **)&Dy, (ParallelGrid **)&Dz,
-                                       (ParallelGrid **)&Bx, (ParallelGrid **)&By, (ParallelGrid **)&Bz,
-                                       (ParallelGrid **)&D1x, (ParallelGrid **)&D1y, (ParallelGrid **)&D1z,
-                                       (ParallelGrid **)&B1x, (ParallelGrid **)&B1y, (ParallelGrid **)&B1z,
-                                       (ParallelGrid **)&SigmaX, (ParallelGrid **)&SigmaY, (ParallelGrid **)&SigmaZ,
-                                       (ParallelGrid **)&ExAmplitude, (ParallelGrid **)&EyAmplitude, (ParallelGrid **)&EzAmplitude,
-                                       (ParallelGrid **)&HxAmplitude, (ParallelGrid **)&HyAmplitude, (ParallelGrid **)&HzAmplitude,
-                                       (ParallelGrid **)&OmegaPE, (ParallelGrid **)&GammaE,
-                                       (ParallelGrid **)&OmegaPM, (ParallelGrid **)&GammaM);
-#else
-  ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                  "Recompile it with -DPARALLEL_GRID_DIMENSION=3.");
-#endif
-}
-
-#endif /* PARALLEL_GRID */
-
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeBase<Type, TCoord, layout_type>::init (YeeGridLayout<Type, TCoord, layout_type> *layout,
+InternalScheme<Type, TCoord, layout_type>::init (YeeGridLayout<Type, TCoord, layout_type> *layout,
                                                            bool parallel)
 {
   yeeLayout = layout;
@@ -213,7 +110,7 @@ InternalSchemeBase<Type, TCoord, layout_type>::init (YeeGridLayout<Type, TCoord,
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelper::allocateGrids (InternalSchemeBase<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout)
+InternalSchemeHelper::allocateGrids (InternalScheme<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout)
 {
   typedef TCoord<grid_coord, true> TC;
   typedef TCoord<grid_coord, false> TCS;
@@ -276,7 +173,7 @@ InternalSchemeHelper::allocateGrids (InternalSchemeBase<Type, TCoord, layout_typ
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelper::allocateGridsInc (InternalSchemeBase<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout)
+InternalSchemeHelper::allocateGridsInc (InternalScheme<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout)
 {
   intScheme->EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(layout->getSize ().get1 ())
 #ifdef DEBUG_INFO
@@ -295,73 +192,65 @@ InternalSchemeHelper::allocateGridsInc (InternalSchemeBase<Type, TCoord, layout_
 template <SchemeType_t Type, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelper::allocateParallelGrids (ParallelYeeGridLayout<Type, layout_type> *pLayout,
-                            bool doNeedEx, bool doNeedEy, bool doNeedEz,
-                            bool doNeedHx, bool doNeedHy, bool doNeedHz,
-                            bool doNeedSigmaX, bool doNeedSigmaY, bool doNeedSigmaZ,
-                            ParallelGridCoordinate bufSize, ParallelGrid **Eps, ParallelGrid **Mu,
-                            ParallelGrid **Ex, ParallelGrid **Ey, ParallelGrid **Ez,
-                            ParallelGrid **Hx, ParallelGrid **Hy, ParallelGrid **Hz,
-                            ParallelGrid **Dx, ParallelGrid **Dy, ParallelGrid **Dz,
-                            ParallelGrid **Bx, ParallelGrid **By, ParallelGrid **Bz,
-                            ParallelGrid **D1x, ParallelGrid **D1y, ParallelGrid **D1z,
-                            ParallelGrid **B1x, ParallelGrid **B1y, ParallelGrid **B1z,
-                            ParallelGrid **SigmaX, ParallelGrid **SigmaY, ParallelGrid **SigmaZ,
-                            ParallelGrid **ExAmplitude, ParallelGrid **EyAmplitude, ParallelGrid **EzAmplitude,
-                            ParallelGrid **HxAmplitude, ParallelGrid **HyAmplitude, ParallelGrid **HzAmplitude,
-                            ParallelGrid **OmegaPE, ParallelGrid **GammaE,
-                            ParallelGrid **OmegaPM, ParallelGrid **GammaM)
+InternalSchemeHelper::allocateParallelGrids (InternalScheme<Type, ParallelGridCoordinateTemplate, layout_type> *intScheme)
 {
-  *Eps = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "Eps");
-  *Mu = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getMuSizeForCurNode (), "Mu");
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               ct1, ct2, ct3);
 
-  *Ex = doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "Ex") : NULLPTR;
-  *Ey = doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "Ey") : NULLPTR;
-  *Ez = doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "Ez") : NULLPTR;
-  *Hx = doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "Hx") : NULLPTR;
-  *Hy = doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "Hy") : NULLPTR;
-  *Hz = doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "Hz") : NULLPTR;
+  ParallelYeeGridLayout<Type, layout_type> *pLayout = intScheme->yeeLayout;
+
+  intScheme->Eps = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "Eps");
+  intScheme->Mu = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getMuSizeForCurNode (), "Mu");
+
+  intScheme->Ex = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "Ex") : NULLPTR;
+  intScheme->Ey = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "Ey") : NULLPTR;
+  intScheme->Ez = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "Ez") : NULLPTR;
+  intScheme->Hx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "Hx") : NULLPTR;
+  intScheme->Hy = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "Hy") : NULLPTR;
+  intScheme->Hz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "Hz") : NULLPTR;
 
   if (SOLVER_SETTINGS.getDoUsePML ())
   {
-    *Dx = doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "Dx") : NULLPTR;
-    *Dy = doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "Dy") : NULLPTR;
-    *Dz = doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "Dz") : NULLPTR;
-    *Bx = doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "Bx") : NULLPTR;
-    *By = doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "By") : NULLPTR;
-    *Bz = doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "Bz") : NULLPTR;
+    intScheme->Dx = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "Dx") : NULLPTR;
+    intScheme->Dy = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "Dy") : NULLPTR;
+    intScheme->Dz = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "Dz") : NULLPTR;
+    intScheme->Bx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "Bx") : NULLPTR;
+    intScheme->By = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "By") : NULLPTR;
+    intScheme->Bz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "Bz") : NULLPTR;
 
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      *D1x = doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "D1x") : NULLPTR;
-      *D1y = doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "D1y") : NULLPTR;
-      *D1z = doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "D1z") : NULLPTR;
-      *B1x = doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "B1x") : NULLPTR;
-      *B1y = doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "B1y") : NULLPTR;
-      *B1z = doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "B1z") : NULLPTR;
+      intScheme->D1x = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "D1x") : NULLPTR;
+      intScheme->D1y = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "D1y") : NULLPTR;
+      intScheme->D1z = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "D1z") : NULLPTR;
+      intScheme->B1x = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "B1x") : NULLPTR;
+      intScheme->B1y = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "B1y") : NULLPTR;
+      intScheme->B1z = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "B1z") : NULLPTR;
     }
 
-    *SigmaX = doNeedSigmaX ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaX") : NULLPTR;
-    *SigmaY = doNeedSigmaY ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaY") : NULLPTR;
-    *SigmaZ = doNeedSigmaZ ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaZ") : NULLPTR;
+    intScheme->SigmaX = intScheme->doNeedSigmaX ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaX") : NULLPTR;
+    intScheme->SigmaY = intScheme->doNeedSigmaY ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaY") : NULLPTR;
+    intScheme->SigmaZ = intScheme->doNeedSigmaZ ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaZ") : NULLPTR;
   }
 
   if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
   {
-    *ExAmplitude = doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "ExAmp") : NULLPTR;
-    *EyAmplitude = doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "EyAmp") : NULLPTR;
-    *EzAmplitude = doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "EzAmp") : NULLPTR;
-    *HxAmplitude = doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "HxAmp") : NULLPTR;
-    *HyAmplitude = doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "HyAmp") : NULLPTR;
-    *HzAmplitude = doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "HzAmp") : NULLPTR;
+    intScheme->ExAmplitude = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "ExAmp") : NULLPTR;
+    intScheme->EyAmplitude = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "EyAmp") : NULLPTR;
+    intScheme->EzAmplitude = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "EzAmp") : NULLPTR;
+    intScheme->HxAmplitude = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "HxAmp") : NULLPTR;
+    intScheme->HyAmplitude = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "HyAmp") : NULLPTR;
+    intScheme->HzAmplitude = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "HzAmp") : NULLPTR;
   }
 
   if (SOLVER_SETTINGS.getDoUseMetamaterials ())
   {
-    *OmegaPE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "OmegaPE");
-    *GammaE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "GammaE");
-    *OmegaPM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "OmegaPM");
-    *GammaM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "GammaM");
+    intScheme->OmegaPE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "OmegaPE");
+    intScheme->GammaE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "GammaE");
+    intScheme->OmegaPM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "OmegaPM");
+    intScheme->GammaM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "GammaM");
   }
 }
 
@@ -372,8 +261,8 @@ InternalSchemeHelper::allocateParallelGrids (ParallelYeeGridLayout<Type, layout_
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelperGPU::allocateGridsFromCPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *intScheme,
-                                               InternalSchemeBase<Type, TCoord, layout_type> *cpuScheme, TCoord<grid_coord, true> blockSize, TCoord<grid_coord, true> bufSize)
+InternalSchemeHelperGPU::allocateGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme,
+                                               InternalScheme<Type, TCoord, layout_type> *cpuScheme, TCoord<grid_coord, true> blockSize, TCoord<grid_coord, true> bufSize)
 {
   typedef TCoord<grid_coord, true> TC;
   typedef TCoord<grid_coord, false> TCS;
@@ -456,7 +345,7 @@ InternalSchemeHelperGPU::allocateGridsFromCPU (InternalSchemeBaseGPU<Type, TCoor
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelperGPU::freeGridsFromCPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *intScheme)
+InternalSchemeHelperGPU::freeGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme)
 {
   delete intScheme->Eps;
   delete intScheme->Mu;
@@ -554,7 +443,7 @@ InternalSchemeHelperGPU::freeGridsFromCPU (InternalSchemeBaseGPU<Type, TCoord, l
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
-InternalSchemeBaseGPU<Type, TCoord, layout_type>::~InternalSchemeBaseGPU ()
+InternalSchemeGPU<Type, TCoord, layout_type>::~InternalSchemeGPU ()
 {
   ASSERT (Eps == NULLPTR);
   ASSERT (Mu == NULLPTR);
@@ -603,7 +492,7 @@ InternalSchemeBaseGPU<Type, TCoord, layout_type>::~InternalSchemeBaseGPU ()
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelperGPU::allocateGridsOnGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme)
+InternalSchemeHelperGPU::allocateGridsOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
 {
   typedef TCoord<grid_coord, true> TC;
   typedef TCoord<grid_coord, false> TCS;
@@ -673,7 +562,7 @@ InternalSchemeHelperGPU::allocateGridsOnGPU (InternalSchemeBaseGPU<Type, TCoord,
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelperGPU::freeGridsOnGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme)
+InternalSchemeHelperGPU::freeGridsOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
 {
   cudaCheckErrorCmd (cudaFree (gpuScheme->Eps));
   cudaCheckErrorCmd (cudaFree (gpuScheme->Mu));
@@ -772,7 +661,7 @@ InternalSchemeHelperGPU::freeGridsOnGPU (InternalSchemeBaseGPU<Type, TCoord, lay
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelperGPU::copyGridsFromCPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme,
+InternalSchemeHelperGPU::copyGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
                   TCoord<grid_coord, true> start,
                   TCoord<grid_coord, true> end)
 {
@@ -854,8 +743,8 @@ InternalSchemeHelperGPU::copyGridsFromCPU (InternalSchemeBaseGPU<Type, TCoord, l
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelperGPU::copyGridsToGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme,
-                                         InternalSchemeBaseGPU<Type, TCoord, layout_type> *intScheme)
+InternalSchemeHelperGPU::copyGridsToGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                         InternalSchemeGPU<Type, TCoord, layout_type> *intScheme)
 {
   typedef TCoord<grid_coord, true> TC;
   typedef TCoord<grid_coord, false> TCS;
@@ -924,7 +813,7 @@ InternalSchemeHelperGPU::copyGridsToGPU (InternalSchemeBaseGPU<Type, TCoord, lay
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelperGPU::copyGridsBackToCPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme)
+InternalSchemeHelperGPU::copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
 {
   gpuScheme->Eps->copyToCPU ();
   gpuScheme->Mu->copyToCPU ();
@@ -988,7 +877,7 @@ InternalSchemeHelperGPU::copyGridsBackToCPU (InternalSchemeBaseGPU<Type, TCoord,
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeBaseGPU<Type, TCoord, layout_type>::initFromCPU (InternalSchemeBase<Type, TCoord, layout_type> *cpuScheme,
+InternalSchemeGPU<Type, TCoord, layout_type>::initFromCPU (InternalScheme<Type, TCoord, layout_type> *cpuScheme,
                                                                   TC blockSize,
                                                                   TC bufSize)
 {
@@ -1022,7 +911,7 @@ InternalSchemeBaseGPU<Type, TCoord, layout_type>::initFromCPU (InternalSchemeBas
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeBaseGPU<Type, TCoord, layout_type>::uninitFromCPU ()
+InternalSchemeGPU<Type, TCoord, layout_type>::uninitFromCPU ()
 {
   ASSERT (isInitialized);
 
@@ -1032,7 +921,7 @@ InternalSchemeBaseGPU<Type, TCoord, layout_type>::uninitFromCPU ()
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeBaseGPU<Type, TCoord, layout_type>::initOnGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme)
+InternalSchemeGPU<Type, TCoord, layout_type>::initOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
 {
   yeeLayout = gpuScheme->yeeLayout;
   initScheme (gpuScheme->gridStep, gpuScheme->sourceWaveLength);
@@ -1065,7 +954,7 @@ InternalSchemeBaseGPU<Type, TCoord, layout_type>::initOnGPU (InternalSchemeBaseG
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeBaseGPU<Type, TCoord, layout_type>::uninitOnGPU ()
+InternalSchemeGPU<Type, TCoord, layout_type>::uninitOnGPU ()
 {
   ASSERT (isInitialized);
 
@@ -1077,7 +966,7 @@ InternalSchemeBaseGPU<Type, TCoord, layout_type>::uninitOnGPU ()
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeBaseGPU<Type, TCoord, layout_type>::copyFromCPU (TCoord<grid_coord, true> start,
+InternalSchemeGPU<Type, TCoord, layout_type>::copyFromCPU (TCoord<grid_coord, true> start,
                                                                    TCoord<grid_coord, true> end)
 {
   ASSERT (isInitialized);
@@ -1088,7 +977,7 @@ InternalSchemeBaseGPU<Type, TCoord, layout_type>::copyFromCPU (TCoord<grid_coord
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeBaseGPU<Type, TCoord, layout_type>::copyToGPU (InternalSchemeBaseGPU<Type, TCoord, layout_type> *gpuScheme)
+InternalSchemeGPU<Type, TCoord, layout_type>::copyToGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
 {
   ASSERT (isInitialized);
   ASSERT (gpuScheme->isInitialized);
@@ -1099,7 +988,7 @@ InternalSchemeBaseGPU<Type, TCoord, layout_type>::copyToGPU (InternalSchemeBaseG
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeBaseGPU<Type, TCoord, layout_type>::copyBackToCPU ()
+InternalSchemeGPU<Type, TCoord, layout_type>::copyBackToCPU ()
 {
   ASSERT (isInitialized);
 
