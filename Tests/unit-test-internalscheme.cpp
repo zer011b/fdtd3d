@@ -30,7 +30,11 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
   intScheme->getEps ()->initialize (getFieldValueRealOnly (1.0));
   intScheme->getMu ()->initialize (getFieldValueRealOnly (1.0));
 
-  TCoord<grid_coord, true> diff (1, 1, 1, ct1, ct2, ct3);
+  TCoord<grid_coord, true> diff (1, 1, 1
+#ifdef DEBUG_INFO
+                                 , ct1, ct2, ct3
+#endif /* DEBUG_INFO */
+                                 );
 
   TCoord<grid_coord, true> zero (0, 0, 0
 #ifdef DEBUG_INFO
@@ -191,8 +195,16 @@ void test1D (Grid<GridCoordinate1D> *E,
   {
     for (grid_coord i = 0; i < SIZE; ++i)
     {
-      GridCoordinate1D pos (i, ct1);
-      GridCoordinateFP1D posFP (i, ct1);
+      GridCoordinate1D pos (i
+#ifdef DEBUG_INFO
+                            , ct1
+#endif /* DEBUG_INFO */
+                            );
+      GridCoordinateFP1D posFP (i
+#ifdef DEBUG_INFO
+                                , ct1
+#endif /* DEBUG_INFO */
+                                );
       posFP = posFP + diff;
 
       FieldPointValue * val = E->getFieldPointValue (pos);
@@ -223,8 +235,16 @@ void test2D (Grid<GridCoordinate2D> *E,
     {
       for (grid_coord j = 0; j < SIZE; ++j)
       {
-        GridCoordinate2D pos (i, j, ct1, ct2);
-        GridCoordinateFP2D posFP (i, j, ct1, ct2);
+        GridCoordinate2D pos (i, j
+#ifdef DEBUG_INFO
+                              , ct1, ct2
+#endif /* DEBUG_INFO */
+                              );
+        GridCoordinateFP2D posFP (i, j
+#ifdef DEBUG_INFO
+                                  , ct1, ct2
+#endif /* DEBUG_INFO */
+                                  );
         posFP = posFP + diff;
 
         FieldPointValue * val = E->getFieldPointValue (pos);
@@ -260,8 +280,16 @@ void test3D (Grid<GridCoordinate3D> *E,
       {
         for (grid_coord k = 0; k < SIZE; ++k)
         {
-          GridCoordinate3D pos (i, j, k, ct1, ct2, ct3);
-          GridCoordinateFP3D posFP (i, j, k, ct1, ct2, ct3);
+          GridCoordinate3D pos (i, j, k
+#ifdef DEBUG_INFO
+                                , ct1, ct2, ct3
+#endif /* DEBUG_INFO */
+                                );
+          GridCoordinateFP3D posFP (i, j, k
+#ifdef DEBUG_INFO
+                                    , ct1, ct2, ct3
+#endif /* DEBUG_INFO */
+                                    );
           posFP = posFP + diff;
 
           FieldPointValue * val = E->getFieldPointValue (pos);
@@ -289,10 +317,10 @@ void test1D_ExHy ()
 {
   CoordinateType ct1 = CoordinateType::Z;
 
-  GridCoordinate1D overallSize (SIZE, ct1);
-  GridCoordinate1D pmlSize (PML_SIZE, ct1);
-  GridCoordinate1D tfsfSizeLeft (TFSF_SIZE, ct1);
-  GridCoordinate1D tfsfSizeRight (TFSF_SIZE, ct1);
+  GridCoordinate1D overallSize = GRID_COORDINATE_1D (SIZE, ct1);
+  GridCoordinate1D pmlSize = GRID_COORDINATE_1D (PML_SIZE, ct1);
+  GridCoordinate1D tfsfSizeLeft = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
+  GridCoordinate1D tfsfSizeRight = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -332,10 +360,10 @@ void test1D_ExHz ()
 {
   CoordinateType ct1 = CoordinateType::Y;
 
-  GridCoordinate1D overallSize (SIZE, ct1);
-  GridCoordinate1D pmlSize (PML_SIZE, ct1);
-  GridCoordinate1D tfsfSizeLeft (TFSF_SIZE, ct1);
-  GridCoordinate1D tfsfSizeRight (TFSF_SIZE, ct1);
+  GridCoordinate1D overallSize = GRID_COORDINATE_1D (SIZE, ct1);
+  GridCoordinate1D pmlSize = GRID_COORDINATE_1D (PML_SIZE, ct1);
+  GridCoordinate1D tfsfSizeLeft = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
+  GridCoordinate1D tfsfSizeRight = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -375,10 +403,10 @@ void test1D_EyHx ()
 {
   CoordinateType ct1 = CoordinateType::Z;
 
-  GridCoordinate1D overallSize (SIZE, ct1);
-  GridCoordinate1D pmlSize (PML_SIZE, ct1);
-  GridCoordinate1D tfsfSizeLeft (TFSF_SIZE, ct1);
-  GridCoordinate1D tfsfSizeRight (TFSF_SIZE, ct1);
+  GridCoordinate1D overallSize = GRID_COORDINATE_1D (SIZE, ct1);
+  GridCoordinate1D pmlSize = GRID_COORDINATE_1D (PML_SIZE, ct1);
+  GridCoordinate1D tfsfSizeLeft = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
+  GridCoordinate1D tfsfSizeRight = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -418,10 +446,10 @@ void test1D_EyHz ()
 {
   CoordinateType ct1 = CoordinateType::X;
 
-  GridCoordinate1D overallSize (SIZE, ct1);
-  GridCoordinate1D pmlSize (PML_SIZE, ct1);
-  GridCoordinate1D tfsfSizeLeft (TFSF_SIZE, ct1);
-  GridCoordinate1D tfsfSizeRight (TFSF_SIZE, ct1);
+  GridCoordinate1D overallSize = GRID_COORDINATE_1D (SIZE, ct1);
+  GridCoordinate1D pmlSize = GRID_COORDINATE_1D (PML_SIZE, ct1);
+  GridCoordinate1D tfsfSizeLeft = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
+  GridCoordinate1D tfsfSizeRight = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -461,10 +489,10 @@ void test1D_EzHx ()
 {
   CoordinateType ct1 = CoordinateType::Y;
 
-  GridCoordinate1D overallSize (SIZE, ct1);
-  GridCoordinate1D pmlSize (PML_SIZE, ct1);
-  GridCoordinate1D tfsfSizeLeft (TFSF_SIZE, ct1);
-  GridCoordinate1D tfsfSizeRight (TFSF_SIZE, ct1);
+  GridCoordinate1D overallSize = GRID_COORDINATE_1D (SIZE, ct1);
+  GridCoordinate1D pmlSize = GRID_COORDINATE_1D (PML_SIZE, ct1);
+  GridCoordinate1D tfsfSizeLeft = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
+  GridCoordinate1D tfsfSizeRight = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -504,10 +532,10 @@ void test1D_EzHy ()
 {
   CoordinateType ct1 = CoordinateType::X;
 
-  GridCoordinate1D overallSize (SIZE, ct1);
-  GridCoordinate1D pmlSize (PML_SIZE, ct1);
-  GridCoordinate1D tfsfSizeLeft (TFSF_SIZE, ct1);
-  GridCoordinate1D tfsfSizeRight (TFSF_SIZE, ct1);
+  GridCoordinate1D overallSize = GRID_COORDINATE_1D (SIZE, ct1);
+  GridCoordinate1D pmlSize = GRID_COORDINATE_1D (PML_SIZE, ct1);
+  GridCoordinate1D tfsfSizeLeft = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
+  GridCoordinate1D tfsfSizeRight = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -548,10 +576,10 @@ void test2D_TEx ()
   CoordinateType ct1 = CoordinateType::Y;
   CoordinateType ct2 = CoordinateType::Z;
 
-  GridCoordinate2D overallSize (SIZE, SIZE, ct1, ct2);
-  GridCoordinate2D pmlSize (PML_SIZE, PML_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeLeft (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeRight (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D overallSize = GRID_COORDINATE_2D (SIZE, SIZE, ct1, ct2);
+  GridCoordinate2D pmlSize = GRID_COORDINATE_2D (PML_SIZE, PML_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeLeft = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeRight = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -591,10 +619,10 @@ void test2D_TEy ()
   CoordinateType ct1 = CoordinateType::X;
   CoordinateType ct2 = CoordinateType::Z;
 
-  GridCoordinate2D overallSize (SIZE, SIZE, ct1, ct2);
-  GridCoordinate2D pmlSize (PML_SIZE, PML_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeLeft (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeRight (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D overallSize = GRID_COORDINATE_2D (SIZE, SIZE, ct1, ct2);
+  GridCoordinate2D pmlSize = GRID_COORDINATE_2D (PML_SIZE, PML_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeLeft = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeRight = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -634,10 +662,10 @@ void test2D_TEz ()
   CoordinateType ct1 = CoordinateType::X;
   CoordinateType ct2 = CoordinateType::Y;
 
-  GridCoordinate2D overallSize (SIZE, SIZE, ct1, ct2);
-  GridCoordinate2D pmlSize (PML_SIZE, PML_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeLeft (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeRight (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D overallSize = GRID_COORDINATE_2D (SIZE, SIZE, ct1, ct2);
+  GridCoordinate2D pmlSize = GRID_COORDINATE_2D (PML_SIZE, PML_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeLeft = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeRight = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -677,10 +705,10 @@ void test2D_TMx ()
   CoordinateType ct1 = CoordinateType::Y;
   CoordinateType ct2 = CoordinateType::Z;
 
-  GridCoordinate2D overallSize (SIZE, SIZE, ct1, ct2);
-  GridCoordinate2D pmlSize (PML_SIZE, PML_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeLeft (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeRight (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D overallSize = GRID_COORDINATE_2D (SIZE, SIZE, ct1, ct2);
+  GridCoordinate2D pmlSize = GRID_COORDINATE_2D (PML_SIZE, PML_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeLeft = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeRight = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -720,10 +748,10 @@ void test2D_TMy ()
   CoordinateType ct1 = CoordinateType::X;
   CoordinateType ct2 = CoordinateType::Z;
 
-  GridCoordinate2D overallSize (SIZE, SIZE, ct1, ct2);
-  GridCoordinate2D pmlSize (PML_SIZE, PML_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeLeft (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeRight (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D overallSize = GRID_COORDINATE_2D (SIZE, SIZE, ct1, ct2);
+  GridCoordinate2D pmlSize = GRID_COORDINATE_2D (PML_SIZE, PML_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeLeft = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeRight = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -763,10 +791,10 @@ void test2D_TMz ()
   CoordinateType ct1 = CoordinateType::X;
   CoordinateType ct2 = CoordinateType::Y;
 
-  GridCoordinate2D overallSize (SIZE, SIZE, ct1, ct2);
-  GridCoordinate2D pmlSize (PML_SIZE, PML_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeLeft (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
-  GridCoordinate2D tfsfSizeRight (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D overallSize = GRID_COORDINATE_2D (SIZE, SIZE, ct1, ct2);
+  GridCoordinate2D pmlSize = GRID_COORDINATE_2D (PML_SIZE, PML_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeLeft = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
+  GridCoordinate2D tfsfSizeRight = GRID_COORDINATE_2D (TFSF_SIZE, TFSF_SIZE, ct1, ct2);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -807,10 +835,10 @@ void test3D ()
   CoordinateType ct2 = CoordinateType::Y;
   CoordinateType ct3 = CoordinateType::Z;
 
-  GridCoordinate3D overallSize (SIZE, SIZE, SIZE, ct1, ct2, ct3);
-  GridCoordinate3D pmlSize (PML_SIZE, PML_SIZE, PML_SIZE, ct1, ct2, ct3);
-  GridCoordinate3D tfsfSizeLeft (TFSF_SIZE, TFSF_SIZE, TFSF_SIZE, ct1, ct2, ct3);
-  GridCoordinate3D tfsfSizeRight (TFSF_SIZE, TFSF_SIZE, TFSF_SIZE, ct1, ct2, ct3);
+  GridCoordinate3D overallSize = GRID_COORDINATE_3D (SIZE, SIZE, SIZE, ct1, ct2, ct3);
+  GridCoordinate3D pmlSize = GRID_COORDINATE_3D (PML_SIZE, PML_SIZE, PML_SIZE, ct1, ct2, ct3);
+  GridCoordinate3D tfsfSizeLeft = GRID_COORDINATE_3D (TFSF_SIZE, TFSF_SIZE, TFSF_SIZE, ct1, ct2, ct3);
+  GridCoordinate3D tfsfSizeRight = GRID_COORDINATE_3D (TFSF_SIZE, TFSF_SIZE, TFSF_SIZE, ct1, ct2, ct3);
 
   bool useDoubleMaterialPrecision = false;
 
