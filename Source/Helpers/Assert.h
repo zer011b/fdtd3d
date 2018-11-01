@@ -177,9 +177,21 @@ typedef double DOUBLE;
 #ifdef DEBUG_INFO
 #define TC_COORD(x,y,z,ct1,ct2,ct3) TC(x,y,z,ct1,ct2,ct3)
 #define GRID_COORDINATE_1D(x,ct1) GridCoordinate1D(x,ct1)
+#define GRID_COORDINATE_2D(x,y,ct1,ct2) GridCoordinate2D(x,y,ct1,ct2)
+#define GRID_COORDINATE_3D(x,y,z,ct1,ct2,ct3) GridCoordinate3D(x,y,z,ct1,ct2,ct3)
+#define TC_FP_COORD(x,y,z,ct1,ct2,ct3) TCFP(x,y,z,ct1,ct2,ct3)
+#define GRID_COORDINATE_FP_1D(x,ct1) GridCoordinateFP1D(x,ct1)
+#define GRID_COORDINATE_FP_2D(x,y,ct1,ct2) GridCoordinateFP2D(x,y,ct1,ct2)
+#define GRID_COORDINATE_FP_3D(x,y,z,ct1,ct2,ct3) GridCoordinateFP3D(x,y,z,ct1,ct2,ct3)
 #else /* DEBUG_INFO */
 #define TC_COORD(x,y,z,ct1,ct2,ct3) TC(x,y,z)
 #define GRID_COORDINATE_1D(x,ct1) GridCoordinate1D(x)
+#define GRID_COORDINATE_2D(x,y,ct1,ct2) GridCoordinate2D(x,y)
+#define GRID_COORDINATE_3D(x,y,z,ct1,ct2,ct3) GridCoordinate3D(x,y,z)
+#define TC_FP_COORD(x,y,z,ct1,ct2,ct3) TCFP(x,y,z)
+#define GRID_COORDINATE_FP_1D(x,ct1) GridCoordinateFP1D(x)
+#define GRID_COORDINATE_FP_2D(x,y,ct1,ct2) GridCoordinateFP2D(x,y)
+#define GRID_COORDINATE_FP_3D(x,y,z,ct1,ct2,ct3) GridCoordinateFP3D(x,y,z)
 #endif /* !DEBUG_INFO */
 
 #include "CudaInclude.h"

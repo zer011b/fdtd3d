@@ -183,8 +183,8 @@ void test1D (Grid<GridCoordinate1D> *E,
   {
     for (grid_coord i = 0; i < SIZE; ++i)
     {
-      GridCoordinate1D pos (i, ct1);
-      GridCoordinateFP1D posFP (i, ct1);
+      GridCoordinate1D pos = GRID_COORDINATE_1D(i, ct1);
+      GridCoordinateFP1D posFP = GRID_COORDINATE_FP_1D (i, ct1);
       posFP = posFP + diff;
 
       FieldPointValue * val = E->getFieldPointValue (pos);
@@ -215,8 +215,8 @@ void test2D (Grid<GridCoordinate2D> *E,
     {
       for (grid_coord j = 0; j < SIZE; ++j)
       {
-        GridCoordinate2D pos (i, j, ct1, ct2);
-        GridCoordinateFP2D posFP (i, j, ct1, ct2);
+        GridCoordinate2D pos = GRID_COORDINATE_2D (i, j, ct1, ct2);
+        GridCoordinateFP2D posFP = GRID_COORDINATE_FP_2D (i, j, ct1, ct2);
         posFP = posFP + diff;
 
         FieldPointValue * val = E->getFieldPointValue (pos);
@@ -253,8 +253,8 @@ void test3D (Grid<GridCoordinate3D> *E,
       {
         for (grid_coord k = 0; k < SIZE; ++k)
         {
-          GridCoordinate3D pos (i, j, k, ct1, ct2, ct3);
-          GridCoordinateFP3D posFP (i, j, k, ct1, ct2, ct3);
+          GridCoordinate3D pos = GRID_COORDINATE_3D (i, j, k, ct1, ct2, ct3);
+          GridCoordinateFP3D posFP = GRID_COORDINATE_FP_3D (i, j, k, ct1, ct2, ct3);
           posFP = posFP + diff;
 
           FieldPointValue * val = E->getFieldPointValue (pos);
@@ -282,10 +282,10 @@ void test1D_ExHy ()
 {
   CoordinateType ct1 = CoordinateType::Z;
 
-  GridCoordinate1D overallSize (SIZE, ct1);
-  GridCoordinate1D pmlSize (PML_SIZE, ct1);
-  GridCoordinate1D tfsfSizeLeft (TFSF_SIZE, ct1);
-  GridCoordinate1D tfsfSizeRight (TFSF_SIZE, ct1);
+  GridCoordinate1D overallSize = GRID_COORDINATE_1D (SIZE, ct1);
+  GridCoordinate1D pmlSize = GRID_COORDINATE_1D (PML_SIZE, ct1);
+  GridCoordinate1D tfsfSizeLeft = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
+  GridCoordinate1D tfsfSizeRight = GRID_COORDINATE_1D (TFSF_SIZE, ct1);
 
   bool useDoubleMaterialPrecision = false;
 
@@ -310,8 +310,8 @@ void test1D_ExHy ()
   intScheme.getEps ()->initialize (getFieldValueRealOnly (1.0));
   intScheme.getMu ()->initialize (getFieldValueRealOnly (1.0));
 
-  GridCoordinate1D zero (0, ct1);
-  GridCoordinate1D one (1, ct1);
+  GridCoordinate1D zero = GRID_COORDINATE_1D (0, ct1);
+  GridCoordinate1D one = GRID_COORDINATE_1D (1, ct1);
 
   /*
    * Init InternalScheme on GPU
