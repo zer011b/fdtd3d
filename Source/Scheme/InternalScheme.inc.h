@@ -178,6 +178,22 @@ protected:
   IGRID<TC> *GammaM;
 
   /**
+   * Helper grids
+   */
+  IGRID<TC> *CaEx;
+  IGRID<TC> *CbEx;
+  IGRID<TC> *CaEy;
+  IGRID<TC> *CbEy;
+  IGRID<TC> *CaEz;
+  IGRID<TC> *CbEz;
+  IGRID<TC> *DaHx;
+  IGRID<TC> *DbHx;
+  IGRID<TC> *DaHy;
+  IGRID<TC> *DbHy;
+  IGRID<TC> *DaHz;
+  IGRID<TC> *DbHz;
+
+  /**
    * Auxiliary TF/SF 1D grids
    */
   IGRID<GridCoordinate1D> *EInc;
@@ -310,12 +326,13 @@ protected:
   ICUDA_DEVICE ICUDA_HOST
   void calculateFieldStepInit (IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *,
     IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, IGRID<TC> **,
-    IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, SourceCallBack *, SourceCallBack *, SourceCallBack *, FPValue *);
+    IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, SourceCallBack *, SourceCallBack *, SourceCallBack *, FPValue *,
+    IGRID<TC> **, IGRID<TC> **);
 
   template <uint8_t grid_type, bool usePML>
   ICUDA_DEVICE ICUDA_HOST
-  void calculateFieldStepIteration (time_step, TC, TC, TCS, TCS, TCS, TCS, FPValue, FieldPointValue *, TCFP,
-                                    GridType, IGRID<TC> *, GridType, IGRID<TC> *, IGRID<TC> *, SourceCallBack, FPValue);
+  void calculateFieldStepIteration (time_step, TC, TC, TCS, TCS, TCS, TCS, FieldPointValue *, TCFP,
+                                    IGRID<TC> *, IGRID<TC> *, SourceCallBack, IGRID<TC> *, IGRID<TC> *);
 
   ICUDA_DEVICE ICUDA_HOST
   void calculateFieldStepIterationPMLMetamaterials (time_step, TC, IGRID<TC> *, IGRID<TC> *, GridType,
@@ -738,6 +755,67 @@ public:
     return B1z;
   }
 
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCaEx ()
+  {
+    ASSERT (CaEx);
+    return CaEx;
+  }
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCbEx ()
+  {
+    ASSERT (CbEx);
+    return CbEx;
+  }
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCaEy ()
+  {
+    ASSERT (CaEy);
+    return CaEy;
+  }
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCbEy ()
+  {
+    ASSERT (CbEy);
+    return CbEy;
+  }
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCaEz ()
+  {
+    ASSERT (CaEz);
+    return CaEz;
+  }
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCbEz ()
+  {
+    ASSERT (CbEz);
+    return CbEz;
+  }
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDaHx ()
+  {
+    ASSERT (DaHx);
+    return DaHx;
+  }
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDbHx ()
+  {
+    ASSERT (DbHx);
+    return DbHx;
+  }
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDaHy ()
+  {
+    ASSERT (DaHy);
+    return DaHy;
+  }
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDbHy ()
+  {
+    ASSERT (DbHy);
+    return DbHy;
+  }
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDaHz ()
+  {
+    ASSERT (DaHz);
+    return DaHz;
+  }
+  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDbHz ()
+  {
+    ASSERT (DbHz);
+    return DbHz;
+  }
+
   ICUDA_DEVICE ICUDA_HOST IGRID<GridCoordinate1D> * getEInc ()
   {
     ASSERT (EInc);
@@ -747,6 +825,17 @@ public:
   {
     ASSERT (HInc);
     return HInc;
+  }
+
+  FPValue getTimeStep ()
+  {
+    return gridTimeStep;
+  }
+
+  YeeGridLayout<Type, TCoord, layout_type> * getYeeLayout ()
+  {
+    ASSERT (yeeLayout);
+    return yeeLayout;
   }
 };
 
