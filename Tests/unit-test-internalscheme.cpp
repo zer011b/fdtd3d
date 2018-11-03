@@ -30,6 +30,162 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
   intScheme->getEps ()->initialize (getFieldValueRealOnly (1.0));
   intScheme->getMu ()->initialize (getFieldValueRealOnly (1.0));
 
+  if (intScheme->getDoNeedEx ())
+  {
+    for (grid_coord i = 0; i < intScheme->getEx ()->getSize ().calculateTotalCoord (); ++i)
+    {
+      TCoord<grid_coord, true> pos = intScheme->getEx ()->calculatePositionFromIndex (i);
+
+      if (!(pos >= intScheme->getYeeLayout ()->getExStartDiff () && pos < intScheme->getEx ()->getSize () - intScheme->getYeeLayout ()->getExEndDiff ()))
+      {
+        continue;
+      }
+
+      TCoord<grid_coord, true> posAbs = intScheme->getEx ()->getTotalPosition (pos);
+
+      FPValue material = intScheme->getMaterial (posAbs, GridType::EX, intScheme->getEps (), GridType::EPS);
+
+      FPValue ca = 1.0;
+      FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Eps0 * DX);
+
+      FieldPointValue valCa (FIELDVALUE (ca, 0));
+      FieldPointValue valCb (FIELDVALUE (cb, 0));
+
+      intScheme->getCaEx ()->setFieldPointValue (valCa, pos);
+      intScheme->getCbEx ()->setFieldPointValue (valCb, pos);
+    }
+  }
+
+  if (intScheme->getDoNeedEy ())
+  {
+    for (grid_coord i = 0; i < intScheme->getEy ()->getSize ().calculateTotalCoord (); ++i)
+    {
+      TCoord<grid_coord, true> pos = intScheme->getEy ()->calculatePositionFromIndex (i);
+
+      if (!(pos >= intScheme->getYeeLayout ()->getEyStartDiff () && pos < intScheme->getEy ()->getSize () - intScheme->getYeeLayout ()->getEyEndDiff ()))
+      {
+        continue;
+      }
+
+      TCoord<grid_coord, true> posAbs = intScheme->getEy ()->getTotalPosition (pos);
+
+      FPValue material = intScheme->getMaterial (posAbs, GridType::EY, intScheme->getEps (), GridType::EPS);
+
+      FPValue ca = 1.0;
+      FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Eps0 * DX);
+
+      FieldPointValue valCa (FIELDVALUE (ca, 0));
+      FieldPointValue valCb (FIELDVALUE (cb, 0));
+
+      intScheme->getCaEy ()->setFieldPointValue (valCa, pos);
+      intScheme->getCbEy ()->setFieldPointValue (valCb, pos);
+    }
+  }
+
+  if (intScheme->getDoNeedEz ())
+  {
+    for (grid_coord i = 0; i < intScheme->getEz ()->getSize ().calculateTotalCoord (); ++i)
+    {
+      TCoord<grid_coord, true> pos = intScheme->getEz ()->calculatePositionFromIndex (i);
+
+      if (!(pos >= intScheme->getYeeLayout ()->getEzStartDiff () && pos < intScheme->getEz ()->getSize () - intScheme->getYeeLayout ()->getEzEndDiff ()))
+      {
+        continue;
+      }
+
+      TCoord<grid_coord, true> posAbs = intScheme->getEz ()->getTotalPosition (pos);
+
+      FPValue material = intScheme->getMaterial (posAbs, GridType::EZ, intScheme->getEps (), GridType::EPS);
+
+      FPValue ca = 1.0;
+      FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Eps0 * DX);
+
+      FieldPointValue valCa (FIELDVALUE (ca, 0));
+      FieldPointValue valCb (FIELDVALUE (cb, 0));
+
+      intScheme->getCaEz ()->setFieldPointValue (valCa, pos);
+      intScheme->getCbEz ()->setFieldPointValue (valCb, pos);
+    }
+  }
+
+  if (intScheme->getDoNeedHx ())
+  {
+    for (grid_coord i = 0; i < intScheme->getHx ()->getSize ().calculateTotalCoord (); ++i)
+    {
+      TCoord<grid_coord, true> pos = intScheme->getHx ()->calculatePositionFromIndex (i);
+
+      if (!(pos >= intScheme->getYeeLayout ()->getHxStartDiff () && pos < intScheme->getHx ()->getSize () - intScheme->getYeeLayout ()->getHxEndDiff ()))
+      {
+        continue;
+      }
+
+      TCoord<grid_coord, true> posAbs = intScheme->getHx ()->getTotalPosition (pos);
+
+      FPValue material = intScheme->getMaterial (posAbs, GridType::HX, intScheme->getMu (), GridType::MU);
+
+      FPValue ca = 1.0;
+      FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Mu0 * DX);
+
+      FieldPointValue valCa (FIELDVALUE (ca, 0));
+      FieldPointValue valCb (FIELDVALUE (cb, 0));
+
+      intScheme->getDaHx ()->setFieldPointValue (valCa, pos);
+      intScheme->getDbHx ()->setFieldPointValue (valCb, pos);
+    }
+  }
+
+  if (intScheme->getDoNeedHy ())
+  {
+    for (grid_coord i = 0; i < intScheme->getHy ()->getSize ().calculateTotalCoord (); ++i)
+    {
+      TCoord<grid_coord, true> pos = intScheme->getHy ()->calculatePositionFromIndex (i);
+
+      if (!(pos >= intScheme->getYeeLayout ()->getHyStartDiff () && pos < intScheme->getHy ()->getSize () - intScheme->getYeeLayout ()->getHyEndDiff ()))
+      {
+        continue;
+      }
+
+      TCoord<grid_coord, true> posAbs = intScheme->getHy ()->getTotalPosition (pos);
+
+      FPValue material = intScheme->getMaterial (posAbs, GridType::HY, intScheme->getMu (), GridType::MU);
+
+      FPValue ca = 1.0;
+      FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Mu0 * DX);
+
+      FieldPointValue valCa (FIELDVALUE (ca, 0));
+      FieldPointValue valCb (FIELDVALUE (cb, 0));
+
+      intScheme->getDaHy ()->setFieldPointValue (valCa, pos);
+      intScheme->getDbHy ()->setFieldPointValue (valCb, pos);
+    }
+  }
+
+  if (intScheme->getDoNeedHz ())
+  {
+    for (grid_coord i = 0; i < intScheme->getHz ()->getSize ().calculateTotalCoord (); ++i)
+    {
+      TCoord<grid_coord, true> pos = intScheme->getHz ()->calculatePositionFromIndex (i);
+
+      if (!(pos >= intScheme->getYeeLayout ()->getHzStartDiff () && pos < intScheme->getHz ()->getSize () - intScheme->getYeeLayout ()->getHzEndDiff ()))
+      {
+        continue;
+      }
+
+      TCoord<grid_coord, true> posAbs = intScheme->getHz ()->getTotalPosition (pos);
+
+      FPValue material = intScheme->getMaterial (posAbs, GridType::HZ, intScheme->getMu (), GridType::MU);
+
+      FPValue ca = 1.0;
+      FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Mu0 * DX);
+
+      FieldPointValue valCa (FIELDVALUE (ca, 0));
+      FieldPointValue valCb (FIELDVALUE (cb, 0));
+
+      intScheme->getDaHz ()->setFieldPointValue (valCa, pos);
+      intScheme->getDbHz ()->setFieldPointValue (valCb, pos);
+    }
+  }
+
   TCoord<grid_coord, true> diff (1, 1, 1
 #ifdef DEBUG_INFO
                                  , ct1, ct2, ct3
@@ -875,6 +1031,11 @@ void test3D ()
 int main (int argc, char** argv)
 {
   solverSettings.SetupFromCmd (argc, argv);
+
+  /*
+   * PML mode is not supported (Sigmas, Ca, Cb are not initialized here)
+   */
+  ASSERT (!solverSettings.getDoUsePML ());
 
   test1D_ExHy<E_CENTERED> ();
   test1D_ExHz<E_CENTERED> ();

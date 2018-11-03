@@ -395,6 +395,9 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStep (time_step t
   IGRID<TC> *gridPML2 = NULLPTR;
   GridType gridPMLType2 = GridType::NONE;
 
+  IGRID<TC> *Ca = NULLPTR;
+  IGRID<TC> *Cb = NULLPTR;
+
   SourceCallBack rightSideFunc = NULLPTR;
   SourceCallBack borderFunc = NULLPTR;
   SourceCallBack exactFunc = NULLPTR;
@@ -408,7 +411,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStep (time_step t
     &materialGrid, &materialGridType, &materialGrid1, &materialGridType1, &materialGrid2, &materialGridType2,
     &materialGrid3, &materialGridType3, &materialGrid4, &materialGridType4, &materialGrid5, &materialGridType5,
     &oppositeGrid1, &oppositeGrid2, &gridPML1, &gridPMLType1, &gridPML2, &gridPMLType2,
-    &rightSideFunc, &borderFunc, &exactFunc, &materialModifier);
+    &rightSideFunc, &borderFunc, &exactFunc, &materialModifier, &Ca, &Cb);
 
   GridCoordinate3D start3D;
   GridCoordinate3D end3D;
@@ -422,7 +425,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStep (time_step t
     TCS diff12;
     TCS diff21;
     TCS diff22;
-    
+
     FPValue k_mod;
 
     switch (grid_type)
@@ -508,14 +511,14 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStep (time_step t
         for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
         {
           TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          
+
           // TODO: add getTotalPositionDiff here, which will be called before loop
           TC posAbs = grid->getTotalPosition (pos);
           // TODO: [possible] move 1D gridValues to 3D gridValues array
           FieldPointValue *valField = grid->getFieldPointValue (pos);
 
           TCFP coordFP;
-          
+
           if (rightSideFunc != NULLPTR)
           {
             switch (grid_type)
@@ -556,11 +559,10 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStep (time_step t
               }
             }
           }
-          
-          calculateFieldStepIteration<grid_type, usePML> (t, pos, posAbs, diff11, diff12, diff21, diff22, k_mod,
+
+          calculateFieldStepIteration<grid_type, usePML> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                           valField, coordFP,
-                                                          gridType, materialGrid, materialGridType,
-                                                          oppositeGrid1, oppositeGrid2, rightSideFunc, materialModifier);
+                                                          oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb);
         }
       }
     }
@@ -722,7 +724,8 @@ void
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepInit (IGRID<TC> **grid, GridType *gridType, IGRID<TC> **materialGrid, GridType *materialGridType, IGRID<TC> **materialGrid1, GridType *materialGridType1,
 IGRID<TC> **materialGrid2, GridType *materialGridType2, IGRID<TC> **materialGrid3, GridType *materialGridType3, IGRID<TC> **materialGrid4, GridType *materialGridType4,
 IGRID<TC> **materialGrid5, GridType *materialGridType5, IGRID<TC> **oppositeGrid1, IGRID<TC> **oppositeGrid2, IGRID<TC> **gridPML1, GridType *gridPMLType1, IGRID<TC> **gridPML2, GridType *gridPMLType2,
-SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exactFunc, FPValue *materialModifier)
+SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exactFunc, FPValue *materialModifier,
+  IGRID<TC> **Ca, IGRID<TC> **Cb)
 {
   switch (grid_type)
   {
@@ -742,6 +745,9 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
       *rightSideFunc = Jx;
       *borderFunc = ExBorder;
       *exactFunc = ExExact;
+
+      *Ca = CaEx;
+      *Cb = CbEx;
 
       if (usePML)
       {
@@ -794,6 +800,9 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
       *borderFunc = EyBorder;
       *exactFunc = EyExact;
 
+      *Ca = CaEy;
+      *Cb = CbEy;
+
       if (usePML)
       {
         *grid = Dy;
@@ -844,6 +853,9 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
       *rightSideFunc = Jz;
       *borderFunc = EzBorder;
       *exactFunc = EzExact;
+
+      *Ca = CaEz;
+      *Cb = CbEz;
 
       if (usePML)
       {
@@ -896,6 +908,9 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
       *borderFunc = HxBorder;
       *exactFunc = HxExact;
 
+      *Ca = DaHx;
+      *Cb = DbHx;
+
       if (usePML)
       {
         *grid = Bx;
@@ -947,6 +962,9 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
       *borderFunc = HyBorder;
       *exactFunc = HyExact;
 
+      *Ca = DaHy;
+      *Cb = DbHy;
+
       if (usePML)
       {
         *grid = By;
@@ -996,6 +1014,9 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
       *rightSideFunc = Mz;
       *borderFunc = HzBorder;
       *exactFunc = HzExact;
+
+      *Ca = DaHz;
+      *Cb = DbHz;
 
       if (usePML)
       {
@@ -1049,34 +1070,16 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
                                                                TCS diff12,
                                                                TCS diff21,
                                                                TCS diff22,
-                                                               FPValue k_mod,
                                                                FieldPointValue *valField,
                                                                TCFP coordFP,
-                                                               GridType gridType,
-                                                               IGRID<TC> *materialGrid,
-                                                               GridType materialGridType,
                                                                IGRID<TC> *oppositeGrid1,
                                                                IGRID<TC> *oppositeGrid2,
                                                                SourceCallBack rightSideFunc,
-                                                               FPValue materialModifier)
+                                                               IGRID<TC> *Ca,
+                                                               IGRID<TC> *Cb)
 {
-  // TODO: remove this
-  FPValue material = materialGrid ? getMaterial (posAbs, gridType, materialGrid, materialGridType) : 0;
-
-  FPValue Ca;
-  FPValue Cb;
-
-  if (usePML)
-  {
-    FPValue eps0 = PhysicsConst::Eps0;
-    Ca = (2 * eps0 * k_mod - material * gridTimeStep) / (2 * eps0 * k_mod + material * gridTimeStep);
-    Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_mod + material * gridTimeStep);
-  }
-  else
-  {
-    Ca = 1.0;
-    Cb = gridTimeStep / (material * materialModifier * gridStep);
-  }
+  FieldValue valCa = Ca->getFieldPointValue (pos)->getCurValue ();
+  FieldValue valCb = Cb->getFieldPointValue (pos)->getCurValue ();
 
   // TODO: separate previous grid and current
   FieldValue prev11 = FIELDVALUE (0, 0);
@@ -1129,8 +1132,8 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
                               prev22,
                               prev21,
                               prevRightSide,
-                              Ca,
-                              Cb,
+                              valCa.real (),
+                              valCb.real (),
                               gridStep);
 #else
   ALWAYS_ASSERT (0);
@@ -1769,6 +1772,18 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::INTERNAL_SCHEME_BASE ()
   , SigmaX (NULLPTR)
   , SigmaY (NULLPTR)
   , SigmaZ (NULLPTR)
+  , CaEx (NULLPTR)
+  , CbEx (NULLPTR)
+  , CaEy (NULLPTR)
+  , CbEy (NULLPTR)
+  , CaEz (NULLPTR)
+  , CbEz (NULLPTR)
+  , DaHx (NULLPTR)
+  , DbHx (NULLPTR)
+  , DaHy (NULLPTR)
+  , DbHy (NULLPTR)
+  , DaHz (NULLPTR)
+  , DbHz (NULLPTR)
   , EInc (NULLPTR)
   , HInc (NULLPTR)
   , sourceWaveLength (0)
