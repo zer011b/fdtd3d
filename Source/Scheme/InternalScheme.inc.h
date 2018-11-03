@@ -314,7 +314,8 @@ protected:
 
   template <uint8_t grid_type, bool usePML>
   ICUDA_DEVICE ICUDA_HOST
-  void calculateFieldStepIteration (time_step, TC, IGRID<TC> *, GridType, IGRID<TC> *, GridType, IGRID<TC> *, IGRID<TC> *, SourceCallBack, FPValue);
+  void calculateFieldStepIteration (time_step, TC, TC, TCS, TCS, TCS, TCS, FPValue, FieldPointValue *, TCFP,
+                                    GridType, IGRID<TC> *, GridType, IGRID<TC> *, IGRID<TC> *, SourceCallBack, FPValue);
 
   ICUDA_DEVICE ICUDA_HOST
   void calculateFieldStepIterationPMLMetamaterials (time_step, TC, IGRID<TC> *, IGRID<TC> *, GridType,
