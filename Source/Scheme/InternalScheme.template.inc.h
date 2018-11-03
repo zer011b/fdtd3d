@@ -418,6 +418,87 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStep (time_step t
   // TODO: remove this check for each iteration
   if (t > 0)
   {
+    TCS diff11;
+    TCS diff12;
+    TCS diff21;
+    TCS diff22;
+    
+    FPValue k_mod;
+
+    switch (grid_type)
+    {
+      case (static_cast<uint8_t> (GridType::EX)):
+      {
+        diff11 = yeeLayout->getExCircuitElementDiff (LayoutDirection::DOWN);
+        diff12 = yeeLayout->getExCircuitElementDiff (LayoutDirection::UP);
+        diff21 = yeeLayout->getExCircuitElementDiff (LayoutDirection::BACK);
+        diff22 = yeeLayout->getExCircuitElementDiff (LayoutDirection::FRONT);
+
+        FPValue k_y = 1;
+        k_mod = k_y;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EY)):
+      {
+        diff11 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::BACK);
+        diff12 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::FRONT);
+        diff21 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::LEFT);
+        diff22 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::RIGHT);
+
+        FPValue k_z = 1;
+        k_mod = k_z;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EZ)):
+      {
+        diff11 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::LEFT);
+        diff12 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::RIGHT);
+        diff21 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::DOWN);
+        diff22 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::UP);
+
+        FPValue k_x = 1;
+        k_mod = k_x;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HX)):
+      {
+        diff11 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::BACK);
+        diff12 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::FRONT);
+        diff21 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::DOWN);
+        diff22 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::UP);
+
+        FPValue k_y = 1;
+        k_mod = k_y;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HY)):
+      {
+        diff11 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::LEFT);
+        diff12 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::RIGHT);
+        diff21 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::BACK);
+        diff22 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::FRONT);
+
+        FPValue k_z = 1;
+        k_mod = k_z;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HZ)):
+      {
+        diff11 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::DOWN);
+        diff12 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::UP);
+        diff21 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::LEFT);
+        diff22 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::RIGHT);
+
+        FPValue k_x = 1;
+        k_mod = k_x;
+        break;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+
     for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
     {
       // TODO: check that this loop is optimized out
@@ -427,7 +508,58 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStep (time_step t
         for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
         {
           TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          calculateFieldStepIteration<grid_type, usePML> (t, pos, grid, gridType, materialGrid, materialGridType,
+          
+          // TODO: add getTotalPositionDiff here, which will be called before loop
+          TC posAbs = grid->getTotalPosition (pos);
+          // TODO: [possible] move 1D gridValues to 3D gridValues array
+          FieldPointValue *valField = grid->getFieldPointValue (pos);
+
+          TCFP coordFP;
+          
+          if (rightSideFunc != NULLPTR)
+          {
+            switch (grid_type)
+            {
+              case (static_cast<uint8_t> (GridType::EX)):
+              {
+                coordFP = yeeLayout->getExCoordFP (posAbs);
+                break;
+              }
+              case (static_cast<uint8_t> (GridType::EY)):
+              {
+                coordFP = yeeLayout->getEyCoordFP (posAbs);
+                break;
+              }
+              case (static_cast<uint8_t> (GridType::EZ)):
+              {
+                coordFP = yeeLayout->getEzCoordFP (posAbs);
+                break;
+              }
+              case (static_cast<uint8_t> (GridType::HX)):
+              {
+                coordFP = yeeLayout->getHxCoordFP (posAbs);
+                break;
+              }
+              case (static_cast<uint8_t> (GridType::HY)):
+              {
+                coordFP = yeeLayout->getHyCoordFP (posAbs);
+                break;
+              }
+              case (static_cast<uint8_t> (GridType::HZ)):
+              {
+                coordFP = yeeLayout->getHzCoordFP (posAbs);
+                break;
+              }
+              default:
+              {
+                UNREACHABLE;
+              }
+            }
+          }
+          
+          calculateFieldStepIteration<grid_type, usePML> (t, pos, posAbs, diff11, diff12, diff21, diff22, k_mod,
+                                                          valField, coordFP,
+                                                          gridType, materialGrid, materialGridType,
                                                           oppositeGrid1, oppositeGrid2, rightSideFunc, materialModifier);
         }
       }
@@ -912,7 +1044,14 @@ ICUDA_DEVICE ICUDA_HOST
 void
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
                                                                TC pos,
-                                                               IGRID<TC> *grid,
+                                                               TC posAbs,
+                                                               TCS diff11,
+                                                               TCS diff12,
+                                                               TCS diff21,
+                                                               TCS diff22,
+                                                               FPValue k_mod,
+                                                               FieldPointValue *valField,
+                                                               TCFP coordFP,
                                                                GridType gridType,
                                                                IGRID<TC> *materialGrid,
                                                                GridType materialGridType,
@@ -921,139 +1060,15 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
                                                                SourceCallBack rightSideFunc,
                                                                FPValue materialModifier)
 {
-  FPValue eps0 = PhysicsConst::Eps0;
-
-  // TODO: add getTotalPositionDiff here, which will be called before loop
-  TC posAbs = grid->getTotalPosition (pos);
-  // TODO: [possible] move 1D gridValues to 3D gridValues array
-  FieldPointValue *valField = grid->getFieldPointValue (pos);
-
+  // TODO: remove this
   FPValue material = materialGrid ? getMaterial (posAbs, gridType, materialGrid, materialGridType) : 0;
 
-  TC pos11 = pos;
-  TC pos12 = pos;
-  TC pos21 = pos;
-  TC pos22 = pos;
-
-  TCFP coordFP;
-  FPValue timestep;
-
-  FPValue k_mod;
   FPValue Ca;
   FPValue Cb;
 
-  switch (grid_type)
-  {
-    case (static_cast<uint8_t> (GridType::EX)):
-    {
-      pos11 = pos11 + yeeLayout->getExCircuitElementDiff (LayoutDirection::DOWN);
-      pos12 = pos12 + yeeLayout->getExCircuitElementDiff (LayoutDirection::UP);
-      pos21 = pos21 + yeeLayout->getExCircuitElementDiff (LayoutDirection::BACK);
-      pos22 = pos22 + yeeLayout->getExCircuitElementDiff (LayoutDirection::FRONT);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getExCoordFP (posAbs);
-        timestep = t;
-      }
-
-      FPValue k_y = 1;
-      k_mod = k_y;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EY)):
-    {
-      pos11 = pos11 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::BACK);
-      pos12 = pos12 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::FRONT);
-      pos21 = pos21 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::LEFT);
-      pos22 = pos22 + yeeLayout->getEyCircuitElementDiff (LayoutDirection::RIGHT);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getEyCoordFP (posAbs);
-        timestep = t;
-      }
-
-      FPValue k_z = 1;
-      k_mod = k_z;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EZ)):
-    {
-      pos11 = pos11 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::LEFT);
-      pos12 = pos12 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::RIGHT);
-      pos21 = pos21 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::DOWN);
-      pos22 = pos22 + yeeLayout->getEzCircuitElementDiff (LayoutDirection::UP);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getEzCoordFP (posAbs);
-        timestep = t;
-      }
-
-      FPValue k_x = 1;
-      k_mod = k_x;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HX)):
-    {
-      pos11 = pos11 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::BACK);
-      pos12 = pos12 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::FRONT);
-      pos21 = pos21 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::DOWN);
-      pos22 = pos22 + yeeLayout->getHxCircuitElementDiff (LayoutDirection::UP);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getHxCoordFP (posAbs);
-        timestep = t + 0.5;
-      }
-
-      FPValue k_y = 1;
-      k_mod = k_y;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HY)):
-    {
-      pos11 = pos11 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::LEFT);
-      pos12 = pos12 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::RIGHT);
-      pos21 = pos21 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::BACK);
-      pos22 = pos22 + yeeLayout->getHyCircuitElementDiff (LayoutDirection::FRONT);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getHyCoordFP (posAbs);
-        timestep = t + 0.5;
-      }
-
-      FPValue k_z = 1;
-      k_mod = k_z;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HZ)):
-    {
-      pos11 = pos11 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::DOWN);
-      pos12 = pos12 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::UP);
-      pos21 = pos21 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::LEFT);
-      pos22 = pos22 + yeeLayout->getHzCircuitElementDiff (LayoutDirection::RIGHT);
-
-      if (rightSideFunc != NULLPTR)
-      {
-        coordFP = yeeLayout->getHzCoordFP (posAbs);
-        timestep = t + 0.5;
-      }
-
-      FPValue k_x = 1;
-      k_mod = k_x;
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
   if (usePML)
   {
+    FPValue eps0 = PhysicsConst::Eps0;
     Ca = (2 * eps0 * k_mod - material * gridTimeStep) / (2 * eps0 * k_mod + material * gridTimeStep);
     Cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_mod + material * gridTimeStep);
   }
@@ -1071,8 +1086,8 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
 
   if (oppositeGrid1)
   {
-    FieldPointValue *val11 = oppositeGrid1->getFieldPointValue (pos11);
-    FieldPointValue *val12 = oppositeGrid1->getFieldPointValue (pos12);
+    FieldPointValue *val11 = oppositeGrid1->getFieldPointValue (pos + diff11);
+    FieldPointValue *val12 = oppositeGrid1->getFieldPointValue (pos + diff12);
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     prev11 = val11->getPrevValue ();
@@ -1084,8 +1099,8 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
 
   if (oppositeGrid2)
   {
-    FieldPointValue *val21 = oppositeGrid2->getFieldPointValue (pos21);
-    FieldPointValue *val22 = oppositeGrid2->getFieldPointValue (pos22);
+    FieldPointValue *val21 = oppositeGrid2->getFieldPointValue (pos + diff21);
+    FieldPointValue *val22 = oppositeGrid2->getFieldPointValue (pos + diff22);
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
     prev21 = val21->getPrevValue ();
@@ -1097,13 +1112,13 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
-    calculateTFSF<grid_type> (posAbs, prev11, prev12, prev21, prev22, pos11, pos12, pos21, pos22);
+    calculateTFSF<grid_type> (posAbs, prev11, prev12, prev21, prev22, pos + diff11, pos + diff12, pos + diff21, pos + diff22);
   }
 
   FieldValue prevRightSide = 0;
   if (rightSideFunc != NULLPTR)
   {
-    prevRightSide = rightSideFunc (expandTo3D (coordFP * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
+    prevRightSide = rightSideFunc (expandTo3D (coordFP * gridStep, ct1, ct2, ct3), t * gridTimeStep);
   }
 
 #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
