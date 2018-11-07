@@ -382,6 +382,11 @@ public:
     ++shareStep;
   } /* nextShareStep */
 
+  time_step getShareStep ()
+  {
+    return shareStep;
+  }
+
   /**
    * Set share step to zero
    */

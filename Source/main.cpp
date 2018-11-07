@@ -893,7 +893,8 @@ int runMode (int argc, char** argv)
                                                overallSize,
                                                solverSettings.getNumTimeSteps ());
     scheme.initScheme (solverSettings.getGridStep (), /* dx */
-                       solverSettings.getSourceWaveLength ()); /* source wave length */
+                       solverSettings.getSourceWaveLength (), /* source wave length */
+                       solverSettings.getNumTimeSteps ());
     scheme.initCallBacks ();
     scheme.initGrids ();
 

@@ -149,11 +149,11 @@ public:
   CUDA_DEVICE CUDA_HOST FieldPointValue * getFieldPointValue (grid_coord);
 
   CUDA_DEVICE void shiftInTime (const TCoord & start, const TCoord & end);
-  CUDA_DEVICE void nextTimeStep ();
-  CUDA_DEVICE CUDA_HOST void setTimeStep (time_step);
+  CUDA_HOST void nextTimeStep ();
+  CUDA_HOST void setTimeStep (time_step);
 
-  CUDA_DEVICE void nextShareStep ();
-  CUDA_DEVICE CUDA_HOST void zeroShareStep ();
+  CUDA_HOST void nextShareStep ();
+  CUDA_HOST void zeroShareStep ();
 
   CUDA_DEVICE CUDA_HOST
   TCoord getHasLeft () const
@@ -350,29 +350,18 @@ CudaGrid<TCoord>::getFieldPointValue (grid_coord coord) /**< index in grid */
  * Switch to next time step
  */
 template <class TCoord>
-CUDA_DEVICE
+CUDA_HOST
 void
 CudaGrid<TCoord>::nextTimeStep ()
 {
   nextShareStep ();
-
-  ASSERT (getShareStep () <= getBufSize ().get1 ());
-  bool is_share_time = getShareStep () == getBufSize ().get1 ();
-
-  if (is_share_time)
-  {
-    /*
-     * Time to copy back to CPU. If copy hasn't happened, assert above will fire due to increase of shareStep.
-     */
-    zeroShareStep ();
-  }
 } /* CudaGrid<TCoord>::nextTimeStep */
 
 /**
  * Set time step
  */
 template <class TCoord>
-CUDA_DEVICE CUDA_HOST
+CUDA_HOST
 void
 CudaGrid<TCoord>::setTimeStep (time_step step)
 {
@@ -383,7 +372,7 @@ CudaGrid<TCoord>::setTimeStep (time_step step)
  * Increase share step
  */
 template <class TCoord>
-CUDA_DEVICE
+CUDA_HOST
 void
 CudaGrid<TCoord>::nextShareStep ()
 {
@@ -394,7 +383,7 @@ CudaGrid<TCoord>::nextShareStep ()
  * Set share step to zero
  */
 template <class TCoord>
-CUDA_DEVICE CUDA_HOST
+CUDA_HOST
 void
 CudaGrid<TCoord>::zeroShareStep ()
 {

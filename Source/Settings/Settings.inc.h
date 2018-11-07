@@ -106,6 +106,11 @@ SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeZ, getTopologySizeZ, int, 1, "--topolog
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-topology", "Use size of topology by x coordinate for y and z coordinates too")
 
 /*
+ * CUDA
+ */
+SETTINGS_ELEM_FIELD_TYPE_INT(cudaBlocksBufferSize, getCudaBlocksBufferSize, int, 1, "--cuda-buffer-size", "Size of buffer for blocks for cuda grid")
+
+/*
  * Computation mode flags
  */
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseDoubleMaterialPrecision, getDoUseDoubleMaterialPrecision, bool, false, "--use-double-material-precision", "Use double material precision")
