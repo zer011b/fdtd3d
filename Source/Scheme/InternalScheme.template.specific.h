@@ -2,6 +2,28 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 CUDA_HOST
 InternalScheme<Type, TCoord, layout_type>::~InternalScheme ()
 {
+#ifdef CUDA_ENABLED
+  /*
+   * Free memory
+   */
+  if (d_gpuIntSchemeOnGPU)
+  {
+    cudaCheckErrorCmd (cudaFree (d_gpuIntSchemeOnGPU));
+  }
+
+  if (gpuIntSchemeOnGPU)
+  {
+    gpuIntSchemeOnGPU->uninitOnGPU ();
+  }
+  if (gpuIntScheme)
+  {
+    gpuIntScheme->uninitFromCPU ();
+  }
+
+  delete gpuIntSchemeOnGPU;
+  delete gpuIntScheme;
+#endif /* CUDA_ENABLED */
+
   delete Eps;
   delete Mu;
 
@@ -379,7 +401,7 @@ InternalSchemeHelperGPU::allocateGridsFromCPU (InternalSchemeGPU<Type, TCoord, l
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
-    TC one (1
+    GridCoordinate1D one (1
 #ifdef DEBUG_INFO
             , CoordinateType::X
 #endif
@@ -873,7 +895,7 @@ InternalSchemeHelperGPU::copyGridsFromCPU (InternalSchemeGPU<Type, TCoord, layou
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
-    TCoord<grid_coord, true> zero (0
+    GridCoordinate1D zero (0
 #ifdef DEBUG_INFO
             , CoordinateType::X
 #endif
@@ -981,49 +1003,185 @@ InternalSchemeHelperGPU::copyGridsToGPU (InternalSchemeGPU<Type, TCoord, layout_
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelperGPU::copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
+InternalSchemeHelperGPU::copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                             time_step N,
+                                             bool finalCopy) /**< used for grid, which should be copied back from CPU only once, i.e. TFSF */
 {
-  if (gpuScheme->doNeedEx) { gpuScheme->Ex->copyToCPU (); }
-  if (gpuScheme->doNeedEy) { gpuScheme->Ey->copyToCPU (); }
-  if (gpuScheme->doNeedEz) { gpuScheme->Ez->copyToCPU (); }
-  if (gpuScheme->doNeedHx) { gpuScheme->Hx->copyToCPU (); }
-  if (gpuScheme->doNeedHy) { gpuScheme->Hy->copyToCPU (); }
-  if (gpuScheme->doNeedHz) { gpuScheme->Hz->copyToCPU (); }
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
+  if (gpuScheme->doNeedEx)
   {
-    if (gpuScheme->doNeedEx) { gpuScheme->Dx->copyToCPU (); }
-    if (gpuScheme->doNeedEy) { gpuScheme->Dy->copyToCPU (); }
-    if (gpuScheme->doNeedEz) { gpuScheme->Dz->copyToCPU (); }
-    if (gpuScheme->doNeedHx) { gpuScheme->Bx->copyToCPU (); }
-    if (gpuScheme->doNeedHy) { gpuScheme->By->copyToCPU (); }
-    if (gpuScheme->doNeedHz) { gpuScheme->Bz->copyToCPU (); }
+    ASSERT (gpuScheme->Ex->getShareStep () == N);
+    gpuScheme->Ex->copyToCPU ();
+    gpuScheme->Ex->zeroShareStep ();
 
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      if (gpuScheme->doNeedEx) { gpuScheme->D1x->copyToCPU (); }
-      if (gpuScheme->doNeedEy) { gpuScheme->D1y->copyToCPU (); }
-      if (gpuScheme->doNeedEz) { gpuScheme->D1z->copyToCPU (); }
-      if (gpuScheme->doNeedHx) { gpuScheme->B1x->copyToCPU (); }
-      if (gpuScheme->doNeedHy) { gpuScheme->B1y->copyToCPU (); }
-      if (gpuScheme->doNeedHz) { gpuScheme->B1z->copyToCPU (); }
+      ASSERT (gpuScheme->Dx->getShareStep () == N);
+      gpuScheme->Dx->copyToCPU ();
+      gpuScheme->Dx->zeroShareStep ();
+
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        ASSERT (gpuScheme->D1x->getShareStep () == N);
+        gpuScheme->D1x->copyToCPU ();
+        gpuScheme->D1x->zeroShareStep ();
+      }
+    }
+
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+    {
+      ASSERT (gpuScheme->ExAmplitude->getShareStep () == N);
+      gpuScheme->ExAmplitude->copyToCPU ();
+      gpuScheme->ExAmplitude->zeroShareStep ();
     }
   }
 
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+  if (gpuScheme->doNeedEy)
   {
-    if (gpuScheme->doNeedEx) { gpuScheme->ExAmplitude->copyToCPU (); }
-    if (gpuScheme->doNeedEy) { gpuScheme->EyAmplitude->copyToCPU (); }
-    if (gpuScheme->doNeedEz) { gpuScheme->EzAmplitude->copyToCPU (); }
-    if (gpuScheme->doNeedHx) { gpuScheme->HxAmplitude->copyToCPU (); }
-    if (gpuScheme->doNeedHy) { gpuScheme->HyAmplitude->copyToCPU (); }
-    if (gpuScheme->doNeedHz) { gpuScheme->HzAmplitude->copyToCPU (); }
+    ASSERT (gpuScheme->Ey->getShareStep () == N);
+    gpuScheme->Ey->copyToCPU ();
+    gpuScheme->Ey->zeroShareStep ();
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      ASSERT (gpuScheme->Dy->getShareStep () == N);
+      gpuScheme->Dy->copyToCPU ();
+      gpuScheme->Dy->zeroShareStep ();
+
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        ASSERT (gpuScheme->D1y->getShareStep () == N);
+        gpuScheme->D1y->copyToCPU ();
+        gpuScheme->D1y->zeroShareStep ();
+      }
+    }
+
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+    {
+      ASSERT (gpuScheme->EyAmplitude->getShareStep () == N);
+      gpuScheme->EyAmplitude->copyToCPU ();
+      gpuScheme->EyAmplitude->zeroShareStep ();
+    }
   }
 
-  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  if (gpuScheme->doNeedEz)
   {
-    gpuScheme->EInc->copyToCPU ();
-    gpuScheme->HInc->copyToCPU ();
+    ASSERT (gpuScheme->Ez->getShareStep () == N);
+    gpuScheme->Ez->copyToCPU ();
+    gpuScheme->Ez->zeroShareStep ();
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      ASSERT (gpuScheme->Dz->getShareStep () == N);
+      gpuScheme->Dz->copyToCPU ();
+      gpuScheme->Dz->zeroShareStep ();
+
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        ASSERT (gpuScheme->D1z->getShareStep () == N);
+        gpuScheme->D1z->copyToCPU ();
+        gpuScheme->D1z->zeroShareStep ();
+      }
+    }
+
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+    {
+      ASSERT (gpuScheme->EzAmplitude->getShareStep () == N);
+      gpuScheme->EzAmplitude->copyToCPU ();
+      gpuScheme->EzAmplitude->zeroShareStep ();
+    }
+  }
+
+  if (gpuScheme->doNeedHx)
+  {
+    ASSERT (gpuScheme->Hx->getShareStep () == N);
+    gpuScheme->Hx->copyToCPU ();
+    gpuScheme->Hx->zeroShareStep ();
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      ASSERT (gpuScheme->Bx->getShareStep () == N);
+      gpuScheme->Bx->copyToCPU ();
+      gpuScheme->Bx->zeroShareStep ();
+
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        ASSERT (gpuScheme->B1x->getShareStep () == N);
+        gpuScheme->B1x->copyToCPU ();
+        gpuScheme->B1x->zeroShareStep ();
+      }
+    }
+
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+    {
+      ASSERT (gpuScheme->HxAmplitude->getShareStep () == N);
+      gpuScheme->HxAmplitude->copyToCPU ();
+      gpuScheme->HxAmplitude->zeroShareStep ();
+    }
+  }
+
+  if (gpuScheme->doNeedHy)
+  {
+    ASSERT (gpuScheme->Hy->getShareStep () == N);
+    gpuScheme->Hy->copyToCPU ();
+    gpuScheme->Hy->zeroShareStep ();
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      ASSERT (gpuScheme->By->getShareStep () == N);
+      gpuScheme->By->copyToCPU ();
+      gpuScheme->By->zeroShareStep ();
+
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        ASSERT (gpuScheme->B1y->getShareStep () == N);
+        gpuScheme->B1y->copyToCPU ();
+        gpuScheme->B1y->zeroShareStep ();
+      }
+    }
+
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+    {
+      ASSERT (gpuScheme->HyAmplitude->getShareStep () == N);
+      gpuScheme->HyAmplitude->copyToCPU ();
+      gpuScheme->HyAmplitude->zeroShareStep ();
+    }
+  }
+
+  if (gpuScheme->doNeedHz)
+  {
+    ASSERT (gpuScheme->Hz->getShareStep () == N);
+    gpuScheme->Hz->copyToCPU ();
+    gpuScheme->Hz->zeroShareStep ();
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      ASSERT (gpuScheme->Bz->getShareStep () == N);
+      gpuScheme->Bz->copyToCPU ();
+      gpuScheme->Bz->zeroShareStep ();
+
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        ASSERT (gpuScheme->B1z->getShareStep () == N);
+        gpuScheme->B1z->copyToCPU ();
+        gpuScheme->B1z->zeroShareStep ();
+      }
+    }
+
+    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
+    {
+      ASSERT (gpuScheme->HzAmplitude->getShareStep () == N);
+      gpuScheme->HzAmplitude->copyToCPU ();
+      gpuScheme->HzAmplitude->zeroShareStep ();
+    }
+  }
+
+  if (finalCopy)
+  {
+    if (SOLVER_SETTINGS.getDoUseTFSF ())
+    {
+      gpuScheme->EInc->copyToCPU ();
+      gpuScheme->HInc->copyToCPU ();
+    }
   }
 }
 
@@ -1038,8 +1196,6 @@ InternalSchemeGPU<Type, TCoord, layout_type>::initFromCPU (InternalScheme<Type, 
 
   yeeLayout = cpuScheme->yeeLayout;
   initScheme (cpuScheme->gridStep, cpuScheme->sourceWaveLength);
-
-  useParallel = false;
 
   initCoordTypes ();
 
@@ -1078,8 +1234,6 @@ InternalSchemeGPU<Type, TCoord, layout_type>::initOnGPU (InternalSchemeGPU<Type,
 {
   yeeLayout = gpuScheme->yeeLayout;
   initScheme (gpuScheme->gridStep, gpuScheme->sourceWaveLength);
-
-  useParallel = false;
 
   initCoordTypes ();
 
@@ -1141,11 +1295,12 @@ InternalSchemeGPU<Type, TCoord, layout_type>::copyToGPU (InternalSchemeGPU<Type,
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeGPU<Type, TCoord, layout_type>::copyBackToCPU ()
+InternalSchemeGPU<Type, TCoord, layout_type>::copyBackToCPU (time_step N,
+                                                             bool finalCopy)
 {
   ASSERT (isInitialized);
 
-  copyGridsBackToCPU ();
+  copyGridsBackToCPU (N, finalCopy);
 }
 
 #endif /* CUDA_ENABLED */

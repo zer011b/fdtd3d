@@ -354,372 +354,76 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template<uint8_t grid_type, bool usePML, bool useMetamaterials>
-ICUDA_DEVICE ICUDA_HOST
+template<uint8_t grid_type>
+ICUDA_HOST
 void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStep (time_step t, TC start, TC end)
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepInitDiff (TCS *diff11, TCS *diff12, TCS *diff21, TCS *diff22)
 {
-  // TODO: add metamaterials without pml
-  if (!usePML && useMetamaterials)
+  switch (grid_type)
   {
-    UNREACHABLE;
-  }
-
-  IGRID<TC> *grid = NULLPTR;
-  GridType gridType = GridType::NONE;
-
-  IGRID<TC> *materialGrid = NULLPTR;
-  GridType materialGridType = GridType::NONE;
-
-  IGRID<TC> *materialGrid1 = NULLPTR;
-  GridType materialGridType1 = GridType::NONE;
-
-  IGRID<TC> *materialGrid2 = NULLPTR;
-  GridType materialGridType2 = GridType::NONE;
-
-  IGRID<TC> *materialGrid3 = NULLPTR;
-  GridType materialGridType3 = GridType::NONE;
-
-  IGRID<TC> *materialGrid4 = NULLPTR;
-  GridType materialGridType4 = GridType::NONE;
-
-  IGRID<TC> *materialGrid5 = NULLPTR;
-  GridType materialGridType5 = GridType::NONE;
-
-  IGRID<TC> *oppositeGrid1 = NULLPTR;
-  IGRID<TC> *oppositeGrid2 = NULLPTR;
-
-  IGRID<TC> *gridPML1 = NULLPTR;
-  GridType gridPMLType1 = GridType::NONE;
-
-  IGRID<TC> *gridPML2 = NULLPTR;
-  GridType gridPMLType2 = GridType::NONE;
-
-  IGRID<TC> *Ca = NULLPTR;
-  IGRID<TC> *Cb = NULLPTR;
-
-  SourceCallBack rightSideFunc = NULLPTR;
-  SourceCallBack borderFunc = NULLPTR;
-  SourceCallBack exactFunc = NULLPTR;
-
-  /*
-   * TODO: remove this, multiply on this at initialization
-   */
-  FPValue materialModifier;
-
-  calculateFieldStepInit<grid_type, usePML, useMetamaterials> (&grid, &gridType,
-    &materialGrid, &materialGridType, &materialGrid1, &materialGridType1, &materialGrid2, &materialGridType2,
-    &materialGrid3, &materialGridType3, &materialGrid4, &materialGridType4, &materialGrid5, &materialGridType5,
-    &oppositeGrid1, &oppositeGrid2, &gridPML1, &gridPMLType1, &gridPML2, &gridPMLType2,
-    &rightSideFunc, &borderFunc, &exactFunc, &materialModifier, &Ca, &Cb);
-
-  GridCoordinate3D start3D;
-  GridCoordinate3D end3D;
-
-  expandTo3DStartEnd (start, end, start3D, end3D, ct1, ct2, ct3);
-
-  // TODO: remove this check for each iteration
-  if (t > 0)
-  {
-    TCS diff11;
-    TCS diff12;
-    TCS diff21;
-    TCS diff22;
-
-    FPValue k_mod;
-
-    switch (grid_type)
+    case (static_cast<uint8_t> (GridType::EX)):
     {
-      case (static_cast<uint8_t> (GridType::EX)):
-      {
-        diff11 = yeeLayout->getExCircuitElementDiff (LayoutDirection::DOWN);
-        diff12 = yeeLayout->getExCircuitElementDiff (LayoutDirection::UP);
-        diff21 = yeeLayout->getExCircuitElementDiff (LayoutDirection::BACK);
-        diff22 = yeeLayout->getExCircuitElementDiff (LayoutDirection::FRONT);
-
-        FPValue k_y = 1;
-        k_mod = k_y;
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EY)):
-      {
-        diff11 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::BACK);
-        diff12 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::FRONT);
-        diff21 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::LEFT);
-        diff22 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::RIGHT);
-
-        FPValue k_z = 1;
-        k_mod = k_z;
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EZ)):
-      {
-        diff11 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::LEFT);
-        diff12 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::RIGHT);
-        diff21 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::DOWN);
-        diff22 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::UP);
-
-        FPValue k_x = 1;
-        k_mod = k_x;
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HX)):
-      {
-        diff11 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::BACK);
-        diff12 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::FRONT);
-        diff21 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::DOWN);
-        diff22 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::UP);
-
-        FPValue k_y = 1;
-        k_mod = k_y;
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HY)):
-      {
-        diff11 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::LEFT);
-        diff12 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::RIGHT);
-        diff21 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::BACK);
-        diff22 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::FRONT);
-
-        FPValue k_z = 1;
-        k_mod = k_z;
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HZ)):
-      {
-        diff11 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::DOWN);
-        diff12 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::UP);
-        diff21 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::LEFT);
-        diff22 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::RIGHT);
-
-        FPValue k_x = 1;
-        k_mod = k_x;
-        break;
-      }
-      default:
-      {
-        UNREACHABLE;
-      }
+      *diff11 = yeeLayout->getExCircuitElementDiff (LayoutDirection::DOWN);
+      *diff12 = yeeLayout->getExCircuitElementDiff (LayoutDirection::UP);
+      *diff21 = yeeLayout->getExCircuitElementDiff (LayoutDirection::BACK);
+      *diff22 = yeeLayout->getExCircuitElementDiff (LayoutDirection::FRONT);
+      break;
     }
-
-    for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+    case (static_cast<uint8_t> (GridType::EY)):
     {
-      // TODO: check that this loop is optimized out
-      for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-      {
-        // TODO: check that this is optimized out in case 2D mode
-        for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-        {
-          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-
-          // TODO: add getTotalPositionDiff here, which will be called before loop
-          TC posAbs = grid->getTotalPosition (pos);
-          // TODO: [possible] move 1D gridValues to 3D gridValues array
-          FieldPointValue *valField = grid->getFieldPointValue (pos);
-
-          TCFP coordFP;
-
-          if (rightSideFunc != NULLPTR)
-          {
-            switch (grid_type)
-            {
-              case (static_cast<uint8_t> (GridType::EX)):
-              {
-                coordFP = yeeLayout->getExCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::EY)):
-              {
-                coordFP = yeeLayout->getEyCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::EZ)):
-              {
-                coordFP = yeeLayout->getEzCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HX)):
-              {
-                coordFP = yeeLayout->getHxCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HY)):
-              {
-                coordFP = yeeLayout->getHyCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HZ)):
-              {
-                coordFP = yeeLayout->getHzCoordFP (posAbs);
-                break;
-              }
-              default:
-              {
-                UNREACHABLE;
-              }
-            }
-          }
-
-          calculateFieldStepIteration<grid_type, usePML> (t, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                          valField, coordFP,
-                                                          oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb);
-        }
-      }
+      *diff11 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::BACK);
+      *diff12 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::FRONT);
+      *diff21 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::LEFT);
+      *diff22 = yeeLayout->getEyCircuitElementDiff (LayoutDirection::RIGHT);
+      break;
     }
-
-    if (usePML)
+    case (static_cast<uint8_t> (GridType::EZ)):
     {
-      if (useMetamaterials)
-      {
-#ifdef TWO_TIME_STEPS
-        for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
-        {
-          // TODO: check that this loop is optimized out
-          for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-          {
-            // TODO: check that this loop is optimized out
-            for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-            {
-              TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-              calculateFieldStepIterationPMLMetamaterials (t, pos, grid, gridPML1, gridType,
-                materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
-                materialModifier);
-            }
-          }
-        }
-#else
-        ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
-#endif
-      }
-
-      for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
-      {
-        // TODO: check that this loop is optimized out
-        for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-        {
-          // TODO: check that this loop is optimized out
-          for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-          {
-            TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-            calculateFieldStepIterationPML<useMetamaterials> (t, pos, grid, gridPML1, gridPML2, gridType, gridPMLType1,
-              materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
-              materialModifier);
-          }
-        }
-      }
+      *diff11 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::LEFT);
+      *diff12 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::RIGHT);
+      *diff21 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::DOWN);
+      *diff22 = yeeLayout->getEzCircuitElementDiff (LayoutDirection::UP);
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HX)):
+    {
+      *diff11 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::BACK);
+      *diff12 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::FRONT);
+      *diff21 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::DOWN);
+      *diff22 = yeeLayout->getHxCircuitElementDiff (LayoutDirection::UP);
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HY)):
+    {
+      *diff11 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::LEFT);
+      *diff12 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::RIGHT);
+      *diff21 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::BACK);
+      *diff22 = yeeLayout->getHyCircuitElementDiff (LayoutDirection::FRONT);
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HZ)):
+    {
+      *diff11 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::DOWN);
+      *diff12 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::UP);
+      *diff21 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::LEFT);
+      *diff22 = yeeLayout->getHzCircuitElementDiff (LayoutDirection::RIGHT);
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
     }
   }
-
-  if (borderFunc != NULLPTR)
-  {
-    GridCoordinate3D startBorder;
-    GridCoordinate3D endBorder;
-
-    expandTo3DStartEnd (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3),
-                        grid->getSize (),
-                        startBorder,
-                        endBorder,
-                        ct1, ct2, ct3);
-
-    for (grid_coord i = startBorder.get1 (); i < endBorder.get1 (); ++i)
-    {
-      // TODO: check that this loop is optimized out
-      for (grid_coord j = startBorder.get2 (); j < endBorder.get2 (); ++j)
-      {
-        // TODO: check that this loop is optimized out
-        for (grid_coord k = startBorder.get3 (); k < endBorder.get3 (); ++k)
-        {
-          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          calculateFieldStepIterationBorder<grid_type> (t, pos, grid, borderFunc);
-        }
-      }
-    }
-  }
-
-//   if (exactFunc != NULLPTR)
-//   {
-//     FPValue normRe = 0.0;
-//     FPValue normIm = 0.0;
-//     FPValue normMod = 0.0;
-//
-//     FPValue maxRe = 0.0;
-//     FPValue maxIm = 0.0;
-//     FPValue maxMod = 0.0;
-//
-//     GridCoordinate3D startNorm = start3D;
-//     GridCoordinate3D endNorm = end3D;
-//
-//     if (SOLVER_SETTINGS.getExactSolutionCompareStartX () != 0)
-//     {
-//       startNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareStartX ());
-//     }
-//     if (SOLVER_SETTINGS.getExactSolutionCompareStartY () != 0)
-//     {
-//       startNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareStartY ());
-//     }
-//     if (SOLVER_SETTINGS.getExactSolutionCompareStartZ () != 0)
-//     {
-//       startNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareStartZ ());
-//     }
-//
-//     if (SOLVER_SETTINGS.getExactSolutionCompareEndX () != 0)
-//     {
-//       endNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareEndX ());
-//     }
-//     if (SOLVER_SETTINGS.getExactSolutionCompareEndY () != 0)
-//     {
-//       endNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareEndY ());
-//     }
-//     if (SOLVER_SETTINGS.getExactSolutionCompareEndZ () != 0)
-//     {
-//       endNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareEndZ ());
-//     }
-//
-//     IGRID<TC> *normGrid = grid;
-//     if (usePML)
-//     {
-//       grid = gridPML2;
-//     }
-//
-//     for (grid_coord i = startNorm.get1 (); i < endNorm.get1 (); ++i)
-//     {
-//       // TODO: check that this loop is optimized out
-//       for (grid_coord j = startNorm.get2 (); j < endNorm.get2 (); ++j)
-//       {
-//         // TODO: check that this loop is optimized out
-//         for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
-//         {
-//           TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-//           calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
-//         }
-//       }
-//     }
-//
-// #ifdef COMPLEX_FIELD_VALUES
-//     normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
-//     normIm = sqrt (normIm / grid->getSize ().calculateTotalCoord ());
-//     normMod = sqrt (normMod / grid->getSize ().calculateTotalCoord ());
-//
-//     /*
-//      * NOTE: do not change this! test suite depdends on the order of values in output
-//      */
-//     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
-//       grid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
-// #else
-//     normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
-//
-//     /*
-//      * NOTE: do not change this! test suite depdends on the order of values in output
-//      */
-//     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
-//       grid->getName (), t, normRe, normRe * 100.0 / maxRe);
-// #endif
-//   }
 }
 
+/**
+ * Initialize grids used in further computations
+ *
+ * TODO: force inline this
+ */
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template<uint8_t grid_type, bool usePML, bool useMetamaterials>
-ICUDA_DEVICE ICUDA_HOST
+ICUDA_HOST
 void
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepInit (IGRID<TC> **grid, GridType *gridType, IGRID<TC> **materialGrid, GridType *materialGridType, IGRID<TC> **materialGrid1, GridType *materialGridType1,
 IGRID<TC> **materialGrid2, GridType *materialGridType2, IGRID<TC> **materialGrid3, GridType *materialGridType3, IGRID<TC> **materialGrid4, GridType *materialGridType4,
@@ -1070,7 +774,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
                                                                TCS diff12,
                                                                TCS diff21,
                                                                TCS diff22,
-                                                               FieldPointValue *valField,
+                                                               IGRID<TC> *grid,
                                                                TCFP coordFP,
                                                                IGRID<TC> *oppositeGrid1,
                                                                IGRID<TC> *oppositeGrid2,
@@ -1078,6 +782,9 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
                                                                IGRID<TC> *Ca,
                                                                IGRID<TC> *Cb)
 {
+  // TODO: [possible] move 1D gridValues to 3D gridValues array
+  FieldPointValue *valField = grid->getFieldPointValue (pos);
+
   FieldValue valCa = Ca->getFieldPointValue (pos)->getCurValue ();
   FieldValue valCb = Cb->getFieldPointValue (pos)->getCurValue ();
 
@@ -1508,6 +1215,8 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPointSourceCalc (time_st
   }
 }
 
+#ifndef GPU_INTERNAL_SCHEME
+
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 ICUDA_DEVICE
 FPValue
@@ -1734,6 +1443,8 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
   return FPValue (0);
 }
 
+#endif /* !GPU_INTERNAL_SCHEME */
+
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 ICUDA_HOST
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::INTERNAL_SCHEME_BASE ()
@@ -1792,7 +1503,6 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::INTERNAL_SCHEME_BASE ()
   , courantNum (0)
   , gridStep (0)
   , gridTimeStep (0)
-  , useParallel (false)
   , ExBorder (NULLPTR)
   , ExInitial (NULLPTR)
   , EyBorder (NULLPTR)
@@ -1847,6 +1557,14 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::INTERNAL_SCHEME_BASE ()
                   || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy)
                   || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy)
                   || Type == static_cast<SchemeType_t> (SchemeType::Dim3))
+#ifndef GPU_INTERNAL_SCHEME
+  , totalTimeSteps (0)
+  , NTimeSteps (0)
+  , useParallel (false)
+  , gpuIntScheme (NULLPTR)
+  , gpuIntSchemeOnGPU (NULLPTR)
+  , d_gpuIntSchemeOnGPU (NULLPTR)
+#endif /* !GPU_INTERNAL_SCHEME */
 {
 }
 
@@ -2022,3 +1740,902 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::initScheme (FPValue dx, FPValue
            relPhaseVelocity, phaseVelocity0, phaseVelocity, 2*PhysicsConst::Pi/sourceWaveLength, k,
            sourceWaveLength, sourceWaveLengthNumerical, gridStep, gridTimeStep, sourceFrequency);
 }
+
+#ifndef GPU_INTERNAL_SCHEME
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+void
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::initBlocks (time_step t_total)
+{
+  totalTimeSteps = t_total;
+
+  /*
+   * TODO: currently only single block is set up here, but underlying methods should support more?
+   */
+  blockCount = TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+
+  // TODO: allocate previous step storage for cuda blocks (see page 81)
+
+#ifdef PARALLEL_GRID
+  ParallelYeeGridLayout<Type, layout_type> *parallelYeeLayout = (ParallelYeeGridLayout<Type, layout_type> *) yeeLayout;
+  blockSize = parallelYeeLayout->getSizeForCurNode ();
+#else
+  blockSize = yeeLayout->getSize ();
+#endif
+
+#ifdef PARALLEL_GRID
+  if (useParallel)
+  {
+    time_step parallelBuf = (time_step) SOLVER_SETTINGS.getBufferSize ();
+    NTimeSteps = parallelBuf;
+  }
+  else
+#endif /* PARALLEL_GRID */
+  {
+    NTimeSteps = totalTimeSteps;
+  }
+
+#ifdef CUDA_ENABLED
+  if (blockCount.calculateTotalCoord () > 1)
+  {
+    /*
+     * More than one block is used, have to consider buffers now
+     */
+    time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
+
+#ifdef PARALLEL_GRID
+    if (useParallel)
+    {
+      /*
+       * Cuda grid buffer can't be greater than parallel grid buffer, because there will be no data to fill it with.
+       * If cuda grid buffer is less than parallel grid buffer, then parallel grid buffer won't be used fully, which
+       * is undesirable. So, restrict buffers to be identical for the case of both parallel mode and cuda mode.
+       */
+      ALWAYS_ASSERT (cudaBuf == (time_step) SOLVER_SETTINGS.getBufferSize ())
+    }
+#endif /* PARALLEL_GRID */
+
+    NTimeSteps = cudaBuf;
+  }
+
+  /*
+   * Init InternalScheme on GPU
+   */
+  time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
+
+  gpuIntScheme = new InternalSchemeGPU<Type, TCoord, layout_type> ();
+  gpuIntSchemeOnGPU = new InternalSchemeGPU<Type, TCoord, layout_type> ();
+
+  gpuIntScheme->initFromCPU (this, blockSize, TC_COORD (cudaBuf, cudaBuf, cudaBuf, ct1, ct2, ct3));
+  gpuIntSchemeOnGPU->initOnGPU (gpuIntScheme);
+
+  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gpuIntSchemeOnGPU, sizeof(InternalSchemeGPU<Type, TCoord, layout_type>)));
+#endif /* CUDA_ENABLED */
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+ICUDA_HOST
+void
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, time_step N, TC blockIdx)
+{
+#ifdef CUDA_ENABLED
+  /*
+   * Copy InternalScheme to GPU
+   */
+  gpuIntScheme->copyFromCPU (blockIdx * blockSize, blockSize);
+  gpuIntSchemeOnGPU->copyToGPU (gpuIntScheme);
+  cudaCheckErrorCmd (cudaMemcpy (d_gpuIntSchemeOnGPU, gpuIntSchemeOnGPU, sizeof(InternalSchemeGPU<Type, TCoord, layout_type>), cudaMemcpyHostToDevice));
+#endif /* CUDA_ENABLED */
+
+  TC zero = TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+#ifdef CUDA_ENABLED
+  GridCoordinate3D zero3D = GRID_COORDINATE_3D (0, 0, 0, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  GridCoordinate3D ExSize = gpuIntScheme->doNeedEx ? expandTo3D (gpuIntScheme->getEx ()->getSize (), ct1, ct2, ct3) : zero3D;
+  GridCoordinate3D EySize = gpuIntScheme->doNeedEy ? expandTo3D (gpuIntScheme->getEy ()->getSize (), ct1, ct2, ct3) : zero3D;
+  GridCoordinate3D EzSize = gpuIntScheme->doNeedEz ? expandTo3D (gpuIntScheme->getEz ()->getSize (), ct1, ct2, ct3) : zero3D;
+  GridCoordinate3D HxSize = gpuIntScheme->doNeedHx ? expandTo3D (gpuIntScheme->getHx ()->getSize (), ct1, ct2, ct3) : zero3D;
+  GridCoordinate3D HySize = gpuIntScheme->doNeedHy ? expandTo3D (gpuIntScheme->getHy ()->getSize (), ct1, ct2, ct3) : zero3D;
+  GridCoordinate3D HzSize = gpuIntScheme->doNeedHz ? expandTo3D (gpuIntScheme->getHz ()->getSize (), ct1, ct2, ct3) : zero3D;
+#endif
+
+  for (time_step t = tStart; t < tStart + N; ++t)
+  {
+    DPRINTF (LOG_LEVEL_NONE, "calculating time step %d\n", t);
+
+#ifdef CUDA_ENABLED
+    TC ExStart = gpuIntScheme->doNeedEx ? gpuIntScheme->Ex->getComputationStart (yeeLayout->getExStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC ExEnd = gpuIntScheme->doNeedEx ? gpuIntScheme->Ex->getComputationEnd (yeeLayout->getExEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+    TC EyStart = gpuIntScheme->doNeedEy ? gpuIntScheme->Ey->getComputationStart (yeeLayout->getEyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC EyEnd = gpuIntScheme->doNeedEy ? gpuIntScheme->Ey->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+    TC EzStart = gpuIntScheme->doNeedEz ? gpuIntScheme->Ez->getComputationStart (yeeLayout->getEzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC EzEnd = gpuIntScheme->doNeedEz ? gpuIntScheme->Ez->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+    TC HxStart = gpuIntScheme->doNeedHx ? gpuIntScheme->Hx->getComputationStart (yeeLayout->getHxStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC HxEnd = gpuIntScheme->doNeedHx ? gpuIntScheme->Hx->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+    TC HyStart = gpuIntScheme->doNeedHy ? gpuIntScheme->Hy->getComputationStart (yeeLayout->getHyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC HyEnd = gpuIntScheme->doNeedHy ? gpuIntScheme->Hy->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+    TC HzStart = gpuIntScheme->doNeedHz ? gpuIntScheme->Hz->getComputationStart (yeeLayout->getHzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC HzEnd = gpuIntScheme->doNeedHz ? gpuIntScheme->Hz->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+#else /* CUDA_ENABLED */
+    TC ExStart = doNeedEx ? Ex->getComputationStart (yeeLayout->getExStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC ExEnd = doNeedEx ? Ex->getComputationEnd (yeeLayout->getExEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+    TC EyStart = doNeedEy ? Ey->getComputationStart (yeeLayout->getEyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC EyEnd = doNeedEy ? Ey->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+    TC EzStart = doNeedEz ? Ez->getComputationStart (yeeLayout->getEzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC EzEnd = doNeedEz ? Ez->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+    TC HxStart = doNeedHx ? Hx->getComputationStart (yeeLayout->getHxStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC HxEnd = doNeedHx ? Hx->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+    TC HyStart = doNeedHy ? Hy->getComputationStart (yeeLayout->getHyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC HyEnd = doNeedHy ? Hy->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+    TC HzStart = doNeedHz ? Hz->getComputationStart (yeeLayout->getHzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TC HzEnd = doNeedHz ? Hz->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+#endif /* CUDA_ENABLED */
+
+    if (SOLVER_SETTINGS.getDoUseTFSF ())
+    {
+      GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
+
+#ifdef CUDA_ENABLED
+      gpuIntSchemeOnGPU->performPlaneWaveEStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getEInc ()->getSize ());
+      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU, zero1D, gpuIntScheme->getEInc ()->getSize ());
+      gpuIntScheme->getEInc ()->nextTimeStep ();
+#else /* CUDA_ENABLED */
+      performPlaneWaveESteps (t, zero1D, getEInc ()->getSize ());
+      getEInc ()->shiftInTime (zero1D, getEInc ()->getSize ());
+      getEInc ()->nextTimeStep ();
+#endif /* !CUDA_ENABLED */
+    }
+
+    if (getDoNeedEx ())
+    {
+      performFieldSteps<static_cast<uint8_t> (GridType::EX)> (t, ExStart, ExEnd);
+
+#ifdef CUDA_ENABLED
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU, zero, zero3D, ExSize, ct1, ct2, ct3);
+      gpuIntScheme->getEx ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDx (d_gpuIntSchemeOnGPU, zero, zero3D, ExSize, ct1, ct2, ct3);
+        gpuIntScheme->getDx ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1x (d_gpuIntSchemeOnGPU, zero, zero3D, ExSize, ct1, ct2, ct3);
+        gpuIntScheme->getD1x ()->nextTimeStep ();
+      }
+#else
+      getEx ()->shiftInTime (zero, getEx ()->getSize ());
+      getEx ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        getDx ()->shiftInTime (zero, getDx ()->getSize ());
+        getDx ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        getD1x ()->shiftInTime (zero, getD1x ()->getSize ());
+        getD1x ()->nextTimeStep ();
+      }
+#endif
+    }
+
+    if (getDoNeedEy ())
+    {
+      performFieldSteps<static_cast<uint8_t> (GridType::EY)> (t, EyStart, EyEnd);
+
+#ifdef CUDA_ENABLED
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU, zero, zero3D, EySize, ct1, ct2, ct3);
+      gpuIntScheme->getEy ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDy (d_gpuIntSchemeOnGPU, zero, zero3D, EySize, ct1, ct2, ct3);
+        gpuIntScheme->getDy ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1y (d_gpuIntSchemeOnGPU, zero, zero3D, EySize, ct1, ct2, ct3);
+        gpuIntScheme->getD1y ()->nextTimeStep ();
+      }
+#else
+      getEy ()->shiftInTime (zero, getEy ()->getSize ());
+      getEy ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        getDy ()->shiftInTime (zero, getDy ()->getSize ());
+        getDy ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        getD1y ()->shiftInTime (zero, getD1y ()->getSize ());
+        getD1y ()->nextTimeStep ();
+      }
+#endif
+    }
+
+    if (getDoNeedEz ())
+    {
+      performFieldSteps<static_cast<uint8_t> (GridType::EZ)> (t, EzStart, EzEnd);
+
+#ifdef CUDA_ENABLED
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU, zero, zero3D, EzSize, ct1, ct2, ct3);
+      gpuIntScheme->getEz ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDz (d_gpuIntSchemeOnGPU, zero, zero3D, EzSize, ct1, ct2, ct3);
+        gpuIntScheme->getDz ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1z (d_gpuIntSchemeOnGPU, zero, zero3D, EzSize, ct1, ct2, ct3);
+        gpuIntScheme->getD1z ()->nextTimeStep ();
+      }
+#else
+      getEz ()->shiftInTime (zero, getEz ()->getSize ());
+      getEz ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        getDz ()->shiftInTime (zero, getDz ()->getSize ());
+        getDz ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        getD1z ()->shiftInTime (zero, getD1z ()->getSize ());
+        getD1z ()->nextTimeStep ();
+      }
+#endif
+    }
+
+    if (SOLVER_SETTINGS.getDoUseTFSF ())
+    {
+      GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
+
+#ifdef CUDA_ENABLED
+      gpuIntSchemeOnGPU->performPlaneWaveHStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getHInc ()->getSize ());
+      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU, zero1D, gpuIntScheme->getHInc ()->getSize ());
+      gpuIntScheme->getHInc ()->nextTimeStep ();
+#else /* CUDA_ENABLED */
+      performPlaneWaveHSteps (t, zero1D, getHInc ()->getSize ());
+      getHInc ()->shiftInTime (zero1D, getHInc ()->getSize ());
+      getHInc ()->nextTimeStep ();
+#endif /* !CUDA_ENABLED */
+    }
+
+    if (getDoNeedHx ())
+    {
+      performFieldSteps<static_cast<uint8_t> (GridType::HX)> (t, HxStart, HxEnd);
+
+#ifdef CUDA_ENABLED
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU, zero, zero3D, HxSize, ct1, ct2, ct3);
+      gpuIntScheme->getHx ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBx (d_gpuIntSchemeOnGPU, zero, zero3D, HxSize, ct1, ct2, ct3);
+        gpuIntScheme->getBx ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1x (d_gpuIntSchemeOnGPU, zero, zero3D, HxSize, ct1, ct2, ct3);
+        gpuIntScheme->getB1x ()->nextTimeStep ();
+      }
+#else
+      getHx ()->shiftInTime (zero, getHx ()->getSize ());
+      getHx ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        getBx ()->shiftInTime (zero, getBx ()->getSize ());
+        getBx ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        getB1x ()->shiftInTime (zero, getB1x ()->getSize ());
+        getB1x ()->nextTimeStep ();
+      }
+#endif
+    }
+
+    if (getDoNeedHy ())
+    {
+      performFieldSteps<static_cast<uint8_t> (GridType::HY)> (t, HyStart, HyEnd);
+
+#ifdef CUDA_ENABLED
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU, zero, zero3D, HySize, ct1, ct2, ct3);
+      gpuIntScheme->getHy ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBy (d_gpuIntSchemeOnGPU, zero, zero3D, HySize, ct1, ct2, ct3);
+        gpuIntScheme->getBy ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1y (d_gpuIntSchemeOnGPU, zero, zero3D, HySize, ct1, ct2, ct3);
+        gpuIntScheme->getB1y ()->nextTimeStep ();
+      }
+#else
+      getHy ()->shiftInTime (zero, getHy ()->getSize ());
+      getHy ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        getBy ()->shiftInTime (zero, getBy ()->getSize ());
+        getBy ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        getB1y ()->shiftInTime (zero, getB1y ()->getSize ());
+        getB1y ()->nextTimeStep ();
+      }
+#endif
+    }
+
+    if (getDoNeedHz ())
+    {
+      performFieldSteps<static_cast<uint8_t> (GridType::HZ)> (t, HzStart, HzEnd);
+
+#ifdef CUDA_ENABLED
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU, zero, zero3D, HzSize, ct1, ct2, ct3);
+      gpuIntScheme->getHz ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBz (d_gpuIntSchemeOnGPU, zero, zero3D, HzSize, ct1, ct2, ct3);
+        gpuIntScheme->getBz ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1z (d_gpuIntSchemeOnGPU, zero, zero3D, HzSize, ct1, ct2, ct3);
+        gpuIntScheme->getB1z ()->nextTimeStep ();
+      }
+#else
+      getHz ()->shiftInTime (zero, getHz ()->getSize ());
+      getHz ()->nextTimeStep ();
+
+      if (SOLVER_SETTINGS.getDoUsePML ())
+      {
+        getBz ()->shiftInTime (zero, getBz ()->getSize ());
+        getBz ()->nextTimeStep ();
+      }
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        getB1z ()->shiftInTime (zero, getB1z ()->getSize ());
+        getB1z ()->nextTimeStep ();
+      }
+#endif
+    }
+  }
+
+#ifdef CUDA_ENABLED
+  /*
+   * Copy back from GPU to CPU
+   */
+  bool finalCopy = blockIdx + TC_COORD (1, 1, 1, ct1, ct2, ct3) == blockCount;
+  gpuIntScheme->copyBackToCPU (NTimeSteps, finalCopy);
+#endif /* CUDA_ENABLED */
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+ICUDA_HOST
+void
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::share ()
+{
+#ifdef PARALLEL_GRID
+  if (!useParallel)
+  {
+    return;
+  }
+
+  if (intScheme->getDoNeedEx ())
+  {
+    ASSERT (((ParallelGrid *) Ex)->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) Ex)->share ();
+    ((ParallelGrid *) Ex)->zeroShareStep ();
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      ASSERT (((ParallelGrid *) Dx)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) Dx)->share ();
+      ((ParallelGrid *) Dx)->zeroShareStep ();
+    }
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    {
+      ASSERT (((ParallelGrid *) D1x)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) D1x)->share ();
+      ((ParallelGrid *) D1x)->zeroShareStep ();
+    }
+  }
+
+  if (intScheme->getDoNeedEy ())
+  {
+    ASSERT (((ParallelGrid *) Ey)->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) Ey)->share ();
+    ((ParallelGrid *) Ey)->zeroShareStep ();
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      ASSERT (((ParallelGrid *) Dy)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) Dy)->share ();
+      ((ParallelGrid *) Dy)->zeroShareStep ();
+    }
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    {
+      ASSERT (((ParallelGrid *) D1y)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) D1y)->share ();
+      ((ParallelGrid *) D1y)->zeroShareStep ();
+    }
+  }
+
+  if (intScheme->getDoNeedEz ())
+  {
+    ASSERT (((ParallelGrid *) Ez)->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) Ez)->share ();
+    ((ParallelGrid *) Ez)->zeroShareStep ();
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      ASSERT (((ParallelGrid *) Dz)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) Dz)->share ();
+      ((ParallelGrid *) Dz)->zeroShareStep ();
+    }
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    {
+      ASSERT (((ParallelGrid *) D1z)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) D1z)->share ();
+      ((ParallelGrid *) D1z)->zeroShareStep ();
+    }
+  }
+
+  if (intScheme->getDoNeedHx ())
+  {
+    ASSERT (((ParallelGrid *) Hx)->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) Hx)->share ();
+    ((ParallelGrid *) Hx)->zeroShareStep ();
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      ASSERT (((ParallelGrid *) Bx)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) Bx)->share ();
+      ((ParallelGrid *) Bx)->zeroShareStep ();
+    }
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    {
+      ASSERT (((ParallelGrid *) B1x)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) B1x)->share ();
+      ((ParallelGrid *) B1x)->zeroShareStep ();
+    }
+  }
+
+  if (intScheme->getDoNeedHy ())
+  {
+    ASSERT (((ParallelGrid *) Hy)->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) Hy)->share ();
+    ((ParallelGrid *) Hy)->zeroShareStep ();
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      ASSERT (((ParallelGrid *) By)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) By)->share ();
+      ((ParallelGrid *) By)->zeroShareStep ();
+    }
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    {
+      ASSERT (((ParallelGrid *) B1y)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) B1y)->share ();
+      ((ParallelGrid *) B1y)->zeroShareStep ();
+    }
+  }
+
+  if (intScheme->getDoNeedHz ())
+  {
+    ASSERT (((ParallelGrid *) Hz)->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) Hz)->share ();
+    ((ParallelGrid *) Hz)->zeroShareStep ();
+
+    if (SOLVER_SETTINGS.getDoUsePML ())
+    {
+      ASSERT (((ParallelGrid *) Bz)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) Bz)->share ();
+      ((ParallelGrid *) Bz)->zeroShareStep ();
+    }
+    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+    {
+      ASSERT (((ParallelGrid *) B1z)->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) B1z)->share ();
+      ((ParallelGrid *) B1z)->zeroShareStep ();
+    }
+  }
+#endif /* PARALLEL_GRID */
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+ICUDA_HOST
+void
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::rebalance ()
+{
+
+}
+
+/**
+ * Perform computations of single time step for specific field and for specified chunk.
+ *
+ * NOTE: For GPU InternalScheme this method is not defined, because it is supposed to be ran on CPU only,
+ *       and call kernels deeper in call tree.
+ *
+ * NOTE: Start and End coordinates should correctly consider buffers in parallel grid,
+ *       which means, that computations are not performed for incorrect grid points.
+ */
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template<uint8_t grid_type, bool usePML, bool useMetamaterials>
+ICUDA_HOST
+void
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time step to calculate */
+                                                                     TC start, /**< start coordinate of chunk to perform computations on */
+                                                                     TC end) /**< end coordinate of chunk to perform computations on */
+{
+  // TODO: add metamaterials without pml
+  if (!usePML && useMetamaterials)
+  {
+    UNREACHABLE;
+  }
+
+  IGRID<TC> *grid = NULLPTR;
+  GridType gridType = GridType::NONE;
+
+  IGRID<TC> *materialGrid = NULLPTR;
+  GridType materialGridType = GridType::NONE;
+
+  IGRID<TC> *materialGrid1 = NULLPTR;
+  GridType materialGridType1 = GridType::NONE;
+
+  IGRID<TC> *materialGrid2 = NULLPTR;
+  GridType materialGridType2 = GridType::NONE;
+
+  IGRID<TC> *materialGrid3 = NULLPTR;
+  GridType materialGridType3 = GridType::NONE;
+
+  IGRID<TC> *materialGrid4 = NULLPTR;
+  GridType materialGridType4 = GridType::NONE;
+
+  IGRID<TC> *materialGrid5 = NULLPTR;
+  GridType materialGridType5 = GridType::NONE;
+
+  IGRID<TC> *oppositeGrid1 = NULLPTR;
+  IGRID<TC> *oppositeGrid2 = NULLPTR;
+
+  IGRID<TC> *gridPML1 = NULLPTR;
+  GridType gridPMLType1 = GridType::NONE;
+
+  IGRID<TC> *gridPML2 = NULLPTR;
+  GridType gridPMLType2 = GridType::NONE;
+
+  IGRID<TC> *Ca = NULLPTR;
+  IGRID<TC> *Cb = NULLPTR;
+
+  SourceCallBack rightSideFunc = NULLPTR;
+  SourceCallBack borderFunc = NULLPTR;
+  SourceCallBack exactFunc = NULLPTR;
+
+  TCS diff11;
+  TCS diff12;
+  TCS diff21;
+  TCS diff22;
+
+  /*
+   * TODO: remove this, multiply on this at initialization
+   */
+  FPValue materialModifier;
+
+  calculateFieldStepInit<grid_type, usePML, useMetamaterials> (&grid, &gridType,
+    &materialGrid, &materialGridType, &materialGrid1, &materialGridType1, &materialGrid2, &materialGridType2,
+    &materialGrid3, &materialGridType3, &materialGrid4, &materialGridType4, &materialGrid5, &materialGridType5,
+    &oppositeGrid1, &oppositeGrid2, &gridPML1, &gridPMLType1, &gridPML2, &gridPMLType2,
+    &rightSideFunc, &borderFunc, &exactFunc, &materialModifier, &Ca, &Cb);
+
+  calculateFieldStepInitDiff<grid_type> (&diff11, &diff12, &diff21, &diff22);
+
+#ifdef CUDA_ENABLED
+  CudaGrid<TC> *d_grid = NULLPTR;
+  GridType _gridType = GridType::NONE;
+
+  CudaGrid<TC> *d_materialGrid = NULLPTR;
+  GridType _materialGridType = GridType::NONE;
+
+  CudaGrid<TC> *d_materialGrid1 = NULLPTR;
+  GridType _materialGridType1 = GridType::NONE;
+
+  CudaGrid<TC> *d_materialGrid2 = NULLPTR;
+  GridType _materialGridType2 = GridType::NONE;
+
+  CudaGrid<TC> *d_materialGrid3 = NULLPTR;
+  GridType _materialGridType3 = GridType::NONE;
+
+  CudaGrid<TC> *d_materialGrid4 = NULLPTR;
+  GridType _materialGridType4 = GridType::NONE;
+
+  CudaGrid<TC> *d_materialGrid5 = NULLPTR;
+  GridType _materialGridType5 = GridType::NONE;
+
+  CudaGrid<TC> *d_oppositeGrid1 = NULLPTR;
+  CudaGrid<TC> *d_oppositeGrid2 = NULLPTR;
+
+  CudaGrid<TC> *d_gridPML1 = NULLPTR;
+  GridType _gridPMLType1 = GridType::NONE;
+
+  CudaGrid<TC> *d_gridPML2 = NULLPTR;
+  GridType _gridPMLType2 = GridType::NONE;
+
+  CudaGrid<TC> *d_Ca = NULLPTR;
+  CudaGrid<TC> *d_Cb = NULLPTR;
+
+  SourceCallBack _rightSideFunc = NULLPTR;
+  SourceCallBack _borderFunc = NULLPTR;
+  SourceCallBack _exactFunc = NULLPTR;
+
+  FPValue _materialModifier;
+
+  TCS _diff11;
+  TCS _diff12;
+  TCS _diff21;
+  TCS _diff22;
+
+  gpuIntSchemeOnGPU->template calculateFieldStepInit<grid_type, usePML, useMetamaterials> (&d_grid, &_gridType,
+    &d_materialGrid, &_materialGridType, &d_materialGrid1, &_materialGridType1, &d_materialGrid2, &_materialGridType2,
+    &d_materialGrid3, &_materialGridType3, &d_materialGrid4, &_materialGridType4, &d_materialGrid5, &_materialGridType5,
+    &d_oppositeGrid1, &d_oppositeGrid2, &d_gridPML1, &_gridPMLType1, &d_gridPML2, &_gridPMLType2,
+    &_rightSideFunc, &_borderFunc, &_exactFunc, &_materialModifier, &d_Ca, &d_Cb);
+
+  gpuIntScheme->template calculateFieldStepInitDiff<grid_type> (&_diff11, &_diff12, &_diff21, &_diff22);
+
+#endif /* CUDA_ENABLED */
+
+  // TODO: specialize for each dimension
+  GridCoordinate3D start3D;
+  GridCoordinate3D end3D;
+
+  expandTo3DStartEnd (start, end, start3D, end3D, ct1, ct2, ct3);
+
+  // TODO: remove this check for each iteration
+  if (t > 0)
+  {
+#ifdef CUDA_ENABLED
+
+    // Launch kernel here
+    gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <grid_type, usePML, useMetamaterials> (d_gpuIntSchemeOnGPU, start3D, end3D,
+                                                                            t, diff11, diff12, diff21, diff22,
+                                                                            d_grid,
+                                                                            d_oppositeGrid1, d_oppositeGrid2, _rightSideFunc, d_Ca, d_Cb);
+
+#else /* CUDA_ENABLED */
+
+    for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+    {
+      // TODO: check that this loop is optimized out
+      for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+      {
+        // TODO: check that this is optimized out in case 2D mode
+        for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
+        {
+          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+
+          // TODO: add getTotalPositionDiff here, which will be called before loop
+          TC posAbs = grid->getTotalPosition (pos);
+
+          TCFP coordFP;
+
+          if (rightSideFunc != NULLPTR)
+          {
+            switch (grid_type)
+            {
+              case (static_cast<uint8_t> (GridType::EX)):
+              {
+                coordFP = yeeLayout->getExCoordFP (posAbs);
+                break;
+              }
+              case (static_cast<uint8_t> (GridType::EY)):
+              {
+                coordFP = yeeLayout->getEyCoordFP (posAbs);
+                break;
+              }
+              case (static_cast<uint8_t> (GridType::EZ)):
+              {
+                coordFP = yeeLayout->getEzCoordFP (posAbs);
+                break;
+              }
+              case (static_cast<uint8_t> (GridType::HX)):
+              {
+                coordFP = yeeLayout->getHxCoordFP (posAbs);
+                break;
+              }
+              case (static_cast<uint8_t> (GridType::HY)):
+              {
+                coordFP = yeeLayout->getHyCoordFP (posAbs);
+                break;
+              }
+              case (static_cast<uint8_t> (GridType::HZ)):
+              {
+                coordFP = yeeLayout->getHzCoordFP (posAbs);
+                break;
+              }
+              default:
+              {
+                UNREACHABLE;
+              }
+            }
+          }
+
+          calculateFieldStepIteration<grid_type, usePML> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                          grid, coordFP,
+                                                          oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb);
+        }
+      }
+    }
+#endif
+
+//     if (usePML)
+//     {
+//       if (useMetamaterials)
+//       {
+// #ifdef TWO_TIME_STEPS
+//         for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+//         {
+//           // TODO: check that this loop is optimized out
+//           for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+//           {
+//             // TODO: check that this loop is optimized out
+//             for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
+//             {
+//               TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+//               calculateFieldStepIterationPMLMetamaterials (t, pos, grid, gridPML1, gridType,
+//                 materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
+//                 materialModifier);
+//             }
+//           }
+//         }
+// #else
+//         ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
+// #endif
+//       }
+//
+//       for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+//       {
+//         // TODO: check that this loop is optimized out
+//         for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+//         {
+//           // TODO: check that this loop is optimized out
+//           for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
+//           {
+//             TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+//             calculateFieldStepIterationPML<useMetamaterials> (t, pos, grid, gridPML1, gridPML2, gridType, gridPMLType1,
+//               materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
+//               materialModifier);
+//           }
+//         }
+//       }
+//     }
+  }
+
+  // if (borderFunc != NULLPTR)
+  // {
+  //   GridCoordinate3D startBorder;
+  //   GridCoordinate3D endBorder;
+  //
+  //   expandTo3DStartEnd (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3),
+  //                       grid->getSize (),
+  //                       startBorder,
+  //                       endBorder,
+  //                       ct1, ct2, ct3);
+  //
+  //   for (grid_coord i = startBorder.get1 (); i < endBorder.get1 (); ++i)
+  //   {
+  //     // TODO: check that this loop is optimized out
+  //     for (grid_coord j = startBorder.get2 (); j < endBorder.get2 (); ++j)
+  //     {
+  //       // TODO: check that this loop is optimized out
+  //       for (grid_coord k = startBorder.get3 (); k < endBorder.get3 (); ++k)
+  //       {
+  //         TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+  //         calculateFieldStepIterationBorder<grid_type> (t, pos, grid, borderFunc);
+  //       }
+  //     }
+  //   }
+  // }
+
+//   if (exactFunc != NULLPTR)
+//   {
+//     FPValue normRe = 0.0;
+//     FPValue normIm = 0.0;
+//     FPValue normMod = 0.0;
+//
+//     FPValue maxRe = 0.0;
+//     FPValue maxIm = 0.0;
+//     FPValue maxMod = 0.0;
+//
+//     GridCoordinate3D startNorm = start3D;
+//     GridCoordinate3D endNorm = end3D;
+//
+//     if (SOLVER_SETTINGS.getExactSolutionCompareStartX () != 0)
+//     {
+//       startNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareStartX ());
+//     }
+//     if (SOLVER_SETTINGS.getExactSolutionCompareStartY () != 0)
+//     {
+//       startNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareStartY ());
+//     }
+//     if (SOLVER_SETTINGS.getExactSolutionCompareStartZ () != 0)
+//     {
+//       startNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareStartZ ());
+//     }
+//
+//     if (SOLVER_SETTINGS.getExactSolutionCompareEndX () != 0)
+//     {
+//       endNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareEndX ());
+//     }
+//     if (SOLVER_SETTINGS.getExactSolutionCompareEndY () != 0)
+//     {
+//       endNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareEndY ());
+//     }
+//     if (SOLVER_SETTINGS.getExactSolutionCompareEndZ () != 0)
+//     {
+//       endNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareEndZ ());
+//     }
+//
+//     IGRID<TC> *normGrid = grid;
+//     if (usePML)
+//     {
+//       grid = gridPML2;
+//     }
+//
+//     for (grid_coord i = startNorm.get1 (); i < endNorm.get1 (); ++i)
+//     {
+//       // TODO: check that this loop is optimized out
+//       for (grid_coord j = startNorm.get2 (); j < endNorm.get2 (); ++j)
+//       {
+//         // TODO: check that this loop is optimized out
+//         for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
+//         {
+//           TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+//           calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
+//         }
+//       }
+//     }
+//
+// #ifdef COMPLEX_FIELD_VALUES
+//     normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
+//     normIm = sqrt (normIm / grid->getSize ().calculateTotalCoord ());
+//     normMod = sqrt (normMod / grid->getSize ().calculateTotalCoord ());
+//
+//     /*
+//      * NOTE: do not change this! test suite depdends on the order of values in output
+//      */
+//     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
+//       grid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
+// #else
+//     normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
+//
+//     /*
+//      * NOTE: do not change this! test suite depdends on the order of values in output
+//      */
+//     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
+//       grid->getName (), t, normRe, normRe * 100.0 / maxRe);
+// #endif
+//   }
+}
+
+#endif /* !GPU_INTERNAL_SCHEME */

@@ -1,14 +1,209 @@
+#ifdef GPU_INTERNAL_SCHEME
+
+namespace InternalSchemeKernelHelpers
+{
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, uint8_t grid_type, bool usePML, bool useMetamaterials>
+  __global__
+  void calculateFieldStepIterationKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                          GridCoordinate3D start3D,
+                                          time_step t,
+                                          TCoord<grid_coord, false> diff11,
+                                          TCoord<grid_coord, false> diff12,
+                                          TCoord<grid_coord, false> diff21,
+                                          TCoord<grid_coord, false> diff22,
+                                          IGRID< TCoord<grid_coord, true> > *grid,
+                                          IGRID< TCoord<grid_coord, true> > *oppositeGrid1,
+                                          IGRID< TCoord<grid_coord, true> > *oppositeGrid2,
+                                          SourceCallBack rightSideFunc,
+                                          IGRID< TCoord<grid_coord, true> > *Ca,
+                                          IGRID< TCoord<grid_coord, true> > *Cb,
+                                          CoordinateType ct1,
+                                          CoordinateType ct2,
+                                          CoordinateType ct3)
+  {
+    GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
+                                                         (blockIdx.y * blockDim.y) + threadIdx.y,
+                                                         (blockIdx.z * blockDim.z) + threadIdx.z,
+                                                          CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+    TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
+
+    // TODO: add getTotalPositionDiff here, which will be called before loop
+    TCoord<grid_coord, true> posAbs = grid->getTotalPosition (pos);
+
+    TCoord<FPValue, true> coordFP;
+
+    if (rightSideFunc != NULLPTR)
+    {
+      switch (grid_type)
+      {
+        case (static_cast<uint8_t> (GridType::EX)):
+        {
+          coordFP = gpuScheme->getYeeLayout ()->getExCoordFP (posAbs);
+          break;
+        }
+        case (static_cast<uint8_t> (GridType::EY)):
+        {
+          coordFP = gpuScheme->getYeeLayout ()->getEyCoordFP (posAbs);
+          break;
+        }
+        case (static_cast<uint8_t> (GridType::EZ)):
+        {
+          coordFP = gpuScheme->getYeeLayout ()->getEzCoordFP (posAbs);
+          break;
+        }
+        case (static_cast<uint8_t> (GridType::HX)):
+        {
+          coordFP = gpuScheme->getYeeLayout ()->getHxCoordFP (posAbs);
+          break;
+        }
+        case (static_cast<uint8_t> (GridType::HY)):
+        {
+          coordFP = gpuScheme->getYeeLayout ()->getHyCoordFP (posAbs);
+          break;
+        }
+        case (static_cast<uint8_t> (GridType::HZ)):
+        {
+          coordFP = gpuScheme->getYeeLayout ()->getHzCoordFP (posAbs);
+          break;
+        }
+        default:
+        {
+          UNREACHABLE;
+        }
+      }
+    }
+
+    gpuScheme->calculateFieldStepIteration<grid_type, usePML> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               grid, coordFP,
+                                                               oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb);
+  }
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  __global__
+  void performPlaneWaveEStepsKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                     time_step t, GridCoordinate1D Start, GridCoordinate1D CoordPerKernel)
+  {
+    GridCoordinate1D posStart = GRID_COORDINATE_1D ((blockIdx.x * blockDim.x) + threadIdx.x,
+                                 CoordinateType::X);
+    posStart = posStart * CoordPerKernel + Start;
+    GridCoordinate1D posEnd = posStart + CoordPerKernel;
+    gpuScheme->performPlaneWaveESteps (t, posStart, posEnd);
+  }
+    template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  __global__
+  void performPlaneWaveHStepsKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                     time_step t, GridCoordinate1D Start, GridCoordinate1D CoordPerKernel)
+  {
+    GridCoordinate1D posStart = GRID_COORDINATE_1D ((blockIdx.x * blockDim.x) + threadIdx.x,
+                                 CoordinateType::X);
+    posStart = posStart * CoordPerKernel + Start;
+    GridCoordinate1D posEnd = posStart + CoordPerKernel;
+    gpuScheme->performPlaneWaveHSteps (t, posStart, posEnd);
+  }
+
+#define SHIFT_IN_TIME_KERNEL(NAME) \
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
+  __global__ \
+  void shiftInTimeKernel ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme, \
+                                  TCoord<grid_coord, true> Start, TCoord<grid_coord, true> CoordPerKernel, \
+                                  CoordinateType ct1, CoordinateType ct2, CoordinateType ct3) \
+  { \
+    TCoord<grid_coord, true> posStart = TCoord<grid_coord, true>::initAxesCoordinate ((blockIdx.x * blockDim.x) + threadIdx.x, \
+                                          (blockIdx.y * blockDim.y) + threadIdx.y, \
+                                          (blockIdx.z * blockDim.z) + threadIdx.z, \
+                                          ct1, ct2, ct3); \
+    posStart = posStart * CoordPerKernel + Start; \
+    TCoord<grid_coord, true> posEnd = posStart + CoordPerKernel; \
+    gpuScheme-> get ## NAME () -> shiftInTime (posStart, posEnd); \
+  }
+
+  SHIFT_IN_TIME_KERNEL(Ex)
+  SHIFT_IN_TIME_KERNEL(Ey)
+  SHIFT_IN_TIME_KERNEL(Ez)
+  SHIFT_IN_TIME_KERNEL(Hx)
+  SHIFT_IN_TIME_KERNEL(Hy)
+  SHIFT_IN_TIME_KERNEL(Hz)
+  SHIFT_IN_TIME_KERNEL(Dx)
+  SHIFT_IN_TIME_KERNEL(Dy)
+  SHIFT_IN_TIME_KERNEL(Dz)
+  SHIFT_IN_TIME_KERNEL(Bx)
+  SHIFT_IN_TIME_KERNEL(By)
+  SHIFT_IN_TIME_KERNEL(Bz)
+  SHIFT_IN_TIME_KERNEL(D1x)
+  SHIFT_IN_TIME_KERNEL(D1y)
+  SHIFT_IN_TIME_KERNEL(D1z)
+  SHIFT_IN_TIME_KERNEL(B1x)
+  SHIFT_IN_TIME_KERNEL(B1y)
+  SHIFT_IN_TIME_KERNEL(B1z)
+
+#define SHIFT_IN_TIME_PLANE_WAVE_KERNEL(NAME) \
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
+  __global__ \
+  void shiftInTimePlaneWaveKernel ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme, \
+                                           GridCoordinate1D Start, GridCoordinate1D CoordPerKernel) \
+  { \
+    GridCoordinate1D posStart = GRID_COORDINATE_1D ((blockIdx.x * blockDim.x) + threadIdx.x, \
+                                 CoordinateType::X); \
+    posStart = posStart * CoordPerKernel + Start; \
+    GridCoordinate1D posEnd = posStart + CoordPerKernel; \
+    gpuScheme-> get ## NAME () -> shiftInTime (posStart, posEnd); \
+  }
+
+  SHIFT_IN_TIME_PLANE_WAVE_KERNEL(EInc)
+  SHIFT_IN_TIME_PLANE_WAVE_KERNEL(HInc)
+};
+
+#endif /* GPU_INTERNAL_SCHEME */
+
 class INTERNAL_SCHEME_HELPER
 {
 public:
 
-  HELPER_ALLOCATE_GRIDS
-  HELPER_ALLOCATE_GRIDS_INC
-  HELPER_ALLOCATE_GRIDS_FROM_CPU
-  HELPER_ALLOCATE_GRIDS_ON_GPU
+#ifdef GPU_INTERNAL_SCHEME
 
-  HELPER_COPY_GRIDS_FROM_CPU
-  HELPER_COPY_GRIDS_TO_GPU
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  ICUDA_HOST static void
+  allocateGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme,
+                        InternalScheme<Type, TCoord, layout_type> *cpuScheme,
+                        TCoord<grid_coord, true> blockSize, TCoord<grid_coord, true> bufSize);
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  ICUDA_HOST static void
+  freeGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme);
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  ICUDA_HOST static void allocateGridsOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  ICUDA_HOST static void freeGridsOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  ICUDA_HOST static void
+  copyGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                    TCoord<grid_coord, true> start, TCoord<grid_coord, true> end);
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  ICUDA_HOST static void
+  copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                      time_step N,
+                      bool finalCopy);
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  ICUDA_HOST static void
+  copyGridsToGPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme,
+                  InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
+
+#else /* GPU_INTERNAL_SCHEME */
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  ICUDA_HOST
+  static void allocateGrids (InternalScheme<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout);
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  ICUDA_HOST
+  static void allocateGridsInc (InternalScheme<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout);
+
+#endif /* !GPU_INTERNAL_SCHEME */
 
   ICUDA_DEVICE
   static FieldValue approximateIncidentWaveHelper (FPValue d, IGRID<GridCoordinate1D> *FieldInc)
@@ -60,22 +255,95 @@ public:
     return approximateIncidentWave<Type, TCoord> (realCoord, zeroCoord, 0.5, HInc, incAngle1, incAngle2);
   }
 
+#ifndef GPU_INTERNAL_SCHEME
 #if defined (PARALLEL_GRID)
-  HELPER_ALLOCATE_PARALLEL_GRIDS
+
+  template <SchemeType_t Type, LayoutType layout_type>
+  ICUDA_HOST
+  static
+  void allocateParallelGrids (InternalScheme<Type, ParallelGridCoordinateTemplate, layout_type> *intScheme);
+
 #endif /* PARALLEL_GRID */
 
-  ICUDA_DEVICE
+  template <SchemeType_t Type, LayoutType layout_type>
+  ICUDA_HOST
+  static
+  void performNSteps1D (INTERNAL_SCHEME_BASE<Type, GridCoordinate1DTemplate, layout_type> *intScheme,
+                        time_step tStart,
+                        time_step N)
+  {
+    for (grid_coord c1 = 0; c1 < intScheme->blockCount.get1 (); ++c1)
+    {
+      GridCoordinate1D blockIdx = GRID_COORDINATE_1D (c1, intScheme->ct1);
+
+      // TODO: save block to prev blocks storage
+      intScheme->performNStepsForBlock (tStart, N, blockIdx);
+    }
+
+    intScheme->share ();
+    intScheme->rebalance ();
+  }
+
+  template <SchemeType_t Type, LayoutType layout_type>
+  ICUDA_HOST
+  static
+  void performNSteps2D (INTERNAL_SCHEME_BASE<Type, GridCoordinate2DTemplate, layout_type> *intScheme,
+                        time_step tStart,
+                        time_step N)
+  {
+    for (grid_coord c1 = 0; c1 < intScheme->blockCount.get1 (); ++c1)
+    {
+      for (grid_coord c2 = 0; c2 < intScheme->blockCount.get2 (); ++c2)
+      {
+        GridCoordinate2D blockIdx = GRID_COORDINATE_2D (c1, c2, intScheme->ct1, intScheme->ct2);
+
+        // TODO: save block to prev blocks storage
+        intScheme->performNStepsForBlock (tStart, N, blockIdx);
+      }
+    }
+
+    intScheme->share ();
+    intScheme->rebalance ();
+  }
+
+  template <SchemeType_t Type, LayoutType layout_type>
+  ICUDA_HOST
+  static
+  void performNSteps3D (INTERNAL_SCHEME_BASE<Type, GridCoordinate3DTemplate, layout_type> *intScheme,
+                        time_step tStart,
+                        time_step N)
+  {
+    for (grid_coord c1 = 0; c1 < intScheme->blockCount.get1 (); ++c1)
+    {
+      for (grid_coord c2 = 0; c2 < intScheme->blockCount.get2 (); ++c2)
+      {
+        for (grid_coord c3 = 0; c3 < intScheme->blockCount.get3 (); ++c3)
+        {
+          GridCoordinate3D blockIdx = GRID_COORDINATE_3D (c1, c2, c3, intScheme->ct1, intScheme->ct2, intScheme->ct3);
+
+          // TODO: save block to prev blocks storage
+          intScheme->performNStepsForBlock (tStart, N, blockIdx);
+        }
+      }
+    }
+
+    intScheme->share ();
+    intScheme->rebalance ();
+  }
+#endif /* !GPU_INTERNAL_SCHEME */
+
+  ICUDA_DEVICE ICUDA_HOST
   static bool doSkipBorderFunc1D (GridCoordinate1D pos, IGRID<GridCoordinate1D> *grid)
   {
     return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1;
   }
-  ICUDA_DEVICE
+  ICUDA_DEVICE ICUDA_HOST
   static bool doSkipBorderFunc2D (GridCoordinate2D pos, IGRID<GridCoordinate2D> *grid)
   {
     return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1
            && pos.get2 () != 0 && pos.get2 () != grid->getTotalSize ().get2 () - 1;
   }
-  ICUDA_DEVICE
+  ICUDA_DEVICE ICUDA_HOST
   static bool doSkipBorderFunc3D (GridCoordinate3D pos, IGRID<GridCoordinate3D> *grid)
   {
     return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1
@@ -88,8 +356,22 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 class INTERNAL_SCHEME_BASE
 {
   friend class INTERNAL_SCHEME_HELPER;
-  INTERNAL_SCHEME_BASE_CPU_FRIEND
-  INTERNAL_SCHEME_BASE_HELPER_CPU_FRIEND
+
+#ifdef CUDA_ENABLED
+#ifdef GPU_INTERNAL_SCHEME
+
+  template <SchemeType_t Type1, template <typename, bool> class TCoord1, LayoutType layout_type1>
+  friend class InternalScheme;
+  friend class InternalSchemeHelper;
+
+#else /* GPU_INTERNAL_SCHEME */
+
+  template <SchemeType_t Type1, template <typename, bool> class TCoord1, LayoutType layout_type1>
+  friend class InternalSchemeGPU;
+  friend class InternalSchemeHelperGPU;
+
+#endif /* !GPU_INTERNAL_SCHEME */
+#endif
 
 protected:
 
@@ -237,8 +519,6 @@ protected:
   TC leftNTFF;
   TC rightNTFF;
 
-  bool useParallel;
-
   SourceCallBack ExBorder;
   SourceCallBack ExInitial;
 
@@ -285,32 +565,105 @@ protected:
   const bool doNeedSigmaY;
   const bool doNeedSigmaZ;
 
+  TC blockCount;
+  TC blockSize;
+
+#ifndef GPU_INTERNAL_SCHEME
+  time_step totalTimeSteps;
+  time_step NTimeSteps;
+
+  bool useParallel;
+
+  InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntScheme;
+  InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntSchemeOnGPU;
+  InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuIntSchemeOnGPU;
+
+#endif /* !GPU_INTERNAL_SCHEME */
+
 protected:
 
+#ifdef GPU_INTERNAL_SCHEME
+
+  ICUDA_HOST
+  void allocateGridsFromCPU (InternalScheme<Type, TCoord, layout_type> *cpuScheme, TC blockSize, TC bufSize)
+  {
+    InternalSchemeHelperGPU::allocateGridsFromCPU<Type, TCoord, layout_type> (this, cpuScheme, blockSize, bufSize);
+  }
+  ICUDA_HOST
+  void allocateGridsOnGPU ()
+  {
+    InternalSchemeHelperGPU::allocateGridsOnGPU<Type, TCoord, layout_type> (this);
+  }
+  ICUDA_HOST
+  void freeGridsFromCPU ()
+  {
+    InternalSchemeHelperGPU::freeGridsFromCPU<Type, TCoord, layout_type> (this);
+  }
+  ICUDA_HOST
+  void freeGridsOnGPU ()
+  {
+    InternalSchemeHelperGPU::freeGridsOnGPU<Type, TCoord, layout_type> (this);
+  }
+
+  ICUDA_HOST
+  void copyGridsFromCPU (TC start, TC end)
+  {
+    InternalSchemeHelperGPU::copyGridsFromCPU<Type, TCoord, layout_type> (this, start, end);
+  }
+  ICUDA_HOST
+  void copyGridsToGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
+  {
+    InternalSchemeHelperGPU::copyGridsToGPU<Type, TCoord, layout_type> (this, gpuScheme);
+  }
+  ICUDA_HOST
+  void copyGridsBackToCPU (time_step N, bool finalCopy)
+  {
+    InternalSchemeHelperGPU::copyGridsBackToCPU<Type, TCoord, layout_type> (this, N, finalCopy);
+  }
+
+#else /* GPU_INTERNAL_SCHEME */
+
 #if defined (PARALLEL_GRID)
-  ALLOCATE_PARALLEL_GRIDS
+
+  ICUDA_HOST void allocateParallelGrids ()
+  {
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
+                    "Recompile it with -DPARALLEL_GRID_DIMENSION=X, where X is required dimension");
+  }
+
 #endif
 
-  ALLOCATE_GRIDS
-  ALLOCATE_GRIDS_GPU
-  COPY_GRIDS_GPU
+  ICUDA_HOST
+  void allocateGrids ()
+  {
+    YeeGridLayout<Type, TCoord, layout_type> *layout = InternalScheme<Type, TCoord, layout_type>::yeeLayout;
+    InternalSchemeHelper::allocateGrids<Type, TCoord, layout_type> (this, layout);
+  }
+  ICUDA_HOST
+  void allocateGridsInc ()
+  {
+    YeeGridLayout<Type, TCoord, layout_type> *layout = InternalScheme<Type, TCoord, layout_type>::yeeLayout;
+    InternalSchemeHelper::allocateGridsInc<Type, TCoord, layout_type> (this, layout);
+  }
+
+#endif /* !GPU_INTERNAL_SCHEME */
 
   ICUDA_HOST void initCoordTypes ();
 
-  ICUDA_DEVICE bool doSkipBorderFunc (TC, IGRID<TC> *);
+  ICUDA_DEVICE ICUDA_HOST bool doSkipBorderFunc (TC, IGRID<TC> *);
 
 #ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE
+  ICUDA_DEVICE ICUDA_HOST
   void calculateTFSFExAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE
+  ICUDA_DEVICE ICUDA_HOST
   void calculateTFSFEyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE
+  ICUDA_DEVICE ICUDA_HOST
   void calculateTFSFEzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE
+  ICUDA_DEVICE ICUDA_HOST
   void calculateTFSFHxAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE
+  ICUDA_DEVICE ICUDA_HOST
   void calculateTFSFHyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE
+  ICUDA_DEVICE ICUDA_HOST
   void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
 #endif /* ENABLE_ASSERTS */
 
@@ -318,21 +671,22 @@ protected:
   ICUDA_DEVICE ICUDA_HOST
   void calculateTFSF (TC, FieldValue &, FieldValue &, FieldValue &, FieldValue &, TC, TC, TC, TC);
 
+#ifndef GPU_INTERNAL_SCHEME
   template <uint8_t grid_type, bool usePML, bool useMetamaterials>
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_HOST
   void calculateFieldStep (time_step, TC, TC);
+#endif /* !GPU_INTERNAL_SCHEME */
 
   template <uint8_t grid_type, bool usePML, bool useMetamaterials>
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_HOST
   void calculateFieldStepInit (IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *,
     IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, IGRID<TC> **,
     IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, SourceCallBack *, SourceCallBack *, SourceCallBack *, FPValue *,
     IGRID<TC> **, IGRID<TC> **);
 
-  template <uint8_t grid_type, bool usePML>
-  ICUDA_DEVICE ICUDA_HOST
-  void calculateFieldStepIteration (time_step, TC, TC, TCS, TCS, TCS, TCS, FieldPointValue *, TCFP,
-                                    IGRID<TC> *, IGRID<TC> *, SourceCallBack, IGRID<TC> *, IGRID<TC> *);
+  template <uint8_t grid_type>
+  ICUDA_HOST
+  void calculateFieldStepInitDiff (TCS *, TCS *, TCS *, TCS *);
 
   ICUDA_DEVICE ICUDA_HOST
   void calculateFieldStepIterationPMLMetamaterials (time_step, TC, IGRID<TC> *, IGRID<TC> *, GridType,
@@ -353,7 +707,7 @@ protected:
     FPValue &, FPValue &, FPValue &, FPValue &, FPValue &, FPValue &);
 
   template<uint8_t EnumVal>
-  ICUDA_DEVICE
+  ICUDA_DEVICE ICUDA_HOST
   void performPointSourceCalc (time_step);
 
   ICUDA_DEVICE ICUDA_HOST
@@ -388,93 +742,198 @@ public:
   ICUDA_HOST
   ~INTERNAL_SCHEME_BASE ();
 
-  INIT
-  INIT_FROM_CPU
-  INIT_ON_GPU
+  template <uint8_t grid_type, bool usePML>
+  ICUDA_DEVICE ICUDA_HOST
+  void calculateFieldStepIteration (time_step, TC, TC, TCS, TCS, TCS, TCS, IGRID<TC> *, TCFP,
+                                    IGRID<TC> *, IGRID<TC> *, SourceCallBack, IGRID<TC> *, IGRID<TC> *);
 
-  UNINIT_FROM_CPU
-  UNINIT_ON_GPU
+#ifdef GPU_INTERNAL_SCHEME
+  ICUDA_HOST void initFromCPU (InternalScheme<Type, TCoord, layout_type> *cpuScheme, TC, TC);
+  ICUDA_HOST void initOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
 
-  COPY_FROM_CPU
-  COPY_TO_GPU
+  ICUDA_HOST void uninitFromCPU ();
+  ICUDA_HOST void uninitOnGPU ();
 
-  COPY_BACK_TO_CPU
+  ICUDA_HOST void copyFromCPU (TCoord<grid_coord, true>, TCoord<grid_coord, true>);
+  ICUDA_HOST void copyToGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
+  ICUDA_HOST void copyBackToCPU (time_step N, bool finalCopy);
+#else
+  ICUDA_HOST void init (YeeGridLayout<Type, TCoord, layout_type> *layout, bool parallelLayout);
+  ICUDA_HOST void initBlocks (time_step);
+#endif
 
   ICUDA_HOST
   void
   initScheme (FPValue, FPValue);
 
-  PERFORM_FIELD_STEPS_KERNEL
-  SHIFT_IN_TIME_KERNEL_LAUNCHES
-  PERFORM_PLANE_WAVE_STEPS_KERNELS
-  SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCHES
+#ifdef GPU_INTERNAL_SCHEME
 
-  template <uint8_t grid_type>
-  ICUDA_DEVICE
-  void performFieldSteps (time_step t, TC Start, TC End)
+#define SETUP_BLOCKS_AND_THREADS \
+  ASSERT (diff3D.get1 () % SOLVER_SETTINGS.getNumCudaThreadsX () == 0); \
+  ASSERT (diff3D.get2 () % SOLVER_SETTINGS.getNumCudaThreadsY () == 0); \
+  ASSERT (diff3D.get3 () % SOLVER_SETTINGS.getNumCudaThreadsZ () == 0); \
+  dim3 blocks (diff3D.get1 () == 0 ? 1 : diff3D.get1 () / SOLVER_SETTINGS.getNumCudaThreadsX (), \
+               diff3D.get2 () == 0 ? 1 : diff3D.get2 () / SOLVER_SETTINGS.getNumCudaThreadsY (), \
+               diff3D.get3 () == 0 ? 1 : diff3D.get3 () / SOLVER_SETTINGS.getNumCudaThreadsZ ()); \
+  dim3 threads (diff3D.get1 () == 0 ? 1 : SOLVER_SETTINGS.getNumCudaThreadsX (), \
+                diff3D.get2 () == 0 ? 1 : SOLVER_SETTINGS.getNumCudaThreadsY (), \
+                diff3D.get3 () == 0 ? 1 : SOLVER_SETTINGS.getNumCudaThreadsZ ()); \
+
+  template <uint8_t grid_type, bool usePML, bool useMetamaterials>
+  CUDA_HOST
+  void calculateFieldStepIterationKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuScheme,
+                                                GridCoordinate3D start3D,
+                                                GridCoordinate3D end3D,
+                                                time_step t,
+                                                TCS diff11,
+                                                TCS diff12,
+                                                TCS diff21,
+                                                TCS diff22,
+                                                IGRID<TC> *grid,
+                                                IGRID<TC> *oppositeGrid1,
+                                                IGRID<TC> *oppositeGrid2,
+                                                SourceCallBack rightSideFunc,
+                                                IGRID<TC> *Ca,
+                                                IGRID<TC> *Cb)
   {
-    TC zero (0, 0, 0
-#ifdef DEBUG_INFO
-             , ct1, ct2, ct3
-#endif /* DEBUG_INFO */
-             );
+    GridCoordinate3D diff3D = end3D - start3D;
+    SETUP_BLOCKS_AND_THREADS;
+    InternalSchemeKernelHelpers::calculateFieldStepIterationKernel<Type, TCoord, layout_type, grid_type, usePML, useMetamaterials> <<< blocks, threads >>>
+      (d_gpuScheme, start3D, t, diff11, diff12, diff21, diff22, grid, oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb, ct1, ct2, ct3);
+    cudaCheckError ();
+  }
 
-    TC start;
-    TC end;
+#define SHIFT_IN_TIME_KERNEL_LAUNCH(NAME) \
+  CUDA_HOST \
+  void shiftInTimeKernelLaunch ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuSchemeOnGPU, \
+                                        TC Start, \
+                                        GridCoordinate3D Start3D, GridCoordinate3D End3D, CoordinateType ct1, CoordinateType ct2, CoordinateType ct3) \
+  { \
+    GridCoordinate3D diff3D = End3D - Start3D; \
+    SETUP_BLOCKS_AND_THREADS; \
+    TC one = TC_COORD (1, 1, 1, ct1, ct2, ct3); \
+    InternalSchemeKernelHelpers::shiftInTimeKernel ## NAME <Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, Start, one, ct1, ct2, ct3); \
+    cudaCheckError (); \
+  }
 
-    switch (grid_type)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(Ex)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(Ey)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(Ez)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(Hx)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(Hy)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(Hz)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(Dx)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(Dy)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(Dz)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(Bx)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(By)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(Bz)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(D1x)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(D1y)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(D1z)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(B1x)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(B1y)
+  SHIFT_IN_TIME_KERNEL_LAUNCH(B1z)
+
+#define SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCH(NAME) \
+  CUDA_HOST \
+  void shiftInTimePlaneWaveKernelLaunch ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuSchemeOnGPU, GridCoordinate1D Start, GridCoordinate1D End) \
+  { \
+    GridCoordinate1D diff = End - Start; \
+    int thrds = SOLVER_SETTINGS.getNumCudaThreadsX () \
+                  * SOLVER_SETTINGS.getNumCudaThreadsY () \
+                  * SOLVER_SETTINGS.getNumCudaThreadsZ (); \
+    ASSERT (diff.get1 () % thrds == 0); \
+    dim3 blocks (diff.get1 () / thrds, 1, 1); \
+    dim3 threads (thrds, 1, 1); \
+    GridCoordinate1D one = GRID_COORDINATE_1D (1, CoordinateType::X); \
+    InternalSchemeKernelHelpers::shiftInTimePlaneWaveKernel ## NAME <Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, Start, one); \
+    cudaCheckError (); \
+  }
+
+  SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCH(EInc)
+  SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCH(HInc)
+
+  CUDA_HOST
+  void performPlaneWaveEStepsKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuSchemeOnGPU,
+                                           time_step t, GridCoordinate1D Start, GridCoordinate1D End)
+  {
+    GridCoordinate1D diff = End - Start;
+    int thrds = SOLVER_SETTINGS.getNumCudaThreadsX ()
+                  * SOLVER_SETTINGS.getNumCudaThreadsY ()
+                  * SOLVER_SETTINGS.getNumCudaThreadsZ ();
+    ASSERT (diff.get1 () % thrds == 0);
+    dim3 blocks (diff.get1 () / thrds, 1, 1);
+    dim3 threads (thrds, 1, 1);
+    GridCoordinate1D one = GRID_COORDINATE_1D (1, CoordinateType::X);
+    InternalSchemeKernelHelpers::performPlaneWaveEStepsKernel<Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, t, Start, one);
+    cudaCheckError ();
+  }
+  CUDA_HOST
+  void performPlaneWaveHStepsKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuSchemeOnGPU,
+                                           time_step t, GridCoordinate1D Start, GridCoordinate1D End)
+  {
+    GridCoordinate1D diff = End - Start;
+    int thrds = SOLVER_SETTINGS.getNumCudaThreadsX ()
+                  * SOLVER_SETTINGS.getNumCudaThreadsY ()
+                  * SOLVER_SETTINGS.getNumCudaThreadsZ ();
+    ASSERT (diff.get1 () % thrds == 0);
+    dim3 blocks (diff.get1 () / thrds, 1, 1);
+    dim3 threads (thrds, 1, 1);
+    GridCoordinate1D one = GRID_COORDINATE_1D (1, CoordinateType::X);
+    InternalSchemeKernelHelpers::performPlaneWaveHStepsKernel<Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, t, Start, one);
+    cudaCheckError ();
+  }
+
+#endif /* GPU_INTERNAL_SCHEME */
+
+#ifndef GPU_INTERNAL_SCHEME
+
+  /**
+   * Perform all time steps for scheme
+   */
+  ICUDA_HOST
+  void performSteps ()
+  {
+    for (time_step t = 0; t < totalTimeSteps; t += NTimeSteps)
     {
-      case (static_cast<uint8_t> (GridType::EX)):
-      {
-        start = Ex->getComputationStart (zero);
-        end = Ex->getComputationEnd (zero);
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EY)):
-      {
-        start = Ey->getComputationStart (zero);
-        end = Ey->getComputationEnd (zero);
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EZ)):
-      {
-        start = Ez->getComputationStart (zero);
-        end = Ez->getComputationEnd (zero);
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HX)):
-      {
-        start = Hx->getComputationStart (zero);
-        end = Hx->getComputationEnd (zero);
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HY)):
-      {
-        start = Hy->getComputationStart (zero);
-        end = Hy->getComputationEnd (zero);
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HZ)):
-      {
-        start = Hz->getComputationStart (zero);
-        end = Hz->getComputationEnd (zero);
-        break;
-      }
-      default:
-      {
-        UNREACHABLE;
-      }
+      /*
+       * Each NTimeSteps sharing will be performed.
+       *
+       * For sequential solver, NTimeSteps == totalTimeSteps
+       * For parallel/cuda solver, NTimeSteps == min (bufSize, cudaBufSize)
+       */
+      performNSteps (t, NTimeSteps);
     }
+  }
 
-    if (Start < start)
-    {
-      Start = start;
-    }
-    if (End > end)
-    {
-      End = end;
-    }
+  ICUDA_HOST
+  void performNSteps (time_step tStart, time_step N);
 
+  ICUDA_HOST
+  void performNStepsForBlock (time_step tStart, time_step N, TC blockIdx);
+
+  ICUDA_HOST
+  void share ();
+
+  ICUDA_HOST
+  void rebalance ();
+
+  /**
+   * Perform computations of single time step for specific field and for specified chunk.
+   *
+   * NOTE: For GPU InternalScheme this method is not defined, because it is supposed to be ran on CPU only,
+   *       and call kernels deeper in call tree.
+   *
+   * NOTE: Start and End coordinates should correctly consider buffers in parallel grid,
+   *       which means, that computations are not performed for incorrect grid points.
+   */
+  template <uint8_t grid_type>
+  ICUDA_HOST
+  void performFieldSteps (time_step t, /**< time step to compute */
+                          TC Start, /**< start coordinate of chunk to compute */
+                          TC End) /**< end coordinate of chunk to compute */
+  {
     /*
      * TODO: remove check performed on each iteration
      */
@@ -545,6 +1004,7 @@ public:
       performPointSourceCalc<grid_type> (t);
     }
   }
+#endif
 
   ICUDA_DEVICE
   void performPlaneWaveESteps (time_step, GridCoordinate1D start, GridCoordinate1D end);
@@ -564,11 +1024,13 @@ public:
     return INTERNAL_SCHEME_HELPER::approximateIncidentWaveH<Type, TCoord> (pos, layout->getZeroIncCoordFP (), HInc, layout->getIncidentWaveAngle1 (), layout->getIncidentWaveAngle2 ());
   }
 
-  ICUDA_DEVICE
+#ifndef GPU_INTERNAL_SCHEME
+  ICUDA_HOST
   FPValue getMaterial (const TC &, GridType, IGRID<TC> *, GridType);
-  ICUDA_DEVICE
+  ICUDA_HOST
   FPValue getMetaMaterial (const TC &, GridType, IGRID<TC> *, GridType, IGRID<TC> *, GridType, IGRID<TC> *, GridType,
                            FPValue &, FPValue &);
+#endif
 
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedEx () const { return doNeedEx; }
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedEy () const { return doNeedEy; }
@@ -827,39 +1289,67 @@ public:
     return HInc;
   }
 
+  ICUDA_DEVICE ICUDA_HOST
   FPValue getTimeStep ()
   {
     return gridTimeStep;
   }
 
+  ICUDA_DEVICE ICUDA_HOST
   YeeGridLayout<Type, TCoord, layout_type> * getYeeLayout ()
   {
     ASSERT (yeeLayout);
     return yeeLayout;
   }
+
+// #ifndef GPU_INTERNAL_SCHEME
+//
+//   InternalSchemeGPU<Type, TCoord, layout_type> *getGPUInternalScheme ()
+//   {
+//     ASSERT (gpuIntScheme != NULLPTR);
+//     return gpuIntScheme;
+//   }
+//
+//   void setGPUInternalScheme (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
+//   {
+//     ASSERT (gpuScheme != NULLPTR);
+//     gpuIntScheme = gpuScheme;
+//   }
+//
+//   InternalSchemeGPU<Type, TCoord, layout_type> *getGPUInternalSchemeOnGPU ()
+//   {
+//     ASSERT (gpuIntSchemeOnGPU != NULLPTR);
+//     return gpuIntSchemeOnGPU;
+//   }
+//
+//   void setGPUInternalSchemeOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuSchemeOnGPU)
+//   {
+//     ASSERT (gpuSchemeOnGPU != NULLPTR);
+//     gpuIntSchemeOnGPU = gpuSchemeOnGPU;
+//   }
+//
+//   InternalSchemeGPU<Type, TCoord, layout_type> *getGPUInternalSchemeOnGPUFull ()
+//   {
+//     ASSERT (d_gpuIntSchemeOnGPU != NULLPTR);
+//     return d_gpuIntSchemeOnGPU;
+//   }
+//
+//   void setGPUInternalSchemeOnGPUFull (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuScheme)
+//   {
+//     ASSERT (d_gpuScheme != NULLPTR);
+//     d_gpuIntSchemeOnGPU = d_gpuScheme;
+//   }
+//
+// #endif /* !GPU_INTERNAL_SCHEME */
 };
 
 #include "InternalScheme.template.inc.h"
 
 #undef INTERNAL_SCHEME_BASE
-#undef INTERNAL_SCHEME_BASE_CPU_FRIEND
-#undef INTERNAL_SCHEME_BASE_HELPER_CPU_FRIEND
 #undef INTERNAL_SCHEME_HELPER
 #undef IGRID
 #undef ICUDA_HOST
 #undef ICUDA_DEVICE
-
-#undef ALLOCATE_PARALLEL_GRIDS
-#undef ALLOCATE_PARALLEL_GRIDS_OVERRIDE
-
-#undef INIT
-#undef INIT_FROM_CPU
-#undef INIT_ON_GPU
-#undef COPY_FROM_CPU
-#undef COPY_TO_GPU
-#undef COPY_BACK_TO_CPU
-#undef UNINIT_FROM_CPU
-#undef UNINIT_ON_GPU
 
 #undef INTERNAL_SCHEME_1D
 #undef INTERNAL_SCHEME_2D
@@ -879,18 +1369,8 @@ public:
 #undef INTERNAL_SCHEME_2D_TMZ
 #undef INTERNAL_SCHEME_3D_3D
 
-#undef ALLOCATE_GRIDS
-#undef ALLOCATE_GRIDS_GPU
-#undef COPY_GRIDS_GPU
-#undef HELPER_ALLOCATE_GRIDS
-#undef HELPER_ALLOCATE_GRIDS_INC
-#undef HELPER_ALLOCATE_GRIDS_FROM_CPU
-#undef HELPER_ALLOCATE_GRIDS_ON_GPU
-#undef HELPER_COPY_GRIDS_FROM_CPU
-#undef HELPER_COPY_GRIDS_TO_GPU
-#undef HELPER_ALLOCATE_PARALLEL_GRIDS
-
-#undef PERFORM_FIELD_STEPS_KERNEL
-#undef PERFORM_PLANE_WAVE_STEPS_KERNELS
-#undef SHIFT_IN_TIME_KERNEL_LAUNCHES
-#undef SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCHES
+#undef SHIFT_IN_TIME_KERNEL
+#undef SHIFT_IN_TIME_PLANE_WAVE_KERNEL
+#undef SETUP_BLOCKS_AND_THREADS
+#undef SHIFT_IN_TIME_KERNEL_LAUNCH
+#undef SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCH
