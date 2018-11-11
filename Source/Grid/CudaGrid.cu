@@ -468,6 +468,7 @@ CudaGrid<GridCoordinate1D>::copyFromCPU (const GridCoordinate1D &start, /**< abs
 {
   ASSERT (cpuGrid != NULLPTR);
   ASSERT (d_gridValues != NULLPTR);
+  ASSERT (helperGridValues != NULLPTR);
 
   startOfBlock = start;
   endOfBlock = end;
@@ -507,6 +508,10 @@ CudaGrid<GridCoordinate1D>::copyFromCPU (const GridCoordinate1D &start, /**< abs
 #endif /* DEBUG_INFO */
                                      );
 
+  // grid_coord count = endWithBuf.get1 () - startWithBuf.get1 ();
+  // ASSERT (cpuGrid->getSize ().get1 () <= count);
+  // memcpy (helperGridValues, cpuGrid->getRaw () + cpuGrid->calculateIndexFromPosition (startWithBuf), count * sizeof (FieldPointValue));
+
   for (grid_coord index1 = startWithBuf.get1 (); index1 < endWithBuf.get1 (); ++index1)
   {
     if (index1 < 0 || index1 >= cpuGrid->getSize ().get1 ())
@@ -529,8 +534,13 @@ CudaGrid<GridCoordinate1D>::copyFromCPU (const GridCoordinate1D &start, /**< abs
 
     ASSERT (index >= 0 && index < sizeGridValues);
 
-    cudaCheckErrorCmd (cudaMemcpy (&d_gridValues[index], cpuGrid->getFieldPointValue (pos), sizeof (FieldPointValue), cudaMemcpyHostToDevice));
+    /*
+     * Copy to helper buffer first
+     */
+    helperGridValues[index] = *cpuGrid->getFieldPointValue (pos);
   }
+
+  cudaCheckErrorCmd (cudaMemcpy (d_gridValues, helperGridValues, sizeGridValues * sizeof (FieldPointValue), cudaMemcpyHostToDevice));
 } /* CudaGrid<GridCoordinate1D>::copyFromCPU */
 
 /**
@@ -543,7 +553,10 @@ CudaGrid<GridCoordinate1D>::copyToCPU ()
 {
   ASSERT (cpuGrid != NULLPTR);
   ASSERT (d_gridValues != NULLPTR);
+  ASSERT (helperGridValues != NULLPTR);
   ASSERT (startOfBlock != endOfBlock);
+
+  cudaCheckErrorCmd (cudaMemcpy (helperGridValues, d_gridValues, sizeGridValues * sizeof (FieldPointValue), cudaMemcpyDeviceToHost));
 
   GridCoordinate1D relStart = cpuGrid->getRelativePosition (startOfBlock);
   GridCoordinate1D relEnd = cpuGrid->getRelativePosition (endOfBlock);
@@ -559,6 +572,10 @@ CudaGrid<GridCoordinate1D>::copyToCPU ()
 #endif /* DEBUG_INFO */
                                      );
 
+  // grid_coord count = endWithBuf.get1 () - startWithBuf.get1 ();
+  // ASSERT (cpuGrid->getSize ().get1 () <= count);
+  // memcpy (cpuGrid->getRaw () + cpuGrid->calculateIndexFromPosition (startWithBuf), helperGridValues, count * sizeof (FieldPointValue));
+
   for (grid_coord index1 = startWithBuf.get1 (); index1 < endWithBuf.get1 (); ++index1)
   {
     if (index1 < 0 || index1 >= cpuGrid->getSize ().get1 ())
@@ -581,7 +598,10 @@ CudaGrid<GridCoordinate1D>::copyToCPU ()
 
     ASSERT (index >= 0 && index < sizeGridValues);
 
-    cudaCheckErrorCmd (cudaMemcpy (cpuGrid->getFieldPointValue (pos), &d_gridValues[index], sizeof (FieldPointValue), cudaMemcpyDeviceToHost));
+    /*
+     * Copy to helper buffer first
+     */
+    *cpuGrid->getFieldPointValue (pos) = helperGridValues[index];
   }
 } /* CudaGrid<GridCoordinate1D>::copyToCPU */
 
@@ -596,6 +616,7 @@ CudaGrid<GridCoordinate2D>::copyFromCPU (const GridCoordinate2D &start, /**< abs
 {
   ASSERT (cpuGrid != NULLPTR);
   ASSERT (d_gridValues != NULLPTR);
+  ASSERT (helperGridValues != NULLPTR);
 
   startOfBlock = start;
   endOfBlock = end;
@@ -682,9 +703,14 @@ CudaGrid<GridCoordinate2D>::copyFromCPU (const GridCoordinate2D &start, /**< abs
 
       ASSERT (index >= 0 && index < sizeGridValues);
 
-      cudaCheckErrorCmd (cudaMemcpy (&d_gridValues[index], cpuGrid->getFieldPointValue (pos), sizeof (FieldPointValue), cudaMemcpyHostToDevice));
+      /*
+       * Copy to helper buffer first
+       */
+      helperGridValues[index] = *cpuGrid->getFieldPointValue (pos);
     }
   }
+
+  cudaCheckErrorCmd (cudaMemcpy (d_gridValues, helperGridValues, sizeGridValues * sizeof (FieldPointValue), cudaMemcpyHostToDevice));
 } /* CudaGrid<GridCoordinate2D>::copyFromCPU */
 
 /**
@@ -697,7 +723,10 @@ CudaGrid<GridCoordinate2D>::copyToCPU ()
 {
   ASSERT (cpuGrid != NULLPTR);
   ASSERT (d_gridValues != NULLPTR);
+  ASSERT (helperGridValues != NULLPTR);
   ASSERT (startOfBlock != endOfBlock);
+
+  cudaCheckErrorCmd (cudaMemcpy (helperGridValues, d_gridValues, sizeGridValues * sizeof (FieldPointValue), cudaMemcpyDeviceToHost));
 
   GridCoordinate2D relStart = cpuGrid->getRelativePosition (startOfBlock);
   GridCoordinate2D relEnd = cpuGrid->getRelativePosition (endOfBlock);
@@ -750,7 +779,10 @@ CudaGrid<GridCoordinate2D>::copyToCPU ()
 
       ASSERT (index >= 0 && index < sizeGridValues);
 
-      cudaCheckErrorCmd (cudaMemcpy (cpuGrid->getFieldPointValue (pos), &d_gridValues[index], sizeof (FieldPointValue), cudaMemcpyDeviceToHost));
+      /*
+       * Copy to helper buffer first
+       */
+      *cpuGrid->getFieldPointValue (pos) = helperGridValues[index];
     }
   }
 } /* CudaGrid<GridCoordinate2D>::copyToCPU */
@@ -766,6 +798,7 @@ CudaGrid<GridCoordinate3D>::copyFromCPU (const GridCoordinate3D &start, /**< abs
 {
   ASSERT (cpuGrid != NULLPTR);
   ASSERT (d_gridValues != NULLPTR);
+  ASSERT (helperGridValues != NULLPTR);
 
   startOfBlock = start;
   endOfBlock = end;
@@ -877,10 +910,15 @@ CudaGrid<GridCoordinate3D>::copyFromCPU (const GridCoordinate3D &start, /**< abs
 
         ASSERT (index >= 0 && index < sizeGridValues);
 
-        cudaCheckErrorCmd (cudaMemcpy (&d_gridValues[index], cpuGrid->getFieldPointValue (pos), sizeof (FieldPointValue), cudaMemcpyHostToDevice));
+        /*
+         * Copy to helper buffer first
+         */
+        helperGridValues[index] = *cpuGrid->getFieldPointValue (pos);
       }
     }
   }
+
+  cudaCheckErrorCmd (cudaMemcpy (d_gridValues, helperGridValues, sizeGridValues * sizeof (FieldPointValue), cudaMemcpyHostToDevice));
 } /* CudaGrid<GridCoordinate3D>::copyFromCPU */
 
 /**
@@ -893,7 +931,10 @@ CudaGrid<GridCoordinate3D>::copyToCPU ()
 {
   ASSERT (cpuGrid != NULLPTR);
   ASSERT (d_gridValues != NULLPTR);
+  ASSERT (helperGridValues != NULLPTR);
   ASSERT (startOfBlock != endOfBlock);
+
+  cudaCheckErrorCmd (cudaMemcpy (helperGridValues, d_gridValues, sizeGridValues * sizeof (FieldPointValue), cudaMemcpyDeviceToHost));
 
   GridCoordinate3D relStart = cpuGrid->getRelativePosition (startOfBlock);
   GridCoordinate3D relEnd = cpuGrid->getRelativePosition (endOfBlock);
@@ -961,7 +1002,10 @@ CudaGrid<GridCoordinate3D>::copyToCPU ()
 
         ASSERT (index >= 0 && index < sizeGridValues);
 
-        cudaCheckErrorCmd (cudaMemcpy (cpuGrid->getFieldPointValue (pos), &d_gridValues[index], sizeof (FieldPointValue), cudaMemcpyDeviceToHost));
+        /*
+         * Copy to helper buffer first
+         */
+        *cpuGrid->getFieldPointValue (pos) = helperGridValues[index];
       }
     }
   }

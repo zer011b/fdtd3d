@@ -66,6 +66,7 @@ protected:
    * Vector of points in grid. Owns this. Deletes all FieldPointValue* itself.
    */
   FieldPointValue *d_gridValues;
+  FieldPointValue *helperGridValues;
 
   /**
    * Current time step.
@@ -184,6 +185,7 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
   , totalSize (grid->getTotalSize ())
   , cpuGrid (grid)
   , d_gridValues (NULLPTR)
+  , helperGridValues (NULLPTR)
   , timeStep (0)
   , shareStep (0)
   , hasLeft (TCoord ())
@@ -192,6 +194,7 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
   ASSERT (checkParams ());
 
   cudaCheckErrorCmd (cudaMalloc ((void **) &d_gridValues, sizeGridValues * sizeof (FieldPointValue)));
+  helperGridValues = new FieldPointValue [sizeGridValues];
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New Cuda grid '%s' with raw size: " COORD_MOD ".\n", grid->getName (), sizeGridValues);
 } /* CudaGrid<TCoord>::CudaGrid */
@@ -203,6 +206,7 @@ template <class TCoord>
 CUDA_HOST
 CudaGrid<TCoord>::~CudaGrid ()
 {
+  delete[] helperGridValues;
   cudaCheckErrorCmd (cudaFree (d_gridValues));
 } /* CudaGrid<TCoord>::~CudaGrid */
 
