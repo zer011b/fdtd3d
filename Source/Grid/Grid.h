@@ -93,6 +93,8 @@ public:
   time_step getTimeStep () const;
 
   void initialize (FieldValue);
+
+  FieldPointValue * getRaw ();
 }; /* Grid */
 
 /**
@@ -371,5 +373,12 @@ Grid<TCoord>::initialize (FieldValue cur)
     gridValues[i].setCurValue (cur);
   }
 } /* Grid<TCoord>::initialize */
+
+template <class TCoord>
+FieldPointValue *
+Grid<TCoord>::getRaw ()
+{
+  return &gridValues[0];
+}
 
 #endif /* GRID_H */
