@@ -36,7 +36,8 @@ std::vector<ParallelGridCoordinate> neighborSendEnd (BUFFER_COUNT);
 
 void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
 {
-  FieldPointValue *val = grid->getFieldPointValue (pos);
+  grid_coord coord = grid->calculateIndexFromPosition (pos);
+
   BufferPosition dir = grid->getBufferForPosition (pos);
 
   if (dir == BUFFER_NONE)
@@ -62,7 +63,7 @@ void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
 
   ParallelGridCoordinate sendStart = grid->getSendStart ()[dir];
 
-  FieldValue cur = val->getCurValue ();
+  FieldValue cur = *grid->getFieldValue (coord, 0);
 #ifdef COMPLEX_FIELD_VALUES
   ASSERT (cur.real () == pidSender * multiplier);
   ASSERT (cur.imag () == pidSender * multiplier * imagMult);
@@ -70,25 +71,21 @@ void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
   ASSERT (cur == pidSender * multiplier);
 #endif
 
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  FieldValue prev = val->getPrevValue ();
+  FieldValue prev = *grid->getFieldValue (coord, 1);
 #ifdef COMPLEX_FIELD_VALUES
   ASSERT (prev.real () == pidSender * multiplier * prevMult);
   ASSERT (prev.imag () == pidSender * multiplier * prevMult * imagMult);
 #else
   ASSERT (prev == pidSender * multiplier * prevMult);
 #endif
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
 
-#if defined (TWO_TIME_STEPS)
-  FieldValue prevPrev = val->getPrevPrevValue ();
+  FieldValue prevPrev = *grid->getFieldValue (coord, 2);
 #ifdef COMPLEX_FIELD_VALUES
   ASSERT (prevPrev.real () == pidSender * multiplier * prevPrevMult);
   ASSERT (prevPrev.imag () == pidSender * multiplier * prevPrevMult * imagMult);
 #else
   ASSERT (prevPrev == pidSender * multiplier * prevPrevMult);
 #endif
-#endif /* TWO_TIME_STEPS */
 }
 
 ParallelGrid * initGrid (ParallelGridCoordinate overallSize,
@@ -96,22 +93,20 @@ ParallelGrid * initGrid (ParallelGridCoordinate overallSize,
                          ParallelGridCoordinate sizeForCurNode,
                          bool isAbsVal)
 {
-  ParallelGrid *grid = new ParallelGrid (overallSize, bufferSize, 0, sizeForCurNode);
+  ParallelGrid *grid = new ParallelGrid (overallSize, bufferSize, 0, sizeForCurNode, 3);
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
-  {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+  {
 #if defined (GRID_2D) || defined (GRID_3D)
     for (grid_coord j = 0; j < grid->getSize ().get2 (); ++j)
-    {
 #endif /* GRID_2D || GRID_3D */
+    {
 #if defined (GRID_3D)
       for (grid_coord k = 0; k < grid->getSize ().get3 (); ++k)
-      {
 #endif /* GRID_3D */
-        FieldPointValue val;
-
+      {
 #ifdef GRID_1D
         GridCoordinate1D pos (i, CoordinateType::X);
 #endif /* GRID_1D */
@@ -123,6 +118,8 @@ ParallelGrid * initGrid (ParallelGridCoordinate overallSize,
 #ifdef GRID_3D
         GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 #endif /* GRID_3D */
+
+        grid_coord index = grid->calculateIndexFromPosition (pos);
 
         ParallelGridCoordinate totalPos = grid->getTotalPosition (pos);
         ParallelGridCoordinate coord;
@@ -149,43 +146,12 @@ ParallelGrid * initGrid (ParallelGridCoordinate overallSize,
         fpval *= coord.get3 ();
 #endif /* GRID_3D */
 
-#ifdef COMPLEX_FIELD_VALUES
-
-        val.setCurValue (FieldValue (fpval, fpval * imagMult));
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-        val.setPrevValue (FieldValue (fpval * prevMult, fpval * prevMult * imagMult));
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-
-#if defined (TWO_TIME_STEPS)
-        val.setPrevPrevValue (FieldValue (fpval * prevPrevMult, fpval * prevPrevMult * imagMult));
-#endif /* TWO_TIME_STEPS */
-
-#else /* COMPLEX_FIELD_VALUES */
-
-        val.setCurValue (fpval);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-        val.setPrevValue (fpval * prevMult);
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-
-#if defined (TWO_TIME_STEPS)
-        val.setPrevPrevValue (fpval * prevPrevMult);
-#endif /* TWO_TIME_STEPS */
-
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        grid->setFieldPointValue (val, pos);
-
-#if defined (GRID_3D)
+        grid->setFieldValue (FIELDVALUE (fpval, fpval * imagMult), index, 0);
+        grid->setFieldValue (FIELDVALUE (fpval * prevMult, fpval * prevMult * imagMult), index, 1);
+        grid->setFieldValue (FIELDVALUE (fpval * prevPrevMult, fpval * prevPrevMult * imagMult), index, 2);
       }
-#endif /* GRID_3D */
-#if defined (GRID_2D) || defined (GRID_3D)
     }
-#endif /* GRID_2D || GRID_3D */
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   }
-#endif /* GRID_1D || GRID_2D || GRID_3D */
 
   return grid;
 }
@@ -458,16 +424,16 @@ int main (int argc, char** argv)
    */
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
-  {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+  {
 #if defined (GRID_2D) || defined (GRID_3D)
     for (grid_coord j = 0; j < grid->getSize ().get2 (); ++j)
-    {
 #endif /* GRID_2D || GRID_3D */
+    {
 #if defined (GRID_3D)
       for (grid_coord k = 0; k < grid->getSize ().get3 (); ++k)
-      {
 #endif /* GRID_3D */
+      {
 #ifdef GRID_1D
         GridCoordinate1D pos (i, CoordinateType::X);
 #endif /* GRID_1D */
@@ -481,16 +447,9 @@ int main (int argc, char** argv)
 #endif /* GRID_3D */
 
         checkVal (grid, pos);
-
-#if defined (GRID_3D)
       }
-#endif /* GRID_3D */
-#if defined (GRID_2D) || defined (GRID_3D)
     }
-#endif /* GRID_2D || GRID_3D */
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   }
-#endif /* GRID_1D || GRID_2D || GRID_3D */
 
   delete grid;
   grid = initGrid (overallSize, bufferSize, yeeLayout.getSizeForCurNode (), true);
@@ -499,16 +458,16 @@ int main (int argc, char** argv)
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
-  {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+  {
 #if defined (GRID_2D) || defined (GRID_3D)
     for (grid_coord j = 0; j < grid->getSize ().get2 (); ++j)
-    {
 #endif /* GRID_2D || GRID_3D */
+    {
 #if defined (GRID_3D)
       for (grid_coord k = 0; k < grid->getSize ().get3 (); ++k)
-      {
 #endif /* GRID_3D */
+      {
 
 #ifdef GRID_1D
         GridCoordinate1D pos (i, CoordinateType::X);
@@ -522,36 +481,24 @@ int main (int argc, char** argv)
         GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 #endif /* GRID_3D */
 
-        FieldPointValue *val = gridTotal->getFieldPointValue (pos);
+        grid_coord index = gridTotal->calculateIndexFromPosition (pos);
 
         FPValue fpval;
 
 #ifdef COMPLEX_FIELD_VALUES
 
-        fpval = val->getCurValue ().real ();
-        ASSERT (fpval * imagMult == val->getCurValue ().imag ());
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-        ASSERT (fpval * prevMult == val->getPrevValue ().real ());
-        ASSERT (fpval * prevMult * imagMult == val->getPrevValue ().imag ());
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-
-#if defined (TWO_TIME_STEPS)
-        ASSERT (fpval * prevPrevMult == val->getPrevPrevValue ().real ());
-        ASSERT (fpval * prevPrevMult * imagMult == val->getPrevPrevValue ().imag ());
-#endif /* TWO_TIME_STEPS */
+        fpval = gridTotal->getFieldValue (index, 0)->real ();
+        ASSERT (fpval * imagMult == gridTotal->getFieldValue (index, 0)->imag ());
+        ASSERT (fpval * prevMult == gridTotal->getFieldValue (index, 1)->real ());
+        ASSERT (fpval * prevMult * imagMult == gridTotal->getFieldValue (index, 1)->imag ());
+        ASSERT (fpval * prevPrevMult == gridTotal->getFieldValue (index, 2)->real ());
+        ASSERT (fpval * prevPrevMult * imagMult == gridTotal->getFieldValue (index, 2)->imag ());
 
 #else /* COMPLEX_FIELD_VALUES */
 
-        fpval = val->getCurValue ();
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-        ASSERT (fpval * prevMult == val->getPrevValue ());
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-
-#if defined (TWO_TIME_STEPS)
-        ASSERT (fpval * prevPrevMult == val->getPrevPrevValue ());
-#endif /* TWO_TIME_STEPS */
+        fpval = *gridTotal->getFieldValue (index, 0);
+        ASSERT (fpval * prevMult == *gridTotal->getFieldValue (index, 1));
+        ASSERT (fpval * prevPrevMult == *gridTotal->getFieldValue (index, 2));
 
 #endif /* !COMPLEX_FIELD_VALUES */
 
@@ -627,16 +574,9 @@ int main (int argc, char** argv)
 #endif /* GRID_3D */
 
         ASSERT (fpprocess == fpval);
-
-#if defined (GRID_3D)
       }
-#endif /* GRID_3D */
-#if defined (GRID_2D) || defined (GRID_3D)
     }
-#endif /* GRID_2D || GRID_3D */
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   }
-#endif /* GRID_1D || GRID_2D || GRID_3D */
 
   delete gridTotal;
 

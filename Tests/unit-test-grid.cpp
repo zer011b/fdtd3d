@@ -13,42 +13,67 @@
 #endif /* !CXX11_ENABLED */
 
 template <class TCoord>
-void testFunc (TCoord overallSize)
+void testFunc (TCoord overallSize, int storedSteps, CoordinateType ct1, CoordinateType ct2, CoordinateType ct3)
 {
-  Grid<TCoord> grid (overallSize, 0);
+  TCoord test_coord = TCoord::initAxesCoordinate (16, 16, 16, ct1, ct2, ct3);
+  TCoord zero = TCoord::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+  
+  Grid<TCoord> grid (overallSize, 0, storedSteps);
 
-  /*
-   * Copy constructor
-   */
-  Grid<TCoord> grid_1 (grid);
+  ASSERT (grid.getSize () == overallSize);
+  ASSERT (grid.getTotalSize () == overallSize);
+  ASSERT (grid.getTimeStep () == 0);
+  
+  ASSERT (grid.getTotalPosition (test_coord) == test_coord);
+  ASSERT (grid.getRelativePosition (test_coord) == test_coord);
+  
+  ASSERT (grid.getComputationStart (zero) == zero);
+  ASSERT (grid.getComputationEnd (zero) == overallSize);
 
-  /*
-   * Copy constructor with initialize grid
-   */
-  Grid<TCoord> grid_2 (grid);
+  for (int i = 0; i < storedSteps; ++i)
+  {
+    grid.setFieldValue (FIELDVALUE (1502 * i, 189 * i), test_coord, i);
+  }
+  for (int i = 0; i < storedSteps; ++i)
+  {
+    ASSERT (*grid.getFieldValue (test_coord, i) == FieldValue (1502 * i, 189 * i));
+    ASSERT (*grid.getFieldValueByAbsolutePos (test_coord, i) == FieldValue (1502 * i, 189 * i));
+    ASSERT (*grid.getFieldValueOrNullByAbsolutePos (test_coord, i) == FieldValue (1502 * i, 189 * i));
+  }
+  
+  grid.shiftInTime ();
+  for (int j = 1; j < storedSteps; ++j)
+  {
+    int i = j - 1;
+    ASSERT (*grid.getFieldValue (test_coord, j) == FieldValue (1502 * i, 189 * i));
+    ASSERT (*grid.getFieldValueByAbsolutePos (test_coord, j) == FieldValue (1502 * i, 189 * i));
+    ASSERT (*grid.getFieldValueOrNullByAbsolutePos (test_coord, j) == FieldValue (1502 * i, 189 * i));
+  }
+  
+  grid.nextTimeStep ();
 
-  /*
-   * Operator =
-   */
-  grid = grid_1;
-
-  /*
-   * Operator = with initialized grid
-   */
-  grid = grid_2;
-
-  /*
-   * Dynamic creation of grid
-   */
-  Grid<TCoord> *grid_3 = new Grid<TCoord> (overallSize, 0);
-  Grid<TCoord> *grid_4 = new Grid<TCoord> (overallSize, 0);
-
-  *grid_3 = *grid_4;
-
-  *grid_3 = *grid_4;
-
-  delete grid_3;
-  delete grid_4;
+#ifdef DEBUG_INFO
+  ASSERT (grid.getTimeStep () == 1);
+#endif /* DEBUG_INFO */
+  
+  grid.initialize (FieldValue (127, 1982));
+  for (grid_coord i = 0; i < grid.getSize ().calculateTotalCoord (); ++i)
+  {
+    ASSERT (*grid.getFieldValue (i, 0) == FieldValue (127, 1982));
+    
+    if (grid.calculatePositionFromIndex (i) == test_coord)
+    {
+      for (int j = 1; j < storedSteps; ++j)
+      {
+        int i = j - 1;
+        ASSERT (*grid.getFieldValue (test_coord, j) == FieldValue (1502 * i, 189 * i));
+        ASSERT (*grid.getFieldValueByAbsolutePos (test_coord, j) == FieldValue (1502 * i, 189 * i));
+        ASSERT (*grid.getFieldValueOrNullByAbsolutePos (test_coord, j) == FieldValue (1502 * i, 189 * i));
+      }
+    }
+  }
+  
+  ASSERT (grid.getRaw (0) == grid.getFieldValue (zero, 0));
 }
 
 int main (int argc, char** argv)
@@ -56,16 +81,27 @@ int main (int argc, char** argv)
   int gridSizeX = 32;
   int gridSizeY = 32;
   int gridSizeZ = 32;
+  
+  for (int i = 1; i < 10; ++i)
+  {
+    testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeX, CoordinateType::X), i,
+      CoordinateType::X, CoordinateType::NONE, CoordinateType::NONE);
+    testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeY, CoordinateType::Y), i,
+      CoordinateType::Y, CoordinateType::NONE, CoordinateType::NONE);
+    testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeZ, CoordinateType::Z), i,
+      CoordinateType::Z, CoordinateType::NONE, CoordinateType::NONE);
 
-  testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeX, CoordinateType::X));
-  testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeY, CoordinateType::Y));
-  testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeZ, CoordinateType::Z));
+    testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeX, gridSizeY, CoordinateType::X, CoordinateType::Y), i,
+      CoordinateType::X, CoordinateType::Y, CoordinateType::NONE);
+    testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeX, gridSizeZ, CoordinateType::X, CoordinateType::Z), i,
+      CoordinateType::X, CoordinateType::Z, CoordinateType::NONE);
+    testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeY, gridSizeZ, CoordinateType::Y, CoordinateType::Z), i,
+      CoordinateType::Y, CoordinateType::Z, CoordinateType::NONE);
 
-  testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeX, gridSizeY, CoordinateType::X, CoordinateType::Y));
-  testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeX, gridSizeZ, CoordinateType::X, CoordinateType::Z));
-  testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeY, gridSizeZ, CoordinateType::Y, CoordinateType::Z));
-
-  testFunc<GridCoordinate3D> (GridCoordinate3D (gridSizeX, gridSizeY, gridSizeZ, CoordinateType::X, CoordinateType::Y, CoordinateType::Z));
+    testFunc<GridCoordinate3D> (GridCoordinate3D (gridSizeX, gridSizeY, gridSizeZ,
+                                                  CoordinateType::X, CoordinateType::Y, CoordinateType::Z), i,
+                                CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+  }
 
   return 0;
 } /* main */

@@ -175,6 +175,7 @@ typedef double DOUBLE;
 #define CUBE(x) (SQR(x) * (x))
 
 #ifdef DEBUG_INFO
+#define TCOORD(x,y,z,ct1,ct2,ct3) TCoord(x,y,z,ct1,ct2,ct3)
 #define TC_COORD(x,y,z,ct1,ct2,ct3) TC(x,y,z,ct1,ct2,ct3)
 #define GRID_COORDINATE_1D(x,ct1) GridCoordinate1D(x,ct1)
 #define GRID_COORDINATE_2D(x,y,ct1,ct2) GridCoordinate2D(x,y,ct1,ct2)
@@ -184,6 +185,7 @@ typedef double DOUBLE;
 #define GRID_COORDINATE_FP_2D(x,y,ct1,ct2) GridCoordinateFP2D(x,y,ct1,ct2)
 #define GRID_COORDINATE_FP_3D(x,y,z,ct1,ct2,ct3) GridCoordinateFP3D(x,y,z,ct1,ct2,ct3)
 #else /* DEBUG_INFO */
+#define TCOORD(x,y,z,ct1,ct2,ct3) TCoord(x,y,z)
 #define TC_COORD(x,y,z,ct1,ct2,ct3) TC(x,y,z)
 #define GRID_COORDINATE_1D(x,ct1) GridCoordinate1D(x)
 #define GRID_COORDINATE_2D(x,y,ct1,ct2) GridCoordinate2D(x,y)

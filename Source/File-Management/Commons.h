@@ -4,24 +4,9 @@
 #include <string>
 
 #include "Assert.h"
-#include "Grid.h"
+#include "GridInterface.h"
 
 extern std::string int64_to_string(int64_t value);
-
-/**
- * Type of save/load from file.
- * CURRENT: current layer.
- * PREVIOUS: previous layer.
- * PREVIOUS2: previous to previous layer.
- * ALL: all layers.
- */
-enum GridFileType
-{
-  CURRENT,
-  PREVIOUS,
-  PREVIOUS2,
-  ALL
-};
 
 enum FileType
 {
@@ -37,108 +22,94 @@ enum FileType
 class GridFileManager
 {
 protected:
+  
+  /**
+   * Index of grid time step to save/load:
+   *   -1:  save/load all time steps
+   *   >=0: save/load specific time step
+   */
+  int index_of_grid;
 
-  bool manualFileNames;
+  std::vector< std::string > names;
 
-  // Time step number (used in file naming).
-  time_step step;
-
-  // Save/load type.
-  GridFileType type;
-
-  int processId;
-
-  // File names.
-  // File name for current layer file.
-  std::string cur;
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  // File name for previous layer file.
-  std::string prev;
-#if defined (TWO_TIME_STEPS)
-  // File name for previous to previous layer file.
-  std::string prevPrev;
-#endif /* TWO_TIME_STEPS */
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-
-  std::string customName;
-
-  // Set file names according to time step.
-  void setFileNames ()
+  void setFileNames (int savedSteps,
+                     time_step step,
+                     int processId,
+                     const std::string & customName,
+                     FileType ftype)
   {
-    cur.clear ();
-    cur = std::string ("current[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId) + std::string ("_") + customName;
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    prev.clear ();
-    prev = std::string ("previous[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId) + std::string ("_") + customName;
-#if defined (TWO_TIME_STEPS)
-    prevPrev.clear ();
-    prevPrev = std::string ("previous2[") + int64_to_string (step) + std::string ("]_rank-") + int64_to_string (processId) + std::string ("_") + customName;
-#endif /* TWO_TIME_STEPS */
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-  }
+    bool singleName = false;
+    if (savedSteps == -1)
+    {
+      /*
+       * Make only one file
+       */
+      savedSteps = 1;
+      singleName = true;
+    }
+    
+    ASSERT (savedSteps > 0);
 
-  // Protected constructor to disallow instantiation.
-  GridFileManager ()
-    : manualFileNames (false)
-  , step (0)
-  , type (CURRENT)
-  , processId (0)
-  {
+    names.resize (savedSteps);
+
+    for (int i = 0; i < names.size (); ++i)
+    {
+      if (singleName)
+      {
+        names[i] = std::string ("previous");
+      }
+      else
+      {
+        names[i] = std::string ("previous-") + int64_to_string (i);
+      }
+      
+      names[i] += std::string ("_[timestep=") + int64_to_string (step)
+                  + std::string ("]_[pid=") + int64_to_string (processId) + std::string ("]_[name=") + customName
+                  + std::string ("]");
+
+      switch (ftype)
+      {
+        case FILE_TYPE_BMP:
+        {
+          names[i] += std::string (".bmp");
+          break;
+        }
+        case FILE_TYPE_DAT:
+        {
+          names[i] += std::string (".dat");
+          break;
+        }
+        case FILE_TYPE_TXT:
+        {
+          names[i] += std::string (".txt");
+          break;
+        }
+        default:
+        {
+          UNREACHABLE;
+        }
+      }
+    }
   }
+  
+  void setCustomFileNames (const std::vector< std::string > & customNames)
+  {
+    names.resize (customNames.size ());
+    
+    for (int i = 0; i < names.size (); ++i)
+    {
+      names[i] = customNames[i];
+    }
+  }
+  
+  /**
+   * Protected constructor to save/load all/specific grid time step
+   */
+  GridFileManager () {}
 
 public:
 
   virtual ~GridFileManager () {}
-
-  // Initialize dumper with time step number and save/load type.
-  void init (const time_step& timeStep, GridFileType newType, int process, const char *name)
-  {
-    manualFileNames = false;
-    step = timeStep;
-    type = newType;
-    processId = process;
-    customName = std::string (name);
-
-    setFileNames ();
-  }
-
-  void initManual (const time_step& timeStep,
-                   GridFileType newType,
-                   int process,
-                   const std::string &current,
-                   const std::string &previous,
-                   const std::string &prevPrevious)
-  {
-    manualFileNames = true;
-    step = timeStep;
-    type = newType;
-    processId = process;
-
-    cur.clear ();
-    cur = current;
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    prev.clear ();
-    prev = previous;
-#if defined (TWO_TIME_STEPS)
-    prevPrev.clear ();
-    prevPrev = prevPrevious;
-#endif /* TWO_TIME_STEPS */
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-  }
-
-  // Set time step.
-  void setStep (const time_step& timeStep)
-  {
-    step = timeStep;
-
-    setFileNames();
-  }
-
-  // Set save/load type.
-  void setGridFileType (GridFileType newType)
-  {
-    type = newType;
-  }
 
   static FileType getFileType (const std::string &);
 };

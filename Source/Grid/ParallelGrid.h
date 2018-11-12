@@ -367,7 +367,8 @@ public:
   ParallelGrid (const ParallelGridCoordinate &,
                 const ParallelGridCoordinate &,
                 time_step,
-                ParallelGridCoordinate,
+                const ParallelGridCoordinate &,
+                int,
                 const char * = "unnamed");
 
   virtual ~ParallelGrid () {}
@@ -403,7 +404,7 @@ public:
    * @return first coordinate from which to perform computations at current step
    */
   virtual ParallelGridCoordinate getComputationStart
-    (ParallelGridCoordinate diffPosStart) const CXX11_OVERRIDE /**< layout coordinate modifier */
+    (const ParallelGridCoordinate & diffPosStart) const CXX11_OVERRIDE /**< layout coordinate modifier */
   {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     grid_coord diffX = diffPosStart.get1 ();
@@ -481,7 +482,7 @@ public:
    * @return last coordinate until which to perform computations at current step
    */
   virtual ParallelGridCoordinate getComputationEnd
-    (ParallelGridCoordinate diffPosEnd) const CXX11_OVERRIDE /**< layout coordinate modifier */
+    (const ParallelGridCoordinate & diffPosEnd) const CXX11_OVERRIDE /**< layout coordinate modifier */
   {
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     grid_coord diffX = diffPosEnd.get1 ();
@@ -609,7 +610,7 @@ public:
    *
    * @return total position in grid from relative position for current computational node
    */
-  virtual ParallelGridCoordinate getTotalPosition (ParallelGridCoordinate pos) const CXX11_OVERRIDE /**< relative
+  virtual ParallelGridCoordinate getTotalPosition (const ParallelGridCoordinate & pos) const CXX11_OVERRIDE /**< relative
                                                                                                      *   position for
                                                                                                      *   current
                                                                                                      *   computational
@@ -625,7 +626,7 @@ public:
    *
    * @return relative position for current computational node from total position
    */
-  virtual ParallelGridCoordinate getRelativePosition (ParallelGridCoordinate pos) const CXX11_OVERRIDE /**< total
+  virtual ParallelGridCoordinate getRelativePosition (const ParallelGridCoordinate & pos) const CXX11_OVERRIDE /**< total
                                                                                                         *   position in
                                                                                                         *   grid */
   {
@@ -637,23 +638,25 @@ public:
   } /* ParallelGrid::getRelativePosition */
 
   /**
-   * Get field point value at absolute coordinate in grid
+   * Get field value at absolute coordinate in grid
    *
-   * @return field point value
+   * @return field value
    */
-  virtual FieldPointValue * getFieldPointValueByAbsolutePos
-    (const ParallelGridCoordinate &absPosition) CXX11_OVERRIDE /**< absolute coordinate in grid */
+  virtual FieldValue * getFieldValueByAbsolutePos
+    (const ParallelGridCoordinate &absPosition, /**< absolute coordinate in grid */
+     int time_step_back) CXX11_OVERRIDE /**< offset in time */
   {
-    return getFieldPointValue (getRelativePosition (absPosition));
-  } /* getFieldPointValueByAbsolutePos */
+    return getFieldValue (getRelativePosition (absPosition), time_step_back);
+  } /* getFieldValueByAbsolutePos */
 
   /**
-   * Get field point value at absolute coordinate in grid. If current node does not contain this coordinate, return NULLPTR
+   * Get field value at absolute coordinate in grid. If current node does not contain this coordinate, return NULLPTR
    *
-   * @return field point value or NULLPTR
+   * @return field value or NULLPTR
    */
-  virtual FieldPointValue * getFieldPointValueOrNullByAbsolutePos
-    (const ParallelGridCoordinate &absPosition) CXX11_OVERRIDE /**< absolute coordinate in grid */
+  virtual FieldValue * getFieldValueOrNullByAbsolutePos
+    (const ParallelGridCoordinate &absPosition, /**< absolute coordinate in grid */
+     int time_step_back) CXX11_OVERRIDE /**< offset in time */
   {
     if (!hasValueForCoordinate (absPosition))
     {
@@ -662,8 +665,8 @@ public:
 
     ParallelGridCoordinate relPosition = getRelativePosition (absPosition);
 
-    return getFieldPointValue (relPosition);
-  } /* getFieldPointValueOrNullByAbsolutePos */
+    return getFieldValue (relPosition, time_step_back);
+  } /* getFieldValueOrNullByAbsolutePos */
 
   /**
    * Check whether current node has value for coordinate
@@ -828,7 +831,7 @@ public:
    *
    * @return true, if position is in left buffer, false, otherwise
    */
-  bool isBufferLeftPosition (ParallelGridCoordinate pos) /**< position to check */
+  bool isBufferLeftPosition (const ParallelGridCoordinate & pos) /**< position to check */
   {
     ASSERT (pos < totalSize);
     ParallelGridCoordinate chunkStart = getChunkStartPosition ();
@@ -848,7 +851,7 @@ public:
    *
    * @return true, if position is in right buffer, false, otherwise
    */
-  bool isBufferRightPosition (ParallelGridCoordinate pos) /**< position to check */
+  bool isBufferRightPosition (const ParallelGridCoordinate & pos) /**< position to check */
   {
     ASSERT (pos < totalSize);
     ParallelGridCoordinate chunkEnd = getChunkStartPosition () + currentSize;

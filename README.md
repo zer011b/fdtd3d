@@ -38,7 +38,7 @@ make
 Build command for 3D grid in detail:
 
 ```sh
-cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=OFF -DTIME_STEPS=2 \
+cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=OFF \
 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=ON -DPARALLEL_GRID=OFF -DPARALLEL_BUFFER_DIMENSION=xyz \
 -DCXX11_ENABLED=ON -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DLARGE_COORDINATES=OFF
 ```
@@ -56,7 +56,6 @@ Solver incorporates following features which could be set up during build.
 CMAKE_BUILD_TYPE - build type (Debug, ReleaseWithAsserts, Release)
 VALUE_TYPE - use float (f), double (d) or long double (ld) floating point values
 COMPLEX_FIELD_VALUES - use complex values or not (ON of OFF)
-TIME_STEPS - number of steps in time (1 or 2)
 PARALLEL_GRID_DIMENSION - number of dimensions in parallel grid (1, 2 or 3)
 PRINT_MESSAGE - print debug output (ON or OFF)
 PARALLEL_GRID - use parallel grid or not (ON or OFF)

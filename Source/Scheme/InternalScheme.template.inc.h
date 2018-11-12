@@ -783,41 +783,29 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
                                                                IGRID<TC> *Cb)
 {
   // TODO: [possible] move 1D gridValues to 3D gridValues array
-  FieldPointValue *valField = grid->getFieldPointValue (pos);
+  grid_coord coord = grid->calculateIndexFromPosition (pos);
+  FieldValue val = *grid->getFieldValue (coord, 1);
 
-  FieldValue valCa = Ca->getFieldPointValue (pos)->getCurValue ();
-  FieldValue valCb = Cb->getFieldPointValue (pos)->getCurValue ();
+  FieldValue valCa = *Ca->getFieldValue (pos, 0);
+  FieldValue valCb = *Cb->getFieldValue (pos, 0);
 
-  // TODO: separate previous grid and current
   FieldValue prev11 = FIELDVALUE (0, 0);
   FieldValue prev12 = FIELDVALUE (0, 0);
   FieldValue prev21 = FIELDVALUE (0, 0);
   FieldValue prev22 = FIELDVALUE (0, 0);
 
+  FieldValue prevRightSide = FIELDVALUE (0, 0);
+
   if (oppositeGrid1)
   {
-    FieldPointValue *val11 = oppositeGrid1->getFieldPointValue (pos + diff11);
-    FieldPointValue *val12 = oppositeGrid1->getFieldPointValue (pos + diff12);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    prev11 = val11->getPrevValue ();
-    prev12 = val12->getPrevValue ();
-#else
-    ALWAYS_ASSERT (0);
-#endif
+    prev11 = *oppositeGrid1->getFieldValue (pos + diff11, 1);
+    prev12 = *oppositeGrid1->getFieldValue (pos + diff12, 1);
   }
 
   if (oppositeGrid2)
   {
-    FieldPointValue *val21 = oppositeGrid2->getFieldPointValue (pos + diff21);
-    FieldPointValue *val22 = oppositeGrid2->getFieldPointValue (pos + diff22);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    prev21 = val21->getPrevValue ();
-    prev22 = val22->getPrevValue ();
-#else
-    ALWAYS_ASSERT (0);
-#endif
+    prev21 = *oppositeGrid2->getFieldValue (pos + diff21, 1);
+    prev22 = *oppositeGrid2->getFieldValue (pos + diff22, 1);
   }
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
@@ -825,323 +813,308 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
     calculateTFSF<grid_type> (posAbs, prev11, prev12, prev21, prev22, pos + diff11, pos + diff12, pos + diff21, pos + diff22);
   }
 
-  FieldValue prevRightSide = 0;
   if (rightSideFunc != NULLPTR)
   {
     prevRightSide = rightSideFunc (expandTo3D (coordFP * gridStep, ct1, ct2, ct3), t * gridTimeStep);
   }
 
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  // TODO: precalculate Ca,Cb
-  FieldValue val = calcField (valField->getPrevValue (),
-                              prev12,
-                              prev11,
-                              prev22,
-                              prev21,
-                              prevRightSide,
-                              valCa.real (),
-                              valCb.real (),
-                              gridStep);
-#else
-  ALWAYS_ASSERT (0);
-#endif
-
-  valField->setCurValue (val);
+  FieldValue valNew = calcField (val, prev12, prev11, prev22, prev21, prevRightSide, valCa, valCb, gridStep);
+  grid->setFieldValue (valNew, coord, 0);
 }
 
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-ICUDA_DEVICE ICUDA_HOST
-void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPMLMetamaterials (time_step t,
-                                                                               TC pos,
-                                                                               IGRID<TC> *grid,
-                                                                               IGRID<TC> *gridPML,
-                                                                               GridType gridType,
-                                                                               IGRID<TC> *materialGrid1,
-                                                                               GridType materialGridType1,
-                                                                               IGRID<TC> *materialGrid2,
-                                                                               GridType materialGridType2,
-                                                                               IGRID<TC> *materialGrid3,
-                                                                               GridType materialGridType3,
-                                                                               FPValue materialModifier)
-{
-  TC posAbs = grid->getTotalPosition (pos);
-  FieldPointValue *valField = grid->getFieldPointValue (pos);
-  FieldPointValue *valField1 = gridPML->getFieldPointValue (pos);
+// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+// ICUDA_DEVICE ICUDA_HOST
+// void
+// INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPMLMetamaterials (time_step t,
+//                                                                                TC pos,
+//                                                                                IGRID<TC> *grid,
+//                                                                                IGRID<TC> *gridPML,
+//                                                                                GridType gridType,
+//                                                                                IGRID<TC> *materialGrid1,
+//                                                                                GridType materialGridType1,
+//                                                                                IGRID<TC> *materialGrid2,
+//                                                                                GridType materialGridType2,
+//                                                                                IGRID<TC> *materialGrid3,
+//                                                                                GridType materialGridType3,
+//                                                                                FPValue materialModifier)
+// {
+//   TC posAbs = grid->getTotalPosition (pos);
+//   FieldPointValue *valField = grid->getFieldPointValue (pos);
+//   FieldPointValue *valField1 = gridPML->getFieldPointValue (pos);
+//
+//   FPValue material1;
+//   FPValue material2;
+//
+//   FPValue material = getMetaMaterial (posAbs, gridType,
+//                                                  materialGrid1, materialGridType1,
+//                                                  materialGrid2, materialGridType2,
+//                                                  materialGrid3, materialGridType3,
+//                                                  material1, material2);
+//
+//   /*
+//    * TODO: precalculate coefficients
+//    */
+//   FPValue A = 4*materialModifier*material + 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1);
+//   FPValue a1 = (4 + 2*gridTimeStep*material2) / A;
+//   FPValue a2 = -8 / A;
+//   FPValue a3 = (4 - 2*gridTimeStep*material2) / A;
+//   FPValue a4 = (2*materialModifier*SQR(gridTimeStep*material1) - 8*materialModifier*material) / A;
+//   FPValue a5 = (4*materialModifier*material - 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1)) / A;
+//
+// #if defined (TWO_TIME_STEPS)
+//   FieldValue val = calcFieldDrude (valField->getCurValue (),
+//                                    valField->getPrevValue (),
+//                                    valField->getPrevPrevValue (),
+//                                    valField1->getPrevValue (),
+//                                    valField1->getPrevPrevValue (),
+//                                    a1,
+//                                    a2,
+//                                    a3,
+//                                    a4,
+//                                    a5);
+//   valField1->setCurValue (val);
+// #else
+//   ALWAYS_ASSERT (0);
+// #endif
+// }
 
-  FPValue material1;
-  FPValue material2;
+// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+// template <bool useMetamaterials>
+// ICUDA_DEVICE ICUDA_HOST
+// void
+// INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML (time_step t,
+//                                                                    TC pos,
+//                                                                    IGRID<TC> *grid,
+//                                                                    IGRID<TC> *gridPML1,
+//                                                                    IGRID<TC> *gridPML2,
+//                                                                    GridType gridType,
+//                                                                    GridType gridPMLType1,
+//                                                                    IGRID<TC> *materialGrid1,
+//                                                                    GridType materialGridType1,
+//                                                                    IGRID<TC> *materialGrid4,
+//                                                                    GridType materialGridType4,
+//                                                                    IGRID<TC> *materialGrid5,
+//                                                                    GridType materialGridType5,
+//                                                                    FPValue materialModifier)
+// {
+//   FPValue eps0 = PhysicsConst::Eps0;
+//
+//   TC posAbs = gridPML2->getTotalPosition (pos);
+//
+//   FieldPointValue *valField = gridPML2->getFieldPointValue (pos);
+//
+//   FieldPointValue *valField1;
+//
+//   if (useMetamaterials)
+//   {
+//     valField1 = gridPML1->getFieldPointValue (pos);
+//   }
+//   else
+//   {
+//     valField1 = grid->getFieldPointValue (pos);
+//   }
+//
+//   FPValue material1 = materialGrid1 ? getMaterial (posAbs, gridPMLType1, materialGrid1, materialGridType1) : 0;
+//   FPValue material4 = materialGrid4 ? getMaterial (posAbs, gridPMLType1, materialGrid4, materialGridType4) : 0;
+//   FPValue material5 = materialGrid5 ? getMaterial (posAbs, gridPMLType1, materialGrid5, materialGridType5) : 0;
+//
+//   FPValue modifier = material1 * materialModifier;
+//   if (useMetamaterials)
+//   {
+//     modifier = 1;
+//   }
+//
+//   FPValue k_mod1 = 1;
+//   FPValue k_mod2 = 1;
+//
+//   FPValue Ca = (2 * eps0 * k_mod2 - material5 * gridTimeStep) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
+//   FPValue Cb = ((2 * eps0 * k_mod1 + material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
+//   FPValue Cc = ((2 * eps0 * k_mod1 - material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
+//
+// #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
+//   FieldValue val = calcFieldFromDOrB (valField->getPrevValue (),
+//                                       valField1->getCurValue (),
+//                                       valField1->getPrevValue (),
+//                                       Ca,
+//                                       Cb,
+//                                       Cc);
+// #else
+//   ALWAYS_ASSERT (0);
+// #endif
+//
+//   valField->setCurValue (val);
+// }
 
-  FPValue material = getMetaMaterial (posAbs, gridType,
-                                                 materialGrid1, materialGridType1,
-                                                 materialGrid2, materialGridType2,
-                                                 materialGrid3, materialGridType3,
-                                                 material1, material2);
+// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+// template <uint8_t grid_type>
+// ICUDA_DEVICE ICUDA_HOST
+// void
+// INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationBorder (time_step t,
+//                                                                       TC pos,
+//                                                                       IGRID<TC> *grid,
+//                                                                       SourceCallBack borderFunc)
+// {
+//   TC posAbs = grid->getTotalPosition (pos);
+//
+//   if (doSkipBorderFunc (posAbs, grid))
+//   {
+//     return;
+//   }
+//
+//   TCFP realCoord;
+//   FPValue timestep;
+//   switch (grid_type)
+//   {
+//     case (static_cast<uint8_t> (GridType::EX)):
+//     {
+//       realCoord = yeeLayout->getExCoordFP (posAbs);
+//       timestep = t + 0.5;
+//       break;
+//     }
+//     case (static_cast<uint8_t> (GridType::EY)):
+//     {
+//       realCoord = yeeLayout->getEyCoordFP (posAbs);
+//       timestep = t + 0.5;
+//       break;
+//     }
+//     case (static_cast<uint8_t> (GridType::EZ)):
+//     {
+//       realCoord = yeeLayout->getEzCoordFP (posAbs);
+//       timestep = t + 0.5;
+//       break;
+//     }
+//     case (static_cast<uint8_t> (GridType::HX)):
+//     {
+//       realCoord = yeeLayout->getHxCoordFP (posAbs);
+//       timestep = t + 1.0;
+//       break;
+//     }
+//     case (static_cast<uint8_t> (GridType::HY)):
+//     {
+//       realCoord = yeeLayout->getHyCoordFP (posAbs);
+//       timestep = t + 1.0;
+//       break;
+//     }
+//     case (static_cast<uint8_t> (GridType::HZ)):
+//     {
+//       realCoord = yeeLayout->getHzCoordFP (posAbs);
+//       timestep = t + 1.0;
+//       break;
+//     }
+//     default:
+//     {
+//       UNREACHABLE;
+//     }
+//   }
+//
+//   grid->getFieldPointValue (pos)->setCurValue (borderFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep));
+// }
 
-  /*
-   * TODO: precalculate coefficients
-   */
-  FPValue A = 4*materialModifier*material + 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1);
-  FPValue a1 = (4 + 2*gridTimeStep*material2) / A;
-  FPValue a2 = -8 / A;
-  FPValue a3 = (4 - 2*gridTimeStep*material2) / A;
-  FPValue a4 = (2*materialModifier*SQR(gridTimeStep*material1) - 8*materialModifier*material) / A;
-  FPValue a5 = (4*materialModifier*material - 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1)) / A;
-
-#if defined (TWO_TIME_STEPS)
-  FieldValue val = calcFieldDrude (valField->getCurValue (),
-                                   valField->getPrevValue (),
-                                   valField->getPrevPrevValue (),
-                                   valField1->getPrevValue (),
-                                   valField1->getPrevPrevValue (),
-                                   a1,
-                                   a2,
-                                   a3,
-                                   a4,
-                                   a5);
-  valField1->setCurValue (val);
-#else
-  ALWAYS_ASSERT (0);
-#endif
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <bool useMetamaterials>
-ICUDA_DEVICE ICUDA_HOST
-void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML (time_step t,
-                                                                   TC pos,
-                                                                   IGRID<TC> *grid,
-                                                                   IGRID<TC> *gridPML1,
-                                                                   IGRID<TC> *gridPML2,
-                                                                   GridType gridType,
-                                                                   GridType gridPMLType1,
-                                                                   IGRID<TC> *materialGrid1,
-                                                                   GridType materialGridType1,
-                                                                   IGRID<TC> *materialGrid4,
-                                                                   GridType materialGridType4,
-                                                                   IGRID<TC> *materialGrid5,
-                                                                   GridType materialGridType5,
-                                                                   FPValue materialModifier)
-{
-  FPValue eps0 = PhysicsConst::Eps0;
-
-  TC posAbs = gridPML2->getTotalPosition (pos);
-
-  FieldPointValue *valField = gridPML2->getFieldPointValue (pos);
-
-  FieldPointValue *valField1;
-
-  if (useMetamaterials)
-  {
-    valField1 = gridPML1->getFieldPointValue (pos);
-  }
-  else
-  {
-    valField1 = grid->getFieldPointValue (pos);
-  }
-
-  FPValue material1 = materialGrid1 ? getMaterial (posAbs, gridPMLType1, materialGrid1, materialGridType1) : 0;
-  FPValue material4 = materialGrid4 ? getMaterial (posAbs, gridPMLType1, materialGrid4, materialGridType4) : 0;
-  FPValue material5 = materialGrid5 ? getMaterial (posAbs, gridPMLType1, materialGrid5, materialGridType5) : 0;
-
-  FPValue modifier = material1 * materialModifier;
-  if (useMetamaterials)
-  {
-    modifier = 1;
-  }
-
-  FPValue k_mod1 = 1;
-  FPValue k_mod2 = 1;
-
-  FPValue Ca = (2 * eps0 * k_mod2 - material5 * gridTimeStep) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
-  FPValue Cb = ((2 * eps0 * k_mod1 + material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
-  FPValue Cc = ((2 * eps0 * k_mod1 - material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  FieldValue val = calcFieldFromDOrB (valField->getPrevValue (),
-                                      valField1->getCurValue (),
-                                      valField1->getPrevValue (),
-                                      Ca,
-                                      Cb,
-                                      Cc);
-#else
-  ALWAYS_ASSERT (0);
-#endif
-
-  valField->setCurValue (val);
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <uint8_t grid_type>
-ICUDA_DEVICE ICUDA_HOST
-void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationBorder (time_step t,
-                                                                      TC pos,
-                                                                      IGRID<TC> *grid,
-                                                                      SourceCallBack borderFunc)
-{
-  TC posAbs = grid->getTotalPosition (pos);
-
-  if (doSkipBorderFunc (posAbs, grid))
-  {
-    return;
-  }
-
-  TCFP realCoord;
-  FPValue timestep;
-  switch (grid_type)
-  {
-    case (static_cast<uint8_t> (GridType::EX)):
-    {
-      realCoord = yeeLayout->getExCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EY)):
-    {
-      realCoord = yeeLayout->getEyCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EZ)):
-    {
-      realCoord = yeeLayout->getEzCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HX)):
-    {
-      realCoord = yeeLayout->getHxCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HY)):
-    {
-      realCoord = yeeLayout->getHyCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HZ)):
-    {
-      realCoord = yeeLayout->getHzCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  grid->getFieldPointValue (pos)->setCurValue (borderFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep));
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <uint8_t grid_type>
-ICUDA_DEVICE ICUDA_HOST
-void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationExact (time_step t,
-                                                                     TC pos,
-                                                                     IGRID<TC> *grid,
-                                                                     SourceCallBack exactFunc,
-                                                                     FPValue &normRe,
-                                                                     FPValue &normIm,
-                                                                     FPValue &normMod,
-                                                                     FPValue &maxRe,
-                                                                     FPValue &maxIm,
-                                                                     FPValue &maxMod)
-{
-  TC posAbs = grid->getTotalPosition (pos);
-
-  TCFP realCoord;
-  FPValue timestep;
-  switch (grid_type)
-  {
-    case (static_cast<uint8_t> (GridType::EX)):
-    {
-      realCoord = yeeLayout->getExCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EY)):
-    {
-      realCoord = yeeLayout->getEyCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::EZ)):
-    {
-      realCoord = yeeLayout->getEzCoordFP (posAbs);
-      timestep = t + 0.5;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HX)):
-    {
-      realCoord = yeeLayout->getHxCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HY)):
-    {
-      realCoord = yeeLayout->getHyCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    case (static_cast<uint8_t> (GridType::HZ)):
-    {
-      realCoord = yeeLayout->getHzCoordFP (posAbs);
-      timestep = t + 1.0;
-      break;
-    }
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
-
-  FieldValue numerical = grid->getFieldPointValue (pos)->getCurValue ();
-  FieldValue exact = exactFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
-
-#ifdef COMPLEX_FIELD_VALUES
-  FPValue modExact = sqrt (SQR (exact.real ()) + SQR (exact.imag ()));
-  FPValue modNumerical = sqrt (SQR (numerical.real ()) + SQR (numerical.imag ()));
-
-  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact.real (), numerical.real ());
-
-  normRe += SQR (exact.real () - numerical.real ());
-  normIm += SQR (exact.imag () - numerical.imag ());
-  normMod += SQR (modExact - modNumerical);
-
-  FPValue exactAbs = fabs (exact.real ());
-  if (maxRe < exactAbs)
-  {
-    maxRe = exactAbs;
-  }
-
-  exactAbs = fabs (exact.imag ());
-  if (maxIm < exactAbs)
-  {
-    maxIm = exactAbs;
-  }
-
-  exactAbs = modExact;
-  if (maxMod < exactAbs)
-  {
-    maxMod = exactAbs;
-  }
-#else
-  normRe += SQR (exact - numerical);
-
-  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact, numerical);
-
-  FPValue exactAbs = fabs (exact);
-  if (maxRe < exactAbs)
-  {
-    maxRe = exactAbs;
-  }
-#endif
-}
+// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+// template <uint8_t grid_type>
+// ICUDA_DEVICE ICUDA_HOST
+// void
+// INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationExact (time_step t,
+//                                                                      TC pos,
+//                                                                      IGRID<TC> *grid,
+//                                                                      SourceCallBack exactFunc,
+//                                                                      FPValue &normRe,
+//                                                                      FPValue &normIm,
+//                                                                      FPValue &normMod,
+//                                                                      FPValue &maxRe,
+//                                                                      FPValue &maxIm,
+//                                                                      FPValue &maxMod)
+// {
+//   TC posAbs = grid->getTotalPosition (pos);
+//
+//   TCFP realCoord;
+//   FPValue timestep;
+//   switch (grid_type)
+//   {
+//     case (static_cast<uint8_t> (GridType::EX)):
+//     {
+//       realCoord = yeeLayout->getExCoordFP (posAbs);
+//       timestep = t + 0.5;
+//       break;
+//     }
+//     case (static_cast<uint8_t> (GridType::EY)):
+//     {
+//       realCoord = yeeLayout->getEyCoordFP (posAbs);
+//       timestep = t + 0.5;
+//       break;
+//     }
+//     case (static_cast<uint8_t> (GridType::EZ)):
+//     {
+//       realCoord = yeeLayout->getEzCoordFP (posAbs);
+//       timestep = t + 0.5;
+//       break;
+//     }
+//     case (static_cast<uint8_t> (GridType::HX)):
+//     {
+//       realCoord = yeeLayout->getHxCoordFP (posAbs);
+//       timestep = t + 1.0;
+//       break;
+//     }
+//     case (static_cast<uint8_t> (GridType::HY)):
+//     {
+//       realCoord = yeeLayout->getHyCoordFP (posAbs);
+//       timestep = t + 1.0;
+//       break;
+//     }
+//     case (static_cast<uint8_t> (GridType::HZ)):
+//     {
+//       realCoord = yeeLayout->getHzCoordFP (posAbs);
+//       timestep = t + 1.0;
+//       break;
+//     }
+//     default:
+//     {
+//       UNREACHABLE;
+//     }
+//   }
+//
+//   FieldValue numerical = grid->getFieldPointValue (pos)->getCurValue ();
+//   FieldValue exact = exactFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
+//
+// #ifdef COMPLEX_FIELD_VALUES
+//   FPValue modExact = sqrt (SQR (exact.real ()) + SQR (exact.imag ()));
+//   FPValue modNumerical = sqrt (SQR (numerical.real ()) + SQR (numerical.imag ()));
+//
+//   //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact.real (), numerical.real ());
+//
+//   normRe += SQR (exact.real () - numerical.real ());
+//   normIm += SQR (exact.imag () - numerical.imag ());
+//   normMod += SQR (modExact - modNumerical);
+//
+//   FPValue exactAbs = fabs (exact.real ());
+//   if (maxRe < exactAbs)
+//   {
+//     maxRe = exactAbs;
+//   }
+//
+//   exactAbs = fabs (exact.imag ());
+//   if (maxIm < exactAbs)
+//   {
+//     maxIm = exactAbs;
+//   }
+//
+//   exactAbs = modExact;
+//   if (maxMod < exactAbs)
+//   {
+//     maxMod = exactAbs;
+//   }
+// #else
+//   normRe += SQR (exact - numerical);
+//
+//   //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact, numerical);
+//
+//   FPValue exactAbs = fabs (exact);
+//   if (maxRe < exactAbs)
+//   {
+//     maxRe = exactAbs;
+//   }
+// #endif
+// }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template<uint8_t EnumVal>
@@ -1202,15 +1175,15 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPointSourceCalc (time_st
                                    SOLVER_SETTINGS.getPointSourcePositionZ (),
                                    ct1, ct2, ct3);
 
-  FieldPointValue* pointVal = grid->getFieldPointValueOrNullByAbsolutePos (pos);
+  FieldValue* pointVal = grid->getFieldValueOrNullByAbsolutePos (pos, 0);
 
   if (pointVal)
   {
 #ifdef COMPLEX_FIELD_VALUES
-    pointVal->setCurValue (FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
-                                       cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency)));
+    *pointVal = FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
+                            cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
 #else /* COMPLEX_FIELD_VALUES */
-    pointVal->setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
+    *pointVal = setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
 #endif /* !COMPLEX_FIELD_VALUES */
   }
 }
@@ -1261,14 +1234,14 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
       case GridType::EZ:
       case GridType::DZ:
       {
-        return yeeLayout->getApproximateMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
-                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos12),
-                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos21),
-                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos22),
-                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos31),
-                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos32),
-                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos41),
-                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos42));
+        return yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos31, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos32, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos41, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos42, 0));
       }
       default:
       {
@@ -1287,8 +1260,8 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
       case GridType::EZ:
       case GridType::DZ:
       {
-        return yeeLayout->getApproximateMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
-                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos12));
+        return yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0));
       }
       case GridType::HX:
       case GridType::BX:
@@ -1297,10 +1270,10 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
       case GridType::HZ:
       case GridType::BZ:
       {
-        return yeeLayout->getApproximateMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
-                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos12),
-                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos21),
-                                                  gridMaterial->getFieldPointValueByAbsolutePos (absPos22));
+        return yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0));
       }
       default:
       {
@@ -1360,30 +1333,30 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
       case GridType::EZ:
       case GridType::DZ:
       {
-        return yeeLayout->getApproximateMetaMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
-                                                      gridMaterial->getFieldPointValueByAbsolutePos (absPos12),
-                                                      gridMaterial->getFieldPointValueByAbsolutePos (absPos21),
-                                                      gridMaterial->getFieldPointValueByAbsolutePos (absPos22),
-                                                      gridMaterial->getFieldPointValueByAbsolutePos (absPos31),
-                                                      gridMaterial->getFieldPointValueByAbsolutePos (absPos32),
-                                                      gridMaterial->getFieldPointValueByAbsolutePos (absPos41),
-                                                      gridMaterial->getFieldPointValueByAbsolutePos (absPos42),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos11),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos12),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos21),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos22),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos31),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos32),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos41),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos42),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos11),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos12),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos21),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos22),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos31),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos32),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos41),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos42),
+        return yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
+                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
+                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
+                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos31, 0),
+                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos32, 0),
+                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos41, 0),
+                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos42, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos21, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos22, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos31, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos32, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos41, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos42, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos11, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos12, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos21, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos22, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos31, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos32, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos41, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos42, 0),
                                                       omega, gamma);
       }
       default:
@@ -1403,12 +1376,12 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
       case GridType::EZ:
       case GridType::DZ:
       {
-        return yeeLayout->getApproximateMetaMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
-                                                      gridMaterial->getFieldPointValueByAbsolutePos (absPos12),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos11),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos12),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos11),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos12),
+        return yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos11, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos12, 0),
                                                       omega, gamma);
       }
       case GridType::HX:
@@ -1418,18 +1391,18 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
       case GridType::HZ:
       case GridType::BZ:
       {
-        return yeeLayout->getApproximateMetaMaterial (gridMaterial->getFieldPointValueByAbsolutePos (absPos11),
-                                                      gridMaterial->getFieldPointValueByAbsolutePos (absPos12),
-                                                      gridMaterial->getFieldPointValueByAbsolutePos (absPos21),
-                                                      gridMaterial->getFieldPointValueByAbsolutePos (absPos22),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos11),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos12),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos21),
-                                                      gridMaterialOmega->getFieldPointValueByAbsolutePos (absPos22),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos11),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos12),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos21),
-                                                      gridMaterialGamma->getFieldPointValueByAbsolutePos (absPos22),
+        return yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
+                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
+                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos21, 0),
+                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos22, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos11, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos12, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos21, 0),
+                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos22, 0),
                                                       omega, gamma);
       }
       default:
@@ -1590,60 +1563,29 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPlaneWaveESteps (time_st
 
   for (grid_coord i = cstart; i < cend; ++i)
   {
-    GridCoordinate1D pos (i
-#ifdef DEBUG_INFO
-                          , CoordinateType::X
-#endif
-                          );
+    FieldValue valE = *EInc->getFieldValue (i, 1);
+    FieldValue valH1 = *HInc->getFieldValue (i - 1, 1);
+    FieldValue valH2 = *HInc->getFieldValue (i, 1);
 
-    FieldPointValue *valE = EInc->getFieldPointValue (pos);
-
-    GridCoordinate1D posLeft (i - 1
-#ifdef DEBUG_INFO
-                              , CoordinateType::X
-#endif
-                              );
-    GridCoordinate1D posRight (i
-#ifdef DEBUG_INFO
-                               , CoordinateType::X
-#endif
-                               );
-
-    FieldPointValue *valH1 = HInc->getFieldPointValue (posLeft);
-    FieldPointValue *valH2 = HInc->getFieldPointValue (posRight);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    FieldValue val = valE->getPrevValue () + (valH1->getPrevValue () - valH2->getPrevValue ()) * modifier;
-#else
-    ALWAYS_ASSERT (0);
-#endif
-
-    valE->setCurValue (val);
+    FieldValue val = valE + (valH1 - valH2) * modifier;
+    EInc->setFieldValue (val, i, 0);
   }
 
   if (setSource)
   {
-    GridCoordinate1D pos (0
-#ifdef DEBUG_INFO
-                          , CoordinateType::X
-#endif
-                          );
-    FieldPointValue *valE = EInc->getFieldPointValue (pos);
-
     FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
 
 #ifdef COMPLEX_FIELD_VALUES
-    valE->setCurValue (FieldValue (sin (arg), cos (arg)));
+    EInc->setFieldValue (FieldValue (sin (arg), cos (arg)), 0, 0);
 #else /* COMPLEX_FIELD_VALUES */
-    valE->setCurValue (sin (arg));
+    EInc->setFieldValue (sin (arg), 0, 0);
 #endif /* !COMPLEX_FIELD_VALUES */
 
     //printf ("EInc[0] %f \n", valE->getCurValue ());
   }
 
 #ifdef ENABLE_ASSERTS
-  GridCoordinate1D posEnd (EInc->getSize ().get1 () - 1, CoordinateType::X);
-  ALWAYS_ASSERT (EInc->getFieldPointValue (posEnd)->getCurValue () == getFieldValueRealOnly (0.0));
+  ALWAYS_ASSERT (*EInc->getFieldValue (EInc->getSize ().get1 () - 1, 0) == getFieldValueRealOnly (0.0));
 #endif
 }
 
@@ -1667,40 +1609,16 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPlaneWaveHSteps (time_st
 
   for (grid_coord i = cstart; i < cend; ++i)
   {
-    GridCoordinate1D pos (i
-#ifdef DEBUG_INFO
-                          , CoordinateType::X
-#endif
-                          );
+    FieldValue valH = *HInc->getFieldValue (i, 1);
+    FieldValue valE1 = *EInc->getFieldValue (i, 1);
+    FieldValue valE2 = *EInc->getFieldValue (i + 1, 1);
 
-    FieldPointValue *valH = HInc->getFieldPointValue (pos);
-
-    GridCoordinate1D posLeft (i
-#ifdef DEBUG_INFO
-                              , CoordinateType::X
-#endif
-                              );
-    GridCoordinate1D posRight (i + 1
-#ifdef DEBUG_INFO
-                               , CoordinateType::X
-#endif
-                               );
-
-    FieldPointValue *valE1 = EInc->getFieldPointValue (posLeft);
-    FieldPointValue *valE2 = EInc->getFieldPointValue (posRight);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    FieldValue val = valH->getPrevValue () + (valE1->getPrevValue () - valE2->getPrevValue ()) * modifier;
-#else
-    ALWAYS_ASSERT (0);
-#endif
-
-    valH->setCurValue (val);
+    FieldValue val = valH + (valE1 - valE2) * modifier;
+    HInc->setFieldValue (val, i, 0);
   }
 
 #ifdef ENABLE_ASSERTS
-  GridCoordinate1D pos (HInc->getSize ().get1 () - 2, CoordinateType::X);
-  ALWAYS_ASSERT (HInc->getFieldPointValue (pos)->getCurValue () == getFieldValueRealOnly (0.0));
+  ALWAYS_ASSERT (*HInc->getFieldValue (HInc->getSize ().get1 () - 2, 0) == getFieldValueRealOnly (0.0));
 #endif
 }
 
@@ -1887,11 +1805,11 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performNStepsForBlock (time_ste
 
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->performPlaneWaveEStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getEInc ()->getSize ());
-      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU, zero1D, gpuIntScheme->getEInc ()->getSize ());
+      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU);
       gpuIntScheme->getEInc ()->nextTimeStep ();
 #else /* CUDA_ENABLED */
       performPlaneWaveESteps (t, zero1D, getEInc ()->getSize ());
-      getEInc ()->shiftInTime (zero1D, getEInc ()->getSize ());
+      getEInc ()->shiftInTime ();
       getEInc ()->nextTimeStep ();
 #endif /* !CUDA_ENABLED */
     }
@@ -1901,31 +1819,31 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performNStepsForBlock (time_ste
       performFieldSteps<static_cast<uint8_t> (GridType::EX)> (t, ExStart, ExEnd);
 
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU, zero, zero3D, ExSize, ct1, ct2, ct3);
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU);
       gpuIntScheme->getEx ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDx (d_gpuIntSchemeOnGPU, zero, zero3D, ExSize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDx (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getDx ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1x (d_gpuIntSchemeOnGPU, zero, zero3D, ExSize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1x (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getD1x ()->nextTimeStep ();
       }
 #else
-      getEx ()->shiftInTime (zero, getEx ()->getSize ());
+      getEx ()->shiftInTime ();
       getEx ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        getDx ()->shiftInTime (zero, getDx ()->getSize ());
+        getDx ()->shiftInTime ();
         getDx ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        getD1x ()->shiftInTime (zero, getD1x ()->getSize ());
+        getD1x ()->shiftInTime ();
         getD1x ()->nextTimeStep ();
       }
 #endif
@@ -1936,31 +1854,31 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performNStepsForBlock (time_ste
       performFieldSteps<static_cast<uint8_t> (GridType::EY)> (t, EyStart, EyEnd);
 
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU, zero, zero3D, EySize, ct1, ct2, ct3);
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU);
       gpuIntScheme->getEy ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDy (d_gpuIntSchemeOnGPU, zero, zero3D, EySize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDy (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getDy ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1y (d_gpuIntSchemeOnGPU, zero, zero3D, EySize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1y (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getD1y ()->nextTimeStep ();
       }
 #else
-      getEy ()->shiftInTime (zero, getEy ()->getSize ());
+      getEy ()->shiftInTime ();
       getEy ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        getDy ()->shiftInTime (zero, getDy ()->getSize ());
+        getDy ()->shiftInTime ();
         getDy ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        getD1y ()->shiftInTime (zero, getD1y ()->getSize ());
+        getD1y ()->shiftInTime ();
         getD1y ()->nextTimeStep ();
       }
 #endif
@@ -1971,31 +1889,31 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performNStepsForBlock (time_ste
       performFieldSteps<static_cast<uint8_t> (GridType::EZ)> (t, EzStart, EzEnd);
 
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU, zero, zero3D, EzSize, ct1, ct2, ct3);
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU);
       gpuIntScheme->getEz ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDz (d_gpuIntSchemeOnGPU, zero, zero3D, EzSize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDz (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getDz ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1z (d_gpuIntSchemeOnGPU, zero, zero3D, EzSize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1z (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getD1z ()->nextTimeStep ();
       }
 #else
-      getEz ()->shiftInTime (zero, getEz ()->getSize ());
+      getEz ()->shiftInTime ();
       getEz ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        getDz ()->shiftInTime (zero, getDz ()->getSize ());
+        getDz ()->shiftInTime ();
         getDz ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        getD1z ()->shiftInTime (zero, getD1z ()->getSize ());
+        getD1z ()->shiftInTime ();
         getD1z ()->nextTimeStep ();
       }
 #endif
@@ -2007,11 +1925,11 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performNStepsForBlock (time_ste
 
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->performPlaneWaveHStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getHInc ()->getSize ());
-      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU, zero1D, gpuIntScheme->getHInc ()->getSize ());
+      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU);
       gpuIntScheme->getHInc ()->nextTimeStep ();
 #else /* CUDA_ENABLED */
       performPlaneWaveHSteps (t, zero1D, getHInc ()->getSize ());
-      getHInc ()->shiftInTime (zero1D, getHInc ()->getSize ());
+      getHInc ()->shiftInTime ();
       getHInc ()->nextTimeStep ();
 #endif /* !CUDA_ENABLED */
     }
@@ -2021,31 +1939,31 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performNStepsForBlock (time_ste
       performFieldSteps<static_cast<uint8_t> (GridType::HX)> (t, HxStart, HxEnd);
 
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU, zero, zero3D, HxSize, ct1, ct2, ct3);
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU);
       gpuIntScheme->getHx ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBx (d_gpuIntSchemeOnGPU, zero, zero3D, HxSize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBx (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getBx ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1x (d_gpuIntSchemeOnGPU, zero, zero3D, HxSize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1x (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getB1x ()->nextTimeStep ();
       }
 #else
-      getHx ()->shiftInTime (zero, getHx ()->getSize ());
+      getHx ()->shiftInTime ();
       getHx ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        getBx ()->shiftInTime (zero, getBx ()->getSize ());
+        getBx ()->shiftInTime ();
         getBx ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        getB1x ()->shiftInTime (zero, getB1x ()->getSize ());
+        getB1x ()->shiftInTime ();
         getB1x ()->nextTimeStep ();
       }
 #endif
@@ -2056,31 +1974,31 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performNStepsForBlock (time_ste
       performFieldSteps<static_cast<uint8_t> (GridType::HY)> (t, HyStart, HyEnd);
 
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU, zero, zero3D, HySize, ct1, ct2, ct3);
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU);
       gpuIntScheme->getHy ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBy (d_gpuIntSchemeOnGPU, zero, zero3D, HySize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBy (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getBy ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1y (d_gpuIntSchemeOnGPU, zero, zero3D, HySize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1y (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getB1y ()->nextTimeStep ();
       }
 #else
-      getHy ()->shiftInTime (zero, getHy ()->getSize ());
+      getHy ()->shiftInTime ();
       getHy ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        getBy ()->shiftInTime (zero, getBy ()->getSize ());
+        getBy ()->shiftInTime ();
         getBy ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        getB1y ()->shiftInTime (zero, getB1y ()->getSize ());
+        getB1y ()->shiftInTime ();
         getB1y ()->nextTimeStep ();
       }
 #endif
@@ -2091,31 +2009,31 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performNStepsForBlock (time_ste
       performFieldSteps<static_cast<uint8_t> (GridType::HZ)> (t, HzStart, HzEnd);
 
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU, zero, zero3D, HzSize, ct1, ct2, ct3);
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU);
       gpuIntScheme->getHz ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBz (d_gpuIntSchemeOnGPU, zero, zero3D, HzSize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBz (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getBz ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1z (d_gpuIntSchemeOnGPU, zero, zero3D, HzSize, ct1, ct2, ct3);
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1z (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getB1z ()->nextTimeStep ();
       }
 #else
-      getHz ()->shiftInTime (zero, getHz ()->getSize ());
+      getHz ()->shiftInTime ();
       getHz ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
-        getBz ()->shiftInTime (zero, getBz ()->getSize ());
+        getBz ()->shiftInTime ();
         getBz ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        getB1z ()->shiftInTime (zero, getB1z ()->getSize ());
+        getB1z ()->shiftInTime ();
         getB1z ()->nextTimeStep ();
       }
 #endif

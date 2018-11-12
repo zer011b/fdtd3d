@@ -2,7 +2,7 @@
 #define BMP_HELPER_H
 
 #include "EasyBMP.h"
-#include "FieldPoint.h"
+#include "FieldValue.h"
 #include "Assert.h"
 #include "Settings.h"
 
