@@ -313,6 +313,11 @@ SETTINGS_ELEM_FIELD_TYPE_INT(rebalanceStep, getRebalanceStep, int, 100, "--rebal
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCheckDisablingConditions, getDoCheckDisablingConditions, bool, false, "--check-disabling-cond", "Check dynamic grid disabling conditions")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCheckEnablingConditions, getDoCheckEnablingConditions, bool, false, "--check-enabling-cond", "Check dynamic grid enabling conditions")
 
+/*
+ * Steps in time
+ */
+SETTINGS_ELEM_FIELD_TYPE_INT(storedSteps, getStoredSteps, time_step, 2, "--stored-steps", "Number of time steps in time, for which grid values are stored")
+
 SETTINGS_ELEM_OPTION_TYPE_STRING("--cmd-from-file", "Load command line from file. Cmd file has the next format:\n"
                                                     "\t\t<cmd with arg>\n"
                                                     "\t\t<value>\n"

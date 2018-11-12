@@ -39,9 +39,10 @@ ParallelGridCore *ParallelGrid::parallelGridCore = NULLPTR;
 ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total size of grid */
                             const ParallelGridCoordinate &bufSize, /**< buffer size */
                             time_step step, /**< start time step */
-                            ParallelGridCoordinate curSize,  /**< size of grid for current node, received from layout */
+                            const ParallelGridCoordinate &curSize,  /**< size of grid for current node, received from layout */
+                            int storedSteps, /**< number of steps in time for which to store grid values */
                             const char * name) /**< name of grid */
-  : ParallelGridBase (step, name)
+  : ParallelGridBase (step, storedSteps, name)
 #ifdef DEBUG_INFO
   , ct1 (CoordinateType::NONE)
   , ct2 (CoordinateType::NONE)
@@ -144,13 +145,17 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
    */
   ParallelGridConstructor ();
 
-  gridValues.resize (size.calculateTotalCoord ());
+  for (int i = 0; i < gridValues.size (); ++i)
+  {
+    gridValues[i] = new VectorFieldValues (size.calculateTotalCoord ());
+  }
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' for proc: %d (of %d) with raw size: %lu.\n",
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' for proc: %d (of %d) with %lu stored steps with raw size: " COORD_MOD ".\n",
            gridName.data (),
            parallelGridCore->getProcessId (),
            parallelGridCore->getTotalProcCount (),
-           gridValues.size ());
+           gridValues.size (),
+           size.calculateTotalCoord ());
 
   gatherStartPosition ();
 } /* ParallelGrid::ParallelGrid */
@@ -1888,20 +1893,20 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
     for (grid_coord i = sendStart[bufferDirection].get1 ();
          i < sendEnd[bufferDirection].get1 ();
          ++i)
-    {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+    {
 #if defined (GRID_2D) || defined (GRID_3D)
       for (grid_coord j = sendStart[bufferDirection].get2 ();
            j < sendEnd[bufferDirection].get2 ();
            ++j)
-      {
 #endif /* GRID_2D || GRID_3D */
+      {
 #if defined (GRID_3D)
         for (grid_coord k = sendStart[bufferDirection].get3 ();
              k < sendEnd[bufferDirection].get3 ();
              ++k)
-        {
 #endif /* GRID_3D */
+        {
 
 #if defined (GRID_1D)
           ParallelGridCoordinate pos (i COORD_TYPES);
@@ -1913,27 +1918,14 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
           ParallelGridCoordinate pos (i, j, k COORD_TYPES);
 #endif /* GRID_3D */
 
-          FieldPointValue* val = getFieldPointValue (pos);
-
-          buffersSend[bufferDirection][index++] = val->getCurValue ();
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-          buffersSend[bufferDirection][index++] = val->getPrevValue ();
-#if defined (TWO_TIME_STEPS)
-          buffersSend[bufferDirection][index++] = val->getPrevPrevValue ();
-#endif /* TWO_TIME_STEPS */
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-
-#if defined (GRID_3D)
+          grid_coord coord = calculateIndexFromPosition (pos);
+          for (int t = 0; t < gridValues.size (); ++t)
+          {
+            buffersSend[bufferDirection][index++] = *getFieldValue (coord, t);
+          }
         }
-#endif /* GRID_3D */
-
-#if defined (GRID_2D) || defined (GRID_3D)
       }
-#endif /* GRID_2D || GRID_3D */
-
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     }
-#endif /* GRID_1D || GRID_2D || GRID_3D */
   }
 
   DPRINTF (LOG_LEVEL_FULL, "\tSHARE RAW. PID=#%d. Directions TO(%s=#%d), FROM(%s=#%d).\n",
@@ -2039,33 +2031,20 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     for (grid_coord index = 0, i = recvStart[bufferDirection].get1 ();
          i < recvEnd[bufferDirection].get1 (); ++i)
-    {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+    {
 
 #if defined (GRID_2D) || defined (GRID_3D)
       for (grid_coord j = recvStart[bufferDirection].get2 ();
            j < recvEnd[bufferDirection].get2 (); ++j)
-      {
 #endif /* GRID_2D || GRID_3D */
+      {
 
 #if defined (GRID_3D)
         for (grid_coord k = recvStart[bufferDirection].get3 ();
              k < recvEnd[bufferDirection].get3 (); ++k)
-        {
 #endif /* GRID_3D */
-
-#if defined (TWO_TIME_STEPS)
-          FieldPointValue val (buffersReceive[opposite][index++],
-                               buffersReceive[opposite][index++],
-                               buffersReceive[opposite][index++]);
-#else /* TWO_TIME_STEPS */
-#if defined (ONE_TIME_STEP)
-          FieldPointValue val (buffersReceive[opposite][index++],
-                               buffersReceive[opposite][index++]);
-#else /* ONE_TIME_STEP */
-          FieldPointValue val (buffersReceive[opposite][index++]);
-#endif /* !ONE_TIME_STEP */
-#endif /* !TWO_TIME_STEPS */
+        {
 
 #if defined (GRID_1D)
           ParallelGridCoordinate pos (i COORD_TYPES);
@@ -2077,19 +2056,14 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
           ParallelGridCoordinate pos (i, j, k COORD_TYPES);
 #endif /* GRID_3D */
 
-          setFieldPointValue (val, pos);
-
-#if defined (GRID_3D)
+          grid_coord coord = calculateIndexFromPosition (pos);
+          for (int t = 0; t < gridValues.size (); ++t)
+          {
+            setFieldValue (buffersReceive[opposite][index++], coord, t);
+          }
         }
-#endif /* GRID_3D */
-
-#if defined (GRID_2D) || defined (GRID_3D)
       }
-#endif /* GRID_2D || GRID_3D */
-
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     }
-#endif /* GRID_1D || GRID_2D || GRID_3D */
   }
 } /* ParallelGrid::SendReceiveBuffer */
 
@@ -2167,16 +2141,6 @@ ParallelGrid::InitBuffers ()
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ */
 
-  /*
-   * Number of time steps in build used to initialize parallel grid
-   */
-#if defined (ONE_TIME_STEP)
-  const grid_coord numTimeStepsInBuild = 2;
-#endif /* ONE_TIME_STEP */
-#if defined (TWO_TIME_STEPS)
-  const grid_coord numTimeStepsInBuild = 3;
-#endif /* TWO_TIME_STEPS */
-
   buffersSend.resize (BUFFER_COUNT);
   buffersReceive.resize (BUFFER_COUNT);
 
@@ -2184,7 +2148,7 @@ ParallelGrid::InitBuffers ()
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasL ())
   {
-    int buf_size = bufferSize.get1 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * gridValues.size ();
 #if defined (GRID_2D) || defined (GRID_3D)
     buf_size *= currentSize.get2 ();
 #endif /* GRID_2D || GRID_3D */
@@ -2196,7 +2160,7 @@ ParallelGrid::InitBuffers ()
   }
   if (parallelGridCore->getHasR ())
   {
-    int buf_size = bufferSize.get1 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * gridValues.size ();
 #if defined (GRID_2D) || defined (GRID_3D)
     buf_size *= currentSize.get2 ();
 #endif /* GRID_2D || GRID_3D */
@@ -2213,7 +2177,7 @@ ParallelGrid::InitBuffers ()
     defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasD ())
   {
-    int buf_size = bufferSize.get2 () * currentSize.get1 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * currentSize.get1 () * gridValues.size ();
 #if defined (GRID_3D)
     buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
@@ -2222,7 +2186,7 @@ ParallelGrid::InitBuffers ()
   }
   if (parallelGridCore->getHasU ())
   {
-    int buf_size = bufferSize.get2 () * currentSize.get1 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * currentSize.get1 () * gridValues.size ();
 #if defined (GRID_3D)
     buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
@@ -2236,13 +2200,13 @@ ParallelGrid::InitBuffers ()
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasB ())
   {
-    int buf_size = bufferSize.get3 () * currentSize.get2 () * currentSize.get1 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get3 () * currentSize.get2 () * currentSize.get1 () * gridValues.size ();
     buffersSend[BACK].resize (buf_size);
     buffersReceive[BACK].resize (buf_size);
   }
   if (parallelGridCore->getHasF ())
   {
-    int buf_size = bufferSize.get3 () * currentSize.get2 () * currentSize.get1 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get3 () * currentSize.get2 () * currentSize.get1 () * gridValues.size ();
     buffersSend[FRONT].resize (buf_size);
     buffersReceive[FRONT].resize (buf_size);
   }
@@ -2252,7 +2216,7 @@ ParallelGrid::InitBuffers ()
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasL () && parallelGridCore->getHasD ())
   {
-    int buf_size = bufferSize.get1 () * bufferSize.get2 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get2 () * gridValues.size ();
 #if defined (GRID_3D)
     buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
@@ -2261,7 +2225,7 @@ ParallelGrid::InitBuffers ()
   }
   if (parallelGridCore->getHasL () && parallelGridCore->getHasU ())
   {
-    int buf_size = bufferSize.get1 () * bufferSize.get2 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get2 () * gridValues.size ();
 #if defined (GRID_3D)
     buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
@@ -2270,7 +2234,7 @@ ParallelGrid::InitBuffers ()
   }
   if (parallelGridCore->getHasR () && parallelGridCore->getHasD ())
   {
-    int buf_size = bufferSize.get1 () * bufferSize.get2 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get2 () * gridValues.size ();
 #if defined (GRID_3D)
     buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
@@ -2279,7 +2243,7 @@ ParallelGrid::InitBuffers ()
   }
   if (parallelGridCore->getHasR () && parallelGridCore->getHasU ())
   {
-    int buf_size = bufferSize.get1 () * bufferSize.get2 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get2 () * gridValues.size ();
 #if defined (GRID_3D)
     buf_size *= currentSize.get3 ();
 #endif /* GRID_3D */
@@ -2291,25 +2255,25 @@ ParallelGrid::InitBuffers ()
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_YZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasD () && parallelGridCore->getHasB ())
   {
-    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * gridValues.size ();
     buffersSend[DOWN_BACK].resize (buf_size);
     buffersReceive[DOWN_BACK].resize (buf_size);
   }
   if (parallelGridCore->getHasD () && parallelGridCore->getHasF ())
   {
-    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * gridValues.size ();
     buffersSend[DOWN_FRONT].resize (buf_size);
     buffersReceive[DOWN_FRONT].resize (buf_size);
   }
   if (parallelGridCore->getHasU () && parallelGridCore->getHasB ())
   {
-    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * gridValues.size ();
     buffersSend[UP_BACK].resize (buf_size);
     buffersReceive[UP_BACK].resize (buf_size);
   }
   if (parallelGridCore->getHasU () && parallelGridCore->getHasF ())
   {
-    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get2 () * bufferSize.get3 () * currentSize.get1 () * gridValues.size ();
     buffersSend[UP_FRONT].resize (buf_size);
     buffersReceive[UP_FRONT].resize (buf_size);
   }
@@ -2318,32 +2282,32 @@ ParallelGrid::InitBuffers ()
 #if defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   if (parallelGridCore->getHasL () && parallelGridCore->getHasB ())
   {
-    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * gridValues.size ();
     buffersSend[LEFT_BACK].resize (buf_size);
     buffersReceive[LEFT_BACK].resize (buf_size);
   }
   if (parallelGridCore->getHasL () && parallelGridCore->getHasF ())
   {
-    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * gridValues.size ();
     buffersSend[LEFT_FRONT].resize (buf_size);
     buffersReceive[LEFT_FRONT].resize (buf_size);
   }
   if (parallelGridCore->getHasR () && parallelGridCore->getHasB ())
   {
-    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * gridValues.size ();
     buffersSend[RIGHT_BACK].resize (buf_size);
     buffersReceive[RIGHT_BACK].resize (buf_size);
   }
   if (parallelGridCore->getHasR () && parallelGridCore->getHasF ())
   {
-    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * numTimeStepsInBuild;
+    int buf_size = bufferSize.get1 () * bufferSize.get3 () * currentSize.get2 () * gridValues.size ();
     buffersSend[RIGHT_FRONT].resize (buf_size);
     buffersReceive[RIGHT_FRONT].resize (buf_size);
   }
 #endif /* PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
-  int buf_size = bufferSize.get1 () * bufferSize.get2 () * bufferSize.get3 () * numTimeStepsInBuild;
+  int buf_size = bufferSize.get1 () * bufferSize.get2 () * bufferSize.get3 () * gridValues.size ();
   if (parallelGridCore->getHasL ()
       && parallelGridCore->getHasD ()
       && parallelGridCore->getHasB ())
@@ -2497,7 +2461,7 @@ ParallelGrid::nextTimeStep ()
 ParallelGridBase *
 ParallelGrid::gatherFullGrid () const
 {
-  ParallelGridBase *grid = new ParallelGridBase (totalSize, ParallelGridBase::timeStep, getName ());
+  ParallelGridBase *grid = new ParallelGridBase (totalSize, ParallelGridBase::timeStep, gridValues.size (), getName ());
 
   return gatherFullGridPlacement (grid);
 } /* ParallelGrid::gatherFullGrid */
@@ -2513,6 +2477,12 @@ ParallelGridBase *
 ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 {
   ParallelGridBase *grid = placementGrid;
+
+  std::vector<VectorFieldValues *> values (gridValues.size ());
+  for (int i = 0; i < gridValues.size (); ++i)
+  {
+    values[i] = new VectorFieldValues (size.calculateTotalCoord ());
+  }
 
   /*
    * Each computational node broadcasts to all others its data
@@ -2581,16 +2551,6 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
     /*
      * Fill vectors with data for current computational node
      */
-    grid_coord size = sizeCoord.calculateTotalCoord ();
-    std::vector<FieldValue> current (size);
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    std::vector<FieldValue> previous (size);
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-
-#if defined (TWO_TIME_STEPS)
-    std::vector<FieldValue> previousPrev (size);
-#endif /* TWO_TIME_STEPS */
 
     if (process == ParallelGrid::getParallelCore ()->getProcessId ())
     {
@@ -2627,15 +2587,10 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 
             grid_coord coord = calculateIndexFromPosition (pos);
 
-            FieldPointValue *val = gridValues[coord];
-
-            current[index] = val->getCurValue ();
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-            previous[index] = val->getPrevValue ();
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-#if defined (TWO_TIME_STEPS)
-            previousPrev[index] = val->getPrevPrevValue ();
-#endif /* TWO_TIME_STEPS */
+            for (int i = 0; i < gridValues.size (); ++i)
+            {
+              (*values[i])[index] = (*gridValues[i])[coord];
+            }
 
             ++index;
 
@@ -2654,15 +2609,10 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
      * Broadcast data
      */
 
-    MPI_Bcast (current.data (), current.size (), MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
-
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    MPI_Bcast (previous.data (), previous.size (), MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-
-#if defined (TWO_TIME_STEPS)
-    MPI_Bcast (previousPrev.data (), previousPrev.size (), MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
-#endif /* TWO_TIME_STEPS */
+    for (int i = 0; i < gridValues.size (); ++i)
+    {
+      MPI_Bcast (values[i]->data (), values[i]->size (), MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+    }
 
     grid_coord index = 0;
 
@@ -2672,16 +2622,16 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     for (grid_coord i = startX; i < endX; ++i)
-    {
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+    {
 #if defined (GRID_2D) || defined (GRID_3D)
       for (grid_coord j = startY; j < endY; ++j)
-      {
 #endif /* GRID_2D || GRID_3D */
+      {
 #if defined (GRID_3D)
         for (grid_coord k = startZ; k < endZ; ++k)
-        {
 #endif /* GRID_3D */
+        {
 
 #ifdef GRID_1D
           ParallelGridCoordinate pos (i COORD_TYPES);
@@ -2693,29 +2643,24 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
           ParallelGridCoordinate pos (i, j, k COORD_TYPES);
 #endif /* GRID_3D */
 
-          FieldPointValue *val = grid->getFieldPointValue (pos);
+          grid_coord coord = grid->calculateIndexFromPosition (pos);
 
-          val->setCurValue (current[index]);
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-          val->setPrevValue (previous[index]);
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-#if defined (TWO_TIME_STEPS)
-          val->setPrevPrevValue (previousPrev[index]);
-#endif /* TWO_TIME_STEPS */
+          for (int i = 0; i < gridValues.size (); ++i)
+          {
+            grid->setFieldValue ((*values[i])[index], coord, i);
+          }
 
           ++index;
-
-#if defined (GRID_3D)
         }
-#endif /* GRID_3D */
-#if defined (GRID_2D) || defined (GRID_3D)
       }
-#endif /* GRID_2D || GRID_3D */
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
     }
-#endif /* GRID_1D || GRID_2D || GRID_3D */
 
     MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
+  }
+
+  for (int i = 0; i < gridValues.size (); ++i)
+  {
+    delete values[i];
   }
 
   return grid;

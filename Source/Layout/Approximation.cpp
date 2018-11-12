@@ -229,9 +229,9 @@ Approximation::approximateDrudeModel (FPValue &omega,
 
 CUDA_DEVICE CUDA_HOST
 FPValue
-Approximation::getMaterial (const FieldPointValue *val)
+Approximation::getMaterial (const FieldValue & cur)
 {
-  return getRealOnlyFromFieldValue (val->getCurValue ());
+  return getRealOnlyFromFieldValue (cur);
 }
 
 CUDA_DEVICE CUDA_HOST

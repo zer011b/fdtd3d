@@ -14,12 +14,18 @@ template <class TCoord>
 class DATLoader: public Loader<TCoord>
 {
   // Load grid from file for specific layer.
-  void loadFromFile (Grid<TCoord> *grid, GridFileType type) const;
+  void loadFromFile (Grid<TCoord> *grid, TCoord, TCoord, int);
+  
+  void loadGridInternal (Grid<TCoord> *grid, TCoord, TCoord, time_step, int);
 
 public:
 
+  virtual ~DATLoader () {}
+
   // Virtual method for grid loading.
-  virtual void loadGrid (Grid<TCoord> *grid) const CXX11_OVERRIDE;
+  virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int) CXX11_OVERRIDE;
+  virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int,
+                         const std::vector< std::string > &) CXX11_OVERRIDE;
 };
 
 /**
@@ -31,133 +37,113 @@ public:
  */
 template <class TCoord>
 void
-DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid, GridFileType type) const
+DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid,
+                                 TCoord startCoord,
+                                 TCoord endCoord,
+                                 int time_step_back)
 {
-  std::ifstream file;
-  switch (type)
-  {
-    case CURRENT:
-    {
-      std::string cur_dat = this->GridFileManager::cur;
-      if (!this->GridFileManager::manualFileNames)
-      {
-        cur_dat += std::string (".dat");
-      }
-      file.open (cur_dat.c_str (), std::ios::in | std::ios::binary);
-      break;
-    }
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    case PREVIOUS:
-    {
-      std::string prev_dat = this->GridFileManager::prev;
-      if (!this->GridFileManager::manualFileNames)
-      {
-        prev_dat += std::string (".dat");
-      }
-      file.open (prev_dat.c_str (), std::ios::in | std::ios::binary);
-      break;
-    }
-#if defined (TWO_TIME_STEPS)
-    case PREVIOUS2:
-    {
-      std::string prevPrev_dat = this->GridFileManager::prevPrev;
-      if (!this->GridFileManager::manualFileNames)
-      {
-        prevPrev_dat += std::string (".dat");
-      }
-      file.open (prevPrev_dat.c_str (), std::ios::in | std::ios::binary);
-      break;
-    }
-#endif /* TWO_TIME_STEPS */
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-    default:
-    {
-      UNREACHABLE;
-    }
-  }
+  ASSERT ((time_step_back == -1) || (time_step_back >= 0 && time_step_back < grid->getCountStoredSteps ()));
+#ifdef DEBUG_INFO
+  TCoord zero = startCoord - startCoord;
+  ASSERT (startCoord >= zero && startCoord < grid->getSize ());
+  ASSERT (endCoord > zero && endCoord <= grid->getSize ());
+#endif /* DEBUG_INFO */
 
+  std::ifstream file;
+  file.open (GridFileManager::names[time_step_back == -1 ? 0 : time_step_back].c_str (), std::ios::in | std::ios::binary);
   ASSERT (file.is_open());
 
-  char* memblock = new char [sizeof (FieldValue)];
+  char memblock[sizeof (FieldValue)];
 
-  // Go through all values and write to file.
+  // Go through all values and load from file.
   grid_coord end = grid->getSize().calculateTotalCoord ();
   for (grid_coord iter = 0; iter < end; ++iter)
   {
-    // Get current point value.
-    FieldPointValue* current = grid->getFieldPointValue (iter);
-    ASSERT (current);
-
-    switch (type)
+    TCoord pos = grid->calculatePositionFromIndex (iter);
+    if (!(pos >= startCoord && pos < endCoord))
     {
-      case CURRENT:
+      continue;
+    }
+    
+    if (time_step_back == -1)
+    {
+      for (int i = 0; i < grid->getCountStoredSteps (); ++i)
       {
         file.read (memblock, sizeof (FieldValue));
         ASSERT ((file.rdstate() & std::ifstream::failbit) == 0);
 
-        current->setCurValue (*((FieldValue*) memblock));
-        break;
+        grid->setFieldValue (*((FieldValue*) memblock), iter, i);
       }
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-      case PREVIOUS:
-      {
-        file.read (memblock, sizeof (FieldValue));
-        ASSERT ((file.rdstate() & std::ifstream::failbit) == 0);
+    }
+    else
+    {
+      file.read (memblock, sizeof (FieldValue));
+      ASSERT ((file.rdstate() & std::ifstream::failbit) == 0);
 
-        current->setPrevValue (*((FieldValue*) memblock));
-        break;
-      }
-#if defined (TWO_TIME_STEPS)
-      case PREVIOUS2:
-      {
-        file.read (memblock, sizeof (FieldValue));
-        ASSERT ((file.rdstate() & std::ifstream::failbit) == 0);
-
-        current->setPrevPrevValue (*((FieldValue*) memblock));
-        break;
-      }
-#endif /* TWO_TIME_STEPS */
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
-      default:
-      {
-        UNREACHABLE;
-      }
+      grid->setFieldValue (*((FieldValue*) memblock), iter, time_step_back);
     }
   }
 
   // peek next character from file, which should set eof flags
   ASSERT ((file.peek (), file.eof()));
 
-  delete[] memblock;
-
   file.close();
 }
 
+template <class TCoord>
+void
+DATLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
+                                     time_step timeStep, int time_step_back)
+{
+  const TCoord& size = grid->getSize ();
+  
+  if (time_step_back == -1)
+  {  
+    std::cout << "Loading grid '" << grid->getName () << "' from binary. Time step: all"
+              << ". Size: " << size.calculateTotalCoord () << " (from startCoord to endCoord). " << std::endl;
+  }
+  else
+  {
+    std::cout << "Loading grid '" << grid->getName () << "' from binary. Time step: " << time_step_back
+              << ". Size: " << size.calculateTotalCoord () << " (from startCoord to endCoord). " << std::endl;
+  }
+  
+  loadFromFile (grid, startCoord, endCoord, time_step_back);
+
+  std::cout << "Loaded. " << std::endl;
+}
+
 /**
- * Virtual method for grid loading.
+ * Virtual method for grid saving.
  */
 template <class TCoord>
 void
-DATLoader<TCoord>::loadGrid (Grid<TCoord> *grid) const
+DATLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
+                             time_step timeStep, int time_step_back)
 {
-  const TCoord& size = grid->getSize ();
-  std::cout << "Load grid from binary. Size: " << size.calculateTotalCoord () << ". " << std::endl;
+#ifdef PARALLEL_GRID
+  int pid = ParallelGridCore::getProcessId ();
+#else /* PARALLEL_GRID */
+  int pid = 0;
+#endif /* !PARALLEL_GRID */
 
-  loadFromFile (grid, CURRENT);
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-  if (this->GridFileManager::type == ALL)
-  {
-    loadFromFile (grid, PREVIOUS);
-  }
-#if defined (TWO_TIME_STEPS)
-  if (this->GridFileManager::type == ALL)
-  {
-    loadFromFile (grid, PREVIOUS2);
-  }
-#endif /* TWO_TIME_STEPS */
-#endif /* ONE_TIME_STEP || TWO_TIME_STEPS */
+  GridFileManager::setFileNames (time_step_back, timeStep, pid, std::string (grid->getName ()), FILE_TYPE_DAT);
+  
+  loadGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
+}
 
-  std::cout << "Loaded. " << std::endl;
+/**
+ * Virtual method for grid saving.
+ */
+template <class TCoord>
+void
+DATLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
+                             time_step timeStep, int time_step_back,
+                             const std::vector< std::string > & customNames)
+{
+  GridFileManager::setCustomFileNames (customNames);
+  
+  loadGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
 }
 
 #endif /* DAT_LOADER_H */

@@ -1,88 +1,13 @@
 #include "Grid.h"
 
 /**
- * Replace previous time layer with current and so on
- */
-template <>
-void
-Grid<GridCoordinate1D>::shiftInTime (const GridCoordinate1D &start, const GridCoordinate1D &end)
-{
-  for (grid_coord index1 = start.get1 (); index1 < end.get1 (); ++index1)
-  {
-    GridCoordinate1D pos (index1
-#ifdef DEBUG_INFO
-                          , start.getType1 ()
-#endif /* DEBUG_INFO */
-                          );
-
-    grid_coord index = calculateIndexFromPosition (pos);
-
-    gridValues[index].shiftInTime ();
-  }
-} /* Grid<GridCoordinate1D>::shiftInTime */
-
-/**
- * Replace previous time layer with current and so on
- */
-template <>
-void
-Grid<GridCoordinate2D>::shiftInTime (const GridCoordinate2D &start, const GridCoordinate2D &end)
-{
-  for (grid_coord index1 = start.get1 (); index1 < end.get1 (); ++index1)
-  {
-    for (grid_coord index2 = start.get2 (); index2 < end.get2 (); ++index2)
-    {
-      GridCoordinate2D pos (index1, index2
-#ifdef DEBUG_INFO
-                            , start.getType1 ()
-                            , start.getType2 ()
-#endif /* DEBUG_INFO */
-                           );
-
-      grid_coord index = calculateIndexFromPosition (pos);
-
-      gridValues[index].shiftInTime ();
-    }
-  }
-} /* Grid<GridCoordinate2D>::shiftInTime */
-
-/**
- * Replace previous time layer with current and so on
- */
-template <>
-void
-Grid<GridCoordinate3D>::shiftInTime (const GridCoordinate3D &start, const GridCoordinate3D &end)
-{
-  for (grid_coord index1 = start.get1 (); index1 < end.get1 (); ++index1)
-  {
-    for (grid_coord index2 = start.get2 (); index2 < end.get2 (); ++index2)
-    {
-      for (grid_coord index3 = start.get3 (); index3 < end.get3 (); ++index3)
-      {
-        GridCoordinate3D pos (index1, index2, index3
-#ifdef DEBUG_INFO
-                              , start.getType1 ()
-                              , start.getType2 ()
-                              , start.getType3 ()
-#endif /* DEBUG_INFO */
-                             );
-
-        grid_coord index = calculateIndexFromPosition (pos);
-
-        gridValues[index].shiftInTime ();
-      }
-    }
-  }
-} /* Grid<GridCoordinate3D>::shiftInTime */
-
-/**
  * Get first coordinate from which to perform computations at current step
  *
  * @return first coordinate from which to perform computations at current step
  */
 template <>
 GridCoordinate1D
-Grid<GridCoordinate1D>::getComputationStart (GridCoordinate1D diffPosStart) const /**< offset from the left border */
+Grid<GridCoordinate1D>::getComputationStart (const GridCoordinate1D & diffPosStart) const /**< offset from the left border */
 {
   CoordinateType ct1 = CoordinateType::NONE;
 #ifdef DEBUG_INFO
@@ -102,7 +27,7 @@ Grid<GridCoordinate1D>::getComputationStart (GridCoordinate1D diffPosStart) cons
  */
 template <>
 GridCoordinate2D
-Grid<GridCoordinate2D>::getComputationStart (GridCoordinate2D diffPosStart) const /**< offset from the left border */
+Grid<GridCoordinate2D>::getComputationStart (const GridCoordinate2D & diffPosStart) const /**< offset from the left border */
 {
   CoordinateType ct1 = CoordinateType::NONE;
   CoordinateType ct2 = CoordinateType::NONE;
@@ -124,7 +49,7 @@ Grid<GridCoordinate2D>::getComputationStart (GridCoordinate2D diffPosStart) cons
  */
 template <>
 GridCoordinate3D
-Grid<GridCoordinate3D>::getComputationStart (GridCoordinate3D diffPosStart) const /**< offset from the left border */
+Grid<GridCoordinate3D>::getComputationStart (const GridCoordinate3D & diffPosStart) const /**< offset from the left border */
 {
   CoordinateType ct1 = CoordinateType::NONE;
   CoordinateType ct2 = CoordinateType::NONE;

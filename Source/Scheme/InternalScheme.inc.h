@@ -104,17 +104,10 @@ namespace InternalSchemeKernelHelpers
 #define SHIFT_IN_TIME_KERNEL(NAME) \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   __global__ \
-  void shiftInTimeKernel ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme, \
-                                  TCoord<grid_coord, true> Start, TCoord<grid_coord, true> CoordPerKernel, \
-                                  CoordinateType ct1, CoordinateType ct2, CoordinateType ct3) \
+  void shiftInTimeKernel ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme) \
   { \
-    TCoord<grid_coord, true> posStart = TCoord<grid_coord, true>::initAxesCoordinate ((blockIdx.x * blockDim.x) + threadIdx.x, \
-                                          (blockIdx.y * blockDim.y) + threadIdx.y, \
-                                          (blockIdx.z * blockDim.z) + threadIdx.z, \
-                                          ct1, ct2, ct3); \
-    posStart = posStart * CoordPerKernel + Start; \
-    TCoord<grid_coord, true> posEnd = posStart + CoordPerKernel; \
-    gpuScheme-> get ## NAME () -> shiftInTime (posStart, posEnd); \
+    ASSERT (blockIdx.x == 0 && blockDim.x == 1 && threadIdx.x == 0); \
+    gpuScheme-> get ## NAME () -> shiftInTime (); \
   }
 
   SHIFT_IN_TIME_KERNEL(Ex)
@@ -139,14 +132,10 @@ namespace InternalSchemeKernelHelpers
 #define SHIFT_IN_TIME_PLANE_WAVE_KERNEL(NAME) \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   __global__ \
-  void shiftInTimePlaneWaveKernel ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme, \
-                                           GridCoordinate1D Start, GridCoordinate1D CoordPerKernel) \
+  void shiftInTimePlaneWaveKernel ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme) \
   { \
-    GridCoordinate1D posStart = GRID_COORDINATE_1D ((blockIdx.x * blockDim.x) + threadIdx.x, \
-                                 CoordinateType::X); \
-    posStart = posStart * CoordPerKernel + Start; \
-    GridCoordinate1D posEnd = posStart + CoordPerKernel; \
-    gpuScheme-> get ## NAME () -> shiftInTime (posStart, posEnd); \
+    ASSERT (blockIdx.x == 0 && blockDim.x == 1 && threadIdx.x == 0); \
+    gpuScheme-> get ## NAME () -> shiftInTime (); \
   }
 
   SHIFT_IN_TIME_PLANE_WAVE_KERNEL(EInc)
@@ -213,25 +202,13 @@ public:
     FPValue proportionD2 = d - coordD1;
     FPValue proportionD1 = 1 - proportionD2;
 
-    GridCoordinate1D pos1 ((grid_coord) coordD1
-#ifdef DEBUG_INFO
-                              , FieldInc->getSize ().getType1 ()
-#endif
-                          );
-    GridCoordinate1D pos2 ((grid_coord) coordD2
-#ifdef DEBUG_INFO
-                              , FieldInc->getSize ().getType1 ()
-#endif
-                          );
+    grid_coord coord1 = (grid_coord) coordD1;
+    grid_coord coord2 = (grid_coord) coordD2;
 
-    FieldPointValue *val1 = FieldInc->getFieldPointValue (pos1);
-    FieldPointValue *val2 = FieldInc->getFieldPointValue (pos2);
+    FieldValue val1 = *FieldInc->getFieldValue (coord1, 1);
+    FieldValue val2 = *FieldInc->getFieldValue (coord2, 1);
 
-#if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-    return val1->getPrevValue () * proportionD1 + val2->getPrevValue () * proportionD2;
-#else
-    ALWAYS_ASSERT (0);
-#endif
+    return val1 * proportionD1 + val2 * proportionD2;
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord>
@@ -711,25 +688,25 @@ protected:
   void performPointSourceCalc (time_step);
 
   ICUDA_DEVICE ICUDA_HOST
-  FieldValue calcField (FieldValue prev, FieldValue oppositeField12, FieldValue oppositeField11,
-                        FieldValue oppositeField22, FieldValue oppositeField21, FieldValue prevRightSide,
-                        FPValue Ca, FPValue Cb, FPValue delta)
+  FieldValue calcField (const FieldValue & prev, const FieldValue & oppositeField12, const FieldValue & oppositeField11,
+                        const FieldValue & oppositeField22, const FieldValue & oppositeField21, const FieldValue & prevRightSide,
+                        const FieldValue & Ca, const FieldValue & Cb, const FPValue & delta)
   {
     FieldValue tmp = oppositeField12 - oppositeField11 - oppositeField22 + oppositeField21 + prevRightSide * delta;
     return prev * Ca + tmp * Cb;
   }
 
   ICUDA_DEVICE ICUDA_HOST
-  FieldValue calcFieldDrude (FieldValue curDOrB, FieldValue prevDOrB, FieldValue prevPrevDOrB,
-                             FieldValue prevEOrH, FieldValue prevPrevEOrH,
-                             FPValue b0, FPValue b1, FPValue b2, FPValue a1, FPValue a2)
+  FieldValue calcFieldDrude (const FieldValue & curDOrB, const FieldValue & prevDOrB, const FieldValue & prevPrevDOrB,
+                             const FieldValue & prevEOrH, const FieldValue & prevPrevEOrH,
+                             const FieldValue & b0, const FieldValue & b1, const FieldValue & b2, const FieldValue & a1, const FieldValue & a2)
   {
     return curDOrB * b0 + prevDOrB * b1 + prevPrevDOrB * b2 - prevEOrH * a1 - prevPrevEOrH * a2;
   }
 
   ICUDA_DEVICE ICUDA_HOST
-  FieldValue calcFieldFromDOrB (FieldValue prevEOrH, FieldValue curDOrB, FieldValue prevDOrB,
-                                FPValue Ca, FPValue Cb, FPValue Cc)
+  FieldValue calcFieldFromDOrB (const FieldValue & prevEOrH, const FieldValue & curDOrB, const FieldValue & prevDOrB,
+                                const FieldValue & Ca, const FieldValue & Cb, const FieldValue & Cc)
   {
     return prevEOrH * Ca + curDOrB * Cb - prevDOrB * Cc;
   }
@@ -805,14 +782,11 @@ public:
 
 #define SHIFT_IN_TIME_KERNEL_LAUNCH(NAME) \
   CUDA_HOST \
-  void shiftInTimeKernelLaunch ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuSchemeOnGPU, \
-                                        TC Start, \
-                                        GridCoordinate3D Start3D, GridCoordinate3D End3D, CoordinateType ct1, CoordinateType ct2, CoordinateType ct3) \
+  void shiftInTimeKernelLaunch ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuSchemeOnGPU) \
   { \
-    GridCoordinate3D diff3D = End3D - Start3D; \
-    SETUP_BLOCKS_AND_THREADS; \
-    TC one = TC_COORD (1, 1, 1, ct1, ct2, ct3); \
-    InternalSchemeKernelHelpers::shiftInTimeKernel ## NAME <Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, Start, one, ct1, ct2, ct3); \
+    dim3 blocks (1, 1, 1); \
+    dim3 threads (1, 1, 1); \
+    InternalSchemeKernelHelpers::shiftInTimeKernel ## NAME <Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU); \
     cudaCheckError (); \
   }
 
@@ -837,17 +811,11 @@ public:
 
 #define SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCH(NAME) \
   CUDA_HOST \
-  void shiftInTimePlaneWaveKernelLaunch ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuSchemeOnGPU, GridCoordinate1D Start, GridCoordinate1D End) \
+  void shiftInTimePlaneWaveKernelLaunch ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuSchemeOnGPU) \
   { \
-    GridCoordinate1D diff = End - Start; \
-    int thrds = SOLVER_SETTINGS.getNumCudaThreadsX () \
-                  * SOLVER_SETTINGS.getNumCudaThreadsY () \
-                  * SOLVER_SETTINGS.getNumCudaThreadsZ (); \
-    ASSERT (diff.get1 () % thrds == 0); \
-    dim3 blocks (diff.get1 () / thrds, 1, 1); \
-    dim3 threads (thrds, 1, 1); \
-    GridCoordinate1D one = GRID_COORDINATE_1D (1, CoordinateType::X); \
-    InternalSchemeKernelHelpers::shiftInTimePlaneWaveKernel ## NAME <Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, Start, one); \
+    dim3 blocks (1, 1, 1); \
+    dim3 threads (1, 1, 1); \
+    InternalSchemeKernelHelpers::shiftInTimePlaneWaveKernel ## NAME <Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU); \
     cudaCheckError (); \
   }
 

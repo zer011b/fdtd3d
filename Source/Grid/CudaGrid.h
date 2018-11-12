@@ -2,7 +2,7 @@
 #define CUDA_GRID_H
 
 #include "Assert.h"
-#include "FieldPoint.h"
+#include "FieldValue.h"
 #include "GridCoordinate3D.h"
 #include "Settings.h"
 #include "Grid.h"
@@ -53,6 +53,11 @@ protected:
   grid_coord sizeGridValues;
 
   /**
+   * Number of stored time steps
+   */
+  int storedSteps;
+
+  /**
    * Total size of CPU grid
    */
   TCoord totalSize;
@@ -63,15 +68,19 @@ protected:
   Grid<TCoord> *cpuGrid;
 
   /**
-   * Vector of points in grid. Owns this. Deletes all FieldPointValue* itself.
+   * Vector of points in grid
    */
-  FieldPointValue *d_gridValues;
-  FieldPointValue *helperGridValues;
+  FieldValue **d_gridValues;
+  FieldValue **gridValuesDevicePointers;
 
+  FieldValue *helperGridValues;
+
+#ifdef DEBUG_INFO
   /**
    * Current time step.
    */
   time_step timeStep;
+#endif /* DEBUG_INFO */
 
   /**
    * Step at which to perform share operations for synchronization of computational nodes
@@ -96,11 +105,11 @@ private:
   CUDA_HOST CudaGrid<TCoord> & operator = (const CudaGrid<TCoord> &);
 
   CUDA_HOST bool checkParams ();
+  CUDA_DEVICE CUDA_HOST void shift (FieldValue **);
 
 protected:
 
   CUDA_DEVICE CUDA_HOST bool isLegitIndex (const TCoord &) const;
-  CUDA_DEVICE CUDA_HOST grid_coord calculateIndexFromPosition (const TCoord &) const;
 
 public:
 
@@ -125,33 +134,37 @@ public:
   bool hasValueForCoordinate (const TCoord &position) const;
 
   CUDA_DEVICE CUDA_HOST
-  FieldPointValue * getFieldPointValueByAbsolutePos (const TCoord &absPosition)
+  FieldValue * getFieldValueByAbsolutePos (const TCoord &absPosition,
+                                           int time_step_back)
   {
-    return getFieldPointValue (getRelativePosition (absPosition));
+    return getFieldValue (getRelativePosition (absPosition), time_step_back);
   }
 
   CUDA_DEVICE CUDA_HOST
-  FieldPointValue * getFieldPointValueOrNullByAbsolutePos (const TCoord &absPosition)
+  FieldValue * getFieldValueOrNullByAbsolutePos (const TCoord &absPosition,
+                                                 int time_step_back)
   {
     if (!hasValueForCoordinate (absPosition))
     {
       return NULLPTR;
     }
 
-    return getFieldPointValueByAbsolutePos (absPosition);
-  } /* getFieldPointValueOrNullByAbsolutePos */
+    return getFieldValueByAbsolutePos (absPosition, time_step_back);
+  } /* getFieldValueOrNullByAbsolutePos */
 
-  CUDA_DEVICE CUDA_HOST TCoord getComputationStart (TCoord) const;
-  CUDA_DEVICE CUDA_HOST TCoord getComputationEnd (TCoord) const;
+  CUDA_DEVICE CUDA_HOST TCoord getComputationStart (const TCoord &) const;
+  CUDA_DEVICE CUDA_HOST TCoord getComputationEnd (const TCoord &) const;
   CUDA_DEVICE CUDA_HOST TCoord calculatePositionFromIndex (grid_coord) const;
+  CUDA_DEVICE CUDA_HOST grid_coord calculateIndexFromPosition (const TCoord &) const;
 
-  CUDA_DEVICE void setFieldPointValue (const FieldPointValue &, const TCoord &);
-  CUDA_DEVICE CUDA_HOST FieldPointValue * getFieldPointValue (const TCoord &);
-  CUDA_DEVICE CUDA_HOST FieldPointValue * getFieldPointValue (grid_coord);
+  CUDA_DEVICE void setFieldValue (const FieldValue &, const TCoord &, int);
+  CUDA_DEVICE void setFieldValue (const FieldValue &, grid_coord, int);
+  CUDA_DEVICE CUDA_HOST FieldValue * getFieldValue (const TCoord &, int);
+  CUDA_DEVICE CUDA_HOST FieldValue * getFieldValue (grid_coord, int);
 
-  CUDA_DEVICE void shiftInTime (const TCoord & start, const TCoord & end);
+  CUDA_DEVICE void shiftInTime ();
   CUDA_HOST void nextTimeStep ();
-  CUDA_HOST void setTimeStep (time_step);
+  CUDA_HOST time_step getTimeStep ();
 
   CUDA_HOST void nextShareStep ();
   CUDA_HOST void zeroShareStep ();
@@ -182,21 +195,39 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
   , bufSize (buf)
   , size (sizeOfBlock + bufSize * 2)
   , sizeGridValues (size.calculateTotalCoord ())
+  , storedSteps (grid->getCountStoredSteps ())
   , totalSize (grid->getTotalSize ())
   , cpuGrid (grid)
   , d_gridValues (NULLPTR)
+  , gridValuesDevicePointers (NULLPTR)
   , helperGridValues (NULLPTR)
+#ifdef DEBUG_INFO
   , timeStep (0)
+#endif /* DEBUG_INFO */
   , shareStep (0)
   , hasLeft (TCoord ())
   , hasRight (TCoord ())
 {
   ASSERT (checkParams ());
+  ASSERT (storedSteps > 0);
+  ASSERT (sizeGridValues > 0);
 
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gridValues, sizeGridValues * sizeof (FieldPointValue)));
-  helperGridValues = new FieldPointValue [sizeGridValues];
+  gridValuesDevicePointers = new FieldValue * [storedSteps];
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New Cuda grid '%s' with raw size: " COORD_MOD ".\n", grid->getName (), sizeGridValues);
+  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gridValues, storedSteps * sizeof (FieldValue *)));
+  for (int i = 0; i < storedSteps; ++i)
+  {
+    FieldValue *d_tmp = NULLPTR;
+    cudaCheckErrorCmd (cudaMalloc ((void **) &d_tmp, sizeGridValues * sizeof (FieldValue)));
+    cudaCheckErrorCmd (cudaMemcpy (d_gridValues + i, &d_tmp, sizeof (FieldValue *), cudaMemcpyHostToDevice));
+
+    gridValuesDevicePointers[i] = d_tmp;
+  }
+
+  helperGridValues = new FieldValue [sizeGridValues];
+
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New Cuda grid '%s' with %d stored steps and with raw size: " COORD_MOD ".\n",
+    grid->getName (), storedSteps, sizeGridValues);
 } /* CudaGrid<TCoord>::CudaGrid */
 
 /**
@@ -206,8 +237,13 @@ template <class TCoord>
 CUDA_HOST
 CudaGrid<TCoord>::~CudaGrid ()
 {
-  delete[] helperGridValues;
+  for (int i = 0; i < storedSteps; ++i)
+  {
+    cudaCheckErrorCmd (cudaFree (gridValuesDevicePointers[i]));
+  }
   cudaCheckErrorCmd (cudaFree (d_gridValues));
+
+  delete[] helperGridValues;
 } /* CudaGrid<TCoord>::~CudaGrid */
 
 /**
@@ -216,13 +252,30 @@ CudaGrid<TCoord>::~CudaGrid ()
 template <class TCoord>
 CUDA_DEVICE
 void
-CudaGrid<TCoord>::shiftInTime (const TCoord & start, const TCoord & end)
+CudaGrid<TCoord>::shiftInTime ()
 {
-  for (grid_coord iter = 0; iter < getSizeGridValues (); ++iter)
-  {
-    d_gridValues[iter].shiftInTime ();
-  }
+  /*
+   * Reuse oldest grid as new current
+   */
+  shift (d_gridValues);
 } /* CudaGrid<TCoord>::shiftInTime */
+
+template <class TCoord>
+CUDA_DEVICE CUDA_HOST
+void
+CudaGrid<TCoord>::shift (FieldValue **grid)
+{
+  ASSERT (storedSteps > 0);
+
+  FieldValue *oldest = grid[storedSteps - 1];
+
+  for (int i = storedSteps - 1; i >= 1; --i)
+  {
+    grid[i] = grid[i - 1];
+  }
+
+  grid[0] = oldest;
+}
 
 /**
  * Check whether position is appropriate to get/set value from
@@ -303,20 +356,38 @@ CudaGrid<TCoord>::getShareStep () const
 } /* CudaGrid<TCoord>::getSizeGridValues */
 
 /**
- * Set field point value at coordinate in grid
+ * Set field value at coordinate in grid
  */
 template <class TCoord>
 CUDA_DEVICE
 void
-CudaGrid<TCoord>::setFieldPointValue (const FieldPointValue & value, /**< field point value */
-                                      const TCoord &position) /**< coordinate in grid */
+CudaGrid<TCoord>::setFieldValue (const FieldValue & value, /**< field value */
+                                 const TCoord &position, /**< coordinate in grid */
+                                 int time_step_back) /**< shift in time */
 {
   ASSERT (isLegitIndex (position));
+  ASSERT (time_step_back < storedSteps);
 
   grid_coord coord = calculateIndexFromPosition (position);
 
-  d_gridValues[coord] = value;
-} /* CudaGrid<TCoord>::setFieldPointValue */
+  d_gridValues[time_step_back][coord] = value;
+} /* CudaGrid<TCoord>::setFieldValue */
+
+/**
+ * Set field value at coordinate in grid
+ */
+template <class TCoord>
+CUDA_DEVICE
+void
+CudaGrid<TCoord>::setFieldValue (const FieldValue & value, /**< field value */
+                                 grid_coord coord, /**< coordinate in grid */
+                                 int time_step_back) /**< shift in time */
+{
+  ASSERT (coord >= 0 && coord < sizeGridValues);
+  ASSERT (time_step_back < storedSteps);
+
+  d_gridValues[time_step_back][coord] = value;
+} /* CudaGrid<TCoord>::setFieldValue */
 
 /**
  * Get field point value at coordinate in grid
@@ -325,15 +396,16 @@ CudaGrid<TCoord>::setFieldPointValue (const FieldPointValue & value, /**< field 
  */
 template <class TCoord>
 CUDA_DEVICE CUDA_HOST
-FieldPointValue *
-CudaGrid<TCoord>::getFieldPointValue (const TCoord &position) /**< coordinate in grid */
+FieldValue *
+CudaGrid<TCoord>::getFieldValue (const TCoord &position, /**< coordinate in grid */
+                                 int time_step_back) /**< shift in time */
 {
   ASSERT (isLegitIndex (position));
 
   grid_coord coord = calculateIndexFromPosition (position);
 
-  return getFieldPointValue (coord);
-} /* CudaGrid<TCoord>::getFieldPointValue */
+  return getFieldValue (coord, time_step_back);
+} /* CudaGrid<TCoord>::getFieldValue */
 
 /**
  * Get field point value at coordinate in grid
@@ -342,13 +414,18 @@ CudaGrid<TCoord>::getFieldPointValue (const TCoord &position) /**< coordinate in
  */
 template <class TCoord>
 CUDA_DEVICE CUDA_HOST
-FieldPointValue *
-CudaGrid<TCoord>::getFieldPointValue (grid_coord coord) /**< index in grid */
+FieldValue *
+CudaGrid<TCoord>::getFieldValue (grid_coord coord, /**< index in grid */
+                                 int time_step_back) /**< shift in time */
 {
   ASSERT (coord >= 0 && coord < getSizeGridValues ());
 
-  return &d_gridValues[coord];
-} /* CudaGrid<TCoord>::getFieldPointValue */
+#ifdef __CUDA_ARCH__
+  return &d_gridValues[time_step_back][coord];
+#else /* __CUDA_ARCH__ */
+  return gridValuesDevicePointers[time_step_back] + coord;
+#endif /* !__CUDA_ARCH__ */
+} /* CudaGrid<TCoord>::getFieldValue */
 
 /**
  * Switch to next time step
@@ -358,19 +435,29 @@ CUDA_HOST
 void
 CudaGrid<TCoord>::nextTimeStep ()
 {
+  shift (gridValuesDevicePointers);
+
   nextShareStep ();
+
+#ifdef DEBUG_INFO
+  ++timeStep;
+#endif /* DEBUG_INFO */
 } /* CudaGrid<TCoord>::nextTimeStep */
+
+#ifdef DEBUG_INFO
 
 /**
  * Set time step
  */
 template <class TCoord>
 CUDA_HOST
-void
-CudaGrid<TCoord>::setTimeStep (time_step step)
+time_step
+CudaGrid<TCoord>::getTimeStep ()
 {
-  timeStep = step;
-} /* CudaGrid<TCoord>::setTimeStep */
+  return timeStep;
+} /* CudaGrid<TCoord>::getTimeStep */
+
+#endif /* DEBUG_INFO */
 
 /**
  * Increase share step

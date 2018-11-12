@@ -48,11 +48,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       FPValue ca = 1.0;
       FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Eps0 * DX);
 
-      FieldPointValue valCa (FIELDVALUE (ca, 0));
-      FieldPointValue valCb (FIELDVALUE (cb, 0));
-
-      intScheme->getCaEx ()->setFieldPointValue (valCa, pos);
-      intScheme->getCbEx ()->setFieldPointValue (valCb, pos);
+      intScheme->getCaEx ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
+      intScheme->getCbEx ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
     }
   }
 
@@ -74,11 +71,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       FPValue ca = 1.0;
       FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Eps0 * DX);
 
-      FieldPointValue valCa (FIELDVALUE (ca, 0));
-      FieldPointValue valCb (FIELDVALUE (cb, 0));
-
-      intScheme->getCaEy ()->setFieldPointValue (valCa, pos);
-      intScheme->getCbEy ()->setFieldPointValue (valCb, pos);
+      intScheme->getCaEy ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
+      intScheme->getCbEy ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
     }
   }
 
@@ -100,11 +94,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       FPValue ca = 1.0;
       FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Eps0 * DX);
 
-      FieldPointValue valCa (FIELDVALUE (ca, 0));
-      FieldPointValue valCb (FIELDVALUE (cb, 0));
-
-      intScheme->getCaEz ()->setFieldPointValue (valCa, pos);
-      intScheme->getCbEz ()->setFieldPointValue (valCb, pos);
+      intScheme->getCaEz ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
+      intScheme->getCbEz ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
     }
   }
 
@@ -126,11 +117,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       FPValue ca = 1.0;
       FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Mu0 * DX);
 
-      FieldPointValue valCa (FIELDVALUE (ca, 0));
-      FieldPointValue valCb (FIELDVALUE (cb, 0));
-
-      intScheme->getDaHx ()->setFieldPointValue (valCa, pos);
-      intScheme->getDbHx ()->setFieldPointValue (valCb, pos);
+      intScheme->getDaHx ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
+      intScheme->getDbHx ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
     }
   }
 
@@ -152,11 +140,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       FPValue ca = 1.0;
       FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Mu0 * DX);
 
-      FieldPointValue valCa (FIELDVALUE (ca, 0));
-      FieldPointValue valCb (FIELDVALUE (cb, 0));
-
-      intScheme->getDaHy ()->setFieldPointValue (valCa, pos);
-      intScheme->getDbHy ()->setFieldPointValue (valCb, pos);
+      intScheme->getDaHy ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
+      intScheme->getDbHy ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
     }
   }
 
@@ -178,14 +163,11 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       FPValue ca = 1.0;
       FPValue cb = intScheme->getTimeStep () / (material * PhysicsConst::Mu0 * DX);
 
-      FieldPointValue valCa (FIELDVALUE (ca, 0));
-      FieldPointValue valCb (FIELDVALUE (cb, 0));
-
-      intScheme->getDaHz ()->setFieldPointValue (valCa, pos);
-      intScheme->getDbHz ()->setFieldPointValue (valCb, pos);
+      intScheme->getDaHz ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
+      intScheme->getDbHz ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
     }
   }
-  
+
   intScheme->initBlocks (SOLVER_SETTINGS.getNumTimeSteps ());
   intScheme->performSteps ();
 }
@@ -211,16 +193,15 @@ void test1D (Grid<GridCoordinate1D> *E,
                                 );
       posFP = posFP + diff;
 
-      FieldPointValue * val = E->getFieldPointValue (pos);
-      FieldValue cur = val->getCurValue ();
+      FieldValue val = *E->getFieldValue (pos, 1);
 
       if (posFP.get1 () >= TFSF_SIZE && posFP.get1 () <= SIZE - TFSF_SIZE)
       {
-        ASSERT (SQR (cur.abs () - FPValue (1)) < 0.0001);
+        ASSERT (SQR (val.abs () - FPValue (1)) < 0.0001);
       }
       else
       {
-        ASSERT (IS_FP_EXACT (cur.abs (), FPValue (0)));
+        ASSERT (IS_FP_EXACT (val.abs (), FPValue (0)));
       }
     }
   }
@@ -251,17 +232,16 @@ void test2D (Grid<GridCoordinate2D> *E,
                                   );
         posFP = posFP + diff;
 
-        FieldPointValue * val = E->getFieldPointValue (pos);
-        FieldValue cur = val->getCurValue ();
+        FieldValue val = *E->getFieldValue (pos, 1);
 
         if (posFP.get1 () >= TFSF_SIZE && posFP.get1 () <= SIZE - TFSF_SIZE
             && posFP.get2 () >= TFSF_SIZE && posFP.get2 () <= SIZE - TFSF_SIZE)
         {
-          ASSERT (SQR (cur.abs () - FPValue (1)) < 0.0001);
+          ASSERT (SQR (val.abs () - FPValue (1)) < 0.0001);
         }
         else
         {
-          ASSERT (IS_FP_EXACT (cur.abs (), FPValue (0)));
+          ASSERT (IS_FP_EXACT (val.abs (), FPValue (0)));
         }
       }
     }
@@ -296,18 +276,17 @@ void test3D (Grid<GridCoordinate3D> *E,
                                     );
           posFP = posFP + diff;
 
-          FieldPointValue * val = E->getFieldPointValue (pos);
-          FieldValue cur = val->getCurValue ();
+          FieldValue val = *E->getFieldValue (pos, 1);
 
           if (posFP.get1 () >= TFSF_SIZE && posFP.get1 () <= SIZE - TFSF_SIZE
               && posFP.get2 () >= TFSF_SIZE && posFP.get2 () <= SIZE - TFSF_SIZE
               && posFP.get3 () >= TFSF_SIZE && posFP.get3 () <= SIZE - TFSF_SIZE)
           {
-            ASSERT (SQR (cur.abs () - FPValue (1)) < 0.0001);
+            ASSERT (SQR (val.abs () - FPValue (1)) < 0.0001);
           }
           else
           {
-            ASSERT (IS_FP_EXACT (cur.abs (), FPValue (0)));
+            ASSERT (IS_FP_EXACT (val.abs (), FPValue (0)));
           }
         }
       }

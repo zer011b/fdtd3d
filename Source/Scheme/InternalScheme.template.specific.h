@@ -153,70 +153,72 @@ InternalSchemeHelper::allocateGrids (InternalScheme<Type, TCoord, layout_type> *
   typedef TCoord<FPValue, true> TCFP;
   typedef TCoord<FPValue, false> TCSFP;
 
-  intScheme->Eps = new Grid< TCoord<grid_coord, true> > (layout->getEpsSize (), 0, "Eps");
-  intScheme->Mu = new Grid<TC> (layout->getEpsSize (), 0, "Mu");
+  int storedSteps = 3;
 
-  intScheme->Ex = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "Ex") : NULLPTR;
-  intScheme->Ey = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "Ey") : NULLPTR;
-  intScheme->Ez = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, "Ez") : NULLPTR;
-  intScheme->Hx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, "Hx") : NULLPTR;
-  intScheme->Hy = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "Hy") : NULLPTR;
-  intScheme->Hz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "Hz") : NULLPTR;
+  intScheme->Eps = new Grid< TCoord<grid_coord, true> > (layout->getEpsSize (), 0, 1, "Eps");
+  intScheme->Mu = new Grid<TC> (layout->getEpsSize (), 0, 1, "Mu");
+
+  intScheme->Ex = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, storedSteps, "Ex") : NULLPTR;
+  intScheme->Ey = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, storedSteps, "Ey") : NULLPTR;
+  intScheme->Ez = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, storedSteps, "Ez") : NULLPTR;
+  intScheme->Hx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, storedSteps, "Hx") : NULLPTR;
+  intScheme->Hy = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, storedSteps, "Hy") : NULLPTR;
+  intScheme->Hz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, storedSteps, "Hz") : NULLPTR;
 
   if (SOLVER_SETTINGS.getDoUsePML ())
   {
-    intScheme->Dx = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "Dx") : NULLPTR;
-    intScheme->Dy = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "Dy") : NULLPTR;
-    intScheme->Dz = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, "Dz") : NULLPTR;
-    intScheme->Bx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, "Bx") : NULLPTR;
-    intScheme->By = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "By") : NULLPTR;
-    intScheme->Bz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "Bz") : NULLPTR;
+    intScheme->Dx = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, storedSteps, "Dx") : NULLPTR;
+    intScheme->Dy = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, storedSteps, "Dy") : NULLPTR;
+    intScheme->Dz = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, storedSteps, "Dz") : NULLPTR;
+    intScheme->Bx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, storedSteps, "Bx") : NULLPTR;
+    intScheme->By = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, storedSteps, "By") : NULLPTR;
+    intScheme->Bz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, storedSteps, "Bz") : NULLPTR;
 
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      intScheme->D1x = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "D1x") : NULLPTR;
-      intScheme->D1y = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "D1y") : NULLPTR;
-      intScheme->D1z = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, "D1z") : NULLPTR;
-      intScheme->B1x = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, "B1x") : NULLPTR;
-      intScheme->B1y = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "B1y") : NULLPTR;
-      intScheme->B1z = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "B1z") : NULLPTR;
+      intScheme->D1x = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, storedSteps, "D1x") : NULLPTR;
+      intScheme->D1y = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, storedSteps, "D1y") : NULLPTR;
+      intScheme->D1z = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, storedSteps, "D1z") : NULLPTR;
+      intScheme->B1x = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, storedSteps, "B1x") : NULLPTR;
+      intScheme->B1y = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, storedSteps, "B1y") : NULLPTR;
+      intScheme->B1z = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, storedSteps, "B1z") : NULLPTR;
     }
 
-    intScheme->SigmaX = intScheme->doNeedSigmaX ? new Grid<TC> (layout->getEpsSize (), 0, "SigmaX") : NULLPTR;
-    intScheme->SigmaY = intScheme->doNeedSigmaY ? new Grid<TC> (layout->getEpsSize (), 0, "SigmaY") : NULLPTR;
-    intScheme->SigmaZ = intScheme->doNeedSigmaZ ? new Grid<TC> (layout->getEpsSize (), 0, "SigmaZ") : NULLPTR;
+    intScheme->SigmaX = intScheme->doNeedSigmaX ? new Grid<TC> (layout->getEpsSize (), 0, 1, "SigmaX") : NULLPTR;
+    intScheme->SigmaY = intScheme->doNeedSigmaY ? new Grid<TC> (layout->getEpsSize (), 0, 1, "SigmaY") : NULLPTR;
+    intScheme->SigmaZ = intScheme->doNeedSigmaZ ? new Grid<TC> (layout->getEpsSize (), 0, 1, "SigmaZ") : NULLPTR;
   }
 
   if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
   {
-    intScheme->ExAmplitude = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "ExAmp") : NULLPTR;
-    intScheme->EyAmplitude = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "EyAmp") : NULLPTR;
-    intScheme->EzAmplitude = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, "EzAmp") : NULLPTR;
-    intScheme->HxAmplitude = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, "HxAmp") : NULLPTR;
-    intScheme->HyAmplitude = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "HyAmp") : NULLPTR;
-    intScheme->HzAmplitude = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "HzAmp") : NULLPTR;
+    intScheme->ExAmplitude = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, storedSteps, "ExAmp") : NULLPTR;
+    intScheme->EyAmplitude = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, storedSteps, "EyAmp") : NULLPTR;
+    intScheme->EzAmplitude = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, storedSteps, "EzAmp") : NULLPTR;
+    intScheme->HxAmplitude = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, storedSteps, "HxAmp") : NULLPTR;
+    intScheme->HyAmplitude = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, storedSteps, "HyAmp") : NULLPTR;
+    intScheme->HzAmplitude = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, storedSteps, "HzAmp") : NULLPTR;
   }
 
-  intScheme->CaEx = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "CaEx") : NULLPTR;
-  intScheme->CbEx = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, "CbEx") : NULLPTR;
-  intScheme->CaEy = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "CaEy") : NULLPTR;
-  intScheme->CbEy = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, "CbEy") : NULLPTR;
-  intScheme->CaEz = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, "CaEz") : NULLPTR;
-  intScheme->CbEz = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, "CbEz") : NULLPTR;
+  intScheme->CaEx = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, 1, "CaEx") : NULLPTR;
+  intScheme->CbEx = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, 1, "CbEx") : NULLPTR;
+  intScheme->CaEy = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, 1, "CaEy") : NULLPTR;
+  intScheme->CbEy = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, 1, "CbEy") : NULLPTR;
+  intScheme->CaEz = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, 1, "CaEz") : NULLPTR;
+  intScheme->CbEz = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, 1, "CbEz") : NULLPTR;
 
-  intScheme->DaHx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, "DaHx") : NULLPTR;
-  intScheme->DbHx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, "DbHx") : NULLPTR;
-  intScheme->DaHy = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "DaHy") : NULLPTR;
-  intScheme->DbHy = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, "DbHy") : NULLPTR;
-  intScheme->DaHz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "DaHz") : NULLPTR;
-  intScheme->DbHz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, "DbHz") : NULLPTR;
+  intScheme->DaHx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, 1, "DaHx") : NULLPTR;
+  intScheme->DbHx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, 1, "DbHx") : NULLPTR;
+  intScheme->DaHy = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, 1, "DaHy") : NULLPTR;
+  intScheme->DbHy = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, 1, "DbHy") : NULLPTR;
+  intScheme->DaHz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, 1, "DaHz") : NULLPTR;
+  intScheme->DbHz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, 1, "DbHz") : NULLPTR;
 
   if (SOLVER_SETTINGS.getDoUseMetamaterials ())
   {
-    intScheme->OmegaPE = new Grid<TC> (layout->getEpsSize (), 0, "OmegaPE");
-    intScheme->GammaE = new Grid<TC> (layout->getEpsSize (), 0, "GammaE");
-    intScheme->OmegaPM = new Grid<TC> (layout->getEpsSize (), 0, "OmegaPM");
-    intScheme->GammaM = new Grid<TC> (layout->getEpsSize (), 0, "GammaM");
+    intScheme->OmegaPE = new Grid<TC> (layout->getEpsSize (), 0, 1, "OmegaPE");
+    intScheme->GammaE = new Grid<TC> (layout->getEpsSize (), 0, 1, "GammaE");
+    intScheme->OmegaPM = new Grid<TC> (layout->getEpsSize (), 0, 1, "OmegaPM");
+    intScheme->GammaM = new Grid<TC> (layout->getEpsSize (), 0, 1, "GammaM");
   }
 }
 
@@ -225,16 +227,8 @@ CUDA_HOST
 void
 InternalSchemeHelper::allocateGridsInc (InternalScheme<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout)
 {
-  intScheme->EInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(layout->getSize ().get1 ())
-#ifdef DEBUG_INFO
-                                                            , CoordinateType::X
-#endif
-                                                            ), 0, "EInc");
-  intScheme->HInc = new Grid<GridCoordinate1D> (GridCoordinate1D (500*(layout->getSize ().get1 ())
-#ifdef DEBUG_INFO
-                                                            , CoordinateType::X
-#endif
-                                                            ), 0, "HInc");
+  intScheme->EInc = new Grid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(layout->getSize ().get1 ()), CoordinateType::X), 0, 2, "EInc");
+  intScheme->HInc = new Grid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(layout->getSize ().get1 ()), CoordinateType::X), 0, 2, "HInc");
 }
 
 #ifdef PARALLEL_GRID
@@ -251,71 +245,73 @@ InternalSchemeHelper::allocateParallelGrids (InternalScheme<Type, ParallelGridCo
 
   ParallelYeeGridLayout<Type, layout_type> *pLayout = intScheme->yeeLayout;
 
-  intScheme->Eps = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "Eps");
-  intScheme->Mu = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getMuSizeForCurNode (), "Mu");
+  int storedSteps = 3;
 
-  intScheme->Ex = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "Ex") : NULLPTR;
-  intScheme->Ey = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "Ey") : NULLPTR;
-  intScheme->Ez = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "Ez") : NULLPTR;
-  intScheme->Hx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "Hx") : NULLPTR;
-  intScheme->Hy = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "Hy") : NULLPTR;
-  intScheme->Hz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "Hz") : NULLPTR;
+  intScheme->Eps = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "Eps");
+  intScheme->Mu = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getMuSizeForCurNode (), 1, "Mu");
+
+  intScheme->Ex = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), storedSteps, "Ex") : NULLPTR;
+  intScheme->Ey = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), storedSteps, "Ey") : NULLPTR;
+  intScheme->Ez = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), storedSteps, "Ez") : NULLPTR;
+  intScheme->Hx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), storedSteps, "Hx") : NULLPTR;
+  intScheme->Hy = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), storedSteps, "Hy") : NULLPTR;
+  intScheme->Hz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), storedSteps, "Hz") : NULLPTR;
 
   if (SOLVER_SETTINGS.getDoUsePML ())
   {
-    intScheme->Dx = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "Dx") : NULLPTR;
-    intScheme->Dy = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "Dy") : NULLPTR;
-    intScheme->Dz = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "Dz") : NULLPTR;
-    intScheme->Bx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "Bx") : NULLPTR;
-    intScheme->By = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "By") : NULLPTR;
-    intScheme->Bz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "Bz") : NULLPTR;
+    intScheme->Dx = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), storedSteps, "Dx") : NULLPTR;
+    intScheme->Dy = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), storedSteps, "Dy") : NULLPTR;
+    intScheme->Dz = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), storedSteps, "Dz") : NULLPTR;
+    intScheme->Bx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), storedSteps, "Bx") : NULLPTR;
+    intScheme->By = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), storedSteps, "By") : NULLPTR;
+    intScheme->Bz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), storedSteps, "Bz") : NULLPTR;
 
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      intScheme->D1x = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "D1x") : NULLPTR;
-      intScheme->D1y = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "D1y") : NULLPTR;
-      intScheme->D1z = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "D1z") : NULLPTR;
-      intScheme->B1x = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "B1x") : NULLPTR;
-      intScheme->B1y = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "B1y") : NULLPTR;
-      intScheme->B1z = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "B1z") : NULLPTR;
+      intScheme->D1x = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), storedSteps, "D1x") : NULLPTR;
+      intScheme->D1y = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), storedSteps, "D1y") : NULLPTR;
+      intScheme->D1z = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), storedSteps, "D1z") : NULLPTR;
+      intScheme->B1x = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), storedSteps, "B1x") : NULLPTR;
+      intScheme->B1y = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), storedSteps, "B1y") : NULLPTR;
+      intScheme->B1z = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), storedSteps, "B1z") : NULLPTR;
     }
 
-    intScheme->SigmaX = intScheme->doNeedSigmaX ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaX") : NULLPTR;
-    intScheme->SigmaY = intScheme->doNeedSigmaY ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaY") : NULLPTR;
-    intScheme->SigmaZ = intScheme->doNeedSigmaZ ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "SigmaZ") : NULLPTR;
+    intScheme->SigmaX = intScheme->doNeedSigmaX ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "SigmaX") : NULLPTR;
+    intScheme->SigmaY = intScheme->doNeedSigmaY ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "SigmaY") : NULLPTR;
+    intScheme->SigmaZ = intScheme->doNeedSigmaZ ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "SigmaZ") : NULLPTR;
   }
 
   if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
   {
-    intScheme->ExAmplitude = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "ExAmp") : NULLPTR;
-    intScheme->EyAmplitude = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "EyAmp") : NULLPTR;
-    intScheme->EzAmplitude = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "EzAmp") : NULLPTR;
-    intScheme->HxAmplitude = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "HxAmp") : NULLPTR;
-    intScheme->HyAmplitude = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "HyAmp") : NULLPTR;
-    intScheme->HzAmplitude = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "HzAmp") : NULLPTR;
+    intScheme->ExAmplitude = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), storedSteps, "ExAmp") : NULLPTR;
+    intScheme->EyAmplitude = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), storedSteps, "EyAmp") : NULLPTR;
+    intScheme->EzAmplitude = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), storedSteps, "EzAmp") : NULLPTR;
+    intScheme->HxAmplitude = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), storedSteps, "HxAmp") : NULLPTR;
+    intScheme->HyAmplitude = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), storedSteps, "HyAmp") : NULLPTR;
+    intScheme->HzAmplitude = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), storedSteps, "HzAmp") : NULLPTR;
   }
+
+  intScheme->CaEx = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), 1, "CaEx") : NULLPTR;
+  intScheme->CbEx = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), 1, "CbEx") : NULLPTR;
+  intScheme->CaEy = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), 1, "CaEy") : NULLPTR;
+  intScheme->CbEy = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), 1, "CbEy") : NULLPTR;
+  intScheme->CaEz = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), 1, "CaEz") : NULLPTR;
+  intScheme->CbEz = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), 1, "CbEz") : NULLPTR;
+
+  intScheme->DaHx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), 1, "DaHx") : NULLPTR;
+  intScheme->DbHx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), 1, "DbHx") : NULLPTR;
+  intScheme->DaHy = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), 1, "DaHy") : NULLPTR;
+  intScheme->DbHy = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), 1, "DbHy") : NULLPTR;
+  intScheme->DaHz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), 1, "DaHz") : NULLPTR;
+  intScheme->DbHz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), 1, "DbHz") : NULLPTR;
 
   if (SOLVER_SETTINGS.getDoUseMetamaterials ())
   {
-    intScheme->OmegaPE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "OmegaPE");
-    intScheme->GammaE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "GammaE");
-    intScheme->OmegaPM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "OmegaPM");
-    intScheme->GammaM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), "GammaM");
+    intScheme->OmegaPE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "OmegaPE");
+    intScheme->GammaE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "GammaE");
+    intScheme->OmegaPM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "OmegaPM");
+    intScheme->GammaM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "GammaM");
   }
-
-  intScheme->CaEx = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "CaEx") : NULLPTR;
-  intScheme->CbEx = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), "CbEx") : NULLPTR;
-  intScheme->CaEy = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "CaEy") : NULLPTR;
-  intScheme->CbEy = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), "CbEy") : NULLPTR;
-  intScheme->CaEz = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "CaEz") : NULLPTR;
-  intScheme->CbEz = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), "CbEz") : NULLPTR;
-
-  intScheme->DaHx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "DaHx") : NULLPTR;
-  intScheme->DbHx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), "DbHx") : NULLPTR;
-  intScheme->DaHy = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "DaHy") : NULLPTR;
-  intScheme->DbHy = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), "DbHy") : NULLPTR;
-  intScheme->DaHz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "DaHz") : NULLPTR;
-  intScheme->DbHz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), "DbHz") : NULLPTR;
 }
 
 #endif /* PARALLEL_GRID */

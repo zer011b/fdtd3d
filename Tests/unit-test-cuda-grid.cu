@@ -13,21 +13,41 @@
 #include "cstdlib"
 #endif /* !CXX11_ENABLED */
 
+__global__ void shiftInTime (CudaExitStatus *retval,
+                             CudaGrid<GridCoordinate1D> *grid)
+{
+  grid->shiftInTime ();
+
+  PROGRAM_OK_EXIT;
+}
+
+__global__ void shiftInTime (CudaExitStatus *retval,
+                             CudaGrid<GridCoordinate2D> *grid)
+{
+  grid->shiftInTime ();
+
+  PROGRAM_OK_EXIT;
+}
+
+__global__ void shiftInTime (CudaExitStatus *retval,
+                             CudaGrid<GridCoordinate3D> *grid)
+{
+  grid->shiftInTime ();
+
+  PROGRAM_OK_EXIT;
+}
+
 __global__ void cudaCalculate (CudaExitStatus *retval,
                                CudaGrid<GridCoordinate1D> *grid)
 {
-  GridCoordinate1D pos ((blockIdx.x * blockDim.x) + threadIdx.x
-#ifdef DEBUG_INFO
-                        , grid->getSize ().getType1 ()
-#endif /* DEBUG_INFO */
-                       );
+  GridCoordinate1D pos = GRID_COORDINATE_1D ((blockIdx.x * blockDim.x) + threadIdx.x,
+                                             grid->getSize ().getType1 ());
 
   ALWAYS_ASSERT (pos < grid->getSize ());
 
-  FieldPointValue *val = grid->getFieldPointValue (pos);
-  val->shiftInTime ();
-  grid_coord index = pos.calculateTotalCoord ();
-  val->setCurValue (FIELDVALUE (index * 23, index * 17));
+  FieldValue *val = grid->getFieldValue (pos, 1);
+  grid_coord index = grid->calculateIndexFromPosition (pos);
+  grid->setFieldValue (*val + FIELDVALUE (index * 23, index * 17), index, 0);
 
   PROGRAM_OK_EXIT;
 }
@@ -35,20 +55,16 @@ __global__ void cudaCalculate (CudaExitStatus *retval,
 __global__ void cudaCalculate (CudaExitStatus *retval,
                                CudaGrid<GridCoordinate2D> *grid)
 {
-  GridCoordinate2D pos ((blockIdx.x * blockDim.x) + threadIdx.x,
-                        (blockIdx.y * blockDim.y) + threadIdx.y
-#ifdef DEBUG_INFO
-                        , grid->getSize ().getType1 ()
-                        , grid->getSize ().getType2 ()
-#endif /* DEBUG_INFO */
-                       );
+  GridCoordinate2D pos = GRID_COORDINATE_2D ((blockIdx.x * blockDim.x) + threadIdx.x,
+                                             (blockIdx.y * blockDim.y) + threadIdx.y,
+                                             grid->getSize ().getType1 (),
+                                             grid->getSize ().getType2 ());
 
   ALWAYS_ASSERT (pos < grid->getSize ());
 
-  FieldPointValue *val = grid->getFieldPointValue (pos);
-  val->shiftInTime ();
-  grid_coord index = pos.calculateTotalCoord ();
-  val->setCurValue (FIELDVALUE (index * 23, index * 17));
+  FieldValue *val = grid->getFieldValue (pos, 1);
+  grid_coord index = grid->calculateIndexFromPosition (pos);
+  grid->setFieldValue (*val + FIELDVALUE (index * 23, index * 17), index, 0);
 
   PROGRAM_OK_EXIT;
 }
@@ -56,41 +72,29 @@ __global__ void cudaCalculate (CudaExitStatus *retval,
 __global__ void cudaCalculate (CudaExitStatus *retval,
                                CudaGrid<GridCoordinate3D> *grid)
 {
-  GridCoordinate3D pos ((blockIdx.x * blockDim.x) + threadIdx.x,
-                        (blockIdx.y * blockDim.y) + threadIdx.y,
-                        (blockIdx.z * blockDim.z) + threadIdx.z
-#ifdef DEBUG_INFO
-                        , grid->getSize ().getType1 ()
-                        , grid->getSize ().getType2 ()
-                        , grid->getSize ().getType3 ()
-#endif /* DEBUG_INFO */
-                       );
+  GridCoordinate3D pos = GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
+                                             (blockIdx.y * blockDim.y) + threadIdx.y,
+                                             (blockIdx.z * blockDim.z) + threadIdx.z,
+                                             grid->getSize ().getType1 (),
+                                             grid->getSize ().getType2 (),
+                                             grid->getSize ().getType3 ());
 
   ALWAYS_ASSERT (pos < grid->getSize ());
 
-  FieldPointValue *val = grid->getFieldPointValue (pos);
-  val->shiftInTime ();
-  grid_coord index = pos.calculateTotalCoord ();
-  val->setCurValue (FIELDVALUE (index * 23, index * 17));
+  FieldValue *val = grid->getFieldValue (pos, 1);
+  grid_coord index = grid->calculateIndexFromPosition (pos);
+  grid->setFieldValue (*val + FIELDVALUE (index * 23, index * 17), index, 0);
 
   PROGRAM_OK_EXIT;
 }
 
 void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
 {
-  Grid<GridCoordinate1D> cpuGrid (overallSize, 0);
+  Grid<GridCoordinate1D> cpuGrid (overallSize, 0, 2);
   cpuGrid.initialize (FIELDVALUE (17, 1022));
 
-  GridCoordinate1D zero (0
-#ifdef DEBUG_INFO
-                         , overallSize.getType1 ()
-#endif /* DEBUG_INFO */
-                        );
-  GridCoordinate1D one (1
-#ifdef DEBUG_INFO
-                         , overallSize.getType1 ()
-#endif /* DEBUG_INFO */
-                        );
+  GridCoordinate1D zero = GRID_COORDINATE_1D (0, overallSize.getType1 ());
+  GridCoordinate1D one = GRID_COORDINATE_1D (1, overallSize.getType1 ());
 
   /*
    * CudaGrid with capacity for whole cpu grid
@@ -105,8 +109,8 @@ void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
   ASSERT (cudaGrid.getTotalPosition (bufSize) == zero);
   ASSERT (cudaGrid.getRelativePosition (zero) == bufSize);
   ASSERT (cudaGrid.hasValueForCoordinate (zero));
-  ASSERT (cudaGrid.getFieldPointValueByAbsolutePos (zero) == cudaGrid.getFieldPointValue (bufSize));
-  ASSERT (cudaGrid.getFieldPointValueOrNullByAbsolutePos (zero) == cudaGrid.getFieldPointValue (bufSize));
+  ASSERT (cudaGrid.getFieldValueByAbsolutePos (zero, 0) == cudaGrid.getFieldValue (bufSize, 0));
+  ASSERT (cudaGrid.getFieldValueOrNullByAbsolutePos (zero, 0) == cudaGrid.getFieldValue (bufSize, 0));
   ASSERT (cudaGrid.getComputationStart (one) == one + bufSize);
   ASSERT (cudaGrid.getComputationEnd (one) == overallSize + bufSize - one);
   ASSERT (cudaGrid.getHasLeft ().get1 () == 0);
@@ -118,28 +122,32 @@ void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
   CudaExitStatus *exitStatusCuda;
   cudaCheckErrorCmd (cudaMalloc ((void **) &exitStatusCuda, sizeof (CudaExitStatus)));
 
-  dim3 blocks (cudaGrid.getSize ().get1 () / 2, 1, 1);
-  dim3 threads (2, 1, 1);
-
   CudaGrid<GridCoordinate1D> *d_cudaGrid;
   cudaCheckErrorCmd (cudaMalloc ((void **) &d_cudaGrid, sizeof (CudaGrid<GridCoordinate1D>)));
   cudaCheckErrorCmd (cudaMemcpy (d_cudaGrid, &cudaGrid, sizeof(CudaGrid<GridCoordinate1D>), cudaMemcpyHostToDevice));
+
+  dim3 blocks_shift (1, 1, 1);
+  dim3 threads_shift (1, 1, 1);
+  cudaCheckExitStatus (shiftInTime <<< blocks_shift, threads_shift >>> (exitStatusCuda, d_cudaGrid));
+  cudaGrid.nextTimeStep ();
+  ASSERT (cudaGrid.getTimeStep () == 1);
+
+  dim3 blocks (cudaGrid.getSize ().get1 () / 2, 1, 1);
+  dim3 threads (2, 1, 1);
   cudaCheckExitStatus (cudaCalculate <<< blocks, threads >>> (exitStatusCuda, d_cudaGrid));
 
   cudaGrid.copyToCPU ();
 
   for (grid_coord i = bufSize.get1 (); i < cudaGrid.getSize ().get1 () - bufSize.get1 (); ++i)
   {
-    GridCoordinate1D pos (i
-#ifdef DEBUG_INFO
-                          , overallSize.getType1 ()
-#endif /* DEBUG_INFO */
-                         );
-    FieldPointValue *val = cpuGrid.getFieldPointValue (pos - bufSize);
-    grid_coord index = pos.calculateTotalCoord ();
+    GridCoordinate1D pos = GRID_COORDINATE_1D (i, overallSize.getType1 ());
+    grid_coord index = cudaGrid.calculateIndexFromPosition (pos);
 
-    ALWAYS_ASSERT (val->getCurValue () == FIELDVALUE (index * 23, index * 17));
-    ALWAYS_ASSERT (val->getPrevValue () == FIELDVALUE (17, 1022));
+    GridCoordinate1D posCPU = GRID_COORDINATE_1D (i - bufSize.get1 (), overallSize.getType1 ());
+    grid_coord coord = cpuGrid.calculateIndexFromPosition (posCPU);
+
+    ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 0) == FIELDVALUE (17, 1022) + FIELDVALUE (index * 23, index * 17));
+    ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 1) == FIELDVALUE (17, 1022));
   }
 
   {
@@ -155,8 +163,8 @@ void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
     ASSERT (cudaGrid2.getTotalPosition (overallSize / 2 + bufSize) == overallSize / 2);
     ASSERT (cudaGrid2.getRelativePosition (overallSize / 2) == overallSize / 2 + bufSize);
     ASSERT (cudaGrid2.hasValueForCoordinate (zero));
-    ASSERT (cudaGrid2.getFieldPointValueByAbsolutePos (zero) == cudaGrid2.getFieldPointValue (bufSize));
-    ASSERT (cudaGrid2.getFieldPointValueOrNullByAbsolutePos (zero) == cudaGrid2.getFieldPointValue (bufSize));
+    ASSERT (cudaGrid2.getFieldValueByAbsolutePos (zero, 0) == cudaGrid2.getFieldValue (bufSize, 0));
+    ASSERT (cudaGrid2.getFieldValueOrNullByAbsolutePos (zero, 0) == cudaGrid2.getFieldValue (bufSize, 0));
     ASSERT (cudaGrid2.getComputationStart (one) == one + bufSize);
     ASSERT (cudaGrid2.getComputationEnd (one) == overallSize / 2 + bufSize * 2 - one);
     ASSERT (cudaGrid2.getHasLeft ().get1 () == 0);
@@ -172,8 +180,8 @@ void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
     ASSERT (cudaGrid2.getTotalPosition (zero) == overallSize / 2 - bufSize);
     ASSERT (cudaGrid2.getRelativePosition (overallSize / 2 - bufSize) == zero);
     ASSERT (cudaGrid2.hasValueForCoordinate (overallSize / 2));
-    ASSERT (cudaGrid2.getFieldPointValueByAbsolutePos (overallSize / 2) == cudaGrid2.getFieldPointValue (bufSize));
-    ASSERT (cudaGrid2.getFieldPointValueOrNullByAbsolutePos (overallSize / 2) == cudaGrid2.getFieldPointValue (bufSize));
+    ASSERT (cudaGrid2.getFieldValueByAbsolutePos (overallSize / 2, 0) == cudaGrid2.getFieldValue (bufSize, 0));
+    ASSERT (cudaGrid2.getFieldValueOrNullByAbsolutePos (overallSize / 2, 0) == cudaGrid2.getFieldValue (bufSize, 0));
     ASSERT (cudaGrid2.getComputationStart (one) == one);
     ASSERT (cudaGrid2.getComputationEnd (one) == overallSize / 2 + bufSize - one);
     ASSERT (cudaGrid2.getHasLeft ().get1 () == 1);
@@ -183,24 +191,14 @@ void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
 
 void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
 {
-  Grid<GridCoordinate2D> cpuGrid (overallSize, 0);
+  Grid<GridCoordinate2D> cpuGrid (overallSize, 0, 2);
   cpuGrid.initialize (FIELDVALUE (17, 1022));
 
-  GridCoordinate2D zero (0, 0
-#ifdef DEBUG_INFO
-                         , overallSize.getType1 ()
-                         , overallSize.getType2 ()
-#endif /* DEBUG_INFO */
-                        );
-  GridCoordinate2D one (1, 1
-#ifdef DEBUG_INFO
-                         , overallSize.getType1 ()
-                         , overallSize.getType2 ()
-#endif /* DEBUG_INFO */
-                        );
+  GridCoordinate2D zero = GRID_COORDINATE_2D (0, 0, overallSize.getType1 (), overallSize.getType2 ());
+  GridCoordinate2D one = GRID_COORDINATE_2D (1, 1, overallSize.getType1 (), overallSize.getType2 ());
 
   /*
-   * CudaGrid with capacity for all cpu grid
+   * CudaGrid with capacity for whole cpu grid
    */
   CudaGrid<GridCoordinate2D> cudaGrid (overallSize, bufSize, &cpuGrid);
   cudaGrid.copyFromCPU (zero, overallSize);
@@ -212,14 +210,12 @@ void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
   ASSERT (cudaGrid.getTotalPosition (bufSize) == zero);
   ASSERT (cudaGrid.getRelativePosition (zero) == bufSize);
   ASSERT (cudaGrid.hasValueForCoordinate (zero));
-  ASSERT (cudaGrid.getFieldPointValueByAbsolutePos (zero) == cudaGrid.getFieldPointValue (bufSize));
-  ASSERT (cudaGrid.getFieldPointValueOrNullByAbsolutePos (zero) == cudaGrid.getFieldPointValue (bufSize));
+  ASSERT (cudaGrid.getFieldValueByAbsolutePos (zero, 0) == cudaGrid.getFieldValue (bufSize, 0));
+  ASSERT (cudaGrid.getFieldValueOrNullByAbsolutePos (zero, 0) == cudaGrid.getFieldValue (bufSize, 0));
   ASSERT (cudaGrid.getComputationStart (one) == one + bufSize);
   ASSERT (cudaGrid.getComputationEnd (one) == overallSize + bufSize - one);
   ASSERT (cudaGrid.getHasLeft ().get1 () == 0);
-  ASSERT (cudaGrid.getHasLeft ().get2 () == 0);
   ASSERT (cudaGrid.getHasRight ().get1 () == 0);
-  ASSERT (cudaGrid.getHasRight ().get2 () == 0);
 
   CudaExitStatus _retval = CUDA_ERROR;
   CudaExitStatus *retval = &_retval;
@@ -227,12 +223,18 @@ void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
   CudaExitStatus *exitStatusCuda;
   cudaCheckErrorCmd (cudaMalloc ((void **) &exitStatusCuda, sizeof (CudaExitStatus)));
 
-  dim3 blocks (cudaGrid.getSize ().get1 () / 2, cudaGrid.getSize ().get2 () / 2, 1);
-  dim3 threads (2, 2, 1);
-
   CudaGrid<GridCoordinate2D> *d_cudaGrid;
   cudaCheckErrorCmd (cudaMalloc ((void **) &d_cudaGrid, sizeof (CudaGrid<GridCoordinate2D>)));
   cudaCheckErrorCmd (cudaMemcpy (d_cudaGrid, &cudaGrid, sizeof(CudaGrid<GridCoordinate2D>), cudaMemcpyHostToDevice));
+
+  dim3 blocks_shift (1, 1, 1);
+  dim3 threads_shift (1, 1, 1);
+  cudaCheckExitStatus (shiftInTime <<< blocks_shift, threads_shift >>> (exitStatusCuda, d_cudaGrid));
+  cudaGrid.nextTimeStep ();
+  ASSERT (cudaGrid.getTimeStep () == 1);
+
+  dim3 blocks (cudaGrid.getSize ().get1 () / 2, cudaGrid.getSize ().get2 () / 2, 1);
+  dim3 threads (2, 2, 1);
   cudaCheckExitStatus (cudaCalculate <<< blocks, threads >>> (exitStatusCuda, d_cudaGrid));
 
   cudaGrid.copyToCPU ();
@@ -241,17 +243,18 @@ void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
   {
     for (grid_coord j = bufSize.get2 (); j < cudaGrid.getSize ().get2 () - bufSize.get2 (); ++j)
     {
-      GridCoordinate2D pos (i, j
-#ifdef DEBUG_INFO
-                            , overallSize.getType1 ()
-                            , overallSize.getType2 ()
-#endif /* DEBUG_INFO */
-                           );
-      FieldPointValue *val = cpuGrid.getFieldPointValue (pos - bufSize);
-      grid_coord index = pos.calculateTotalCoord ();
+      GridCoordinate2D pos = GRID_COORDINATE_2D (i, j,
+                                                 overallSize.getType1 (),
+                                                 overallSize.getType2 ());
+      grid_coord index = cudaGrid.calculateIndexFromPosition (pos);
 
-      ALWAYS_ASSERT (val->getCurValue () == FIELDVALUE (index * 23, index * 17));
-      ALWAYS_ASSERT (val->getPrevValue () == FIELDVALUE (17, 1022));
+      GridCoordinate2D posCPU = GRID_COORDINATE_2D (i - bufSize.get1 (), j - bufSize.get2 (),
+                                                    overallSize.getType1 (),
+                                                    overallSize.getType2 ());
+      grid_coord coord = cpuGrid.calculateIndexFromPosition (posCPU);
+
+      ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 0) == FIELDVALUE (17, 1022) + FIELDVALUE (index * 23, index * 17));
+      ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 1) == FIELDVALUE (17, 1022));
     }
   }
 
@@ -268,14 +271,12 @@ void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
     ASSERT (cudaGrid2.getTotalPosition (overallSize / 2 + bufSize) == overallSize / 2);
     ASSERT (cudaGrid2.getRelativePosition (overallSize / 2) == overallSize / 2 + bufSize);
     ASSERT (cudaGrid2.hasValueForCoordinate (zero));
-    ASSERT (cudaGrid2.getFieldPointValueByAbsolutePos (zero) == cudaGrid2.getFieldPointValue (bufSize));
-    ASSERT (cudaGrid2.getFieldPointValueOrNullByAbsolutePos (zero) == cudaGrid2.getFieldPointValue (bufSize));
+    ASSERT (cudaGrid2.getFieldValueByAbsolutePos (zero, 0) == cudaGrid2.getFieldValue (bufSize, 0));
+    ASSERT (cudaGrid2.getFieldValueOrNullByAbsolutePos (zero, 0) == cudaGrid2.getFieldValue (bufSize, 0));
     ASSERT (cudaGrid2.getComputationStart (one) == one + bufSize);
     ASSERT (cudaGrid2.getComputationEnd (one) == overallSize / 2 + bufSize * 2 - one);
     ASSERT (cudaGrid2.getHasLeft ().get1 () == 0);
-    ASSERT (cudaGrid2.getHasLeft ().get2 () == 0);
     ASSERT (cudaGrid2.getHasRight ().get1 () == 1);
-    ASSERT (cudaGrid2.getHasRight ().get2 () == 1);
 
     cudaGrid2.copyFromCPU (overallSize / 2, overallSize);
     ASSERT (cudaGrid2.getBufSize () == bufSize);
@@ -287,39 +288,25 @@ void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
     ASSERT (cudaGrid2.getTotalPosition (zero) == overallSize / 2 - bufSize);
     ASSERT (cudaGrid2.getRelativePosition (overallSize / 2 - bufSize) == zero);
     ASSERT (cudaGrid2.hasValueForCoordinate (overallSize / 2));
-    ASSERT (cudaGrid2.getFieldPointValueByAbsolutePos (overallSize / 2) == cudaGrid2.getFieldPointValue (bufSize));
-    ASSERT (cudaGrid2.getFieldPointValueOrNullByAbsolutePos (overallSize / 2) == cudaGrid2.getFieldPointValue (bufSize));
+    ASSERT (cudaGrid2.getFieldValueByAbsolutePos (overallSize / 2, 0) == cudaGrid2.getFieldValue (bufSize, 0));
+    ASSERT (cudaGrid2.getFieldValueOrNullByAbsolutePos (overallSize / 2, 0) == cudaGrid2.getFieldValue (bufSize, 0));
     ASSERT (cudaGrid2.getComputationStart (one) == one);
     ASSERT (cudaGrid2.getComputationEnd (one) == overallSize / 2 + bufSize - one);
     ASSERT (cudaGrid2.getHasLeft ().get1 () == 1);
-    ASSERT (cudaGrid2.getHasLeft ().get2 () == 1);
     ASSERT (cudaGrid2.getHasRight ().get1 () == 0);
-    ASSERT (cudaGrid2.getHasRight ().get2 () == 0);
   }
 }
 
 void testFunc3D (GridCoordinate3D overallSize, GridCoordinate3D bufSize)
 {
-  Grid<GridCoordinate3D> cpuGrid (overallSize, 0);
+  Grid<GridCoordinate3D> cpuGrid (overallSize, 0, 2);
   cpuGrid.initialize (FIELDVALUE (17, 1022));
 
-  GridCoordinate3D zero (0, 0, 0
-#ifdef DEBUG_INFO
-                         , overallSize.getType1 ()
-                         , overallSize.getType2 ()
-                         , overallSize.getType3 ()
-#endif /* DEBUG_INFO */
-                        );
-  GridCoordinate3D one (1, 1, 1
-#ifdef DEBUG_INFO
-                         , overallSize.getType1 ()
-                         , overallSize.getType2 ()
-                         , overallSize.getType3 ()
-#endif /* DEBUG_INFO */
-                        );
+  GridCoordinate3D zero = GRID_COORDINATE_3D (0, 0, 0, overallSize.getType1 (), overallSize.getType2 (), overallSize.getType3 ());
+  GridCoordinate3D one = GRID_COORDINATE_3D (1, 1, 1, overallSize.getType1 (), overallSize.getType2 (), overallSize.getType3 ());
 
   /*
-   * CudaGrid with capacity for all cpu grid
+   * CudaGrid with capacity for whole cpu grid
    */
   CudaGrid<GridCoordinate3D> cudaGrid (overallSize, bufSize, &cpuGrid);
   cudaGrid.copyFromCPU (zero, overallSize);
@@ -331,16 +318,12 @@ void testFunc3D (GridCoordinate3D overallSize, GridCoordinate3D bufSize)
   ASSERT (cudaGrid.getTotalPosition (bufSize) == zero);
   ASSERT (cudaGrid.getRelativePosition (zero) == bufSize);
   ASSERT (cudaGrid.hasValueForCoordinate (zero));
-  ASSERT (cudaGrid.getFieldPointValueByAbsolutePos (zero) == cudaGrid.getFieldPointValue (bufSize));
-  ASSERT (cudaGrid.getFieldPointValueOrNullByAbsolutePos (zero) == cudaGrid.getFieldPointValue (bufSize));
+  ASSERT (cudaGrid.getFieldValueByAbsolutePos (zero, 0) == cudaGrid.getFieldValue (bufSize, 0));
+  ASSERT (cudaGrid.getFieldValueOrNullByAbsolutePos (zero, 0) == cudaGrid.getFieldValue (bufSize, 0));
   ASSERT (cudaGrid.getComputationStart (one) == one + bufSize);
   ASSERT (cudaGrid.getComputationEnd (one) == overallSize + bufSize - one);
   ASSERT (cudaGrid.getHasLeft ().get1 () == 0);
-  ASSERT (cudaGrid.getHasLeft ().get2 () == 0);
-  ASSERT (cudaGrid.getHasLeft ().get3 () == 0);
   ASSERT (cudaGrid.getHasRight ().get1 () == 0);
-  ASSERT (cudaGrid.getHasRight ().get2 () == 0);
-  ASSERT (cudaGrid.getHasRight ().get3 () == 0);
 
   CudaExitStatus _retval = CUDA_ERROR;
   CudaExitStatus *retval = &_retval;
@@ -348,12 +331,18 @@ void testFunc3D (GridCoordinate3D overallSize, GridCoordinate3D bufSize)
   CudaExitStatus *exitStatusCuda;
   cudaCheckErrorCmd (cudaMalloc ((void **) &exitStatusCuda, sizeof (CudaExitStatus)));
 
-  dim3 blocks (cudaGrid.getSize ().get1 () / 2, cudaGrid.getSize ().get2 () / 2, cudaGrid.getSize ().get3 () / 2);
-  dim3 threads (2, 2, 2);
-
   CudaGrid<GridCoordinate3D> *d_cudaGrid;
   cudaCheckErrorCmd (cudaMalloc ((void **) &d_cudaGrid, sizeof (CudaGrid<GridCoordinate3D>)));
   cudaCheckErrorCmd (cudaMemcpy (d_cudaGrid, &cudaGrid, sizeof(CudaGrid<GridCoordinate3D>), cudaMemcpyHostToDevice));
+
+  dim3 blocks_shift (1, 1, 1);
+  dim3 threads_shift (1, 1, 1);
+  cudaCheckExitStatus (shiftInTime <<< blocks_shift, threads_shift >>> (exitStatusCuda, d_cudaGrid));
+  cudaGrid.nextTimeStep ();
+  ASSERT (cudaGrid.getTimeStep () == 1);
+
+  dim3 blocks (cudaGrid.getSize ().get1 () / 2, cudaGrid.getSize ().get2 () / 2, cudaGrid.getSize ().get3 () / 2);
+  dim3 threads (2, 2, 2);
   cudaCheckExitStatus (cudaCalculate <<< blocks, threads >>> (exitStatusCuda, d_cudaGrid));
 
   cudaGrid.copyToCPU ();
@@ -364,18 +353,20 @@ void testFunc3D (GridCoordinate3D overallSize, GridCoordinate3D bufSize)
     {
       for (grid_coord k = bufSize.get3 (); k < cudaGrid.getSize ().get3 () - bufSize.get3 (); ++k)
       {
-        GridCoordinate3D pos (i, j, k
-#ifdef DEBUG_INFO
-                              , overallSize.getType1 ()
-                              , overallSize.getType2 ()
-                              , overallSize.getType3 ()
-#endif /* DEBUG_INFO */
-                             );
-        FieldPointValue *val = cpuGrid.getFieldPointValue (pos - bufSize);
-        grid_coord index = pos.calculateTotalCoord ();
+        GridCoordinate3D pos = GRID_COORDINATE_3D (i, j, k,
+                                                   overallSize.getType1 (),
+                                                   overallSize.getType2 (),
+                                                   overallSize.getType3 ());
+        grid_coord index = cudaGrid.calculateIndexFromPosition (pos);
 
-        ALWAYS_ASSERT (val->getCurValue () == FIELDVALUE (index * 23, index * 17));
-        ALWAYS_ASSERT (val->getPrevValue () == FIELDVALUE (17, 1022));
+        GridCoordinate3D posCPU = GRID_COORDINATE_3D (i - bufSize.get1 (), j - bufSize.get2 (), k - bufSize.get3 (),
+                                                      overallSize.getType1 (),
+                                                      overallSize.getType2 (),
+                                                      overallSize.getType3 ());
+        grid_coord coord = cpuGrid.calculateIndexFromPosition (posCPU);
+
+        ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 0) == FIELDVALUE (17, 1022) + FIELDVALUE (index * 23, index * 17));
+        ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 1) == FIELDVALUE (17, 1022));
       }
     }
   }
@@ -393,16 +384,12 @@ void testFunc3D (GridCoordinate3D overallSize, GridCoordinate3D bufSize)
     ASSERT (cudaGrid2.getTotalPosition (overallSize / 2 + bufSize) == overallSize / 2);
     ASSERT (cudaGrid2.getRelativePosition (overallSize / 2) == overallSize / 2 + bufSize);
     ASSERT (cudaGrid2.hasValueForCoordinate (zero));
-    ASSERT (cudaGrid2.getFieldPointValueByAbsolutePos (zero) == cudaGrid2.getFieldPointValue (bufSize));
-    ASSERT (cudaGrid2.getFieldPointValueOrNullByAbsolutePos (zero) == cudaGrid2.getFieldPointValue (bufSize));
+    ASSERT (cudaGrid2.getFieldValueByAbsolutePos (zero, 0) == cudaGrid2.getFieldValue (bufSize, 0));
+    ASSERT (cudaGrid2.getFieldValueOrNullByAbsolutePos (zero, 0) == cudaGrid2.getFieldValue (bufSize, 0));
     ASSERT (cudaGrid2.getComputationStart (one) == one + bufSize);
     ASSERT (cudaGrid2.getComputationEnd (one) == overallSize / 2 + bufSize * 2 - one);
     ASSERT (cudaGrid2.getHasLeft ().get1 () == 0);
-    ASSERT (cudaGrid2.getHasLeft ().get2 () == 0);
-    ASSERT (cudaGrid2.getHasLeft ().get3 () == 0);
     ASSERT (cudaGrid2.getHasRight ().get1 () == 1);
-    ASSERT (cudaGrid2.getHasRight ().get2 () == 1);
-    ASSERT (cudaGrid2.getHasRight ().get3 () == 1);
 
     cudaGrid2.copyFromCPU (overallSize / 2, overallSize);
     ASSERT (cudaGrid2.getBufSize () == bufSize);
@@ -414,16 +401,12 @@ void testFunc3D (GridCoordinate3D overallSize, GridCoordinate3D bufSize)
     ASSERT (cudaGrid2.getTotalPosition (zero) == overallSize / 2 - bufSize);
     ASSERT (cudaGrid2.getRelativePosition (overallSize / 2 - bufSize) == zero);
     ASSERT (cudaGrid2.hasValueForCoordinate (overallSize / 2));
-    ASSERT (cudaGrid2.getFieldPointValueByAbsolutePos (overallSize / 2) == cudaGrid2.getFieldPointValue (bufSize));
-    ASSERT (cudaGrid2.getFieldPointValueOrNullByAbsolutePos (overallSize / 2) == cudaGrid2.getFieldPointValue (bufSize));
+    ASSERT (cudaGrid2.getFieldValueByAbsolutePos (overallSize / 2, 0) == cudaGrid2.getFieldValue (bufSize, 0));
+    ASSERT (cudaGrid2.getFieldValueOrNullByAbsolutePos (overallSize / 2, 0) == cudaGrid2.getFieldValue (bufSize, 0));
     ASSERT (cudaGrid2.getComputationStart (one) == one);
     ASSERT (cudaGrid2.getComputationEnd (one) == overallSize / 2 + bufSize - one);
     ASSERT (cudaGrid2.getHasLeft ().get1 () == 1);
-    ASSERT (cudaGrid2.getHasLeft ().get2 () == 1);
-    ASSERT (cudaGrid2.getHasLeft ().get3 () == 1);
     ASSERT (cudaGrid2.getHasRight ().get1 () == 0);
-    ASSERT (cudaGrid2.getHasRight ().get2 () == 0);
-    ASSERT (cudaGrid2.getHasRight ().get3 () == 0);
   }
 }
 

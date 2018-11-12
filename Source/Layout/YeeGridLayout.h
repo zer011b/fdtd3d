@@ -427,25 +427,25 @@ public:
   {
   } /* ~YeeGridLayout */
 
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (FieldPointValue *, FieldPointValue *);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *, FieldPointValue *);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *,
-                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (const FieldValue &, const FieldValue &);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &);
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (const FieldValue &, const FieldValue &, const FieldValue &,
+                                                            const FieldValue &, const FieldValue &, const FieldValue &,
                                                             FPValue &, FPValue &);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *,
-                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
-                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
-                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (const FieldValue &, const FieldValue &, const FieldValue &,
+                                                            const FieldValue &, const FieldValue &, const FieldValue &,
+                                                            const FieldValue &, const FieldValue &, const FieldValue &,
+                                                            const FieldValue &, const FieldValue &, const FieldValue &,
                                                             FPValue &, FPValue &);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (FieldPointValue *, FieldPointValue *, FieldPointValue *,
-                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
-                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
-                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
-                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
-                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
-                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
-                                                            FieldPointValue *, FieldPointValue *, FieldPointValue *,
+  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (const FieldValue &, const FieldValue &, const FieldValue &,
+                                                            const FieldValue &, const FieldValue &, const FieldValue &,
+                                                            const FieldValue &, const FieldValue &, const FieldValue &,
+                                                            const FieldValue &, const FieldValue &, const FieldValue &,
+                                                            const FieldValue &, const FieldValue &, const FieldValue &,
+                                                            const FieldValue &, const FieldValue &, const FieldValue &,
+                                                            const FieldValue &, const FieldValue &, const FieldValue &,
+                                                            const FieldValue &, const FieldValue &, const FieldValue &,
                                                             FPValue &, FPValue &);
 
   template <bool isMetaMaterial>
@@ -622,7 +622,7 @@ private:
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValue * val1, FieldPointValue * val2)
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (const FieldValue & val1, const FieldValue & val2)
 {
   return Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                              Approximation::getMaterial (val2));
@@ -630,7 +630,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValu
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValue * val1, FieldPointValue * val2, FieldPointValue * val3, FieldPointValue * val4)
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (const FieldValue & val1, const FieldValue & val2, const FieldValue & val3, const FieldValue & val4)
 {
   return Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                              Approximation::getMaterial (val2),
@@ -640,8 +640,8 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValu
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValue * val1, FieldPointValue * val2, FieldPointValue * val3, FieldPointValue * val4,
-                                                                  FieldPointValue * val5, FieldPointValue * val6, FieldPointValue * val7, FieldPointValue * val8)
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (const FieldValue & val1, const FieldValue & val2, const FieldValue & val3, const FieldValue & val4,
+                                                                  const FieldValue & val5, const FieldValue & val6, const FieldValue & val7, const FieldValue & val8)
 {
   return Approximation::approximateMaterial (Approximation::getMaterial (val1),
                                              Approximation::getMaterial (val2),
@@ -655,9 +655,9 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (FieldPointValu
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPointValue * val1, FieldPointValue * val2,
-                                           FieldPointValue * val3, FieldPointValue * val4,
-                                           FieldPointValue * val5, FieldPointValue * val6,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (const FieldValue & val1, const FieldValue & val2,
+                                           const FieldValue & val3, const FieldValue & val4,
+                                           const FieldValue & val5, const FieldValue & val6,
                                            FPValue &omega,
                                            FPValue &gamma)
 {
@@ -678,12 +678,12 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPoint
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPointValue * val1, FieldPointValue * val2,
-                                                                      FieldPointValue * val3, FieldPointValue * val4,
-                                                                      FieldPointValue * val5, FieldPointValue * val6,
-                                                                      FieldPointValue * val7, FieldPointValue * val8,
-                                                                      FieldPointValue * val9, FieldPointValue * val10,
-                                                                      FieldPointValue * val11, FieldPointValue * val12,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (const FieldValue & val1, const FieldValue & val2,
+                                                                      const FieldValue & val3, const FieldValue & val4,
+                                                                      const FieldValue & val5, const FieldValue & val6,
+                                                                      const FieldValue & val7, const FieldValue & val8,
+                                                                      const FieldValue & val9, const FieldValue & val10,
+                                                                      const FieldValue & val11, const FieldValue & val12,
                                                                       FPValue &omega,
                                                                       FPValue &gamma)
 {
@@ -712,18 +712,18 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPoint
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_DEVICE CUDA_HOST FPValue
-YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (FieldPointValue * val1, FieldPointValue * val2,
-                                                                      FieldPointValue * val3, FieldPointValue * val4,
-                                                                      FieldPointValue * val5, FieldPointValue * val6,
-                                                                      FieldPointValue * val7, FieldPointValue * val8,
-                                                                      FieldPointValue * val9, FieldPointValue * val10,
-                                                                      FieldPointValue * val11, FieldPointValue * val12,
-                                                                      FieldPointValue * val13, FieldPointValue * val14,
-                                                                      FieldPointValue * val15, FieldPointValue * val16,
-                                                                      FieldPointValue * val17, FieldPointValue * val18,
-                                                                      FieldPointValue * val19, FieldPointValue * val20,
-                                                                      FieldPointValue * val21, FieldPointValue * val22,
-                                                                      FieldPointValue * val23, FieldPointValue * val24,
+YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (const FieldValue & val1, const FieldValue & val2,
+                                                                      const FieldValue & val3, const FieldValue & val4,
+                                                                      const FieldValue & val5, const FieldValue & val6,
+                                                                      const FieldValue & val7, const FieldValue & val8,
+                                                                      const FieldValue & val9, const FieldValue & val10,
+                                                                      const FieldValue & val11, const FieldValue & val12,
+                                                                      const FieldValue & val13, const FieldValue & val14,
+                                                                      const FieldValue & val15, const FieldValue & val16,
+                                                                      const FieldValue & val17, const FieldValue & val18,
+                                                                      const FieldValue & val19, const FieldValue & val20,
+                                                                      const FieldValue & val21, const FieldValue & val22,
+                                                                      const FieldValue & val23, const FieldValue & val24,
                                                                       FPValue &omega,
                                                                       FPValue &gamma)
 {

@@ -1,7 +1,7 @@
 #ifndef APPROXIMATION_H
 #define APPROXIMATION_H
 
-#include "FieldPoint.h"
+#include "FieldValue.h"
 #include "GridCoordinate3D.h"
 
 #define APPROXIMATION_ACCURACY FPValue (0.0000001)
@@ -23,7 +23,7 @@ public:
                                      FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue,
                                      FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
 
-  static CUDA_DEVICE CUDA_HOST FPValue getMaterial (const FieldPointValue *);
+  static CUDA_DEVICE CUDA_HOST FPValue getMaterial (const FieldValue &);
 
   static CUDA_DEVICE CUDA_HOST FPValue phaseVelocityIncidentWave (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
   static CUDA_DEVICE CUDA_HOST FPValue approximateWaveNumber (FPValue, FPValue, FPValue, FPValue, FPValue, FPValue);
