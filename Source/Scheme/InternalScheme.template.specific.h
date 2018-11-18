@@ -2,96 +2,10 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 CUDA_HOST
 InternalScheme<Type, TCoord, layout_type>::~InternalScheme ()
 {
-#ifdef CUDA_ENABLED
-  /*
-   * Free memory
-   */
-  if (d_gpuIntSchemeOnGPU)
-  {
-    cudaCheckErrorCmd (cudaFree (d_gpuIntSchemeOnGPU));
-  }
-
-  if (gpuIntSchemeOnGPU)
-  {
-    gpuIntSchemeOnGPU->uninitOnGPU ();
-  }
-  if (gpuIntScheme)
-  {
-    gpuIntScheme->uninitFromCPU ();
-  }
-
-  delete gpuIntSchemeOnGPU;
-  delete gpuIntScheme;
-#endif /* CUDA_ENABLED */
-
-  delete Eps;
-  delete Mu;
-
-  delete Ex;
-  delete Ey;
-  delete Ez;
-
-  delete Hx;
-  delete Hy;
-  delete Hz;
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
-  {
-    delete Dx;
-    delete Dy;
-    delete Dz;
-
-    delete Bx;
-    delete By;
-    delete Bz;
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      delete D1x;
-      delete D1y;
-      delete D1z;
-
-      delete B1x;
-      delete B1y;
-      delete B1z;
-    }
-
-    delete SigmaX;
-    delete SigmaY;
-    delete SigmaZ;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  {
-    delete ExAmplitude;
-    delete EyAmplitude;
-    delete EzAmplitude;
-    delete HxAmplitude;
-    delete HyAmplitude;
-    delete HzAmplitude;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-  {
-    delete OmegaPE;
-    delete OmegaPM;
-    delete GammaE;
-    delete GammaM;
-  }
-
-  delete CaEx;
-  delete CbEx;
-  delete CaEy;
-  delete CbEy;
-  delete CaEz;
-  delete CbEz;
-
-  delete DaHx;
-  delete DbHx;
-  delete DaHy;
-  delete DbHy;
-  delete DaHz;
-  delete DbHz;
+#define GRID_NAME(x) \
+  delete x;
+#include "Grids.inc.h"
+#undef GRID_NAME
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
@@ -155,71 +69,13 @@ InternalSchemeHelper::allocateGrids (InternalScheme<Type, TCoord, layout_type> *
 
   int storedSteps = 3;
 
-  intScheme->Eps = new Grid< TCoord<grid_coord, true> > (layout->getEpsSize (), 0, 1, "Eps");
-  intScheme->Mu = new Grid<TC> (layout->getEpsSize (), 0, 1, "Mu");
-
-  intScheme->Ex = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, storedSteps, "Ex") : NULLPTR;
-  intScheme->Ey = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, storedSteps, "Ey") : NULLPTR;
-  intScheme->Ez = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, storedSteps, "Ez") : NULLPTR;
-  intScheme->Hx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, storedSteps, "Hx") : NULLPTR;
-  intScheme->Hy = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, storedSteps, "Hy") : NULLPTR;
-  intScheme->Hz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, storedSteps, "Hz") : NULLPTR;
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
-  {
-    intScheme->Dx = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, storedSteps, "Dx") : NULLPTR;
-    intScheme->Dy = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, storedSteps, "Dy") : NULLPTR;
-    intScheme->Dz = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, storedSteps, "Dz") : NULLPTR;
-    intScheme->Bx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, storedSteps, "Bx") : NULLPTR;
-    intScheme->By = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, storedSteps, "By") : NULLPTR;
-    intScheme->Bz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, storedSteps, "Bz") : NULLPTR;
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      intScheme->D1x = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, storedSteps, "D1x") : NULLPTR;
-      intScheme->D1y = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, storedSteps, "D1y") : NULLPTR;
-      intScheme->D1z = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, storedSteps, "D1z") : NULLPTR;
-      intScheme->B1x = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, storedSteps, "B1x") : NULLPTR;
-      intScheme->B1y = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, storedSteps, "B1y") : NULLPTR;
-      intScheme->B1z = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, storedSteps, "B1z") : NULLPTR;
-    }
-
-    intScheme->SigmaX = intScheme->doNeedSigmaX ? new Grid<TC> (layout->getEpsSize (), 0, 1, "SigmaX") : NULLPTR;
-    intScheme->SigmaY = intScheme->doNeedSigmaY ? new Grid<TC> (layout->getEpsSize (), 0, 1, "SigmaY") : NULLPTR;
-    intScheme->SigmaZ = intScheme->doNeedSigmaZ ? new Grid<TC> (layout->getEpsSize (), 0, 1, "SigmaZ") : NULLPTR;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  {
-    intScheme->ExAmplitude = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, storedSteps, "ExAmp") : NULLPTR;
-    intScheme->EyAmplitude = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, storedSteps, "EyAmp") : NULLPTR;
-    intScheme->EzAmplitude = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, storedSteps, "EzAmp") : NULLPTR;
-    intScheme->HxAmplitude = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, storedSteps, "HxAmp") : NULLPTR;
-    intScheme->HyAmplitude = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, storedSteps, "HyAmp") : NULLPTR;
-    intScheme->HzAmplitude = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, storedSteps, "HzAmp") : NULLPTR;
-  }
-
-  intScheme->CaEx = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, 1, "CaEx") : NULLPTR;
-  intScheme->CbEx = intScheme->doNeedEx ? new Grid<TC> (layout->getExSize (), 0, 1, "CbEx") : NULLPTR;
-  intScheme->CaEy = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, 1, "CaEy") : NULLPTR;
-  intScheme->CbEy = intScheme->doNeedEy ? new Grid<TC> (layout->getEySize (), 0, 1, "CbEy") : NULLPTR;
-  intScheme->CaEz = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, 1, "CaEz") : NULLPTR;
-  intScheme->CbEz = intScheme->doNeedEz ? new Grid<TC> (layout->getEzSize (), 0, 1, "CbEz") : NULLPTR;
-
-  intScheme->DaHx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, 1, "DaHx") : NULLPTR;
-  intScheme->DbHx = intScheme->doNeedHx ? new Grid<TC> (layout->getHxSize (), 0, 1, "DbHx") : NULLPTR;
-  intScheme->DaHy = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, 1, "DaHy") : NULLPTR;
-  intScheme->DbHy = intScheme->doNeedHy ? new Grid<TC> (layout->getHySize (), 0, 1, "DbHy") : NULLPTR;
-  intScheme->DaHz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, 1, "DaHz") : NULLPTR;
-  intScheme->DbHz = intScheme->doNeedHz ? new Grid<TC> (layout->getHzSize (), 0, 1, "DbHz") : NULLPTR;
-
-  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-  {
-    intScheme->OmegaPE = new Grid<TC> (layout->getEpsSize (), 0, 1, "OmegaPE");
-    intScheme->GammaE = new Grid<TC> (layout->getEpsSize (), 0, 1, "GammaE");
-    intScheme->OmegaPM = new Grid<TC> (layout->getEpsSize (), 0, 1, "OmegaPM");
-    intScheme->GammaM = new Grid<TC> (layout->getEpsSize (), 0, 1, "GammaM");
-  }
+#define GRID_NAME(x, y, steps) \
+  intScheme->x = intScheme->doNeed ## y ? new Grid<TC> (layout->get ## y ## Size (), 0, steps, #x) : NULLPTR;
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  intScheme->x = new Grid<TC> (layout->get ## y ## Size (), 0, steps, #x);
+#include "Grids2.inc.h"
+#undef GRID_NAME
+#undef GRID_NAME_NO_CHECK
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -247,71 +103,13 @@ InternalSchemeHelper::allocateParallelGrids (InternalScheme<Type, ParallelGridCo
 
   int storedSteps = 3;
 
-  intScheme->Eps = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "Eps");
-  intScheme->Mu = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getMuSizeForCurNode (), 1, "Mu");
-
-  intScheme->Ex = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), storedSteps, "Ex") : NULLPTR;
-  intScheme->Ey = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), storedSteps, "Ey") : NULLPTR;
-  intScheme->Ez = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), storedSteps, "Ez") : NULLPTR;
-  intScheme->Hx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), storedSteps, "Hx") : NULLPTR;
-  intScheme->Hy = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), storedSteps, "Hy") : NULLPTR;
-  intScheme->Hz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), storedSteps, "Hz") : NULLPTR;
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
-  {
-    intScheme->Dx = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), storedSteps, "Dx") : NULLPTR;
-    intScheme->Dy = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), storedSteps, "Dy") : NULLPTR;
-    intScheme->Dz = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), storedSteps, "Dz") : NULLPTR;
-    intScheme->Bx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), storedSteps, "Bx") : NULLPTR;
-    intScheme->By = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), storedSteps, "By") : NULLPTR;
-    intScheme->Bz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), storedSteps, "Bz") : NULLPTR;
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      intScheme->D1x = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), storedSteps, "D1x") : NULLPTR;
-      intScheme->D1y = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), storedSteps, "D1y") : NULLPTR;
-      intScheme->D1z = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), storedSteps, "D1z") : NULLPTR;
-      intScheme->B1x = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), storedSteps, "B1x") : NULLPTR;
-      intScheme->B1y = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), storedSteps, "B1y") : NULLPTR;
-      intScheme->B1z = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), storedSteps, "B1z") : NULLPTR;
-    }
-
-    intScheme->SigmaX = intScheme->doNeedSigmaX ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "SigmaX") : NULLPTR;
-    intScheme->SigmaY = intScheme->doNeedSigmaY ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "SigmaY") : NULLPTR;
-    intScheme->SigmaZ = intScheme->doNeedSigmaZ ? new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "SigmaZ") : NULLPTR;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  {
-    intScheme->ExAmplitude = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), storedSteps, "ExAmp") : NULLPTR;
-    intScheme->EyAmplitude = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), storedSteps, "EyAmp") : NULLPTR;
-    intScheme->EzAmplitude = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), storedSteps, "EzAmp") : NULLPTR;
-    intScheme->HxAmplitude = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), storedSteps, "HxAmp") : NULLPTR;
-    intScheme->HyAmplitude = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), storedSteps, "HyAmp") : NULLPTR;
-    intScheme->HzAmplitude = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), storedSteps, "HzAmp") : NULLPTR;
-  }
-
-  intScheme->CaEx = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), 1, "CaEx") : NULLPTR;
-  intScheme->CbEx = intScheme->doNeedEx ? new ParallelGrid (pLayout->getExSize (), bufSize, 0, pLayout->getExSizeForCurNode (), 1, "CbEx") : NULLPTR;
-  intScheme->CaEy = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), 1, "CaEy") : NULLPTR;
-  intScheme->CbEy = intScheme->doNeedEy ? new ParallelGrid (pLayout->getEySize (), bufSize, 0, pLayout->getEySizeForCurNode (), 1, "CbEy") : NULLPTR;
-  intScheme->CaEz = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), 1, "CaEz") : NULLPTR;
-  intScheme->CbEz = intScheme->doNeedEz ? new ParallelGrid (pLayout->getEzSize (), bufSize, 0, pLayout->getEzSizeForCurNode (), 1, "CbEz") : NULLPTR;
-
-  intScheme->DaHx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), 1, "DaHx") : NULLPTR;
-  intScheme->DbHx = intScheme->doNeedHx ? new ParallelGrid (pLayout->getHxSize (), bufSize, 0, pLayout->getHxSizeForCurNode (), 1, "DbHx") : NULLPTR;
-  intScheme->DaHy = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), 1, "DaHy") : NULLPTR;
-  intScheme->DbHy = intScheme->doNeedHy ? new ParallelGrid (pLayout->getHySize (), bufSize, 0, pLayout->getHySizeForCurNode (), 1, "DbHy") : NULLPTR;
-  intScheme->DaHz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), 1, "DaHz") : NULLPTR;
-  intScheme->DbHz = intScheme->doNeedHz ? new ParallelGrid (pLayout->getHzSize (), bufSize, 0, pLayout->getHzSizeForCurNode (), 1, "DbHz") : NULLPTR;
-
-  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-  {
-    intScheme->OmegaPE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "OmegaPE");
-    intScheme->GammaE = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "GammaE");
-    intScheme->OmegaPM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "OmegaPM");
-    intScheme->GammaM = new ParallelGrid (pLayout->getEpsSize (), bufSize, 0, pLayout->getEpsSizeForCurNode (), 1, "GammaM");
-  }
+#define GRID_NAME(x, y, steps) \
+  intScheme->x = intScheme->doNeed ## y ? new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x) : NULLPTR;
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  intScheme->x = new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x);
+#include "Grids2.inc.h"
+#undef GRID_NAME
+#undef GRID_NAME_NO_CHECK
 }
 
 #endif /* PARALLEL_GRID */
@@ -329,90 +127,19 @@ InternalSchemeHelperGPU::allocateGridsFromCPU (InternalSchemeGPU<Type, TCoord, l
   typedef TCoord<FPValue, true> TCFP;
   typedef TCoord<FPValue, false> TCSFP;
 
-  intScheme->Eps = new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Eps);
-  intScheme->Mu = new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Mu);
-
-  intScheme->Ex = intScheme->doNeedEx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Ex) : NULLPTR;
-  intScheme->Ey = intScheme->doNeedEy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Ey) : NULLPTR;
-  intScheme->Ez = intScheme->doNeedEz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Ez) : NULLPTR;
-  intScheme->Hx = intScheme->doNeedHx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Hx) : NULLPTR;
-  intScheme->Hy = intScheme->doNeedHy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Hy) : NULLPTR;
-  intScheme->Hz = intScheme->doNeedHz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Hz) : NULLPTR;
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
-  {
-    intScheme->Dx = intScheme->doNeedEx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Dx) : NULLPTR;
-    intScheme->Dy = intScheme->doNeedEy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Dy) : NULLPTR;
-    intScheme->Dz = intScheme->doNeedEz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Dz) : NULLPTR;
-    intScheme->Bx = intScheme->doNeedHx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Bx) : NULLPTR;
-    intScheme->By = intScheme->doNeedHy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->By) : NULLPTR;
-    intScheme->Bz = intScheme->doNeedHz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->Bz) : NULLPTR;
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      intScheme->D1x = intScheme->doNeedEx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->D1x) : NULLPTR;
-      intScheme->D1y = intScheme->doNeedEy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->D1y) : NULLPTR;
-      intScheme->D1z = intScheme->doNeedEz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->D1z) : NULLPTR;
-      intScheme->B1x = intScheme->doNeedHx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->B1x) : NULLPTR;
-      intScheme->B1y = intScheme->doNeedHy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->B1y) : NULLPTR;
-      intScheme->B1z = intScheme->doNeedHz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->B1z) : NULLPTR;
-    }
-
-    intScheme->SigmaX = intScheme->doNeedSigmaX ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->SigmaX) : NULLPTR;
-    intScheme->SigmaY = intScheme->doNeedSigmaY ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->SigmaY) : NULLPTR;
-    intScheme->SigmaZ = intScheme->doNeedSigmaZ ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->SigmaZ) : NULLPTR;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  {
-    intScheme->ExAmplitude = intScheme->doNeedEx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->ExAmplitude) : NULLPTR;
-    intScheme->EyAmplitude = intScheme->doNeedEy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->EyAmplitude) : NULLPTR;
-    intScheme->EzAmplitude = intScheme->doNeedEz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->EzAmplitude) : NULLPTR;
-    intScheme->HxAmplitude = intScheme->doNeedHx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->HxAmplitude) : NULLPTR;
-    intScheme->HyAmplitude = intScheme->doNeedHy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->HyAmplitude) : NULLPTR;
-    intScheme->HzAmplitude = intScheme->doNeedHz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->HzAmplitude) : NULLPTR;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-  {
-    intScheme->OmegaPE = new CudaGrid<TC> (blockSize, bufSize, cpuScheme->OmegaPE);
-    intScheme->GammaE = new CudaGrid<TC> (blockSize, bufSize, cpuScheme->GammaE);
-    intScheme->OmegaPM = new CudaGrid<TC> (blockSize, bufSize, cpuScheme->OmegaPM);
-    intScheme->GammaM = new CudaGrid<TC> (blockSize, bufSize, cpuScheme->GammaM);
-  }
-
-  intScheme->CaEx = intScheme->doNeedEx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->CaEx) : NULLPTR;
-  intScheme->CbEx = intScheme->doNeedEx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->CbEx) : NULLPTR;
-  intScheme->CaEy = intScheme->doNeedEy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->CaEy) : NULLPTR;
-  intScheme->CbEy = intScheme->doNeedEy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->CbEy) : NULLPTR;
-  intScheme->CaEz = intScheme->doNeedEz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->CaEz) : NULLPTR;
-  intScheme->CbEz = intScheme->doNeedEz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->CbEz) : NULLPTR;
-
-  intScheme->DaHx = intScheme->doNeedHx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->DaHx) : NULLPTR;
-  intScheme->DbHx = intScheme->doNeedHx ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->DbHx) : NULLPTR;
-  intScheme->DaHy = intScheme->doNeedHy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->DaHy) : NULLPTR;
-  intScheme->DbHy = intScheme->doNeedHy ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->DbHy) : NULLPTR;
-  intScheme->DaHz = intScheme->doNeedHz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->DaHz) : NULLPTR;
-  intScheme->DbHz = intScheme->doNeedHz ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->DbHz) : NULLPTR;
+#define GRID_NAME(x, y, steps) \
+  intScheme->x = intScheme->doNeed ## y ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->x) : NULLPTR;
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  intScheme->x = new CudaGrid<TC> (blockSize, bufSize, cpuScheme->x);
+#include "Grids2.inc.h"
+#undef GRID_NAME
+#undef GRID_NAME_NO_CHECK
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
-    GridCoordinate1D one (1
-#ifdef DEBUG_INFO
-            , CoordinateType::X
-#endif
-            );
-
-    intScheme->EInc = new CudaGrid<GridCoordinate1D> (GridCoordinate1D (500*(cpuScheme->yeeLayout->getSize ().get1 ())
-#ifdef DEBUG_INFO
-                                                              , CoordinateType::X
-#endif
-                                                             ), one, cpuScheme->EInc);
-    intScheme->HInc = new CudaGrid<GridCoordinate1D> (GridCoordinate1D (500*(cpuScheme->yeeLayout->getSize ().get1 ())
-#ifdef DEBUG_INFO
-                                                              , CoordinateType::X
-#endif
-                                                             ), one, cpuScheme->HInc);
+    GridCoordinate1D one = GRID_COORDINATE_1D (1, CoordinateType::X);
+    intScheme->EInc = new CudaGrid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(cpuScheme->yeeLayout->getSize ().get1 ()), CoordinateType::X), one, cpuScheme->EInc);
+    intScheme->HInc = new CudaGrid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(cpuScheme->yeeLayout->getSize ().get1 ()), CoordinateType::X), one, cpuScheme->HInc);
   }
 }
 
@@ -421,118 +148,14 @@ CUDA_HOST
 void
 InternalSchemeHelperGPU::freeGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme)
 {
-  delete intScheme->Eps;
-  delete intScheme->Mu;
-  intScheme->Eps = NULLPTR;
-  intScheme->Mu = NULLPTR;
-
-  delete intScheme->Ex;
-  delete intScheme->Ey;
-  delete intScheme->Ez;
-  delete intScheme->Hx;
-  delete intScheme->Hy;
-  delete intScheme->Hz;
-  intScheme->Ex = NULLPTR;
-  intScheme->Ey = NULLPTR;
-  intScheme->Ez = NULLPTR;
-  intScheme->Hx = NULLPTR;
-  intScheme->Hy = NULLPTR;
-  intScheme->Hz = NULLPTR;
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
-  {
-    delete intScheme->Dx;
-    delete intScheme->Dy;
-    delete intScheme->Dz;
-    delete intScheme->Bx;
-    delete intScheme->By;
-    delete intScheme->Bz;
-    intScheme->Dx = NULLPTR;
-    intScheme->Dy = NULLPTR;
-    intScheme->Dz = NULLPTR;
-    intScheme->Bx = NULLPTR;
-    intScheme->By = NULLPTR;
-    intScheme->Bz = NULLPTR;
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      delete intScheme->D1x;
-      delete intScheme->D1y;
-      delete intScheme->D1z;
-      delete intScheme->B1x;
-      delete intScheme->B1y;
-      delete intScheme->B1z;
-      intScheme->D1x = NULLPTR;
-      intScheme->D1y = NULLPTR;
-      intScheme->D1z = NULLPTR;
-      intScheme->B1x = NULLPTR;
-      intScheme->B1y = NULLPTR;
-      intScheme->B1z = NULLPTR;
-    }
-
-    delete intScheme->SigmaX;
-    delete intScheme->SigmaY;
-    delete intScheme->SigmaZ;
-    intScheme->SigmaX = NULLPTR;
-    intScheme->SigmaY = NULLPTR;
-    intScheme->SigmaZ = NULLPTR;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  {
-    delete intScheme->ExAmplitude;
-    delete intScheme->EyAmplitude;
-    delete intScheme->EzAmplitude;
-    delete intScheme->HxAmplitude;
-    delete intScheme->HyAmplitude;
-    delete intScheme->HzAmplitude;
-    intScheme->ExAmplitude = NULLPTR;
-    intScheme->EyAmplitude = NULLPTR;
-    intScheme->EzAmplitude = NULLPTR;
-    intScheme->HxAmplitude = NULLPTR;
-    intScheme->HyAmplitude = NULLPTR;
-    intScheme->HzAmplitude = NULLPTR;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-  {
-    delete intScheme->OmegaPE;
-    delete intScheme->GammaE;
-    delete intScheme->OmegaPM;
-    delete intScheme->GammaM;
-    intScheme->OmegaPE = NULLPTR;
-    intScheme->GammaE = NULLPTR;
-    intScheme->OmegaPM = NULLPTR;
-    intScheme->GammaM = NULLPTR;
-  }
-
-  delete intScheme->CaEx;
-  delete intScheme->CbEx;
-  delete intScheme->CaEy;
-  delete intScheme->CbEy;
-  delete intScheme->CaEz;
-  delete intScheme->CbEz;
-
-  delete intScheme->DaHx;
-  delete intScheme->DbHx;
-  delete intScheme->DaHy;
-  delete intScheme->DbHy;
-  delete intScheme->DaHz;
-  delete intScheme->DbHz;
-
-  intScheme->CaEx = NULLPTR;
-  intScheme->CbEx = NULLPTR;
-  intScheme->CaEy = NULLPTR;
-  intScheme->CbEy = NULLPTR;
-  intScheme->CaEz = NULLPTR;
-  intScheme->CbEz = NULLPTR;
-
-  intScheme->DaHx = NULLPTR;
-  intScheme->DbHx = NULLPTR;
-  intScheme->DaHy = NULLPTR;
-  intScheme->DbHy = NULLPTR;
-  intScheme->DaHz = NULLPTR;
-  intScheme->DbHz = NULLPTR;
+#define GRID_NAME(x, y, steps) \
+  delete intScheme->x; \
+  intScheme->x = NULLPTR;
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  GRID_NAME(x, y, steps)
+#include "Grids2.inc.h"
+#undef GRID_NAME
+#undef GRID_NAME_NO_CHECK
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
@@ -547,59 +170,13 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 CUDA_HOST
 InternalSchemeGPU<Type, TCoord, layout_type>::~InternalSchemeGPU ()
 {
-  ASSERT (Eps == NULLPTR);
-  ASSERT (Mu == NULLPTR);
-
-  ASSERT (Ex == NULLPTR);
-  ASSERT (Ey == NULLPTR);
-  ASSERT (Ez == NULLPTR);
-  ASSERT (Hx == NULLPTR);
-  ASSERT (Hy == NULLPTR);
-  ASSERT (Hz == NULLPTR);
-
-  ASSERT (Dx == NULLPTR);
-  ASSERT (Dy == NULLPTR);
-  ASSERT (Dz == NULLPTR);
-  ASSERT (Bx == NULLPTR);
-  ASSERT (By == NULLPTR);
-  ASSERT (Bz == NULLPTR);
-
-  ASSERT (D1x == NULLPTR);
-  ASSERT (D1y == NULLPTR);
-  ASSERT (D1z == NULLPTR);
-  ASSERT (B1x == NULLPTR);
-  ASSERT (B1y == NULLPTR);
-  ASSERT (B1z == NULLPTR);
-
-  ASSERT (SigmaX == NULLPTR);
-  ASSERT (SigmaY == NULLPTR);
-  ASSERT (SigmaZ == NULLPTR);
-
-  ASSERT (ExAmplitude == NULLPTR);
-  ASSERT (EyAmplitude == NULLPTR);
-  ASSERT (EzAmplitude == NULLPTR);
-  ASSERT (HxAmplitude == NULLPTR);
-  ASSERT (HyAmplitude == NULLPTR);
-  ASSERT (HzAmplitude == NULLPTR);
-
-  ASSERT (OmegaPE == NULLPTR);
-  ASSERT (GammaE == NULLPTR);
-  ASSERT (OmegaPM == NULLPTR);
-  ASSERT (GammaM == NULLPTR);
-
-  ASSERT (CaEx == NULLPTR);
-  ASSERT (CbEx == NULLPTR);
-  ASSERT (CaEy == NULLPTR);
-  ASSERT (CbEy == NULLPTR);
-  ASSERT (CaEz == NULLPTR);
-  ASSERT (CbEz == NULLPTR);
-
-  ASSERT (DaHx == NULLPTR);
-  ASSERT (DbHx == NULLPTR);
-  ASSERT (DaHy == NULLPTR);
-  ASSERT (DbHy == NULLPTR);
-  ASSERT (DaHz == NULLPTR);
-  ASSERT (DbHz == NULLPTR);
+#define GRID_NAME(x, y, steps) \
+  ASSERT (x == NULLPTR);
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  GRID_NAME(x, y, steps)
+#include "Grids2.inc.h"
+#undef GRID_NAME
+#undef GRID_NAME_NO_CHECK
 
   ASSERT (EInc == NULLPTR);
   ASSERT (HInc == NULLPTR);
@@ -615,71 +192,13 @@ InternalSchemeHelperGPU::allocateGridsOnGPU (InternalSchemeGPU<Type, TCoord, lay
   typedef TCoord<FPValue, true> TCFP;
   typedef TCoord<FPValue, false> TCSFP;
 
-  cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Eps, sizeof(CudaGrid<TC>)));
-  cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Mu, sizeof(CudaGrid<TC>)));
-
-  if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Ex, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Ey, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Ez, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Hx, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Hy, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Hz, sizeof(CudaGrid<TC>))); }
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
-  {
-    if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Dx, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Dy, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Dz, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Bx, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->By, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->Bz, sizeof(CudaGrid<TC>))); }
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->D1x, sizeof(CudaGrid<TC>))); }
-      if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->D1y, sizeof(CudaGrid<TC>))); }
-      if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->D1z, sizeof(CudaGrid<TC>))); }
-      if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->B1x, sizeof(CudaGrid<TC>))); }
-      if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->B1y, sizeof(CudaGrid<TC>))); }
-      if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->B1z, sizeof(CudaGrid<TC>))); }
-    }
-
-    if (gpuScheme->doNeedSigmaX) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->SigmaX, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedSigmaY) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->SigmaY, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedSigmaZ) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->SigmaZ, sizeof(CudaGrid<TC>))); }
-  }
-
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  {
-    if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->ExAmplitude, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->EyAmplitude, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->EzAmplitude, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->HxAmplitude, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->HyAmplitude, sizeof(CudaGrid<TC>))); }
-    if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->HzAmplitude, sizeof(CudaGrid<TC>))); }
-  }
-
-  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-  {
-    cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->OmegaPE, sizeof(CudaGrid<TC>)));
-    cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->GammaE, sizeof(CudaGrid<TC>)));
-    cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->OmegaPM, sizeof(CudaGrid<TC>)));
-    cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->GammaM, sizeof(CudaGrid<TC>)));
-  }
-
-  if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->CaEx, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->CbEx, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->CaEy, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->CbEy, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->CaEz, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->CbEz, sizeof(CudaGrid<TC>))); }
-
-  if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->DaHx, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->DbHx, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->DaHy, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->DbHy, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->DaHz, sizeof(CudaGrid<TC>))); }
-  if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->DbHz, sizeof(CudaGrid<TC>))); }
+#define GRID_NAME(x, y, steps) \
+  if (gpuScheme->doNeed ## y) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->x, sizeof(CudaGrid<TC>))); }
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->x, sizeof(CudaGrid<TC>)));
+#include "Grids2.inc.h"
+#undef GRID_NAME
+#undef GRID_NAME_NO_CHECK
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
@@ -694,118 +213,13 @@ CUDA_HOST
 void
 InternalSchemeHelperGPU::freeGridsOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
 {
-  cudaCheckErrorCmd (cudaFree (gpuScheme->Eps));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->Mu));
-  gpuScheme->Eps = NULLPTR;
-  gpuScheme->Mu = NULLPTR;
-
-  cudaCheckErrorCmd (cudaFree (gpuScheme->Ex));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->Ey));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->Ez));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->Hx));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->Hy));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->Hz));
-  gpuScheme->Ex = NULLPTR;
-  gpuScheme->Ey = NULLPTR;
-  gpuScheme->Ez = NULLPTR;
-  gpuScheme->Hx = NULLPTR;
-  gpuScheme->Hy = NULLPTR;
-  gpuScheme->Hz = NULLPTR;
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
-  {
-    cudaCheckErrorCmd (cudaFree (gpuScheme->Dx));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->Dy));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->Dz));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->Bx));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->By));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->Bz));
-    gpuScheme->Dx = NULLPTR;
-    gpuScheme->Dy = NULLPTR;
-    gpuScheme->Dz = NULLPTR;
-    gpuScheme->Bx = NULLPTR;
-    gpuScheme->By = NULLPTR;
-    gpuScheme->Bz = NULLPTR;
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      cudaCheckErrorCmd (cudaFree (gpuScheme->D1x));
-      cudaCheckErrorCmd (cudaFree (gpuScheme->D1y));
-      cudaCheckErrorCmd (cudaFree (gpuScheme->D1z));
-      cudaCheckErrorCmd (cudaFree (gpuScheme->B1x));
-      cudaCheckErrorCmd (cudaFree (gpuScheme->B1y));
-      cudaCheckErrorCmd (cudaFree (gpuScheme->B1z));
-      gpuScheme->D1x = NULLPTR;
-      gpuScheme->D1y = NULLPTR;
-      gpuScheme->D1z = NULLPTR;
-      gpuScheme->B1x = NULLPTR;
-      gpuScheme->B1y = NULLPTR;
-      gpuScheme->B1z = NULLPTR;
-    }
-
-    cudaCheckErrorCmd (cudaFree (gpuScheme->SigmaX));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->SigmaY));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->SigmaZ));
-    gpuScheme->SigmaX = NULLPTR;
-    gpuScheme->SigmaY = NULLPTR;
-    gpuScheme->SigmaZ = NULLPTR;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  {
-    cudaCheckErrorCmd (cudaFree (gpuScheme->ExAmplitude));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->EyAmplitude));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->EzAmplitude));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->HxAmplitude));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->HyAmplitude));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->HzAmplitude));
-    gpuScheme->ExAmplitude = NULLPTR;
-    gpuScheme->EyAmplitude = NULLPTR;
-    gpuScheme->EzAmplitude = NULLPTR;
-    gpuScheme->HxAmplitude = NULLPTR;
-    gpuScheme->HyAmplitude = NULLPTR;
-    gpuScheme->HzAmplitude = NULLPTR;
-  }
-
-  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-  {
-    cudaCheckErrorCmd (cudaFree (gpuScheme->OmegaPE));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->GammaE));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->OmegaPM));
-    cudaCheckErrorCmd (cudaFree (gpuScheme->GammaM));
-    gpuScheme->OmegaPE = NULLPTR;
-    gpuScheme->GammaE = NULLPTR;
-    gpuScheme->OmegaPM = NULLPTR;
-    gpuScheme->GammaM = NULLPTR;
-  }
-
-  cudaCheckErrorCmd (cudaFree (gpuScheme->CaEx));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->CbEx));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->CaEy));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->CbEy));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->CaEz));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->CbEz));
-
-  cudaCheckErrorCmd (cudaFree (gpuScheme->DaHx));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->DbHx));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->DaHy));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->DbHy));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->DaHz));
-  cudaCheckErrorCmd (cudaFree (gpuScheme->DbHz));
-
-  gpuScheme->CaEx = NULLPTR;
-  gpuScheme->CbEx = NULLPTR;
-  gpuScheme->CaEy = NULLPTR;
-  gpuScheme->CbEy = NULLPTR;
-  gpuScheme->CaEz = NULLPTR;
-  gpuScheme->CbEz = NULLPTR;
-
-  gpuScheme->DaHx = NULLPTR;
-  gpuScheme->DbHx = NULLPTR;
-  gpuScheme->DaHy = NULLPTR;
-  gpuScheme->DbHy = NULLPTR;
-  gpuScheme->DaHz = NULLPTR;
-  gpuScheme->DbHz = NULLPTR;
+#define GRID_NAME(x, y, steps) \
+  if (gpuScheme->doNeed ## y) { cudaCheckErrorCmd (cudaFree (gpuScheme->x)); gpuScheme->x = NULLPTR; }
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  cudaCheckErrorCmd (cudaFree (gpuScheme->x)); gpuScheme->x = NULLPTR;
+#include "Grids2.inc.h"
+#undef GRID_NAME
+#undef GRID_NAME_NO_CHECK
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
@@ -823,92 +237,19 @@ InternalSchemeHelperGPU::copyGridsFromCPU (InternalSchemeGPU<Type, TCoord, layou
                   TCoord<grid_coord, true> start,
                   TCoord<grid_coord, true> end)
 {
-  gpuScheme->Eps->copyFromCPU (start, end);
-  gpuScheme->Mu->copyFromCPU (start, end);
-
-  if (gpuScheme->doNeedEx) { gpuScheme->Ex->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedEy) { gpuScheme->Ey->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedEz) { gpuScheme->Ez->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedHx) { gpuScheme->Hx->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedHy) { gpuScheme->Hy->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedHz) { gpuScheme->Hz->copyFromCPU (start, end); }
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
-  {
-    if (gpuScheme->doNeedEx) { gpuScheme->Dx->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedEy) { gpuScheme->Dy->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedEz) { gpuScheme->Dz->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedHx) { gpuScheme->Bx->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedHy) { gpuScheme->By->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedHz) { gpuScheme->Bz->copyFromCPU (start, end); }
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      if (gpuScheme->doNeedEx) { gpuScheme->D1x->copyFromCPU (start, end); }
-      if (gpuScheme->doNeedEy) { gpuScheme->D1y->copyFromCPU (start, end); }
-      if (gpuScheme->doNeedEz) { gpuScheme->D1z->copyFromCPU (start, end); }
-      if (gpuScheme->doNeedHx) { gpuScheme->B1x->copyFromCPU (start, end); }
-      if (gpuScheme->doNeedHy) { gpuScheme->B1y->copyFromCPU (start, end); }
-      if (gpuScheme->doNeedHz) { gpuScheme->B1z->copyFromCPU (start, end); }
-    }
-
-    if (gpuScheme->doNeedSigmaX) { gpuScheme->SigmaX->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedSigmaY) { gpuScheme->SigmaY->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedSigmaZ) { gpuScheme->SigmaZ->copyFromCPU (start, end); }
-  }
-
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  {
-    if (gpuScheme->doNeedEx) { gpuScheme->ExAmplitude->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedEy) { gpuScheme->EyAmplitude->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedEz) { gpuScheme->EzAmplitude->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedHx) { gpuScheme->HxAmplitude->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedHy) { gpuScheme->HyAmplitude->copyFromCPU (start, end); }
-    if (gpuScheme->doNeedHz) { gpuScheme->HzAmplitude->copyFromCPU (start, end); }
-  }
-
-  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-  {
-    gpuScheme->OmegaPE->copyFromCPU (start, end);
-    gpuScheme->GammaE->copyFromCPU (start, end);
-    gpuScheme->OmegaPM->copyFromCPU (start, end);
-    gpuScheme->GammaM->copyFromCPU (start, end);
-  }
-
-  if (gpuScheme->doNeedEx) { gpuScheme->CaEx->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedEx) { gpuScheme->CbEx->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedEy) { gpuScheme->CaEy->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedEy) { gpuScheme->CbEy->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedEz) { gpuScheme->CaEz->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedEz) { gpuScheme->CbEz->copyFromCPU (start, end); }
-
-  if (gpuScheme->doNeedHx) { gpuScheme->DaHx->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedHx) { gpuScheme->DbHx->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedHy) { gpuScheme->DaHy->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedHy) { gpuScheme->DbHy->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedHz) { gpuScheme->DaHz->copyFromCPU (start, end); }
-  if (gpuScheme->doNeedHz) { gpuScheme->DbHz->copyFromCPU (start, end); }
+#define GRID_NAME(x, y, steps) \
+  if (gpuScheme->doNeed ## y) { gpuScheme->x->copyFromCPU (start, end); }
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  gpuScheme->x->copyFromCPU (start, end);
+#include "Grids2.inc.h"
+#undef GRID_NAME
+#undef GRID_NAME_NO_CHECK
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
-    GridCoordinate1D zero (0
-#ifdef DEBUG_INFO
-            , CoordinateType::X
-#endif
-            );
-
-
-
-    gpuScheme->EInc->copyFromCPU (zero, GridCoordinate1D (500*(gpuScheme->yeeLayout->getSize ().get1 ())
-#ifdef DEBUG_INFO
-                                                              , CoordinateType::X
-#endif
-                                                             ));
-    gpuScheme->HInc->copyFromCPU (zero, GridCoordinate1D (500*(gpuScheme->yeeLayout->getSize ().get1 ())
-#ifdef DEBUG_INFO
-                                                              , CoordinateType::X
-#endif
-                                                             ));
+    GridCoordinate1D zero = GRID_COORDINATE_1D (0, CoordinateType::X);
+    gpuScheme->EInc->copyFromCPU (zero, GRID_COORDINATE_1D (500*(gpuScheme->yeeLayout->getSize ().get1 ()), CoordinateType::X));
+    gpuScheme->HInc->copyFromCPU (zero, GRID_COORDINATE_1D (500*(gpuScheme->yeeLayout->getSize ().get1 ()), CoordinateType::X));
   }
 }
 
@@ -923,71 +264,13 @@ InternalSchemeHelperGPU::copyGridsToGPU (InternalSchemeGPU<Type, TCoord, layout_
   typedef TCoord<FPValue, true> TCFP;
   typedef TCoord<FPValue, false> TCSFP;
 
-  cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Eps, intScheme->Eps, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice));
-  cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Mu, intScheme->Mu, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice));
-
-  if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Ex, intScheme->Ex, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Ey, intScheme->Ey, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Ez, intScheme->Ez, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Hx, intScheme->Hx, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Hy, intScheme->Hy, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Hz, intScheme->Hz, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-
-  if (SOLVER_SETTINGS.getDoUsePML ())
-  {
-    if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Dx, intScheme->Dx, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Dy, intScheme->Dy, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Dz, intScheme->Dz, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Bx, intScheme->Bx, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->By, intScheme->By, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->Bz, intScheme->Bz, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->D1x, intScheme->D1x, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-      if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->D1y, intScheme->D1y, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-      if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->D1z, intScheme->D1z, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-      if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->B1x, intScheme->B1x, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-      if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->B1y, intScheme->B1y, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-      if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->B1z, intScheme->B1z, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    }
-
-    if (gpuScheme->doNeedSigmaX) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->SigmaX, intScheme->SigmaX, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedSigmaY) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->SigmaY, intScheme->SigmaY, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedSigmaZ) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->SigmaZ, intScheme->SigmaZ, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  }
-
-  if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  {
-    if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->ExAmplitude, intScheme->ExAmplitude, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->EyAmplitude, intScheme->EyAmplitude, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->EzAmplitude, intScheme->EzAmplitude, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->HxAmplitude, intScheme->HxAmplitude, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->HyAmplitude, intScheme->HyAmplitude, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-    if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->HzAmplitude, intScheme->HzAmplitude, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  }
-
-  if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-  {
-    cudaCheckErrorCmd (cudaMemcpy (gpuScheme->OmegaPE, intScheme->OmegaPE, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice));
-    cudaCheckErrorCmd (cudaMemcpy (gpuScheme->GammaE, intScheme->GammaE, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice));
-    cudaCheckErrorCmd (cudaMemcpy (gpuScheme->OmegaPM, intScheme->OmegaPM, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice));
-    cudaCheckErrorCmd (cudaMemcpy (gpuScheme->GammaM, intScheme->GammaM, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice));
-  }
-
-  if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->CaEx, intScheme->CaEx, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedEx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->CbEx, intScheme->CbEx, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->CaEy, intScheme->CaEy, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedEy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->CbEy, intScheme->CbEy, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->CaEz, intScheme->CaEz, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedEz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->CbEz, intScheme->CbEz, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-
-  if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->DaHx, intScheme->DaHx, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedHx) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->DbHx, intScheme->DbHx, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->DaHy, intScheme->DaHy, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedHy) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->DbHy, intScheme->DbHy, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->DaHz, intScheme->DaHz, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-  if (gpuScheme->doNeedHz) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->DbHz, intScheme->DbHz, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
+#define GRID_NAME(x, y, steps) \
+  if (gpuScheme->doNeed ## y) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->x, intScheme->x, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  cudaCheckErrorCmd (cudaMemcpy (gpuScheme->x, intScheme->x, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice));
+#include "Grids2.inc.h"
+#undef GRID_NAME
+#undef GRID_NAME_NO_CHECK
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
   {

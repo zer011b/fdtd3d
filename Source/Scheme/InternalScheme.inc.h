@@ -2,7 +2,7 @@
 
 namespace InternalSchemeKernelHelpers
 {
-  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, uint8_t grid_type, bool usePML, bool useMetamaterials>
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, uint8_t grid_type>
   __global__
   void calculateFieldStepIterationKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
                                           GridCoordinate3D start3D,
@@ -19,7 +19,12 @@ namespace InternalSchemeKernelHelpers
                                           IGRID< TCoord<grid_coord, true> > *Cb,
                                           CoordinateType ct1,
                                           CoordinateType ct2,
-                                          CoordinateType ct3)
+                                          CoordinateType ct3,
+                                          bool usePML,
+                                          GridType gridType,
+                                          IGRID<TC> *materialGrid,
+                                          GridType materialGridType,
+                                          FPValue materialModifier)
   {
     GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
@@ -73,9 +78,78 @@ namespace InternalSchemeKernelHelpers
       }
     }
 
-    gpuScheme->calculateFieldStepIteration<grid_type, usePML> (t, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                               grid, coordFP,
-                                                               oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb);
+    gpuScheme->calculateFieldStepIteration<grid_type> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                       grid, coordFP,
+                                                       oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
+                                                       usePML,
+                                                       gridType, materialGrid, materialGridType,
+                                                       materialModifier);
+  }
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  __global__
+  void calculateFieldStepIterationPMLMetamaterialsKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                          GridCoordinate3D start3D,
+                                          time_step t,
+                                         TC pos,
+                                         IGRID<TC> *grid,
+                                         IGRID<TC> *gridPML,
+                                         IGRID<TC> *CB0,
+                                         IGRID<TC> *CB1,
+                                         IGRID<TC> *CB2,
+                                         IGRID<TC> *CA1,
+                                         IGRID<TC> *CA2,
+                                         GridType gridType,
+                                         IGRID<TC> *materialGrid1,
+                                         GridType materialGridType1,
+                                         IGRID<TC> *materialGrid2,
+                                         GridType materialGridType2,
+                                         IGRID<TC> *materialGrid3,
+                                         GridType materialGridType3,
+                                         FPValue materialModifier)
+  {
+    GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
+                                                         (blockIdx.y * blockDim.y) + threadIdx.y,
+                                                         (blockIdx.z * blockDim.z) + threadIdx.z,
+                                                          CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+    TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
+
+    gpuScheme->calculateFieldStepIterationPMLMetamaterials (t, pos, grid, gridPML, CB0, CB1, CB2, CA1, CA2,
+      gridType,
+      materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
+      materialModifier);
+  }
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, bool useMetamaterials>
+  __global__
+  void calculateFieldStepIterationPMLKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                          GridCoordinate3D start3D,
+                                          time_step t,
+                                           TC pos,
+                                           IGRID<TC> *grid,
+                                           IGRID<TC> *gridPML1,
+                                           IGRID<TC> *gridPML2,
+                                           IGRID<TC> *Ca,
+                                           IGRID<TC> *Cb,
+                                           IGRID<TC> *Cc,
+                                           GridType gridPMLType1,
+                                           IGRID<TC> *materialGrid1,
+                                           GridType materialGridType1,
+                                           IGRID<TC> *materialGrid4,
+                                           GridType materialGridType4,
+                                           IGRID<TC> *materialGrid5,
+                                           GridType materialGridType5,
+                                           FPValue materialModifier)
+  {
+    GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
+                                                         (blockIdx.y * blockDim.y) + threadIdx.y,
+                                                         (blockIdx.z * blockDim.z) + threadIdx.z,
+                                                          CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+    TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
+
+    gpuScheme->calculateFieldStepIterationPML<useMetamaterials> (t, pos, grid, gridPML1, gridPML2, Ca, Cb, Cc,
+      gridPMLType1, materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
+      materialModifier);
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -129,6 +203,8 @@ namespace InternalSchemeKernelHelpers
   SHIFT_IN_TIME_KERNEL(B1y)
   SHIFT_IN_TIME_KERNEL(B1z)
 
+#undef SHIFT_IN_TIME_KERNEL
+
 #define SHIFT_IN_TIME_PLANE_WAVE_KERNEL(NAME) \
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type> \
   __global__ \
@@ -140,6 +216,8 @@ namespace InternalSchemeKernelHelpers
 
   SHIFT_IN_TIME_PLANE_WAVE_KERNEL(EInc)
   SHIFT_IN_TIME_PLANE_WAVE_KERNEL(HInc)
+
+#undef SHIFT_IN_TIME_PLANE_WAVE_KERNEL
 };
 
 #endif /* GPU_INTERNAL_SCHEME */
@@ -173,16 +251,22 @@ public:
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
   ICUDA_HOST static void
+  copyGridsToGPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme,
+                  InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+  ICUDA_HOST static void
   copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
                       time_step N,
                       bool finalCopy);
 
-  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-  ICUDA_HOST static void
-  copyGridsToGPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme,
-                  InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
-
 #else /* GPU_INTERNAL_SCHEME */
+
+#if defined (PARALLEL_GRID)
+  template <SchemeType_t Type, LayoutType layout_type>
+  ICUDA_HOST
+  static void allocateParallelGrids (InternalScheme<Type, ParallelGridCoordinateTemplate, layout_type> *intScheme);
+#endif /* PARALLEL_GRID */
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
   ICUDA_HOST
@@ -217,7 +301,7 @@ public:
   FieldValue approximateIncidentWave (TCoord<FPValue, true>, TCoord<FPValue, true>, FPValue, IGRID<GridCoordinate1D> *, FPValue, FPValue);
 
   template <SchemeType_t Type, template <typename, bool> class TCoord>
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   static
   FieldValue approximateIncidentWaveE (TCoord<FPValue, true> realCoord, TCoord<FPValue, true> zeroCoord, IGRID<GridCoordinate1D> *EInc, FPValue incAngle1, FPValue incAngle2)
   {
@@ -225,102 +309,25 @@ public:
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord>
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   static
   FieldValue approximateIncidentWaveH (TCoord<FPValue, true> realCoord, TCoord<FPValue, true> zeroCoord, IGRID<GridCoordinate1D> *HInc, FPValue incAngle1, FPValue incAngle2)
   {
     return approximateIncidentWave<Type, TCoord> (realCoord, zeroCoord, 0.5, HInc, incAngle1, incAngle2);
   }
 
-#ifndef GPU_INTERNAL_SCHEME
-#if defined (PARALLEL_GRID)
-
-  template <SchemeType_t Type, LayoutType layout_type>
-  ICUDA_HOST
-  static
-  void allocateParallelGrids (InternalScheme<Type, ParallelGridCoordinateTemplate, layout_type> *intScheme);
-
-#endif /* PARALLEL_GRID */
-
-  template <SchemeType_t Type, LayoutType layout_type>
-  ICUDA_HOST
-  static
-  void performNSteps1D (INTERNAL_SCHEME_BASE<Type, GridCoordinate1DTemplate, layout_type> *intScheme,
-                        time_step tStart,
-                        time_step N)
-  {
-    for (grid_coord c1 = 0; c1 < intScheme->blockCount.get1 (); ++c1)
-    {
-      GridCoordinate1D blockIdx = GRID_COORDINATE_1D (c1, intScheme->ct1);
-
-      // TODO: save block to prev blocks storage
-      intScheme->performNStepsForBlock (tStart, N, blockIdx);
-    }
-
-    intScheme->share ();
-    intScheme->rebalance ();
-  }
-
-  template <SchemeType_t Type, LayoutType layout_type>
-  ICUDA_HOST
-  static
-  void performNSteps2D (INTERNAL_SCHEME_BASE<Type, GridCoordinate2DTemplate, layout_type> *intScheme,
-                        time_step tStart,
-                        time_step N)
-  {
-    for (grid_coord c1 = 0; c1 < intScheme->blockCount.get1 (); ++c1)
-    {
-      for (grid_coord c2 = 0; c2 < intScheme->blockCount.get2 (); ++c2)
-      {
-        GridCoordinate2D blockIdx = GRID_COORDINATE_2D (c1, c2, intScheme->ct1, intScheme->ct2);
-
-        // TODO: save block to prev blocks storage
-        intScheme->performNStepsForBlock (tStart, N, blockIdx);
-      }
-    }
-
-    intScheme->share ();
-    intScheme->rebalance ();
-  }
-
-  template <SchemeType_t Type, LayoutType layout_type>
-  ICUDA_HOST
-  static
-  void performNSteps3D (INTERNAL_SCHEME_BASE<Type, GridCoordinate3DTemplate, layout_type> *intScheme,
-                        time_step tStart,
-                        time_step N)
-  {
-    for (grid_coord c1 = 0; c1 < intScheme->blockCount.get1 (); ++c1)
-    {
-      for (grid_coord c2 = 0; c2 < intScheme->blockCount.get2 (); ++c2)
-      {
-        for (grid_coord c3 = 0; c3 < intScheme->blockCount.get3 (); ++c3)
-        {
-          GridCoordinate3D blockIdx = GRID_COORDINATE_3D (c1, c2, c3, intScheme->ct1, intScheme->ct2, intScheme->ct3);
-
-          // TODO: save block to prev blocks storage
-          intScheme->performNStepsForBlock (tStart, N, blockIdx);
-        }
-      }
-    }
-
-    intScheme->share ();
-    intScheme->rebalance ();
-  }
-#endif /* !GPU_INTERNAL_SCHEME */
-
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   static bool doSkipBorderFunc1D (GridCoordinate1D pos, IGRID<GridCoordinate1D> *grid)
   {
     return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1;
   }
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   static bool doSkipBorderFunc2D (GridCoordinate2D pos, IGRID<GridCoordinate2D> *grid)
   {
     return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1
            && pos.get2 () != 0 && pos.get2 () != grid->getTotalSize ().get2 () - 1;
   }
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   static bool doSkipBorderFunc3D (GridCoordinate3D pos, IGRID<GridCoordinate3D> *grid)
   {
     return pos.get1 () != 0 && pos.get1 () != grid->getTotalSize ().get1 () - 1
@@ -334,21 +341,21 @@ class INTERNAL_SCHEME_BASE
 {
   friend class INTERNAL_SCHEME_HELPER;
 
-#ifdef CUDA_ENABLED
-#ifdef GPU_INTERNAL_SCHEME
-
-  template <SchemeType_t Type1, template <typename, bool> class TCoord1, LayoutType layout_type1>
-  friend class InternalScheme;
-  friend class InternalSchemeHelper;
-
-#else /* GPU_INTERNAL_SCHEME */
-
-  template <SchemeType_t Type1, template <typename, bool> class TCoord1, LayoutType layout_type1>
-  friend class InternalSchemeGPU;
-  friend class InternalSchemeHelperGPU;
-
-#endif /* !GPU_INTERNAL_SCHEME */
-#endif
+// #ifdef CUDA_ENABLED
+// #ifdef GPU_INTERNAL_SCHEME
+//
+//   template <SchemeType_t Type1, template <typename, bool> class TCoord1, LayoutType layout_type1>
+//   friend class InternalScheme;
+//   friend class InternalSchemeHelper;
+//
+// #else /* GPU_INTERNAL_SCHEME */
+//
+//   template <SchemeType_t Type1, template <typename, bool> class TCoord1, LayoutType layout_type1>
+//   friend class InternalSchemeGPU;
+//   friend class InternalSchemeHelperGPU;
+//
+// #endif /* !GPU_INTERNAL_SCHEME */
+// #endif
 
 protected:
 
@@ -365,6 +372,8 @@ protected:
    */
   bool isInitialized;
 
+  bool useParallel;
+
   /**
    * Yee grid layout, which is being used for computations
    */
@@ -377,80 +386,10 @@ protected:
   CoordinateType ct2;
   CoordinateType ct3;
 
-  /**
-   * Field grids
-   */
-  IGRID<TC> *Ex;
-  IGRID<TC> *Ey;
-  IGRID<TC> *Ez;
-  IGRID<TC> *Hx;
-  IGRID<TC> *Hy;
-  IGRID<TC> *Hz;
-
-  IGRID<TC> *Dx;
-  IGRID<TC> *Dy;
-  IGRID<TC> *Dz;
-  IGRID<TC> *Bx;
-  IGRID<TC> *By;
-  IGRID<TC> *Bz;
-
-  /**
-   * Auxiliary field grids
-   */
-  IGRID<TC> *D1x;
-  IGRID<TC> *D1y;
-  IGRID<TC> *D1z;
-  IGRID<TC> *B1x;
-  IGRID<TC> *B1y;
-  IGRID<TC> *B1z;
-
-  /**
-   * Amplitude field grids
-   */
-  IGRID<TC> *ExAmplitude;
-  IGRID<TC> *EyAmplitude;
-  IGRID<TC> *EzAmplitude;
-  IGRID<TC> *HxAmplitude;
-  IGRID<TC> *HyAmplitude;
-  IGRID<TC> *HzAmplitude;
-
-  /**
-   * Material grids
-   */
-  IGRID<TC> *Eps;
-  IGRID<TC> *Mu;
-
-  /**
-   * Sigmas
-   */
-  IGRID<TC> *SigmaX;
-  IGRID<TC> *SigmaY;
-  IGRID<TC> *SigmaZ;
-
-  /**
-   * Metamaterial grids
-   */
-  IGRID<TC> *OmegaPE;
-  IGRID<TC> *GammaE;
-
-  IGRID<TC> *OmegaPM;
-  IGRID<TC> *GammaM;
-
-  /**
-   * Helper grids
-   */
-  IGRID<TC> *CaEx;
-  IGRID<TC> *CbEx;
-  IGRID<TC> *CaEy;
-  IGRID<TC> *CbEy;
-  IGRID<TC> *CaEz;
-  IGRID<TC> *CbEz;
-  IGRID<TC> *DaHx;
-  IGRID<TC> *DbHx;
-  IGRID<TC> *DaHy;
-  IGRID<TC> *DbHy;
-  IGRID<TC> *DaHz;
-  IGRID<TC> *DbHz;
+#define GRID_NAME(x) \
+  IGRID<TC> *x;
+#include "Grids.inc.h"
+#undef GRID_NAME
 
   /**
    * Auxiliary TF/SF 1D grids
@@ -542,21 +481,6 @@ protected:
   const bool doNeedSigmaY;
   const bool doNeedSigmaZ;
 
-  TC blockCount;
-  TC blockSize;
-
-#ifndef GPU_INTERNAL_SCHEME
-  time_step totalTimeSteps;
-  time_step NTimeSteps;
-
-  bool useParallel;
-
-  InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntScheme;
-  InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntSchemeOnGPU;
-  InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuIntSchemeOnGPU;
-
-#endif /* !GPU_INTERNAL_SCHEME */
-
 protected:
 
 #ifdef GPU_INTERNAL_SCHEME
@@ -644,50 +568,21 @@ protected:
   void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
 #endif /* ENABLE_ASSERTS */
 
+  ICUDA_DEVICE
+  FPValue getMaterial (const TC &, GridType, IGRID<TC> *, GridType);
+  ICUDA_DEVICE
+  FPValue getMetaMaterial (const TC &, GridType, IGRID<TC> *, GridType, IGRID<TC> *, GridType, IGRID<TC> *, GridType,
+                           FPValue &, FPValue &);
+
   template <uint8_t grid_type>
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   void calculateTFSF (TC, FieldValue &, FieldValue &, FieldValue &, FieldValue &, TC, TC, TC, TC);
 
-#ifndef GPU_INTERNAL_SCHEME
-  template <uint8_t grid_type, bool usePML, bool useMetamaterials>
-  ICUDA_HOST
-  void calculateFieldStep (time_step, TC, TC);
-#endif /* !GPU_INTERNAL_SCHEME */
-
-  template <uint8_t grid_type, bool usePML, bool useMetamaterials>
-  ICUDA_HOST
-  void calculateFieldStepInit (IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *,
-    IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, IGRID<TC> **,
-    IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, SourceCallBack *, SourceCallBack *, SourceCallBack *, FPValue *,
-    IGRID<TC> **, IGRID<TC> **);
-
-  template <uint8_t grid_type>
-  ICUDA_HOST
-  void calculateFieldStepInitDiff (TCS *, TCS *, TCS *, TCS *);
-
-  ICUDA_DEVICE ICUDA_HOST
-  void calculateFieldStepIterationPMLMetamaterials (time_step, TC, IGRID<TC> *, IGRID<TC> *, GridType,
-       IGRID<TC> *, GridType,  IGRID<TC> *, GridType,  IGRID<TC> *, GridType, FPValue);
-
-  template <bool useMetamaterials>
-  ICUDA_DEVICE ICUDA_HOST
-  void calculateFieldStepIterationPML (time_step, TC, IGRID<TC> *, IGRID<TC> *, IGRID<TC> *, GridType, GridType,
-       IGRID<TC> *, GridType,  IGRID<TC> *, GridType,  IGRID<TC> *, GridType, FPValue);
-
-  template <uint8_t grid_type>
-  ICUDA_DEVICE ICUDA_HOST
-  void calculateFieldStepIterationBorder (time_step, TC, IGRID<TC> *, SourceCallBack);
-
-  template <uint8_t grid_type>
-  ICUDA_DEVICE ICUDA_HOST
-  void calculateFieldStepIterationExact (time_step, TC, IGRID<TC> *, SourceCallBack,
-    FPValue &, FPValue &, FPValue &, FPValue &, FPValue &, FPValue &);
-
   template<uint8_t EnumVal>
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   void performPointSourceCalc (time_step);
 
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   FieldValue calcField (const FieldValue & prev, const FieldValue & oppositeField12, const FieldValue & oppositeField11,
                         const FieldValue & oppositeField22, const FieldValue & oppositeField21, const FieldValue & prevRightSide,
                         const FieldValue & Ca, const FieldValue & Cb, const FPValue & delta)
@@ -696,7 +591,7 @@ protected:
     return prev * Ca + tmp * Cb;
   }
 
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   FieldValue calcFieldDrude (const FieldValue & curDOrB, const FieldValue & prevDOrB, const FieldValue & prevPrevDOrB,
                              const FieldValue & prevEOrH, const FieldValue & prevPrevEOrH,
                              const FieldValue & b0, const FieldValue & b1, const FieldValue & b2, const FieldValue & a1, const FieldValue & a2)
@@ -704,7 +599,7 @@ protected:
     return curDOrB * b0 + prevDOrB * b1 + prevPrevDOrB * b2 - prevEOrH * a1 - prevPrevEOrH * a2;
   }
 
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   FieldValue calcFieldFromDOrB (const FieldValue & prevEOrH, const FieldValue & curDOrB, const FieldValue & prevDOrB,
                                 const FieldValue & Ca, const FieldValue & Cb, const FieldValue & Cc)
   {
@@ -719,10 +614,45 @@ public:
   ICUDA_HOST
   ~INTERNAL_SCHEME_BASE ();
 
-  template <uint8_t grid_type, bool usePML>
+  template <uint8_t grid_type>
   ICUDA_DEVICE ICUDA_HOST
   void calculateFieldStepIteration (time_step, TC, TC, TCS, TCS, TCS, TCS, IGRID<TC> *, TCFP,
-                                    IGRID<TC> *, IGRID<TC> *, SourceCallBack, IGRID<TC> *, IGRID<TC> *);
+                                    IGRID<TC> *, IGRID<TC> *, SourceCallBack, IGRID<TC> *, IGRID<TC> *, bool,
+                                    GridType, IGRID<TC> *, GridType, FPValue);
+
+  template <uint8_t grid_type, bool usePML, bool useMetamaterials>
+  ICUDA_HOST
+  void calculateFieldStepInit (IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *,
+    IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, IGRID<TC> **, IGRID<TC> **,
+    IGRID<TC> **, GridType *, IGRID<TC> **, GridType *, SourceCallBack *, SourceCallBack *, SourceCallBack *, FPValue *,
+    IGRID<TC> **, IGRID<TC> **,
+    IGRID<TC> **, IGRID<TC> **, IGRID<TC> **, IGRID<TC> **, IGRID<TC> **, IGRID<TC> **, IGRID<TC> **, IGRID<TC> **);
+
+  template <uint8_t grid_type>
+  ICUDA_HOST
+  void calculateFieldStepInitDiff (TCS *, TCS *, TCS *, TCS *);
+
+  ICUDA_DEVICE
+  void calculateFieldStepIterationPMLMetamaterials (time_step, TC, IGRID<TC> *, IGRID<TC> *,
+       IGRID<TC> *, IGRID<TC> *, IGRID<TC> *, IGRID<TC> *, IGRID<TC> *, GridType,
+       IGRID<TC> *, GridType,  IGRID<TC> *, GridType,  IGRID<TC> *, GridType, FPValue);
+
+  template <bool useMetamaterials>
+  ICUDA_DEVICE
+  void calculateFieldStepIterationPML (time_step, TC, IGRID<TC> *, IGRID<TC> *, IGRID<TC> *,
+       IGRID<TC> *, IGRID<TC> *, IGRID<TC> *, GridType,
+       IGRID<TC> *, GridType,  IGRID<TC> *, GridType,  IGRID<TC> *, GridType, FPValue);
+
+#ifndef GPU_INTERNAL_SCHEME
+  template <uint8_t grid_type>
+  ICUDA_DEVICE
+  void calculateFieldStepIterationBorder (time_step, TC, IGRID<TC> *, SourceCallBack);
+
+  template <uint8_t grid_type>
+  ICUDA_DEVICE
+  void calculateFieldStepIterationExact (time_step, TC, IGRID<TC> *, SourceCallBack,
+    FPValue &, FPValue &, FPValue &, FPValue &, FPValue &, FPValue &);
+#endif /* !GPU_INTERNAL_SCHEME */
 
 #ifdef GPU_INTERNAL_SCHEME
   ICUDA_HOST void initFromCPU (InternalScheme<Type, TCoord, layout_type> *cpuScheme, TC, TC);
@@ -756,7 +686,7 @@ public:
                 diff3D.get2 () == 0 ? 1 : SOLVER_SETTINGS.getNumCudaThreadsY (), \
                 diff3D.get3 () == 0 ? 1 : SOLVER_SETTINGS.getNumCudaThreadsZ ()); \
 
-  template <uint8_t grid_type, bool usePML, bool useMetamaterials>
+  template <uint8_t grid_type>
   CUDA_HOST
   void calculateFieldStepIterationKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuScheme,
                                                 GridCoordinate3D start3D,
@@ -771,12 +701,80 @@ public:
                                                 IGRID<TC> *oppositeGrid2,
                                                 SourceCallBack rightSideFunc,
                                                 IGRID<TC> *Ca,
-                                                IGRID<TC> *Cb)
+                                                IGRID<TC> *Cb,
+                                                bool usePML,
+                                                GridType gridType,
+                                                IGRID<TC> *materialGrid,
+                                                GridType materialGridType,
+                                                FPValue materialModifier)
   {
     GridCoordinate3D diff3D = end3D - start3D;
     SETUP_BLOCKS_AND_THREADS;
-    InternalSchemeKernelHelpers::calculateFieldStepIterationKernel<Type, TCoord, layout_type, grid_type, usePML, useMetamaterials> <<< blocks, threads >>>
-      (d_gpuScheme, start3D, t, diff11, diff12, diff21, diff22, grid, oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb, ct1, ct2, ct3);
+    InternalSchemeKernelHelpers::calculateFieldStepIterationKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
+      (d_gpuScheme, start3D, t, diff11, diff12, diff21, diff22, grid, oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb, ct1, ct2, ct3,
+       usePML, gridType, materialGrid, materialGridType, materialModifier);
+    cudaCheckError ();
+  }
+
+  CUDA_HOST
+  void calculateFieldStepIterationPMLMetamaterialsKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuScheme,
+                                                GridCoordinate3D start3D,
+                                                GridCoordinate3D end3D,
+                                                time_step t,
+                                               TC pos,
+                                               IGRID<TC> *grid,
+                                               IGRID<TC> *gridPML,
+                                               IGRID<TC> *CB0,
+                                               IGRID<TC> *CB1,
+                                               IGRID<TC> *CB2,
+                                               IGRID<TC> *CA1,
+                                               IGRID<TC> *CA2,
+                                               GridType gridType,
+                                               IGRID<TC> *materialGrid1,
+                                               GridType materialGridType1,
+                                               IGRID<TC> *materialGrid2,
+                                               GridType materialGridType2,
+                                               IGRID<TC> *materialGrid3,
+                                               GridType materialGridType3,
+                                               FPValue materialModifier)
+  {
+    GridCoordinate3D diff3D = end3D - start3D;
+    SETUP_BLOCKS_AND_THREADS;
+    InternalSchemeKernelHelpers::calculateFieldStepIterationPMLMetamaterialsKernel<Type, TCoord, layout_type> <<< blocks, threads >>>
+      (d_gpuScheme, start3D, t, pos, grid, gridPML, CB0, CB1, CB2, CA1, CA2, gridType,
+       materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
+       materialModifier);
+    cudaCheckError ();
+  }
+
+  template <bool useMetamaterials>
+  CUDA_HOST
+  void calculateFieldStepIterationPMLKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuScheme,
+                                                GridCoordinate3D start3D,
+                                                GridCoordinate3D end3D,
+                                                time_step t,
+                                                 TC pos,
+                                                 IGRID<TC> *grid,
+                                                 IGRID<TC> *gridPML1,
+                                                 IGRID<TC> *gridPML2,
+                                                 IGRID<TC> *Ca,
+                                                 IGRID<TC> *Cb,
+                                                 IGRID<TC> *Cc,
+                                                 GridType gridPMLType1,
+                                                 IGRID<TC> *materialGrid1,
+                                                 GridType materialGridType1,
+                                                 IGRID<TC> *materialGrid4,
+                                                 GridType materialGridType4,
+                                                 IGRID<TC> *materialGrid5,
+                                                 GridType materialGridType5,
+                                                 FPValue materialModifier)
+  {
+    GridCoordinate3D diff3D = end3D - start3D;
+    SETUP_BLOCKS_AND_THREADS;
+    InternalSchemeKernelHelpers::calculateFieldStepIterationPMLKernel<Type, TCoord, layout_type, useMetamaterials> <<< blocks, threads >>>
+      (d_gpuScheme, start3D, t, pos, grid, gridPML1, gridPML2, Ca, Cb, Cc, gridPMLType1,
+        materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
+        materialModifier);
     cudaCheckError ();
   }
 
@@ -809,6 +807,8 @@ public:
   SHIFT_IN_TIME_KERNEL_LAUNCH(B1y)
   SHIFT_IN_TIME_KERNEL_LAUNCH(B1z)
 
+#undef SHIFT_IN_TIME_KERNEL_LAUNCH
+
 #define SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCH(NAME) \
   CUDA_HOST \
   void shiftInTimePlaneWaveKernelLaunch ## NAME (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuSchemeOnGPU) \
@@ -821,6 +821,8 @@ public:
 
   SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCH(EInc)
   SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCH(HInc)
+
+#undef SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCH
 
   CUDA_HOST
   void performPlaneWaveEStepsKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuSchemeOnGPU,
@@ -855,150 +857,23 @@ public:
 
 #endif /* GPU_INTERNAL_SCHEME */
 
-#ifndef GPU_INTERNAL_SCHEME
-
-  /**
-   * Perform all time steps for scheme
-   */
-  ICUDA_HOST
-  void performSteps ()
-  {
-    for (time_step t = 0; t < totalTimeSteps; t += NTimeSteps)
-    {
-      /*
-       * Each NTimeSteps sharing will be performed.
-       *
-       * For sequential solver, NTimeSteps == totalTimeSteps
-       * For parallel/cuda solver, NTimeSteps == min (bufSize, cudaBufSize)
-       */
-      performNSteps (t, NTimeSteps);
-    }
-  }
-
-  ICUDA_HOST
-  void performNSteps (time_step tStart, time_step N);
-
-  ICUDA_HOST
-  void performNStepsForBlock (time_step tStart, time_step N, TC blockIdx);
-
-  ICUDA_HOST
-  void share ();
-
-  ICUDA_HOST
-  void rebalance ();
-
-  /**
-   * Perform computations of single time step for specific field and for specified chunk.
-   *
-   * NOTE: For GPU InternalScheme this method is not defined, because it is supposed to be ran on CPU only,
-   *       and call kernels deeper in call tree.
-   *
-   * NOTE: Start and End coordinates should correctly consider buffers in parallel grid,
-   *       which means, that computations are not performed for incorrect grid points.
-   */
-  template <uint8_t grid_type>
-  ICUDA_HOST
-  void performFieldSteps (time_step t, /**< time step to compute */
-                          TC Start, /**< start coordinate of chunk to compute */
-                          TC End) /**< end coordinate of chunk to compute */
-  {
-    /*
-     * TODO: remove check performed on each iteration
-     */
-    if (SOLVER_SETTINGS.getDoUsePML ())
-    {
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        calculateFieldStep<grid_type, true, true> (t, Start, End);
-      }
-      else
-      {
-        calculateFieldStep<grid_type, true, false> (t, Start, End);
-      }
-    }
-    else
-    {
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        calculateFieldStep<grid_type, false, true> (t, Start, End);
-      }
-      else
-      {
-        calculateFieldStep<grid_type, false, false> (t, Start, End);
-      }
-    }
-
-    bool doUsePointSource;
-    switch (grid_type)
-    {
-      case (static_cast<uint8_t> (GridType::EX)):
-      {
-        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceEx ();
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EY)):
-      {
-        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceEy ();
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EZ)):
-      {
-        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceEz ();
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HX)):
-      {
-        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceHx ();
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HY)):
-      {
-        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceHy ();
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HZ)):
-      {
-        doUsePointSource = SOLVER_SETTINGS.getDoUsePointSourceHz ();
-        break;
-      }
-      default:
-      {
-        UNREACHABLE;
-      }
-    }
-
-    if (doUsePointSource)
-    {
-      performPointSourceCalc<grid_type> (t);
-    }
-  }
-#endif
-
   ICUDA_DEVICE
   void performPlaneWaveESteps (time_step, GridCoordinate1D start, GridCoordinate1D end);
   ICUDA_DEVICE
   void performPlaneWaveHSteps (time_step, GridCoordinate1D start, GridCoordinate1D end);
 
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   FieldValue approximateIncidentWaveE (TCFP pos)
   {
     YeeGridLayout<Type, TCoord, layout_type> *layout = INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::yeeLayout;
     return INTERNAL_SCHEME_HELPER::approximateIncidentWaveE<Type, TCoord> (pos, layout->getZeroIncCoordFP (), EInc, layout->getIncidentWaveAngle1 (), layout->getIncidentWaveAngle2 ());
   }
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   FieldValue approximateIncidentWaveH (TCFP pos)
   {
     YeeGridLayout<Type, TCoord, layout_type> *layout = INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::yeeLayout;
     return INTERNAL_SCHEME_HELPER::approximateIncidentWaveH<Type, TCoord> (pos, layout->getZeroIncCoordFP (), HInc, layout->getIncidentWaveAngle1 (), layout->getIncidentWaveAngle2 ());
   }
-
-#ifndef GPU_INTERNAL_SCHEME
-  ICUDA_HOST
-  FPValue getMaterial (const TC &, GridType, IGRID<TC> *, GridType);
-  ICUDA_HOST
-  FPValue getMetaMaterial (const TC &, GridType, IGRID<TC> *, GridType, IGRID<TC> *, GridType, IGRID<TC> *, GridType,
-                           FPValue &, FPValue &);
-#endif
 
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedEx () const { return doNeedEx; }
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedEy () const { return doNeedEy; }
@@ -1008,257 +883,46 @@ public:
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedHy () const { return doNeedHy; }
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedHz () const { return doNeedHz; }
 
+  ICUDA_DEVICE ICUDA_HOST
   CoordinateType getType1 ()
   {
     return ct1;
   }
+  ICUDA_DEVICE ICUDA_HOST
   CoordinateType getType2 ()
   {
     return ct2;
   }
+  ICUDA_DEVICE ICUDA_HOST
   CoordinateType getType3 ()
   {
     return ct3;
   }
 
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getEx ()
-  {
-    ASSERT (Ex);
-    ASSERT (doNeedEx);
-    return Ex;
+#define GRID_NAME(x) \
+  IGRID<TC> * get ## x () \
+  { \
+    ASSERT (x); \
+    return x; \
   }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getEy ()
-  {
-    ASSERT (Ey);
-    ASSERT (doNeedEy);
-    return Ey;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getEz ()
-  {
-    ASSERT (Ez);
-    ASSERT (doNeedEz);
-    return Ez;
-  }
+#include "Grids.inc.h"
+#undef GRID_NAME
 
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getHx ()
-  {
-    ASSERT (Hx);
-    ASSERT (doNeedHx);
-    return Hx;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getHy ()
-  {
-    ASSERT (Hy);
-    ASSERT (doNeedHy);
-    return Hy;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getHz ()
-  {
-    ASSERT (Hz);
-    ASSERT (doNeedHz);
-    return Hz;
-  }
-
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getEps ()
-  {
-    ASSERT (Eps);
-    return Eps;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getMu ()
-  {
-    ASSERT (Mu);
-    return Mu;
-  }
-
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getSigmaX ()
-  {
-    ASSERT (SigmaX);
-    ASSERT (doNeedSigmaX);
-    return SigmaX;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getSigmaY ()
-  {
-    ASSERT (SigmaY);
-    ASSERT (doNeedSigmaY);
-    return SigmaY;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getSigmaZ ()
-  {
-    ASSERT (SigmaZ);
-    ASSERT (doNeedSigmaZ);
-    return SigmaZ;
-  }
-
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getOmegaPE ()
-  {
-    ASSERT (OmegaPE);
-    return OmegaPE;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getOmegaPM ()
-  {
-    ASSERT (OmegaPM);
-    return OmegaPM;
-  }
-
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getGammaE ()
-  {
-    ASSERT (GammaE);
-    return GammaE;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getGammaM ()
-  {
-    ASSERT (GammaM);
-    return GammaM;
-  }
-
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDx ()
-  {
-    ASSERT (Dx);
-    ASSERT (doNeedEx);
-    return Dx;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDy ()
-  {
-    ASSERT (Dy);
-    ASSERT (doNeedEy);
-    return Dy;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDz ()
-  {
-    ASSERT (Dz);
-    ASSERT (doNeedEz);
-    return Dz;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getBx ()
-  {
-    ASSERT (Bx);
-    ASSERT (doNeedHx);
-    return Bx;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getBy ()
-  {
-    ASSERT (By);
-    ASSERT (doNeedHy);
-    return By;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getBz ()
-  {
-    ASSERT (Bz);
-    ASSERT (doNeedHz);
-    return Bz;
-  }
-
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getD1x ()
-  {
-    ASSERT (D1x);
-    ASSERT (doNeedEx);
-    return D1x;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getD1y ()
-  {
-    ASSERT (D1y);
-    ASSERT (doNeedEy);
-    return D1y;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getD1z ()
-  {
-    ASSERT (D1z);
-    ASSERT (doNeedEz);
-    return D1z;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getB1x ()
-  {
-    ASSERT (B1x);
-    ASSERT (doNeedHx);
-    return B1x;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getB1y ()
-  {
-    ASSERT (B1y);
-    ASSERT (doNeedHy);
-    return B1y;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getB1z ()
-  {
-    ASSERT (B1z);
-    ASSERT (doNeedHz);
-    return B1z;
-  }
-
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCaEx ()
-  {
-    ASSERT (CaEx);
-    return CaEx;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCbEx ()
-  {
-    ASSERT (CbEx);
-    return CbEx;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCaEy ()
-  {
-    ASSERT (CaEy);
-    return CaEy;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCbEy ()
-  {
-    ASSERT (CbEy);
-    return CbEy;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCaEz ()
-  {
-    ASSERT (CaEz);
-    return CaEz;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getCbEz ()
-  {
-    ASSERT (CbEz);
-    return CbEz;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDaHx ()
-  {
-    ASSERT (DaHx);
-    return DaHx;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDbHx ()
-  {
-    ASSERT (DbHx);
-    return DbHx;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDaHy ()
-  {
-    ASSERT (DaHy);
-    return DaHy;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDbHy ()
-  {
-    ASSERT (DbHy);
-    return DbHy;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDaHz ()
-  {
-    ASSERT (DaHz);
-    return DaHz;
-  }
-  ICUDA_DEVICE ICUDA_HOST IGRID<TC> * getDbHz ()
-  {
-    ASSERT (DbHz);
-    return DbHz;
-  }
-
-  ICUDA_DEVICE ICUDA_HOST IGRID<GridCoordinate1D> * getEInc ()
+  ICUDA_DEVICE ICUDA_HOST
+  IGRID<GridCoordinate1D> * getEInc ()
   {
     ASSERT (EInc);
     return EInc;
   }
-  ICUDA_DEVICE ICUDA_HOST IGRID<GridCoordinate1D> * getHInc ()
+  ICUDA_DEVICE ICUDA_HOST
+  IGRID<GridCoordinate1D> * getHInc ()
   {
     ASSERT (HInc);
     return HInc;
   }
 
   ICUDA_DEVICE ICUDA_HOST
-  FPValue getTimeStep ()
+  FPValue getGridTimeStep ()
   {
     return gridTimeStep;
   }
@@ -1269,46 +933,6 @@ public:
     ASSERT (yeeLayout);
     return yeeLayout;
   }
-
-// #ifndef GPU_INTERNAL_SCHEME
-//
-//   InternalSchemeGPU<Type, TCoord, layout_type> *getGPUInternalScheme ()
-//   {
-//     ASSERT (gpuIntScheme != NULLPTR);
-//     return gpuIntScheme;
-//   }
-//
-//   void setGPUInternalScheme (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
-//   {
-//     ASSERT (gpuScheme != NULLPTR);
-//     gpuIntScheme = gpuScheme;
-//   }
-//
-//   InternalSchemeGPU<Type, TCoord, layout_type> *getGPUInternalSchemeOnGPU ()
-//   {
-//     ASSERT (gpuIntSchemeOnGPU != NULLPTR);
-//     return gpuIntSchemeOnGPU;
-//   }
-//
-//   void setGPUInternalSchemeOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuSchemeOnGPU)
-//   {
-//     ASSERT (gpuSchemeOnGPU != NULLPTR);
-//     gpuIntSchemeOnGPU = gpuSchemeOnGPU;
-//   }
-//
-//   InternalSchemeGPU<Type, TCoord, layout_type> *getGPUInternalSchemeOnGPUFull ()
-//   {
-//     ASSERT (d_gpuIntSchemeOnGPU != NULLPTR);
-//     return d_gpuIntSchemeOnGPU;
-//   }
-//
-//   void setGPUInternalSchemeOnGPUFull (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuScheme)
-//   {
-//     ASSERT (d_gpuScheme != NULLPTR);
-//     d_gpuIntSchemeOnGPU = d_gpuScheme;
-//   }
-//
-// #endif /* !GPU_INTERNAL_SCHEME */
 };
 
 #include "InternalScheme.template.inc.h"
@@ -1337,8 +961,4 @@ public:
 #undef INTERNAL_SCHEME_2D_TMZ
 #undef INTERNAL_SCHEME_3D_3D
 
-#undef SHIFT_IN_TIME_KERNEL
-#undef SHIFT_IN_TIME_PLANE_WAVE_KERNEL
 #undef SETUP_BLOCKS_AND_THREADS
-#undef SHIFT_IN_TIME_KERNEL_LAUNCH
-#undef SHIFT_IN_TIME_PLANE_WAVE_KERNEL_LAUNCH

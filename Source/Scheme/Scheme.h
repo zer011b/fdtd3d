@@ -19,11 +19,18 @@ class Scheme
 
 protected:
 
-  InternalScheme<Type, TCoord, layout_type, Grid> *internalScheme;
+  time_step totalTimeSteps;
+  time_step NTimeSteps;
+
+  InternalScheme<Type, TCoord, layout_type> *intScheme;
 
 #ifdef CUDA_ENABLED
-  InternalScheme<Type, TCoord, layout_type, CudaGrid> *gpuScheme;
-  InternalScheme<Type, TCoord, layout_type, CudaGrid> *d_gpuScheme;
+  InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntScheme;
+  InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntSchemeOnGPU;
+  InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuIntSchemeOnGPU;
+
+  TC blockCount;
+  TC blockSize;
 #endif /* CUDA_ENABLED */
 
 private:
@@ -57,7 +64,41 @@ private:
 
   Dumper<GridCoordinate1D> *dumper1D[FILE_TYPE_COUNT];
 
+public:
+
+  /**
+   * Perform all time steps for scheme
+   */
+  ICUDA_HOST
+  void performSteps ()
+  {
+    for (time_step t = 0; t < totalTimeSteps; t += NTimeSteps)
+    {
+      /*
+       * Each NTimeSteps sharing will be performed.
+       *
+       * For sequential solver, NTimeSteps == totalTimeSteps
+       * For parallel/cuda solver, NTimeSteps == min (bufSize, cudaBufSize)
+       */
+      performNSteps (t, NTimeSteps);
+    }
+  }
+
 private:
+
+  void performNSteps (time_step tStart, time_step N);
+  void performNStepsForBlock (time_step tStart, time_step N, TC blockIdx);
+  void share ();
+  void rebalance ();
+
+  template <uint8_t grid_type>
+  void performFieldSteps (time_step, TC, TC);
+
+  template <uint8_t grid_type, bool usePML, bool useMetamaterials>
+  void calculateFieldStep (time_step, TC, TC);
+
+private:
+
 
   // TODO: unify
   void performNSteps (time_step, time_step);
@@ -127,5 +168,7 @@ public:
 
   ~Scheme ();
 };
+
+#include "Scheme.template.h"
 
 #endif /* SCHEME_H */

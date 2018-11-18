@@ -133,6 +133,17 @@ public:
   } /* CComplex::operator== */
 
   /**
+   * Operator !=
+   *
+   * @return result of comparison
+   */
+  CUDA_DEVICE CUDA_HOST
+  bool operator!= (const CComplex<T> & x) const /**< argument of comparison */
+  {
+    return re != x.re || im != x.im;
+  } /* CComplex::operator!= */
+
+  /**
    * Operator *
    *
    * @return result of multiplication

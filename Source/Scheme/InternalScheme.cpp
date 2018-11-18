@@ -17,7 +17,7 @@
   SPECIALIZE_TEMPLATE_FUNC(CLASS, HELPER, RET1D, Dim1_EyHz, GridCoordinate1DTemplate, E_CENTERED, NAME, ARGS1D, ARGS, NAME2) \
   SPECIALIZE_TEMPLATE_FUNC(CLASS, HELPER, RET1D, Dim1_EzHx, GridCoordinate1DTemplate, E_CENTERED, NAME, ARGS1D, ARGS, NAME2) \
   SPECIALIZE_TEMPLATE_FUNC(CLASS, HELPER, RET1D, Dim1_EzHy, GridCoordinate1DTemplate, E_CENTERED, NAME, ARGS1D, ARGS, NAME2) \
-  
+
   // SPECIALIZE_TEMPLATE_FUNC(CLASS, HELPER, RET1D, Dim1_ExHy, GridCoordinate1DTemplate, H_CENTERED, NAME, ARGS1D, ARGS, NAME2) \
   // SPECIALIZE_TEMPLATE_FUNC(CLASS, HELPER, RET1D, Dim1_ExHz, GridCoordinate1DTemplate, H_CENTERED, NAME, ARGS1D, ARGS, NAME2) \
   // SPECIALIZE_TEMPLATE_FUNC(CLASS, HELPER, RET1D, Dim1_EyHx, GridCoordinate1DTemplate, H_CENTERED, NAME, ARGS1D, ARGS, NAME2) \
@@ -42,7 +42,7 @@
 
 #define SPECIALIZE_TEMPLATE_3D(CLASS, HELPER, RET3D, NAME, ARGS3D, ARGS, NAME2) \
   SPECIALIZE_TEMPLATE_FUNC(CLASS, HELPER, RET3D, Dim3, GridCoordinate3DTemplate, E_CENTERED, NAME, ARGS3D, ARGS, NAME2) \
-  
+
   // SPECIALIZE_TEMPLATE_FUNC(CLASS, HELPER, RET3D, Dim3, GridCoordinate3DTemplate, H_CENTERED, NAME, ARGS3D, ARGS, NAME2)
 
 #define SPECIALIZE_TEMPLATE(CLASS, HELPER, RET1D, RET2D, RET3D, NAME, ARGS1D, ARGS2D, ARGS3D, ARGS) \
@@ -57,14 +57,6 @@ SPECIALIZE_TEMPLATE(InternalScheme, InternalSchemeHelper,
                     (GridCoordinate2D pos, Grid<GridCoordinate2D> *grid),
                     (GridCoordinate3D pos, Grid<GridCoordinate3D> *grid),
                     (pos, grid))
-
-SPECIALIZE_TEMPLATE(InternalScheme, InternalSchemeHelper,
-                    void, void, void,
-                    performNSteps,
-                    (time_step tStart, time_step N),
-                    (time_step tStart, time_step N),
-                    (time_step tStart, time_step N),
-                    (this, tStart, N))
 
 #ifdef PARALLEL_GRID
 
