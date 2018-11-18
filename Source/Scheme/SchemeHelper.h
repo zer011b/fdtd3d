@@ -28,6 +28,71 @@ class SchemeHelper
 {
 public:
 
+  template <SchemeType_t Type, LayoutType layout_type>
+  static
+  void performNSteps1D (Scheme<Type, GridCoordinate1DTemplate, layout_type> *scheme,
+                        time_step tStart,
+                        time_step N)
+  {
+    for (grid_coord c1 = 0; c1 < scheme->blockCount.get1 (); ++c1)
+    {
+      GridCoordinate1D blockIdx = GRID_COORDINATE_1D (c1, scheme->ct1);
+
+      // TODO: save block to prev blocks storage
+      scheme->performNStepsForBlock (tStart, N, blockIdx);
+    }
+
+    scheme->share ();
+    scheme->rebalance ();
+  }
+
+  template <SchemeType_t Type, LayoutType layout_type>
+  ICUDA_HOST
+  static
+  void performNSteps2D (Scheme<Type, GridCoordinate2DTemplate, layout_type> *scheme,
+                        time_step tStart,
+                        time_step N)
+  {
+    for (grid_coord c1 = 0; c1 < scheme->blockCount.get1 (); ++c1)
+    {
+      for (grid_coord c2 = 0; c2 < scheme->blockCount.get2 (); ++c2)
+      {
+        GridCoordinate2D blockIdx = GRID_COORDINATE_2D (c1, c2, scheme->ct1, scheme->ct2);
+
+        // TODO: save block to prev blocks storage
+        scheme->performNStepsForBlock (tStart, N, blockIdx);
+      }
+    }
+
+    scheme->share ();
+    scheme->rebalance ();
+  }
+
+  template <SchemeType_t Type, LayoutType layout_type>
+  ICUDA_HOST
+  static
+  void performNSteps3D (Scheme<Type, GridCoordinate3DTemplate, layout_type> *scheme,
+                        time_step tStart,
+                        time_step N)
+  {
+    for (grid_coord c1 = 0; c1 < scheme->blockCount.get1 (); ++c1)
+    {
+      for (grid_coord c2 = 0; c2 < scheme->blockCount.get2 (); ++c2)
+      {
+        for (grid_coord c3 = 0; c3 < scheme->blockCount.get3 (); ++c3)
+        {
+          GridCoordinate3D blockIdx = GRID_COORDINATE_3D (c1, c2, c3, scheme->ct1, scheme->ct2, scheme->ct3);
+
+          // TODO: save block to prev blocks storage
+          scheme->performNStepsForBlock (tStart, N, blockIdx);
+        }
+      }
+    }
+
+    scheme->share ();
+    scheme->rebalance ();
+  }
+
   static
   void initFullMaterialGrids1D (Grid<GridCoordinate1D> *Eps, Grid<GridCoordinate1D> *totalEps,
                                 Grid<GridCoordinate1D> *Mu, Grid<GridCoordinate1D> *totalMu,

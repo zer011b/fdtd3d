@@ -1,6 +1,6 @@
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template <uint8_t grid_type>
-ICUDA_DEVICE ICUDA_HOST
+ICUDA_DEVICE
 void
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
                                                        FieldValue &valOpposite11,
@@ -429,7 +429,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepInit (IGRID<T
 IGRID<TC> **materialGrid2, GridType *materialGridType2, IGRID<TC> **materialGrid3, GridType *materialGridType3, IGRID<TC> **materialGrid4, GridType *materialGridType4,
 IGRID<TC> **materialGrid5, GridType *materialGridType5, IGRID<TC> **oppositeGrid1, IGRID<TC> **oppositeGrid2, IGRID<TC> **gridPML1, GridType *gridPMLType1, IGRID<TC> **gridPML2, GridType *gridPMLType2,
 SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exactFunc, FPValue *materialModifier,
-  IGRID<TC> **Ca, IGRID<TC> **Cb)
+  IGRID<TC> **Ca, IGRID<TC> **Cb, IGRID<TC> **CB0, IGRID<TC> **CB1, IGRID<TC> **CB2, IGRID<TC> **CA1, IGRID<TC> **CA2, IGRID<TC> **CaPML, IGRID<TC> **CbPML, IGRID<TC> **CcPML)
 {
   switch (grid_type)
   {
@@ -452,6 +452,14 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
 
       *Ca = CaEx;
       *Cb = CbEx;
+
+      *CB0 = CB0Ex;
+      *CB1 = CB1Ex;
+      *CB2 = CB2Ex;
+
+      *CaPML = CaPMLEx;
+      *CbPML = CbPMLEx;
+      *CcPML = CcPMLEx;
 
       if (usePML)
       {
@@ -507,6 +515,14 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
       *Ca = CaEy;
       *Cb = CbEy;
 
+      *CB0 = CB0Ey;
+      *CB1 = CB1Ey;
+      *CB2 = CB2Ey;
+
+      *CaPML = CaPMLEy;
+      *CbPML = CbPMLEy;
+      *CcPML = CcPMLEy;
+
       if (usePML)
       {
         *grid = Dy;
@@ -560,6 +576,14 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
 
       *Ca = CaEz;
       *Cb = CbEz;
+
+      *CB0 = CB0Ez;
+      *CB1 = CB1Ez;
+      *CB2 = CB2Ez;
+
+      *CaPML = CaPMLEz;
+      *CbPML = CbPMLEz;
+      *CcPML = CcPMLEz;
 
       if (usePML)
       {
@@ -615,6 +639,14 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
       *Ca = DaHx;
       *Cb = DbHx;
 
+      *CB0 = DB0Hx;
+      *CB1 = DB1Hx;
+      *CB2 = DB2Hx;
+
+      *CaPML = DaPMLHx;
+      *CbPML = DbPMLHx;
+      *CcPML = DcPMLHx;
+
       if (usePML)
       {
         *grid = Bx;
@@ -669,6 +701,14 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
       *Ca = DaHy;
       *Cb = DbHy;
 
+      *CB0 = DB0Hy;
+      *CB1 = DB1Hy;
+      *CB2 = DB2Hy;
+
+      *CaPML = DaPMLHy;
+      *CbPML = DbPMLHy;
+      *CcPML = DcPMLHy;
+
       if (usePML)
       {
         *grid = By;
@@ -722,6 +762,14 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
       *Ca = DaHz;
       *Cb = DbHz;
 
+      *CB0 = DB0Hz;
+      *CB1 = DB1Hz;
+      *CB2 = DB2Hz;
+
+      *CaPML = DaPMLHz;
+      *CbPML = DbPMLHz;
+      *CcPML = DcPMLHz;
+
       if (usePML)
       {
         *grid = Bz;
@@ -764,30 +812,75 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template<uint8_t grid_type, bool usePML>
-ICUDA_DEVICE ICUDA_HOST
+template<uint8_t grid_type>
+ICUDA_DEVICE
 void
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
-                                                               TC pos,
-                                                               TC posAbs,
-                                                               TCS diff11,
-                                                               TCS diff12,
-                                                               TCS diff21,
-                                                               TCS diff22,
-                                                               IGRID<TC> *grid,
-                                                               TCFP coordFP,
-                                                               IGRID<TC> *oppositeGrid1,
-                                                               IGRID<TC> *oppositeGrid2,
-                                                               SourceCallBack rightSideFunc,
-                                                               IGRID<TC> *Ca,
-                                                               IGRID<TC> *Cb)
+                                                                             TC pos,
+                                                                             TC posAbs,
+                                                                             TCS diff11,
+                                                                             TCS diff12,
+                                                                             TCS diff21,
+                                                                             TCS diff22,
+                                                                             IGRID<TC> *grid,
+                                                                             TCFP coordFP,
+                                                                             IGRID<TC> *oppositeGrid1,
+                                                                             IGRID<TC> *oppositeGrid2,
+                                                                             SourceCallBack rightSideFunc,
+                                                                             IGRID<TC> *Ca,
+                                                                             IGRID<TC> *Cb,
+                                                                             bool usePML,
+                                                                             GridType gridType,
+                                                                             IGRID<TC> *materialGrid,
+                                                                             GridType materialGridType,
+                                                                             FPValue materialModifier)
 {
   // TODO: [possible] move 1D gridValues to 3D gridValues array
+  ASSERT (grid != NULLPTR);
   grid_coord coord = grid->calculateIndexFromPosition (pos);
   FieldValue val = *grid->getFieldValue (coord, 1);
 
-  FieldValue valCa = *Ca->getFieldValue (pos, 0);
-  FieldValue valCb = *Cb->getFieldValue (pos, 0);
+  FieldValue valCa = FIELDVALUE (0, 0);
+  FieldValue valCb = FIELDVALUE (0, 0);
+
+  // TODO: move this check out to loop
+  if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+  {
+    ASSERT (Ca != NULLPTR);
+    ASSERT (Cb != NULLPTR);
+    valCa = *Ca->getFieldValue (pos, 0);
+    valCb = *Cb->getFieldValue (pos, 0);
+  }
+  else
+  {
+    ASSERT (Ca == NULLPTR);
+    ASSERT (Cb == NULLPTR);
+    ASSERT (materialGrid != NULLPTR);
+
+    FPValue material = getMaterial (posAbs, gridType, materialGrid, materialGridType);
+    FPValue ca = FPValue (0);
+    FPValue cb = FPValue (0);
+
+    FPValue k_mod = FPValue (1);
+
+    if (usePML)
+    {
+      FPValue eps0 = PhysicsConst::Eps0;
+      ca = (2 * eps0 * k_mod - material * gridTimeStep) / (2 * eps0 * k_mod + material * gridTimeStep);
+      cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_mod + material * gridTimeStep);
+    }
+    else
+    {
+      ca = 1.0;
+      cb = gridTimeStep / (material * materialModifier * gridStep);
+    }
+
+    valCa = FIELDVALUE (ca, 0);
+    valCb = FIELDVALUE (cb, 0);
+  }
+
+  ASSERT (valCa != FIELDVALUE (0, 0));
+  ASSERT (valCb != FIELDVALUE (0, 0));
 
   FieldValue prev11 = FIELDVALUE (0, 0);
   FieldValue prev12 = FIELDVALUE (0, 0);
@@ -822,299 +915,370 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
   grid->setFieldValue (valNew, coord, 0);
 }
 
-// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-// ICUDA_DEVICE ICUDA_HOST
-// void
-// INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPMLMetamaterials (time_step t,
-//                                                                                TC pos,
-//                                                                                IGRID<TC> *grid,
-//                                                                                IGRID<TC> *gridPML,
-//                                                                                GridType gridType,
-//                                                                                IGRID<TC> *materialGrid1,
-//                                                                                GridType materialGridType1,
-//                                                                                IGRID<TC> *materialGrid2,
-//                                                                                GridType materialGridType2,
-//                                                                                IGRID<TC> *materialGrid3,
-//                                                                                GridType materialGridType3,
-//                                                                                FPValue materialModifier)
-// {
-//   TC posAbs = grid->getTotalPosition (pos);
-//   FieldPointValue *valField = grid->getFieldPointValue (pos);
-//   FieldPointValue *valField1 = gridPML->getFieldPointValue (pos);
-//
-//   FPValue material1;
-//   FPValue material2;
-//
-//   FPValue material = getMetaMaterial (posAbs, gridType,
-//                                                  materialGrid1, materialGridType1,
-//                                                  materialGrid2, materialGridType2,
-//                                                  materialGrid3, materialGridType3,
-//                                                  material1, material2);
-//
-//   /*
-//    * TODO: precalculate coefficients
-//    */
-//   FPValue A = 4*materialModifier*material + 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1);
-//   FPValue a1 = (4 + 2*gridTimeStep*material2) / A;
-//   FPValue a2 = -8 / A;
-//   FPValue a3 = (4 - 2*gridTimeStep*material2) / A;
-//   FPValue a4 = (2*materialModifier*SQR(gridTimeStep*material1) - 8*materialModifier*material) / A;
-//   FPValue a5 = (4*materialModifier*material - 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1)) / A;
-//
-// #if defined (TWO_TIME_STEPS)
-//   FieldValue val = calcFieldDrude (valField->getCurValue (),
-//                                    valField->getPrevValue (),
-//                                    valField->getPrevPrevValue (),
-//                                    valField1->getPrevValue (),
-//                                    valField1->getPrevPrevValue (),
-//                                    a1,
-//                                    a2,
-//                                    a3,
-//                                    a4,
-//                                    a5);
-//   valField1->setCurValue (val);
-// #else
-//   ALWAYS_ASSERT (0);
-// #endif
-// }
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+ICUDA_DEVICE
+void
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPMLMetamaterials (time_step t,
+                                                                               TC pos,
+                                                                               IGRID<TC> *grid,
+                                                                               IGRID<TC> *gridPML,
+                                                                               IGRID<TC> *CB0,
+                                                                               IGRID<TC> *CB1,
+                                                                               IGRID<TC> *CB2,
+                                                                               IGRID<TC> *CA1,
+                                                                               IGRID<TC> *CA2,
+                                                                               GridType gridType,
+                                                                               IGRID<TC> *materialGrid1,
+                                                                               GridType materialGridType1,
+                                                                               IGRID<TC> *materialGrid2,
+                                                                               GridType materialGridType2,
+                                                                               IGRID<TC> *materialGrid3,
+                                                                               GridType materialGridType3,
+                                                                               FPValue materialModifier)
+{
+  ASSERT (grid != NULLPTR);
+  ASSERT (gridPML != NULLPTR);
+  grid_coord coord = grid->calculateIndexFromPosition (pos);
 
-// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-// template <bool useMetamaterials>
-// ICUDA_DEVICE ICUDA_HOST
-// void
-// INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML (time_step t,
-//                                                                    TC pos,
-//                                                                    IGRID<TC> *grid,
-//                                                                    IGRID<TC> *gridPML1,
-//                                                                    IGRID<TC> *gridPML2,
-//                                                                    GridType gridType,
-//                                                                    GridType gridPMLType1,
-//                                                                    IGRID<TC> *materialGrid1,
-//                                                                    GridType materialGridType1,
-//                                                                    IGRID<TC> *materialGrid4,
-//                                                                    GridType materialGridType4,
-//                                                                    IGRID<TC> *materialGrid5,
-//                                                                    GridType materialGridType5,
-//                                                                    FPValue materialModifier)
-// {
-//   FPValue eps0 = PhysicsConst::Eps0;
-//
-//   TC posAbs = gridPML2->getTotalPosition (pos);
-//
-//   FieldPointValue *valField = gridPML2->getFieldPointValue (pos);
-//
-//   FieldPointValue *valField1;
-//
-//   if (useMetamaterials)
-//   {
-//     valField1 = gridPML1->getFieldPointValue (pos);
-//   }
-//   else
-//   {
-//     valField1 = grid->getFieldPointValue (pos);
-//   }
-//
-//   FPValue material1 = materialGrid1 ? getMaterial (posAbs, gridPMLType1, materialGrid1, materialGridType1) : 0;
-//   FPValue material4 = materialGrid4 ? getMaterial (posAbs, gridPMLType1, materialGrid4, materialGridType4) : 0;
-//   FPValue material5 = materialGrid5 ? getMaterial (posAbs, gridPMLType1, materialGrid5, materialGridType5) : 0;
-//
-//   FPValue modifier = material1 * materialModifier;
-//   if (useMetamaterials)
-//   {
-//     modifier = 1;
-//   }
-//
-//   FPValue k_mod1 = 1;
-//   FPValue k_mod2 = 1;
-//
-//   FPValue Ca = (2 * eps0 * k_mod2 - material5 * gridTimeStep) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
-//   FPValue Cb = ((2 * eps0 * k_mod1 + material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
-//   FPValue Cc = ((2 * eps0 * k_mod1 - material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
-//
-// #if defined (ONE_TIME_STEP) || defined (TWO_TIME_STEPS)
-//   FieldValue val = calcFieldFromDOrB (valField->getPrevValue (),
-//                                       valField1->getCurValue (),
-//                                       valField1->getPrevValue (),
-//                                       Ca,
-//                                       Cb,
-//                                       Cc);
-// #else
-//   ALWAYS_ASSERT (0);
-// #endif
-//
-//   valField->setCurValue (val);
-// }
+  FieldValue cur = *grid->getFieldValue (coord, 0);
+  FieldValue prev = *grid->getFieldValue (coord, 1);
+  FieldValue prevPrev = *grid->getFieldValue (coord, 2);
 
-// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-// template <uint8_t grid_type>
-// ICUDA_DEVICE ICUDA_HOST
-// void
-// INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationBorder (time_step t,
-//                                                                       TC pos,
-//                                                                       IGRID<TC> *grid,
-//                                                                       SourceCallBack borderFunc)
-// {
-//   TC posAbs = grid->getTotalPosition (pos);
-//
-//   if (doSkipBorderFunc (posAbs, grid))
-//   {
-//     return;
-//   }
-//
-//   TCFP realCoord;
-//   FPValue timestep;
-//   switch (grid_type)
-//   {
-//     case (static_cast<uint8_t> (GridType::EX)):
-//     {
-//       realCoord = yeeLayout->getExCoordFP (posAbs);
-//       timestep = t + 0.5;
-//       break;
-//     }
-//     case (static_cast<uint8_t> (GridType::EY)):
-//     {
-//       realCoord = yeeLayout->getEyCoordFP (posAbs);
-//       timestep = t + 0.5;
-//       break;
-//     }
-//     case (static_cast<uint8_t> (GridType::EZ)):
-//     {
-//       realCoord = yeeLayout->getEzCoordFP (posAbs);
-//       timestep = t + 0.5;
-//       break;
-//     }
-//     case (static_cast<uint8_t> (GridType::HX)):
-//     {
-//       realCoord = yeeLayout->getHxCoordFP (posAbs);
-//       timestep = t + 1.0;
-//       break;
-//     }
-//     case (static_cast<uint8_t> (GridType::HY)):
-//     {
-//       realCoord = yeeLayout->getHyCoordFP (posAbs);
-//       timestep = t + 1.0;
-//       break;
-//     }
-//     case (static_cast<uint8_t> (GridType::HZ)):
-//     {
-//       realCoord = yeeLayout->getHzCoordFP (posAbs);
-//       timestep = t + 1.0;
-//       break;
-//     }
-//     default:
-//     {
-//       UNREACHABLE;
-//     }
-//   }
-//
-//   grid->getFieldPointValue (pos)->setCurValue (borderFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep));
-// }
+  FieldValue prevPML = *gridPML->getFieldValue (coord, 1);
+  FieldValue prevPrevPML = *gridPML->getFieldValue (coord, 2);
 
-// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-// template <uint8_t grid_type>
-// ICUDA_DEVICE ICUDA_HOST
-// void
-// INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationExact (time_step t,
-//                                                                      TC pos,
-//                                                                      IGRID<TC> *grid,
-//                                                                      SourceCallBack exactFunc,
-//                                                                      FPValue &normRe,
-//                                                                      FPValue &normIm,
-//                                                                      FPValue &normMod,
-//                                                                      FPValue &maxRe,
-//                                                                      FPValue &maxIm,
-//                                                                      FPValue &maxMod)
-// {
-//   TC posAbs = grid->getTotalPosition (pos);
-//
-//   TCFP realCoord;
-//   FPValue timestep;
-//   switch (grid_type)
-//   {
-//     case (static_cast<uint8_t> (GridType::EX)):
-//     {
-//       realCoord = yeeLayout->getExCoordFP (posAbs);
-//       timestep = t + 0.5;
-//       break;
-//     }
-//     case (static_cast<uint8_t> (GridType::EY)):
-//     {
-//       realCoord = yeeLayout->getEyCoordFP (posAbs);
-//       timestep = t + 0.5;
-//       break;
-//     }
-//     case (static_cast<uint8_t> (GridType::EZ)):
-//     {
-//       realCoord = yeeLayout->getEzCoordFP (posAbs);
-//       timestep = t + 0.5;
-//       break;
-//     }
-//     case (static_cast<uint8_t> (GridType::HX)):
-//     {
-//       realCoord = yeeLayout->getHxCoordFP (posAbs);
-//       timestep = t + 1.0;
-//       break;
-//     }
-//     case (static_cast<uint8_t> (GridType::HY)):
-//     {
-//       realCoord = yeeLayout->getHyCoordFP (posAbs);
-//       timestep = t + 1.0;
-//       break;
-//     }
-//     case (static_cast<uint8_t> (GridType::HZ)):
-//     {
-//       realCoord = yeeLayout->getHzCoordFP (posAbs);
-//       timestep = t + 1.0;
-//       break;
-//     }
-//     default:
-//     {
-//       UNREACHABLE;
-//     }
-//   }
-//
-//   FieldValue numerical = grid->getFieldPointValue (pos)->getCurValue ();
-//   FieldValue exact = exactFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
-//
-// #ifdef COMPLEX_FIELD_VALUES
-//   FPValue modExact = sqrt (SQR (exact.real ()) + SQR (exact.imag ()));
-//   FPValue modNumerical = sqrt (SQR (numerical.real ()) + SQR (numerical.imag ()));
-//
-//   //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact.real (), numerical.real ());
-//
-//   normRe += SQR (exact.real () - numerical.real ());
-//   normIm += SQR (exact.imag () - numerical.imag ());
-//   normMod += SQR (modExact - modNumerical);
-//
-//   FPValue exactAbs = fabs (exact.real ());
-//   if (maxRe < exactAbs)
-//   {
-//     maxRe = exactAbs;
-//   }
-//
-//   exactAbs = fabs (exact.imag ());
-//   if (maxIm < exactAbs)
-//   {
-//     maxIm = exactAbs;
-//   }
-//
-//   exactAbs = modExact;
-//   if (maxMod < exactAbs)
-//   {
-//     maxMod = exactAbs;
-//   }
-// #else
-//   normRe += SQR (exact - numerical);
-//
-//   //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact, numerical);
-//
-//   FPValue exactAbs = fabs (exact);
-//   if (maxRe < exactAbs)
-//   {
-//     maxRe = exactAbs;
-//   }
-// #endif
-// }
+  FieldValue valb0 = FIELDVALUE (0, 0);
+  FieldValue valb1 = FIELDVALUE (0, 0);
+  FieldValue valb2 = FIELDVALUE (0, 0);
+  FieldValue vala1 = FIELDVALUE (0, 0);
+  FieldValue vala2 = FIELDVALUE (0, 0);
+
+  // TODO: move this check out to loop
+  if (SOLVER_SETTINGS.getDoUseCaCbPMLMetaGrids ())
+  {
+    ASSERT (CB0 != NULLPTR);
+    ASSERT (CB1 != NULLPTR);
+    ASSERT (CB2 != NULLPTR);
+    ASSERT (CA1 != NULLPTR);
+    ASSERT (CA2 != NULLPTR);
+
+    valb0 = *CB0->getFieldValue (coord, 0);
+    valb1 = *CB1->getFieldValue (coord, 0);
+    valb2 = *CB2->getFieldValue (coord, 0);
+    vala1 = *CA1->getFieldValue (coord, 0);
+    vala2 = *CA2->getFieldValue (coord, 0);
+  }
+  else
+  {
+    ASSERT (CB0 == NULLPTR);
+    ASSERT (CB1 == NULLPTR);
+    ASSERT (CB2 == NULLPTR);
+    ASSERT (CA1 == NULLPTR);
+    ASSERT (CA2 == NULLPTR);
+
+    ASSERT (materialGrid1 != NULLPTR);
+    ASSERT (materialGrid2 != NULLPTR);
+    ASSERT (materialGrid3 != NULLPTR);
+
+    TC posAbs = grid->getTotalPosition (pos);
+
+    FPValue material1;
+    FPValue material2;
+
+    FPValue material = getMetaMaterial (posAbs, gridType,
+                                        materialGrid1, materialGridType1,
+                                        materialGrid2, materialGridType2,
+                                        materialGrid3, materialGridType3,
+                                        material1, material2);
+
+    FPValue A = 4*materialModifier*material + 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1);
+    FPValue b0 = (4 + 2*gridTimeStep*material2) / A;
+    FPValue b1 = -8 / A;
+    FPValue b2 = (4 - 2*gridTimeStep*material2) / A;
+    FPValue a1 = (2*materialModifier*SQR(gridTimeStep*material1) - 8*materialModifier*material) / A;
+    FPValue a2 = (4*materialModifier*material - 2*gridTimeStep*materialModifier*material*material2 + materialModifier*SQR(gridTimeStep*material1)) / A;
+
+    valb0 = FIELDVALUE (b0, 0);
+    valb1 = FIELDVALUE (b1, 0);
+    valb2 = FIELDVALUE (b2, 0);
+    vala1 = FIELDVALUE (a1, 0);
+    vala2 = FIELDVALUE (a2, 0);
+  }
+
+  ASSERT (valb0 != FIELDVALUE (0, 0));
+  ASSERT (valb1 != FIELDVALUE (0, 0));
+  ASSERT (valb2 != FIELDVALUE (0, 0));
+  ASSERT (vala1 != FIELDVALUE (0, 0));
+  ASSERT (vala2 != FIELDVALUE (0, 0));
+
+  FieldValue valNew = calcFieldDrude (cur, prev, prevPrev, prevPML, prevPrevPML, valb0, valb1, valb2, vala1, vala2);
+  gridPML->setFieldValue (valNew, coord, 0);
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <bool useMetamaterials>
+ICUDA_DEVICE
+void
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML (time_step t,
+                                                                   TC pos,
+                                                                   IGRID<TC> *grid,
+                                                                   IGRID<TC> *gridPML1,
+                                                                   IGRID<TC> *gridPML2,
+                                                                   IGRID<TC> *Ca,
+                                                                   IGRID<TC> *Cb,
+                                                                   IGRID<TC> *Cc,
+                                                                   GridType gridPMLType1,
+                                                                   IGRID<TC> *materialGrid1,
+                                                                   GridType materialGridType1,
+                                                                   IGRID<TC> *materialGrid4,
+                                                                   GridType materialGridType4,
+                                                                   IGRID<TC> *materialGrid5,
+                                                                   GridType materialGridType5,
+                                                                   FPValue materialModifier)
+{
+  ASSERT (grid != NULLPTR);
+  ASSERT (gridPML1 != NULLPTR);
+  ASSERT (gridPML2 != NULLPTR);
+  grid_coord coord = grid->calculateIndexFromPosition (pos);
+
+  FieldValue prevEorH = *gridPML2->getFieldValue (coord, 1);
+  FieldValue curDorB = FIELDVALUE (0, 0);
+  FieldValue prevDorB = FIELDVALUE (0, 0);
+
+  FieldValue valCa = FIELDVALUE (0, 0);
+  FieldValue valCb = FIELDVALUE (0, 0);
+  FieldValue valCc = FIELDVALUE (0, 0);
+
+  if (useMetamaterials)
+  {
+    curDorB = gridPML1->getFieldValue (coord, 0);
+    prevDorB = gridPML1->getFieldValue (coord, 1);
+  }
+  else
+  {
+    curDorB = grid->getFieldValue (coord, 0);
+    prevDorB = grid->getFieldValue (coord, 1);
+  }
+
+  if (SOLVER_SETTINGS.getDoUseCaCbPMLGrids ())
+  {
+    ASSERT (Ca != NULLPTR);
+    ASSERT (Cb != NULLPTR);
+    ASSERT (Cc != NULLPTR);
+
+    valCa = *Ca->getFieldValue (coord, 0);
+    valCb = *Cb->getFieldValue (coord, 0);
+    valCc = *Cc->getFieldValue (coord, 0);
+  }
+  else
+  {
+    FPValue eps0 = PhysicsConst::Eps0;
+    TC posAbs = gridPML2->getTotalPosition (pos);
+
+    FPValue material1 = materialGrid1 ? getMaterial (posAbs, gridPMLType1, materialGrid1, materialGridType1) : 0;
+    FPValue material4 = materialGrid4 ? getMaterial (posAbs, gridPMLType1, materialGrid4, materialGridType4) : 0;
+    FPValue material5 = materialGrid5 ? getMaterial (posAbs, gridPMLType1, materialGrid5, materialGridType5) : 0;
+
+    FPValue modifier = material1 * materialModifier;
+    if (useMetamaterials)
+    {
+      modifier = 1;
+    }
+
+    FPValue k_mod1 = 1;
+    FPValue k_mod2 = 1;
+
+    FPValue ca = (2 * eps0 * k_mod2 - material5 * gridTimeStep) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
+    FPValue cb = ((2 * eps0 * k_mod1 + material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
+    FPValue cc = ((2 * eps0 * k_mod1 - material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
+
+    valCa = FIELDVALUE (ca, 0);
+    valCb = FIELDVALUE (cb, 0);
+    valCc = FIELDVALUE (cc, 0);
+  }
+
+  ASSERT (Ca != FIELDVALUE (0, 0));
+  ASSERT (Cb != FIELDVALUE (0, 0));
+  ASSERT (Cc != FIELDVALUE (0, 0));
+
+  FieldValue valNew = calcFieldFromDOrB (prevEorH, curDorB, prevDorB, valCa, valCb, valCc);
+  gridPML2->setFieldValue (valNew, coord, 0);
+}
+
+#ifndef GPU_INTERNAL_SCHEME
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <uint8_t grid_type>
+ICUDA_DEVICE
+void
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationBorder (time_step t,
+                                                                      TC pos,
+                                                                      IGRID<TC> *grid,
+                                                                      SourceCallBack borderFunc)
+{
+  TC posAbs = grid->getTotalPosition (pos);
+
+  if (doSkipBorderFunc (posAbs, grid))
+  {
+    return;
+  }
+
+  TCFP realCoord;
+  FPValue timestep;
+  switch (grid_type)
+  {
+    case (static_cast<uint8_t> (GridType::EX)):
+    {
+      realCoord = yeeLayout->getExCoordFP (posAbs);
+      timestep = t + 0.5;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::EY)):
+    {
+      realCoord = yeeLayout->getEyCoordFP (posAbs);
+      timestep = t + 0.5;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::EZ)):
+    {
+      realCoord = yeeLayout->getEzCoordFP (posAbs);
+      timestep = t + 0.5;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HX)):
+    {
+      realCoord = yeeLayout->getHxCoordFP (posAbs);
+      timestep = t + 1.0;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HY)):
+    {
+      realCoord = yeeLayout->getHyCoordFP (posAbs);
+      timestep = t + 1.0;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HZ)):
+    {
+      realCoord = yeeLayout->getHzCoordFP (posAbs);
+      timestep = t + 1.0;
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  grid->setFieldValue (borderFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep), pos, 0);
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <uint8_t grid_type>
+ICUDA_DEVICE
+void
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationExact (time_step t,
+                                                                     TC pos,
+                                                                     IGRID<TC> *grid,
+                                                                     SourceCallBack exactFunc,
+                                                                     FPValue &normRe,
+                                                                     FPValue &normIm,
+                                                                     FPValue &normMod,
+                                                                     FPValue &maxRe,
+                                                                     FPValue &maxIm,
+                                                                     FPValue &maxMod)
+{
+  TC posAbs = grid->getTotalPosition (pos);
+
+  TCFP realCoord;
+  FPValue timestep;
+  switch (grid_type)
+  {
+    case (static_cast<uint8_t> (GridType::EX)):
+    {
+      realCoord = yeeLayout->getExCoordFP (posAbs);
+      timestep = t + 0.5;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::EY)):
+    {
+      realCoord = yeeLayout->getEyCoordFP (posAbs);
+      timestep = t + 0.5;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::EZ)):
+    {
+      realCoord = yeeLayout->getEzCoordFP (posAbs);
+      timestep = t + 0.5;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HX)):
+    {
+      realCoord = yeeLayout->getHxCoordFP (posAbs);
+      timestep = t + 1.0;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HY)):
+    {
+      realCoord = yeeLayout->getHyCoordFP (posAbs);
+      timestep = t + 1.0;
+      break;
+    }
+    case (static_cast<uint8_t> (GridType::HZ)):
+    {
+      realCoord = yeeLayout->getHzCoordFP (posAbs);
+      timestep = t + 1.0;
+      break;
+    }
+    default:
+    {
+      UNREACHABLE;
+    }
+  }
+
+  FieldValue numerical = *grid->getFieldValue (pos, 0);
+  FieldValue exact = exactFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
+
+#ifdef COMPLEX_FIELD_VALUES
+  FPValue modExact = sqrt (SQR (exact.real ()) + SQR (exact.imag ()));
+  FPValue modNumerical = sqrt (SQR (numerical.real ()) + SQR (numerical.imag ()));
+
+  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact.real (), numerical.real ());
+
+  normRe += SQR (exact.real () - numerical.real ());
+  normIm += SQR (exact.imag () - numerical.imag ());
+  normMod += SQR (modExact - modNumerical);
+
+  FPValue exactAbs = fabs (exact.real ());
+  if (maxRe < exactAbs)
+  {
+    maxRe = exactAbs;
+  }
+
+  exactAbs = fabs (exact.imag ());
+  if (maxIm < exactAbs)
+  {
+    maxIm = exactAbs;
+  }
+
+  exactAbs = modExact;
+  if (maxMod < exactAbs)
+  {
+    maxMod = exactAbs;
+  }
+#else
+  normRe += SQR (exact - numerical);
+
+  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact, numerical);
+
+  FPValue exactAbs = fabs (exact);
+  if (maxRe < exactAbs)
+  {
+    maxRe = exactAbs;
+  }
+#endif
+}
+
+#endif /* !GPU_INTERNAL_SCHEME */
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template<uint8_t EnumVal>
@@ -1187,8 +1351,6 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPointSourceCalc (time_st
 #endif /* !COMPLEX_FIELD_VALUES */
   }
 }
-
-#ifndef GPU_INTERNAL_SCHEME
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 ICUDA_DEVICE
@@ -1416,58 +1578,18 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
   return FPValue (0);
 }
 
-#endif /* !GPU_INTERNAL_SCHEME */
-
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 ICUDA_HOST
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::INTERNAL_SCHEME_BASE ()
   : isInitialized (false)
+  , useParallel (false)
   , yeeLayout (NULLPTR)
-  , Ex (NULLPTR)
-  , Ey (NULLPTR)
-  , Ez (NULLPTR)
-  , Hx (NULLPTR)
-  , Hy (NULLPTR)
-  , Hz (NULLPTR)
-  , Dx (NULLPTR)
-  , Dy (NULLPTR)
-  , Dz (NULLPTR)
-  , Bx (NULLPTR)
-  , By (NULLPTR)
-  , Bz (NULLPTR)
-  , D1x (NULLPTR)
-  , D1y (NULLPTR)
-  , D1z (NULLPTR)
-  , B1x (NULLPTR)
-  , B1y (NULLPTR)
-  , B1z (NULLPTR)
-  , ExAmplitude (NULLPTR)
-  , EyAmplitude (NULLPTR)
-  , EzAmplitude (NULLPTR)
-  , HxAmplitude (NULLPTR)
-  , HyAmplitude (NULLPTR)
-  , HzAmplitude (NULLPTR)
-  , Eps (NULLPTR)
-  , Mu (NULLPTR)
-  , OmegaPE (NULLPTR)
-  , OmegaPM (NULLPTR)
-  , GammaE (NULLPTR)
-  , GammaM (NULLPTR)
-  , SigmaX (NULLPTR)
-  , SigmaY (NULLPTR)
-  , SigmaZ (NULLPTR)
-  , CaEx (NULLPTR)
-  , CbEx (NULLPTR)
-  , CaEy (NULLPTR)
-  , CbEy (NULLPTR)
-  , CaEz (NULLPTR)
-  , CbEz (NULLPTR)
-  , DaHx (NULLPTR)
-  , DbHx (NULLPTR)
-  , DaHy (NULLPTR)
-  , DbHy (NULLPTR)
-  , DaHz (NULLPTR)
-  , DbHz (NULLPTR)
+
+#define GRID_NAME(x) \
+  , x (NULLPTR)
+#include "Grids.inc.h"
+#undef GRID_NAME
+
   , EInc (NULLPTR)
   , HInc (NULLPTR)
   , sourceWaveLength (0)
@@ -1530,14 +1652,6 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::INTERNAL_SCHEME_BASE ()
                   || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy)
                   || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMy)
                   || Type == static_cast<SchemeType_t> (SchemeType::Dim3))
-#ifndef GPU_INTERNAL_SCHEME
-  , totalTimeSteps (0)
-  , NTimeSteps (0)
-  , useParallel (false)
-  , gpuIntScheme (NULLPTR)
-  , gpuIntSchemeOnGPU (NULLPTR)
-  , d_gpuIntSchemeOnGPU (NULLPTR)
-#endif /* !GPU_INTERNAL_SCHEME */
 {
 }
 
@@ -1658,902 +1772,3 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::initScheme (FPValue dx, FPValue
            relPhaseVelocity, phaseVelocity0, phaseVelocity, 2*PhysicsConst::Pi/sourceWaveLength, k,
            sourceWaveLength, sourceWaveLengthNumerical, gridStep, gridTimeStep, sourceFrequency);
 }
-
-#ifndef GPU_INTERNAL_SCHEME
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::initBlocks (time_step t_total)
-{
-  totalTimeSteps = t_total;
-
-  /*
-   * TODO: currently only single block is set up here, but underlying methods should support more?
-   */
-  blockCount = TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
-
-  // TODO: allocate previous step storage for cuda blocks (see page 81)
-
-#ifdef PARALLEL_GRID
-  ParallelYeeGridLayout<Type, layout_type> *parallelYeeLayout = (ParallelYeeGridLayout<Type, layout_type> *) yeeLayout;
-  blockSize = parallelYeeLayout->getSizeForCurNode ();
-#else
-  blockSize = yeeLayout->getSize ();
-#endif
-
-#ifdef PARALLEL_GRID
-  if (useParallel)
-  {
-    time_step parallelBuf = (time_step) SOLVER_SETTINGS.getBufferSize ();
-    NTimeSteps = parallelBuf;
-  }
-  else
-#endif /* PARALLEL_GRID */
-  {
-    NTimeSteps = totalTimeSteps;
-  }
-
-#ifdef CUDA_ENABLED
-  if (blockCount.calculateTotalCoord () > 1)
-  {
-    /*
-     * More than one block is used, have to consider buffers now
-     */
-    time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
-
-#ifdef PARALLEL_GRID
-    if (useParallel)
-    {
-      /*
-       * Cuda grid buffer can't be greater than parallel grid buffer, because there will be no data to fill it with.
-       * If cuda grid buffer is less than parallel grid buffer, then parallel grid buffer won't be used fully, which
-       * is undesirable. So, restrict buffers to be identical for the case of both parallel mode and cuda mode.
-       */
-      ALWAYS_ASSERT (cudaBuf == (time_step) SOLVER_SETTINGS.getBufferSize ())
-    }
-#endif /* PARALLEL_GRID */
-
-    NTimeSteps = cudaBuf;
-  }
-
-  /*
-   * Init InternalScheme on GPU
-   */
-  time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
-
-  gpuIntScheme = new InternalSchemeGPU<Type, TCoord, layout_type> ();
-  gpuIntSchemeOnGPU = new InternalSchemeGPU<Type, TCoord, layout_type> ();
-
-  gpuIntScheme->initFromCPU (this, blockSize, TC_COORD (cudaBuf, cudaBuf, cudaBuf, ct1, ct2, ct3));
-  gpuIntSchemeOnGPU->initOnGPU (gpuIntScheme);
-
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gpuIntSchemeOnGPU, sizeof(InternalSchemeGPU<Type, TCoord, layout_type>)));
-#endif /* CUDA_ENABLED */
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-ICUDA_HOST
-void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, time_step N, TC blockIdx)
-{
-#ifdef CUDA_ENABLED
-  /*
-   * Copy InternalScheme to GPU
-   */
-  gpuIntScheme->copyFromCPU (blockIdx * blockSize, blockSize);
-  gpuIntSchemeOnGPU->copyToGPU (gpuIntScheme);
-  cudaCheckErrorCmd (cudaMemcpy (d_gpuIntSchemeOnGPU, gpuIntSchemeOnGPU, sizeof(InternalSchemeGPU<Type, TCoord, layout_type>), cudaMemcpyHostToDevice));
-#endif /* CUDA_ENABLED */
-
-  TC zero = TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-#ifdef CUDA_ENABLED
-  GridCoordinate3D zero3D = GRID_COORDINATE_3D (0, 0, 0, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-  GridCoordinate3D ExSize = gpuIntScheme->doNeedEx ? expandTo3D (gpuIntScheme->getEx ()->getSize (), ct1, ct2, ct3) : zero3D;
-  GridCoordinate3D EySize = gpuIntScheme->doNeedEy ? expandTo3D (gpuIntScheme->getEy ()->getSize (), ct1, ct2, ct3) : zero3D;
-  GridCoordinate3D EzSize = gpuIntScheme->doNeedEz ? expandTo3D (gpuIntScheme->getEz ()->getSize (), ct1, ct2, ct3) : zero3D;
-  GridCoordinate3D HxSize = gpuIntScheme->doNeedHx ? expandTo3D (gpuIntScheme->getHx ()->getSize (), ct1, ct2, ct3) : zero3D;
-  GridCoordinate3D HySize = gpuIntScheme->doNeedHy ? expandTo3D (gpuIntScheme->getHy ()->getSize (), ct1, ct2, ct3) : zero3D;
-  GridCoordinate3D HzSize = gpuIntScheme->doNeedHz ? expandTo3D (gpuIntScheme->getHz ()->getSize (), ct1, ct2, ct3) : zero3D;
-#endif
-
-  for (time_step t = tStart; t < tStart + N; ++t)
-  {
-    DPRINTF (LOG_LEVEL_NONE, "calculating time step %d\n", t);
-
-#ifdef CUDA_ENABLED
-    TC ExStart = gpuIntScheme->doNeedEx ? gpuIntScheme->Ex->getComputationStart (yeeLayout->getExStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC ExEnd = gpuIntScheme->doNeedEx ? gpuIntScheme->Ex->getComputationEnd (yeeLayout->getExEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC EyStart = gpuIntScheme->doNeedEy ? gpuIntScheme->Ey->getComputationStart (yeeLayout->getEyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC EyEnd = gpuIntScheme->doNeedEy ? gpuIntScheme->Ey->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC EzStart = gpuIntScheme->doNeedEz ? gpuIntScheme->Ez->getComputationStart (yeeLayout->getEzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC EzEnd = gpuIntScheme->doNeedEz ? gpuIntScheme->Ez->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC HxStart = gpuIntScheme->doNeedHx ? gpuIntScheme->Hx->getComputationStart (yeeLayout->getHxStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HxEnd = gpuIntScheme->doNeedHx ? gpuIntScheme->Hx->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC HyStart = gpuIntScheme->doNeedHy ? gpuIntScheme->Hy->getComputationStart (yeeLayout->getHyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HyEnd = gpuIntScheme->doNeedHy ? gpuIntScheme->Hy->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC HzStart = gpuIntScheme->doNeedHz ? gpuIntScheme->Hz->getComputationStart (yeeLayout->getHzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HzEnd = gpuIntScheme->doNeedHz ? gpuIntScheme->Hz->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-#else /* CUDA_ENABLED */
-    TC ExStart = doNeedEx ? Ex->getComputationStart (yeeLayout->getExStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC ExEnd = doNeedEx ? Ex->getComputationEnd (yeeLayout->getExEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC EyStart = doNeedEy ? Ey->getComputationStart (yeeLayout->getEyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC EyEnd = doNeedEy ? Ey->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC EzStart = doNeedEz ? Ez->getComputationStart (yeeLayout->getEzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC EzEnd = doNeedEz ? Ez->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC HxStart = doNeedHx ? Hx->getComputationStart (yeeLayout->getHxStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HxEnd = doNeedHx ? Hx->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC HyStart = doNeedHy ? Hy->getComputationStart (yeeLayout->getHyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HyEnd = doNeedHy ? Hy->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC HzStart = doNeedHz ? Hz->getComputationStart (yeeLayout->getHzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HzEnd = doNeedHz ? Hz->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-#endif /* CUDA_ENABLED */
-
-    if (SOLVER_SETTINGS.getDoUseTFSF ())
-    {
-      GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
-
-#ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->performPlaneWaveEStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getEInc ()->getSize ());
-      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEInc ()->nextTimeStep ();
-#else /* CUDA_ENABLED */
-      performPlaneWaveESteps (t, zero1D, getEInc ()->getSize ());
-      getEInc ()->shiftInTime ();
-      getEInc ()->nextTimeStep ();
-#endif /* !CUDA_ENABLED */
-    }
-
-    if (getDoNeedEx ())
-    {
-      performFieldSteps<static_cast<uint8_t> (GridType::EX)> (t, ExStart, ExEnd);
-
-#ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEx ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDx (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getDx ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1x (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getD1x ()->nextTimeStep ();
-      }
-#else
-      getEx ()->shiftInTime ();
-      getEx ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        getDx ()->shiftInTime ();
-        getDx ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        getD1x ()->shiftInTime ();
-        getD1x ()->nextTimeStep ();
-      }
-#endif
-    }
-
-    if (getDoNeedEy ())
-    {
-      performFieldSteps<static_cast<uint8_t> (GridType::EY)> (t, EyStart, EyEnd);
-
-#ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEy ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDy (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getDy ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1y (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getD1y ()->nextTimeStep ();
-      }
-#else
-      getEy ()->shiftInTime ();
-      getEy ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        getDy ()->shiftInTime ();
-        getDy ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        getD1y ()->shiftInTime ();
-        getD1y ()->nextTimeStep ();
-      }
-#endif
-    }
-
-    if (getDoNeedEz ())
-    {
-      performFieldSteps<static_cast<uint8_t> (GridType::EZ)> (t, EzStart, EzEnd);
-
-#ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEz ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDz (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getDz ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1z (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getD1z ()->nextTimeStep ();
-      }
-#else
-      getEz ()->shiftInTime ();
-      getEz ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        getDz ()->shiftInTime ();
-        getDz ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        getD1z ()->shiftInTime ();
-        getD1z ()->nextTimeStep ();
-      }
-#endif
-    }
-
-    if (SOLVER_SETTINGS.getDoUseTFSF ())
-    {
-      GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
-
-#ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->performPlaneWaveHStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getHInc ()->getSize ());
-      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHInc ()->nextTimeStep ();
-#else /* CUDA_ENABLED */
-      performPlaneWaveHSteps (t, zero1D, getHInc ()->getSize ());
-      getHInc ()->shiftInTime ();
-      getHInc ()->nextTimeStep ();
-#endif /* !CUDA_ENABLED */
-    }
-
-    if (getDoNeedHx ())
-    {
-      performFieldSteps<static_cast<uint8_t> (GridType::HX)> (t, HxStart, HxEnd);
-
-#ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHx ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBx (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getBx ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1x (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getB1x ()->nextTimeStep ();
-      }
-#else
-      getHx ()->shiftInTime ();
-      getHx ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        getBx ()->shiftInTime ();
-        getBx ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        getB1x ()->shiftInTime ();
-        getB1x ()->nextTimeStep ();
-      }
-#endif
-    }
-
-    if (getDoNeedHy ())
-    {
-      performFieldSteps<static_cast<uint8_t> (GridType::HY)> (t, HyStart, HyEnd);
-
-#ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHy ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBy (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getBy ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1y (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getB1y ()->nextTimeStep ();
-      }
-#else
-      getHy ()->shiftInTime ();
-      getHy ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        getBy ()->shiftInTime ();
-        getBy ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        getB1y ()->shiftInTime ();
-        getB1y ()->nextTimeStep ();
-      }
-#endif
-    }
-
-    if (getDoNeedHz ())
-    {
-      performFieldSteps<static_cast<uint8_t> (GridType::HZ)> (t, HzStart, HzEnd);
-
-#ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHz ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBz (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getBz ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1z (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getB1z ()->nextTimeStep ();
-      }
-#else
-      getHz ()->shiftInTime ();
-      getHz ()->nextTimeStep ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        getBz ()->shiftInTime ();
-        getBz ()->nextTimeStep ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        getB1z ()->shiftInTime ();
-        getB1z ()->nextTimeStep ();
-      }
-#endif
-    }
-  }
-
-#ifdef CUDA_ENABLED
-  /*
-   * Copy back from GPU to CPU
-   */
-  bool finalCopy = blockIdx + TC_COORD (1, 1, 1, ct1, ct2, ct3) == blockCount;
-  gpuIntScheme->copyBackToCPU (NTimeSteps, finalCopy);
-#endif /* CUDA_ENABLED */
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-ICUDA_HOST
-void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::share ()
-{
-#ifdef PARALLEL_GRID
-  if (!useParallel)
-  {
-    return;
-  }
-
-  if (intScheme->getDoNeedEx ())
-  {
-    ASSERT (((ParallelGrid *) Ex)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) Ex)->share ();
-    ((ParallelGrid *) Ex)->zeroShareStep ();
-
-    if (SOLVER_SETTINGS.getDoUsePML ())
-    {
-      ASSERT (((ParallelGrid *) Dx)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) Dx)->share ();
-      ((ParallelGrid *) Dx)->zeroShareStep ();
-    }
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      ASSERT (((ParallelGrid *) D1x)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) D1x)->share ();
-      ((ParallelGrid *) D1x)->zeroShareStep ();
-    }
-  }
-
-  if (intScheme->getDoNeedEy ())
-  {
-    ASSERT (((ParallelGrid *) Ey)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) Ey)->share ();
-    ((ParallelGrid *) Ey)->zeroShareStep ();
-
-    if (SOLVER_SETTINGS.getDoUsePML ())
-    {
-      ASSERT (((ParallelGrid *) Dy)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) Dy)->share ();
-      ((ParallelGrid *) Dy)->zeroShareStep ();
-    }
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      ASSERT (((ParallelGrid *) D1y)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) D1y)->share ();
-      ((ParallelGrid *) D1y)->zeroShareStep ();
-    }
-  }
-
-  if (intScheme->getDoNeedEz ())
-  {
-    ASSERT (((ParallelGrid *) Ez)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) Ez)->share ();
-    ((ParallelGrid *) Ez)->zeroShareStep ();
-
-    if (SOLVER_SETTINGS.getDoUsePML ())
-    {
-      ASSERT (((ParallelGrid *) Dz)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) Dz)->share ();
-      ((ParallelGrid *) Dz)->zeroShareStep ();
-    }
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      ASSERT (((ParallelGrid *) D1z)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) D1z)->share ();
-      ((ParallelGrid *) D1z)->zeroShareStep ();
-    }
-  }
-
-  if (intScheme->getDoNeedHx ())
-  {
-    ASSERT (((ParallelGrid *) Hx)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) Hx)->share ();
-    ((ParallelGrid *) Hx)->zeroShareStep ();
-
-    if (SOLVER_SETTINGS.getDoUsePML ())
-    {
-      ASSERT (((ParallelGrid *) Bx)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) Bx)->share ();
-      ((ParallelGrid *) Bx)->zeroShareStep ();
-    }
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      ASSERT (((ParallelGrid *) B1x)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) B1x)->share ();
-      ((ParallelGrid *) B1x)->zeroShareStep ();
-    }
-  }
-
-  if (intScheme->getDoNeedHy ())
-  {
-    ASSERT (((ParallelGrid *) Hy)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) Hy)->share ();
-    ((ParallelGrid *) Hy)->zeroShareStep ();
-
-    if (SOLVER_SETTINGS.getDoUsePML ())
-    {
-      ASSERT (((ParallelGrid *) By)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) By)->share ();
-      ((ParallelGrid *) By)->zeroShareStep ();
-    }
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      ASSERT (((ParallelGrid *) B1y)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) B1y)->share ();
-      ((ParallelGrid *) B1y)->zeroShareStep ();
-    }
-  }
-
-  if (intScheme->getDoNeedHz ())
-  {
-    ASSERT (((ParallelGrid *) Hz)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) Hz)->share ();
-    ((ParallelGrid *) Hz)->zeroShareStep ();
-
-    if (SOLVER_SETTINGS.getDoUsePML ())
-    {
-      ASSERT (((ParallelGrid *) Bz)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) Bz)->share ();
-      ((ParallelGrid *) Bz)->zeroShareStep ();
-    }
-    if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-    {
-      ASSERT (((ParallelGrid *) B1z)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) B1z)->share ();
-      ((ParallelGrid *) B1z)->zeroShareStep ();
-    }
-  }
-#endif /* PARALLEL_GRID */
-}
-
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-ICUDA_HOST
-void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::rebalance ()
-{
-
-}
-
-/**
- * Perform computations of single time step for specific field and for specified chunk.
- *
- * NOTE: For GPU InternalScheme this method is not defined, because it is supposed to be ran on CPU only,
- *       and call kernels deeper in call tree.
- *
- * NOTE: Start and End coordinates should correctly consider buffers in parallel grid,
- *       which means, that computations are not performed for incorrect grid points.
- */
-template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template<uint8_t grid_type, bool usePML, bool useMetamaterials>
-ICUDA_HOST
-void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time step to calculate */
-                                                                     TC start, /**< start coordinate of chunk to perform computations on */
-                                                                     TC end) /**< end coordinate of chunk to perform computations on */
-{
-  // TODO: add metamaterials without pml
-  if (!usePML && useMetamaterials)
-  {
-    UNREACHABLE;
-  }
-
-  IGRID<TC> *grid = NULLPTR;
-  GridType gridType = GridType::NONE;
-
-  IGRID<TC> *materialGrid = NULLPTR;
-  GridType materialGridType = GridType::NONE;
-
-  IGRID<TC> *materialGrid1 = NULLPTR;
-  GridType materialGridType1 = GridType::NONE;
-
-  IGRID<TC> *materialGrid2 = NULLPTR;
-  GridType materialGridType2 = GridType::NONE;
-
-  IGRID<TC> *materialGrid3 = NULLPTR;
-  GridType materialGridType3 = GridType::NONE;
-
-  IGRID<TC> *materialGrid4 = NULLPTR;
-  GridType materialGridType4 = GridType::NONE;
-
-  IGRID<TC> *materialGrid5 = NULLPTR;
-  GridType materialGridType5 = GridType::NONE;
-
-  IGRID<TC> *oppositeGrid1 = NULLPTR;
-  IGRID<TC> *oppositeGrid2 = NULLPTR;
-
-  IGRID<TC> *gridPML1 = NULLPTR;
-  GridType gridPMLType1 = GridType::NONE;
-
-  IGRID<TC> *gridPML2 = NULLPTR;
-  GridType gridPMLType2 = GridType::NONE;
-
-  IGRID<TC> *Ca = NULLPTR;
-  IGRID<TC> *Cb = NULLPTR;
-
-  SourceCallBack rightSideFunc = NULLPTR;
-  SourceCallBack borderFunc = NULLPTR;
-  SourceCallBack exactFunc = NULLPTR;
-
-  TCS diff11;
-  TCS diff12;
-  TCS diff21;
-  TCS diff22;
-
-  /*
-   * TODO: remove this, multiply on this at initialization
-   */
-  FPValue materialModifier;
-
-  calculateFieldStepInit<grid_type, usePML, useMetamaterials> (&grid, &gridType,
-    &materialGrid, &materialGridType, &materialGrid1, &materialGridType1, &materialGrid2, &materialGridType2,
-    &materialGrid3, &materialGridType3, &materialGrid4, &materialGridType4, &materialGrid5, &materialGridType5,
-    &oppositeGrid1, &oppositeGrid2, &gridPML1, &gridPMLType1, &gridPML2, &gridPMLType2,
-    &rightSideFunc, &borderFunc, &exactFunc, &materialModifier, &Ca, &Cb);
-
-  calculateFieldStepInitDiff<grid_type> (&diff11, &diff12, &diff21, &diff22);
-
-#ifdef CUDA_ENABLED
-  CudaGrid<TC> *d_grid = NULLPTR;
-  GridType _gridType = GridType::NONE;
-
-  CudaGrid<TC> *d_materialGrid = NULLPTR;
-  GridType _materialGridType = GridType::NONE;
-
-  CudaGrid<TC> *d_materialGrid1 = NULLPTR;
-  GridType _materialGridType1 = GridType::NONE;
-
-  CudaGrid<TC> *d_materialGrid2 = NULLPTR;
-  GridType _materialGridType2 = GridType::NONE;
-
-  CudaGrid<TC> *d_materialGrid3 = NULLPTR;
-  GridType _materialGridType3 = GridType::NONE;
-
-  CudaGrid<TC> *d_materialGrid4 = NULLPTR;
-  GridType _materialGridType4 = GridType::NONE;
-
-  CudaGrid<TC> *d_materialGrid5 = NULLPTR;
-  GridType _materialGridType5 = GridType::NONE;
-
-  CudaGrid<TC> *d_oppositeGrid1 = NULLPTR;
-  CudaGrid<TC> *d_oppositeGrid2 = NULLPTR;
-
-  CudaGrid<TC> *d_gridPML1 = NULLPTR;
-  GridType _gridPMLType1 = GridType::NONE;
-
-  CudaGrid<TC> *d_gridPML2 = NULLPTR;
-  GridType _gridPMLType2 = GridType::NONE;
-
-  CudaGrid<TC> *d_Ca = NULLPTR;
-  CudaGrid<TC> *d_Cb = NULLPTR;
-
-  SourceCallBack _rightSideFunc = NULLPTR;
-  SourceCallBack _borderFunc = NULLPTR;
-  SourceCallBack _exactFunc = NULLPTR;
-
-  FPValue _materialModifier;
-
-  TCS _diff11;
-  TCS _diff12;
-  TCS _diff21;
-  TCS _diff22;
-
-  gpuIntSchemeOnGPU->template calculateFieldStepInit<grid_type, usePML, useMetamaterials> (&d_grid, &_gridType,
-    &d_materialGrid, &_materialGridType, &d_materialGrid1, &_materialGridType1, &d_materialGrid2, &_materialGridType2,
-    &d_materialGrid3, &_materialGridType3, &d_materialGrid4, &_materialGridType4, &d_materialGrid5, &_materialGridType5,
-    &d_oppositeGrid1, &d_oppositeGrid2, &d_gridPML1, &_gridPMLType1, &d_gridPML2, &_gridPMLType2,
-    &_rightSideFunc, &_borderFunc, &_exactFunc, &_materialModifier, &d_Ca, &d_Cb);
-
-  gpuIntScheme->template calculateFieldStepInitDiff<grid_type> (&_diff11, &_diff12, &_diff21, &_diff22);
-
-#endif /* CUDA_ENABLED */
-
-  // TODO: specialize for each dimension
-  GridCoordinate3D start3D;
-  GridCoordinate3D end3D;
-
-  expandTo3DStartEnd (start, end, start3D, end3D, ct1, ct2, ct3);
-
-  // TODO: remove this check for each iteration
-  if (t > 0)
-  {
-#ifdef CUDA_ENABLED
-
-    // Launch kernel here
-    gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <grid_type, usePML, useMetamaterials> (d_gpuIntSchemeOnGPU, start3D, end3D,
-                                                                            t, diff11, diff12, diff21, diff22,
-                                                                            d_grid,
-                                                                            d_oppositeGrid1, d_oppositeGrid2, _rightSideFunc, d_Ca, d_Cb);
-
-#else /* CUDA_ENABLED */
-
-    for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
-    {
-      // TODO: check that this loop is optimized out
-      for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-      {
-        // TODO: check that this is optimized out in case 2D mode
-        for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-        {
-          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-
-          // TODO: add getTotalPositionDiff here, which will be called before loop
-          TC posAbs = grid->getTotalPosition (pos);
-
-          TCFP coordFP;
-
-          if (rightSideFunc != NULLPTR)
-          {
-            switch (grid_type)
-            {
-              case (static_cast<uint8_t> (GridType::EX)):
-              {
-                coordFP = yeeLayout->getExCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::EY)):
-              {
-                coordFP = yeeLayout->getEyCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::EZ)):
-              {
-                coordFP = yeeLayout->getEzCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HX)):
-              {
-                coordFP = yeeLayout->getHxCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HY)):
-              {
-                coordFP = yeeLayout->getHyCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HZ)):
-              {
-                coordFP = yeeLayout->getHzCoordFP (posAbs);
-                break;
-              }
-              default:
-              {
-                UNREACHABLE;
-              }
-            }
-          }
-
-          calculateFieldStepIteration<grid_type, usePML> (t, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                          grid, coordFP,
-                                                          oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb);
-        }
-      }
-    }
-#endif
-
-//     if (usePML)
-//     {
-//       if (useMetamaterials)
-//       {
-// #ifdef TWO_TIME_STEPS
-//         for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
-//         {
-//           // TODO: check that this loop is optimized out
-//           for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-//           {
-//             // TODO: check that this loop is optimized out
-//             for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-//             {
-//               TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-//               calculateFieldStepIterationPMLMetamaterials (t, pos, grid, gridPML1, gridType,
-//                 materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
-//                 materialModifier);
-//             }
-//           }
-//         }
-// #else
-//         ASSERT_MESSAGE ("Solver is not compiled with support of two steps in time. Recompile it with -DTIME_STEPS=2.");
-// #endif
-//       }
-//
-//       for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
-//       {
-//         // TODO: check that this loop is optimized out
-//         for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-//         {
-//           // TODO: check that this loop is optimized out
-//           for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-//           {
-//             TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-//             calculateFieldStepIterationPML<useMetamaterials> (t, pos, grid, gridPML1, gridPML2, gridType, gridPMLType1,
-//               materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
-//               materialModifier);
-//           }
-//         }
-//       }
-//     }
-  }
-
-  // if (borderFunc != NULLPTR)
-  // {
-  //   GridCoordinate3D startBorder;
-  //   GridCoordinate3D endBorder;
-  //
-  //   expandTo3DStartEnd (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3),
-  //                       grid->getSize (),
-  //                       startBorder,
-  //                       endBorder,
-  //                       ct1, ct2, ct3);
-  //
-  //   for (grid_coord i = startBorder.get1 (); i < endBorder.get1 (); ++i)
-  //   {
-  //     // TODO: check that this loop is optimized out
-  //     for (grid_coord j = startBorder.get2 (); j < endBorder.get2 (); ++j)
-  //     {
-  //       // TODO: check that this loop is optimized out
-  //       for (grid_coord k = startBorder.get3 (); k < endBorder.get3 (); ++k)
-  //       {
-  //         TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-  //         calculateFieldStepIterationBorder<grid_type> (t, pos, grid, borderFunc);
-  //       }
-  //     }
-  //   }
-  // }
-
-//   if (exactFunc != NULLPTR)
-//   {
-//     FPValue normRe = 0.0;
-//     FPValue normIm = 0.0;
-//     FPValue normMod = 0.0;
-//
-//     FPValue maxRe = 0.0;
-//     FPValue maxIm = 0.0;
-//     FPValue maxMod = 0.0;
-//
-//     GridCoordinate3D startNorm = start3D;
-//     GridCoordinate3D endNorm = end3D;
-//
-//     if (SOLVER_SETTINGS.getExactSolutionCompareStartX () != 0)
-//     {
-//       startNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareStartX ());
-//     }
-//     if (SOLVER_SETTINGS.getExactSolutionCompareStartY () != 0)
-//     {
-//       startNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareStartY ());
-//     }
-//     if (SOLVER_SETTINGS.getExactSolutionCompareStartZ () != 0)
-//     {
-//       startNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareStartZ ());
-//     }
-//
-//     if (SOLVER_SETTINGS.getExactSolutionCompareEndX () != 0)
-//     {
-//       endNorm.set1 (SOLVER_SETTINGS.getExactSolutionCompareEndX ());
-//     }
-//     if (SOLVER_SETTINGS.getExactSolutionCompareEndY () != 0)
-//     {
-//       endNorm.set2 (SOLVER_SETTINGS.getExactSolutionCompareEndY ());
-//     }
-//     if (SOLVER_SETTINGS.getExactSolutionCompareEndZ () != 0)
-//     {
-//       endNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareEndZ ());
-//     }
-//
-//     IGRID<TC> *normGrid = grid;
-//     if (usePML)
-//     {
-//       grid = gridPML2;
-//     }
-//
-//     for (grid_coord i = startNorm.get1 (); i < endNorm.get1 (); ++i)
-//     {
-//       // TODO: check that this loop is optimized out
-//       for (grid_coord j = startNorm.get2 (); j < endNorm.get2 (); ++j)
-//       {
-//         // TODO: check that this loop is optimized out
-//         for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
-//         {
-//           TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-//           calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
-//         }
-//       }
-//     }
-//
-// #ifdef COMPLEX_FIELD_VALUES
-//     normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
-//     normIm = sqrt (normIm / grid->getSize ().calculateTotalCoord ());
-//     normMod = sqrt (normMod / grid->getSize ().calculateTotalCoord ());
-//
-//     /*
-//      * NOTE: do not change this! test suite depdends on the order of values in output
-//      */
-//     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
-//       grid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
-// #else
-//     normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
-//
-//     /*
-//      * NOTE: do not change this! test suite depdends on the order of values in output
-//      */
-//     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
-//       grid->getName (), t, normRe, normRe * 100.0 / maxRe);
-// #endif
-//   }
-}
-
-#endif /* !GPU_INTERNAL_SCHEME */

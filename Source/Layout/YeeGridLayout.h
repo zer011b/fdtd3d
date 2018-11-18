@@ -427,26 +427,26 @@ public:
   {
   } /* ~YeeGridLayout */
 
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (const FieldValue &, const FieldValue &);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMaterial (const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            FPValue &, FPValue &);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            FPValue &, FPValue &);
-  CUDA_DEVICE CUDA_HOST FPValue getApproximateMetaMaterial (const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            const FieldValue &, const FieldValue &, const FieldValue &,
-                                                            FPValue &, FPValue &);
+  CUDA_DEVICE CUDA_HOST FieldValue getApproximateMaterial (const FieldValue &, const FieldValue &);
+  CUDA_DEVICE CUDA_HOST FieldValue getApproximateMaterial (const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &);
+  CUDA_DEVICE CUDA_HOST FieldValue getApproximateMaterial (const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &, const FieldValue &);
+  CUDA_DEVICE CUDA_HOST FieldValue getApproximateMetaMaterial (const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               FPValue &, FPValue &);
+  CUDA_DEVICE CUDA_HOST FieldValue getApproximateMetaMaterial (const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               FPValue &, FPValue &);
+  CUDA_DEVICE CUDA_HOST FieldValue getApproximateMetaMaterial (const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               const FieldValue &, const FieldValue &, const FieldValue &,
+                                                               FPValue &, FPValue &);
 
   template <bool isMetaMaterial>
   CUDA_DEVICE CUDA_HOST void initCoordinates (const TC &, GridType, TC &, TC &, TC &, TC &, TC &, TC &, TC &, TC &);
@@ -621,40 +621,40 @@ private:
 };
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST FPValue
+CUDA_DEVICE CUDA_HOST FieldValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (const FieldValue & val1, const FieldValue & val2)
 {
-  return Approximation::approximateMaterial (Approximation::getMaterial (val1),
-                                             Approximation::getMaterial (val2));
+  return FIELDVALUE (Approximation::approximateMaterial (Approximation::getMaterial (val1),
+                                                         Approximation::getMaterial (val2)), 0);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST FPValue
+CUDA_DEVICE CUDA_HOST FieldValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (const FieldValue & val1, const FieldValue & val2, const FieldValue & val3, const FieldValue & val4)
 {
-  return Approximation::approximateMaterial (Approximation::getMaterial (val1),
-                                             Approximation::getMaterial (val2),
-                                             Approximation::getMaterial (val3),
-                                             Approximation::getMaterial (val4));
+  return FIELDVALUE (Approximation::approximateMaterial (Approximation::getMaterial (val1),
+                                                         Approximation::getMaterial (val2),
+                                                         Approximation::getMaterial (val3),
+                                                         Approximation::getMaterial (val4)), 0);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST FPValue
+CUDA_DEVICE CUDA_HOST FieldValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMaterial (const FieldValue & val1, const FieldValue & val2, const FieldValue & val3, const FieldValue & val4,
                                                                   const FieldValue & val5, const FieldValue & val6, const FieldValue & val7, const FieldValue & val8)
 {
-  return Approximation::approximateMaterial (Approximation::getMaterial (val1),
-                                             Approximation::getMaterial (val2),
-                                             Approximation::getMaterial (val3),
-                                             Approximation::getMaterial (val4),
-                                             Approximation::getMaterial (val5),
-                                             Approximation::getMaterial (val6),
-                                             Approximation::getMaterial (val7),
-                                             Approximation::getMaterial (val8));
+  return FIELDVALUE (Approximation::approximateMaterial (Approximation::getMaterial (val1),
+                                                         Approximation::getMaterial (val2),
+                                                         Approximation::getMaterial (val3),
+                                                         Approximation::getMaterial (val4),
+                                                         Approximation::getMaterial (val5),
+                                                         Approximation::getMaterial (val6),
+                                                         Approximation::getMaterial (val7),
+                                                         Approximation::getMaterial (val8)), 0);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST FPValue
+CUDA_DEVICE CUDA_HOST FieldValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (const FieldValue & val1, const FieldValue & val2,
                                            const FieldValue & val3, const FieldValue & val4,
                                            const FieldValue & val5, const FieldValue & val6,
@@ -673,11 +673,11 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (const Fiel
                                         Approximation::getMaterial (val5),
                                         Approximation::getMaterial (val6));
 
-  return material;
+  return FIELDVALUE (material, 0);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST FPValue
+CUDA_DEVICE CUDA_HOST FieldValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (const FieldValue & val1, const FieldValue & val2,
                                                                       const FieldValue & val3, const FieldValue & val4,
                                                                       const FieldValue & val5, const FieldValue & val6,
@@ -707,11 +707,11 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (const Fiel
                                         Approximation::getMaterial (val11),
                                         Approximation::getMaterial (val12));
 
-  return material;
+  return FIELDVALUE (material, 0);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-CUDA_DEVICE CUDA_HOST FPValue
+CUDA_DEVICE CUDA_HOST FieldValue
 YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (const FieldValue & val1, const FieldValue & val2,
                                                                       const FieldValue & val3, const FieldValue & val4,
                                                                       const FieldValue & val5, const FieldValue & val6,
@@ -763,7 +763,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (const Fiel
                                         Approximation::getMaterial (val23),
                                         Approximation::getMaterial (val24));
 
-  return material;
+  return FIELDVALUE (material, 0);
 }
 
 /*

@@ -79,6 +79,20 @@ SPECIALIZE_TEMPLATE(bool, bool, bool,
                     (GridCoordinateFP3D pos),
                     (pos, yeeLayout->getLeftBorderTFSF (), yeeLayout->getRightBorderTFSF ()))
 
+SPECIALIZE_TEMPLATE(void, void, void,
+                    performNSteps,
+                    (time_step tStart, time_step N),
+                    (time_step tStart, time_step N),
+                    (time_step tStart, time_step N),
+                    (this, tStart, N))
+
+SPECIALIZE_TEMPLATE(void, void, void,
+                    performNSteps,
+                    (time_step tStart, time_step N),
+                    (time_step tStart, time_step N),
+                    (time_step tStart, time_step N),
+                    (this, tStart, N))
+
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_type> *layout,
                                            bool parallelLayout,
@@ -86,9 +100,13 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
                                            time_step tStep)
   : useParallel (false)
   , internalScheme ()
+  , intScheme (NULLPTR)
+  , totalTimeSteps (0)
+  , NTimeSteps (0)
 #ifdef CUDA_ENABLED
-  , intGPUScheme ()
-  , d_intGPUScheme (NULLPTR)
+  , gpuIntScheme (NULLPTR)
+  , gpuIntSchemeOnGPU (NULLPTR)
+  , d_gpuIntSchemeOnGPU (NULLPTR)
 #endif /* CUDA_ENABLED */
   , totalEx (NULLPTR)
   , totalEy (NULLPTR)
@@ -136,20 +154,22 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
     useParallel = true;
   }
 
-  internalScheme.init (layout, useParallel);
+  intScheme = new InternalScheme<Type, TCoord, layout_type> ();
+
+  intScheme->init (layout, useParallel);
 
 #ifdef CUDA_ENABLED
-  intGPUScheme.initFromCPU (&internalScheme);
+  initBlocks ();
 #endif /* CUDA_ENABLED */
 
   if (!useParallel)
   {
-    totalEps = internalScheme.Eps;
-    totalMu = internalScheme.Mu;
-    totalOmegaPE = internalScheme.OmegaPE;
-    totalOmegaPM = internalScheme.OmegaPM;
-    totalGammaE = internalScheme.GammaE;
-    totalGammaM = internalScheme.GammaM;
+    totalEps = intScheme->Eps;
+    totalMu = intScheme->Mu;
+    totalOmegaPE = intScheme->OmegaPE;
+    totalOmegaPM = intScheme->OmegaPM;
+    totalGammaE = intScheme->GammaE;
+    totalGammaM = intScheme->GammaM;
   }
   else
   {
@@ -274,6 +294,28 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 Scheme<Type, TCoord, layout_type>::~Scheme ()
 {
+#ifdef CUDA_ENABLED
+  /*
+   * Free memory
+   */
+  if (d_gpuIntSchemeOnGPU)
+  {
+    cudaCheckErrorCmd (cudaFree (d_gpuIntSchemeOnGPU));
+  }
+
+  if (gpuIntSchemeOnGPU)
+  {
+    gpuIntSchemeOnGPU->uninitOnGPU ();
+  }
+  if (gpuIntScheme)
+  {
+    gpuIntScheme->uninitFromCPU ();
+  }
+
+  delete gpuIntSchemeOnGPU;
+  delete gpuIntScheme;
+#endif /* CUDA_ENABLED */
+
   if (totalInitialized)
   {
     delete totalEx;
@@ -1768,118 +1810,131 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     }
   }
 
-  if (internalScheme.getDoNeedEx ())
+  if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
   {
-    for (grid_coord i = 0; i < internalScheme.Ex->getSize ().calculateTotalCoord (); ++i)
+    if (internalScheme.getDoNeedEx ())
     {
-      FieldPointValue valCa;
-      FieldPointValue valCb;
-
-      FPValue Ca;
-      FPValue Cb;
-
-      FPValue k_mod = FPValue (1);
-
-      TC pos = internalScheme.Ex->calculatePositionFromIndex (i);
-      TCFP posAbs = yeeLayout->getExCoordFP (internalScheme.Ex->getTotalPosition (pos));
-
-      FPValue material = getMaterial (posAbs, GridType::EX, internalScheme.Eps, GridType::EPS);
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
+      for (grid_coord i = 0; i < internalScheme.Ex->getSize ().calculateTotalCoord (); ++i)
       {
-        Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
-        Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+        FieldPointValue valCa;
+        FieldPointValue valCb;
+
+        FPValue Ca;
+        FPValue Cb;
+
+        FPValue k_mod = FPValue (1);
+
+        TC pos = internalScheme.Ex->calculatePositionFromIndex (i);
+        TCFP posAbs = yeeLayout->getExCoordFP (internalScheme.Ex->getTotalPosition (pos));
+
+        FPValue material = getMaterial (posAbs, GridType::EX, internalScheme.Eps, GridType::EPS);
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+          Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+        }
+        else
+        {
+          Ca = FPValue (1);
+          Cb = gridTimeStep / (material * PhysicsConst::Eps0 * gridStep);
+        }
+
+        valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
+        valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
+
+        internalScheme.CaEx->setFieldPointValue (valCa, pos);
+        internalScheme.CbEx->setFieldPointValue (valCb, pos);
       }
-      else
+    }
+
+    if (internalScheme.getDoNeedEy ())
+    {
+      for (grid_coord i = 0; i < internalScheme.Ey->getSize ().calculateTotalCoord (); ++i)
       {
-        Ca = FPValue (1);
-        Cb = gridTimeStep / (material * PhysicsConst::Eps0 * gridStep);
+        FieldPointValue valCa;
+        FieldPointValue valCb;
+
+        FPValue Ca;
+        FPValue Cb;
+
+        FPValue k_mod = FPValue (1);
+
+        TC pos = internalScheme.Ey->calculatePositionFromIndex (i);
+        TCFP posAbs = yeeLayout->getEyCoordFP (internalScheme.Ey->getTotalPosition (pos));
+
+        FPValue material = getMaterial (posAbs, GridType::EY, internalScheme.Eps, GridType::EPS);
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+          Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+        }
+        else
+        {
+          Ca = FPValue (1);
+          Cb = gridTimeStep / (material * PhysicsConst::Eps0 * gridStep);
+        }
+
+        valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
+        valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
+
+        internalScheme.CaEy->setFieldPointValue (valCa, pos);
+        internalScheme.CbEy->setFieldPointValue (valCb, pos);
       }
+    }
 
-      valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
-      valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
+    if (internalScheme.getDoNeedEz ())
+    {
+      for (grid_coord i = 0; i < internalScheme.Ez->getSize ().calculateTotalCoord (); ++i)
+      {
+        FieldPointValue valCa;
+        FieldPointValue valCb;
 
-      internalScheme.CaEx->setFieldPointValue (valCa, pos);
-      internalScheme.CbEx->setFieldPointValue (valCb, pos);
+        FPValue Ca;
+        FPValue Cb;
+
+        FPValue k_mod = FPValue (1);
+
+        TC pos = internalScheme.Ez->calculatePositionFromIndex (i);
+        TCFP posAbs = yeeLayout->getEzCoordFP (internalScheme.Ez->getTotalPosition (pos));
+
+        FPValue material = getMaterial (posAbs, GridType::EZ, internalScheme.Eps, GridType::EPS);
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+          Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+        }
+        else
+        {
+          Ca = FPValue (1);
+          Cb = gridTimeStep / (material * PhysicsConst::Eps0 * gridStep);
+        }
+
+        valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
+        valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
+
+        internalScheme.CaEz->setFieldPointValue (valCa, pos);
+        internalScheme.CbEz->setFieldPointValue (valCb, pos);
+      }
     }
   }
 
-  if (internalScheme.getDoNeedEy ())
+  if (SOLVER_SETTINGS.getDoUseCaCbPMLGrids ())
   {
-    for (grid_coord i = 0; i < internalScheme.Ey->getSize ().calculateTotalCoord (); ++i)
-    {
-      FieldPointValue valCa;
-      FieldPointValue valCb;
-
-      FPValue Ca;
-      FPValue Cb;
-
-      FPValue k_mod = FPValue (1);
-
-      TC pos = internalScheme.Ey->calculatePositionFromIndex (i);
-      TCFP posAbs = yeeLayout->getEyCoordFP (internalScheme.Ey->getTotalPosition (pos));
-
-      FPValue material = getMaterial (posAbs, GridType::EY, internalScheme.Eps, GridType::EPS);
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
-        Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
-      }
-      else
-      {
-        Ca = FPValue (1);
-        Cb = gridTimeStep / (material * PhysicsConst::Eps0 * gridStep);
-      }
-
-      valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
-      valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
-
-      internalScheme.CaEy->setFieldPointValue (valCa, pos);
-      internalScheme.CbEy->setFieldPointValue (valCb, pos);
-    }
+    UNREACHABLE (0);
   }
 
-  if (internalScheme.getDoNeedEz ())
+  if (SOLVER_SETTINGS.getDoUseCaCbPMLMetaGrids ())
   {
-    for (grid_coord i = 0; i < internalScheme.Ez->getSize ().calculateTotalCoord (); ++i)
-    {
-      FieldPointValue valCa;
-      FieldPointValue valCb;
-
-      FPValue Ca;
-      FPValue Cb;
-
-      FPValue k_mod = FPValue (1);
-
-      TC pos = internalScheme.Ez->calculatePositionFromIndex (i);
-      TCFP posAbs = yeeLayout->getEzCoordFP (internalScheme.Ez->getTotalPosition (pos));
-
-      FPValue material = getMaterial (posAbs, GridType::EZ, internalScheme.Eps, GridType::EPS);
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
-        Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
-      }
-      else
-      {
-        Ca = FPValue (1);
-        Cb = gridTimeStep / (material * PhysicsConst::Eps0 * gridStep);
-      }
-
-      valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
-      valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
-
-      internalScheme.CaEz->setFieldPointValue (valCa, pos);
-      internalScheme.CbEz->setFieldPointValue (valCb, pos);
-    }
+    UNREACHABLE (0);
   }
 
   internalScheme.Mu->initialize (getFieldValueRealOnly (1.0));
@@ -1921,117 +1976,120 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     }
   }
 
-  if (internalScheme.getDoNeeHx ())
+  if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
   {
-    for (grid_coord i = 0; i < internalScheme.Hx->getSize ().calculateTotalCoord (); ++i)
+    if (internalScheme.getDoNeeHx ())
     {
-      FieldPointValue valCa;
-      FieldPointValue valCb;
-
-      FPValue Ca;
-      FPValue Cb;
-
-      FPValue k_mod = FPValue (1);
-
-      TC pos = internalScheme.Hx->calculatePositionFromIndex (i);
-      TCFP posAbs = yeeLayout->getHxCoordFP (internalScheme.Hx->getTotalPosition (pos));
-
-      FPValue material = getMaterial (posAbs, GridType::HX, internalScheme.Mu, GridType::MU);
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
+      for (grid_coord i = 0; i < internalScheme.Hx->getSize ().calculateTotalCoord (); ++i)
       {
-        Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
-        Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
-      }
-      else
-      {
-        Ca = FPValue (1);
-        Cb = gridTimeStep / (material * PhysicsConst::Mu0 * gridStep);
-      }
+        FieldPointValue valCa;
+        FieldPointValue valCb;
 
-      valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
-      valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
+        FPValue Ca;
+        FPValue Cb;
 
-      internalScheme.DaHx->setFieldPointValue (valCa, pos);
-      internalScheme.DbHx->setFieldPointValue (valCb, pos);
+        FPValue k_mod = FPValue (1);
+
+        TC pos = internalScheme.Hx->calculatePositionFromIndex (i);
+        TCFP posAbs = yeeLayout->getHxCoordFP (internalScheme.Hx->getTotalPosition (pos));
+
+        FPValue material = getMaterial (posAbs, GridType::HX, internalScheme.Mu, GridType::MU);
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+          Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+        }
+        else
+        {
+          Ca = FPValue (1);
+          Cb = gridTimeStep / (material * PhysicsConst::Mu0 * gridStep);
+        }
+
+        valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
+        valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
+
+        internalScheme.DaHx->setFieldPointValue (valCa, pos);
+        internalScheme.DbHx->setFieldPointValue (valCb, pos);
+      }
     }
-  }
 
-  if (internalScheme.getDoNeeHy ())
-  {
-    for (grid_coord i = 0; i < internalScheme.Hy->getSize ().calculateTotalCoord (); ++i)
+    if (internalScheme.getDoNeeHy ())
     {
-      FieldPointValue valCa;
-      FieldPointValue valCb;
-
-      FPValue Ca;
-      FPValue Cb;
-
-      FPValue k_mod = FPValue (1);
-
-      TC pos = internalScheme.Hy->calculatePositionFromIndex (i);
-      TCFP posAbs = yeeLayout->getHyCoordFP (internalScheme.Hy->getTotalPosition (pos));
-
-      FPValue material = getMaterial (posAbs, GridType::HY, internalScheme.Mu, GridType::MU);
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
+      for (grid_coord i = 0; i < internalScheme.Hy->getSize ().calculateTotalCoord (); ++i)
       {
-        Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
-        Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
-      }
-      else
-      {
-        Ca = FPValue (1);
-        Cb = gridTimeStep / (material * PhysicsConst::Mu0 * gridStep);
-      }
+        FieldPointValue valCa;
+        FieldPointValue valCb;
 
-      valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
-      valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
+        FPValue Ca;
+        FPValue Cb;
 
-      internalScheme.DaHy->setFieldPointValue (valCa, pos);
-      internalScheme.DbHy->setFieldPointValue (valCb, pos);
+        FPValue k_mod = FPValue (1);
+
+        TC pos = internalScheme.Hy->calculatePositionFromIndex (i);
+        TCFP posAbs = yeeLayout->getHyCoordFP (internalScheme.Hy->getTotalPosition (pos));
+
+        FPValue material = getMaterial (posAbs, GridType::HY, internalScheme.Mu, GridType::MU);
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+          Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+        }
+        else
+        {
+          Ca = FPValue (1);
+          Cb = gridTimeStep / (material * PhysicsConst::Mu0 * gridStep);
+        }
+
+        valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
+        valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
+
+        internalScheme.DaHy->setFieldPointValue (valCa, pos);
+        internalScheme.DbHy->setFieldPointValue (valCb, pos);
+      }
     }
-  }
 
-  if (internalScheme.getDoNeeHz ())
-  {
-    for (grid_coord i = 0; i < internalScheme.Hz->getSize ().calculateTotalCoord (); ++i)
+    if (internalScheme.getDoNeeHz ())
     {
-      FieldPointValue valCa;
-      FieldPointValue valCb;
-
-      FPValue Ca;
-      FPValue Cb;
-
-      FPValue k_mod = FPValue (1);
-
-      TC pos = internalScheme.Hz->calculatePositionFromIndex (i);
-      TCFP posAbs = yeeLayout->getHzCoordFP (internalScheme.Hz->getTotalPosition (pos));
-
-      FPValue material = getMaterial (posAbs, GridType::HZ, internalScheme.Mu, GridType::MU);
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
+      for (grid_coord i = 0; i < internalScheme.Hz->getSize ().calculateTotalCoord (); ++i)
       {
-        Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
-        Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
-             / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
-      }
-      else
-      {
-        Ca = FPValue (1);
-        Cb = gridTimeStep / (material * PhysicsConst::Mu0 * gridStep);
-      }
+        FieldPointValue valCa;
+        FieldPointValue valCb;
 
-      valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
-      valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
+        FPValue Ca;
+        FPValue Cb;
 
-      internalScheme.DaHz->setFieldPointValue (valCa, pos);
-      internalScheme.DbHz->setFieldPointValue (valCb, pos);
+        FPValue k_mod = FPValue (1);
+
+        TC pos = internalScheme.Hz->calculatePositionFromIndex (i);
+        TCFP posAbs = yeeLayout->getHzCoordFP (internalScheme.Hz->getTotalPosition (pos));
+
+        FPValue material = getMaterial (posAbs, GridType::HZ, internalScheme.Mu, GridType::MU);
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          Ca = (2 * PhysicsConst::Eps0 * k_mod - material * gridTimeStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+          Cb = (2 * PhysicsConst::Eps0 * gridTimeStep / gridStep)
+               / (2 * PhysicsConst::Eps0 * k_mod + material * gridTimeStep);
+        }
+        else
+        {
+          Ca = FPValue (1);
+          Cb = gridTimeStep / (material * PhysicsConst::Mu0 * gridStep);
+        }
+
+        valCa.setCurValue (FIELDVALUE (Ca, FPValue (0)));
+        valCb.setCurValue (FIELDVALUE (Cb, FPValue (0)));
+
+        internalScheme.DaHz->setFieldPointValue (valCa, pos);
+        internalScheme.DbHz->setFieldPointValue (valCb, pos);
+      }
     }
   }
 

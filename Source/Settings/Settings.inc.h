@@ -314,6 +314,13 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doCheckDisablingConditions, getDoCheckDisablingCon
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCheckEnablingConditions, getDoCheckEnablingConditions, bool, false, "--check-enabling-cond", "Check dynamic grid enabling conditions")
 
 /*
+ * FDTD helper grids
+ */
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCaCbGrids, getDoUseCaCbGrids, bool, true, "--use-ca-cb", "Use helper grids (Ca, Cb, Da, Db) with precomputed values for general FDTD computation")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCaCbPMLGrids, getDoUseCaCbPMLGrids, bool, true, "--use-ca-cb-pml", "Use helper grids (Ca, Cb, Cc, Da, Db, Dc) with precomputed values for PML FDTD computation")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCaCbPMLMetaGrids, getDoUseCaCbPMLMetaGrids, bool, true, "--use-ca-cb-pml-metamaterials", "Use helper grids (B0, B1, B2, A1, A2) with precomputed values for PML metamaterials FDTD computation")
+
+/*
  * Steps in time
  */
 SETTINGS_ELEM_FIELD_TYPE_INT(storedSteps, getStoredSteps, time_step, 2, "--stored-steps", "Number of time steps in time, for which grid values are stored")

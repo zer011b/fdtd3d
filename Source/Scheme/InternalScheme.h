@@ -15,9 +15,11 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 class InternalScheme;
 class InternalSchemeHelper;
 
+#ifdef CUDA_ENABLED
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 class InternalSchemeGPU;
 class InternalSchemeHelperGPU;
+#endif /* CUDA_ENABLED */
 
 /*
  * ====================================
