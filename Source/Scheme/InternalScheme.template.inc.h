@@ -843,7 +843,6 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
   FieldValue valCa = FIELDVALUE (0, 0);
   FieldValue valCb = FIELDVALUE (0, 0);
 
-  // TODO: move this check out to loop
   if (usePrecomputedGrids)
   {
     ASSERT (Ca != NULLPTR);
@@ -916,6 +915,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template <bool usePrecomputedGrids>
 ICUDA_DEVICE
 void
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPMLMetamaterials (time_step t,
@@ -953,8 +953,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPMLM
   FieldValue vala1 = FIELDVALUE (0, 0);
   FieldValue vala2 = FIELDVALUE (0, 0);
 
-  // TODO: move this check out to loop
-  if (SOLVER_SETTINGS.getDoUseCaCbPMLMetaGrids ())
+  if (usePrecomputedGrids)
   {
     ASSERT (CB0 != NULLPTR);
     ASSERT (CB1 != NULLPTR);
@@ -1016,7 +1015,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPMLM
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template <bool useMetamaterials>
+template <bool useMetamaterials, bool usePrecomputedGrids>
 ICUDA_DEVICE
 void
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML (time_step t,
@@ -1060,7 +1059,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML 
     prevDorB = grid->getFieldValue (coord, 1);
   }
 
-  if (SOLVER_SETTINGS.getDoUseCaCbPMLGrids ())
+  if (usePrecomputedGrids)
   {
     ASSERT (Ca != NULLPTR);
     ASSERT (Cb != NULLPTR);
