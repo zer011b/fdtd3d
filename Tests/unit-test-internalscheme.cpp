@@ -171,10 +171,56 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
     }
   }
 
+#ifdef CUDA_ENABLED
+  int cudaBuf = 1;
+
+  InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntScheme = new InternalSchemeGPU<Type, TCoord, layout_type> ();
+  InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntSchemeOnGPU = new InternalSchemeGPU<Type, TCoord, layout_type> ();
+  InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuIntSchemeOnGPU = NULLPTR;
+
+  TCoord<grid_coord, true> buf (cudaBuf, cudaBuf, cudaBuf
+#ifdef DEBUG_INFO
+                                , ct1, ct2, ct3
+#endif /* DEBUG_INFO */
+                                );
+  TCoord<grid_coord, true> zero (0, 0, 0
+#ifdef DEBUG_INFO
+                                 , ct1, ct2, ct3
+#endif /* DEBUG_INFO */
+                                 );
+
+  gpuIntScheme->initFromCPU (intScheme, intScheme->getYeeLayout ()->getSize (), buf);
+  gpuIntSchemeOnGPU->initOnGPU (gpuIntScheme);
+  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gpuIntSchemeOnGPU, sizeof(InternalSchemeGPU<Type, TCoord, layout_type>)));
+
+  gpuIntScheme->copyFromCPU (zero, intScheme->getYeeLayout ()->getSize ());
+  gpuIntSchemeOnGPU->copyToGPU (gpuIntScheme);
+  cudaCheckErrorCmd (cudaMemcpy (d_gpuIntSchemeOnGPU, gpuIntSchemeOnGPU, sizeof(InternalSchemeGPU<Type, TCoord, layout_type>), cudaMemcpyHostToDevice));
+#endif /* CUDA_ENABLED */
+
   for (time_step t = 0; t < SOLVER_SETTINGS.getNumTimeSteps (); ++t)
   {
     DPRINTF (LOG_LEVEL_NONE, "calculating time step %d\n", t);
 
+#ifdef CUDA_ENABLED
+    TCoord<grid_coord, true> ExStart = gpuIntScheme->getDoNeedEx () ? gpuIntScheme->getEx ()->getComputationStart (gpuIntScheme->getYeeLayout ()->getExStartDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+    TCoord<grid_coord, true> ExEnd = gpuIntScheme->getDoNeedEx () ? gpuIntScheme->getEx ()->getComputationEnd (gpuIntScheme->getYeeLayout ()->getExEndDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+
+    TCoord<grid_coord, true> EyStart = gpuIntScheme->getDoNeedEy () ? gpuIntScheme->getEy ()->getComputationStart (gpuIntScheme->getYeeLayout ()->getEyStartDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+    TCoord<grid_coord, true> EyEnd = gpuIntScheme->getDoNeedEy () ? gpuIntScheme->getEy ()->getComputationEnd (gpuIntScheme->getYeeLayout ()->getEyEndDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+
+    TCoord<grid_coord, true> EzStart = gpuIntScheme->getDoNeedEz () ? gpuIntScheme->getEz ()->getComputationStart (gpuIntScheme->getYeeLayout ()->getEzStartDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+    TCoord<grid_coord, true> EzEnd = gpuIntScheme->getDoNeedEz () ? gpuIntScheme->getEz ()->getComputationEnd (gpuIntScheme->getYeeLayout ()->getEzEndDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+
+    TCoord<grid_coord, true> HxStart = gpuIntScheme->getDoNeedHx () ? gpuIntScheme->getHx ()->getComputationStart (gpuIntScheme->getYeeLayout ()->getHxStartDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+    TCoord<grid_coord, true> HxEnd = gpuIntScheme->getDoNeedHx () ? gpuIntScheme->getHx ()->getComputationEnd (gpuIntScheme->getYeeLayout ()->getHxEndDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+
+    TCoord<grid_coord, true> HyStart = gpuIntScheme->getDoNeedHy () ? gpuIntScheme->getHy ()->getComputationStart (gpuIntScheme->getYeeLayout ()->getHyStartDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+    TCoord<grid_coord, true> HyEnd = gpuIntScheme->getDoNeedHy () ? gpuIntScheme->getHy ()->getComputationEnd (gpuIntScheme->getYeeLayout ()->getHyEndDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+
+    TCoord<grid_coord, true> HzStart = gpuIntScheme->getDoNeedHz () ? gpuIntScheme->getHz ()->getComputationStart (gpuIntScheme->getYeeLayout ()->getHzStartDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+    TCoord<grid_coord, true> HzEnd = gpuIntScheme->getDoNeedHz () ? gpuIntScheme->getHz ()->getComputationEnd (gpuIntScheme->getYeeLayout ()->getHzEndDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+#else /* CUDA_ENABLED */
     TCoord<grid_coord, true> ExStart = intScheme->getDoNeedEx () ? intScheme->getEx ()->getComputationStart (intScheme->getYeeLayout ()->getExStartDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
     TCoord<grid_coord, true> ExEnd = intScheme->getDoNeedEx () ? intScheme->getEx ()->getComputationEnd (intScheme->getYeeLayout ()->getExEndDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
 
@@ -192,14 +238,21 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
     TCoord<grid_coord, true> HzStart = intScheme->getDoNeedHz () ? intScheme->getHz ()->getComputationStart (intScheme->getYeeLayout ()->getHzStartDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
     TCoord<grid_coord, true> HzEnd = intScheme->getDoNeedHz () ? intScheme->getHz ()->getComputationEnd (intScheme->getYeeLayout ()->getHzEndDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+#endif /* !CUDA_ENABLED */
 
     if (SOLVER_SETTINGS.getDoUseTFSF ())
     {
       GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
 
+#ifdef CUDA_ENABLED
+      gpuIntSchemeOnGPU->performPlaneWaveEStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getEInc ()->getSize ());
+      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU);
+      gpuIntScheme->getEInc ()->nextTimeStep ();
+#else /* CUDA_ENABLED */
       intScheme->performPlaneWaveESteps (t, zero1D, intScheme->getEInc ()->getSize ());
       intScheme->getEInc ()->shiftInTime ();
       intScheme->getEInc ()->nextTimeStep ();
+#endif /* !CUDA_ENABLED */
     }
 
     if (intScheme->getDoNeedEx ())
@@ -217,6 +270,35 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       GridCoordinate3D end3D;
 
       expandTo3DStartEnd (ExStart, ExEnd, start3D, end3D, ct1, ct2, ct3);
+
+#ifdef CUDA_ENABLED
+
+      CudaGrid< TCoord<grid_coord, true> > *d_Ca = NULLPTR;
+      CudaGrid< TCoord<grid_coord, true> > *d_Cb = NULLPTR;
+      if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+      {
+        d_Ca = gpuIntSchemeOnGPU->getCaEx ();
+        d_Cb = gpuIntSchemeOnGPU->getCbEx ();
+      }
+
+      // Launch kernel here
+      gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::EX)> (d_gpuIntSchemeOnGPU, start3D, end3D,
+                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              gpuIntSchemeOnGPU->getEx (),
+                                                                              gpuIntScheme->getDoNeedHz () ? gpuIntSchemeOnGPU->getHz () : NULLPTR,
+                                                                              gpuIntScheme->getDoNeedHy () ? gpuIntSchemeOnGPU->getHy () : NULLPTR,
+                                                                              NULLPTR,
+                                                                              d_Ca,
+                                                                              d_Cb,
+                                                                              false,
+                                                                              GridType::EX, gpuIntSchemeOnGPU->getEps (), GridType::EPS,
+                                                                              PhysicsConst::Eps0,
+                                                                              SOLVER_SETTINGS.getDoUseCaCbGrids ());
+
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU);
+      gpuIntScheme->getEx ()->nextTimeStep ();
+
+#else /* CUDA_ENABLED */
 
       for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
       {
@@ -257,6 +339,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       intScheme->getEx ()->shiftInTime ();
       intScheme->getEx ()->nextTimeStep ();
+#endif /* !CUDA_ENABLED */
     }
 
     if (intScheme->getDoNeedEy ())
@@ -274,6 +357,35 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       GridCoordinate3D end3D;
 
       expandTo3DStartEnd (EyStart, EyEnd, start3D, end3D, ct1, ct2, ct3);
+
+#ifdef CUDA_ENABLED
+
+      CudaGrid< TCoord<grid_coord, true> > *d_Ca = NULLPTR;
+      CudaGrid< TCoord<grid_coord, true> > *d_Cb = NULLPTR;
+      if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+      {
+        d_Ca = gpuIntSchemeOnGPU->getCaEy ();
+        d_Cb = gpuIntSchemeOnGPU->getCbEy ();
+      }
+
+      // Launch kernel here
+      gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::EY)> (d_gpuIntSchemeOnGPU, start3D, end3D,
+                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              gpuIntSchemeOnGPU->getEy (),
+                                                                              gpuIntScheme->getDoNeedHx () ? gpuIntSchemeOnGPU->getHx () : NULLPTR,
+                                                                              gpuIntScheme->getDoNeedHz () ? gpuIntSchemeOnGPU->getHz () : NULLPTR,
+                                                                              NULLPTR,
+                                                                              d_Ca,
+                                                                              d_Cb,
+                                                                              false,
+                                                                              GridType::EY, gpuIntSchemeOnGPU->getEps (), GridType::EPS,
+                                                                              PhysicsConst::Eps0,
+                                                                              SOLVER_SETTINGS.getDoUseCaCbGrids ());
+
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU);
+      gpuIntScheme->getEy ()->nextTimeStep ();
+
+#else /* CUDA_ENABLED */
 
       for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
       {
@@ -313,6 +425,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       intScheme->getEy ()->shiftInTime ();
       intScheme->getEy ()->nextTimeStep ();
+#endif /* !CUDA_ENABLED */
     }
 
     if (intScheme->getDoNeedEz ())
@@ -330,6 +443,35 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       GridCoordinate3D end3D;
 
       expandTo3DStartEnd (EzStart, EzEnd, start3D, end3D, ct1, ct2, ct3);
+
+#ifdef CUDA_ENABLED
+
+      CudaGrid< TCoord<grid_coord, true> > *d_Ca = NULLPTR;
+      CudaGrid< TCoord<grid_coord, true> > *d_Cb = NULLPTR;
+      if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+      {
+        d_Ca = gpuIntSchemeOnGPU->getCaEz ();
+        d_Cb = gpuIntSchemeOnGPU->getCbEz ();
+      }
+
+      // Launch kernel here
+      gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::EZ)> (d_gpuIntSchemeOnGPU, start3D, end3D,
+                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              gpuIntSchemeOnGPU->getEz (),
+                                                                              gpuIntScheme->getDoNeedHy () ? gpuIntSchemeOnGPU->getHy () : NULLPTR,
+                                                                              gpuIntScheme->getDoNeedHx () ? gpuIntSchemeOnGPU->getHx () : NULLPTR,
+                                                                              NULLPTR,
+                                                                              d_Ca,
+                                                                              d_Cb,
+                                                                              false,
+                                                                              GridType::EZ, gpuIntSchemeOnGPU->getEps (), GridType::EPS,
+                                                                              PhysicsConst::Eps0,
+                                                                              SOLVER_SETTINGS.getDoUseCaCbGrids ());
+
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU);
+      gpuIntScheme->getEz ()->nextTimeStep ();
+
+#else /* CUDA_ENABLED */
 
       for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
       {
@@ -369,15 +511,22 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       intScheme->getEz ()->shiftInTime ();
       intScheme->getEz ()->nextTimeStep ();
+#endif /* !CUDA_ENABLED */
     }
 
     if (SOLVER_SETTINGS.getDoUseTFSF ())
     {
       GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
 
+#ifdef CUDA_ENABLED
+      gpuIntSchemeOnGPU->performPlaneWaveHStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getHInc ()->getSize ());
+      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU);
+      gpuIntScheme->getHInc ()->nextTimeStep ();
+#else /* CUDA_ENABLED */
       intScheme->performPlaneWaveHSteps (t, zero1D, intScheme->getHInc ()->getSize ());
       intScheme->getHInc ()->shiftInTime ();
       intScheme->getHInc ()->nextTimeStep ();
+#endif /* !CUDA_ENABLED */
     }
 
     if (intScheme->getDoNeedHx ())
@@ -395,6 +544,35 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       GridCoordinate3D end3D;
 
       expandTo3DStartEnd (HxStart, HxEnd, start3D, end3D, ct1, ct2, ct3);
+
+#ifdef CUDA_ENABLED
+
+      CudaGrid< TCoord<grid_coord, true> > *d_Ca = NULLPTR;
+      CudaGrid< TCoord<grid_coord, true> > *d_Cb = NULLPTR;
+      if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+      {
+        d_Ca = gpuIntSchemeOnGPU->getDaHx ();
+        d_Cb = gpuIntSchemeOnGPU->getDbHx ();
+      }
+
+      // Launch kernel here
+      gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::HX)> (d_gpuIntSchemeOnGPU, start3D, end3D,
+                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              gpuIntSchemeOnGPU->getHx (),
+                                                                              gpuIntScheme->getDoNeedEy () ? gpuIntSchemeOnGPU->getEy () : NULLPTR,
+                                                                              gpuIntScheme->getDoNeedEz () ? gpuIntSchemeOnGPU->getEz () : NULLPTR,
+                                                                              NULLPTR,
+                                                                              d_Ca,
+                                                                              d_Cb,
+                                                                              false,
+                                                                              GridType::HX, gpuIntSchemeOnGPU->getMu (), GridType::MU,
+                                                                              PhysicsConst::Mu0,
+                                                                              SOLVER_SETTINGS.getDoUseCaCbGrids ());
+
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU);
+      gpuIntScheme->getHx ()->nextTimeStep ();
+
+#else /* CUDA_ENABLED */
 
       for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
       {
@@ -434,6 +612,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       intScheme->getHx ()->shiftInTime ();
       intScheme->getHx ()->nextTimeStep ();
+#endif /* !CUDA_ENABLED */
     }
 
     if (intScheme->getDoNeedHy ())
@@ -451,6 +630,35 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       GridCoordinate3D end3D;
 
       expandTo3DStartEnd (HyStart, HyEnd, start3D, end3D, ct1, ct2, ct3);
+
+#ifdef CUDA_ENABLED
+
+      CudaGrid< TCoord<grid_coord, true> > *d_Ca = NULLPTR;
+      CudaGrid< TCoord<grid_coord, true> > *d_Cb = NULLPTR;
+      if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+      {
+        d_Ca = gpuIntSchemeOnGPU->getDaHy ();
+        d_Cb = gpuIntSchemeOnGPU->getDbHy ();
+      }
+
+      // Launch kernel here
+      gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::HY)> (d_gpuIntSchemeOnGPU, start3D, end3D,
+                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              gpuIntSchemeOnGPU->getHy (),
+                                                                              gpuIntScheme->getDoNeedEz () ? gpuIntSchemeOnGPU->getEz () : NULLPTR,
+                                                                              gpuIntScheme->getDoNeedEx () ? gpuIntSchemeOnGPU->getEx () : NULLPTR,
+                                                                              NULLPTR,
+                                                                              d_Ca,
+                                                                              d_Cb,
+                                                                              false,
+                                                                              GridType::HY, gpuIntSchemeOnGPU->getMu (), GridType::MU,
+                                                                              PhysicsConst::Mu0,
+                                                                              SOLVER_SETTINGS.getDoUseCaCbGrids ());
+
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU);
+      gpuIntScheme->getHy ()->nextTimeStep ();
+
+#else /* CUDA_ENABLED */
 
       for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
       {
@@ -490,6 +698,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       intScheme->getHy ()->shiftInTime ();
       intScheme->getHy ()->nextTimeStep ();
+#endif /* !CUDA_ENABLED */
     }
 
     if (intScheme->getDoNeedHz ())
@@ -507,6 +716,35 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       GridCoordinate3D end3D;
 
       expandTo3DStartEnd (HzStart, HzEnd, start3D, end3D, ct1, ct2, ct3);
+
+#ifdef CUDA_ENABLED
+
+      CudaGrid< TCoord<grid_coord, true> > *d_Ca = NULLPTR;
+      CudaGrid< TCoord<grid_coord, true> > *d_Cb = NULLPTR;
+      if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+      {
+        d_Ca = gpuIntSchemeOnGPU->getDaHz ();
+        d_Cb = gpuIntSchemeOnGPU->getDbHz ();
+      }
+
+      // Launch kernel here
+      gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::HZ)> (d_gpuIntSchemeOnGPU, start3D, end3D,
+                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              gpuIntSchemeOnGPU->getHz (),
+                                                                              gpuIntScheme->getDoNeedEx () ? gpuIntSchemeOnGPU->getEx () : NULLPTR,
+                                                                              gpuIntScheme->getDoNeedEy () ? gpuIntSchemeOnGPU->getEy () : NULLPTR,
+                                                                              NULLPTR,
+                                                                              d_Ca,
+                                                                              d_Cb,
+                                                                              false,
+                                                                              GridType::HZ, gpuIntSchemeOnGPU->getMu (), GridType::MU,
+                                                                              PhysicsConst::Mu0,
+                                                                              SOLVER_SETTINGS.getDoUseCaCbGrids ());
+
+      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU);
+      gpuIntScheme->getHz ()->nextTimeStep ();
+
+#else /* CUDA_ENABLED */
 
       for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
       {
@@ -546,8 +784,33 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       intScheme->getHz ()->shiftInTime ();
       intScheme->getHz ()->nextTimeStep ();
+#endif /* !CUDA_ENABLED */
     }
   }
+
+#ifdef CUDA_ENABLED
+  gpuIntScheme->copyBackToCPU (SOLVER_SETTINGS.getNumTimeSteps (), true);
+
+  /*
+   * Free memory
+   */
+  if (d_gpuIntSchemeOnGPU)
+  {
+    cudaCheckErrorCmd (cudaFree (d_gpuIntSchemeOnGPU));
+  }
+
+  if (gpuIntSchemeOnGPU)
+  {
+    gpuIntSchemeOnGPU->uninitOnGPU ();
+  }
+  if (gpuIntScheme)
+  {
+    gpuIntScheme->uninitFromCPU ();
+  }
+
+  delete gpuIntSchemeOnGPU;
+  delete gpuIntScheme;
+#endif /* CUDA_ENABLED */
 }
 
 void test1D (Grid<GridCoordinate1D> *E,
