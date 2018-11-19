@@ -316,9 +316,9 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doCheckEnablingConditions, getDoCheckEnablingCondi
 /*
  * FDTD helper grids
  */
-SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCaCbGrids, getDoUseCaCbGrids, bool, true, "--use-ca-cb", "Use helper grids (Ca, Cb, Da, Db) with precomputed values for general FDTD computation")
-SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCaCbPMLGrids, getDoUseCaCbPMLGrids, bool, true, "--use-ca-cb-pml", "Use helper grids (Ca, Cb, Cc, Da, Db, Dc) with precomputed values for PML FDTD computation")
-SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCaCbPMLMetaGrids, getDoUseCaCbPMLMetaGrids, bool, true, "--use-ca-cb-pml-metamaterials", "Use helper grids (B0, B1, B2, A1, A2) with precomputed values for PML metamaterials FDTD computation")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCaCbGrids, getDoUseCaCbGrids, bool, false, "--use-ca-cb", "Use helper grids (Ca, Cb, Da, Db) with precomputed values for general FDTD computation")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCaCbPMLGrids, getDoUseCaCbPMLGrids, bool, false, "--use-ca-cb-pml", "Use helper grids (Ca, Cb, Cc, Da, Db, Dc) with precomputed values for PML FDTD computation")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCaCbPMLMetaGrids, getDoUseCaCbPMLMetaGrids, bool, false, "--use-ca-cb-pml-metamaterials", "Use helper grids (B0, B1, B2, A1, A2) with precomputed values for PML metamaterials FDTD computation")
 
 /*
  * Steps in time
