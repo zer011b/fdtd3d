@@ -719,7 +719,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
                                                                             d_oppositeGrid1, d_oppositeGrid2, _rightSideFunc, d_Ca, d_Cb,
                                                                             usePML,
                                                                             gridType, materialGrid, materialGridType,
-                                                                            materialModifier);
+                                                                            materialModifier,
+                                                                            SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
 #else /* CUDA_ENABLED */
 
@@ -779,12 +780,24 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
             }
           }
 
-          intScheme->calculateFieldStepIteration<grid_type> (t, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                             grid, coordFP,
-                                                             oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
-                                                             usePML,
-                                                             gridType, materialGrid, materialGridType,
-                                                             materialModifier);
+          if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+          {
+            intScheme->calculateFieldStepIteration<grid_type, true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               grid, coordFP,
+                                                               oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
+                                                               usePML,
+                                                               gridType, materialGrid, materialGridType,
+                                                               materialModifier);
+          }
+          else
+          {
+            intScheme->calculateFieldStepIteration<grid_type, false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               grid, coordFP,
+                                                               oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
+                                                               usePML,
+                                                               gridType, materialGrid, materialGridType,
+                                                               materialModifier);
+          }
         }
       }
     }

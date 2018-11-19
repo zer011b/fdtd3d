@@ -812,7 +812,7 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template<uint8_t grid_type>
+template<uint8_t grid_type, bool usePrecomputedGrids>
 ICUDA_DEVICE
 void
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
@@ -844,7 +844,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
   FieldValue valCb = FIELDVALUE (0, 0);
 
   // TODO: move this check out to loop
-  if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+  if (usePrecomputedGrids)
   {
     ASSERT (Ca != NULLPTR);
     ASSERT (Cb != NULLPTR);
