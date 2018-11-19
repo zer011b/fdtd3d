@@ -9,7 +9,7 @@ GRID_NAME_NO_CHECK(Mu, Eps, 1)
  */
 GRID_NAME(Ex, Ex, storedSteps)
 GRID_NAME(Ey, Ey, storedSteps)
-GRID_NAME(Ez, Ey, storedSteps)
+GRID_NAME(Ez, Ez, storedSteps)
 GRID_NAME(Hx, Hx, storedSteps)
 GRID_NAME(Hy, Hy, storedSteps)
 GRID_NAME(Hz, Hz, storedSteps)

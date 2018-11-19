@@ -211,7 +211,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       TCoord<FPValue, true> coordFP;
 
-      intScheme->calculateFieldStepInitDiff<GridType::EX> (&diff11, &diff12, &diff21, &diff22);
+      intScheme->template calculateFieldStepInitDiff< static_cast<uint8_t> (GridType::EX) > (&diff11, &diff12, &diff21, &diff22);
 
       GridCoordinate3D start3D;
       GridCoordinate3D end3D;
@@ -229,9 +229,11 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->calculateFieldStepIteration<GridType::EX, true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EX), true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEx (), coordFP,
-                                                                 intScheme->getHz (), intScheme->getHy (), NULLPTR,
+                                                                 intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
+                                                                 intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
+                                                                 NULLPTR,
                                                                  intScheme->getCaEx (), intScheme->getCbEx (),
                                                                  false,
                                                                  GridType::EX, intScheme->getEps (), GridType::EPS,
@@ -239,10 +241,12 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->calculateFieldStepIteration<GridType::EX, false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EX), false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEx (), coordFP,
-                                                                 intScheme->getHz (), intScheme->getHy (), NULLPTR,
-                                                                 intScheme->getCaEx (), intScheme->getCbEx (),
+                                                                 intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
+                                                                 intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
+                                                                 NULLPTR,
+                                                                 NULLPTR, NULLPTR,
                                                                  false,
                                                                  GridType::EX, intScheme->getEps (), GridType::EPS,
                                                                  PhysicsConst::Eps0);
@@ -264,7 +268,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       TCoord<FPValue, true> coordFP;
 
-      intScheme->calculateFieldStepInitDiff<GridType::EY> (&diff11, &diff12, &diff21, &diff22);
+      intScheme->template calculateFieldStepInitDiff< static_cast<uint8_t> (GridType::EY) > (&diff11, &diff12, &diff21, &diff22);
 
       GridCoordinate3D start3D;
       GridCoordinate3D end3D;
@@ -281,9 +285,11 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             TCoord<grid_coord, true> posAbs = intScheme->getEy ()->getTotalPosition (pos);
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->calculateFieldStepIteration<GridType::EY, true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EY) , true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEy (), coordFP,
-                                                                 intScheme->getHx (), intScheme->getHz (), NULLPTR,
+                                                                 intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
+                                                                 intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
+                                                                 NULLPTR,
                                                                  intScheme->getCaEy (), intScheme->getCbEy (),
                                                                  false,
                                                                  GridType::EY, intScheme->getEps (), GridType::EPS,
@@ -291,10 +297,12 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->calculateFieldStepIteration<GridType::EY, false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EY) , false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEy (), coordFP,
-                                                                 intScheme->getHx (), intScheme->getHz (), NULLPTR,
-                                                                 intScheme->getCaEy (), intScheme->getCbEy (),
+                                                                 intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
+                                                                 intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
+                                                                 NULLPTR,
+                                                                 NULLPTR, NULLPTR,
                                                                  false,
                                                                  GridType::EY, intScheme->getEps (), GridType::EPS,
                                                                  PhysicsConst::Eps0);
@@ -316,7 +324,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       TCoord<FPValue, true> coordFP;
 
-      intScheme->calculateFieldStepInitDiff<GridType::EZ> (&diff11, &diff12, &diff21, &diff22);
+      intScheme->template calculateFieldStepInitDiff< static_cast<uint8_t> (GridType::EZ) > (&diff11, &diff12, &diff21, &diff22);
 
       GridCoordinate3D start3D;
       GridCoordinate3D end3D;
@@ -333,9 +341,11 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             TCoord<grid_coord, true> posAbs = intScheme->getEz ()->getTotalPosition (pos);
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->calculateFieldStepIteration<GridType::EZ, true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EZ) , true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEz (), coordFP,
-                                                                 intScheme->getHy (), intScheme->getHx (), NULLPTR,
+                                                                 intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
+                                                                 intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
+                                                                 NULLPTR,
                                                                  intScheme->getCaEz (), intScheme->getCbEz (),
                                                                  false,
                                                                  GridType::EZ, intScheme->getEps (), GridType::EPS,
@@ -343,10 +353,12 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->calculateFieldStepIteration<GridType::EZ, false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EZ) , false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEz (), coordFP,
-                                                                 intScheme->getHy (), intScheme->getHx (), NULLPTR,
-                                                                 intScheme->getCaEz (), intScheme->getCbEz (),
+                                                                 intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
+                                                                 intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
+                                                                 NULLPTR,
+                                                                 NULLPTR, NULLPTR,
                                                                  false,
                                                                  GridType::EZ, intScheme->getEps (), GridType::EPS,
                                                                  PhysicsConst::Eps0);
@@ -377,7 +389,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       TCoord<FPValue, true> coordFP;
 
-      intScheme->calculateFieldStepInitDiff<GridType::HX> (&diff11, &diff12, &diff21, &diff22);
+      intScheme->template calculateFieldStepInitDiff< static_cast<uint8_t> (GridType::HX) > (&diff11, &diff12, &diff21, &diff22);
 
       GridCoordinate3D start3D;
       GridCoordinate3D end3D;
@@ -394,9 +406,11 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             TCoord<grid_coord, true> posAbs = intScheme->getHx ()->getTotalPosition (pos);
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->calculateFieldStepIteration<GridType::HX, true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HX), true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHx (), coordFP,
-                                                                 intScheme->getEy (), intScheme->getEz (), NULLPTR,
+                                                                 intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
+                                                                 intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
+                                                                 NULLPTR,
                                                                  intScheme->getDaHx (), intScheme->getDbHx (),
                                                                  false,
                                                                  GridType::HX, intScheme->getMu (), GridType::MU,
@@ -404,10 +418,12 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->calculateFieldStepIteration<GridType::HX, false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HX), false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHx (), coordFP,
-                                                                 intScheme->getEy (), intScheme->getEz (), NULLPTR,
-                                                                 intScheme->getDaHx (), intScheme->getDbHx (),
+                                                                 intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
+                                                                 intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
+                                                                 NULLPTR,
+                                                                 NULLPTR, NULLPTR,
                                                                  false,
                                                                  GridType::HX, intScheme->getMu (), GridType::MU,
                                                                  PhysicsConst::Mu0);
@@ -429,7 +445,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       TCoord<FPValue, true> coordFP;
 
-      intScheme->calculateFieldStepInitDiff<GridType::HY> (&diff11, &diff12, &diff21, &diff22);
+      intScheme->template calculateFieldStepInitDiff< static_cast<uint8_t> (GridType::HY) > (&diff11, &diff12, &diff21, &diff22);
 
       GridCoordinate3D start3D;
       GridCoordinate3D end3D;
@@ -446,9 +462,11 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             TCoord<grid_coord, true> posAbs = intScheme->getHy ()->getTotalPosition (pos);
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->calculateFieldStepIteration<GridType::HY, true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HY), true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHy (), coordFP,
-                                                                 intScheme->getEz (), intScheme->getEx (), NULLPTR,
+                                                                 intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
+                                                                 intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
+                                                                 NULLPTR,
                                                                  intScheme->getDaHy (), intScheme->getDbHy (),
                                                                  false,
                                                                  GridType::HY, intScheme->getMu (), GridType::MU,
@@ -456,10 +474,12 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->calculateFieldStepIteration<GridType::HY, false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HY), false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHy (), coordFP,
-                                                                 intScheme->getEz (), intScheme->getEx (), NULLPTR,
-                                                                 intScheme->getDaHy (), intScheme->getDbHy (),
+                                                                 intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
+                                                                 intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
+                                                                 NULLPTR,
+                                                                 NULLPTR, NULLPTR,
                                                                  false,
                                                                  GridType::HY, intScheme->getMu (), GridType::MU,
                                                                  PhysicsConst::Mu0);
@@ -481,7 +501,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       TCoord<FPValue, true> coordFP;
 
-      intScheme->calculateFieldStepInitDiff<GridType::HZ> (&diff11, &diff12, &diff21, &diff22);
+      intScheme->template calculateFieldStepInitDiff< static_cast<uint8_t> (GridType::HZ) > (&diff11, &diff12, &diff21, &diff22);
 
       GridCoordinate3D start3D;
       GridCoordinate3D end3D;
@@ -498,9 +518,11 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             TCoord<grid_coord, true> posAbs = intScheme->getHz ()->getTotalPosition (pos);
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->calculateFieldStepIteration<GridType::HZ, true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HZ), true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHz (), coordFP,
-                                                                 intScheme->getEx (), intScheme->getEy (), NULLPTR,
+                                                                 intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
+                                                                 intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
+                                                                 NULLPTR,
                                                                  intScheme->getDaHz (), intScheme->getDbHz (),
                                                                  false,
                                                                  GridType::HZ, intScheme->getMu (), GridType::MU,
@@ -508,10 +530,12 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->calculateFieldStepIteration<GridType::HZ, false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HZ), false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHz (), coordFP,
-                                                                 intScheme->getEx (), intScheme->getEy (), NULLPTR,
-                                                                 intScheme->getDaHz (), intScheme->getDbHz (),
+                                                                 intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
+                                                                 intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
+                                                                 NULLPTR,
+                                                                 NULLPTR, NULLPTR,
                                                                  false,
                                                                  GridType::HZ, intScheme->getMu (), GridType::MU,
                                                                  PhysicsConst::Mu0);

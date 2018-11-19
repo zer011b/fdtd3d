@@ -129,6 +129,18 @@ public:
   {
     return sizeEps;
   }
+  CUDA_DEVICE CUDA_HOST TC getSigmaXSize () const
+  {
+    return sizeEps;
+  }
+  CUDA_DEVICE CUDA_HOST TC getSigmaYSize () const
+  {
+    return sizeEps;
+  }
+  CUDA_DEVICE CUDA_HOST TC getSigmaZSize () const
+  {
+    return sizeEps;
+  }
   CUDA_DEVICE CUDA_HOST TC getExSize () const
   {
     return sizeEx;
