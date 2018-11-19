@@ -24,7 +24,8 @@ namespace InternalSchemeKernelHelpers
                                           GridType gridType,
                                           IGRID<TC> *materialGrid,
                                           GridType materialGridType,
-                                          FPValue materialModifier)
+                                          FPValue materialModifier,
+                                          bool usePrecomputedGrids)
   {
     GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
@@ -78,12 +79,24 @@ namespace InternalSchemeKernelHelpers
       }
     }
 
-    gpuScheme->calculateFieldStepIteration<grid_type> (t, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                       grid, coordFP,
-                                                       oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
-                                                       usePML,
-                                                       gridType, materialGrid, materialGridType,
-                                                       materialModifier);
+    if (usePrecomputedGrids)
+    {
+      gpuScheme->calculateFieldStepIteration<grid_type, true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                         grid, coordFP,
+                                                         oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
+                                                         usePML,
+                                                         gridType, materialGrid, materialGridType,
+                                                         materialModifier);
+    }
+    else
+    {
+      gpuScheme->calculateFieldStepIteration<grid_type, false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                         grid, coordFP,
+                                                         oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
+                                                         usePML,
+                                                         gridType, materialGrid, materialGridType,
+                                                         materialModifier);
+    }
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -568,12 +581,6 @@ protected:
   void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
 #endif /* ENABLE_ASSERTS */
 
-  ICUDA_DEVICE
-  FPValue getMaterial (const TC &, GridType, IGRID<TC> *, GridType);
-  ICUDA_DEVICE
-  FPValue getMetaMaterial (const TC &, GridType, IGRID<TC> *, GridType, IGRID<TC> *, GridType, IGRID<TC> *, GridType,
-                           FPValue &, FPValue &);
-
   template <uint8_t grid_type>
   ICUDA_DEVICE
   void calculateTFSF (TC, FieldValue &, FieldValue &, FieldValue &, FieldValue &, TC, TC, TC, TC);
@@ -614,7 +621,7 @@ public:
   ICUDA_HOST
   ~INTERNAL_SCHEME_BASE ();
 
-  template <uint8_t grid_type>
+  template <uint8_t grid_type, bool usePrecomputedGrids>
   ICUDA_DEVICE ICUDA_HOST
   void calculateFieldStepIteration (time_step, TC, TC, TCS, TCS, TCS, TCS, IGRID<TC> *, TCFP,
                                     IGRID<TC> *, IGRID<TC> *, SourceCallBack, IGRID<TC> *, IGRID<TC> *, bool,
@@ -706,13 +713,14 @@ public:
                                                 GridType gridType,
                                                 IGRID<TC> *materialGrid,
                                                 GridType materialGridType,
-                                                FPValue materialModifier)
+                                                FPValue materialModifier,
+                                                bool usePrecomputedGrids)
   {
     GridCoordinate3D diff3D = end3D - start3D;
     SETUP_BLOCKS_AND_THREADS;
     InternalSchemeKernelHelpers::calculateFieldStepIterationKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
       (d_gpuScheme, start3D, t, diff11, diff12, diff21, diff22, grid, oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb, ct1, ct2, ct3,
-       usePML, gridType, materialGrid, materialGridType, materialModifier);
+       usePML, gridType, materialGrid, materialGridType, materialModifier, usePrecomputedGrids);
     cudaCheckError ();
   }
 
@@ -874,6 +882,12 @@ public:
     YeeGridLayout<Type, TCoord, layout_type> *layout = INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::yeeLayout;
     return INTERNAL_SCHEME_HELPER::approximateIncidentWaveH<Type, TCoord> (pos, layout->getZeroIncCoordFP (), HInc, layout->getIncidentWaveAngle1 (), layout->getIncidentWaveAngle2 ());
   }
+
+  ICUDA_DEVICE
+  FPValue getMaterial (const TC &, GridType, IGRID<TC> *, GridType);
+  ICUDA_DEVICE
+  FPValue getMetaMaterial (const TC &, GridType, IGRID<TC> *, GridType, IGRID<TC> *, GridType, IGRID<TC> *, GridType,
+                           FPValue &, FPValue &);
 
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedEx () const { return doNeedEx; }
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedEy () const { return doNeedEy; }
