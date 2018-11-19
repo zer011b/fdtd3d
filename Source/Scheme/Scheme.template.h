@@ -812,7 +812,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
         // Launch kernel here
         gpuIntSchemeOnGPU->calculateFieldStepIterationPMLMetamaterialsKernelLaunch
           (d_gpuIntSchemeOnGPU, start3D, end3D,
-           t, pos, grid, gridPML1,
+           t, grid, gridPML1,
            CB0, CB1, CB2, CA1, CA2,
            gridType,
            materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
@@ -829,7 +829,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
             for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
             {
               TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-              
+
               if (SOLVER_SETTINGS.getDoUseCaCbPMLMetaGrids ())
               {
                 intScheme->template calculateFieldStepIterationPMLMetamaterials<true> (t, pos, grid, gridPML1,
@@ -856,7 +856,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
 #ifdef CUDA_ENABLED
 
       gpuIntSchemeOnGPU->template calculateFieldStepIterationPMLKernelLaunch <useMetamaterials> (d_gpuIntSchemeOnGPU, start3D, end3D,
-        t, pos, grid, gridPML1, gridPML2, CaPML, CbPML, CcPML, gridPMLType1,
+        t, grid, gridPML1, gridPML2, CaPML, CbPML, CcPML, gridPMLType1,
         materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
         materialModifier, SOLVER_SETTINGS.getDoUseCaCbPMLGrids ());
 
