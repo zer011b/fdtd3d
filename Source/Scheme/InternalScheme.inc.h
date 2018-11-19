@@ -119,7 +119,8 @@ namespace InternalSchemeKernelHelpers
                                          GridType materialGridType2,
                                          IGRID<TC> *materialGrid3,
                                          GridType materialGridType3,
-                                         FPValue materialModifier)
+                                         FPValue materialModifier,
+                                         bool usePrecomputedGrids)
   {
     GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
@@ -127,10 +128,20 @@ namespace InternalSchemeKernelHelpers
                                                           CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
     TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
 
-    gpuScheme->calculateFieldStepIterationPMLMetamaterials (t, pos, grid, gridPML, CB0, CB1, CB2, CA1, CA2,
-      gridType,
-      materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
-      materialModifier);
+    if (usePrecomputedGrids)
+    {
+      gpuScheme->calculateFieldStepIterationPMLMetamaterials<true> (t, pos, grid, gridPML, CB0, CB1, CB2, CA1, CA2,
+        gridType,
+        materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
+        materialModifier);
+    }
+    else
+    {
+      gpuScheme->calculateFieldStepIterationPMLMetamaterials<false> (t, pos, grid, gridPML, CB0, CB1, CB2, CA1, CA2,
+        gridType,
+        materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
+        materialModifier);
+    }
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, bool useMetamaterials>
@@ -152,7 +163,8 @@ namespace InternalSchemeKernelHelpers
                                            GridType materialGridType4,
                                            IGRID<TC> *materialGrid5,
                                            GridType materialGridType5,
-                                           FPValue materialModifier)
+                                           FPValue materialModifier,
+                                           bool usePrecomputedGrids)
   {
     GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
@@ -160,9 +172,18 @@ namespace InternalSchemeKernelHelpers
                                                           CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
     TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
 
-    gpuScheme->calculateFieldStepIterationPML<useMetamaterials> (t, pos, grid, gridPML1, gridPML2, Ca, Cb, Cc,
-      gridPMLType1, materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
-      materialModifier);
+    if (usePrecomputedGrids)
+    {
+      gpuScheme->calculateFieldStepIterationPML<useMetamaterials, true> (t, pos, grid, gridPML1, gridPML2, Ca, Cb, Cc,
+        gridPMLType1, materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
+        materialModifier);
+    }
+    else
+    {
+      gpuScheme->calculateFieldStepIterationPML<useMetamaterials, false> (t, pos, grid, gridPML1, gridPML2, Ca, Cb, Cc,
+        gridPMLType1, materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
+        materialModifier);
+    }
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -639,12 +660,13 @@ public:
   ICUDA_HOST
   void calculateFieldStepInitDiff (TCS *, TCS *, TCS *, TCS *);
 
+  template <bool usePrecomputedGrids>
   ICUDA_DEVICE
   void calculateFieldStepIterationPMLMetamaterials (time_step, TC, IGRID<TC> *, IGRID<TC> *,
        IGRID<TC> *, IGRID<TC> *, IGRID<TC> *, IGRID<TC> *, IGRID<TC> *, GridType,
        IGRID<TC> *, GridType,  IGRID<TC> *, GridType,  IGRID<TC> *, GridType, FPValue);
 
-  template <bool useMetamaterials>
+  template <bool useMetamaterials, bool usePrecomputedGrids>
   ICUDA_DEVICE
   void calculateFieldStepIterationPML (time_step, TC, IGRID<TC> *, IGRID<TC> *, IGRID<TC> *,
        IGRID<TC> *, IGRID<TC> *, IGRID<TC> *, GridType,
@@ -744,14 +766,15 @@ public:
                                                GridType materialGridType2,
                                                IGRID<TC> *materialGrid3,
                                                GridType materialGridType3,
-                                               FPValue materialModifier)
+                                               FPValue materialModifier,
+                                               bool usePrecomputedGrids)
   {
     GridCoordinate3D diff3D = end3D - start3D;
     SETUP_BLOCKS_AND_THREADS;
     InternalSchemeKernelHelpers::calculateFieldStepIterationPMLMetamaterialsKernel<Type, TCoord, layout_type> <<< blocks, threads >>>
       (d_gpuScheme, start3D, t, pos, grid, gridPML, CB0, CB1, CB2, CA1, CA2, gridType,
        materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
-       materialModifier);
+       materialModifier, usePrecomputedGrids);
     cudaCheckError ();
   }
 
@@ -775,14 +798,15 @@ public:
                                                  GridType materialGridType4,
                                                  IGRID<TC> *materialGrid5,
                                                  GridType materialGridType5,
-                                                 FPValue materialModifier)
+                                                 FPValue materialModifier,
+                                                 bool usePrecomputedGrids)
   {
     GridCoordinate3D diff3D = end3D - start3D;
     SETUP_BLOCKS_AND_THREADS;
     InternalSchemeKernelHelpers::calculateFieldStepIterationPMLKernel<Type, TCoord, layout_type, useMetamaterials> <<< blocks, threads >>>
       (d_gpuScheme, start3D, t, pos, grid, gridPML1, gridPML2, Ca, Cb, Cc, gridPMLType1,
         materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
-        materialModifier);
+        materialModifier, usePrecomputedGrids);
     cudaCheckError ();
   }
 
