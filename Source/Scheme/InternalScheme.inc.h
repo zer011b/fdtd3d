@@ -6,6 +6,7 @@ namespace InternalSchemeKernelHelpers
   __global__
   void calculateFieldStepIterationKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
                                           GridCoordinate3D start3D,
+                                          GridCoordinate3D end3D,
                                           time_step t,
                                           TCoord<grid_coord, false> diff11,
                                           TCoord<grid_coord, false> diff12,
@@ -31,6 +32,11 @@ namespace InternalSchemeKernelHelpers
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
                                                          (blockIdx.z * blockDim.z) + threadIdx.z,
                                                           CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+    if (pos3D >= end3D)
+    {
+      // skip kernels, which do not correspond to actual grid points
+      return;
+    }
     TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
 
     // TODO: add getTotalPositionDiff here, which will be called before loop
@@ -103,6 +109,7 @@ namespace InternalSchemeKernelHelpers
   __global__
   void calculateFieldStepIterationPMLMetamaterialsKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
                                           GridCoordinate3D start3D,
+                                          GridCoordinate3D end3D,
                                           time_step t,
                                          IGRID< TCoord<grid_coord, false> > *grid,
                                          IGRID< TCoord<grid_coord, false> > *gridPML,
@@ -128,6 +135,11 @@ namespace InternalSchemeKernelHelpers
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
                                                          (blockIdx.z * blockDim.z) + threadIdx.z,
                                                           CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+    if (pos3D >= end3D)
+    {
+      // skip kernels, which do not correspond to actual grid points
+      return;
+    }
     TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
 
     if (usePrecomputedGrids)
@@ -150,6 +162,7 @@ namespace InternalSchemeKernelHelpers
   __global__
   void calculateFieldStepIterationPMLKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
                                           GridCoordinate3D start3D,
+                                          GridCoordinate3D end3D,
                                           time_step t,
                                            IGRID< TCoord<grid_coord, false> > *grid,
                                            IGRID< TCoord<grid_coord, false> > *gridPML1,
@@ -174,6 +187,11 @@ namespace InternalSchemeKernelHelpers
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
                                                          (blockIdx.z * blockDim.z) + threadIdx.z,
                                                           CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+    if (pos3D >= end3D)
+    {
+      // skip kernels, which do not correspond to actual grid points
+      return;
+    }
     TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
 
     if (usePrecomputedGrids)
@@ -709,6 +727,9 @@ public:
 #ifdef GPU_INTERNAL_SCHEME
 
 #define SETUP_BLOCKS_AND_THREADS \
+  if (diff3D.get1 () % SOLVER_SETTINGS.getNumCudaThreadsX () != 0) { diff3D.set1 ((diff3D.get1 () / SOLVER_SETTINGS.getNumCudaThreadsX () + 1) * SOLVER_SETTINGS.getNumCudaThreadsX ()); } \
+  if (diff3D.get2 () % SOLVER_SETTINGS.getNumCudaThreadsY () != 0) { diff3D.set2 ((diff3D.get2 () / SOLVER_SETTINGS.getNumCudaThreadsY () + 1) * SOLVER_SETTINGS.getNumCudaThreadsY ()); } \
+  if (diff3D.get3 () % SOLVER_SETTINGS.getNumCudaThreadsZ () != 0) { diff3D.set3 ((diff3D.get3 () / SOLVER_SETTINGS.getNumCudaThreadsZ () + 1) * SOLVER_SETTINGS.getNumCudaThreadsZ ()); } \
   ASSERT (diff3D.get1 () % SOLVER_SETTINGS.getNumCudaThreadsX () == 0); \
   ASSERT (diff3D.get2 () % SOLVER_SETTINGS.getNumCudaThreadsY () == 0); \
   ASSERT (diff3D.get3 () % SOLVER_SETTINGS.getNumCudaThreadsZ () == 0); \
@@ -745,7 +766,7 @@ public:
     GridCoordinate3D diff3D = end3D - start3D;
     SETUP_BLOCKS_AND_THREADS;
     InternalSchemeKernelHelpers::calculateFieldStepIterationKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
-      (d_gpuScheme, start3D, t, diff11, diff12, diff21, diff22, grid, oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb, ct1, ct2, ct3,
+      (d_gpuScheme, start3D, end3D, t, diff11, diff12, diff21, diff22, grid, oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb, ct1, ct2, ct3,
        usePML, gridType, materialGrid, materialGridType, materialModifier, usePrecomputedGrids);
     cudaCheckError ();
   }
@@ -775,7 +796,7 @@ public:
     GridCoordinate3D diff3D = end3D - start3D;
     SETUP_BLOCKS_AND_THREADS;
     InternalSchemeKernelHelpers::calculateFieldStepIterationPMLMetamaterialsKernel<Type, TCoord, layout_type> <<< blocks, threads >>>
-      (d_gpuScheme, start3D, t, grid, gridPML, CB0, CB1, CB2, CA1, CA2, ct1, ct2, ct3, gridType,
+      (d_gpuScheme, start3D, end3D, t, grid, gridPML, CB0, CB1, CB2, CA1, CA2, ct1, ct2, ct3, gridType,
        materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
        materialModifier, usePrecomputedGrids);
     cudaCheckError ();
@@ -806,7 +827,7 @@ public:
     GridCoordinate3D diff3D = end3D - start3D;
     SETUP_BLOCKS_AND_THREADS;
     InternalSchemeKernelHelpers::calculateFieldStepIterationPMLKernel<Type, TCoord, layout_type, useMetamaterials> <<< blocks, threads >>>
-      (d_gpuScheme, start3D, t, grid, gridPML1, gridPML2, Ca, Cb, Cc, ct1, ct2, ct3, gridPMLType1,
+      (d_gpuScheme, start3D, end3D, t, grid, gridPML1, gridPML2, Ca, Cb, Cc, ct1, ct2, ct3, gridPMLType1,
         materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
         materialModifier, usePrecomputedGrids);
     cudaCheckError ();
