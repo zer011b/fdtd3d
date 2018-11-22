@@ -60,7 +60,13 @@ else ()
 endif()
 
 if ("${CUDA_ENABLED}")
-  set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3 -arch ${CUDA_ARCH_SM_TYPE} -x cu -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64 -keep -v")
+  if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O0 -g -G -lineinfo")
+  else ()
+    set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3")
+  endif ()
+
+  set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch ${CUDA_ARCH_SM_TYPE} -coda ${CUDA_ARCH_SM_TYPE} -x cu -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64 -keep -v")
 endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
