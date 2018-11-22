@@ -610,17 +610,17 @@ protected:
   ICUDA_DEVICE bool doSkipBorderFunc (TC, IGRID<TC> *);
 
 #ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   void calculateTFSFExAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   void calculateTFSFEyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   void calculateTFSFEzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   void calculateTFSFHxAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   void calculateTFSFHyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
 #endif /* ENABLE_ASSERTS */
 
