@@ -20,6 +20,8 @@ Grid<GridCoordinate1D>::getComputationStart (const GridCoordinate1D & diffPosSta
                            ) + diffPosStart;
 } /* Grid<GridCoordinate1D>::getComputationStart */
 
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
+
 /**
  * Get first coordinate from which to perform computations at current step
  *
@@ -41,6 +43,10 @@ Grid<GridCoordinate2D>::getComputationStart (const GridCoordinate2D & diffPosSta
 #endif /* DEBUG_INFO */
                            ) + diffPosStart;
 } /* Grid<GridCoordinate2D>::getComputationStart */
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 /**
  * Get first coordinate from which to perform computations at current step
@@ -65,6 +71,8 @@ Grid<GridCoordinate3D>::getComputationStart (const GridCoordinate3D & diffPosSta
 #endif /* DEBUG_INFO */
                            ) + diffPosStart;
 } /* Grid<GridCoordinate3D>::getComputationStart */
+
+#endif /* MODE_DIM3 */
 
 /**
  * Check whether position is appropriate to get/set value from
@@ -101,6 +109,8 @@ Grid<GridCoordinate1D>::calculateIndexFromPosition (const GridCoordinate1D &posi
 
   return px;
 } /* Grid<GridCoordinate1D>::calculateIndexFromPosition */
+
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
 
 /**
  * Check whether position is appropriate to get/set value from
@@ -147,6 +157,10 @@ Grid<GridCoordinate2D>::calculateIndexFromPosition (const GridCoordinate2D &posi
 
   return px * sy + py;
 } /* Grid<GridCoordinate2D>::calculateIndexFromPosition */
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 /**
  * Check whether position is appropriate to get/set value from
@@ -204,6 +218,8 @@ Grid<GridCoordinate3D>::calculateIndexFromPosition (const GridCoordinate3D& posi
   return px * sy * sz + py * sz + pz;
 } /* Grid<GridCoordinate3D>::calculateIndexFromPosition */
 
+#endif /* MODE_DIM3 */
+
 /**
  * Calculate position coordinate from one-dimensional index
  */
@@ -221,6 +237,8 @@ Grid<GridCoordinate1D>::calculatePositionFromIndex (grid_coord index) const /**<
 #endif /* DEBUG_INFO */
                            );
 } /* Grid<GridCoordinate1D>::calculatePositionFromIndex */
+
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
 
 /**
  * Calculate position coordinate from one-dimensional index
@@ -249,6 +267,10 @@ Grid<GridCoordinate2D>::calculatePositionFromIndex (grid_coord index) const /**<
 #endif /* DEBUG_INFO */
                            );
 } /* Grid<GridCoordinate2D>::calculatePositionFromIndex */
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 /**
  * Calculate position coordinate from one-dimensional index
@@ -282,3 +304,5 @@ Grid<GridCoordinate3D>::calculatePositionFromIndex (grid_coord index) const /**<
 #endif /* DEBUG_INFO */
                            );
 } /* Grid<GridCoordinate3D>::calculatePositionFromIndex */
+
+#endif /* MODE_DIM3 */

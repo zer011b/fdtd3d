@@ -43,6 +43,8 @@ TXTDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid,
   file.close();
 }
 
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
+
 template <>
 void
 TXTDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid,
@@ -84,6 +86,10 @@ TXTDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid,
 
   file.close();
 }
+
+#endif /* MODE_DIM2) || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 template <>
 void
@@ -132,3 +138,5 @@ TXTDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid,
 
   file.close();
 }
+
+#endif /* MODE_DIM3 */

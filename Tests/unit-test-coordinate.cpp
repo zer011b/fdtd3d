@@ -11,6 +11,10 @@
 #include "cstdlib"
 #endif /* !CXX11_ENABLED */
 
+#ifndef DEBUG_INFO
+#error Test requires debug info
+#endif /* !DEBUG_INFO */
+
 template<class TcoordType, bool doSignChecks>
 void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
                bool correct1D, bool correct2D, bool correct3D)
@@ -329,10 +333,6 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
 
 int main (int argc, char** argv)
 {
-#ifndef DEBUG_INFO
-  ALWAYS_ASSERT_MESSAGE ("Test requires debug info");
-#endif /* !DEBUG_INFO */
-
   for (uint8_t i = 0; i < 4; ++i)
   {
     bool correct1D = false;

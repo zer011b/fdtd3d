@@ -12,6 +12,10 @@
 #include "cstdlib"
 #endif /* !CXX11_ENABLED */
 
+#ifndef DEBUG_INFO
+#error Test requires debug info
+#endif /* !DEBUG_INFO */
+
 template <class TCoord>
 void testFunc (TCoord overallSize, int storedSteps, CoordinateType ct1, CoordinateType ct2, CoordinateType ct3)
 {
@@ -84,23 +88,29 @@ int main (int argc, char** argv)
   
   for (int i = 1; i < 10; ++i)
   {
+#if defined (MODE_DIM1)
     testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeX, CoordinateType::X), i,
       CoordinateType::X, CoordinateType::NONE, CoordinateType::NONE);
     testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeY, CoordinateType::Y), i,
       CoordinateType::Y, CoordinateType::NONE, CoordinateType::NONE);
     testFunc<GridCoordinate1D> (GridCoordinate1D (gridSizeZ, CoordinateType::Z), i,
       CoordinateType::Z, CoordinateType::NONE, CoordinateType::NONE);
+#endif /* MODE_DIM1 */
 
+#if defined (MODE_DIM2)
     testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeX, gridSizeY, CoordinateType::X, CoordinateType::Y), i,
       CoordinateType::X, CoordinateType::Y, CoordinateType::NONE);
     testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeX, gridSizeZ, CoordinateType::X, CoordinateType::Z), i,
       CoordinateType::X, CoordinateType::Z, CoordinateType::NONE);
     testFunc<GridCoordinate2D> (GridCoordinate2D (gridSizeY, gridSizeZ, CoordinateType::Y, CoordinateType::Z), i,
       CoordinateType::Y, CoordinateType::Z, CoordinateType::NONE);
+#endif /* MODE_DIM2 */
 
+#if defined (MODE_DIM3)
     testFunc<GridCoordinate3D> (GridCoordinate3D (gridSizeX, gridSizeY, gridSizeZ,
                                                   CoordinateType::X, CoordinateType::Y, CoordinateType::Z), i,
                                 CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+#endif /* MODE_DIM3 */
   }
 
   return 0;

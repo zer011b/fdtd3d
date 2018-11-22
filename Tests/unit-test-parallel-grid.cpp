@@ -17,7 +17,9 @@
 #include "Assert.h"
 #include "Settings.h"
 
-#ifdef PARALLEL_GRID
+#ifndef PARALLEL_GRID
+#error This unit tests does not support non-parallel grid mode
+#endif /* !PARALLEL_GRID */
 
 #include "ParallelGrid.h"
 #include "ParallelYeeGridLayout.h"
@@ -584,14 +586,3 @@ int main (int argc, char** argv)
 
   return 0;
 } /* main */
-
-#else /* PARALLEL_GRID */
-
-int main (int argc, char** argv)
-{
-  ASSERT (0);
-
-  return 0;
-} /* main */
-
-#endif /* !PARALLEL_GRID */

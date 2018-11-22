@@ -14,6 +14,8 @@ option(MPI_CLOCK "Use mpi clock (MPI_Wtime) for clocks" OFF)
 option(LINK_NUMA "Link with NUMA library" OFF)
 option(STD_COMPEX "Use std::complex class instead of custom one" OFF)
 
+set(SOLVER_DIM_MODES "all" CACHE STRING "Defines FDTD solver dimension modes, which are compiled")
+
 set(VALUE_TYPE "d" CACHE STRING "Defines type of values")
 set(PARALLEL_GRID_DIMENSION "2" CACHE STRING "Defines number dimension in grid")
 set(PARALLEL_BUFFER_DIMENSION "x" CACHE STRING "Defines dimension of parallel grid")
@@ -22,6 +24,42 @@ set(CUDA_ARCH_SM_TYPE "sm_20" CACHE STRING "Defines cuda gpu arch")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORCE_INLINES")
 
 add_definitions (-DSOLVER_VERSION=0.5)
+
+# All the supported solver modes
+list (APPEND SUPPORTED_DIM_MODES_1D "EX_HY" "EX_HZ" "EY_HX" "EY_HZ" "EZ_HX" "EZ_HY")
+list (APPEND SUPPORTED_DIM_MODES_2D "TEX" "TEY" "TEZ" "TMX" "TMY" "TMZ")
+list (APPEND SUPPORTED_DIM_MODES_3D "DIM3")
+list (APPEND SUPPORTED_DIM_MODES "${SUPPORTED_DIM_MODES_1D}" "${SUPPORTED_DIM_MODES_2D}" "${SUPPORTED_DIM_MODES_3D}")
+
+string (REPLACE "," ";" SOLVER_DIM_MODES "${SOLVER_DIM_MODES}")
+
+if ("${SOLVER_DIM_MODES}" STREQUAL "ALL")
+  message ("Compiling all modes")
+
+  foreach (mode IN LISTS SUPPORTED_DIM_MODES)
+    add_definitions (-DMODE_${mode})
+  endforeach (mode)
+
+  add_definitions (-DMODE_DIM1)
+  add_definitions (-DMODE_DIM2)
+  add_definitions (-DMODE_DIM3)
+else ()
+  foreach (mode IN LISTS SOLVER_DIM_MODES)
+    if ("${mode}" IN_LIST SUPPORTED_DIM_MODES)
+      message ("Compiling with support of ${mode} mode")
+      add_definitions (-DMODE_${mode})
+    else ()
+      message (FATAL_ERROR "${mode} mode is not supported. Supported modes: ${SUPPORTED_DIM_MODES}")
+    endif ()
+    
+    if ("${mode}" IN_LIST SUPPORTED_DIM_MODES_1D)
+      add_definitions (-DMODE_DIM1)
+    endif ()
+    if ("${mode}" IN_LIST SUPPORTED_DIM_MODES_2D)
+      add_definitions (-DMODE_DIM2)
+    endif ()
+  endforeach (mode)
+endif ()
 
 if ("${CUDA_ENABLED}")
   enable_language (CUDA)
@@ -61,6 +99,10 @@ endif()
 
 if ("${CUDA_ENABLED}")
   if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    if ("${SOLVER_DIM_MODES}" STREQUAL "ALL")
+      message (FATAL_ERROR "Debug CUDA builds with all dimension modes (ALL) are too heavy in terms of compilation time. Use specific dimension.")
+    endif ()
+
     set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O0 -g -G -lineinfo")
   else ()
     set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3")

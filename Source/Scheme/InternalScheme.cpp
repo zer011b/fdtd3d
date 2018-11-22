@@ -86,218 +86,9 @@ SPECIALIZE_TEMPLATE_3D(InternalScheme, InternalSchemeHelper,
 
 #endif /* PARALLEL_GRID */
 
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Z;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::Z;
-//   ct2 = CoordinateType::NONE;
-//   ct3 = CoordinateType::NONE;
-// }
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Y;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::Y;
-//   ct2 = CoordinateType::NONE;
-//   ct3 = CoordinateType::NONE;
-// }
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Z;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::Z;
-//   ct2 = CoordinateType::NONE;
-//   ct3 = CoordinateType::NONE;
-// }
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::X;
-//   ct2 = CoordinateType::NONE;
-//   ct3 = CoordinateType::NONE;
-// }
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Y;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::Y;
-//   ct2 = CoordinateType::NONE;
-//   ct3 = CoordinateType::NONE;
-// }
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::NONE;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::X;
-//   ct2 = CoordinateType::NONE;
-//   ct3 = CoordinateType::NONE;
-// }
-
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Y;
-  ct2 = CoordinateType::Z;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::Y;
-//   ct2 = CoordinateType::Z;
-//   ct3 = CoordinateType::NONE;
-// }
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::Z;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::X;
-//   ct2 = CoordinateType::Z;
-//   ct3 = CoordinateType::NONE;
-// }
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::Y;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::X;
-//   ct2 = CoordinateType::Y;
-//   ct3 = CoordinateType::NONE;
-// }
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::Y;
-  ct2 = CoordinateType::Z;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::Y;
-//   ct2 = CoordinateType::Z;
-//   ct3 = CoordinateType::NONE;
-// }
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::Z;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::X;
-//   ct2 = CoordinateType::Z;
-//   ct3 = CoordinateType::NONE;
-// }
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::Y;
-  ct3 = CoordinateType::NONE;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::X;
-//   ct2 = CoordinateType::Y;
-//   ct3 = CoordinateType::NONE;
-// }
-template <>
-void
-InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::initCoordTypes ()
-{
-  ct1 = CoordinateType::X;
-  ct2 = CoordinateType::Y;
-  ct3 = CoordinateType::Z;
-}
-// template <>
-// void
-// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>::initCoordTypes ()
-// {
-//   ct1 = CoordinateType::X;
-//   ct2 = CoordinateType::Y;
-//   ct3 = CoordinateType::Z;
-// }
-
 #ifdef ENABLE_ASSERTS
 
+#ifdef MODE_EX_HY
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFExAsserts
@@ -314,6 +105,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate
 //   ASSERT (pos11.get1 () == pos12.get1 ());
 //   ASSERT (pos21.get1 () < pos22.get1 ());
 // }
+#endif /* MODE_EX_HY */
+
+#ifdef MODE_EX_HZ
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFExAsserts
@@ -330,6 +124,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate
 //   ASSERT (pos11.get1 () < pos12.get1 ());
 //   ASSERT (pos21.get1 () == pos22.get1 ());
 // }
+#endif /* MODE_EX_HZ */
+
+#ifdef MODE_TEY
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFExAsserts
@@ -350,6 +147,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2
 //   ASSERT (pos11.get2 () == pos12.get2 ());
 //   ASSERT (pos21.get2 () < pos22.get2 ());
 // }
+#endif /* MODE_TEY */
+
+#ifdef MODE_TEZ
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFExAsserts
@@ -370,6 +170,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2
 //   ASSERT (pos11.get2 () < pos12.get2 ());
 //   ASSERT (pos21.get2 () == pos22.get2 ());
 // }
+#endif /* MODE_TEZ */
+
+#ifdef MODE_TMX
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFExAsserts
@@ -390,6 +193,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2
 //   ASSERT (pos11.get2 () == pos12.get2 ());
 //   ASSERT (pos21.get2 () < pos22.get2 ());
 // }
+#endif /* MODE_TMX */
+
+#ifdef MODE_DIM3
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFExAsserts
@@ -414,8 +220,10 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTem
 //   ASSERT (pos11.get3 () == pos12.get3 ());
 //   ASSERT (pos21.get3 () < pos22.get3 ());
 // }
+#endif /* MODE_DIM3 */
 
 
+#ifdef MODE_EY_HX
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEyAsserts
@@ -432,6 +240,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate
 //   ASSERT (pos11.get1 () < pos12.get1 ());
 //   ASSERT (pos21.get1 () == pos22.get1 ());
 // }
+#endif /* MODE_EY_HX */
+
+#ifdef MODE_EY_HZ
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEyAsserts
@@ -448,6 +259,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate
 //   ASSERT (pos11.get1 () == pos12.get1 ());
 //   ASSERT (pos21.get1 () < pos22.get1 ());
 // }
+#endif /* MODE_EY_HZ */
+
+#ifdef MODE_TEX
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEyAsserts
@@ -468,6 +282,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2
 //   ASSERT (pos11.get2 () < pos12.get2 ());
 //   ASSERT (pos21.get2 () == pos22.get2 ());
 // }
+#endif /* MODE_TEX */
+
+#ifdef MODE_TEZ
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEyAsserts
@@ -488,6 +305,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2
 //   ASSERT (pos11.get2 () == pos12.get2 ());
 //   ASSERT (pos21.get2 () == pos22.get2 ());
 // }
+#endif /* MODE_TEZ */
+
+#ifdef MODE_TMY
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEyAsserts
@@ -508,6 +328,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2
 //   ASSERT (pos11.get2 () < pos12.get2 ());
 //   ASSERT (pos21.get2 () == pos22.get2 ());
 // }
+#endif /* MODE_TMY */
+
+#ifdef MODE_DIM3
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFEyAsserts
@@ -532,8 +355,10 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTem
 //   ASSERT (pos11.get3 () < pos12.get3 ());
 //   ASSERT (pos21.get3 () == pos22.get3 ());
 // }
+#endif /* MODE_DIM3 */
 
 
+#ifdef MODE_EZ_HX
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEzAsserts
@@ -550,6 +375,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate
 //   ASSERT (pos11.get1 () == pos12.get1 ());
 //   ASSERT (pos21.get1 () < pos22.get1 ());
 // }
+#endif /* MODE_EZ_HX */
+
+#ifdef MODE_EZ_HY
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFEzAsserts
@@ -566,6 +394,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate
 //   ASSERT (pos11.get1 () < pos12.get1 ());
 //   ASSERT (pos21.get1 () == pos22.get1 ());
 // }
+#endif /* MODE_EZ_HY */
+
+#ifdef MODE_TEX
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEzAsserts
@@ -586,6 +417,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2
 //   ASSERT (pos11.get2 () == pos12.get2 ());
 //   ASSERT (pos21.get2 () == pos22.get2 ());
 // }
+#endif /* MODE_TEX */
+
+#ifdef MODE_TEY
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEzAsserts
@@ -606,6 +440,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2
 //   ASSERT (pos11.get2 () == pos12.get2 ());
 //   ASSERT (pos21.get2 () == pos22.get2 ());
 // }
+#endif /* MODE_TEY */
+
+#ifdef MODE_TMZ
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFEzAsserts
@@ -626,6 +463,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2
 //   ASSERT (pos11.get2 () == pos12.get2 ());
 //   ASSERT (pos21.get2 () < pos22.get2 ());
 // }
+#endif /* MODE_TMZ */
+
+#ifdef MODE_DIM3
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFEzAsserts
@@ -650,8 +490,10 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTem
 //   ASSERT (pos11.get3 () == pos12.get3 ());
 //   ASSERT (pos21.get3 () == pos22.get3 ());
 // }
+#endif /* MODE_DIM3 */
 
 
+#ifdef MODE_EY_HX
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHxAsserts
@@ -668,6 +510,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate
 //   ASSERT (pos11.get1 () < pos12.get1 ());
 //   ASSERT (pos21.get1 () == pos22.get1 ());
 // }
+#endif /* MODE_EY_HX */
+
+#ifdef MODE_EZ_HX
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHxAsserts
@@ -684,6 +529,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate
 //   ASSERT (pos11.get1 () == pos12.get1 ());
 //   ASSERT (pos21.get1 () < pos22.get1 ());
 // }
+#endif /* MODE_EZ_HX */
+
+#ifdef MODE_TEX
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHxAsserts
@@ -704,6 +552,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2
 //   ASSERT (pos11.get2 () < pos12.get2 ());
 //   ASSERT (pos21.get2 () == pos22.get2 ());
 // }
+#endif /* MODE_TEX */
+
+#ifdef MODE_TMY
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHxAsserts
@@ -724,6 +575,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2
 //   ASSERT (pos11.get2 () < pos12.get2 ());
 //   ASSERT (pos21.get2 () == pos22.get2 ());
 // }
+#endif /* MODE_TMY */
+
+#ifdef MODE_TMZ
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHxAsserts
@@ -744,6 +598,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2
 //   ASSERT (pos11.get2 () == pos12.get2 ());
 //   ASSERT (pos21.get2 () < pos22.get2 ());
 // }
+#endif /* MODE_TMZ */
+
+#ifdef MODE_DIM3
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFHxAsserts
@@ -768,8 +625,10 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTem
 //   ASSERT (pos11.get3 () < pos12.get3 ());
 //   ASSERT (pos21.get3 () == pos22.get3 ());
 // }
+#endif /* MODE_DIM3 */
 
 
+#ifdef MODE_EX_HY
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHyAsserts
@@ -786,6 +645,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate
 //   ASSERT (pos11.get1 () == pos12.get1 ());
 //   ASSERT (pos21.get1 () < pos22.get1 ());
 // }
+#endif /* MODE_EX_HY */
+
+#ifdef MODE_EZ_HY
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHyAsserts
@@ -802,6 +664,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate
 //   ASSERT (pos11.get1 () < pos12.get1 ());
 //   ASSERT (pos21.get1 () == pos22.get1 ());
 // }
+#endif /* MODE_EZ_HY */
+
+#ifdef MODE_TEY
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHyAsserts
@@ -822,6 +687,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2
 //   ASSERT (pos11.get2 () == pos12.get2 ());
 //   ASSERT (pos21.get2 () < pos22.get2 ());
 // }
+#endif /* MODE_TEY */
+
+#ifdef MODE_TMX
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHyAsserts
@@ -842,6 +710,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2
 //   ASSERT (pos11.get2 () == pos12.get2 ());
 //   ASSERT (pos21.get2 () < pos22.get2 ());
 // }
+#endif /* MODE_TMX */
+
+#ifdef MODE_TMZ
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHyAsserts
@@ -862,6 +733,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2
 //   ASSERT (pos11.get2 () == pos12.get2 ());
 //   ASSERT (pos21.get2 () == pos22.get2 ());
 // }
+#endif /* MODE_TMZ */
+
+#ifdef MODE_DIM3
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFHyAsserts
@@ -886,8 +760,10 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTem
 //   ASSERT (pos11.get3 () == pos12.get3 ());
 //   ASSERT (pos21.get3 () < pos22.get3 ());
 // }
+#endif /* MODE_DIM3 */
 
 
+#ifdef MODE_EX_HZ
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHzAsserts
@@ -904,6 +780,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate
 //   ASSERT (pos11.get1 () < pos12.get1 ());
 //   ASSERT (pos21.get1 () == pos22.get1 ());
 // }
+#endif /* MODE_EX_HZ */
+
+#ifdef MODE_EY_HZ
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::calculateTFSFHzAsserts
@@ -920,6 +799,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate
 //   ASSERT (pos11.get1 () == pos12.get1 ());
 //   ASSERT (pos21.get1 () < pos22.get1 ());
 // }
+#endif /* MODE_EY_HZ */
+
+#ifdef MODE_TEZ
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHzAsserts
@@ -940,6 +822,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2
 //   ASSERT (pos11.get2 () < pos12.get2 ());
 //   ASSERT (pos21.get2 () == pos22.get2 ());
 // }
+#endif /* MODE_TEZ */
+
+#ifdef MODE_TMX
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHzAsserts
@@ -960,6 +845,9 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2
 //   ASSERT (pos11.get2 () == pos12.get2 ());
 //   ASSERT (pos21.get2 () == pos22.get2 ());
 // }
+#endif /* MODE_TMX */
+
+#ifdef MODE_TMY
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::calculateTFSFHzAsserts
@@ -970,6 +858,19 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2
   ASSERT (pos11.get2 () == pos12.get2 ());
   ASSERT (pos21.get2 () == pos22.get2 ());
 }
+// template <>
+// void
+// InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::calculateTFSFHzAsserts
+//   (GridCoordinate2D pos11, GridCoordinate2D pos12, GridCoordinate2D pos21, GridCoordinate2D pos22)
+// {
+//   ASSERT (pos11.get1 () == pos12.get1 ());
+//   ASSERT (pos21.get1 () < pos22.get1 ());
+//   ASSERT (pos11.get2 () == pos12.get2 ());
+//   ASSERT (pos21.get2 () == pos22.get2 ());
+// }
+#endif /* MODE_TMY */
+
+#ifdef MODE_DIM3
 template <>
 void
 InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::calculateTFSFHzAsserts
@@ -994,11 +895,12 @@ InternalScheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTem
 //   ASSERT (pos11.get3 () == pos12.get3 ());
 //   ASSERT (pos21.get3 () == pos22.get3 ());
 // }
+#endif /* MODE_DIM3 */
 
 #endif /* ENABLE_ASSERTS */
 
 
-
+#ifdef MODE_EX_HY
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
@@ -1012,6 +914,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_EX_HY */
+
+#ifdef MODE_EX_HZ
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
@@ -1025,6 +930,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_EX_HZ */
+
+#ifdef MODE_EY_HX
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
@@ -1038,6 +946,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_EY_HX */
+
+#ifdef MODE_EY_HZ
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
@@ -1051,6 +962,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_EY_HZ */
+
+#ifdef MODE_EZ_HX
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
@@ -1064,6 +978,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_EZ_HX */
+
+#ifdef MODE_EZ_HY
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate> (GridCoordinateFP1D realCoord, GridCoordinateFP1D zeroCoordFP,
@@ -1077,6 +994,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_EZ_HY */
+
+#ifdef MODE_TEX
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
@@ -1091,6 +1011,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_TEX */
+
+#ifdef MODE_TEY
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
@@ -1105,6 +1028,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_TEY */
+
+#ifdef MODE_TEZ
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
@@ -1119,6 +1045,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_TEZ */
+
+#ifdef MODE_TMX
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
@@ -1133,6 +1062,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_TMX */
+
+#ifdef MODE_TMY
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
@@ -1147,6 +1079,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_TMY */
+
+#ifdef MODE_TMZ
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate> (GridCoordinateFP2D realCoord, GridCoordinateFP2D zeroCoordFP,
@@ -1161,6 +1096,9 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_TMZ */
+
+#ifdef MODE_DIM3
 template <>
 FieldValue
 InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate> (GridCoordinateFP3D realCoord, GridCoordinateFP3D zeroCoordFP,
@@ -1175,3 +1113,4 @@ InternalSchemeHelper::approximateIncidentWave<(static_cast<SchemeType_t> (Scheme
 
   return InternalSchemeHelper::approximateIncidentWaveHelper (d, FieldInc);
 }
+#endif /* MODE_DIM3 */

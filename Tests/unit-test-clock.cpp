@@ -11,12 +11,12 @@
 #include <mpi.h>
 #endif /* PARALLEL_GRID */
 
-int main (int argc, char** argv)
-{
 #ifndef DEBUG_INFO
-  ALWAYS_ASSERT_MESSAGE ("Test requires debug info");
+#error Test requires debug info
 #endif /* !DEBUG_INFO */
 
+int main (int argc, char** argv)
+{
 #ifdef MPI_CLOCK
   printf ("MPI_Wtime clock\n");
 #else /* MPI_CLOCK */

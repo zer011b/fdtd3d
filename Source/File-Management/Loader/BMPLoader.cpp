@@ -95,6 +95,8 @@ BMPLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid,
   }
 }
 
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
+
 /**
  * Load grid from file for specific layer for 2D.
  */
@@ -190,6 +192,10 @@ BMPLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid,
   }
 }
 
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
+
 /**
  * Load grid from file for specific layer for 3D.
  */
@@ -202,3 +208,5 @@ BMPLoader<GridCoordinate3D>::loadFromFile (Grid<GridCoordinate3D> *grid,
 {
   ASSERT_MESSAGE ("3D loader is not implemented as it is considered unneeded (see Docs/Input-Output.md).")
 }
+
+#endif /* MODE_DIM3 */

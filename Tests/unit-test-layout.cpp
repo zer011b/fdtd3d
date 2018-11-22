@@ -11,6 +11,10 @@
 #include "cstdlib"
 #endif /* !CXX11_ENABLED */
 
+#ifndef DEBUG_INFO
+#error Test requires debug info
+#endif /* !DEBUG_INFO */
+
 #define SIZEMULT 5
 #define SIZEX 3
 #define SIZEY 5
@@ -473,6 +477,7 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   TCoord<FPValue, true> coordHyFP = layout.getHyCoordFP (TCoord<grid_coord, true>::initAxesCoordinate (i, j, k, ct1, ct2, ct3)); \
   TCoord<FPValue, true> coordHzFP = layout.getHzCoordFP (TCoord<grid_coord, true>::initAxesCoordinate (i, j, k, ct1, ct2, ct3)); \
 
+#if defined (MODE_EX_HY)
 
 template<LayoutType layout_type>
 void testFuncDim1_ExHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
@@ -571,6 +576,10 @@ void testFuncDim1_ExHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   }
 }
 
+#endif /* MODE_EX_HY */
+
+#if defined (MODE_EX_HZ)
+
 template<LayoutType layout_type>
 void testFuncDim1_ExHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                         grid_coord mult, grid_coord sy)
@@ -665,6 +674,10 @@ void testFuncDim1_ExHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
     }
   }
 }
+
+#endif /* MODE_EX_HZ */
+
+#if defined (MODE_EY_HX)
 
 template<LayoutType layout_type>
 void testFuncDim1_EyHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
@@ -761,6 +774,10 @@ void testFuncDim1_EyHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   }
 }
 
+#endif /* MODE_EY_HX */
+
+#if defined (MODE_EY_HZ)
+
 template<LayoutType layout_type>
 void testFuncDim1_EyHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                         grid_coord mult, grid_coord sx)
@@ -855,6 +872,10 @@ void testFuncDim1_EyHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
     }
   }
 }
+
+#endif /* MODE_EY_HZ */
+
+#if defined (MODE_EZ_HX)
 
 template<LayoutType layout_type>
 void testFuncDim1_EzHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
@@ -951,6 +972,10 @@ void testFuncDim1_EzHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
   }
 }
 
+#endif /* MODE_EZ_HX */
+
+#if defined (MODE_EZ_HY)
+
 template<LayoutType layout_type>
 void testFuncDim1_EzHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                         grid_coord mult, grid_coord sx)
@@ -1045,6 +1070,10 @@ void testFuncDim1_EzHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
     }
   }
 }
+
+#endif /* MODE_EZ_HY */
+
+#if defined (MODE_TEX)
 
 template<LayoutType layout_type>
 void testFuncDim2_TEx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
@@ -1203,6 +1232,10 @@ void testFuncDim2_TEx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   }
 }
 
+#endif /* MODE_TEX */
+
+#if defined (MODE_TEY)
+
 template<LayoutType layout_type>
 void testFuncDim2_TEy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                        grid_coord mult, grid_coord sx, grid_coord sz)
@@ -1360,6 +1393,10 @@ void testFuncDim2_TEy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   }
 }
 
+#endif /* MODE_TEY */
+
+#if defined (MODE_TEZ)
+
 template<LayoutType layout_type>
 void testFuncDim2_TEz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                        grid_coord mult, grid_coord sx, grid_coord sy)
@@ -1516,6 +1553,10 @@ void testFuncDim2_TEz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
     }
   }
 }
+
+#endif /* MODE_TEZ */
+
+#if defined (MODE_TMX)
 
 template<LayoutType layout_type>
 void testFuncDim2_TMx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
@@ -1675,6 +1716,10 @@ void testFuncDim2_TMx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   }
 }
 
+#endif /* MODE_TMX */
+
+#if defined (MODE_TMY)
+
 template<LayoutType layout_type>
 void testFuncDim2_TMy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                        grid_coord mult, grid_coord sx, grid_coord sz)
@@ -1833,6 +1878,10 @@ void testFuncDim2_TMy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   }
 }
 
+#endif /* MODE_TMY */
+
+#if defined (MODE_TMZ)
+
 template<LayoutType layout_type>
 void testFuncDim2_TMz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
                        grid_coord mult, grid_coord sx, grid_coord sy)
@@ -1990,6 +2039,10 @@ void testFuncDim2_TMz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
     }
   }
 }
+
+#endif /* MODE_TMZ */
+
+#if defined (MODE_DIM3)
 
 template<LayoutType layout_type>
 void testFuncDim3 (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision,
@@ -2390,6 +2443,8 @@ void testFuncDim3 (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool
   }
 }
 
+#endif /* MODE_DIM3 */
+
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void testFunc (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool doubleMaterialPrecision)
 {
@@ -2410,71 +2465,114 @@ void testFunc (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool dou
 
 int main (int argc, char** argv)
 {
-#ifndef DEBUG_INFO
-  ALWAYS_ASSERT_MESSAGE ("Test requires debug info");
-#endif /* !DEBUG_INFO */
-
   for (int dMaterialPrecision = 0; dMaterialPrecision <= 1; ++dMaterialPrecision)
   {
+#if defined (MODE_EX_HY)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED> (0, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
+#endif /* MODE_EX_HY */
+#if defined (MODE_EX_HZ)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, 0, dMaterialPrecision);
+#endif /* MODE_EX_HZ */
+#if defined (MODE_EY_HX)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED> (0, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
+#endif /* MODE_EY_HX */
+#if defined (MODE_EY_HZ)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, 0, 0, dMaterialPrecision);
+#endif /* MODE_EY_HZ */
+#if defined (MODE_EZ_HX)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
+#endif /* MODE_EZ_HX */
+#if defined (MODE_EZ_HY)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
+#endif /* MODE_EZ_HY */
 
     for (grid_coord mult = 2; mult <= MULT; ++mult)
     {
       for (grid_coord sz = SIZEZ; sz <= 2*SIZEZ; sz += SIZEZ)
       {
+#if defined (MODE_EX_HY)
         testFuncDim1_ExHy<E_CENTERED> (0, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sz);
+#endif /* MODE_EX_HY */
+#if defined (MODE_EY_HX)
         testFuncDim1_EyHx<E_CENTERED> (0, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sz);
+#endif /* MODE_EY_HX */
       }
 
       for (grid_coord sy = SIZEY; sy <= 2*SIZEY; sy += SIZEY)
       {
+#if defined (MODE_EX_HZ)
         testFuncDim1_ExHz<E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, 0, dMaterialPrecision, mult, sy);
+#endif /* MODE_EX_HZ */
+#if defined (MODE_EZ_HX)
         testFuncDim1_EzHx<E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sy);
+#endif /* MODE_EZ_HX */
       }
 
       for (grid_coord sx = SIZEX; sx <= 2*SIZEX; sx += SIZEX)
       {
+#if defined (MODE_EY_HZ)
         testFuncDim1_EyHz<E_CENTERED> (PhysicsConst::Pi / 2, 0, 0, dMaterialPrecision, mult, sx);
+#endif /* MODE_EY_HZ */
+#if defined (MODE_EZ_HY)
         testFuncDim1_EzHy<E_CENTERED> (PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx);
+#endif /* MODE_EZ_HY */
       }
     }
 
     for (FPValue angle1 = 0.0; angle1 <= PhysicsConst::Pi / 2; angle1 += PhysicsConst::Pi / 4)
     {
+#if defined (MODE_TEX)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED> (angle1, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
+#endif /* MODE_TEX */
+#if defined (MODE_TEY)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED> (angle1, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
+#endif /* MODE_TEY */
+#if defined (MODE_TEZ)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, angle1, 0, dMaterialPrecision);
-
+#endif /* MODE_TEZ */
+#if defined (MODE_TMX)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED> (angle1, PhysicsConst::Pi / 2, 0, dMaterialPrecision);
+#endif /* MODE_TMX */
+#if defined (MODE_TMY)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED> (angle1, 0, 0, dMaterialPrecision);
+#endif /* MODE_TMY */
+#if defined (MODE_TMZ)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, angle1, PhysicsConst::Pi / 2, dMaterialPrecision);
+#endif /* MODE_TMZ */
 
       for (grid_coord mult = 2; mult <= MULT; ++mult)
       {
         for (grid_coord sy = SIZEY; sy <= 2*SIZEY; sy += SIZEY)
         for (grid_coord sz = SIZEZ; sz <= 2*SIZEZ; sz += SIZEZ)
         {
+#if defined (MODE_TEX)
           testFuncDim2_TEx<E_CENTERED> (angle1, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sy, sz);
+#endif /* MODE_TEX */
+#if defined (MODE_TMX)
           testFuncDim2_TMx<E_CENTERED> (angle1, PhysicsConst::Pi / 2, 0, dMaterialPrecision, mult, sy, sz);
+#endif /* MODE_TMX */
         }
 
         for (grid_coord sx = SIZEX; sx <= 2*SIZEX; sx += SIZEX)
         for (grid_coord sz = SIZEZ; sz <= 2*SIZEZ; sz += SIZEZ)
         {
+#if defined (MODE_TEY)
           testFuncDim2_TEy<E_CENTERED> (angle1, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx, sz);
+#endif /* MODE_TEY */
+#if defined (MODE_TMY)
           testFuncDim2_TMy<E_CENTERED> (angle1, 0, 0, dMaterialPrecision, mult, sx, sz);
+#endif /* MODE_TMY */
         }
 
         for (grid_coord sx = SIZEX; sx <= 2*SIZEX; sx += SIZEX)
         for (grid_coord sy = SIZEY; sy <= 2*SIZEY; sy += SIZEY)
         {
+#if defined (MODE_TEZ)
           testFuncDim2_TEz<E_CENTERED> (PhysicsConst::Pi / 2, angle1, 0, dMaterialPrecision, mult, sx, sy);
+#endif /* MODE_TEZ */
+#if defined (MODE_TMZ)
           testFuncDim2_TMz<E_CENTERED> (PhysicsConst::Pi / 2, angle1, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx, sy);
+#endif /* MODE_TMZ */
         }
       }
 
@@ -2482,7 +2580,9 @@ int main (int argc, char** argv)
       {
         for (FPValue angle3 = 0.0; angle3 <= PhysicsConst::Pi / 2; angle3 += PhysicsConst::Pi / 4)
         {
+#if defined (MODE_DIM3)
           testFunc<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (angle1, angle2, angle3, dMaterialPrecision);
+#endif /* MODE_DIM3 */          
 
           for (grid_coord mult = 2; mult <= MULT; ++mult)
           {
@@ -2490,7 +2590,9 @@ int main (int argc, char** argv)
             for (grid_coord sy = SIZEY; sy <= 2*SIZEY; sy += SIZEY)
             for (grid_coord sz = SIZEZ; sz <= 2*SIZEZ; sz += SIZEZ)
             {
+#if defined (MODE_DIM3)
               testFuncDim3<E_CENTERED> (angle1, angle2, angle3, dMaterialPrecision, mult, sx, sy, sz);
+#endif /* MODE_DIM3 */
             }
           }
         }

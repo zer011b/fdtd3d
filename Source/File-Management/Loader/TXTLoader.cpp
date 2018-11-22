@@ -66,6 +66,8 @@ TXTLoader<GridCoordinate1D>::loadFromFile (Grid<GridCoordinate1D> *grid,
   file.close();
 }
 
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
+
 /**
  * Virtual method for grid loading for 2D
  */
@@ -133,6 +135,10 @@ TXTLoader<GridCoordinate2D>::loadFromFile (Grid<GridCoordinate2D> *grid,
 
   file.close();
 }
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 /**
  * Virtual method for grid loading for 3D
@@ -209,3 +215,5 @@ TXTLoader<GridCoordinate3D>::loadFromFile (Grid<GridCoordinate3D> *grid,
 
   file.close();
 }
+
+#endif /* MODE_DIM3 */
