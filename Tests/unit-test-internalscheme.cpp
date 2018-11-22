@@ -813,6 +813,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 #endif /* CUDA_ENABLED */
 }
 
+#if defined (MODE_DIM1)
+
 void test1D (Grid<GridCoordinate1D> *E,
              GridCoordinateFP1D diff,
              CoordinateType ct1)
@@ -848,6 +850,10 @@ void test1D (Grid<GridCoordinate1D> *E,
   }
 #endif /* COMPLEX_FIELD_VALUES */
 }
+
+#endif /* MODE_DIM1 */
+
+#if defined (MODE_DIM2)
 
 void test2D (Grid<GridCoordinate2D> *E,
              GridCoordinateFP2D diff,
@@ -889,6 +895,10 @@ void test2D (Grid<GridCoordinate2D> *E,
   }
 #endif /* COMPLEX_FIELD_VALUES */
 }
+
+#endif /* MODE_DIM2 */
+
+#if defined (MODE_DIM3)
 
 void test3D (Grid<GridCoordinate3D> *E,
              GridCoordinateFP3D diff,
@@ -936,6 +946,9 @@ void test3D (Grid<GridCoordinate3D> *E,
 #endif /* COMPLEX_FIELD_VALUES */
 }
 
+#endif /* MODE_DIM3 */
+
+#if defined (MODE_EX_HY)
 template<LayoutType layout_type>
 void test1D_ExHy ()
 {
@@ -978,7 +991,9 @@ void test1D_ExHy ()
 
   test1D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1);
 }
+#endif /* MODE_EX_HY */
 
+#if defined (MODE_EX_HZ)
 template<LayoutType layout_type>
 void test1D_ExHz ()
 {
@@ -1021,7 +1036,9 @@ void test1D_ExHz ()
 
   test1D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1);
 }
+#endif /* MODE_EX_HZ */
 
+#if defined (MODE_EY_HX)
 template<LayoutType layout_type>
 void test1D_EyHx ()
 {
@@ -1064,7 +1081,9 @@ void test1D_EyHx ()
 
   test1D (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1);
 }
+#endif /* MODE_EY_HX */
 
+#if defined (MODE_EY_HZ)
 template<LayoutType layout_type>
 void test1D_EyHz ()
 {
@@ -1107,7 +1126,9 @@ void test1D_EyHz ()
 
   test1D (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1);
 }
+#endif /* MODE_EY_HZ */
 
+#if defined (MODE_EZ_HX)
 template<LayoutType layout_type>
 void test1D_EzHx ()
 {
@@ -1150,7 +1171,9 @@ void test1D_EzHx ()
 
   test1D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1);
 }
+#endif /* MODE_EZ_HX */
 
+#if defined (MODE_EZ_HY)
 template<LayoutType layout_type>
 void test1D_EzHy ()
 {
@@ -1193,7 +1216,9 @@ void test1D_EzHy ()
 
   test1D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1);
 }
+#endif /* MODE_EZ_HY */
 
+#if defined (MODE_TEX)
 template<LayoutType layout_type>
 void test2D_TEx ()
 {
@@ -1236,7 +1261,9 @@ void test2D_TEx ()
 
   test2D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2);
 }
+#endif /* MODE_TEX */
 
+#if defined (MODE_TEY)
 template<LayoutType layout_type>
 void test2D_TEy ()
 {
@@ -1279,7 +1306,9 @@ void test2D_TEy ()
 
   test2D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2);
 }
+#endif /* MODE_TEY */
 
+#if defined (MODE_TEZ)
 template<LayoutType layout_type>
 void test2D_TEz ()
 {
@@ -1322,7 +1351,9 @@ void test2D_TEz ()
 
   test2D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1, ct2);
 }
+#endif /* MODE_TEZ */
 
+#if defined (MODE_TMX)
 template<LayoutType layout_type>
 void test2D_TMx ()
 {
@@ -1365,7 +1396,9 @@ void test2D_TMx ()
 
   test2D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1, ct2);
 }
+#endif /* MODE_TMX */
 
+#if defined (MODE_TMY)
 template<LayoutType layout_type>
 void test2D_TMy ()
 {
@@ -1408,7 +1441,9 @@ void test2D_TMy ()
 
   test2D (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1, ct2);
 }
+#endif /* MODE_TMY */
 
+#if defined (MODE_TMZ)
 template<LayoutType layout_type>
 void test2D_TMz ()
 {
@@ -1451,7 +1486,9 @@ void test2D_TMz ()
 
   test2D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2);
 }
+#endif /* MODE_TMZ */
 
+#if defined (MODE_DIM3)
 template<LayoutType layout_type>
 void test3D ()
 {
@@ -1495,6 +1532,7 @@ void test3D ()
 
   test3D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, ct2, ct3);
 }
+#endif /* MODE_DIM3 */
 
 int main (int argc, char** argv)
 {
@@ -1505,21 +1543,47 @@ int main (int argc, char** argv)
    */
   ASSERT (!solverSettings.getDoUsePML ());
 
+#if defined (MODE_EX_HY)
   test1D_ExHy<E_CENTERED> ();
+#endif /* MODE_EX_HY */
+#if defined (MODE_EX_HZ)
   test1D_ExHz<E_CENTERED> ();
+#endif /* MODE_EX_HZ */
+#if defined (MODE_EY_HX)
   test1D_EyHx<E_CENTERED> ();
+#endif /* MODE_EY_HX */
+#if defined (MODE_EY_HZ)
   test1D_EyHz<E_CENTERED> ();
+#endif /* MODE_EY_HZ */
+#if defined (MODE_EZ_HX)
   test1D_EzHx<E_CENTERED> ();
+#endif /* MODE_EZ_HX */
+#if defined (MODE_EZ_HY)
   test1D_EzHy<E_CENTERED> ();
+#endif /* MODE_EZ_HY */
 
+#if defined (MODE_TEX)
   test2D_TEx<E_CENTERED> ();
+#endif /* MODE_TEX */
+#if defined (MODE_TEY)
   test2D_TEy<E_CENTERED> ();
+#endif /* MODE_TEY */
+#if defined (MODE_TEZ)
   test2D_TEz<E_CENTERED> ();
+#endif /* MODE_TEZ */
+#if defined (MODE_TMX)
   test2D_TMx<E_CENTERED> ();
+#endif /* MODE_TMX */
+#if defined (MODE_TMY)
   test2D_TMy<E_CENTERED> ();
+#endif /* MODE_TMY */
+#if defined (MODE_TMZ)
   test2D_TMz<E_CENTERED> ();
+#endif /* MODE_TMZ */  
 
+#if defined (MODE_DIM3)
   test3D<E_CENTERED> ();
+#endif /* MODE_DIM3 */
 
   solverSettings.Uninitialize ();
 

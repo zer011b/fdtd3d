@@ -7,12 +7,12 @@
 #include "Approximation.h"
 #include "Clock.h"
 
-int main (int argc, char** argv)
-{
 #ifndef DEBUG_INFO
-  ALWAYS_ASSERT_MESSAGE ("Test requires debug info");
+#error Test requires debug info
 #endif /* !DEBUG_INFO */
 
+int main (int argc, char** argv)
+{
   FPValue lambda = 0.04;
 
   FPValue stepAngle = PhysicsConst::Pi / 12;

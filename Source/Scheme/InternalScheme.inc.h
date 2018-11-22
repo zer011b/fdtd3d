@@ -605,23 +605,35 @@ protected:
 
 #endif /* !GPU_INTERNAL_SCHEME */
 
-  ICUDA_HOST void initCoordTypes ();
+  ICUDA_HOST void initCoordTypes ()
+  {
+    ct1 = get_ct1 ();
+    ct2 = get_ct2 ();
+    ct3 = get_ct3 ();
+  }
 
   ICUDA_DEVICE bool doSkipBorderFunc (TC, IGRID<TC> *);
 
 #ifdef ENABLE_ASSERTS
-  ICUDA_DEVICE
-  void calculateTFSFExAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE
-  void calculateTFSFEyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE
-  void calculateTFSFEzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE
-  void calculateTFSFHxAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE
-  void calculateTFSFHyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE
-  void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+#ifdef GPU_INTERNAL_SCHEME
+  /*
+   * For some reason nvcc can't handle correctly specialization of template with definition.
+   * So, manually define for all the modes.
+   */
+  ICUDA_DEVICE void calculateTFSFExAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
+  ICUDA_DEVICE void calculateTFSFEyAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
+  ICUDA_DEVICE void calculateTFSFEzAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
+  ICUDA_DEVICE void calculateTFSFHxAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
+  ICUDA_DEVICE void calculateTFSFHyAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
+  ICUDA_DEVICE void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
+#else /* GPU_INTERNAL_SCHEME */
+  ICUDA_DEVICE void calculateTFSFExAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  ICUDA_DEVICE void calculateTFSFEyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  ICUDA_DEVICE void calculateTFSFEzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  ICUDA_DEVICE void calculateTFSFHxAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  ICUDA_DEVICE void calculateTFSFHyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+  ICUDA_DEVICE void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
+#endif /* !GPU_INTERNAL_SCHEME */
 #endif /* ENABLE_ASSERTS */
 
   template <uint8_t grid_type>
@@ -944,6 +956,108 @@ public:
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedHy () const { return doNeedHy; }
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedHz () const { return doNeedHz; }
 
+  ICUDA_HOST CoordinateType get_ct1 ()
+  {
+    switch (static_cast<uint8_t> (Type))
+    {
+      case (static_cast<uint8_t> (SchemeType::Dim1_ExHy)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_EyHx)):
+      {
+        return CoordinateType::Z;
+      }
+      case (static_cast<uint8_t> (SchemeType::Dim1_ExHz)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_EzHx)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TEx)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TMx)):
+      {
+        return CoordinateType::Y;
+      }
+      case (static_cast<uint8_t> (SchemeType::Dim1_EyHz)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_EzHy)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TEy)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TEz)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TMy)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TMz)):
+      case (static_cast<uint8_t> (SchemeType::Dim3)):
+      {
+        return CoordinateType::X;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+
+    return CoordinateType::NONE;
+  }
+
+  ICUDA_HOST CoordinateType get_ct2 ()
+  {
+    switch (static_cast<uint8_t> (Type))
+    {
+      case (static_cast<uint8_t> (SchemeType::Dim1_ExHy)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_EyHx)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_ExHz)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_EzHx)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_EyHz)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_EzHy)):
+      {
+        return CoordinateType::NONE;
+      }
+      case (static_cast<uint8_t> (SchemeType::Dim2_TEx)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TEy)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TMx)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TMy)):
+      {
+        return CoordinateType::Z;
+      }
+      case (static_cast<uint8_t> (SchemeType::Dim2_TEz)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TMz)):
+      case (static_cast<uint8_t> (SchemeType::Dim3)):
+      {
+        return CoordinateType::Y;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+
+    return CoordinateType::NONE;
+  }
+
+  ICUDA_HOST CoordinateType get_ct3 ()
+  {
+    switch (static_cast<uint8_t> (Type))
+    {
+      case (static_cast<uint8_t> (SchemeType::Dim1_ExHy)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_EyHx)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_ExHz)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_EzHx)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_EyHz)):
+      case (static_cast<uint8_t> (SchemeType::Dim1_EzHy)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TEx)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TEy)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TMx)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TMy)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TEz)):
+      case (static_cast<uint8_t> (SchemeType::Dim2_TMz)):
+      {
+        return CoordinateType::NONE;
+      }
+      case (static_cast<uint8_t> (SchemeType::Dim3)):
+      {
+        return CoordinateType::Z;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+
+    return CoordinateType::NONE;
+  }
+
   ICUDA_DEVICE ICUDA_HOST
   CoordinateType getType1 ()
   {
@@ -1004,23 +1118,5 @@ public:
 #undef IGRID
 #undef ICUDA_HOST
 #undef ICUDA_DEVICE
-
-#undef INTERNAL_SCHEME_1D
-#undef INTERNAL_SCHEME_2D
-#undef INTERNAL_SCHEME_3D
-
-#undef INTERNAL_SCHEME_1D_EX_HY
-#undef INTERNAL_SCHEME_1D_EX_HZ
-#undef INTERNAL_SCHEME_1D_EY_HX
-#undef INTERNAL_SCHEME_1D_EY_HZ
-#undef INTERNAL_SCHEME_1D_EZ_HX
-#undef INTERNAL_SCHEME_1D_EZ_HY
-#undef INTERNAL_SCHEME_2D_TEX
-#undef INTERNAL_SCHEME_2D_TEY
-#undef INTERNAL_SCHEME_2D_TEZ
-#undef INTERNAL_SCHEME_2D_TMX
-#undef INTERNAL_SCHEME_2D_TMY
-#undef INTERNAL_SCHEME_2D_TMZ
-#undef INTERNAL_SCHEME_3D_3D
 
 #undef SETUP_BLOCKS_AND_THREADS

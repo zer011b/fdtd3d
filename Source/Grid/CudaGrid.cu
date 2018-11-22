@@ -20,6 +20,8 @@ CudaGrid<GridCoordinate1D>::getTotalPosition (const GridCoordinate1D & pos) cons
                            );
 }
 
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
+
 template <>
 CUDA_DEVICE CUDA_HOST
 GridCoordinate2D
@@ -37,6 +39,10 @@ CudaGrid<GridCoordinate2D>::getTotalPosition (const GridCoordinate2D & pos) cons
 #endif /* DEBUG_INFO */
                            );
 }
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 template <>
 CUDA_DEVICE CUDA_HOST
@@ -58,6 +64,8 @@ CudaGrid<GridCoordinate3D>::getTotalPosition (const GridCoordinate3D & pos) cons
                            );
 }
 
+#endif /* MODE_DIM3 */
+
 template <>
 CUDA_DEVICE CUDA_HOST
 GridCoordinate1D
@@ -73,6 +81,8 @@ CudaGrid<GridCoordinate1D>::getRelativePosition (const GridCoordinate1D & pos) c
 #endif /* DEBUG_INFO */
                            );
 }
+
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
 
 template <>
 CUDA_DEVICE CUDA_HOST
@@ -91,6 +101,10 @@ CudaGrid<GridCoordinate2D>::getRelativePosition (const GridCoordinate2D & pos) c
 #endif /* DEBUG_INFO */
                            );
 }
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 template <>
 CUDA_DEVICE CUDA_HOST
@@ -112,6 +126,8 @@ CudaGrid<GridCoordinate3D>::getRelativePosition (const GridCoordinate3D & pos) c
                            );
 }
 
+#endif /* MODE_DIM3 */
+
 template <>
 CUDA_DEVICE CUDA_HOST
 bool
@@ -125,6 +141,8 @@ CudaGrid<GridCoordinate1D>::hasValueForCoordinate (const GridCoordinate1D & posi
 
   return true;
 }
+
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
 
 template <>
 CUDA_DEVICE CUDA_HOST
@@ -141,6 +159,10 @@ CudaGrid<GridCoordinate2D>::hasValueForCoordinate (const GridCoordinate2D & posi
 
   return true;
 }
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 template <>
 CUDA_DEVICE CUDA_HOST
@@ -160,6 +182,8 @@ CudaGrid<GridCoordinate3D>::hasValueForCoordinate (const GridCoordinate3D & posi
   return true;
 }
 
+#endif /* MODE_DIM3 */
+
 /**
  * Check params for consistency
  */
@@ -170,6 +194,8 @@ CudaGrid<GridCoordinate1D>::checkParams ()
 {
   return true;
 } /* CudaGrid<GridCoordinate1D>::checkParams */
+
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
 
 /**
  * Check params for consistency
@@ -182,6 +208,10 @@ CudaGrid<GridCoordinate2D>::checkParams ()
   return bufSize.get1 () == bufSize.get2 ();
 } /* CudaGrid<GridCoordinate2D>::checkParams */
 
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
+
 /**
  * Check params for consistency
  */
@@ -193,6 +223,8 @@ CudaGrid<GridCoordinate3D>::checkParams ()
   return bufSize.get1 () == bufSize.get2 ()
          && bufSize.get1 () == bufSize.get3 ();
 } /* CudaGrid<GridCoordinate3D>::checkParams */
+
+#endif /* MODE_DIM3 */
 
 /**
  * Get first coordinate from which to perform computations at current step
@@ -217,6 +249,8 @@ CudaGrid<GridCoordinate1D>::getComputationStart (const GridCoordinate1D & diffPo
 #endif /* DEBUG_INFO */
   );
 } /* CudaGrid<GridCoordinate1D>::getComputationStart */
+
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
 
 /**
  * Get first coordinate from which to perform computations at current step
@@ -248,6 +282,10 @@ CudaGrid<GridCoordinate2D>::getComputationStart (const GridCoordinate2D & diffPo
 #endif /* DEBUG_INFO */
   );
 } /* CudaGrid<GridCoordinate2D>::getComputationStart */
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 /**
  * Get first coordinate from which to perform computations at current step
@@ -287,6 +325,8 @@ CudaGrid<GridCoordinate3D>::getComputationStart (const GridCoordinate3D & diffPo
   );
 } /* CudaGrid<GridCoordinate3D>::getComputationStart */
 
+#endif /* MODE_DIM3 */
+
 /**
  * Get last coordinate until which to perform computations at current step
  *
@@ -310,6 +350,8 @@ CudaGrid<GridCoordinate1D>::getComputationEnd (const GridCoordinate1D & diffPosE
 #endif /* DEBUG_INFO */
   );
 } /* CudaGrid<GridCoordinate1D>::getComputationEnd () */
+
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
 
 /**
  * Get last coordinate until which to perform computations at current step
@@ -341,6 +383,10 @@ CudaGrid<GridCoordinate2D>::getComputationEnd (const GridCoordinate2D & diffPosE
 #endif /* DEBUG_INFO */
   );
 } /* CudaGrid<GridCoordinate2D>::getComputationEnd () */
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 /**
  * Get last coordinate until which to perform computations at current step
@@ -379,6 +425,8 @@ CudaGrid<GridCoordinate3D>::getComputationEnd (const GridCoordinate3D & diffPosE
 #endif /* DEBUG_INFO */
   );
 } /* CudaGrid<GridCoordinate3D>::getComputationEnd () */
+
+#endif /* MODE_DIM3 */
 
 /**
  * Copy from CPU grid
@@ -521,6 +569,8 @@ CudaGrid<GridCoordinate1D>::copyToCPU ()
     }
   }
 } /* CudaGrid<GridCoordinate1D>::copyToCPU */
+
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
 
 /**
  * Copy from CPU grid
@@ -697,6 +747,10 @@ CudaGrid<GridCoordinate2D>::copyToCPU ()
     }
   }
 } /* CudaGrid<GridCoordinate2D>::copyToCPU */
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 /**
  * Copy from CPU grid
@@ -920,6 +974,8 @@ CudaGrid<GridCoordinate3D>::copyToCPU ()
   }
 } /* CudaGrid<GridCoordinate3D>::copyToCPU */
 
+#endif /* MODE_DIM3 */
+
 /**
  * Check whether position is appropriate to get/set value from
  *
@@ -957,6 +1013,8 @@ CudaGrid<GridCoordinate1D>::calculateIndexFromPosition (const GridCoordinate1D &
 
   return px;
 } /* CudaGrid<GridCoordinate1D>::calculateIndexFromPosition */
+
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
 
 /**
  * Check whether position is appropriate to get/set value from
@@ -1005,6 +1063,10 @@ CudaGrid<GridCoordinate2D>::calculateIndexFromPosition (const GridCoordinate2D &
 
   return px * sy + py;
 } /* CudaGrid<GridCoordinate2D>::calculateIndexFromPosition */
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 /**
  * Check whether position is appropriate to get/set value from
@@ -1064,6 +1126,8 @@ CudaGrid<GridCoordinate3D>::calculateIndexFromPosition (const GridCoordinate3D& 
   return px * sy * sz + py * sz + pz;
 } /* CudaGrid<GridCoordinate3D>::calculateIndexFromPosition */
 
+#endif /* MODE_DIM3 */
+
 /**
  * Calculate position coordinate from one-dimensional index
  */
@@ -1082,6 +1146,8 @@ CudaGrid<GridCoordinate1D>::calculatePositionFromIndex (grid_coord index) const 
 #endif /* DEBUG_INFO */
                            );
 } /* CudaGrid<GridCoordinate1D>::calculatePositionFromIndex */
+
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
 
 /**
  * Calculate position coordinate from one-dimensional index
@@ -1110,6 +1176,10 @@ CudaGrid<GridCoordinate2D>::calculatePositionFromIndex (grid_coord index) const 
 #endif /* DEBUG_INFO */
                            );
 } /* CudaGrid<GridCoordinate2D>::calculatePositionFromIndex */
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 /**
  * Calculate position coordinate from one-dimensional index
@@ -1144,5 +1214,7 @@ CudaGrid<GridCoordinate3D>::calculatePositionFromIndex (grid_coord index) const 
 #endif /* DEBUG_INFO */
                            );
 } /* CudaGrid<GridCoordinate3D>::calculatePositionFromIndex */
+
+#endif /* MODE_DIM3 */
 
 #endif /* CUDA_ENABLED */

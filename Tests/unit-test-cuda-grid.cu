@@ -13,6 +13,11 @@
 #include "cstdlib"
 #endif /* !CXX11_ENABLED */
 
+#ifndef DEBUG_INFO
+#error Test requires debug info
+#endif /* !DEBUG_INFO */
+
+#if defined (MODE_DIM1)
 __global__ void shiftInTime (CudaExitStatus *retval,
                              CudaGrid<GridCoordinate1D> *grid)
 {
@@ -20,7 +25,9 @@ __global__ void shiftInTime (CudaExitStatus *retval,
 
   PROGRAM_OK_EXIT;
 }
+#endif /* MODE_DIM1 */
 
+#if defined (MODE_DIM2)
 __global__ void shiftInTime (CudaExitStatus *retval,
                              CudaGrid<GridCoordinate2D> *grid)
 {
@@ -28,7 +35,9 @@ __global__ void shiftInTime (CudaExitStatus *retval,
 
   PROGRAM_OK_EXIT;
 }
+#endif /* MODE_DIM2 */
 
+#if defined (MODE_DIM3)
 __global__ void shiftInTime (CudaExitStatus *retval,
                              CudaGrid<GridCoordinate3D> *grid)
 {
@@ -36,7 +45,9 @@ __global__ void shiftInTime (CudaExitStatus *retval,
 
   PROGRAM_OK_EXIT;
 }
+#endif /* MODE_DIM3 */
 
+#if defined (MODE_DIM1)
 __global__ void cudaCalculate (CudaExitStatus *retval,
                                CudaGrid<GridCoordinate1D> *grid)
 {
@@ -51,7 +62,9 @@ __global__ void cudaCalculate (CudaExitStatus *retval,
 
   PROGRAM_OK_EXIT;
 }
+#endif /* MODE_DIM1 */
 
+#if defined (MODE_DIM2)
 __global__ void cudaCalculate (CudaExitStatus *retval,
                                CudaGrid<GridCoordinate2D> *grid)
 {
@@ -68,7 +81,9 @@ __global__ void cudaCalculate (CudaExitStatus *retval,
 
   PROGRAM_OK_EXIT;
 }
+#endif /* MODE_DIM2 */
 
+#if defined (MODE_DIM3)
 __global__ void cudaCalculate (CudaExitStatus *retval,
                                CudaGrid<GridCoordinate3D> *grid)
 {
@@ -87,7 +102,9 @@ __global__ void cudaCalculate (CudaExitStatus *retval,
 
   PROGRAM_OK_EXIT;
 }
+#endif /* MODE_DIM3 */
 
+#if defined (MODE_DIM1)
 void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
 {
   Grid<GridCoordinate1D> cpuGrid (overallSize, 0, 2);
@@ -188,7 +205,9 @@ void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
     ASSERT (cudaGrid2.getHasRight ().get1 () == 0);
   }
 }
+#endif /* MODE_DIM1 */
 
+#if defined (MODE_DIM2)
 void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
 {
   Grid<GridCoordinate2D> cpuGrid (overallSize, 0, 2);
@@ -296,7 +315,9 @@ void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
     ASSERT (cudaGrid2.getHasRight ().get1 () == 0);
   }
 }
+#endif /* MODE_DIM2 */
 
+#if defined (MODE_DIM3)
 void testFunc3D (GridCoordinate3D overallSize, GridCoordinate3D bufSize)
 {
   Grid<GridCoordinate3D> cpuGrid (overallSize, 0, 2);
@@ -409,6 +430,7 @@ void testFunc3D (GridCoordinate3D overallSize, GridCoordinate3D bufSize)
     ASSERT (cudaGrid2.getHasRight ().get1 () == 0);
   }
 }
+#endif /* MODE_DIM3 */
 
 int main (int argc, char** argv)
 {
@@ -419,22 +441,28 @@ int main (int argc, char** argv)
   int gridSizeY = 46;
   int gridSizeZ = 40;
 
+#if defined (MODE_DIM1)
   testFunc1D (GridCoordinate1D (gridSizeX, CoordinateType::X),
               GridCoordinate1D (1, CoordinateType::X));
   testFunc1D (GridCoordinate1D (gridSizeY, CoordinateType::Y),
               GridCoordinate1D (1, CoordinateType::Y));
   testFunc1D (GridCoordinate1D (gridSizeZ, CoordinateType::Z),
               GridCoordinate1D (1, CoordinateType::Z));
+#endif /* MODE_DIM1 */
 
+#if defined (MODE_DIM2)
   testFunc2D (GridCoordinate2D (gridSizeX, gridSizeY, CoordinateType::X, CoordinateType::Y),
               GridCoordinate2D (1, 1, CoordinateType::X, CoordinateType::Y));
   testFunc2D (GridCoordinate2D (gridSizeY, gridSizeZ, CoordinateType::Y, CoordinateType::Z),
               GridCoordinate2D (1, 1, CoordinateType::Y, CoordinateType::Z));
   testFunc2D (GridCoordinate2D (gridSizeX, gridSizeZ, CoordinateType::X, CoordinateType::Z),
               GridCoordinate2D (1, 1, CoordinateType::X, CoordinateType::Z));
+#endif /* MODE_DIM2 */
 
+#if defined (MODE_DIM3)
   testFunc3D (GridCoordinate3D (gridSizeX, gridSizeY, gridSizeZ, CoordinateType::X, CoordinateType::Y, CoordinateType::Z),
               GridCoordinate3D (1, 1, 1, CoordinateType::X, CoordinateType::Y, CoordinateType::Z));
+#endif /* MODE_DIM3 */
 
   solverSettings.Uninitialize ();
 

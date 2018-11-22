@@ -19,6 +19,14 @@
 #include "cstdlib"
 #endif /* !CXX11_ENABLED */
 
+#if not defined (MODE_DIM1) || not defined (MODE_DIM2) || not defined (MODE_DIM3)
+#error This unit test does not support separate compilation
+#endif
+
+#ifndef DEBUG_INFO
+#error Test requires debug info
+#endif /* !DEBUG_INFO */
+
 const FPValue imagMult = 1000;
 const FPValue prevMult = 16;
 const FPValue prevPrevMult = prevMult * prevMult;

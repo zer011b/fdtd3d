@@ -8,6 +8,10 @@
 #include "Assert.h"
 #include "Settings.h"
 
+#ifndef DEBUG_INFO
+#error Test requires debug info
+#endif /* !DEBUG_INFO */
+
 void check (const std::string & arg, SchemeType schemeType, int dim)
 {
   Settings settings;
@@ -26,10 +30,6 @@ void check (const std::string & arg, SchemeType schemeType, int dim)
 
 int main (int argc, char** argv)
 {
-#ifndef DEBUG_INFO
-  ALWAYS_ASSERT_MESSAGE ("Test requires debug info");
-#endif /* !DEBUG_INFO */
-
   check (std::string ("--1d-exhy"), SchemeType::Dim1_ExHy, 1);
   check (std::string ("--1d-exhz"), SchemeType::Dim1_ExHz, 1);
   check (std::string ("--1d-eyhx"), SchemeType::Dim1_EyHx, 1);

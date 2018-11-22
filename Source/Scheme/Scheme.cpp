@@ -4,7 +4,7 @@
 #include "DATLoader.h"
 #include "TXTDumper.h"
 #include "TXTLoader.h"
-#include "Kernels.h"
+#include "FieldValue.h"
 #include "Settings.h"
 #include "Scheme.h"
 #include "Approximation.h"

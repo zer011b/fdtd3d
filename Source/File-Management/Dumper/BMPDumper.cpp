@@ -171,6 +171,8 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid,
 #endif /* COMPLEX_FIELD_VALUES */
 }
 
+#if defined (MODE_DIM2) || defined (MODE_DIM3)
+
 /**
  * Save grid to file for specific layer for 1D.
  */
@@ -344,6 +346,10 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid,
   fileMaxMod.close();
 #endif /* COMPLEX_FIELD_VALUES */
 }
+
+#endif /* MODE_DIM2 || MODE_DIM3 */
+
+#if defined (MODE_DIM3)
 
 /**
  * Save grid to file for specific layer for 3D.
@@ -608,3 +614,5 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid,
   fileMaxMod.close();
 #endif /* COMPLEX_FIELD_VALUES */
 }
+
+#endif /* MODE_DIM3 */

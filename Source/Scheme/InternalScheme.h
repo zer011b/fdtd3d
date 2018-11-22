@@ -32,27 +32,6 @@ class InternalSchemeHelperGPU;
 #define ICUDA_HOST CUDA_HOST
 #define ICUDA_DEVICE
 
-#define INTERNAL_SCHEME_1D InternalScheme1D
-#define INTERNAL_SCHEME_2D InternalScheme2D
-#define INTERNAL_SCHEME_3D InternalScheme3D
-
-#define INTERNAL_SCHEME_1D_EX_HY InternalScheme1D_ExHy
-#define INTERNAL_SCHEME_1D_EX_HZ InternalScheme1D_ExHz
-#define INTERNAL_SCHEME_1D_EY_HX InternalScheme1D_EyHx
-#define INTERNAL_SCHEME_1D_EY_HZ InternalScheme1D_EyHz
-#define INTERNAL_SCHEME_1D_EZ_HX InternalScheme1D_EzHx
-#define INTERNAL_SCHEME_1D_EZ_HY InternalScheme1D_EzHy
-
-#define INTERNAL_SCHEME_2D_TEX InternalScheme2D_TEx
-#define INTERNAL_SCHEME_2D_TEY InternalScheme2D_TEy
-#define INTERNAL_SCHEME_2D_TEZ InternalScheme2D_TEz
-#define INTERNAL_SCHEME_2D_TMX InternalScheme2D_TMx
-#define INTERNAL_SCHEME_2D_TMY InternalScheme2D_TMy
-#define INTERNAL_SCHEME_2D_TMZ InternalScheme2D_TMz
-
-#define INTERNAL_SCHEME_3D_3D InternalScheme3D_3D
-
-
 #include "InternalScheme.inc.h"
 
 /*
@@ -69,26 +48,6 @@ class InternalSchemeHelperGPU;
 #define IGRID CudaGrid
 #define ICUDA_HOST CUDA_HOST
 #define ICUDA_DEVICE CUDA_DEVICE
-
-#define INTERNAL_SCHEME_1D InternalSchemeGPU1D
-#define INTERNAL_SCHEME_2D InternalSchemeGPU2D
-#define INTERNAL_SCHEME_3D InternalSchemeGPU3D
-
-#define INTERNAL_SCHEME_1D_EX_HY InternalSchemeGPU1D_ExHy
-#define INTERNAL_SCHEME_1D_EX_HZ InternalSchemeGPU1D_ExHz
-#define INTERNAL_SCHEME_1D_EY_HX InternalSchemeGPU1D_EyHx
-#define INTERNAL_SCHEME_1D_EY_HZ InternalSchemeGPU1D_EyHz
-#define INTERNAL_SCHEME_1D_EZ_HX InternalSchemeGPU1D_EzHx
-#define INTERNAL_SCHEME_1D_EZ_HY InternalSchemeGPU1D_EzHy
-
-#define INTERNAL_SCHEME_2D_TEX InternalSchemeGPU2D_TEx
-#define INTERNAL_SCHEME_2D_TEY InternalSchemeGPU2D_TEy
-#define INTERNAL_SCHEME_2D_TEZ InternalSchemeGPU2D_TEz
-#define INTERNAL_SCHEME_2D_TMX InternalSchemeGPU2D_TMx
-#define INTERNAL_SCHEME_2D_TMY InternalSchemeGPU2D_TMy
-#define INTERNAL_SCHEME_2D_TMZ InternalSchemeGPU2D_TMz
-
-#define INTERNAL_SCHEME_3D_3D InternalSchemeGPU3D_3D
 
 #include "InternalScheme.inc.h"
 
