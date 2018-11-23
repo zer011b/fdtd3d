@@ -32,7 +32,7 @@ namespace InternalSchemeKernelHelpers
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
                                                          (blockIdx.z * blockDim.z) + threadIdx.z,
                                                           CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-    if (pos3D >= end3D)
+    if (!(pos3D < end3D))
     {
       // skip kernels, which do not correspond to actual grid points
       return;
@@ -135,7 +135,7 @@ namespace InternalSchemeKernelHelpers
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
                                                          (blockIdx.z * blockDim.z) + threadIdx.z,
                                                           CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-    if (pos3D >= end3D)
+    if (!(pos3D < end3D))
     {
       // skip kernels, which do not correspond to actual grid points
       return;
@@ -187,7 +187,7 @@ namespace InternalSchemeKernelHelpers
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
                                                          (blockIdx.z * blockDim.z) + threadIdx.z,
                                                           CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-    if (pos3D >= end3D)
+    if (!(pos3D < end3D))
     {
       // skip kernels, which do not correspond to actual grid points
       return;
@@ -211,23 +211,39 @@ namespace InternalSchemeKernelHelpers
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
   __global__
   void performPlaneWaveEStepsKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
-                                     time_step t, GridCoordinate1D Start, GridCoordinate1D CoordPerKernel)
+                                     time_step t, GridCoordinate1D Start, GridCoordinate1D End, GridCoordinate1D CoordPerKernel)
   {
     GridCoordinate1D posStart = GRID_COORDINATE_1D ((blockIdx.x * blockDim.x) + threadIdx.x,
                                  CoordinateType::X);
     posStart = posStart * CoordPerKernel + Start;
     GridCoordinate1D posEnd = posStart + CoordPerKernel;
+    if (posStart >= End)
+    {
+      return;
+    }
+    if (posEnd >= End)
+    {
+      posEnd = End;
+    }
     gpuScheme->performPlaneWaveESteps (t, posStart, posEnd);
   }
     template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
   __global__
   void performPlaneWaveHStepsKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
-                                     time_step t, GridCoordinate1D Start, GridCoordinate1D CoordPerKernel)
+                                     time_step t, GridCoordinate1D Start, GridCoordinate1D End, GridCoordinate1D CoordPerKernel)
   {
     GridCoordinate1D posStart = GRID_COORDINATE_1D ((blockIdx.x * blockDim.x) + threadIdx.x,
                                  CoordinateType::X);
     posStart = posStart * CoordPerKernel + Start;
     GridCoordinate1D posEnd = posStart + CoordPerKernel;
+    if (posStart >= End)
+    {
+      return;
+    }
+    if (posEnd >= End)
+    {
+      posEnd = End;
+    }
     gpuScheme->performPlaneWaveHSteps (t, posStart, posEnd);
   }
 
@@ -899,11 +915,12 @@ public:
     int thrds = SOLVER_SETTINGS.getNumCudaThreadsX ()
                   * SOLVER_SETTINGS.getNumCudaThreadsY ()
                   * SOLVER_SETTINGS.getNumCudaThreadsZ ();
+    if (diff.get1 () % thrds != 0) { diff.set1 ((diff.get1 () / thrds + 1) * thrds); }
     ASSERT (diff.get1 () % thrds == 0);
     dim3 blocks (diff.get1 () / thrds, 1, 1);
     dim3 threads (thrds, 1, 1);
     GridCoordinate1D one = GRID_COORDINATE_1D (1, CoordinateType::X);
-    InternalSchemeKernelHelpers::performPlaneWaveEStepsKernel<Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, t, Start, one);
+    InternalSchemeKernelHelpers::performPlaneWaveEStepsKernel<Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, t, Start, End, one);
     cudaCheckError ();
   }
   CUDA_HOST
@@ -914,11 +931,12 @@ public:
     int thrds = SOLVER_SETTINGS.getNumCudaThreadsX ()
                   * SOLVER_SETTINGS.getNumCudaThreadsY ()
                   * SOLVER_SETTINGS.getNumCudaThreadsZ ();
+    if (diff.get1 () % thrds != 0) { diff.set1 ((diff.get1 () / thrds + 1) * thrds); }
     ASSERT (diff.get1 () % thrds == 0);
     dim3 blocks (diff.get1 () / thrds, 1, 1);
     dim3 threads (thrds, 1, 1);
     GridCoordinate1D one = GRID_COORDINATE_1D (1, CoordinateType::X);
-    InternalSchemeKernelHelpers::performPlaneWaveHStepsKernel<Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, t, Start, one);
+    InternalSchemeKernelHelpers::performPlaneWaveHStepsKernel<Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, t, Start, End, one);
     cudaCheckError ();
   }
 
