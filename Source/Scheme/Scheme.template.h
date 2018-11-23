@@ -892,9 +892,6 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     }
   }
 
-#ifndef CUDA_ENABLED
-  // TODO: support border func, exact func and right side func for CUDA
-
   if (borderFunc != NULLPTR)
   {
     GridCoordinate3D startBorder;
@@ -905,6 +902,13 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
                         startBorder,
                         endBorder,
                         ct1, ct2, ct3);
+
+#ifdef CUDA_ENABLED
+
+    gpuIntSchemeOnGPU->template calculateFieldStepIterationBorderKernelLaunch<grid_type>
+      (d_gpuIntSchemeOnGPU, startBorder, endBorder, t, grid, borderFunc);
+
+#else
 
     for (grid_coord i = startBorder.get1 (); i < endBorder.get1 (); ++i)
     {
@@ -919,6 +923,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
         }
       }
     }
+#endif
   }
 
   if (exactFunc != NULLPTR)
@@ -963,8 +968,15 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     IGRID<TC> *normGrid = grid;
     if (usePML)
     {
-      grid = gridPML2;
+      normGrid = gridPML2;
     }
+
+#ifdef CUDA_ENABLED
+
+    gpuIntSchemeOnGPU->template calculateFieldStepIterationExactKernelLaunch<grid_type>
+      (d_gpuIntSchemeOnGPU, startNorm, endNorm, t, normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
+
+#else /* CUDA_ENABLED */
 
     for (grid_coord i = startNorm.get1 (); i < endNorm.get1 (); ++i)
     {
@@ -975,33 +987,32 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
         for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
         {
           TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          intScheme->calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
+          intScheme->calculateFieldStepIterationExact<grid_type> (t, pos, normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
         }
       }
     }
+#endif /* CUDA_ENABLED */
 
 #ifdef COMPLEX_FIELD_VALUES
-    normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
-    normIm = sqrt (normIm / grid->getSize ().calculateTotalCoord ());
-    normMod = sqrt (normMod / grid->getSize ().calculateTotalCoord ());
+    normRe = sqrt (normRe / normGrid->getSize ().calculateTotalCoord ());
+    normIm = sqrt (normIm / normGrid->getSize ().calculateTotalCoord ());
+    normMod = sqrt (normMod / normGrid->getSize ().calculateTotalCoord ());
 
     /*
      * NOTE: do not change this! test suite depdends on the order of values in output
      */
     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
-      grid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
+      normGrid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
 #else
-    normRe = sqrt (normRe / grid->getSize ().calculateTotalCoord ());
+    normRe = sqrt (normRe / normGrid->getSize ().calculateTotalCoord ());
 
     /*
      * NOTE: do not change this! test suite depdends on the order of values in output
      */
     printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
-      grid->getName (), t, normRe, normRe * 100.0 / maxRe);
+      normGrid->getName (), t, normRe, normRe * 100.0 / maxRe);
 #endif
   }
-
-#endif /* !CUDA_ENABLED */
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>

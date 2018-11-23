@@ -1104,8 +1104,6 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML 
   gridPML2->setFieldValue (valNew, coord, 0);
 }
 
-#ifndef GPU_INTERNAL_SCHEME
-
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template <uint8_t grid_type>
 ICUDA_DEVICE
@@ -1276,8 +1274,6 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationExac
   }
 #endif
 }
-
-#endif /* !GPU_INTERNAL_SCHEME */
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template<uint8_t EnumVal>
@@ -1621,6 +1617,9 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::INTERNAL_SCHEME_BASE ()
   , HxExact (NULLPTR)
   , HyExact (NULLPTR)
   , HzExact (NULLPTR)
+#ifdef GPU_INTERNAL_SCHEME
+  , d_norm (NULLPTR)
+#endif /* GPU_INTERNAL_SCHEME */
   , doNeedEx (Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHy) || Type == static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)
               || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEy) || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TEz)
               || Type == static_cast<SchemeType_t> (SchemeType::Dim2_TMx) || Type == static_cast<SchemeType_t> (SchemeType::Dim3))

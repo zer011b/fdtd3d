@@ -1227,11 +1227,25 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
 #ifndef COMPLEX_FIELD_VALUES
   if (SOLVER_SETTINGS.getDoUsePolinom1BorderCondition ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&EzBorder, CallBack::polinom1_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyBorder, CallBack::polinom1_hy, sizeof(SourceCallBack));
+#else
     EzBorder = CallBack::polinom1_ez;
     HyBorder = CallBack::polinom1_hy;
+#endif
   }
   else if (SOLVER_SETTINGS.getDoUsePolinom2BorderCondition ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&ExBorder, CallBack::polinom2_ex, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&EyBorder, CallBack::polinom2_ey, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&EzBorder, CallBack::polinom2_ez, sizeof(SourceCallBack));
+
+    cudaMemcpyFromSymbol (&HxBorder, CallBack::polinom2_hx, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyBorder, CallBack::polinom2_hy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HzBorder, CallBack::polinom2_hz, sizeof(SourceCallBack));
+#else
     ExBorder = CallBack::polinom2_ex;
     EyBorder = CallBack::polinom2_ey;
     EzBorder = CallBack::polinom2_ez;
@@ -1239,25 +1253,49 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     HxBorder = CallBack::polinom2_hx;
     HyBorder = CallBack::polinom2_hy;
     HzBorder = CallBack::polinom2_hz;
+#endif
   }
   else if (SOLVER_SETTINGS.getDoUsePolinom3BorderCondition ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&EzBorder, CallBack::polinom3_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyBorder, CallBack::polinom3_hy, sizeof(SourceCallBack));
+#else
     EzBorder = CallBack::polinom3_ez;
     HyBorder = CallBack::polinom3_hy;
+#endif
   }
   else if (SOLVER_SETTINGS.getDoUseSin1BorderCondition ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&EzBorder, CallBack::sin1_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyBorder, CallBack::sin1_hy, sizeof(SourceCallBack));
+#else
     EzBorder = CallBack::sin1_ez;
     HyBorder = CallBack::sin1_hy;
+#endif
   }
 
   if (SOLVER_SETTINGS.getDoUsePolinom1StartValues ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&EzInitial, CallBack::polinom1_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyInitial, CallBack::polinom1_hy, sizeof(SourceCallBack));
+#else
     EzInitial = CallBack::polinom1_ez;
     HyInitial = CallBack::polinom1_hy;
+#endif
   }
   else if (SOLVER_SETTINGS.getDoUsePolinom2StartValues ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&ExInitial, CallBack::polinom2_ex, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&EyInitial, CallBack::polinom2_ey, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&EzInitial, CallBack::polinom2_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HxInitial, CallBack::polinom2_hx, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyInitial, CallBack::polinom2_hy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HzInitial, CallBack::polinom2_hz, sizeof(SourceCallBack));
+#else
     ExInitial = CallBack::polinom2_ex;
     EyInitial = CallBack::polinom2_ey;
     EzInitial = CallBack::polinom2_ez;
@@ -1265,25 +1303,49 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     HxInitial = CallBack::polinom2_hx;
     HyInitial = CallBack::polinom2_hy;
     HzInitial = CallBack::polinom2_hz;
+#endif
   }
   else if (SOLVER_SETTINGS.getDoUsePolinom3StartValues ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&EzInitial, CallBack::polinom3_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyInitial, CallBack::polinom3_hy, sizeof(SourceCallBack));
+#else
     EzInitial = CallBack::polinom3_ez;
     HyInitial = CallBack::polinom3_hy;
+#endif
   }
   else if (SOLVER_SETTINGS.getDoUseSin1StartValues ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&EzInitial, CallBack::sin1_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyInitial, CallBack::sin1_hy, sizeof(SourceCallBack));
+#else
     EzInitial = CallBack::sin1_ez;
     HyInitial = CallBack::sin1_hy;
+#endif
   }
 
   if (SOLVER_SETTINGS.getDoUsePolinom1RightSide ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&Jz, CallBack::polinom1_jz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&My, CallBack::polinom1_my, sizeof(SourceCallBack));
+#else
     Jz = CallBack::polinom1_jz;
     My = CallBack::polinom1_my;
+#endif /* !CUDA_ENABLED */
   }
   else if (SOLVER_SETTINGS.getDoUsePolinom2RightSide ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&Jx, CallBack::polinom2_jx, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&Jy, CallBack::polinom2_jy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&Jz, CallBack::polinom2_jz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&Mx, CallBack::polinom2_mx, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&My, CallBack::polinom2_my, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&Mz, CallBack::polinom2_mz, sizeof(SourceCallBack));
+#else
     Jx = CallBack::polinom2_jx;
     Jy = CallBack::polinom2_jy;
     Jz = CallBack::polinom2_jz;
@@ -1291,20 +1353,39 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     Mx = CallBack::polinom2_mx;
     My = CallBack::polinom2_my;
     Mz = CallBack::polinom2_mz;
+#endif
   }
   else if (SOLVER_SETTINGS.getDoUsePolinom3RightSide ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&Jz, CallBack::polinom3_jz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&My, CallBack::polinom3_my, sizeof(SourceCallBack));
+#else
     Jz = CallBack::polinom3_jz;
     My = CallBack::polinom3_my;
+#endif
   }
 
   if (SOLVER_SETTINGS.getDoCalculatePolinom1DiffNorm ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&EzExact, CallBack::polinom1_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyExact, CallBack::polinom1_hy, sizeof(SourceCallBack));
+#else
     EzExact = CallBack::polinom1_ez;
     HyExact = CallBack::polinom1_hy;
+#endif
   }
   else if (SOLVER_SETTINGS.getDoCalculatePolinom2DiffNorm ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&ExExact, CallBack::polinom2_ex, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&EyExact, CallBack::polinom2_ey, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&EzExact, CallBack::polinom2_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HxExact, CallBack::polinom2_hx, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyExact, CallBack::polinom2_hy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HzExact, CallBack::polinom2_hz, sizeof(SourceCallBack));
+#else
     ExExact = CallBack::polinom2_ex;
     EyExact = CallBack::polinom2_ey;
     EzExact = CallBack::polinom2_ez;
@@ -1312,23 +1393,39 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     HxExact = CallBack::polinom2_hx;
     HyExact = CallBack::polinom2_hy;
     HzExact = CallBack::polinom2_hz;
+#endif
   }
   else if (SOLVER_SETTINGS.getDoCalculatePolinom3DiffNorm ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&EzExact, CallBack::polinom3_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyExact, CallBack::polinom3_hy, sizeof(SourceCallBack));
+#else
     EzExact = CallBack::polinom3_ez;
     HyExact = CallBack::polinom3_hy;
+#endif
   }
   else if (SOLVER_SETTINGS.getDoCalculateSin1DiffNorm ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&EzExact, CallBack::sin1_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyExact, CallBack::sin1_hy, sizeof(SourceCallBack));
+#else
     EzExact = CallBack::sin1_ez;
     HyExact = CallBack::sin1_hy;
+#endif
   }
 #endif
 
   if (SOLVER_SETTINGS.getDoCalculateExp1ExHyDiffNorm ())
   {
+#ifdef CUDA_ENABLED
+    cudaMemcpyFromSymbol (&ExExact, CallBack::exp1_ex_exhy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&HyExact, CallBack::exp1_hy_exhy, sizeof(SourceCallBack));
+#else
     ExExact = CallBack::exp1_ex_exhy;
     HyExact = CallBack::exp1_hy_exhy;
+#endif
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp2ExHyDiffNorm ())
   {
