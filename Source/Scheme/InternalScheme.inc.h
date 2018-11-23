@@ -208,6 +208,53 @@ namespace InternalSchemeKernelHelpers
     }
   }
 
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, uint8_t grid_type>
+  __global__
+  void calculateFieldStepIterationBorderKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                          GridCoordinate3D start3D,
+                                          GridCoordinate3D end3D,
+                                          time_step t,
+                                          IGRID< TCoord<grid_coord, true> > *grid,
+                                          SourceCallBack borderFunc)
+  {
+    GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
+                                                         (blockIdx.y * blockDim.y) + threadIdx.y,
+                                                         (blockIdx.z * blockDim.z) + threadIdx.z,
+                                                          CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+    if (!(pos3D < end3D))
+    {
+      // skip kernels, which do not correspond to actual grid points
+      return;
+    }
+    TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
+
+    gpuScheme->calculateFieldStepIterationBorder<grid_type> (t, pos, grid, borderFunc);
+  }
+
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, uint8_t grid_type>
+  __global__
+  void calculateFieldStepIterationExactKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                          GridCoordinate3D start3D,
+                                          GridCoordinate3D end3D,
+                                          time_step t,
+                                          IGRID< TCoord<grid_coord, true> > *grid,
+                                          SourceCallBack exactFunc)
+  {
+    GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
+                                                         (blockIdx.y * blockDim.y) + threadIdx.y,
+                                                         (blockIdx.z * blockDim.z) + threadIdx.z,
+                                                          CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+    if (!(pos3D < end3D))
+    {
+      // skip kernels, which do not correspond to actual grid points
+      return;
+    }
+    TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
+
+    gpuScheme->calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc,
+      gpuScheme->normRe, gpuScheme->normIm, gpuScheme->normMod, gpuScheme->maxRe, gpuScheme->maxIm, gpuScheme->maxMod);
+  }
+
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
   __global__
   void performPlaneWaveEStepsKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
@@ -539,6 +586,10 @@ protected:
   SourceCallBack HyExact;
   SourceCallBack HzExact;
 
+#ifdef GPU_INTERNAL_SCHEME
+  FPValue *d_norm;
+#endif /* GPU_INTERNAL_SCHEME */
+
   /*
    * TODO: maybe add separate for Dx, etc.
    */
@@ -722,7 +773,6 @@ public:
        IGRID<TC> *, IGRID<TC> *, IGRID<TC> *, GridType,
        IGRID<TC> *, GridType,  IGRID<TC> *, GridType,  IGRID<TC> *, GridType, FPValue);
 
-#ifndef GPU_INTERNAL_SCHEME
   template <uint8_t grid_type>
   ICUDA_DEVICE
   void calculateFieldStepIterationBorder (time_step, TC, IGRID<TC> *, SourceCallBack);
@@ -731,7 +781,6 @@ public:
   ICUDA_DEVICE
   void calculateFieldStepIterationExact (time_step, TC, IGRID<TC> *, SourceCallBack,
     FPValue &, FPValue &, FPValue &, FPValue &, FPValue &, FPValue &);
-#endif /* !GPU_INTERNAL_SCHEME */
 
 #ifdef GPU_INTERNAL_SCHEME
   ICUDA_HOST void initFromCPU (InternalScheme<Type, TCoord, layout_type> *cpuScheme, TC, TC);
@@ -859,6 +908,54 @@ public:
         materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
         materialModifier, usePrecomputedGrids);
     cudaCheckError ();
+  }
+
+  template <uint8_t grid_type>
+  CUDA_HOST
+  void calculateFieldStepIterationBorderKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuScheme,
+                                                     InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                                GridCoordinate3D start3D,
+                                                GridCoordinate3D end3D,
+                                                time_step t,
+                                                IGRID< TCoord<grid_coord, true> > *grid,
+                                                SourceCallBack borderFunc)
+  {
+    GridCoordinate3D diff3D = end3D - start3D;
+    SETUP_BLOCKS_AND_THREADS;
+    InternalSchemeKernelHelpers::calculateFieldStepIterationBorderKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
+      (d_gpuScheme, start3D, end3D, t, grid, borderFunc);
+    cudaCheckError ();
+  }
+
+  template <uint8_t grid_type>
+  CUDA_HOST
+  void calculateFieldStepIterationExactKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuScheme,
+                                                     InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                                GridCoordinate3D start3D,
+                                                GridCoordinate3D end3D,
+                                                time_step t,
+                                                IGRID< TCoord<grid_coord, true> > *grid,
+                                                SourceCallBack exactFunc,
+                                                FPValue & normRe,
+                                                FPValue & normIm,
+                                                FPValue & normMod,
+                                                FPValue & maxRe,
+                                                FPValue & maxIm,
+                                                FPValue & maxMod)
+  {
+    GridCoordinate3D diff3D = end3D - start3D;
+    SETUP_BLOCKS_AND_THREADS;
+    InternalSchemeKernelHelpers::calculateFieldStepIterationExactKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
+      (d_gpuScheme, start3D, end3D, t, grid, exactFunc);
+    cudaCheckError ();
+    FPValue buf[6];
+    cudaCheckErrorCmd (cudaMemcpy (buf, gpuScheme->d_norm, sizeof(6 * FPValue), cudaMemcpyDeviceToHost));
+    normRe = buf[0];
+    normIm = buf[1];
+    normMod = buf[2];
+    maxRe = buf[3];
+    maxIm = buf[4];
+    maxMod = buf[5];
   }
 
 #define SHIFT_IN_TIME_KERNEL_LAUNCH(NAME) \

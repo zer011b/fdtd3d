@@ -492,6 +492,8 @@ InternalSchemeGPU<Type, TCoord, layout_type>::initFromCPU (InternalScheme<Type, 
   }
 
   allocateGridsFromCPU (cpuScheme, blockSize, bufSize);
+  
+  cudaCheckErrorCmd (cudaMalloc ((void **) &d_norm, sizeof(6 * FPValue)));
 
   isInitialized = true;
 }
@@ -504,6 +506,8 @@ InternalSchemeGPU<Type, TCoord, layout_type>::uninitFromCPU ()
   ASSERT (isInitialized);
 
   freeGridsFromCPU ();
+  
+  cudaCheckErrorCmd (cudaFree (d_norm));
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
