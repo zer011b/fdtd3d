@@ -2,36 +2,41 @@
 
 namespace InternalSchemeKernelHelpers
 {
+  /**
+   * GPU kernel.
+   *
+   * Perform calculateFieldStepIteration for specific thread in block. Thread corresponds 1 to 1 to grid point.
+   */
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, uint8_t grid_type>
   __global__
-  void calculateFieldStepIterationKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
-                                          GridCoordinate3D start3D,
-                                          GridCoordinate3D end3D,
-                                          time_step t,
-                                          TCoord<grid_coord, false> diff11,
-                                          TCoord<grid_coord, false> diff12,
-                                          TCoord<grid_coord, false> diff21,
-                                          TCoord<grid_coord, false> diff22,
-                                          IGRID< TCoord<grid_coord, true> > *grid,
-                                          IGRID< TCoord<grid_coord, true> > *oppositeGrid1,
-                                          IGRID< TCoord<grid_coord, true> > *oppositeGrid2,
-                                          SourceCallBack rightSideFunc,
-                                          IGRID< TCoord<grid_coord, true> > *Ca,
-                                          IGRID< TCoord<grid_coord, true> > *Cb,
-                                          CoordinateType ct1,
-                                          CoordinateType ct2,
-                                          CoordinateType ct3,
-                                          bool usePML,
-                                          GridType gridType,
-                                          IGRID< TCoord<grid_coord, true> > *materialGrid,
-                                          GridType materialGridType,
-                                          FPValue materialModifier,
-                                          bool usePrecomputedGrids)
+  void calculateFieldStepIterationKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme, /**< GPU internal scheme */
+                                          GridCoordinate3D start3D, /**< start coordinate of block, for which computations are performed */
+                                          GridCoordinate3D end3D, /**< end coordinate of block, for which computations are performed */
+                                          time_step t, /**< time step to compute */
+                                          TCoord<grid_coord, false> diff11, /**< offset in layout */
+                                          TCoord<grid_coord, false> diff12, /**< offset in layout */
+                                          TCoord<grid_coord, false> diff21, /**< offset in layout */
+                                          TCoord<grid_coord, false> diff22, /**< offset in layout */
+                                          IGRID< TCoord<grid_coord, true> > *grid, /**< core grid to perform computations for */
+                                          IGRID< TCoord<grid_coord, true> > *oppositeGrid1, /**< grid from circuit */
+                                          IGRID< TCoord<grid_coord, true> > *oppositeGrid2, /**< grid from circuit */
+                                          SourceCallBack rightSideFunc, /**< right side function to be called */
+                                          IGRID< TCoord<grid_coord, true> > *Ca, /**< grid with precomputed values */
+                                          IGRID< TCoord<grid_coord, true> > *Cb, /**< grid with precomputed values */
+                                          CoordinateType ct1, /**< coordinate type for specified scheme */
+                                          CoordinateType ct2, /**< coordinate type for specified scheme */
+                                          CoordinateType ct3, /**< coordinate type for specified scheme */
+                                          bool usePML, /**< flag whether to use PML */
+                                          GridType gridType, /**< type of core grid */
+                                          IGRID< TCoord<grid_coord, true> > *materialGrid, /**< material grid */
+                                          GridType materialGridType, /**< type of material */
+                                          FPValue materialModifier, /**< additional multiplier for material */
+                                          bool usePrecomputedGrids) /**< flag whether to use precomputed values */
   {
     GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
-                                                         (blockIdx.y * blockDim.y) + threadIdx.y,
-                                                         (blockIdx.z * blockDim.z) + threadIdx.z,
-                                                          CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+                                                           (blockIdx.y * blockDim.y) + threadIdx.y,
+                                                           (blockIdx.z * blockDim.z) + threadIdx.z,
+                                                           CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
     if (!(pos3D < end3D))
     {
       // skip kernels, which do not correspond to actual grid points
@@ -458,6 +463,8 @@ public:
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 class INTERNAL_SCHEME_BASE
 {
+private:
+
   friend class INTERNAL_SCHEME_HELPER;
 
 #ifdef CUDA_ENABLED
@@ -476,7 +483,7 @@ class INTERNAL_SCHEME_BASE
 #endif /* !GPU_INTERNAL_SCHEME */
 #endif
 
-protected:
+private:
 
   /**
    * Different types of template coordinates
@@ -604,7 +611,7 @@ protected:
   const bool doNeedSigmaY;
   const bool doNeedSigmaZ;
 
-protected:
+private:
 
 #ifdef GPU_INTERNAL_SCHEME
 
@@ -744,7 +751,7 @@ public:
   ~INTERNAL_SCHEME_BASE ();
 
   template <uint8_t grid_type, bool usePrecomputedGrids>
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_DEVICE
   void calculateFieldStepIteration (time_step, TC, TC, TCS, TCS, TCS, TCS, IGRID<TC> *, TCFP,
                                     IGRID<TC> *, IGRID<TC> *, SourceCallBack, IGRID<TC> *, IGRID<TC> *, bool,
                                     GridType, IGRID<TC> *, GridType, FPValue);

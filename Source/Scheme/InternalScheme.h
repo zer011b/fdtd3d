@@ -11,6 +11,9 @@
  * InternalScheme is implemented without virtual functions in order to be copied to GPU (classes with vtable can't be)
  */
 
+/*
+ * Forward declaration of both CPU and GPU internal schemes
+ */
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 class InternalScheme;
 class InternalSchemeHelper;
