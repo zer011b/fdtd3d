@@ -53,6 +53,6 @@ class InternalSchemeHelperGPU;
 
 #endif /* CUDA_ENABLED */
 
-#include "InternalScheme.template.specific.h"
+#include "InternalScheme.specific.h"
 
 #endif /* !INTERNAL_SCHEME_H */
