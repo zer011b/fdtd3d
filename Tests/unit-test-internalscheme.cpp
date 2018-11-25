@@ -17,6 +17,8 @@
 #define LAMBDA 0.2
 #define DX 0.02
 
+#define ACCURACY 0.000018
+
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
            TCoord<grid_coord, true> overallSize,
@@ -817,7 +819,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
 void test1D (Grid<GridCoordinate1D> *E,
              GridCoordinateFP1D diff,
-             CoordinateType ct1)
+             CoordinateType ct1,
+             Grid<GridCoordinate1D> *E_cmp)
 {
 #ifdef COMPLEX_FIELD_VALUES
   if (SOLVER_SETTINGS.getDoUseTFSF ())
@@ -840,12 +843,24 @@ void test1D (Grid<GridCoordinate1D> *E,
 
       if (posFP.get1 () >= TFSF_SIZE && posFP.get1 () <= SIZE - TFSF_SIZE)
       {
-        ASSERT (SQR (val.abs () - FPValue (1)) < 0.0001);
+        ASSERT (SQR (val.abs () - FPValue (1)) < ACCURACY);
       }
       else
       {
         ASSERT (IS_FP_EXACT (val.abs (), FPValue (0)));
       }
+
+#ifdef DOUBLE_VALUES
+      /*
+       * For double values
+       */
+      if (SIZE == 20)
+      {
+        FieldValue cmp = *E_cmp->getFieldValue (pos, 0);
+        ASSERT (IS_FP_EXACT (val.real (), cmp.real ()));
+        ASSERT (IS_FP_EXACT (val.imag (), cmp.imag ()));
+      }
+#endif /* DOUBLE_VALUES */
     }
   }
 #endif /* COMPLEX_FIELD_VALUES */
@@ -884,7 +899,7 @@ void test2D (Grid<GridCoordinate2D> *E,
         if (posFP.get1 () >= TFSF_SIZE && posFP.get1 () <= SIZE - TFSF_SIZE
             && posFP.get2 () >= TFSF_SIZE && posFP.get2 () <= SIZE - TFSF_SIZE)
         {
-          ASSERT (SQR (val.abs () - FPValue (1)) < 0.0001);
+          ASSERT (SQR (val.abs () - FPValue (1)) < ACCURACY);
         }
         else
         {
@@ -933,7 +948,7 @@ void test3D (Grid<GridCoordinate3D> *E,
               && posFP.get2 () >= TFSF_SIZE && posFP.get2 () <= SIZE - TFSF_SIZE
               && posFP.get3 () >= TFSF_SIZE && posFP.get3 () <= SIZE - TFSF_SIZE)
           {
-            ASSERT (SQR (val.abs () - FPValue (1)) < 0.0001);
+            ASSERT (SQR (val.abs () - FPValue (1)) < ACCURACY);
           }
           else
           {
@@ -989,7 +1004,39 @@ void test1D_ExHy ()
   test<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1);
+  Grid<GridCoordinate1D> * cmp = NULLPTR;
+#ifdef DOUBLE_VALUES
+  Grid<GridCoordinate1D> Ex_cmp (overallSize, 0, 1);
+  cmp = &Ex_cmp;
+
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  {
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+
+    Ex_cmp.setFieldValue (FIELDVALUE (0.79571497761748566, 0.60809029887445343), 7, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.27623647076707097, 0.96028222975360356), 8, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.34487117399285794, 0.93684404556633882), 9, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.83973252464642545, 0.55069841528912211), 10, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.99469300893775081, -0.062536805911835081), 11, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.77329299330101442, -0.62955147602001804), 12, 0);
+
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+#endif /* DOUBLE_VALUES */
+
+  test1D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1, cmp);
 }
 #endif /* MODE_EX_HY */
 
@@ -1034,7 +1081,39 @@ void test1D_ExHz ()
   test<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1);
+  Grid<GridCoordinate1D> * cmp = NULLPTR;
+#ifdef DOUBLE_VALUES
+  Grid<GridCoordinate1D> Ex_cmp (overallSize, 0, 1);
+  cmp = &Ex_cmp;
+
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  {
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.79571497761748566, -0.60809029887445343), 7, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.27623647076707097, -0.96028222975360356), 8, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.34487117399285794, -0.93684404556633882), 9, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.83973252464642545, -0.55069841528912211), 10, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.99469300893775081, 0.062536805911835081), 11, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.77329299330101442, 0.62955147602001804), 12, 0);
+
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+#endif /* DOUBLE_VALUES */
+
+  test1D (intScheme.getEx (), yeeLayout.getMinExCoordFP (), ct1, cmp);
 }
 #endif /* MODE_EX_HZ */
 
@@ -1079,7 +1158,39 @@ void test1D_EyHx ()
   test<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1);
+  Grid<GridCoordinate1D> * cmp = NULLPTR;
+#ifdef DOUBLE_VALUES
+  Grid<GridCoordinate1D> Ey_cmp (overallSize, 0, 1);
+  cmp = &Ey_cmp;
+
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  {
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+
+    Ey_cmp.setFieldValue (FIELDVALUE (0.79571497761748566, 0.60809029887445343), 7, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.27623647076707097, 0.96028222975360356), 8, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (-0.34487117399285794, 0.93684404556633882), 9, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (-0.83973252464642545, 0.55069841528912211), 10, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (-0.99469300893775081, -0.062536805911835081), 11, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (-0.77329299330101442, -0.62955147602001804), 12, 0);
+
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+#endif /* DOUBLE_VALUES */
+
+  test1D (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1, cmp);
 }
 #endif /* MODE_EY_HX */
 
@@ -1124,7 +1235,39 @@ void test1D_EyHz ()
   test<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1);
+  Grid<GridCoordinate1D> * cmp = NULLPTR;
+#ifdef DOUBLE_VALUES
+  Grid<GridCoordinate1D> Ey_cmp (overallSize, 0, 1);
+  cmp = &Ey_cmp;
+
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  {
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+
+    Ey_cmp.setFieldValue (FIELDVALUE (0.79571497761748566, 0.60809029887445343), 7, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.27623647076707097, 0.96028222975360356), 8, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (-0.34487117399285794, 0.93684404556633882), 9, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (-0.83973252464642545, 0.55069841528912211), 10, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (-0.99469300893775081, -0.062536805911835081), 11, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (-0.77329299330101442, -0.62955147602001804), 12, 0);
+
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+#endif /* DOUBLE_VALUES */
+
+  test1D (intScheme.getEy (), yeeLayout.getMinEyCoordFP (), ct1, cmp);
 }
 #endif /* MODE_EY_HZ */
 
@@ -1169,7 +1312,39 @@ void test1D_EzHx ()
   test<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1);
+  Grid<GridCoordinate1D> * cmp = NULLPTR;
+#ifdef DOUBLE_VALUES
+  Grid<GridCoordinate1D> Ez_cmp (overallSize, 0, 1);
+  cmp = &Ez_cmp;
+
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  {
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.79571497761748566, -0.60809029887445343), 7, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.27623647076707097, -0.96028222975360356), 8, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0.34487117399285794, -0.93684404556633882), 9, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0.83973252464642545, -0.55069841528912211), 10, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0.99469300893775081, 0.062536805911835081), 11, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0.77329299330101442, 0.62955147602001804), 12, 0);
+
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+#endif /* DOUBLE_VALUES */
+
+  test1D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, cmp);
 }
 #endif /* MODE_EZ_HX */
 
@@ -1214,7 +1389,39 @@ void test1D_EzHy ()
   test<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type>
     (&intScheme, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, ct1, CoordinateType::NONE, CoordinateType::NONE);
 
-  test1D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1);
+  Grid<GridCoordinate1D> * cmp = NULLPTR;
+#ifdef DOUBLE_VALUES
+  Grid<GridCoordinate1D> Ez_cmp (overallSize, 0, 1);
+  cmp = &Ez_cmp;
+
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  {
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.79571497761748566, -0.60809029887445343), 7, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.27623647076707097, -0.96028222975360356), 8, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0.34487117399285794, -0.93684404556633882), 9, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0.83973252464642545, -0.55069841528912211), 10, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0.99469300893775081, 0.062536805911835081), 11, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0.77329299330101442, 0.62955147602001804), 12, 0);
+
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+#endif /* DOUBLE_VALUES */
+
+  test1D (intScheme.getEz (), yeeLayout.getMinEzCoordFP (), ct1, cmp);
 }
 #endif /* MODE_EZ_HY */
 
@@ -1579,7 +1786,7 @@ int main (int argc, char** argv)
 #endif /* MODE_TMY */
 #if defined (MODE_TMZ)
   test2D_TMz<E_CENTERED> ();
-#endif /* MODE_TMZ */  
+#endif /* MODE_TMZ */
 
 #if defined (MODE_DIM3)
   test3D<E_CENTERED> ();
