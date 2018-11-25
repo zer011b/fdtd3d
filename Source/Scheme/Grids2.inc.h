@@ -52,32 +52,35 @@ if (SOLVER_SETTINGS.getDoUsePML ())
   GRID_NAME(SigmaY, SigmaY, 1)
   GRID_NAME(SigmaZ, SigmaZ, 1)
 
-  /**
-   * Helper grids for PML
-   */
-  GRID_NAME(CaPMLEx, Ex, 1)
-  GRID_NAME(CbPMLEx, Ex, 1)
-  GRID_NAME(CcPMLEx, Ex, 1)
+  if (SOLVER_SETTINGS.getDoUseCaCbPMLGrids ())
+  {
+    /**
+     * Helper grids for PML
+     */
+    GRID_NAME(CaPMLEx, Ex, 1)
+    GRID_NAME(CbPMLEx, Ex, 1)
+    GRID_NAME(CcPMLEx, Ex, 1)
 
-  GRID_NAME(CaPMLEy, Ey, 1)
-  GRID_NAME(CbPMLEy, Ey, 1)
-  GRID_NAME(CcPMLEy, Ey, 1)
+    GRID_NAME(CaPMLEy, Ey, 1)
+    GRID_NAME(CbPMLEy, Ey, 1)
+    GRID_NAME(CcPMLEy, Ey, 1)
 
-  GRID_NAME(CaPMLEz, Ez, 1)
-  GRID_NAME(CbPMLEz, Ez, 1)
-  GRID_NAME(CcPMLEz, Ez, 1)
+    GRID_NAME(CaPMLEz, Ez, 1)
+    GRID_NAME(CbPMLEz, Ez, 1)
+    GRID_NAME(CcPMLEz, Ez, 1)
 
-  GRID_NAME(DaPMLHx, Hx, 1)
-  GRID_NAME(DbPMLHx, Hx, 1)
-  GRID_NAME(DcPMLHx, Hx, 1)
+    GRID_NAME(DaPMLHx, Hx, 1)
+    GRID_NAME(DbPMLHx, Hx, 1)
+    GRID_NAME(DcPMLHx, Hx, 1)
 
-  GRID_NAME(DaPMLHy, Hy, 1)
-  GRID_NAME(DbPMLHy, Hy, 1)
-  GRID_NAME(DcPMLHy, Hy,1)
+    GRID_NAME(DaPMLHy, Hy, 1)
+    GRID_NAME(DbPMLHy, Hy, 1)
+    GRID_NAME(DcPMLHy, Hy,1)
 
-  GRID_NAME(DaPMLHz, Hz, 1)
-  GRID_NAME(DbPMLHz, Hz, 1)
-  GRID_NAME(DcPMLHz, Hz, 1)
+    GRID_NAME(DaPMLHz, Hz, 1)
+    GRID_NAME(DbPMLHz, Hz, 1)
+    GRID_NAME(DcPMLHz, Hz, 1)
+  }
 
   if (SOLVER_SETTINGS.getDoUseMetamaterials ())
   {
@@ -91,44 +94,47 @@ if (SOLVER_SETTINGS.getDoUsePML ())
     GRID_NAME(B1y, Hy, storedSteps)
     GRID_NAME(B1z, Hz, storedSteps)
 
-    /**
-     * Helper grids for metamaterials and PML
-     */
-    GRID_NAME(CB0Ex, Ex, 1)
-    GRID_NAME(CB1Ex, Ex, 1)
-    GRID_NAME(CB2Ex, Ex, 1)
-    GRID_NAME(CA1Ex, Ex, 1)
-    GRID_NAME(CA2Ex, Ex, 1)
+    if (SOLVER_SETTINGS.getDoUseCaCbPMLMetaGrids ())
+    {
+      /**
+       * Helper grids for metamaterials and PML
+       */
+      GRID_NAME(CB0Ex, Ex, 1)
+      GRID_NAME(CB1Ex, Ex, 1)
+      GRID_NAME(CB2Ex, Ex, 1)
+      GRID_NAME(CA1Ex, Ex, 1)
+      GRID_NAME(CA2Ex, Ex, 1)
 
-    GRID_NAME(CB0Ey, Ey, 1)
-    GRID_NAME(CB1Ey, Ey, 1)
-    GRID_NAME(CB2Ey, Ey, 1)
-    GRID_NAME(CA1Ey, Ey, 1)
-    GRID_NAME(CA2Ey, Ey, 1)
+      GRID_NAME(CB0Ey, Ey, 1)
+      GRID_NAME(CB1Ey, Ey, 1)
+      GRID_NAME(CB2Ey, Ey, 1)
+      GRID_NAME(CA1Ey, Ey, 1)
+      GRID_NAME(CA2Ey, Ey, 1)
 
-    GRID_NAME(CB0Ez, Ez, 1)
-    GRID_NAME(CB1Ez, Ez, 1)
-    GRID_NAME(CB2Ez, Ez, 1)
-    GRID_NAME(CA1Ez, Ez, 1)
-    GRID_NAME(CA2Ez, Ez, 1)
+      GRID_NAME(CB0Ez, Ez, 1)
+      GRID_NAME(CB1Ez, Ez, 1)
+      GRID_NAME(CB2Ez, Ez, 1)
+      GRID_NAME(CA1Ez, Ez, 1)
+      GRID_NAME(CA2Ez, Ez, 1)
 
-    GRID_NAME(DB0Hx, Hx, 1)
-    GRID_NAME(DB1Hx, Hx, 1)
-    GRID_NAME(DB2Hx, Hx, 1)
-    GRID_NAME(DA1Hx, Hx, 1)
-    GRID_NAME(DA2Hx, Hx, 1)
+      GRID_NAME(DB0Hx, Hx, 1)
+      GRID_NAME(DB1Hx, Hx, 1)
+      GRID_NAME(DB2Hx, Hx, 1)
+      GRID_NAME(DA1Hx, Hx, 1)
+      GRID_NAME(DA2Hx, Hx, 1)
 
-    GRID_NAME(DB0Hy, Hy, 1)
-    GRID_NAME(DB1Hy, Hy, 1)
-    GRID_NAME(DB2Hy, Hy, 1)
-    GRID_NAME(DA1Hy, Hy, 1)
-    GRID_NAME(DA2Hy, Hy, 1)
+      GRID_NAME(DB0Hy, Hy, 1)
+      GRID_NAME(DB1Hy, Hy, 1)
+      GRID_NAME(DB2Hy, Hy, 1)
+      GRID_NAME(DA1Hy, Hy, 1)
+      GRID_NAME(DA2Hy, Hy, 1)
 
-    GRID_NAME(DB0Hz, Hz, 1)
-    GRID_NAME(DB1Hz, Hz, 1)
-    GRID_NAME(DB2Hz, Hz, 1)
-    GRID_NAME(DA1Hz, Hz, 1)
-    GRID_NAME(DA2Hz, Hz, 1)
+      GRID_NAME(DB0Hz, Hz, 1)
+      GRID_NAME(DB1Hz, Hz, 1)
+      GRID_NAME(DB2Hz, Hz, 1)
+      GRID_NAME(DA1Hz, Hz, 1)
+      GRID_NAME(DA2Hz, Hz, 1)
+    }
   }
 }
 

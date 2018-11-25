@@ -7,6 +7,16 @@
 #include "ParallelYeeGridLayout.h"
 #include "CallBack.h"
 
+#include "BMPDumper.h"
+#include "BMPLoader.h"
+#include "DATDumper.h"
+#include "DATLoader.h"
+#include "TXTDumper.h"
+#include "TXTLoader.h"
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+class Scheme;
+
 struct NPair
 {
   FieldValue nTeta;
@@ -44,10 +54,22 @@ public:
 
     scheme->share ();
     scheme->rebalance ();
+
+    if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
+        && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
+    {
+      //scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      scheme->saveGrids (tStart + N);
+    }
+
+    if (SOLVER_SETTINGS.getDoUseNTFF ()
+        && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
+    {
+      //scheme->saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), tStart + N);
+    }
   }
 
   template <SchemeType_t Type, LayoutType layout_type>
-  ICUDA_HOST
   static
   void performNSteps2D (Scheme<Type, GridCoordinate2DTemplate, layout_type> *scheme,
                         time_step tStart,
@@ -66,10 +88,22 @@ public:
 
     scheme->share ();
     scheme->rebalance ();
+
+    if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
+        && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
+    {
+      //scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      scheme->saveGrids (tStart + N);
+    }
+
+    if (SOLVER_SETTINGS.getDoUseNTFF ()
+        && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
+    {
+      //scheme->saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), tStart + N);
+    }
   }
 
   template <SchemeType_t Type, LayoutType layout_type>
-  ICUDA_HOST
   static
   void performNSteps3D (Scheme<Type, GridCoordinate3DTemplate, layout_type> *scheme,
                         time_step tStart,
@@ -91,6 +125,19 @@ public:
 
     scheme->share ();
     scheme->rebalance ();
+
+    if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
+        && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
+    {
+      //scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      scheme->saveGrids (tStart + N);
+    }
+
+    if (SOLVER_SETTINGS.getDoUseNTFF ()
+        && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
+    {
+      //scheme->saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), tStart + N);
+    }
   }
 
   static
@@ -182,12 +229,12 @@ public:
 
   static
   void initFullFieldGrids1D (bool *totalInitialized,
-                             bool doNeedEx, Grid<GridCoordinate1D> **Ex, Grid<GridCoordinate1D> **totalEx,
-                             bool doNeedEy, Grid<GridCoordinate1D> **Ey, Grid<GridCoordinate1D> **totalEy,
-                             bool doNeedEz, Grid<GridCoordinate1D> **Ez, Grid<GridCoordinate1D> **totalEz,
-                             bool doNeedHx, Grid<GridCoordinate1D> **Hx, Grid<GridCoordinate1D> **totalHx,
-                             bool doNeedHy, Grid<GridCoordinate1D> **Hy, Grid<GridCoordinate1D> **totalHy,
-                             bool doNeedHz, Grid<GridCoordinate1D> **Hz, Grid<GridCoordinate1D> **totalHz)
+                             bool doNeedEx, Grid<GridCoordinate1D> *Ex, Grid<GridCoordinate1D> **totalEx,
+                             bool doNeedEy, Grid<GridCoordinate1D> *Ey, Grid<GridCoordinate1D> **totalEy,
+                             bool doNeedEz, Grid<GridCoordinate1D> *Ez, Grid<GridCoordinate1D> **totalEz,
+                             bool doNeedHx, Grid<GridCoordinate1D> *Hx, Grid<GridCoordinate1D> **totalHx,
+                             bool doNeedHy, Grid<GridCoordinate1D> *Hy, Grid<GridCoordinate1D> **totalHy,
+                             bool doNeedHz, Grid<GridCoordinate1D> *Hz, Grid<GridCoordinate1D> **totalHz)
   {
 #ifdef PARALLEL_GRID
 #ifdef GRID_1D
@@ -195,56 +242,56 @@ public:
     {
       if (doNeedEx)
       {
-        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGridPlacement (*totalEx);
+        *totalEx = ((ParallelGrid *) Ex)->gatherFullGridPlacement (*totalEx);
       }
       if (doNeedEy)
       {
-        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGridPlacement (*totalEy);
+        *totalEy = ((ParallelGrid *) Ey)->gatherFullGridPlacement (*totalEy);
       }
       if (doNeedEz)
       {
-        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGridPlacement (*totalEz);
+        *totalEz = ((ParallelGrid *) Ez)->gatherFullGridPlacement (*totalEz);
       }
 
       if (doNeedHx)
       {
-        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGridPlacement (*totalHx);
+        *totalHx = ((ParallelGrid *) Hx)->gatherFullGridPlacement (*totalHx);
       }
       if (doNeedHy)
       {
-        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGridPlacement (*totalHy);
+        *totalHy = ((ParallelGrid *) Hy)->gatherFullGridPlacement (*totalHy);
       }
       if (doNeedHz)
       {
-        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGridPlacement (*totalHz);
+        *totalHz = ((ParallelGrid *) Hz)->gatherFullGridPlacement (*totalHz);
       }
     }
     else
     {
       if (doNeedEx)
       {
-        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGrid ();
+        *totalEx = ((ParallelGrid *) Ex)->gatherFullGrid ();
       }
       if (doNeedEy)
       {
-        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGrid ();
+        *totalEy = ((ParallelGrid *) Ey)->gatherFullGrid ();
       }
       if (doNeedEz)
       {
-        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGrid ();
+        *totalEz = ((ParallelGrid *) Ez)->gatherFullGrid ();
       }
 
       if (doNeedHx)
       {
-        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGrid ();
+        *totalHx = ((ParallelGrid *) Hx)->gatherFullGrid ();
       }
       if (doNeedHy)
       {
-        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGrid ();
+        *totalHy = ((ParallelGrid *) Hy)->gatherFullGrid ();
       }
       if (doNeedHz)
       {
-        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGrid ();
+        *totalHz = ((ParallelGrid *) Hz)->gatherFullGrid ();
       }
 
       *totalInitialized = true;
@@ -260,12 +307,12 @@ public:
 
   static
   void initFullFieldGrids2D (bool *totalInitialized,
-                             bool doNeedEx, Grid<GridCoordinate2D> **Ex, Grid<GridCoordinate2D> **totalEx,
-                             bool doNeedEy, Grid<GridCoordinate2D> **Ey, Grid<GridCoordinate2D> **totalEy,
-                             bool doNeedEz, Grid<GridCoordinate2D> **Ez, Grid<GridCoordinate2D> **totalEz,
-                             bool doNeedHx, Grid<GridCoordinate2D> **Hx, Grid<GridCoordinate2D> **totalHx,
-                             bool doNeedHy, Grid<GridCoordinate2D> **Hy, Grid<GridCoordinate2D> **totalHy,
-                             bool doNeedHz, Grid<GridCoordinate2D> **Hz, Grid<GridCoordinate2D> **totalHz)
+                             bool doNeedEx, Grid<GridCoordinate2D> *Ex, Grid<GridCoordinate2D> **totalEx,
+                             bool doNeedEy, Grid<GridCoordinate2D> *Ey, Grid<GridCoordinate2D> **totalEy,
+                             bool doNeedEz, Grid<GridCoordinate2D> *Ez, Grid<GridCoordinate2D> **totalEz,
+                             bool doNeedHx, Grid<GridCoordinate2D> *Hx, Grid<GridCoordinate2D> **totalHx,
+                             bool doNeedHy, Grid<GridCoordinate2D> *Hy, Grid<GridCoordinate2D> **totalHy,
+                             bool doNeedHz, Grid<GridCoordinate2D> *Hz, Grid<GridCoordinate2D> **totalHz)
   {
 #ifdef PARALLEL_GRID
 #ifdef GRID_2D
@@ -273,56 +320,56 @@ public:
     {
       if (doNeedEx)
       {
-        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGridPlacement (*totalEx);
+        *totalEx = ((ParallelGrid *) Ex)->gatherFullGridPlacement (*totalEx);
       }
       if (doNeedEy)
       {
-        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGridPlacement (*totalEy);
+        *totalEy = ((ParallelGrid *) Ey)->gatherFullGridPlacement (*totalEy);
       }
       if (doNeedEz)
       {
-        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGridPlacement (*totalEz);
+        *totalEz = ((ParallelGrid *) Ez)->gatherFullGridPlacement (*totalEz);
       }
 
       if (doNeedHx)
       {
-        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGridPlacement (*totalHx);
+        *totalHx = ((ParallelGrid *) Hx)->gatherFullGridPlacement (*totalHx);
       }
       if (doNeedHy)
       {
-        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGridPlacement (*totalHy);
+        *totalHy = ((ParallelGrid *) Hy)->gatherFullGridPlacement (*totalHy);
       }
       if (doNeedHz)
       {
-        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGridPlacement (*totalHz);
+        *totalHz = ((ParallelGrid *) Hz)->gatherFullGridPlacement (*totalHz);
       }
     }
     else
     {
       if (doNeedEx)
       {
-        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGrid ();
+        *totalEx = ((ParallelGrid *) Ex)->gatherFullGrid ();
       }
       if (doNeedEy)
       {
-        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGrid ();
+        *totalEy = ((ParallelGrid *) Ey)->gatherFullGrid ();
       }
       if (doNeedEz)
       {
-        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGrid ();
+        *totalEz = ((ParallelGrid *) Ez)->gatherFullGrid ();
       }
 
       if (doNeedHx)
       {
-        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGrid ();
+        *totalHx = ((ParallelGrid *) Hx)->gatherFullGrid ();
       }
       if (doNeedHy)
       {
-        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGrid ();
+        *totalHy = ((ParallelGrid *) Hy)->gatherFullGrid ();
       }
       if (doNeedHz)
       {
-        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGrid ();
+        *totalHz = ((ParallelGrid *) Hz)->gatherFullGrid ();
       }
 
       *totalInitialized = true;
@@ -338,69 +385,69 @@ public:
 
   static
   void initFullFieldGrids3D (bool *totalInitialized,
-                             bool doNeedEx, Grid<GridCoordinate3D> **Ex, Grid<GridCoordinate3D> **totalEx,
-                             bool doNeedEy, Grid<GridCoordinate3D> **Ey, Grid<GridCoordinate3D> **totalEy,
-                             bool doNeedEz, Grid<GridCoordinate3D> **Ez, Grid<GridCoordinate3D> **totalEz,
-                             bool doNeedHx, Grid<GridCoordinate3D> **Hx, Grid<GridCoordinate3D> **totalHx,
-                             bool doNeedHy, Grid<GridCoordinate3D> **Hy, Grid<GridCoordinate3D> **totalHy,
-                             bool doNeedHz, Grid<GridCoordinate3D> **Hz, Grid<GridCoordinate3D> **totalHz)
+                             bool doNeedEx, Grid<GridCoordinate3D> *Ex, Grid<GridCoordinate3D> **totalEx,
+                             bool doNeedEy, Grid<GridCoordinate3D> *Ey, Grid<GridCoordinate3D> **totalEy,
+                             bool doNeedEz, Grid<GridCoordinate3D> *Ez, Grid<GridCoordinate3D> **totalEz,
+                             bool doNeedHx, Grid<GridCoordinate3D> *Hx, Grid<GridCoordinate3D> **totalHx,
+                             bool doNeedHy, Grid<GridCoordinate3D> *Hy, Grid<GridCoordinate3D> **totalHy,
+                             bool doNeedHz, Grid<GridCoordinate3D> *Hz, Grid<GridCoordinate3D> **totalHz)
   {
 #ifdef PARALLEL_GRID
 #ifdef GRID_3D
-    if (totalInitialized)
+    if (*totalInitialized)
     {
       if (doNeedEx)
       {
-        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGridPlacement (*totalEx);
+        *totalEx = ((ParallelGrid *) Ex)->gatherFullGridPlacement (*totalEx);
       }
       if (doNeedEy)
       {
-        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGridPlacement (*totalEy);
+        *totalEy = ((ParallelGrid *) Ey)->gatherFullGridPlacement (*totalEy);
       }
       if (doNeedEz)
       {
-        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGridPlacement (*totalEz);
+        *totalEz = ((ParallelGrid *) Ez)->gatherFullGridPlacement (*totalEz);
       }
 
       if (doNeedHx)
       {
-        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGridPlacement (*totalHx);
+        *totalHx = ((ParallelGrid *) Hx)->gatherFullGridPlacement (*totalHx);
       }
       if (doNeedHy)
       {
-        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGridPlacement (*totalHy);
+        *totalHy = ((ParallelGrid *) Hy)->gatherFullGridPlacement (*totalHy);
       }
       if (doNeedHz)
       {
-        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGridPlacement (*totalHz);
+        *totalHz = ((ParallelGrid *) Hz)->gatherFullGridPlacement (*totalHz);
       }
     }
     else
     {
       if (doNeedEx)
       {
-        *totalEx = ((ParallelGrid *) *Ex)->gatherFullGrid ();
+        *totalEx = ((ParallelGrid *) Ex)->gatherFullGrid ();
       }
       if (doNeedEy)
       {
-        *totalEy = ((ParallelGrid *) *Ey)->gatherFullGrid ();
+        *totalEy = ((ParallelGrid *) Ey)->gatherFullGrid ();
       }
       if (doNeedEz)
       {
-        *totalEz = ((ParallelGrid *) *Ez)->gatherFullGrid ();
+        *totalEz = ((ParallelGrid *) Ez)->gatherFullGrid ();
       }
 
       if (doNeedHx)
       {
-        *totalHx = ((ParallelGrid *) *Hx)->gatherFullGrid ();
+        *totalHx = ((ParallelGrid *) Hx)->gatherFullGrid ();
       }
       if (doNeedHy)
       {
-        *totalHy = ((ParallelGrid *) *Hy)->gatherFullGrid ();
+        *totalHy = ((ParallelGrid *) Hy)->gatherFullGrid ();
       }
       if (doNeedHz)
       {
-        *totalHz = ((ParallelGrid *) *Hz)->gatherFullGrid ();
+        *totalHz = ((ParallelGrid *) Hz)->gatherFullGrid ();
       }
 
       *totalInitialized = true;
@@ -414,7 +461,7 @@ public:
 #endif
   }
 
-  static void initSigma (FieldPointValue *fieldValue, grid_coord dist, FPValue boundary, FPValue gridStep)
+  static void initSigma (FieldValue *fieldValue, grid_coord dist, FPValue boundary, FPValue gridStep)
   {
     FPValue eps0 = PhysicsConst::Eps0;
     FPValue mu0 = PhysicsConst::Mu0;
@@ -429,7 +476,7 @@ public:
 
     FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));    //   polynomial grading
 
-    fieldValue->setCurValue (getFieldValueRealOnly (val));
+    *fieldValue = getFieldValueRealOnly (val);
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -444,7 +491,7 @@ public:
     {
       TCoord<grid_coord, true> pos = sigma->calculatePositionFromIndex (i);
 
-      FieldPointValue valSigma;
+      FieldValue valSigma;
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
 
       TCoord<FPValue, true> size = layout->getEpsCoordFP (sigma->getTotalSize ());
@@ -465,10 +512,10 @@ public:
       }
       else
       {
-        valSigma.setCurValue (getFieldValueRealOnly (FPValue (0)));
+        valSigma = getFieldValueRealOnly (FPValue (0));
       }
 
-      sigma->setFieldPointValue (valSigma, pos);
+      sigma->setFieldValue (valSigma, pos, 0);
     }
   }
 
@@ -484,7 +531,7 @@ public:
     {
       TCoord<grid_coord, true> pos = sigma->calculatePositionFromIndex (i);
 
-      FieldPointValue valSigma;
+      FieldValue valSigma;
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
 
       TCoord<FPValue, true> size = layout->getEpsCoordFP (sigma->getTotalSize ());
@@ -505,10 +552,10 @@ public:
       }
       else
       {
-        valSigma.setCurValue (getFieldValueRealOnly (FPValue (0)));
+        valSigma = getFieldValueRealOnly (FPValue (0));
       }
 
-      sigma->setFieldPointValue (valSigma, pos);
+      sigma->setFieldValue (valSigma, pos, 0);
     }
   }
 
@@ -524,7 +571,7 @@ public:
     {
       TCoord<grid_coord, true> pos = sigma->calculatePositionFromIndex (i);
 
-      FieldPointValue valSigma;
+      FieldValue valSigma;
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
 
       TCoord<FPValue, true> size = layout->getEpsCoordFP (sigma->getTotalSize ());
@@ -545,127 +592,127 @@ public:
       }
       else
       {
-        valSigma.setCurValue (getFieldValueRealOnly (FPValue (0)));
+        valSigma = getFieldValueRealOnly (FPValue (0));
       }
 
-      sigma->setFieldPointValue (valSigma, pos);
+      sigma->setFieldValue (valSigma, pos, 0);
     }
   }
 
-  static
-  NPair ntffN3D_x (grid_coord, FPValue, FPValue,
-                   GridCoordinate3D, GridCoordinate3D,
-                   YL3D_Dim3 *,
-                   FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
-                   Grid<GridCoordinate3D> *,
-                   Grid<GridCoordinate3D> *,
-                   Grid<GridCoordinate3D> *);
-  static
-  NPair ntffN3D_y (grid_coord, FPValue, FPValue,
-                   GridCoordinate3D, GridCoordinate3D,
-                   YL3D_Dim3 *,
-                   FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
-                   Grid<GridCoordinate3D> *,
-                   Grid<GridCoordinate3D> *,
-                   Grid<GridCoordinate3D> *);
-  static
-  NPair ntffN3D_z (grid_coord, FPValue, FPValue,
-                   GridCoordinate3D, GridCoordinate3D,
-                   YL3D_Dim3 *,
-                   FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
-                   Grid<GridCoordinate3D> *,
-                   Grid<GridCoordinate3D> *,
-                   Grid<GridCoordinate3D> *);
-  static
-  NPair ntffN3D (FPValue, FPValue,
-                 GridCoordinate3D, GridCoordinate3D,
-                 YL3D_Dim3 *,
-                 FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
-                 Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *,
-                 Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
-
-  template <SchemeType_t Type, LayoutType layout_type>
-  static
-  NPair ntffN2D (FPValue, FPValue,
-                 GridCoordinate2D, GridCoordinate2D,
-                 YeeGridLayout<Type, GridCoordinate2DTemplate, layout_type> *,
-                 FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
-                 Grid<GridCoordinate2D> *, Grid<GridCoordinate2D> *,
-                 Grid<GridCoordinate2D> *, Grid<GridCoordinate2D> *)
-  {}
-
-  template <SchemeType_t Type, LayoutType layout_type>
-  static
-  NPair ntffN1D (FPValue, FPValue,
-                 GridCoordinate1D, GridCoordinate1D,
-                 YeeGridLayout<Type, GridCoordinate1DTemplate, layout_type> *,
-                 FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
-                 Grid<GridCoordinate1D> *, Grid<GridCoordinate1D> *,
-                 Grid<GridCoordinate1D> *, Grid<GridCoordinate1D> *)
-  {}
-
-  static
-  NPair ntffL3D_x (grid_coord, FPValue, FPValue,
-                   GridCoordinate3D, GridCoordinate3D,
-                   YL3D_Dim3 *,
-                   FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
-                   Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
-  static
-  NPair ntffL3D_y (grid_coord, FPValue, FPValue,
-                   GridCoordinate3D, GridCoordinate3D,
-                   YL3D_Dim3 *,
-                   FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
-                   Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
-  static
-  NPair ntffL3D_z (grid_coord, FPValue, FPValue,
-                   GridCoordinate3D, GridCoordinate3D,
-                   YL3D_Dim3 *,
-                   FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
-                   Grid<GridCoordinate3D> *,
-                   Grid<GridCoordinate3D> *,
-                   Grid<GridCoordinate3D> *);
-  static
-  NPair ntffL3D (FPValue, FPValue,
-                 GridCoordinate3D, GridCoordinate3D,
-                 YL3D_Dim3 *,
-                 FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
-                 Grid<GridCoordinate3D> *,
-                 Grid<GridCoordinate3D> *,
-                 Grid<GridCoordinate3D> *);
-
-  template <SchemeType_t Type, LayoutType layout_type>
-  static
-  NPair ntffL2D (FPValue, FPValue,
-                 GridCoordinate2D, GridCoordinate2D,
-                 YeeGridLayout<Type, GridCoordinate2DTemplate, layout_type> *,
-                 FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
-                 Grid<GridCoordinate2D> *,
-                 Grid<GridCoordinate2D> *,
-                 Grid<GridCoordinate2D> *)
-  {}
-
-  template <SchemeType_t Type, LayoutType layout_type>
-  static
-  NPair ntffL1D (FPValue, FPValue,
-                 GridCoordinate1D, GridCoordinate1D,
-                 YeeGridLayout<Type, GridCoordinate1DTemplate, layout_type> *,
-                 FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
-                 Grid<GridCoordinate1D> *,
-                 Grid<GridCoordinate1D> *,
-                 Grid<GridCoordinate1D> *)
-  {}
+  // static
+  // NPair ntffN3D_x (grid_coord, FPValue, FPValue,
+  //                  GridCoordinate3D, GridCoordinate3D,
+  //                  YL3D_Dim3 *,
+  //                  FPValue, FPValue,
+  //                  Grid<GridCoordinate1D> *,
+  //                  Grid<GridCoordinate3D> *,
+  //                  Grid<GridCoordinate3D> *,
+  //                  Grid<GridCoordinate3D> *);
+  // static
+  // NPair ntffN3D_y (grid_coord, FPValue, FPValue,
+  //                  GridCoordinate3D, GridCoordinate3D,
+  //                  YL3D_Dim3 *,
+  //                  FPValue, FPValue,
+  //                  Grid<GridCoordinate1D> *,
+  //                  Grid<GridCoordinate3D> *,
+  //                  Grid<GridCoordinate3D> *,
+  //                  Grid<GridCoordinate3D> *);
+  // static
+  // NPair ntffN3D_z (grid_coord, FPValue, FPValue,
+  //                  GridCoordinate3D, GridCoordinate3D,
+  //                  YL3D_Dim3 *,
+  //                  FPValue, FPValue,
+  //                  Grid<GridCoordinate1D> *,
+  //                  Grid<GridCoordinate3D> *,
+  //                  Grid<GridCoordinate3D> *,
+  //                  Grid<GridCoordinate3D> *);
+  // static
+  // NPair ntffN3D (FPValue, FPValue,
+  //                GridCoordinate3D, GridCoordinate3D,
+  //                YL3D_Dim3 *,
+  //                FPValue, FPValue,
+  //                Grid<GridCoordinate1D> *,
+  //                Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *,
+  //                Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
+  //
+  // template <SchemeType_t Type, LayoutType layout_type>
+  // static
+  // NPair ntffN2D (FPValue, FPValue,
+  //                GridCoordinate2D, GridCoordinate2D,
+  //                YeeGridLayout<Type, GridCoordinate2DTemplate, layout_type> *,
+  //                FPValue, FPValue,
+  //                Grid<GridCoordinate1D> *,
+  //                Grid<GridCoordinate2D> *, Grid<GridCoordinate2D> *,
+  //                Grid<GridCoordinate2D> *, Grid<GridCoordinate2D> *)
+  // {}
+  //
+  // template <SchemeType_t Type, LayoutType layout_type>
+  // static
+  // NPair ntffN1D (FPValue, FPValue,
+  //                GridCoordinate1D, GridCoordinate1D,
+  //                YeeGridLayout<Type, GridCoordinate1DTemplate, layout_type> *,
+  //                FPValue, FPValue,
+  //                Grid<GridCoordinate1D> *,
+  //                Grid<GridCoordinate1D> *, Grid<GridCoordinate1D> *,
+  //                Grid<GridCoordinate1D> *, Grid<GridCoordinate1D> *)
+  // {}
+  //
+  // static
+  // NPair ntffL3D_x (grid_coord, FPValue, FPValue,
+  //                  GridCoordinate3D, GridCoordinate3D,
+  //                  YL3D_Dim3 *,
+  //                  FPValue, FPValue,
+  //                  Grid<GridCoordinate1D> *,
+  //                  Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
+  // static
+  // NPair ntffL3D_y (grid_coord, FPValue, FPValue,
+  //                  GridCoordinate3D, GridCoordinate3D,
+  //                  YL3D_Dim3 *,
+  //                  FPValue, FPValue,
+  //                  Grid<GridCoordinate1D> *,
+  //                  Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
+  // static
+  // NPair ntffL3D_z (grid_coord, FPValue, FPValue,
+  //                  GridCoordinate3D, GridCoordinate3D,
+  //                  YL3D_Dim3 *,
+  //                  FPValue, FPValue,
+  //                  Grid<GridCoordinate1D> *,
+  //                  Grid<GridCoordinate3D> *,
+  //                  Grid<GridCoordinate3D> *,
+  //                  Grid<GridCoordinate3D> *);
+  // static
+  // NPair ntffL3D (FPValue, FPValue,
+  //                GridCoordinate3D, GridCoordinate3D,
+  //                YL3D_Dim3 *,
+  //                FPValue, FPValue,
+  //                Grid<GridCoordinate1D> *,
+  //                Grid<GridCoordinate3D> *,
+  //                Grid<GridCoordinate3D> *,
+  //                Grid<GridCoordinate3D> *);
+  //
+  // template <SchemeType_t Type, LayoutType layout_type>
+  // static
+  // NPair ntffL2D (FPValue, FPValue,
+  //                GridCoordinate2D, GridCoordinate2D,
+  //                YeeGridLayout<Type, GridCoordinate2DTemplate, layout_type> *,
+  //                FPValue, FPValue,
+  //                Grid<GridCoordinate1D> *,
+  //                Grid<GridCoordinate2D> *,
+  //                Grid<GridCoordinate2D> *,
+  //                Grid<GridCoordinate2D> *)
+  // {}
+  //
+  // template <SchemeType_t Type, LayoutType layout_type>
+  // static
+  // NPair ntffL1D (FPValue, FPValue,
+  //                GridCoordinate1D, GridCoordinate1D,
+  //                YeeGridLayout<Type, GridCoordinate1DTemplate, layout_type> *,
+  //                FPValue, FPValue,
+  //                Grid<GridCoordinate1D> *,
+  //                Grid<GridCoordinate1D> *,
+  //                Grid<GridCoordinate1D> *,
+  //                Grid<GridCoordinate1D> *)
+  // {}
 
   template <typename TCoord>
   static grid_coord getStartCoordOrthX (TCoord size)
