@@ -54,7 +54,7 @@ Solver incorporates following features which could be set up during build.
 
 ```c_cpp
 CMAKE_BUILD_TYPE - build type (Debug, ReleaseWithAsserts, Release)
-SOLVER_DIM_MODES - dimension modes to include in build (EX_HY;EX_HZ;EY_HX;EY_HZ;EZ_HX;EZ_HY;TEX;TEY;TEZ;TMX;TMY;TMZ;DIM3;ALL); default value is ALL, which includes all the supported modes
+SOLVER_DIM_MODES - dimension modes to include in build (EX_HY;EX_HZ;EY_HX;EY_HZ;EZ_HX;EZ_HY;TEX;TEY;TEZ;TMX;TMY;TMZ;DIM1;DIM2;DIM3;ALL); default value is ALL, which includes all the supported modes
 VALUE_TYPE - use float (f), double (d) or long double (ld) floating point values
 COMPLEX_FIELD_VALUES - use complex values or not (ON of OFF)
 PARALLEL_GRID_DIMENSION - number of dimensions in parallel grid (1, 2 or 3)
