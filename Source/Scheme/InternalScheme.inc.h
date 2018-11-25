@@ -2,6 +2,15 @@
 
 namespace InternalSchemeKernelHelpers
 {
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, uint8_t grid_type>
+  __global__
+  void performPointSourceCalcKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                     time_step t)
+  {
+    ASSERT (blockIdx.x == 0 && blockDim.x == 1 && threadIdx.x == 0);
+    gpuScheme->performPointSourceCalc<grid_type> (t);
+  }
+
   /**
    * GPU kernel.
    *
@@ -220,7 +229,10 @@ namespace InternalSchemeKernelHelpers
                                           GridCoordinate3D end3D,
                                           time_step t,
                                           IGRID< TCoord<grid_coord, true> > *grid,
-                                          SourceCallBack borderFunc)
+                                          SourceCallBack borderFunc,
+                                          CoordinateType ct1,
+                                          CoordinateType ct2,
+                                          CoordinateType ct3)
   {
     GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
@@ -243,7 +255,10 @@ namespace InternalSchemeKernelHelpers
                                           GridCoordinate3D end3D,
                                           time_step t,
                                           IGRID< TCoord<grid_coord, true> > *grid,
-                                          SourceCallBack exactFunc)
+                                          SourceCallBack exactFunc,
+                                          CoordinateType ct1,
+                                          CoordinateType ct2,
+                                          CoordinateType ct3)
   {
     GridCoordinate3D pos3D = start3D + GRID_COORDINATE_3D ((blockIdx.x * blockDim.x) + threadIdx.x,
                                                          (blockIdx.y * blockDim.y) + threadIdx.y,
@@ -561,37 +576,10 @@ private:
   TC leftNTFF;
   TC rightNTFF;
 
-  SourceCallBack ExBorder;
-  SourceCallBack ExInitial;
-
-  SourceCallBack EyBorder;
-  SourceCallBack EyInitial;
-
-  SourceCallBack EzBorder;
-  SourceCallBack EzInitial;
-
-  SourceCallBack HxBorder;
-  SourceCallBack HxInitial;
-
-  SourceCallBack HyBorder;
-  SourceCallBack HyInitial;
-
-  SourceCallBack HzBorder;
-  SourceCallBack HzInitial;
-
-  SourceCallBack Jx;
-  SourceCallBack Jy;
-  SourceCallBack Jz;
-  SourceCallBack Mx;
-  SourceCallBack My;
-  SourceCallBack Mz;
-
-  SourceCallBack ExExact;
-  SourceCallBack EyExact;
-  SourceCallBack EzExact;
-  SourceCallBack HxExact;
-  SourceCallBack HyExact;
-  SourceCallBack HzExact;
+#define CALLBACK_NAME(x) \
+  SourceCallBack x;
+#include "Callbacks.inc.h"
+#undef CALLBACK_NAME
 
 #ifdef GPU_INTERNAL_SCHEME
   FPValue *d_norm;
@@ -714,10 +702,6 @@ private:
   ICUDA_DEVICE
   void calculateTFSF (TC, FieldValue &, FieldValue &, FieldValue &, FieldValue &, TC, TC, TC, TC);
 
-  template<uint8_t EnumVal>
-  ICUDA_DEVICE
-  void performPointSourceCalc (time_step);
-
   ICUDA_DEVICE
   FieldValue calcField (const FieldValue & prev, const FieldValue & oppositeField12, const FieldValue & oppositeField11,
                         const FieldValue & oppositeField22, const FieldValue & oppositeField21, const FieldValue & prevRightSide,
@@ -789,6 +773,10 @@ public:
   void calculateFieldStepIterationExact (time_step, TC, IGRID<TC> *, SourceCallBack,
     FPValue &, FPValue &, FPValue &, FPValue &, FPValue &, FPValue &);
 
+  template<uint8_t EnumVal>
+  ICUDA_DEVICE
+  void performPointSourceCalc (time_step);
+
 #ifdef GPU_INTERNAL_SCHEME
   ICUDA_HOST void initFromCPU (InternalScheme<Type, TCoord, layout_type> *cpuScheme, TC, TC);
   ICUDA_HOST void initOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme);
@@ -801,7 +789,6 @@ public:
   ICUDA_HOST void copyBackToCPU (time_step N, bool finalCopy);
 #else
   ICUDA_HOST void init (YeeGridLayout<Type, TCoord, layout_type> *layout, bool parallelLayout);
-  ICUDA_HOST void initBlocks (time_step);
 #endif
 
   ICUDA_HOST
@@ -809,6 +796,17 @@ public:
   initScheme (FPValue, FPValue);
 
 #ifdef GPU_INTERNAL_SCHEME
+
+  template <uint8_t grid_type>
+  CUDA_HOST
+  void performPointSourceCalcKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+                                           time_step t)
+  {
+    dim3 blocks (1, 1, 1);
+    dim3 threads (1, 1, 1);
+    InternalSchemeKernelHelpers::performPointSourceCalcKernel <Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, t);
+    cudaCheckError ();
+  }
 
 #define SETUP_BLOCKS_AND_THREADS \
   if (diff3D.get1 () % SOLVER_SETTINGS.getNumCudaThreadsX () != 0) { diff3D.set1 ((diff3D.get1 () / SOLVER_SETTINGS.getNumCudaThreadsX () + 1) * SOLVER_SETTINGS.getNumCudaThreadsX ()); } \
@@ -930,7 +928,7 @@ public:
     GridCoordinate3D diff3D = end3D - start3D;
     SETUP_BLOCKS_AND_THREADS;
     InternalSchemeKernelHelpers::calculateFieldStepIterationBorderKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
-      (d_gpuScheme, start3D, end3D, t, grid, borderFunc);
+      (d_gpuScheme, start3D, end3D, t, grid, borderFunc, ct1, ct2, ct3);
     cudaCheckError ();
   }
 
@@ -953,10 +951,10 @@ public:
     GridCoordinate3D diff3D = end3D - start3D;
     SETUP_BLOCKS_AND_THREADS;
     InternalSchemeKernelHelpers::calculateFieldStepIterationExactKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
-      (d_gpuScheme, start3D, end3D, t, grid, exactFunc);
+      (d_gpuScheme, start3D, end3D, t, grid, exactFunc, ct1, ct2, ct3);
     cudaCheckError ();
     FPValue buf[6];
-    cudaCheckErrorCmd (cudaMemcpy (buf, gpuScheme->d_norm, sizeof(6 * FPValue), cudaMemcpyDeviceToHost));
+    cudaCheckErrorCmd (cudaMemcpy (buf, gpuScheme->d_norm, 6 * sizeof(FPValue), cudaMemcpyDeviceToHost));
     normRe = buf[0];
     normIm = buf[1];
     normMod = buf[2];
@@ -1206,6 +1204,21 @@ public:
 #include "Grids.inc.h"
 #undef GRID_NAME
 
+#define CALLBACK_NAME(x) \
+  ICUDA_HOST \
+  SourceCallBack getCallback ## x () \
+  { \
+    return x; \
+  } \
+  ICUDA_HOST \
+  void setCallback ## x (SourceCallBack new_cb) \
+  { \
+    ASSERT (new_cb != NULLPTR); \
+    x = new_cb; \
+  }
+#include "Callbacks.inc.h"
+#undef CALLBACK_NAME
+
   ICUDA_DEVICE ICUDA_HOST
   IGRID<GridCoordinate1D> * getEInc ()
   {
@@ -1219,7 +1232,13 @@ public:
     return HInc;
   }
 
-  ICUDA_DEVICE ICUDA_HOST
+  ICUDA_HOST
+  FPValue getGridStep ()
+  {
+    return gridStep;
+  }
+
+  ICUDA_HOST
   FPValue getGridTimeStep ()
   {
     return gridTimeStep;
@@ -1230,6 +1249,12 @@ public:
   {
     ASSERT (yeeLayout);
     return yeeLayout;
+  }
+
+  ICUDA_HOST
+  FPValue getSourceFrequency ()
+  {
+    return sourceFrequency;
   }
 };
 
@@ -2089,9 +2114,9 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
   {
     ASSERT (Ca == NULLPTR);
     ASSERT (Cb == NULLPTR);
-    ASSERT (materialGrid != NULLPTR);
+    ASSERT (materialGrid != NULLPTR || SOLVER_SETTINGS.getDoUsePML ());
 
-    FPValue material = getMaterial (posAbs, gridType, materialGrid, materialGridType);
+    FPValue material = materialGrid ? getMaterial (posAbs, gridType, materialGrid, materialGridType) : 0;
     FPValue ca = FPValue (0);
     FPValue cb = FPValue (0);
 
@@ -2270,10 +2295,8 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML 
                                                                    GridType materialGridType5,
                                                                    FPValue materialModifier)
 {
-  ASSERT (grid != NULLPTR);
-  ASSERT (gridPML1 != NULLPTR);
   ASSERT (gridPML2 != NULLPTR);
-  grid_coord coord = grid->calculateIndexFromPosition (pos);
+  grid_coord coord = gridPML2->calculateIndexFromPosition (pos);
 
   FieldValue prevEorH = *gridPML2->getFieldValue (coord, 1);
   FieldValue curDorB = FIELDVALUE (0, 0);
@@ -2285,13 +2308,15 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML 
 
   if (useMetamaterials)
   {
-    curDorB = gridPML1->getFieldValue (coord, 0);
-    prevDorB = gridPML1->getFieldValue (coord, 1);
+    ASSERT (gridPML1 != NULLPTR);
+    curDorB = *gridPML1->getFieldValue (coord, 0);
+    prevDorB = *gridPML1->getFieldValue (coord, 1);
   }
   else
   {
-    curDorB = grid->getFieldValue (coord, 0);
-    prevDorB = grid->getFieldValue (coord, 1);
+    ASSERT (grid != NULLPTR);
+    curDorB = *grid->getFieldValue (coord, 0);
+    prevDorB = *grid->getFieldValue (coord, 1);
   }
 
   if (usePrecomputedGrids)
@@ -2331,9 +2356,9 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML 
     valCc = FIELDVALUE (cc, 0);
   }
 
-  ASSERT (Ca != FIELDVALUE (0, 0));
-  ASSERT (Cb != FIELDVALUE (0, 0));
-  ASSERT (Cc != FIELDVALUE (0, 0));
+  ASSERT (valCa != FIELDVALUE (0, 0));
+  ASSERT (valCb != FIELDVALUE (0, 0));
+  ASSERT (valCc != FIELDVALUE (0, 0));
 
   FieldValue valNew = calcFieldFromDOrB (prevEorH, curDorB, prevDorB, valCa, valCb, valCc);
   gridPML2->setFieldValue (valNew, coord, 0);
@@ -2828,30 +2853,11 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::INTERNAL_SCHEME_BASE ()
   , courantNum (0)
   , gridStep (0)
   , gridTimeStep (0)
-  , ExBorder (NULLPTR)
-  , ExInitial (NULLPTR)
-  , EyBorder (NULLPTR)
-  , EyInitial (NULLPTR)
-  , EzBorder (NULLPTR)
-  , EzInitial (NULLPTR)
-  , HxBorder (NULLPTR)
-  , HxInitial (NULLPTR)
-  , HyBorder (NULLPTR)
-  , HyInitial (NULLPTR)
-  , HzBorder (NULLPTR)
-  , HzInitial (NULLPTR)
-  , Jx (NULLPTR)
-  , Jy (NULLPTR)
-  , Jz (NULLPTR)
-  , Mx (NULLPTR)
-  , My (NULLPTR)
-  , Mz (NULLPTR)
-  , ExExact (NULLPTR)
-  , EyExact (NULLPTR)
-  , EzExact (NULLPTR)
-  , HxExact (NULLPTR)
-  , HyExact (NULLPTR)
-  , HzExact (NULLPTR)
+#define CALLBACK_NAME(x) \
+  , x (NULLPTR)
+#include "Callbacks.inc.h"
+#undef CALLBACK_NAME
+
 #ifdef GPU_INTERNAL_SCHEME
   , d_norm (NULLPTR)
 #endif /* GPU_INTERNAL_SCHEME */

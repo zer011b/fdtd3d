@@ -57,6 +57,7 @@ protected:
 private:
 
   Grid<TCoord> & operator = (const Grid<TCoord> &);
+  Grid (const Grid<TCoord> &);
 
 protected:
 
@@ -102,6 +103,19 @@ public:
   int getCountStoredSteps () const
   {
     return gridValues.size ();
+  }
+
+  void copy (const Grid<TCoord> *grid)
+  {
+    ASSERT (size == grid->size);
+    ASSERT (gridValues.size () == grid->gridValues.size ());
+
+    for (int i = 0; i < gridValues.size (); ++i)
+    {
+      ASSERT (gridValues[i]->size () == grid->gridValues[i]->size ());
+
+      memcpy (&gridValues[i][0], &grid->gridValues[i][0], gridValues[i]->size () * sizeof (FieldValue));
+    }
   }
 }; /* Grid */
 
