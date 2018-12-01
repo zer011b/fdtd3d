@@ -3912,16 +3912,18 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       continue;
     }
+    
+    int currentLayer = 1;
 
     if (intScheme->getDoNeedEx ())
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getEx (), zero, intScheme->getEx ()->getSize (), t, -1);
+        dumper[type]->dumpGrid (intScheme->getEx (), zero, intScheme->getEx ()->getSize (), t, currentLayer);
       }
       else
       {
-        dumper[type]->dumpGrid (totalEx, startEx, endEx, t, -1);
+        dumper[type]->dumpGrid (totalEx, startEx, endEx, t, currentLayer);
       }
     }
 
@@ -3929,11 +3931,11 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getEy (), zero, intScheme->getEy ()->getSize (), t, -1);
+        dumper[type]->dumpGrid (intScheme->getEy (), zero, intScheme->getEy ()->getSize (), t, currentLayer);
       }
       else
       {
-        dumper[type]->dumpGrid (totalEy, startEy, endEy, t, -1);
+        dumper[type]->dumpGrid (totalEy, startEy, endEy, t, currentLayer);
       }
     }
 
@@ -3941,11 +3943,11 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getEz (), zero, intScheme->getEz ()->getSize (), t, -1);
+        dumper[type]->dumpGrid (intScheme->getEz (), zero, intScheme->getEz ()->getSize (), t, currentLayer);
       }
       else
       {
-        dumper[type]->dumpGrid (totalEz, startEz, endEz, t, -1);
+        dumper[type]->dumpGrid (totalEz, startEz, endEz, t, currentLayer);
       }
     }
 
@@ -3953,11 +3955,11 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getHx (), zero, intScheme->getHx ()->getSize (), t, -1);
+        dumper[type]->dumpGrid (intScheme->getHx (), zero, intScheme->getHx ()->getSize (), t, currentLayer);
       }
       else
       {
-        dumper[type]->dumpGrid (totalHx, startHx, endHx, t, -1);
+        dumper[type]->dumpGrid (totalHx, startHx, endHx, t, currentLayer);
       }
     }
 
@@ -3965,11 +3967,11 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getHy (), zero, intScheme->getHy ()->getSize (), t, -1);
+        dumper[type]->dumpGrid (intScheme->getHy (), zero, intScheme->getHy ()->getSize (), t, currentLayer);
       }
       else
       {
-        dumper[type]->dumpGrid (totalHy, startHy, endHy, t, -1);
+        dumper[type]->dumpGrid (totalHy, startHy, endHy, t, currentLayer);
       }
     }
 
@@ -3977,11 +3979,11 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getHz (), zero, intScheme->getHz ()->getSize (), t, -1);
+        dumper[type]->dumpGrid (intScheme->getHz (), zero, intScheme->getHz ()->getSize (), t, currentLayer);
       }
       else
       {
-        dumper[type]->dumpGrid (totalHz, startHz, endHz, t, -1);
+        dumper[type]->dumpGrid (totalHz, startHz, endHz, t, currentLayer);
       }
     }
 
@@ -3992,7 +3994,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
         continue;
       }
 
-      dumper1D[type]->dumpGrid (intScheme->getEInc (), GRID_COORDINATE_1D (0, CoordinateType::X), intScheme->getEInc ()->getSize (), t, -1);
+      dumper1D[type]->dumpGrid (intScheme->getEInc (), GRID_COORDINATE_1D (0, CoordinateType::X), intScheme->getEInc ()->getSize (), t, currentLayer);
     }
 
     if (SOLVER_SETTINGS.getDoSaveTFSFHInc ())
@@ -4002,7 +4004,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
         continue;
       }
 
-      dumper1D[type]->dumpGrid (intScheme->getHInc (), GRID_COORDINATE_1D (0, CoordinateType::X), intScheme->getHInc ()->getSize (), t, -1);
+      dumper1D[type]->dumpGrid (intScheme->getHInc (), GRID_COORDINATE_1D (0, CoordinateType::X), intScheme->getHInc ()->getSize (), t, currentLayer);
     }
   }
 }
