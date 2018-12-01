@@ -2,7 +2,6 @@
 
 #ifdef CUDA_ENABLED
 
-#include "InternalScheme.h"
 #include "InternalScheme.cpp"
 
 SPECIALIZE_TEMPLATE(InternalSchemeGPU, InternalSchemeHelperGPU,

@@ -26,12 +26,6 @@ include_directories ("${PROJECT_SOURCE_DIR}/Source/Layout")
 add_subdirectory (Layout)
 set (LIBS ${LIBS} Layout)
 
-if ("${CUDA_ENABLED}")
-  include_directories ("${PROJECT_SOURCE_DIR}/Source/Cuda")
-  add_subdirectory (Cuda)
-  set (LIBS ${LIBS} CudaScheme)
-endif ()
-
 include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/Loader")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/File-Management/Dumper")
@@ -41,9 +35,18 @@ set (LIBS ${LIBS} Dumper)
 
 include_directories ("${PROJECT_SOURCE_DIR}/Source/Scheme")
 add_subdirectory (Scheme)
-set (LIBS ${LIBS} Scheme)
+set (LIBS ${LIBS} InternalScheme Scheme)
 
-add_executable (fdtd3d main.cpp)
+if ("${CUDA_ENABLED}")
+  add_executable (fdtd3d main.cu)
+  set_target_properties (fdtd3d PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+else ()
+  add_executable (fdtd3d main.cpp)
+endif ()
+
+if ("${CXX11_ENABLED}")
+  target_compile_features (fdtd3d PUBLIC cxx_std_11)
+endif ()
 
 target_link_libraries (fdtd3d ${LIBS})
 

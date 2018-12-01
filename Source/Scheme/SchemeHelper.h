@@ -812,6 +812,9 @@ public:
 #endif
              );
     }
+
+    UNREACHABLE;
+    return GRID_COORDINATE_3D (0, 0, 0, start.getType1 (), start.getType2 (), start.getType3 ());
   }
   static GridCoordinate3D getEndCoordRes3D (OrthogonalAxis orthogonalAxis, GridCoordinate3D end, GridCoordinate3D size)
   {
@@ -839,6 +842,9 @@ public:
 #endif
              );
     }
+
+    UNREACHABLE;
+    return GRID_COORDINATE_3D (0, 0, 0, end.getType1 (), end.getType2 (), end.getType3 ());
   }
 };
 

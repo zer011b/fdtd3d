@@ -10,10 +10,6 @@
 #include "Grid.h"
 #endif /* !PARALLEL_GRID */
 
-#ifdef CUDA_ENABLED
-#include "CudaInterface.h"
-#endif
-
 #include "BMPDumper.h"
 #include "BMPLoader.h"
 #include "DATDumper.h"
@@ -27,6 +23,35 @@
 int cudaThreadsX = 8;
 int cudaThreadsY = 8;
 int cudaThreadsZ = 8;
+
+#ifdef CUDA_ENABLED
+static void cudaInfo ()
+{
+  int cudaDevicesCount;
+
+  cudaCheckErrorCmd (cudaGetDeviceCount (&cudaDevicesCount));
+
+  for (int i = 0; i < cudaDevicesCount; i++)
+  {
+    cudaDeviceProp prop;
+    cudaCheckErrorCmd (cudaGetDeviceProperties(&prop, i));
+    printf("Device Number: %d\n", i);
+    printf("  Device name: %s\n", prop.name);
+    printf("  Concurrent kernels number: %d\n", prop.concurrentKernels);
+    printf("  Max threads per block: %d\n", prop.maxThreadsPerBlock);
+    printf("  Max threads per multiprocessor: %d\n", prop.maxThreadsPerMultiProcessor);
+    printf("  Memory Clock Rate (KHz): %d\n", prop.memoryClockRate);
+    printf("  Memory Bus Width (bits): %d\n", prop.memoryBusWidth);
+    printf("  Total global mem: %llu\n", (long long unsigned) prop.totalGlobalMem);
+    printf("  Peak Memory Bandwidth (GB/s): %f\n\n", 2.0*prop.memoryClockRate*(prop.memoryBusWidth/8)/1.0e6);
+  }
+}
+
+void cudaInit (int rank)
+{
+  cudaCheckErrorCmd (cudaSetDevice(rank));
+}
+#endif /* CUDA_ENABLED */
 
 #ifdef PARALLEL_GRID
 template <SchemeType_t Type, LayoutType layout_type>

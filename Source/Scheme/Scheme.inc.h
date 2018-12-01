@@ -791,7 +791,7 @@ Scheme<Type, TCoord, layout_type>::performFieldSteps (time_step t, /**< time ste
   if (doUsePointSource)
   {
 #ifdef CUDA_ENABLED
-    gpuIntSchemeOnGPU->performPointSourceCalcKernelLaunch<grid_type> (d_gpuIntSchemeOnGPU, t);
+    gpuIntSchemeOnGPU->template performPointSourceCalcKernelLaunch<grid_type> (d_gpuIntSchemeOnGPU, t);
 #else /* CUDA_ENABLED */
     intScheme->template performPointSourceCalc<grid_type> (t);
 #endif /* !CUDA_ENABLED */
@@ -816,8 +816,6 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
   {
     UNREACHABLE;
   }
-
-  FPValue k_mod = FPValue (1);
 
   Grid<TC> *grid = NULLPTR;
   GridType gridType = GridType::NONE;
@@ -942,16 +940,6 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     &_rightSideFunc, &_borderFunc, &_exactFunc, &_materialModifier, &d_Ca, &d_Cb,
     &d_CB0, &d_CB1, &d_CB2, &d_CA1, &d_CA2, &d_CaPML, &d_CbPML, &d_CcPML);
 
-#ifdef ENABLE_ASSERTS
-  TCS _diff11;
-  TCS _diff12;
-  TCS _diff21;
-  TCS _diff22;
-
-  gpuIntSchemeOnGPU->calculateFieldStepInitDiff<grid_type> (&diff11, &diff12, &diff21, &diff22);
-  ASSERT (diff11 == _diff11 && diff12 == _diff12 && diff21 == _diff21 && diff22 == _diff22);
-#endif /* ENABLE_ASSERTS */
-
 #endif /* CUDA_ENABLED */
 
   // TODO: specialize for each dimension
@@ -976,7 +964,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
         d_Ca,
         d_Cb,
         usePML,
-        gridType, materialGrid, materialGridType,
+        gridType, d_materialGrid, materialGridType,
         materialModifier,
         SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
@@ -1242,7 +1230,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     }
 
     gpuIntSchemeOnGPU->template calculateFieldStepIterationExactKernelLaunch<grid_type>
-      (d_gpuIntSchemeOnGPU, startNorm, endNorm, t, d_normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
+      (d_gpuIntSchemeOnGPU, gpuIntSchemeOnGPU, startNorm, endNorm, t, d_normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
 
 #else /* CUDA_ENABLED */
 
@@ -1346,7 +1334,7 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
   gpuIntScheme = new InternalSchemeGPU<Type, TCoord, layout_type> ();
   gpuIntSchemeOnGPU = new InternalSchemeGPU<Type, TCoord, layout_type> ();
 
-  gpuIntScheme->initFromCPU (this, blockSize, TC_COORD (cudaBuf, cudaBuf, cudaBuf, ct1, ct2, ct3));
+  gpuIntScheme->initFromCPU (intScheme, blockSize, TC_COORD (cudaBuf, cudaBuf, cudaBuf, ct1, ct2, ct3));
   gpuIntSchemeOnGPU->initOnGPU (gpuIntScheme);
 
   cudaCheckErrorCmd (cudaMalloc ((void **) &d_gpuIntSchemeOnGPU, sizeof(InternalSchemeGPU<Type, TCoord, layout_type>)));
@@ -1980,13 +1968,19 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&ExBorder, CallBack::polinom2_ex, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&EyBorder, CallBack::polinom2_ey, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&EzBorder, CallBack::polinom2_ez, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ex, sizeof(SourceCallBack));
+    intScheme->setCallbackExBorder (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ey, sizeof(SourceCallBack));
+    intScheme->setCallbackEyBorder (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ez, sizeof(SourceCallBack));
+    intScheme->setCallbackEzBorder (tmp);
 
-    cudaMemcpyFromSymbol (&HxBorder, CallBack::polinom2_hx, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyBorder, CallBack::polinom2_hy, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HzBorder, CallBack::polinom2_hz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hx, sizeof(SourceCallBack));
+    intScheme->setCallbackHxBorder (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyBorder (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hz, sizeof(SourceCallBack));
+    intScheme->setCallbackHzBorder (tmp);
 #else
     intScheme->setCallbackExBorder (CallBack::polinom2_ex);
     intScheme->setCallbackEyBorder (CallBack::polinom2_ey);
@@ -2001,8 +1995,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EzBorder, CallBack::polinom3_ez, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyBorder, CallBack::polinom3_hy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_ez, sizeof(SourceCallBack));
+    intScheme->setCallbackEzBorder (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_hy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyBorder (tmp);
 #else
     intScheme->setCallbackEzBorder (CallBack::polinom3_ez);
     intScheme->setCallbackHyBorder (CallBack::polinom3_hy);
@@ -2012,8 +2008,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EzBorder, CallBack::sin1_ez, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyBorder, CallBack::sin1_hy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::sin1_ez, sizeof(SourceCallBack));
+    intScheme->setCallbackEzBorder (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::sin1_hy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyBorder (tmp);
 #else
     intScheme->setCallbackEzBorder (CallBack::sin1_ez);
     intScheme->setCallbackHyBorder (CallBack::sin1_hy);
@@ -2050,8 +2048,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&Jz, CallBack::polinom1_jz, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&My, CallBack::polinom1_my, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_jz, sizeof(SourceCallBack));
+    intScheme->setCallbackJz (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_my, sizeof(SourceCallBack));
+    intScheme->setCallbackMy (tmp);
 #else
     intScheme->setCallbackJz (CallBack::polinom1_jz);
     intScheme->setCallbackMy (CallBack::polinom1_my);
@@ -2061,12 +2061,18 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&Jx, CallBack::polinom2_jx, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&Jy, CallBack::polinom2_jy, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&Jz, CallBack::polinom2_jz, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&Mx, CallBack::polinom2_mx, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&My, CallBack::polinom2_my, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&Mz, CallBack::polinom2_mz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jx, sizeof(SourceCallBack));
+    intScheme->setCallbackJx (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jy, sizeof(SourceCallBack));
+    intScheme->setCallbackJy (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jz, sizeof(SourceCallBack));
+    intScheme->setCallbackJz (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_mx, sizeof(SourceCallBack));
+    intScheme->setCallbackMx (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_my, sizeof(SourceCallBack));
+    intScheme->setCallbackMy (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_mz, sizeof(SourceCallBack));
+    intScheme->setCallbackMz (tmp);
 #else
     intScheme->setCallbackJx (CallBack::polinom2_jx);
     intScheme->setCallbackJy (CallBack::polinom2_jy);
@@ -2081,8 +2087,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&Jz, CallBack::polinom3_jz, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&My, CallBack::polinom3_my, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_jz, sizeof(SourceCallBack));
+    intScheme->setCallbackJz (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_my, sizeof(SourceCallBack));
+    intScheme->setCallbackMy (tmp);
 #else
     intScheme->setCallbackJz (CallBack::polinom3_jz);
     intScheme->setCallbackMy (CallBack::polinom3_my);
@@ -2093,8 +2101,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EzExact, CallBack::polinom1_ez, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyExact, CallBack::polinom1_hy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_ez, sizeof(SourceCallBack));
+    intScheme->setCallbackEzExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_hy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyExact (tmp);
 #else
     intScheme->setCallbackEzExact (CallBack::polinom1_ez);
     intScheme->setCallbackHyExact (CallBack::polinom1_hy);
@@ -2104,12 +2114,18 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&ExExact, CallBack::polinom2_ex, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&EyExact, CallBack::polinom2_ey, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&EzExact, CallBack::polinom2_ez, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HxExact, CallBack::polinom2_hx, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyExact, CallBack::polinom2_hy, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HzExact, CallBack::polinom2_hz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ex, sizeof(SourceCallBack));
+    intScheme->setCallbackExExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ey, sizeof(SourceCallBack));
+    intScheme->setCallbackEyExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ez, sizeof(SourceCallBack));
+    intScheme->setCallbackEzExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hx, sizeof(SourceCallBack));
+    intScheme->setCallbackHxExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hz, sizeof(SourceCallBack));
+    intScheme->setCallbackHzExact (tmp);
 #else
     intScheme->setCallbackExExact (CallBack::polinom2_ex);
     intScheme->setCallbackEyExact (CallBack::polinom2_ey);
@@ -2124,8 +2140,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EzExact, CallBack::polinom3_ez, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyExact, CallBack::polinom3_hy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_ez, sizeof(SourceCallBack));
+    intScheme->setCallbackEzExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_hy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyExact (tmp);
 #else
     intScheme->setCallbackEzExact (CallBack::polinom3_ez);
     intScheme->setCallbackHyExact (CallBack::polinom3_hy);
@@ -2135,8 +2153,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EzExact, CallBack::sin1_ez, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyExact, CallBack::sin1_hy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::sin1_ez, sizeof(SourceCallBack));
+    intScheme->setCallbackEzExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::sin1_hy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyExact (tmp);
 #else
     intScheme->setCallbackEzExact (CallBack::sin1_ez);
     intScheme->setCallbackHyExact (CallBack::sin1_hy);
@@ -2148,8 +2168,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&ExExact, CallBack::exp1_ex_exhy, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyExact, CallBack::exp1_hy_exhy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ex_exhy, sizeof(SourceCallBack));
+    intScheme->setCallbackExExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hy_exhy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyExact (tmp);
 #else
     intScheme->setCallbackExExact (CallBack::exp1_ex_exhy);
     intScheme->setCallbackHyExact (CallBack::exp1_hy_exhy);
@@ -2159,8 +2181,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&ExExact, CallBack::exp2_ex_exhy, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyExact, CallBack::exp2_hy_exhy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ex_exhy, sizeof(SourceCallBack));
+    intScheme->setCallbackExExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hy_exhy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyExact (tmp);
 #else
     intScheme->setCallbackExExact (CallBack::exp2_ex_exhy);
     intScheme->setCallbackHyExact (CallBack::exp2_hy_exhy);
@@ -2170,8 +2194,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&ExExact, CallBack::exp3_ex_exhy, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyExact, CallBack::exp3_hy_exhy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ex_exhy, sizeof(SourceCallBack));
+    intScheme->setCallbackExExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hy_exhy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyExact (tmp);
 #else
     intScheme->setCallbackExExact (CallBack::exp3_ex_exhy);
     intScheme->setCallbackHyExact (CallBack::exp3_hy_exhy);
@@ -2182,8 +2208,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&ExExact, CallBack::exp1_ex_exhz, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HzExact, CallBack::exp1_hz_exhz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ex_exhz, sizeof(SourceCallBack));
+    intScheme->setCallbackExExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hz_exhz, sizeof(SourceCallBack));
+    intScheme->setCallbackHzExact (tmp);
 #else
     intScheme->setCallbackExExact (CallBack::exp1_ex_exhz);
     intScheme->setCallbackHzExact (CallBack::exp1_hz_exhz);
@@ -2193,8 +2221,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&ExExact, CallBack::exp2_ex_exhz, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HzExact, CallBack::exp2_hz_exhz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ex_exhz, sizeof(SourceCallBack));
+    intScheme->setCallbackExExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hz_exhz, sizeof(SourceCallBack));
+    intScheme->setCallbackHzExact (tmp);
 #else
     intScheme->setCallbackExExact (CallBack::exp2_ex_exhz);
     intScheme->setCallbackHzExact (CallBack::exp2_hz_exhz);
@@ -2204,8 +2234,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&ExExact, CallBack::exp3_ex_exhz, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HzExact, CallBack::exp3_hz_exhz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ex_exhz, sizeof(SourceCallBack));
+    intScheme->setCallbackExExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hz_exhz, sizeof(SourceCallBack));
+    intScheme->setCallbackHzExact (tmp);
 #else
     intScheme->setCallbackExExact (CallBack::exp3_ex_exhz);
     intScheme->setCallbackHzExact (CallBack::exp3_hz_exhz);
@@ -2216,8 +2248,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EyExact, CallBack::exp1_ey_eyhx, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HxExact, CallBack::exp1_hx_eyhx, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ey_eyhx, sizeof(SourceCallBack));
+    intScheme->setCallbackEyExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hx_eyhx, sizeof(SourceCallBack));
+    intScheme->setCallbackHxExact (tmp);
 #else
     intScheme->setCallbackEyExact (CallBack::exp1_ey_eyhx);
     intScheme->setCallbackHxExact (CallBack::exp1_hx_eyhx);
@@ -2227,8 +2261,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EyExact, CallBack::exp2_ey_eyhx, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HxExact, CallBack::exp2_hx_eyhx, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ey_eyhx, sizeof(SourceCallBack));
+    intScheme->setCallbackEyExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hx_eyhx, sizeof(SourceCallBack));
+    intScheme->setCallbackHxExact (tmp);
 #else
     intScheme->setCallbackEyExact (CallBack::exp2_ey_eyhx);
     intScheme->setCallbackHxExact (CallBack::exp2_hx_eyhx);
@@ -2238,8 +2274,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EyExact, CallBack::exp3_ey_eyhx, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HxExact, CallBack::exp3_hx_eyhx, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ey_eyhx, sizeof(SourceCallBack));
+    intScheme->setCallbackEyExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hx_eyhx, sizeof(SourceCallBack));
+    intScheme->setCallbackHxExact (tmp);
 #else
     intScheme->setCallbackEyExact (CallBack::exp3_ey_eyhx);
     intScheme->setCallbackHxExact (CallBack::exp3_hx_eyhx);
@@ -2250,8 +2288,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EyExact, CallBack::exp1_ey_eyhz, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HxExact, CallBack::exp1_hz_eyhz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ey_eyhz, sizeof(SourceCallBack));
+    intScheme->setCallbackEyExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hz_eyhz, sizeof(SourceCallBack));
+    intScheme->setCallbackHzExact (tmp);
 #else
     intScheme->setCallbackEyExact (CallBack::exp1_ey_eyhz);
     intScheme->setCallbackHzExact (CallBack::exp1_hz_eyhz);
@@ -2261,8 +2301,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EyExact, CallBack::exp2_ey_eyhz, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HxExact, CallBack::exp2_hz_eyhz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ey_eyhz, sizeof(SourceCallBack));
+    intScheme->setCallbackEyExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hz_eyhz, sizeof(SourceCallBack));
+    intScheme->setCallbackHzExact (tmp);
 #else
     intScheme->setCallbackEyExact (CallBack::exp2_ey_eyhz);
     intScheme->setCallbackHzExact (CallBack::exp2_hz_eyhz);
@@ -2272,8 +2314,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EyExact, CallBack::exp3_ey_eyhz, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HxExact, CallBack::exp3_hz_eyhz, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ey_eyhz, sizeof(SourceCallBack));
+    intScheme->setCallbackEyExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hz_eyhz, sizeof(SourceCallBack));
+    intScheme->setCallbackHzExact (tmp);
 #else
     intScheme->setCallbackEyExact (CallBack::exp3_ey_eyhz);
     intScheme->setCallbackHzExact (CallBack::exp3_hz_eyhz);
@@ -2284,8 +2328,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EzExact, CallBack::exp1_ez_ezhx, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HxExact, CallBack::exp1_hx_ezhx, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ez_ezhx, sizeof(SourceCallBack));
+    intScheme->setCallbackEzExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hx_ezhx, sizeof(SourceCallBack));
+    intScheme->setCallbackHxExact (tmp);
 #else
     intScheme->setCallbackEzExact (CallBack::exp1_ez_ezhx);
     intScheme->setCallbackHxExact (CallBack::exp1_hx_ezhx);
@@ -2295,8 +2341,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EzExact, CallBack::exp2_ez_ezhx, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HxExact, CallBack::exp2_hx_ezhx, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ez_ezhx, sizeof(SourceCallBack));
+    intScheme->setCallbackEzExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hx_ezhx, sizeof(SourceCallBack));
+    intScheme->setCallbackHxExact (tmp);
 #else
     intScheme->setCallbackEzExact (CallBack::exp2_ez_ezhx);
     intScheme->setCallbackHxExact (CallBack::exp2_hx_ezhx);
@@ -2306,8 +2354,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EzExact, CallBack::exp3_ez_ezhx, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HxExact, CallBack::exp3_hx_ezhx, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ez_ezhx, sizeof(SourceCallBack));
+    intScheme->setCallbackEzExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hx_ezhx, sizeof(SourceCallBack));
+    intScheme->setCallbackHxExact (tmp);
 #else
     intScheme->setCallbackEzExact (CallBack::exp3_ez_ezhx);
     intScheme->setCallbackHxExact (CallBack::exp3_hx_ezhx);
@@ -2318,8 +2368,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EzExact, CallBack::exp1_ez_ezhy, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyExact, CallBack::exp1_hy_ezhy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ez_ezhy, sizeof(SourceCallBack));
+    intScheme->setCallbackEzExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hy_ezhy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyExact (tmp);
 #else
     intScheme->setCallbackEzExact (CallBack::exp1_ez_ezhy);
     intScheme->setCallbackHyExact (CallBack::exp1_hy_ezhy);
@@ -2329,8 +2381,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EzExact, CallBack::exp2_ez_ezhy, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyExact, CallBack::exp2_hy_ezhy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ez_ezhy, sizeof(SourceCallBack));
+    intScheme->setCallbackEzExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hy_ezhy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyExact (tmp);
 #else
     intScheme->setCallbackEzExact (CallBack::exp2_ez_ezhy);
     intScheme->setCallbackHyExact (CallBack::exp2_hy_ezhy);
@@ -2340,8 +2394,10 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   {
 #ifdef CUDA_ENABLED
     SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&EzExact, CallBack::exp3_ez_ezhy, sizeof(SourceCallBack));
-    cudaMemcpyFromSymbol (&HyExact, CallBack::exp3_hy_ezhy, sizeof(SourceCallBack));
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ez_ezhy, sizeof(SourceCallBack));
+    intScheme->setCallbackEzExact (tmp);
+    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hy_ezhy, sizeof(SourceCallBack));
+    intScheme->setCallbackHyExact (tmp);
 #else
     intScheme->setCallbackEzExact (CallBack::exp3_ez_ezhy);
     intScheme->setCallbackHyExact (CallBack::exp3_hy_ezhy);
@@ -2353,17 +2409,6 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 void
 Scheme<Type, TCoord, layout_type>::initMaterialFromFile (GridType gridType, Grid<TC> *grid, Grid<TC> *totalGrid)
 {
-  int processId = 0;
-
-  if (useParallel)
-  {
-#ifdef PARALLEL_GRID
-    processId = ParallelGrid::getParallelCore ()->getProcessId ();
-#else /* PARALLEL_GRID */
-    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
-#endif /* !PARALLEL_GRID */
-  }
-
   std::string filename;
 
   switch (gridType)
@@ -2830,7 +2875,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif
   }
-  
+
   if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
   {
     if (intScheme->getDoNeedEx ())
@@ -2875,12 +2920,12 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       for (grid_coord i = 0; i < intScheme->getEy ()->getSize ().calculateTotalCoord (); ++i)
       {
         TC pos = intScheme->getEy ()->calculatePositionFromIndex (i);
-        
+
         if (!(pos >= yeeLayout->getEyStartDiff () && pos < intScheme->getEy ()->getSize () - yeeLayout->getEyEndDiff ()))
         {
           continue;
         }
-        
+
         FPValue Ca;
         FPValue Cb;
 
@@ -2912,12 +2957,12 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       for (grid_coord i = 0; i < intScheme->getEz ()->getSize ().calculateTotalCoord (); ++i)
       {
         TC pos = intScheme->getEz ()->calculatePositionFromIndex (i);
-        
+
         if (!(pos >= yeeLayout->getEzStartDiff () && pos < intScheme->getEz ()->getSize () - yeeLayout->getEzEndDiff ()))
         {
           continue;
         }
-        
+
         FPValue Ca;
         FPValue Cb;
 
@@ -2943,18 +2988,18 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         intScheme->getCbEz ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
       }
     }
-    
+
     if (intScheme->getDoNeedHx ())
     {
       for (grid_coord i = 0; i < intScheme->getHx ()->getSize ().calculateTotalCoord (); ++i)
       {
         TC pos = intScheme->getHx ()->calculatePositionFromIndex (i);
-        
+
         if (!(pos >= yeeLayout->getHxStartDiff () && pos < intScheme->getHx ()->getSize () - yeeLayout->getHxEndDiff ()))
         {
           continue;
         }
-        
+
         FPValue Ca;
         FPValue Cb;
 
@@ -2987,12 +3032,12 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       for (grid_coord i = 0; i < intScheme->getHy ()->getSize ().calculateTotalCoord (); ++i)
       {
         TC pos = intScheme->getHy ()->calculatePositionFromIndex (i);
-        
+
         if (!(pos >= yeeLayout->getHyStartDiff () && pos < intScheme->getHy ()->getSize () - yeeLayout->getHyEndDiff ()))
         {
           continue;
         }
-        
+
         FPValue Ca;
         FPValue Cb;
 
@@ -3025,12 +3070,12 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       for (grid_coord i = 0; i < intScheme->getHz ()->getSize ().calculateTotalCoord (); ++i)
       {
         TC pos = intScheme->getHz ()->calculatePositionFromIndex (i);
-        
+
         if (!(pos >= yeeLayout->getHzStartDiff () && pos < intScheme->getHz ()->getSize () - yeeLayout->getHzEndDiff ()))
         {
           continue;
         }
-        
+
         FPValue Ca;
         FPValue Cb;
 
@@ -3058,7 +3103,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       }
     }
   }
-  
+
   if (SOLVER_SETTINGS.getDoUseCaCbPMLGrids () && SOLVER_SETTINGS.getDoUsePML ())
   {
     if (intScheme->getDoNeedEx ())
@@ -3076,7 +3121,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         FPValue k_mod2 = FPValue (1);
 
         TC posAbs = intScheme->getEx ()->getTotalPosition (pos);
-        
+
         FPValue material1 = intScheme->getMaterial (posAbs, GridType::DX, intScheme->getEps (), GridType::EPS);
         FPValue material4 = intScheme->hasSigmaX () ? intScheme->getMaterial (posAbs, GridType::DX, intScheme->getSigmaX (), GridType::SIGMAX) : 0;
         FPValue material5 = intScheme->hasSigmaZ () ? intScheme->getMaterial (posAbs, GridType::DX, intScheme->getSigmaZ (), GridType::SIGMAZ) : 0;
@@ -3086,7 +3131,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         {
           modifier = FPValue (1);
         }
-        
+
         FPValue eps0 = PhysicsConst::Eps0;
         FPValue dd = (2 * eps0 * k_mod2 + material5 * intScheme->getGridTimeStep ());
         FPValue Ca = (2 * eps0 * k_mod2 - material5 * intScheme->getGridTimeStep ()) / dd;
@@ -3098,7 +3143,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         intScheme->getCcPMLEx ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
       }
     }
-    
+
     if (intScheme->getDoNeedEy ())
     {
       for (grid_coord i = 0; i < intScheme->getEy ()->getSize ().calculateTotalCoord (); ++i)
@@ -3114,7 +3159,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         FPValue k_mod2 = FPValue (1);
 
         TC posAbs = intScheme->getEy ()->getTotalPosition (pos);
-        
+
         FPValue material1 = intScheme->getMaterial (posAbs, GridType::DY, intScheme->getEps (), GridType::EPS);
         FPValue material4 = intScheme->hasSigmaY () ? intScheme->getMaterial (posAbs, GridType::DY, intScheme->getSigmaY (), GridType::SIGMAY) : 0;
         FPValue material5 = intScheme->hasSigmaX () ? intScheme->getMaterial (posAbs, GridType::DY, intScheme->getSigmaX (), GridType::SIGMAX) : 0;
@@ -3124,7 +3169,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         {
           modifier = FPValue (1);
         }
-        
+
         FPValue eps0 = PhysicsConst::Eps0;
         FPValue dd = (2 * eps0 * k_mod2 + material5 * intScheme->getGridTimeStep ());
         FPValue Ca = (2 * eps0 * k_mod2 - material5 * intScheme->getGridTimeStep ()) / dd;
@@ -3136,7 +3181,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         intScheme->getCcPMLEy ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
       }
     }
-    
+
     if (intScheme->getDoNeedEz ())
     {
       for (grid_coord i = 0; i < intScheme->getEz ()->getSize ().calculateTotalCoord (); ++i)
@@ -3152,7 +3197,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         FPValue k_mod2 = FPValue (1);
 
         TC posAbs = intScheme->getEz ()->getTotalPosition (pos);
-        
+
         FPValue material1 = intScheme->getMaterial (posAbs, GridType::DZ, intScheme->getEps (), GridType::EPS);
         FPValue material4 = intScheme->hasSigmaZ () ? intScheme->getMaterial (posAbs, GridType::DZ, intScheme->getSigmaZ (), GridType::SIGMAZ) : 0;
         FPValue material5 = intScheme->hasSigmaY () ? intScheme->getMaterial (posAbs, GridType::DZ, intScheme->getSigmaY (), GridType::SIGMAY) : 0;
@@ -3162,7 +3207,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         {
           modifier = FPValue (1);
         }
-        
+
         FPValue eps0 = PhysicsConst::Eps0;
         FPValue dd = (2 * eps0 * k_mod2 + material5 * intScheme->getGridTimeStep ());
         FPValue Ca = (2 * eps0 * k_mod2 - material5 * intScheme->getGridTimeStep ()) / dd;
@@ -3174,7 +3219,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         intScheme->getCcPMLEz ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
       }
     }
-    
+
     if (intScheme->getDoNeedHx ())
     {
       for (grid_coord i = 0; i < intScheme->getHx ()->getSize ().calculateTotalCoord (); ++i)
@@ -3190,7 +3235,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         FPValue k_mod2 = FPValue (1);
 
         TC posAbs = intScheme->getHx ()->getTotalPosition (pos);
-        
+
         FPValue material1 = intScheme->getMaterial (posAbs, GridType::BX, intScheme->getMu (), GridType::MU);
         FPValue material4 = intScheme->hasSigmaX () ? intScheme->getMaterial (posAbs, GridType::BX, intScheme->getSigmaX (), GridType::SIGMAX) : 0;
         FPValue material5 = intScheme->hasSigmaZ () ? intScheme->getMaterial (posAbs, GridType::BX, intScheme->getSigmaZ (), GridType::SIGMAZ) : 0;
@@ -3200,7 +3245,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         {
           modifier = FPValue (1);
         }
-        
+
         FPValue eps0 = PhysicsConst::Eps0;
         FPValue dd = (2 * eps0 * k_mod2 + material5 * intScheme->getGridTimeStep ());
         FPValue Ca = (2 * eps0 * k_mod2 - material5 * intScheme->getGridTimeStep ()) / dd;
@@ -3212,7 +3257,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         intScheme->getDcPMLHx ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
       }
     }
-    
+
     if (intScheme->getDoNeedHy ())
     {
       for (grid_coord i = 0; i < intScheme->getHy ()->getSize ().calculateTotalCoord (); ++i)
@@ -3228,7 +3273,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         FPValue k_mod2 = FPValue (1);
 
         TC posAbs = intScheme->getHy ()->getTotalPosition (pos);
-        
+
         FPValue material1 = intScheme->getMaterial (posAbs, GridType::BY, intScheme->getMu (), GridType::MU);
         FPValue material4 = intScheme->hasSigmaY () ? intScheme->getMaterial (posAbs, GridType::BY, intScheme->getSigmaY (), GridType::SIGMAY) : 0;
         FPValue material5 = intScheme->hasSigmaX () ? intScheme->getMaterial (posAbs, GridType::BY, intScheme->getSigmaX (), GridType::SIGMAX) : 0;
@@ -3238,7 +3283,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         {
           modifier = FPValue (1);
         }
-        
+
         FPValue eps0 = PhysicsConst::Eps0;
         FPValue dd = (2 * eps0 * k_mod2 + material5 * intScheme->getGridTimeStep ());
         FPValue Ca = (2 * eps0 * k_mod2 - material5 * intScheme->getGridTimeStep ()) / dd;
@@ -3250,7 +3295,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         intScheme->getDcPMLHy ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
       }
     }
-    
+
     if (intScheme->getDoNeedHz ())
     {
       for (grid_coord i = 0; i < intScheme->getHz ()->getSize ().calculateTotalCoord (); ++i)
@@ -3266,7 +3311,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         FPValue k_mod2 = FPValue (1);
 
         TC posAbs = intScheme->getHz ()->getTotalPosition (pos);
-        
+
         FPValue material1 = intScheme->getMaterial (posAbs, GridType::BZ, intScheme->getMu (), GridType::MU);
         FPValue material4 = intScheme->hasSigmaZ () ? intScheme->getMaterial (posAbs, GridType::BZ, intScheme->getSigmaZ (), GridType::SIGMAZ) : 0;
         FPValue material5 = intScheme->hasSigmaY () ? intScheme->getMaterial (posAbs, GridType::BZ, intScheme->getSigmaY (), GridType::SIGMAY) : 0;
@@ -3276,7 +3321,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         {
           modifier = FPValue (1);
         }
-        
+
         FPValue eps0 = PhysicsConst::Eps0;
         FPValue dd = (2 * eps0 * k_mod2 + material5 * intScheme->getGridTimeStep ());
         FPValue Ca = (2 * eps0 * k_mod2 - material5 * intScheme->getGridTimeStep ()) / dd;
@@ -3306,7 +3351,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         }
 
         TC posAbs = intScheme->getEx ()->getTotalPosition (pos);
-        
+
         FPValue material1;
         FPValue material2;
         FPValue material = intScheme->getMetaMaterial (posAbs, GridType::EX,
@@ -3330,7 +3375,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         intScheme->getCA2Ex ()->setFieldValue (FIELDVALUE (a2, FPValue (0)), pos, 0);
       }
     }
-    
+
     if (intScheme->getDoNeedEy ())
     {
       for (grid_coord i = 0; i < intScheme->getEy ()->getSize ().calculateTotalCoord (); ++i)
@@ -3343,7 +3388,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         }
 
         TC posAbs = intScheme->getEy ()->getTotalPosition (pos);
-        
+
         FPValue material1;
         FPValue material2;
         FPValue material = intScheme->getMetaMaterial (posAbs, GridType::EY,
@@ -3367,7 +3412,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         intScheme->getCA2Ey ()->setFieldValue (FIELDVALUE (a2, FPValue (0)), pos, 0);
       }
     }
-    
+
     if (intScheme->getDoNeedEz ())
     {
       for (grid_coord i = 0; i < intScheme->getEz ()->getSize ().calculateTotalCoord (); ++i)
@@ -3380,7 +3425,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         }
 
         TC posAbs = intScheme->getEz ()->getTotalPosition (pos);
-        
+
         FPValue material1;
         FPValue material2;
         FPValue material = intScheme->getMetaMaterial (posAbs, GridType::EZ,
@@ -3404,7 +3449,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         intScheme->getCA2Ez ()->setFieldValue (FIELDVALUE (a2, FPValue (0)), pos, 0);
       }
     }
-    
+
     if (intScheme->getDoNeedHx ())
     {
       for (grid_coord i = 0; i < intScheme->getHx ()->getSize ().calculateTotalCoord (); ++i)
@@ -3417,7 +3462,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         }
 
         TC posAbs = intScheme->getHx ()->getTotalPosition (pos);
-        
+
         FPValue material1;
         FPValue material2;
         FPValue material = intScheme->getMetaMaterial (posAbs, GridType::HX,
@@ -3441,7 +3486,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         intScheme->getDA2Hx ()->setFieldValue (FIELDVALUE (a2, FPValue (0)), pos, 0);
       }
     }
-    
+
     if (intScheme->getDoNeedHy ())
     {
       for (grid_coord i = 0; i < intScheme->getHy ()->getSize ().calculateTotalCoord (); ++i)
@@ -3454,7 +3499,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         }
 
         TC posAbs = intScheme->getHy ()->getTotalPosition (pos);
-        
+
         FPValue material1;
         FPValue material2;
         FPValue material = intScheme->getMetaMaterial (posAbs, GridType::HY,
@@ -3478,7 +3523,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         intScheme->getDA2Hy ()->setFieldValue (FIELDVALUE (a2, FPValue (0)), pos, 0);
       }
     }
-    
+
     if (intScheme->getDoNeedHz ())
     {
       for (grid_coord i = 0; i < intScheme->getHz ()->getSize ().calculateTotalCoord (); ++i)
@@ -3491,7 +3536,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         }
 
         TC posAbs = intScheme->getHz ()->getTotalPosition (pos);
-        
+
         FPValue material1;
         FPValue material2;
         FPValue material = intScheme->getMetaMaterial (posAbs, GridType::HZ,
@@ -3912,7 +3957,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       continue;
     }
-    
+
     int currentLayer = 1;
 
     if (intScheme->getDoNeedEx ())
@@ -3921,7 +3966,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       {
         dumper[type]->dumpGrid (intScheme->getEx (), zero, intScheme->getEx ()->getSize (), t, currentLayer);
       }
-      else
+      else if (processId == 0)
       {
         dumper[type]->dumpGrid (totalEx, startEx, endEx, t, currentLayer);
       }
@@ -3933,7 +3978,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       {
         dumper[type]->dumpGrid (intScheme->getEy (), zero, intScheme->getEy ()->getSize (), t, currentLayer);
       }
-      else
+      else if (processId == 0)
       {
         dumper[type]->dumpGrid (totalEy, startEy, endEy, t, currentLayer);
       }
@@ -3945,7 +3990,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       {
         dumper[type]->dumpGrid (intScheme->getEz (), zero, intScheme->getEz ()->getSize (), t, currentLayer);
       }
-      else
+      else if (processId == 0)
       {
         dumper[type]->dumpGrid (totalEz, startEz, endEz, t, currentLayer);
       }
@@ -3957,7 +4002,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       {
         dumper[type]->dumpGrid (intScheme->getHx (), zero, intScheme->getHx ()->getSize (), t, currentLayer);
       }
-      else
+      else if (processId == 0)
       {
         dumper[type]->dumpGrid (totalHx, startHx, endHx, t, currentLayer);
       }
@@ -3969,7 +4014,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       {
         dumper[type]->dumpGrid (intScheme->getHy (), zero, intScheme->getHy ()->getSize (), t, currentLayer);
       }
-      else
+      else if (processId == 0)
       {
         dumper[type]->dumpGrid (totalHy, startHy, endHy, t, currentLayer);
       }
@@ -3981,7 +4026,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
       {
         dumper[type]->dumpGrid (intScheme->getHz (), zero, intScheme->getHz ()->getSize (), t, currentLayer);
       }
-      else
+      else if (processId == 0)
       {
         dumper[type]->dumpGrid (totalHz, startHz, endHz, t, currentLayer);
       }

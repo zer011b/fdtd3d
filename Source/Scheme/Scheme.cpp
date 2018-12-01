@@ -15,10 +15,6 @@
 
 #include <cmath>
 
-#if defined (CUDA_ENABLED)
-#include "CudaInterface.h"
-#endif
-
 #define _NAME(A,B) A ##B
 
 #define SPECIALIZE_TEMPLATE_FUNC(RET, STYPE, COORD, LAYOUT_TYPE, NAME, ARGSND, ARGS, NAME_HELPER) \
@@ -64,7 +60,7 @@ SPECIALIZE_TEMPLATE(GridCoordinate1D, GridCoordinate2D, GridCoordinate3D,
 //                     (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz),
 //                     (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *curEz, Grid<GridCoordinate3D> *curHx, Grid<GridCoordinate3D> *curHy, Grid<GridCoordinate3D> *curHz),
 //                     (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), sourceWaveLength, HInc, curEz, curHx, curHy, curHz)) // TODO: check sourceWaveLengthNumerical here
-// 
+//
 // SPECIALIZE_TEMPLATE(NPair, NPair, NPair,
 //                     ntffL,
 //                     (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz),
