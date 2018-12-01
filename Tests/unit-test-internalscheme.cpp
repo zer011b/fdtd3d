@@ -1750,6 +1750,10 @@ int main (int argc, char** argv)
    */
   ASSERT (!solverSettings.getDoUsePML ());
 
+#ifdef CUDA_ENABLED
+  cudaCheckErrorCmd (cudaSetDevice(solverSettings.getNumCudaGPUs ()));
+#endif /* CUDA_ENABLED */
+
 #if defined (MODE_EX_HY)
   test1D_ExHy<E_CENTERED> ();
 #endif /* MODE_EX_HY */
