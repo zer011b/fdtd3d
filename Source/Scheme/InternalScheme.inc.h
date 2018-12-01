@@ -1200,6 +1200,11 @@ public:
   { \
     ASSERT (x); \
     return x; \
+  } \
+  ICUDA_DEVICE ICUDA_HOST \
+  bool has ## x () \
+  { \
+    return x != NULLPTR; \
   }
 #include "Grids.inc.h"
 #undef GRID_NAME
@@ -2125,8 +2130,9 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
     if (usePML)
     {
       FPValue eps0 = PhysicsConst::Eps0;
-      ca = (2 * eps0 * k_mod - material * gridTimeStep) / (2 * eps0 * k_mod + material * gridTimeStep);
-      cb = (2 * eps0 * gridTimeStep / gridStep) / (2 * eps0 * k_mod + material * gridTimeStep);
+      FPValue dd = (2 * eps0 * k_mod + material * gridTimeStep);
+      ca = (2 * eps0 * k_mod - material * gridTimeStep) / dd;
+      cb = (2 * eps0 * gridTimeStep / gridStep) / dd;
     }
     else
     {
@@ -2346,10 +2352,12 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML 
 
     FPValue k_mod1 = 1;
     FPValue k_mod2 = 1;
+    
+    FPValue dd = (2 * eps0 * k_mod2 + material5 * gridTimeStep);
 
-    FPValue ca = (2 * eps0 * k_mod2 - material5 * gridTimeStep) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
-    FPValue cb = ((2 * eps0 * k_mod1 + material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
-    FPValue cc = ((2 * eps0 * k_mod1 - material4 * gridTimeStep) / (modifier)) / (2 * eps0 * k_mod2 + material5 * gridTimeStep);
+    FPValue ca = (2 * eps0 * k_mod2 - material5 * gridTimeStep) / dd;
+    FPValue cb = ((2 * eps0 * k_mod1 + material4 * gridTimeStep) / (modifier)) / dd;
+    FPValue cc = ((2 * eps0 * k_mod1 - material4 * gridTimeStep) / (modifier)) / dd;
 
     valCa = FIELDVALUE (ca, 0);
     valCb = FIELDVALUE (cb, 0);
