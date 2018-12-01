@@ -556,7 +556,7 @@ public:
   /**
    * Print coordinate to console
    */
-  CUDA_DEVICE CUDA_HOST
+  CUDA_HOST
   void
   print () const
   {

@@ -125,22 +125,22 @@ namespace InternalSchemeKernelHelpers
                                           GridCoordinate3D start3D,
                                           GridCoordinate3D end3D,
                                           time_step t,
-                                         IGRID< TCoord<grid_coord, false> > *grid,
-                                         IGRID< TCoord<grid_coord, false> > *gridPML,
-                                         IGRID< TCoord<grid_coord, false> > *CB0,
-                                         IGRID< TCoord<grid_coord, false> > *CB1,
-                                         IGRID< TCoord<grid_coord, false> > *CB2,
-                                         IGRID< TCoord<grid_coord, false> > *CA1,
-                                         IGRID< TCoord<grid_coord, false> > *CA2,
+                                         IGRID< TCoord<grid_coord, true> > *grid,
+                                         IGRID< TCoord<grid_coord, true> > *gridPML,
+                                         IGRID< TCoord<grid_coord, true> > *CB0,
+                                         IGRID< TCoord<grid_coord, true> > *CB1,
+                                         IGRID< TCoord<grid_coord, true> > *CB2,
+                                         IGRID< TCoord<grid_coord, true> > *CA1,
+                                         IGRID< TCoord<grid_coord, true> > *CA2,
                                          CoordinateType ct1,
                                          CoordinateType ct2,
                                          CoordinateType ct3,
                                          GridType gridType,
-                                         IGRID< TCoord<grid_coord, false> > *materialGrid1,
+                                         IGRID< TCoord<grid_coord, true> > *materialGrid1,
                                          GridType materialGridType1,
-                                         IGRID< TCoord<grid_coord, false> > *materialGrid2,
+                                         IGRID< TCoord<grid_coord, true> > *materialGrid2,
                                          GridType materialGridType2,
-                                         IGRID< TCoord<grid_coord, false> > *materialGrid3,
+                                         IGRID< TCoord<grid_coord, true> > *materialGrid3,
                                          GridType materialGridType3,
                                          FPValue materialModifier,
                                          bool usePrecomputedGrids)
@@ -178,21 +178,21 @@ namespace InternalSchemeKernelHelpers
                                           GridCoordinate3D start3D,
                                           GridCoordinate3D end3D,
                                           time_step t,
-                                           IGRID< TCoord<grid_coord, false> > *grid,
-                                           IGRID< TCoord<grid_coord, false> > *gridPML1,
-                                           IGRID< TCoord<grid_coord, false> > *gridPML2,
-                                           IGRID< TCoord<grid_coord, false> > *Ca,
-                                           IGRID< TCoord<grid_coord, false> > *Cb,
-                                           IGRID< TCoord<grid_coord, false> > *Cc,
+                                           IGRID< TCoord<grid_coord, true> > *grid,
+                                           IGRID< TCoord<grid_coord, true> > *gridPML1,
+                                           IGRID< TCoord<grid_coord, true> > *gridPML2,
+                                           IGRID< TCoord<grid_coord, true> > *Ca,
+                                           IGRID< TCoord<grid_coord, true> > *Cb,
+                                           IGRID< TCoord<grid_coord, true> > *Cc,
                                            CoordinateType ct1,
                                            CoordinateType ct2,
                                            CoordinateType ct3,
                                            GridType gridPMLType1,
-                                           IGRID< TCoord<grid_coord, false> > *materialGrid1,
+                                           IGRID< TCoord<grid_coord, true> > *materialGrid1,
                                            GridType materialGridType1,
-                                           IGRID< TCoord<grid_coord, false> > *materialGrid4,
+                                           IGRID< TCoord<grid_coord, true> > *materialGrid4,
                                            GridType materialGridType4,
-                                           IGRID< TCoord<grid_coord, false> > *materialGrid5,
+                                           IGRID< TCoord<grid_coord, true> > *materialGrid5,
                                            GridType materialGridType5,
                                            FPValue materialModifier,
                                            bool usePrecomputedGrids)
@@ -272,7 +272,7 @@ namespace InternalSchemeKernelHelpers
     TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
 
     gpuScheme->calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc,
-      gpuScheme->normRe, gpuScheme->normIm, gpuScheme->normMod, gpuScheme->maxRe, gpuScheme->maxIm, gpuScheme->maxMod);
+      gpuScheme->getd_norm ()[0], gpuScheme->getd_norm ()[1], gpuScheme->getd_norm ()[2], gpuScheme->getd_norm ()[3], gpuScheme->getd_norm ()[4], gpuScheme->getd_norm ()[5]);
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -748,9 +748,11 @@ public:
     IGRID<TC> **, IGRID<TC> **,
     IGRID<TC> **, IGRID<TC> **, IGRID<TC> **, IGRID<TC> **, IGRID<TC> **, IGRID<TC> **, IGRID<TC> **, IGRID<TC> **);
 
+#ifndef GPU_INTERNAL_SCHEME
   template <uint8_t grid_type>
   ICUDA_HOST
   void calculateFieldStepInitDiff (TCS *, TCS *, TCS *, TCS *);
+#endif
 
   template <bool usePrecomputedGrids>
   ICUDA_DEVICE
@@ -799,12 +801,12 @@ public:
 
   template <uint8_t grid_type>
   CUDA_HOST
-  void performPointSourceCalcKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
+  void performPointSourceCalcKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuSchemeOnGPU,
                                            time_step t)
   {
     dim3 blocks (1, 1, 1);
     dim3 threads (1, 1, 1);
-    InternalSchemeKernelHelpers::performPointSourceCalcKernel <Type, TCoord, layout_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, t);
+    InternalSchemeKernelHelpers::performPointSourceCalcKernel <Type, TCoord, layout_type, grid_type> <<< blocks, threads >>> (d_gpuSchemeOnGPU, t);
     cudaCheckError ();
   }
 
@@ -918,7 +920,6 @@ public:
   template <uint8_t grid_type>
   CUDA_HOST
   void calculateFieldStepIterationBorderKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuScheme,
-                                                     InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
                                                 GridCoordinate3D start3D,
                                                 GridCoordinate3D end3D,
                                                 time_step t,
@@ -1261,6 +1262,15 @@ public:
   {
     return sourceFrequency;
   }
+
+#ifdef GPU_INTERNAL_SCHEME
+  ICUDA_DEVICE
+  FPValue * getd_norm ()
+  {
+    ASSERT (d_norm != NULLPTR);
+    return d_norm;
+  }
+#endif /* GPU_INTERNAL_SCHEME */
 };
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -1618,6 +1628,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
   }
 }
 
+#ifndef GPU_INTERNAL_SCHEME
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template<uint8_t grid_type>
 ICUDA_HOST
@@ -1680,6 +1691,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepInitDiff (TCS
     }
   }
 }
+#endif
 
 /**
  * Initialize grids used in further computations
@@ -2352,7 +2364,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML 
 
     FPValue k_mod1 = 1;
     FPValue k_mod2 = 1;
-    
+
     FPValue dd = (2 * eps0 * k_mod2 + material5 * gridTimeStep);
 
     FPValue ca = (2 * eps0 * k_mod2 - material5 * gridTimeStep) / dd;

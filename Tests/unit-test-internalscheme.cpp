@@ -992,7 +992,7 @@ void test1D_ExHy ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (intScheme.getDoNeedEx ());
   ASSERT (!intScheme.getDoNeedEy ());
@@ -1069,7 +1069,7 @@ void test1D_ExHz ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (intScheme.getDoNeedEx ());
   ASSERT (!intScheme.getDoNeedEy ());
@@ -1146,7 +1146,7 @@ void test1D_EyHx ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (!intScheme.getDoNeedEx ());
   ASSERT (intScheme.getDoNeedEy ());
@@ -1223,7 +1223,7 @@ void test1D_EyHz ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (!intScheme.getDoNeedEx ());
   ASSERT (intScheme.getDoNeedEy ());
@@ -1300,7 +1300,7 @@ void test1D_EzHx ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (!intScheme.getDoNeedEx ());
   ASSERT (!intScheme.getDoNeedEy ());
@@ -1377,7 +1377,7 @@ void test1D_EzHy ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (!intScheme.getDoNeedEx ());
   ASSERT (!intScheme.getDoNeedEy ());
@@ -1454,7 +1454,7 @@ void test2D_TEx ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (!intScheme.getDoNeedEx ());
   ASSERT (intScheme.getDoNeedEy ());
@@ -1499,7 +1499,7 @@ void test2D_TEy ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (intScheme.getDoNeedEx ());
   ASSERT (!intScheme.getDoNeedEy ());
@@ -1544,7 +1544,7 @@ void test2D_TEz ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (intScheme.getDoNeedEx ());
   ASSERT (intScheme.getDoNeedEy ());
@@ -1589,7 +1589,7 @@ void test2D_TMx ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (intScheme.getDoNeedEx ());
   ASSERT (!intScheme.getDoNeedEy ());
@@ -1634,7 +1634,7 @@ void test2D_TMy ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (!intScheme.getDoNeedEx ());
   ASSERT (intScheme.getDoNeedEy ());
@@ -1679,7 +1679,7 @@ void test2D_TMz ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (!intScheme.getDoNeedEx ());
   ASSERT (!intScheme.getDoNeedEy ());
@@ -1725,7 +1725,7 @@ void test3D ()
 
   InternalScheme<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, layout_type> intScheme;
   intScheme.init (&yeeLayout, false);
-  intScheme.initScheme (DX, LAMBDA, SOLVER_SETTINGS.getNumTimeSteps ());
+  intScheme.initScheme (DX, LAMBDA);
 
   ASSERT (intScheme.getDoNeedEx ());
   ASSERT (intScheme.getDoNeedEy ());
