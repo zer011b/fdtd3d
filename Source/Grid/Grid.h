@@ -113,8 +113,9 @@ public:
     for (int i = 0; i < gridValues.size (); ++i)
     {
       ASSERT (gridValues[i]->size () == grid->gridValues[i]->size ());
+      ASSERT (gridValues[i]->capacity () == grid->gridValues[i]->capacity ())
 
-      memcpy (&gridValues[i][0], &grid->gridValues[i][0], gridValues[i]->size () * sizeof (FieldValue));
+      memcpy (&(*gridValues[i])[0], &(*grid->gridValues[i])[0], grid->gridValues[i]->size () * sizeof (FieldValue));
     }
   }
 }; /* Grid */
