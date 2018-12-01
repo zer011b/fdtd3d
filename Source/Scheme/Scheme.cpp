@@ -80,13 +80,6 @@ SPECIALIZE_TEMPLATE(bool, bool, bool,
                     (pos, yeeLayout->getLeftBorderTFSF (), yeeLayout->getRightBorderTFSF ()))
 
 SPECIALIZE_TEMPLATE(void, void, void,
-                    performNSteps,
-                    (time_step tStart, time_step N),
-                    (time_step tStart, time_step N),
-                    (time_step tStart, time_step N),
-                    (this, tStart, N))
-
-SPECIALIZE_TEMPLATE(void, void, void,
                     initFullMaterialGrids,
                     (),
                     (),
@@ -114,6 +107,7 @@ SPECIALIZE_TEMPLATE(void, void, void,
 /*
  * Specialization for Sigma
  */
+#ifdef MODE_EX_HY
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
@@ -121,6 +115,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTempla
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+#endif /* MODE_EX_HY */
+
+#ifdef MODE_EX_HZ
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
@@ -128,6 +125,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTempla
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
 };
+#endif /* MODE_EX_HZ */
+
+#ifdef MODE_EY_HX
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
@@ -135,6 +135,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTempla
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+#endif /* MODE_EY_HX */
+
+#ifdef MODE_EY_HZ
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
@@ -142,6 +145,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTempla
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
 }
+#endif /* MODE_EY_HZ */
+
+#ifdef MODE_EZ_HX
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
@@ -149,6 +155,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTempla
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
 }
+#endif /* MODE_EZ_HX */
+
+#ifdef MODE_EZ_HY
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
@@ -156,7 +165,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTempla
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
 }
+#endif /* MODE_EZ_HY */
 
+#ifdef MODE_TEX
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
@@ -166,6 +177,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplat
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+#endif /* MODE_TEX */
+
+#ifdef MODE_TEY
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
@@ -175,6 +189,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplat
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+#endif /* MODE_TEY */
+
+#ifdef MODE_TEZ
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
@@ -184,6 +201,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplat
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
 }
+#endif /* MODE_TEZ */
+
+#ifdef MODE_TMX
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
@@ -193,6 +213,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplat
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+#endif /* MODE_TMX */
+
+#ifdef MODE_TMY
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
@@ -202,6 +225,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplat
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+#endif /* MODE_TMY */
+
+#ifdef MODE_TMZ
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::initSigmas ()
@@ -211,7 +237,9 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplat
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
 }
+#endif /* MODE_TMZ */
 
+#ifdef MODE_DIM3
 template <>
 void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::initSigmas ()
@@ -223,3 +251,122 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E
   SchemeHelper::initSigmaZ<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+#endif /* MODE_DIM3 */
+
+
+#ifdef MODE_EX_HY
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_EX_HY */
+
+#ifdef MODE_EX_HZ
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_EX_HZ */
+
+#ifdef MODE_EY_HX
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_EY_HX */
+
+#ifdef MODE_EY_HZ
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_EY_HZ */
+
+#ifdef MODE_EZ_HX
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_EZ_HX */
+
+#ifdef MODE_EZ_HY
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_EZ_HY */
+
+#ifdef MODE_TEX
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_TEX */
+
+#ifdef MODE_TEY
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_TEY */
+
+#ifdef MODE_TEZ
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_TEZ */
+
+#ifdef MODE_TMX
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_TMX */
+
+#ifdef MODE_TMY
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_TMY */
+
+#ifdef MODE_TMZ
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_TMZ */
+
+#ifdef MODE_DIM3
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps3D<static_cast<SchemeType_t> (SchemeType::Dim3), E_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_DIM3 */

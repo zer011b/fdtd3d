@@ -85,6 +85,7 @@ void initParallel (ParallelYeeGridLayout<Type, layout_type> **yeeLayout,
   }
 }
 
+#ifdef MODE_EX_HY
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -104,7 +105,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ex
                                                                                  tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_EX_HY */
 
+#ifdef MODE_EX_HZ
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -124,7 +127,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ex
                                                                                  tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_EX_HZ */
 
+#ifdef MODE_EY_HX
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -144,7 +149,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ey
                                                                                  tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_EY_HX */
 
+#ifdef MODE_EY_HZ
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -164,7 +171,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ey
                                                                                  tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_EY_HZ */
 
+#ifdef MODE_EZ_HX
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -184,7 +193,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ez
                                                                                  tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_EZ_HX */
 
+#ifdef MODE_EZ_HY
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -204,7 +215,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ez
                                                                                  tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_EZ_HY */
 
+#ifdef MODE_TEX
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -224,7 +237,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_TEX */
 
+#ifdef MODE_TEY
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -244,7 +259,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_TEY */
 
+#ifdef MODE_TEZ
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -264,7 +281,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_TEZ */
 
+#ifdef MODE_TMX
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -284,7 +303,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_TMX */
 
+#ifdef MODE_TMY
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -304,7 +325,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_TMY */
 
+#ifdef MODE_TMZ
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -324,7 +347,9 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_TMZ */
 
+#ifdef MODE_DIM3
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED> **layout,
                    ParallelGridCore **parallelGridCore,
                    int *rank,
@@ -344,11 +369,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)),
                                                                             tfsfSizeLeft, tfsfSizeRight, argc, argv);
 #endif
 }
+#endif /* MODE_DIM3 */
+
 #endif
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void initSettings (TCoord<grid_coord, true> &, TCoord<grid_coord, true> &, TCoord<grid_coord, true> &, TCoord<grid_coord, true> &);
 
+#ifdef MODE_EX_HY
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED>
@@ -378,7 +406,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate
 #endif
                                                               );
 }
+#endif /* MODE_EX_HY */
 
+#ifdef MODE_EX_HZ
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED>
@@ -408,7 +438,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate
 #endif
                                                               );
 }
+#endif /* MODE_EX_HZ */
 
+#ifdef MODE_EY_HX
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED>
@@ -438,7 +470,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate
 #endif
                                                               );
 }
+#endif /* MODE_EY_HX */
 
+#ifdef MODE_EY_HZ
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED>
@@ -468,7 +502,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate
 #endif
                                                               );
 }
+#endif /* MODE_EY_HZ */
 
+#ifdef MODE_EZ_HX
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED>
@@ -498,7 +534,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate
 #endif
                                                               );
 }
+#endif /* MODE_EZ_HX */
 
+#ifdef MODE_EZ_HY
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED>
@@ -528,7 +566,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate
 #endif
                                                               );
 }
+#endif /* MODE_EZ_HY */
 
+#ifdef MODE_TEX
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED>
@@ -566,7 +606,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2
 #endif
                                                               );
 }
+#endif /* MODE_TEX */
 
+#ifdef MODE_TEY
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED>
@@ -604,7 +646,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2
 #endif
                                                               );
 }
+#endif /* MODE_TEY */
 
+#ifdef MODE_TEZ
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED>
@@ -642,7 +686,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2
 #endif
                                                               );
 }
+#endif /* MODE_TEZ */
 
+#ifdef MODE_TMX
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED>
@@ -680,7 +726,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2
 #endif
                                                               );
 }
+#endif /* MODE_TMX */
 
+#ifdef MODE_TMY
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED>
@@ -718,7 +766,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2
 #endif
                                                               );
 }
+#endif /* MODE_TMY */
 
+#ifdef MODE_TMZ
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED>
@@ -756,7 +806,9 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2
 #endif
                                                               );
 }
+#endif /* MODE_TMZ */
 
+#ifdef MODE_DIM3
 template <>
 void
 initSettings<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED>
@@ -802,6 +854,7 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTem
 #endif
                                                               );
 }
+#endif /* MODE_DIM3 */
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 int runMode (int argc, char** argv)
@@ -1002,36 +1055,48 @@ int main (int argc, char** argv)
   {
     switch (solverSettings.getSchemeType ())
     {
+#ifdef MODE_EX_HY
       case SchemeType::Dim1_ExHy:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_EX_HY */
+#ifdef MODE_EX_HZ
       case SchemeType::Dim1_ExHz:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_EX_HZ */
+#ifdef MODE_EY_HX
       case SchemeType::Dim1_EyHx:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_EY_HX */
+#ifdef MODE_EY_HZ
       case SchemeType::Dim1_EyHz:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_EY_HZ */
+#ifdef MODE_EZ_HX
       case SchemeType::Dim1_EzHx:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_EZ_HX */
+#ifdef MODE_EZ_HY
       case SchemeType::Dim1_EzHy:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_EZ_HY */
       default:
       {
         UNREACHABLE;
@@ -1042,36 +1107,48 @@ int main (int argc, char** argv)
   {
     switch (solverSettings.getSchemeType ())
     {
+#ifdef MODE_TEX
       case SchemeType::Dim2_TEx:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_TEX */
+#ifdef MODE_TEY
       case SchemeType::Dim2_TEy:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_TEY */
+#ifdef MODE_TEZ
       case SchemeType::Dim2_TEz:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_TEZ */
+#ifdef MODE_TMX
       case SchemeType::Dim2_TMx:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_TMX */
+#ifdef MODE_TMY
       case SchemeType::Dim2_TMy:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_TMY */
+#ifdef MODE_TMZ
       case SchemeType::Dim2_TMz:
       {
         exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED> (argc, argv);
         break;
       }
+#endif /* MODE_TMZ */
       default:
       {
         UNREACHABLE;
@@ -1082,7 +1159,16 @@ int main (int argc, char** argv)
   {
     ASSERT (solverSettings.getDimension () == 3);
 
-    exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (argc, argv);
+#ifdef MODE_DIM3
+    if (solverSettings.getSchemeType () == SchemeType::Dim3)
+    {
+      exit_code = runMode<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (argc, argv);
+    }
+    else
+#endif /* MODE_DIM3 */
+    {
+      UNREACHABLE;
+    }
   }
 
   solverSettings.Uninitialize ();
