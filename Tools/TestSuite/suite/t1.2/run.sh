@@ -35,7 +35,7 @@ function launch ()
     local exact_val_mod=$(echo $exact | awk '{printf "%.17g", $3}')
 
     # numerical value
-    local line=$(sed "${line_num}q;d" current\[$timesteps\]_rank-0_EInc.txt)
+    local line=$(sed "${line_num}q;d" previous-1_\[timestep\=$timesteps\]_\[pid\=0\]_\[name\=EInc\].txt)
     local index=$(echo $line | awk '{printf "%.17g", $1}')
     local numerical_val_re=$(echo $line | awk '{printf "%.17g", $2}')
     local numerical_val_im=$(echo $line | awk '{printf "%.17g", $3}')
@@ -69,7 +69,7 @@ function launch ()
     fi
   done
 
-  rm current\[*
+  rm previous-*
 
   return $ret
 }
