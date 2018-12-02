@@ -80,6 +80,21 @@ public:
     return YeeGridLayout<Type, ParallelGridCoordinateTemplate, layout_type>::isDoubleMaterialPrecision ? getSizeForCurNode () * 2: getSizeForCurNode ();
   }
 
+  ParallelGridCoordinate getSigmaXSizeForCurNode () const
+  {
+    return getEpsSizeForCurNode ();
+  }
+
+  ParallelGridCoordinate getSigmaYSizeForCurNode () const
+  {
+    return getEpsSizeForCurNode ();
+  }
+
+  ParallelGridCoordinate getSigmaZSizeForCurNode () const
+  {
+    return getEpsSizeForCurNode ();
+  }
+
   ParallelGridCoordinate getExSizeForCurNode () const
   {
     return getSizeForCurNode ();

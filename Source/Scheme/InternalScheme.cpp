@@ -65,7 +65,8 @@ SPECIALIZE_TEMPLATE_1D(InternalScheme, InternalSchemeHelper,
                        void,
                        allocateParallelGrids,
                        (),
-                       (this))
+                       (this),
+                       allocateParallelGrids)
 #endif /* GRID_1D */
 
 #ifdef GRID_2D
@@ -73,7 +74,8 @@ SPECIALIZE_TEMPLATE_2D(InternalScheme, InternalSchemeHelper,
                        void,
                        allocateParallelGrids,
                        (),
-                       (this))
+                       (this),
+                       allocateParallelGrids)
 #endif /* GRID_2D */
 
 #ifdef GRID_3D
@@ -81,7 +83,8 @@ SPECIALIZE_TEMPLATE_3D(InternalScheme, InternalSchemeHelper,
                        void,
                        allocateParallelGrids,
                        (),
-                       (this))
+                       (this),
+                       allocateParallelGrids)
 #endif /* GRID_3D */
 
 #endif /* PARALLEL_GRID */

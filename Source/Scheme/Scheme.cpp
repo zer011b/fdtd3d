@@ -93,12 +93,12 @@ SPECIALIZE_TEMPLATE(void, void, void,
                     (),
                     (),
                     (&totalInitialized,
-                     intScheme->getDoNeedEx (), intScheme->getEx (), &totalEx,
-                     intScheme->getDoNeedEy (), intScheme->getEy (), &totalEy,
-                     intScheme->getDoNeedEz (), intScheme->getEz (), &totalEz,
-                     intScheme->getDoNeedHx (), intScheme->getHx (), &totalHx,
-                     intScheme->getDoNeedHy (), intScheme->getHy (), &totalHy,
-                     intScheme->getDoNeedHz (), intScheme->getHz (), &totalHz))
+                     intScheme->getDoNeedEx (), intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR, &totalEx,
+                     intScheme->getDoNeedEy (), intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR, &totalEy,
+                     intScheme->getDoNeedEz (), intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR, &totalEz,
+                     intScheme->getDoNeedHx (), intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR, &totalHx,
+                     intScheme->getDoNeedHy (), intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR, &totalHy,
+                     intScheme->getDoNeedHz (), intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR, &totalHz))
 
 /*
  * Specialization for Sigma

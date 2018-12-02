@@ -417,121 +417,121 @@ Scheme<Type, TCoord, layout_type>::share ()
 
   if (intScheme->getDoNeedEx ())
   {
-    ASSERT (((ParallelGrid *) intScheme->Ex)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) intScheme->Ex)->share ();
-    ((ParallelGrid *) intScheme->Ex)->zeroShareStep ();
+    ASSERT (((ParallelGrid *) intScheme->getEx ())->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) intScheme->getEx ())->share ();
+    ((ParallelGrid *) intScheme->getEx ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->Dx)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->Dx)->share ();
-      ((ParallelGrid *) intScheme->Dx)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getDx ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getDx ())->share ();
+      ((ParallelGrid *) intScheme->getDx ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->D1x)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->D1x)->share ();
-      ((ParallelGrid *) intScheme->D1x)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getD1x ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getD1x ())->share ();
+      ((ParallelGrid *) intScheme->getD1x ())->zeroShareStep ();
     }
   }
 
   if (intScheme->getDoNeedEy ())
   {
-    ASSERT (((ParallelGrid *) intScheme->Ey)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) intScheme->Ey)->share ();
-    ((ParallelGrid *) intScheme->Ey)->zeroShareStep ();
+    ASSERT (((ParallelGrid *) intScheme->getEy ())->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) intScheme->getEy ())->share ();
+    ((ParallelGrid *) intScheme->getEy ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->Dy)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->Dy)->share ();
-      ((ParallelGrid *) intScheme->Dy)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getDy ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getDy ())->share ();
+      ((ParallelGrid *) intScheme->getDy ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->D1y)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->D1y)->share ();
-      ((ParallelGrid *) intScheme->D1y)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getD1y ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getD1y ())->share ();
+      ((ParallelGrid *) intScheme->getD1y ())->zeroShareStep ();
     }
   }
 
   if (intScheme->getDoNeedEz ())
   {
-    ASSERT (((ParallelGrid *) intScheme->Ez)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) intScheme->Ez)->share ();
-    ((ParallelGrid *) intScheme->Ez)->zeroShareStep ();
+    ASSERT (((ParallelGrid *) intScheme->getEz ())->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) intScheme->getEz ())->share ();
+    ((ParallelGrid *) intScheme->getEz ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->Dz)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->Dz)->share ();
-      ((ParallelGrid *) intScheme->Dz)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getDz ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getDz ())->share ();
+      ((ParallelGrid *) intScheme->getDz ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->D1z)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->D1z)->share ();
-      ((ParallelGrid *) intScheme->D1z)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getD1z ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getD1z ())->share ();
+      ((ParallelGrid *) intScheme->getD1z ())->zeroShareStep ();
     }
   }
 
   if (intScheme->getDoNeedHx ())
   {
-    ASSERT (((ParallelGrid *) intScheme->Hx)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) intScheme->Hx)->share ();
-    ((ParallelGrid *) intScheme->Hx)->zeroShareStep ();
+    ASSERT (((ParallelGrid *) intScheme->getHx ())->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) intScheme->getHx ())->share ();
+    ((ParallelGrid *) intScheme->getHx ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->Bx)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->Bx)->share ();
-      ((ParallelGrid *) intScheme->Bx)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getBx ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getBx ())->share ();
+      ((ParallelGrid *) intScheme->getBx ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->B1x)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->B1x)->share ();
-      ((ParallelGrid *) intScheme->B1x)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getB1x ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getB1x ())->share ();
+      ((ParallelGrid *) intScheme->getB1x ())->zeroShareStep ();
     }
   }
 
   if (intScheme->getDoNeedHy ())
   {
-    ASSERT (((ParallelGrid *) intScheme->Hy)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) intScheme->Hy)->share ();
-    ((ParallelGrid *) intScheme->Hy)->zeroShareStep ();
+    ASSERT (((ParallelGrid *) intScheme->getHy ())->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) intScheme->getHy ())->share ();
+    ((ParallelGrid *) intScheme->getHy ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->By)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->By)->share ();
-      ((ParallelGrid *) intScheme->By)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getBy ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getBy ())->share ();
+      ((ParallelGrid *) intScheme->getBy ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->B1y)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->B1y)->share ();
-      ((ParallelGrid *) intScheme->B1y)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getB1y ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getB1y ())->share ();
+      ((ParallelGrid *) intScheme->getB1y ())->zeroShareStep ();
     }
   }
 
   if (intScheme->getDoNeedHz ())
   {
-    ASSERT (((ParallelGrid *) intScheme->Hz)->getShareStep () == NTimeSteps);
-    ((ParallelGrid *) intScheme->Hz)->share ();
-    ((ParallelGrid *) intScheme->Hz)->zeroShareStep ();
+    ASSERT (((ParallelGrid *) intScheme->getHz ())->getShareStep () == NTimeSteps);
+    ((ParallelGrid *) intScheme->getHz ())->share ();
+    ((ParallelGrid *) intScheme->getHz ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->Bz)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->Bz)->share ();
-      ((ParallelGrid *) intScheme->Bz)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getBz ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getBz ())->share ();
+      ((ParallelGrid *) intScheme->getBz ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->B1z)->getShareStep () == NTimeSteps);
-      ((ParallelGrid *) intScheme->B1z)->share ();
-      ((ParallelGrid *) intScheme->B1z)->zeroShareStep ();
+      ASSERT (((ParallelGrid *) intScheme->getB1z ())->getShareStep () == NTimeSteps);
+      ((ParallelGrid *) intScheme->getB1z ())->share ();
+      ((ParallelGrid *) intScheme->getB1z ())->zeroShareStep ();
     }
   }
 #endif /* PARALLEL_GRID */

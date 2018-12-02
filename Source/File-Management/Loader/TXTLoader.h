@@ -77,7 +77,7 @@ TXTLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCo
                              time_step timeStep, int time_step_back)
 {
 #ifdef PARALLEL_GRID
-  int pid = ParallelGridCore::getProcessId ();
+  int pid = ParallelGrid::getParallelCore ()->getProcessId ();
 #else /* PARALLEL_GRID */
   int pid = 0;
 #endif /* !PARALLEL_GRID */
