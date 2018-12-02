@@ -1272,60 +1272,222 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+uint64_t
+Scheme<Type, TCoord, layout_type>::estimateCurrentSize ()
+{
+  uint64_t size = 0;
+
+  /*
+   * Estimation is just size of grid plus size of Grid class
+   */
+
+#define GRID_NAME(x, y, steps) \
+  size += intScheme->has ## x () ? intScheme->get ## x ()->getSize ().calculateTotalCoord () * intScheme->get ## x ()->getCountStoredSteps () * sizeof (FieldValue) + sizeof (Grid<TC>) : 0;
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  GRID_NAME(x, y, steps)
+#include "Grids2.inc.h"
+#undef GRID_NAME
+
+  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  {
+    size += intScheme->getEInc ()->getSize ().calculateTotalCoord () * intScheme->getEInc ()->getCountStoredSteps () * sizeof (FieldValue) + sizeof (Grid<TC>);
+    size += intScheme->getHInc ()->getSize ().calculateTotalCoord () * intScheme->getHInc ()->getCountStoredSteps () * sizeof (FieldValue) + sizeof (Grid<TC>);
+  }
+
+  /*
+   * Add additional 256Mb to cover inaccuracies with small sizes
+   */
+  size += 256*1024*1024;
+
+  /*
+   * multiply on modifier to cover inaccuracies with big sizes
+   */
+  size *= 1.2;
+
+  return size;
+}
+
+#ifdef CUDA_ENABLED
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+void
+Scheme<Type, TCoord, layout_type>::setupBlocksForGPU (TC &blockCount, TC &blockSize)
+{
+  int device = 0;
+  cudaCheckErrorCmd (cudaGetDevice (&device));
+
+  cudaDeviceProp prop;
+  cudaCheckErrorCmd (cudaGetDeviceProperties (&prop, device));
+
+  uint64_t size = (uint64_t) prop.totalGlobalMem;
+
+  uint64_t requiredSize = estimateCurrentSize ();
+  printf ("Estimated current size: %lu byte.\n", requiredSize);
+
+  if (requiredSize < size)
+  {
+    /*
+     * There is enough memory, use single block, which should be already setup in blockCount and blockSize
+     */
+    return;
+  }
+
+  /*
+   * Not enough memory, use few blocks
+   */
+
+  /*
+   * Algorithm is next:
+   *
+   * Consider AxBxC grid for 3D and AxB for 2D.
+   * 1. Split the largest axes until block starts to fit in memory
+   *    a) for 2D mode, the border case for this will be 1xB or Ax1, which should certainly fit in memory.
+   *       This is true, because otherwise it should not fit in CPU memory. Consider Ax1,
+   *       and GPU having 64 Mb of memory (2^26), then, A=2^23, and B should be at least 2^23, which makes
+   *       AxB at least 2^46, which is 64 Tb and quite large for RAM (at least for now).
+   *    b) for 3D mode, the cases are same to 2D, i.e. 1xBxC, etc. Argumentation is similar to 2D.
+   *    c) for 1D mode, it is considered that it always fits.
+   *
+   * Assert will hit for condition if really huge amount of memory is required, meaning that this case is unsupported yet.
+   *
+   * Thus, blockCount will be non-equal to 1 for only one axis!
+   */
+
+  GridCoordinate3D size3D = expandTo3D (blockSize, ct1, ct2, ct3);
+  GridCoordinate3D count3D = expandTo3D (blockCount, ct1, ct2, ct3);
+
+  uint64_t modifier = 1;
+
+  if (size3D.get1 () == size3D.getMax ())
+  {
+    GridCoordinate3D min3D = GRID_COORDINATE_3D (2, size3D.get2 (), size3D.get3 (), CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+    while (size3D >= min3D && requiredSize / modifier >= size)
+    {
+      size3D.set1 (size3D.get1 () / grid_coord (2));
+      count3D.set1 (count3D.get1 () * grid_coord (2));
+      modifier *= 2;
+      blockSize = TC::initAxesCoordinate (size3D.get1 (), size3D.get2 (), size3D.get3 (), ct1, ct2, ct3);
+    }
+
+    if (!(size3D >= min3D))
+    {
+      ALWAYS_ASSERT_MESSAGE ("Too much memory was requested. Not implemented");
+    }
+  }
+  else if (size3D.get2 () == size3D.getMax ())
+  {
+    GridCoordinate3D min3D = GRID_COORDINATE_3D (size3D.get1 (), 2, size3D.get3 (), CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+    while (size3D >= min3D && requiredSize / modifier >= size)
+    {
+      size3D.set2 (size3D.get2 () / grid_coord (2));
+      count3D.set2 (count3D.get2 () * grid_coord (2));
+      modifier *= 2;
+      blockSize = TC::initAxesCoordinate (size3D.get1 (), size3D.get2 (), size3D.get3 (), ct1, ct2, ct3);
+    }
+
+    if (!(size3D >= min3D))
+    {
+      ALWAYS_ASSERT_MESSAGE ("Too much memory was requested. Not implemented");
+    }
+  }
+  else if (size3D.get3 () == size3D.getMax ())
+  {
+    GridCoordinate3D min3D = GRID_COORDINATE_3D (size3D.get1 (), size3D.get2 (), 2, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
+    while (size3D >= min3D && requiredSize / modifier >= size)
+    {
+      size3D.set3 (size3D.get3 () / grid_coord (2));
+      count3D.set3 (count3D.get3 () * grid_coord (2));
+      modifier *= 2;
+      blockSize = TC::initAxesCoordinate (size3D.get1 (), size3D.get2 (), size3D.get3 (), ct1, ct2, ct3);
+    }
+
+    if (!(size3D >= min3D))
+    {
+      ALWAYS_ASSERT_MESSAGE ("Too much memory was requested. Not implemented");
+    }
+  }
+  else
+  {
+    UNREACHABLE;
+  }
+
+  blockCount = TC::initAxesCoordinate (count3D.get1 (), count3D.get2 (), count3D.get3 (), ct1, ct2, ct3);
+}
+#endif
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void
 Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
 {
   totalTimeSteps = t_total;
 
-  /*
-   * TODO: currently only single block is set up here, but underlying methods should support more?
-   */
-  blockCount = TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
-
-  // TODO: allocate previous step storage for cuda blocks (see page 81)
-
-#ifdef PARALLEL_GRID
-  ParallelYeeGridLayout<Type, layout_type> *parallelYeeLayout = (ParallelYeeGridLayout<Type, layout_type> *) yeeLayout;
-  blockSize = parallelYeeLayout->getSizeForCurNode ();
-#else
-  blockSize = yeeLayout->getSize ();
-#endif
-
-#ifdef PARALLEL_GRID
-  if (useParallel)
-  {
-    time_step parallelBuf = (time_step) SOLVER_SETTINGS.getBufferSize ();
-    NTimeSteps = parallelBuf;
-  }
-  else
-#endif /* PARALLEL_GRID */
-  {
-    NTimeSteps = totalTimeSteps;
-  }
-
-#ifdef CUDA_ENABLED
-  if (blockCount.calculateTotalCoord () > 1)
   {
     /*
-     * More than one block is used, have to consider buffers now
+     * Identify required amount of blocks and their sizes. Left blocks - better.
      */
-    time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
+    blockCount = TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
 
 #ifdef PARALLEL_GRID
     if (useParallel)
     {
-      /*
-       * Cuda grid buffer can't be greater than parallel grid buffer, because there will be no data to fill it with.
-       * If cuda grid buffer is less than parallel grid buffer, then parallel grid buffer won't be used fully, which
-       * is undesirable. So, restrict buffers to be identical for the case of both parallel mode and cuda mode.
-       */
-      ALWAYS_ASSERT (cudaBuf == (time_step) SOLVER_SETTINGS.getBufferSize ())
+      ParallelYeeGridLayout<Type, layout_type> *parallelYeeLayout = (ParallelYeeGridLayout<Type, layout_type> *) yeeLayout;
+      blockSize = parallelYeeLayout->getSizeForCurNode ();
     }
-#endif /* PARALLEL_GRID */
+    else
+#endif
+    {
+      blockSize = yeeLayout->getSize ();
+    }
 
-    NTimeSteps = cudaBuf;
+#ifdef CUDA_ENABLED
+    setupBlocksForGPU (blockCount, blockSize);
+#endif
   }
 
+  printf ("Setup blocks:\n");
+  printf ("blockCount:\n");
+  blockCount.print ();
+  printf ("blockSize:\n");
+  blockSize.print ();
+
+  {
+#ifdef PARALLEL_GRID
+    if (useParallel)
+    {
+      time_step parallelBuf = (time_step) SOLVER_SETTINGS.getBufferSize ();
+      NTimeSteps = parallelBuf;
+    }
+    else
+#endif /* PARALLEL_GRID */
+    {
+      NTimeSteps = totalTimeSteps;
+    }
+
+#ifdef CUDA_ENABLED
+    if (blockCount.calculateTotalCoord () > 1)
+    {
+      /*
+       * More than one block is used, have to consider buffers now
+       */
+      time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
+
+#ifdef PARALLEL_GRID
+      if (useParallel)
+      {
+        /*
+         * Cuda grid buffer can't be greater than parallel grid buffer, because there will be no data to fill it with.
+         * If cuda grid buffer is less than parallel grid buffer, then parallel grid buffer won't be used fully, which
+         * is undesirable. So, restrict buffers to be identical for the case of both parallel mode and cuda mode.
+         */
+        ALWAYS_ASSERT (cudaBuf == (time_step) SOLVER_SETTINGS.getBufferSize ())
+      }
+#endif /* PARALLEL_GRID */
+
+      NTimeSteps = cudaBuf;
+    }
+#endif /* CUDA_ENABLED */
+  }
+
+#ifdef CUDA_ENABLED
   /*
    * Init InternalScheme on GPU
    */
