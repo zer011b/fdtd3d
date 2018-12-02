@@ -13,8 +13,8 @@ function launch ()
 
   local ret=$?
 
-  val_max=$(cat current[100]_rank-0_Ex-Mod.bmp.txt | awk '{print $1}')
-  val_min=$(cat current[100]_rank-0_Ex-Mod.bmp.txt | awk '{print $2}')
+  val_max=$(cat previous-1_[timestep=100]_[pid=0]_[name=Ex]_[mod].txt | awk '{print $1}')
+  val_min=$(cat previous-1_[timestep=100]_[pid=0]_[name=Ex]_[mod].txt | awk '{print $2}')
   is_ok=$(echo $val_max $val_min | awk '
             {
               if (1.01 <= $1 && $1 <= 1.02 && 0.0 == $2)
@@ -39,8 +39,8 @@ function launch ()
 
   ret=$?
 
-  val_max=$(cat current[100]_rank-0_Ex-Mod.bmp.txt | awk '{print $1}')
-  val_min=$(cat current[100]_rank-0_Ex-Mod.bmp.txt | awk '{print $2}')
+  val_max=$(cat previous-1_[timestep=100]_[pid=0]_[name=Ex]_[mod].txt | awk '{print $1}')
+  val_min=$(cat previous-1_[timestep=100]_[pid=0]_[name=Ex]_[mod].txt | awk '{print $2}')
   is_ok=$(echo $val_max $val_min | awk '
             {
               if (0.0 <= $1 && $1 <= 1e-14 && 0.0 == $2)

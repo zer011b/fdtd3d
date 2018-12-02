@@ -16,7 +16,7 @@ function launch ()
 
   ./fdtd3d${binary_prefix} --cmd-from-file vacuum2D_planewave_TMz.txt &> $output_file
 
-  mv current[$timestep]_rank-0_Ez.txt current[$timestep]_rank-0_Ez.txt.$binary_prefix
+  mv previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt.$binary_prefix
 
   local ret=$?
 
@@ -38,8 +38,8 @@ if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-filename_complex="current[$timestep]_rank-0_Ez.txt._complex"
-filename_real="current[$timestep]_rank-0_Ez.txt._real"
+filename_complex="previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt._complex"
+filename_real="previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt._real"
 
 while read -r line
 do
