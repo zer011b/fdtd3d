@@ -1077,6 +1077,10 @@ public:
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedHy () const { return doNeedHy; }
   ICUDA_DEVICE ICUDA_HOST bool getDoNeedHz () const { return doNeedHz; }
 
+  ICUDA_DEVICE ICUDA_HOST bool getDoNeedSigmaX () const { return doNeedSigmaX; }
+  ICUDA_DEVICE ICUDA_HOST bool getDoNeedSigmaY () const { return doNeedSigmaY; }
+  ICUDA_DEVICE ICUDA_HOST bool getDoNeedSigmaZ () const { return doNeedSigmaZ; }
+
   ICUDA_HOST CoordinateType get_ct1 ()
   {
     switch (static_cast<uint8_t> (Type))

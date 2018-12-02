@@ -97,9 +97,9 @@ InternalSchemeHelper::allocateParallelGrids (InternalScheme<Type, ParallelGridCo
   ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
                                                                                SOLVER_SETTINGS.getBufferSize (),
                                                                                SOLVER_SETTINGS.getBufferSize (),
-                                                                               ct1, ct2, ct3);
+                                                                               intScheme->ct1, intScheme->ct2, intScheme->ct3);
 
-  ParallelYeeGridLayout<Type, layout_type> *pLayout = intScheme->yeeLayout;
+  ParallelYeeGridLayout<Type, layout_type> *pLayout = (ParallelYeeGridLayout<Type, layout_type> *) intScheme->yeeLayout;
 
   int storedSteps = 3;
 
