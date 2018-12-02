@@ -15,7 +15,7 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 class Scheme
 {
   friend class SchemeHelper;
-  
+
   typedef TCoord<grid_coord, true> TC;
   typedef TCoord<grid_coord, false> TCS;
   typedef TCoord<FPValue, true> TCFP;
@@ -67,11 +67,11 @@ private:
   Loader<TC> *loader[FILE_TYPE_COUNT];
 
   Dumper<GridCoordinate1D> *dumper1D[FILE_TYPE_COUNT];
-  
+
   CoordinateType ct1;
   CoordinateType ct2;
   CoordinateType ct3;
-  
+
   YeeGridLayout<Type, TCoord, layout_type> *yeeLayout;
 
 private:
@@ -80,10 +80,16 @@ private:
   void performNStepsForBlock (time_step tStart, time_step N, TC blockIdx);
   void share ();
   void rebalance ();
-  
+
   void initCallBacks ();
   void initGrids ();
   void initBlocks (time_step t_total);
+
+  uint64_t estimateCurrentSize ();
+
+#ifdef CUDA_ENABLED
+  void setupBlocksForGPU (TC &blockCount, TC &blockSize);
+#endif
 
   template <uint8_t grid_type>
   void performFieldSteps (time_step, TC, TC);
