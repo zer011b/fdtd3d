@@ -3988,33 +3988,33 @@ Scheme<Type, TCoord, layout_type>::gatherFieldsTotal (bool scattered)
       {
         if (intScheme->getDoNeedEx ())
         {
-          totalEx = new Grid<TC> (yeeLayout->getExSize (), 0, intScheme->getEx ()->getCountStoredSteps (), "TotalEx");
+          totalEx = new Grid<TC> (yeeLayout->getExSize (), 0, intScheme->getEx ()->getCountStoredSteps (), "Ex");
           totalEx->copy (intScheme->getEx ());
         }
         if (intScheme->getDoNeedEy ())
         {
-          totalEy = new Grid<TC> (yeeLayout->getEySize (), 0, intScheme->getEy ()->getCountStoredSteps (), "TotalEy");
+          totalEy = new Grid<TC> (yeeLayout->getEySize (), 0, intScheme->getEy ()->getCountStoredSteps (), "Ey");
           totalEy->copy (intScheme->getEy ());
         }
         if (intScheme->getDoNeedEz ())
         {
-          totalEz = new Grid<TC> (yeeLayout->getEzSize (), 0, intScheme->getEz ()->getCountStoredSteps (), "TotalEz");
+          totalEz = new Grid<TC> (yeeLayout->getEzSize (), 0, intScheme->getEz ()->getCountStoredSteps (), "Ez");
           totalEz->copy (intScheme->getEz ());
         }
 
         if (intScheme->getDoNeedHx ())
         {
-          totalHx = new Grid<TC> (yeeLayout->getHxSize (), 0, intScheme->getHx ()->getCountStoredSteps (), "TotalHx");
+          totalHx = new Grid<TC> (yeeLayout->getHxSize (), 0, intScheme->getHx ()->getCountStoredSteps (), "Hx");
           totalHx->copy (intScheme->getHx ());
         }
         if (intScheme->getDoNeedHy ())
         {
-          totalHy = new Grid<TC> (yeeLayout->getHySize (), 0, intScheme->getHy ()->getCountStoredSteps (), "TotalHy");
+          totalHy = new Grid<TC> (yeeLayout->getHySize (), 0, intScheme->getHy ()->getCountStoredSteps (), "Hy");
           totalHy->copy (intScheme->getHy ());
         }
         if (intScheme->getDoNeedHz ())
         {
-          totalHz = new Grid<TC> (yeeLayout->getHzSize (), 0, intScheme->getHz ()->getCountStoredSteps (), "TotalHz");
+          totalHz = new Grid<TC> (yeeLayout->getHzSize (), 0, intScheme->getHz ()->getCountStoredSteps (), "Hz");
           totalHz->copy (intScheme->getHz ());
         }
 
