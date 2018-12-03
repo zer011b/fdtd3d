@@ -54,7 +54,7 @@ void testFunc (TCoord overallSize, int storedSteps, CoordinateType ct1, Coordina
     ASSERT (*grid.getFieldValueOrNullByAbsolutePos (test_coord, j) == FieldValue (1502 * i, 189 * i));
   }
   
-  grid.nextTimeStep ();
+  grid.nextTimeStep (false);
 
 #ifdef DEBUG_INFO
   ASSERT (grid.getTimeStep () == 1);

@@ -78,7 +78,12 @@ private:
 
   void performNSteps (time_step tStart, time_step N);
   void performNStepsForBlock (time_step tStart, time_step N, TC blockIdx);
-  void share ();
+  
+#ifdef CUDA_ENABLED
+  void shareE ();
+  void shareH ();
+#endif
+
   void rebalance ();
 
   void initCallBacks ();
