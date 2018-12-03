@@ -1616,9 +1616,19 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
   }
   else
   {
-    /*
-     * In parallel mode total grids will be allocated if required
-     */
+    if (SOLVER_SETTINGS.getDoSaveMaterials ())
+    {
+      totalEps = new Grid<TC> (yeeLayout->getEpsSize (), 0, intScheme->getEps ()->getCountStoredSteps (), "Eps");
+      totalMu = new Grid<TC> (yeeLayout->getMuSize (), 0, intScheme->getMu ()->getCountStoredSteps (), "Mu");
+
+      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+      {
+        totalOmegaPE = new Grid<TC> (yeeLayout->getEpsSize (), 0, intScheme->getOmegaPE ()->getCountStoredSteps (), "OmegaPE");
+        totalOmegaPM = new Grid<TC> (yeeLayout->getEpsSize (), 0, intScheme->getOmegaPM ()->getCountStoredSteps (), "OmegaPM");
+        totalGammaE = new Grid<TC> (yeeLayout->getEpsSize (), 0, intScheme->getGammaE ()->getCountStoredSteps (), "GammaE");
+        totalGammaM = new Grid<TC> (yeeLayout->getEpsSize (), 0, intScheme->getGammaM ()->getCountStoredSteps (), "GammaM");
+      }
+    }
   }
 
   if (SOLVER_SETTINGS.getDoSaveAsBMP ())
