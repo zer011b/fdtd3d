@@ -373,7 +373,7 @@ public:
 
   virtual ~ParallelGrid () {}
 
-  virtual void nextTimeStep () CXX11_OVERRIDE;
+  virtual void nextTimeStep (bool) CXX11_OVERRIDE;
 
   /**
    * Increase share step

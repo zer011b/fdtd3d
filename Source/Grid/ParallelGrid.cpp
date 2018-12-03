@@ -2428,27 +2428,41 @@ ParallelGrid::ParallelGridConstructor ()
  * Switch to next time step
  */
 void
-ParallelGrid::nextTimeStep ()
+ParallelGrid::nextTimeStep (bool performShareIfRequired)
 {
-  ParallelGridBase::nextTimeStep ();
+  ParallelGridBase::nextTimeStep (performShareIfRequired);
 
   nextShareStep ();
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_X) || defined (PARALLEL_BUFFER_DIMENSION_2D_XY) || \
     defined (PARALLEL_BUFFER_DIMENSION_2D_XZ) || defined (PARALLEL_BUFFER_DIMENSION_3D_XYZ)
   ASSERT (shareStep <= bufferSize.get1 ());
+  bool is_share_time = shareStep == bufferSize.get1 ();
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_X || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Y) || defined (PARALLEL_BUFFER_DIMENSION_2D_YZ)
   ASSERT (shareStep <= bufferSize.get2 ());
+  bool is_share_time = shareStep == bufferSize.get2 ();
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Y || PARALLEL_BUFFER_DIMENSION_2D_XY ||
           PARALLEL_BUFFER_DIMENSION_2D_YZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
 
 #if defined (PARALLEL_BUFFER_DIMENSION_1D_Z)
   ASSERT (shareStep <= bufferSize.get3 ());
+  bool is_share_time = shareStep == bufferSize.get3 ();
 #endif /* PARALLEL_BUFFER_DIMENSION_1D_Z || PARALLEL_BUFFER_DIMENSION_2D_YZ ||
           PARALLEL_BUFFER_DIMENSION_2D_XZ || PARALLEL_BUFFER_DIMENSION_3D_XYZ */
+
+  if (is_share_time)
+  {
+    if (!performShareIfRequired)
+    {
+      ALWAYS_ASSERT_MESSAGE ("Share operation should be performed, but they are not expected!");
+    }
+
+    share ();
+    zeroShareStep ();
+  }
 } /* ParallelGrid::nextTimeStep */
 
 /**

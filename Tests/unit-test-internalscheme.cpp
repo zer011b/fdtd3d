@@ -253,7 +253,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 #else /* CUDA_ENABLED */
       intScheme->performPlaneWaveESteps (t, zero1D, intScheme->getEInc ()->getSize ());
       intScheme->getEInc ()->shiftInTime ();
-      intScheme->getEInc ()->nextTimeStep ();
+      intScheme->getEInc ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -340,7 +340,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getEx ()->shiftInTime ();
-      intScheme->getEx ()->nextTimeStep ();
+      intScheme->getEx ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -426,7 +426,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getEy ()->shiftInTime ();
-      intScheme->getEy ()->nextTimeStep ();
+      intScheme->getEy ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -512,7 +512,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getEz ()->shiftInTime ();
-      intScheme->getEz ()->nextTimeStep ();
+      intScheme->getEz ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -527,7 +527,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 #else /* CUDA_ENABLED */
       intScheme->performPlaneWaveHSteps (t, zero1D, intScheme->getHInc ()->getSize ());
       intScheme->getHInc ()->shiftInTime ();
-      intScheme->getHInc ()->nextTimeStep ();
+      intScheme->getHInc ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -613,7 +613,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getHx ()->shiftInTime ();
-      intScheme->getHx ()->nextTimeStep ();
+      intScheme->getHx ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -699,7 +699,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getHy ()->shiftInTime ();
-      intScheme->getHy ()->nextTimeStep ();
+      intScheme->getHy ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -785,7 +785,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getHz ()->shiftInTime ();
-      intScheme->getHz ()->nextTimeStep ();
+      intScheme->getHz ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
   }

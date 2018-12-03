@@ -88,7 +88,7 @@ public:
   virtual FieldValue * getFieldValueOrNullByAbsolutePos (const TCoord &, int);
 
   void shiftInTime ();
-  virtual void nextTimeStep ();
+  virtual void nextTimeStep (bool);
 
   const char * getName () const;
 
@@ -321,7 +321,7 @@ Grid<TCoord>::getFieldValueOrNullByAbsolutePos (const TCoord &relPosition, /**< 
  */
 template <class TCoord>
 void
-Grid<TCoord>::nextTimeStep ()
+Grid<TCoord>::nextTimeStep (bool performShareIfRequired)
 {
 #ifdef DEBUG_INFO
   ++timeStep;

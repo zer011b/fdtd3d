@@ -87,7 +87,7 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
 #else /* CUDA_ENABLED */
       intScheme->performPlaneWaveESteps (t, zero1D, intScheme->getEInc ()->getSize ());
       intScheme->getEInc ()->shiftInTime ();
-      intScheme->getEInc ()->nextTimeStep ();
+      intScheme->getEInc ()->nextTimeStep (true);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -152,17 +152,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       }
 #else
       intScheme->getEx ()->shiftInTime ();
-      intScheme->getEx ()->nextTimeStep ();
+      intScheme->getEx ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getDx ()->shiftInTime ();
-        intScheme->getDx ()->nextTimeStep ();
+        intScheme->getDx ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getD1x ()->shiftInTime ();
-        intScheme->getD1x ()->nextTimeStep ();
+        intScheme->getD1x ()->nextTimeStep (true);
       }
 #endif
     }
@@ -185,17 +185,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       }
 #else
       intScheme->getEy ()->shiftInTime ();
-      intScheme->getEy ()->nextTimeStep ();
+      intScheme->getEy ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getDy ()->shiftInTime ();
-        intScheme->getDy ()->nextTimeStep ();
+        intScheme->getDy ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getD1y ()->shiftInTime ();
-        intScheme->getD1y ()->nextTimeStep ();
+        intScheme->getD1y ()->nextTimeStep (true);
       }
 #endif
     }
@@ -218,17 +218,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       }
 #else
       intScheme->getEz ()->shiftInTime ();
-      intScheme->getEz ()->nextTimeStep ();
+      intScheme->getEz ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getDz ()->shiftInTime ();
-        intScheme->getDz ()->nextTimeStep ();
+        intScheme->getDz ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getD1z ()->shiftInTime ();
-        intScheme->getD1z ()->nextTimeStep ();
+        intScheme->getD1z ()->nextTimeStep (true);
       }
 #endif
     }
@@ -244,7 +244,7 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
 #else /* CUDA_ENABLED */
       intScheme->performPlaneWaveHSteps (t, zero1D, intScheme->getHInc ()->getSize ());
       intScheme->getHInc ()->shiftInTime ();
-      intScheme->getHInc ()->nextTimeStep ();
+      intScheme->getHInc ()->nextTimeStep (true);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -309,17 +309,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       }
 #else
       intScheme->getHx ()->shiftInTime ();
-      intScheme->getHx ()->nextTimeStep ();
+      intScheme->getHx ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getBx ()->shiftInTime ();
-        intScheme->getBx ()->nextTimeStep ();
+        intScheme->getBx ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getB1x ()->shiftInTime ();
-        intScheme->getB1x ()->nextTimeStep ();
+        intScheme->getB1x ()->nextTimeStep (true);
       }
 #endif
     }
@@ -342,17 +342,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       }
 #else
       intScheme->getHy ()->shiftInTime ();
-      intScheme->getHy ()->nextTimeStep ();
+      intScheme->getHy ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getBy ()->shiftInTime ();
-        intScheme->getBy ()->nextTimeStep ();
+        intScheme->getBy ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getB1y ()->shiftInTime ();
-        intScheme->getB1y ()->nextTimeStep ();
+        intScheme->getB1y ()->nextTimeStep (true);
       }
 #endif
     }
@@ -375,17 +375,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       }
 #else
       intScheme->getHz ()->shiftInTime ();
-      intScheme->getHz ()->nextTimeStep ();
+      intScheme->getHz ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getBz ()->shiftInTime ();
-        intScheme->getBz ()->nextTimeStep ();
+        intScheme->getBz ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getB1z ()->shiftInTime ();
-        intScheme->getB1z ()->nextTimeStep ();
+        intScheme->getB1z ()->nextTimeStep (true);
       }
 #endif
     }
@@ -400,6 +400,7 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
 #endif /* CUDA_ENABLED */
 }
 
+#ifdef CUDA_ENABLED
 /**
  * Perform share operations, required for grids
  *
@@ -407,7 +408,7 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
  */
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void
-Scheme<Type, TCoord, layout_type>::share ()
+Scheme<Type, TCoord, layout_type>::shareE ()
 {
 #ifdef PARALLEL_GRID
   if (!useParallel)
@@ -474,7 +475,14 @@ Scheme<Type, TCoord, layout_type>::share ()
       ((ParallelGrid *) intScheme->getD1z ())->zeroShareStep ();
     }
   }
+#endif
+}
 
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+void
+Scheme<Type, TCoord, layout_type>::shareH ()
+{
+#ifdef PARALLEL_GRID
   if (intScheme->getDoNeedHx ())
   {
     ASSERT (((ParallelGrid *) intScheme->getHx ())->getShareStep () == NTimeSteps);
@@ -536,6 +544,7 @@ Scheme<Type, TCoord, layout_type>::share ()
   }
 #endif /* PARALLEL_GRID */
 }
+#endif
 
 /**
  * Perform balancing operations
@@ -1450,25 +1459,27 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
   blockSize.print ();
 
   {
-#ifdef PARALLEL_GRID
-    if (useParallel)
-    {
-      time_step parallelBuf = (time_step) SOLVER_SETTINGS.getBufferSize ();
-      NTimeSteps = parallelBuf;
-    }
-    else
-#endif /* PARALLEL_GRID */
-    {
-      NTimeSteps = totalTimeSteps;
-    }
-
 #ifdef CUDA_ENABLED
-    if (blockCount.calculateTotalCoord () > 1)
+    time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
+
+    if (blockCount.calculateTotalCoord () > 1
+#ifdef PARALLEL_GRID
+        || useParallel
+#endif
+        )
     {
       /*
        * More than one block is used, have to consider buffers now
        */
-      time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
+
+      /*
+       * Buf can't be 1, because this will lead to usage of incorrect data from buffers, as share operations in CUDA
+       * mode are delayed until both computations for E and H are finished.
+       * That's why additional buffer layer is required for computaions, which basically means, that cudaBuf - 1 time
+       * steps can be performed before share operations are required.
+       */
+      ALWAYS_ASSERT (cudaBuf > 1);
+      NTimeSteps = cudaBuf - 1;
 
 #ifdef PARALLEL_GRID
       if (useParallel)
@@ -1481,10 +1492,31 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
         ALWAYS_ASSERT (cudaBuf == (time_step) SOLVER_SETTINGS.getBufferSize ())
       }
 #endif /* PARALLEL_GRID */
-
-      NTimeSteps = cudaBuf;
     }
-#endif /* CUDA_ENABLED */
+    else
+    {
+      NTimeSteps = totalTimeSteps;
+      /*
+       * Minimum buffer could be used
+       */
+      ALWAYS_ASSERT (cudaBuf == 1);
+    }
+#else /* CUDA_ENABLED */
+
+#ifdef PARALLEL_GRID
+    if (useParallel)
+    {
+      time_step parallelBuf = (time_step) SOLVER_SETTINGS.getBufferSize ();
+      ALWAYS_ASSERT (parallelBuf >= 1);
+      NTimeSteps = parallelBuf;
+    }
+    else
+#endif /* PARALLEL_GRID */
+    {
+      NTimeSteps = totalTimeSteps;
+    }
+
+#endif /* !CUDA_ENABLED */
   }
 
 #ifdef CUDA_ENABLED

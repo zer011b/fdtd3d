@@ -126,11 +126,14 @@ void
 BMPLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
                              time_step timeStep, int time_step_back)
 {
-#ifdef PARALLEL_GRID
-  int pid = ParallelGrid::getParallelCore ()->getProcessId ();
-#else /* PARALLEL_GRID */
   int pid = 0;
-#endif /* !PARALLEL_GRID */
+  
+#ifdef PARALLEL_GRID
+  if (SOLVER_SETTINGS.getDoUseParallelGrid ())
+  {
+    int pid = ParallelGrid::getParallelCore ()->getProcessId ();
+  }
+#endif /* PARALLEL_GRID */
 
   GridFileManager::setFileNames (grid->getCountStoredSteps (), timeStep, pid, std::string (grid->getName ()), FILE_TYPE_BMP);
   

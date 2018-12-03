@@ -52,7 +52,10 @@ public:
       scheme->performNStepsForBlock (tStart, N, blockIdx);
     }
 
-    scheme->share ();
+#ifdef CUDA_ENABLED
+    scheme->shareE ();
+    scheme->shareH ();
+#endif
     scheme->rebalance ();
 
     if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
@@ -86,7 +89,10 @@ public:
       }
     }
 
-    scheme->share ();
+#ifdef CUDA_ENABLED
+    scheme->shareE ();
+    scheme->shareH ();
+#endif
     scheme->rebalance ();
 
     if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
@@ -123,7 +129,10 @@ public:
       }
     }
 
-    scheme->share ();
+#ifdef CUDA_ENABLED
+    scheme->shareE ();
+    scheme->shareH ();
+#endif
     scheme->rebalance ();
 
     if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
