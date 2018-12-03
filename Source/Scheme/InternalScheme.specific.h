@@ -67,7 +67,16 @@ InternalSchemeHelper::allocateGrids (InternalScheme<Type, TCoord, layout_type> *
   typedef TCoord<FPValue, true> TCFP;
   typedef TCoord<FPValue, false> TCSFP;
 
-  int storedSteps = 3;
+  /*
+   * Minimum number of stores steps is 2.
+   * TODO: optimize to be able to allocate single step for non-PML modes.
+   */
+  int storedSteps = 2;
+
+  if (SOLVER_SETTINGS.getDoUseMetamaterials () && SOLVER_SETTINGS.getDoUsePML ())
+  {
+    storedSteps = 3;
+  }
 
 #define GRID_NAME(x, y, steps) \
   intScheme->x = intScheme->doNeed ## y ? new Grid<TC> (layout->get ## y ## Size (), 0, steps, #x) : NULLPTR;
