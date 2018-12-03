@@ -29,8 +29,7 @@ function build
   LIST_OF_BUFFERS="$2"
 
   for VALUE_TYPE in f d ld; do
-    for TIME_STEPS in 1 2; do
-      for PARALLEL_BUFFER in `echo $LIST_OF_BUFFERS`; do
+    for PARALLEL_BUFFER in `echo $LIST_OF_BUFFERS`; do
       for COMBINED_SENDRECV in ON OFF; do
 
         if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
@@ -40,7 +39,6 @@ function build
         cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=ReleaseWithAsserts \
           -DVALUE_TYPE=${VALUE_TYPE} \
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
-          -DTIME_STEPS=${TIME_STEPS} \
           -DPARALLEL_GRID_DIMENSION=${PARALLEL_GRID_DIM} \
           -DPRINT_MESSAGE=ON \
           -DPARALLEL_GRID=ON \
@@ -110,7 +108,6 @@ function build
         if [[ res -ne 0 ]]; then
           exit 1
         fi
-      done
       done
     done
   done

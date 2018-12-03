@@ -14,7 +14,7 @@ option(MPI_CLOCK "Use mpi clock (MPI_Wtime) for clocks" OFF)
 option(LINK_NUMA "Link with NUMA library" OFF)
 option(STD_COMPEX "Use std::complex class instead of custom one" OFF)
 
-set(SOLVER_DIM_MODES "all" CACHE STRING "Defines FDTD solver dimension modes, which are compiled")
+set(SOLVER_DIM_MODES "ALL" CACHE STRING "Defines FDTD solver dimension modes, which are compiled")
 
 set(VALUE_TYPE "d" CACHE STRING "Defines type of values")
 set(PARALLEL_GRID_DIMENSION "2" CACHE STRING "Defines number dimension in grid")

@@ -27,8 +27,7 @@ cd ${BUILD_DIR}
 function build
 {
   for VALUE_TYPE in f d; do
-    for TIME_STEPS in 1 2; do
-      for COMPLEX_FIELD_VALUES in ON OFF; do
+    for COMPLEX_FIELD_VALUES in ON OFF; do
       for LARGE_COORDINATES in ON OFF; do
 
         if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
@@ -38,7 +37,6 @@ function build
         cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=ReleaseWithAsserts \
           -DVALUE_TYPE=${VALUE_TYPE} \
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
-          -DTIME_STEPS=${TIME_STEPS} \
           -DPARALLEL_GRID_DIMENSION=3 \
           -DPRINT_MESSAGE=OFF \
           -DPARALLEL_GRID=OFF \
@@ -76,7 +74,6 @@ function build
             exit 1
           fi
         fi
-      done
       done
     done
   done

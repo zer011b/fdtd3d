@@ -21,20 +21,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Release
-        - CXX11=ON
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -42,20 +31,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Release
-        - CXX11=ON
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Release, non-Cxx11, no message print build ----
     - stage: build
@@ -64,20 +42,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Release
-        - CXX11=OFF
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -85,20 +52,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Release
-        - CXX11=OFF
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Release, Cxx11, message print build ----
     - stage: build
@@ -107,20 +63,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Release
-        - CXX11=ON
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -128,20 +73,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Release
-        - CXX11=ON
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Release, non-Cxx11, message print build ----
     - stage: build
@@ -150,20 +84,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Release
-        - CXX11=OFF
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -171,20 +94,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Release
-        - CXX11=OFF
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- ReleaseWithAsserts, Cxx11, no message print build ----
     - stage: build
@@ -193,20 +105,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=ReleaseWithAsserts
-        - CXX11=ON
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -214,20 +115,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=ReleaseWithAsserts
-        - CXX11=ON
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- ReleaseWithAsserts, non-Cxx11, no message print build ----
     - stage: build
@@ -236,20 +126,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=ReleaseWithAsserts
-        - CXX11=OFF
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -257,20 +136,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=ReleaseWithAsserts
-        - CXX11=OFF
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- ReleaseWithAsserts, Cxx11, message print build ----
     - stage: build
@@ -279,20 +147,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=ReleaseWithAsserts
-        - CXX11=ON
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -300,20 +157,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=ReleaseWithAsserts
-        - CXX11=ON
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- ReleaseWithAsserts, non-Cxx11, message print build ----
     - stage: build
@@ -322,20 +168,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=ReleaseWithAsserts
-        - CXX11=OFF
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -343,20 +178,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=ReleaseWithAsserts
-        - CXX11=OFF
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Debug, Cxx11, no message print build ----
     - stage: build
@@ -365,20 +189,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Debug
-        - CXX11=ON
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -386,20 +199,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Debug
-        - CXX11=ON
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Debug, non-Cxx11, no message print build ----
     - stage: build
@@ -408,20 +210,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Debug
-        - CXX11=OFF
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -429,20 +220,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Debug
-        - CXX11=OFF
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=OFF
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Debug, Cxx11, message print build ----
     - stage: build
@@ -451,20 +231,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Debug
-        - CXX11=ON
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -472,20 +241,9 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Debug
-        - CXX11=ON
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Debug, non-Cxx11, message print build ----
     - stage: build
@@ -494,20 +252,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Debug
-        - CXX11=OFF
-        - COMPLEX_VALUES=ON
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -515,20 +262,9 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
-        - TIME_STEPS=1
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
-    - stage: build
-      env:
-        - BUILD_MODE=Debug
-        - CXX11=OFF
-        - COMPLEX_VALUES=OFF
-        - PRINT_MESSAGE=ON
-        - TIME_STEPS=2
-      script:
-      - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${TIME_STEPS}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ==== Unit tests stage ====
 # ---- Unit test for ParallelGrid ----

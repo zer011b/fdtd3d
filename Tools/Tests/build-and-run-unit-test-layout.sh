@@ -32,7 +32,6 @@ function build
       cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=ReleaseWithAsserts \
         -DVALUE_TYPE=${VALUE_TYPE} \
         -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
-        -DTIME_STEPS=2 \
         -DPARALLEL_GRID_DIMENSION=3 \
         -DPRINT_MESSAGE=OFF \
         -DPARALLEL_GRID=OFF \
