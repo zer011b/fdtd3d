@@ -644,11 +644,7 @@ private:
 
 #if defined (PARALLEL_GRID)
 
-  ICUDA_HOST void allocateParallelGrids ()
-  {
-    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                    "Recompile it with -DPARALLEL_GRID_DIMENSION=X, where X is required dimension");
-  }
+  ICUDA_HOST void allocateParallelGrids ();
 
 #endif
 
@@ -677,25 +673,12 @@ private:
   ICUDA_DEVICE bool doSkipBorderFunc (TC, IGRID<TC> *);
 
 #ifdef ENABLE_ASSERTS
-#ifdef GPU_INTERNAL_SCHEME
-  /*
-   * For some reason nvcc can't handle correctly specialization of template with definition.
-   * So, manually define for all the modes.
-   */
   ICUDA_DEVICE void calculateTFSFExAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
   ICUDA_DEVICE void calculateTFSFEyAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
   ICUDA_DEVICE void calculateTFSFEzAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
   ICUDA_DEVICE void calculateTFSFHxAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
   ICUDA_DEVICE void calculateTFSFHyAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
   ICUDA_DEVICE void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22);
-#else /* GPU_INTERNAL_SCHEME */
-  ICUDA_DEVICE void calculateTFSFExAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE void calculateTFSFEyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE void calculateTFSFEzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE void calculateTFSFHxAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE void calculateTFSFHyAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-  ICUDA_DEVICE void calculateTFSFHzAsserts (TC pos11, TC pos12, TC pos21, TC pos22) { UNREACHABLE; }
-#endif /* !GPU_INTERNAL_SCHEME */
 #endif /* ENABLE_ASSERTS */
 
   template <uint8_t grid_type>
