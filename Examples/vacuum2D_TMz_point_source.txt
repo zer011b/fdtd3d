@@ -24,6 +24,6 @@
 --pml-sizey 20
 --use-pml
 
----point-source-pos-x 100
----point-source-pos-y 100
----point-source-ez
+--point-source-pos-x 100
+--point-source-pos-y 100
+--point-source-ez
