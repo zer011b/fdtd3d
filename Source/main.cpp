@@ -1023,13 +1023,6 @@ int runMode (int argc, char** argv)
     printf ("Value type: long double\n");
 #endif
 
-#ifdef TWO_TIME_STEPS
-    printf ("Number of time steps: 2\n");
-#endif
-#ifdef ONE_TIME_STEP
-    printf ("Number of time steps: 1\n");
-#endif
-
     printf ("\n-------- Details --------\n");
     printf ("Parallel grid: %d\n", solverSettings.getDoUseParallelGrid ());
 
