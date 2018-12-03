@@ -56,6 +56,8 @@ void test (T v1, T v2, T v3, T v4, T v5)
 
   CComplex<T> val5 (v3, v4);
 
+  assert (val1 != val5);
+
   CComplex<T> val6 = val1 + val5;
   assert (val6.real () == v1 + v3 && val6.imag () == v2 + v4);
 
