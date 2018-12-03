@@ -21,16 +21,16 @@ void testFunc (TCoord overallSize, int storedSteps, CoordinateType ct1, Coordina
 {
   TCoord test_coord = TCoord::initAxesCoordinate (16, 16, 16, ct1, ct2, ct3);
   TCoord zero = TCoord::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-  
+
   Grid<TCoord> grid (overallSize, 0, storedSteps);
 
   ASSERT (grid.getSize () == overallSize);
   ASSERT (grid.getTotalSize () == overallSize);
   ASSERT (grid.getTimeStep () == 0);
-  
+
   ASSERT (grid.getTotalPosition (test_coord) == test_coord);
   ASSERT (grid.getRelativePosition (test_coord) == test_coord);
-  
+
   ASSERT (grid.getComputationStart (zero) == zero);
   ASSERT (grid.getComputationEnd (zero) == overallSize);
 
@@ -40,43 +40,43 @@ void testFunc (TCoord overallSize, int storedSteps, CoordinateType ct1, Coordina
   }
   for (int i = 0; i < storedSteps; ++i)
   {
-    ASSERT (*grid.getFieldValue (test_coord, i) == FieldValue (1502 * i, 189 * i));
-    ASSERT (*grid.getFieldValueByAbsolutePos (test_coord, i) == FieldValue (1502 * i, 189 * i));
-    ASSERT (*grid.getFieldValueOrNullByAbsolutePos (test_coord, i) == FieldValue (1502 * i, 189 * i));
+    ASSERT (*grid.getFieldValue (test_coord, i) == FIELDVALUE (1502 * i, 189 * i));
+    ASSERT (*grid.getFieldValueByAbsolutePos (test_coord, i) == FIELDVALUE (1502 * i, 189 * i));
+    ASSERT (*grid.getFieldValueOrNullByAbsolutePos (test_coord, i) == FIELDVALUE (1502 * i, 189 * i));
   }
-  
+
   grid.shiftInTime ();
   for (int j = 1; j < storedSteps; ++j)
   {
     int i = j - 1;
-    ASSERT (*grid.getFieldValue (test_coord, j) == FieldValue (1502 * i, 189 * i));
-    ASSERT (*grid.getFieldValueByAbsolutePos (test_coord, j) == FieldValue (1502 * i, 189 * i));
-    ASSERT (*grid.getFieldValueOrNullByAbsolutePos (test_coord, j) == FieldValue (1502 * i, 189 * i));
+    ASSERT (*grid.getFieldValue (test_coord, j) == FIELDVALUE (1502 * i, 189 * i));
+    ASSERT (*grid.getFieldValueByAbsolutePos (test_coord, j) == FIELDVALUE (1502 * i, 189 * i));
+    ASSERT (*grid.getFieldValueOrNullByAbsolutePos (test_coord, j) == FIELDVALUE (1502 * i, 189 * i));
   }
-  
+
   grid.nextTimeStep (false);
 
 #ifdef DEBUG_INFO
   ASSERT (grid.getTimeStep () == 1);
 #endif /* DEBUG_INFO */
   
-  grid.initialize (FieldValue (127, 1982));
+  grid.initialize (FIELDVALUE (127, 1982));
   for (grid_coord i = 0; i < grid.getSize ().calculateTotalCoord (); ++i)
   {
-    ASSERT (*grid.getFieldValue (i, 0) == FieldValue (127, 1982));
-    
+    ASSERT (*grid.getFieldValue (i, 0) == FIELDVALUE (127, 1982));
+
     if (grid.calculatePositionFromIndex (i) == test_coord)
     {
       for (int j = 1; j < storedSteps; ++j)
       {
         int i = j - 1;
-        ASSERT (*grid.getFieldValue (test_coord, j) == FieldValue (1502 * i, 189 * i));
-        ASSERT (*grid.getFieldValueByAbsolutePos (test_coord, j) == FieldValue (1502 * i, 189 * i));
-        ASSERT (*grid.getFieldValueOrNullByAbsolutePos (test_coord, j) == FieldValue (1502 * i, 189 * i));
+        ASSERT (*grid.getFieldValue (test_coord, j) == FIELDVALUE (1502 * i, 189 * i));
+        ASSERT (*grid.getFieldValueByAbsolutePos (test_coord, j) == FIELDVALUE (1502 * i, 189 * i));
+        ASSERT (*grid.getFieldValueOrNullByAbsolutePos (test_coord, j) == FIELDVALUE (1502 * i, 189 * i));
       }
     }
   }
-  
+
   ASSERT (grid.getRaw (0) == grid.getFieldValue (zero, 0));
 }
 
@@ -85,7 +85,7 @@ int main (int argc, char** argv)
   int gridSizeX = 32;
   int gridSizeY = 32;
   int gridSizeZ = 32;
-  
+
   for (int i = 1; i < 10; ++i)
   {
 #if defined (MODE_DIM1)

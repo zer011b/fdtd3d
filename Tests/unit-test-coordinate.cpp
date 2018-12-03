@@ -36,6 +36,9 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
     GridCoordinate1DTemplate<TcoordType, doSignChecks> *coord1D_1 = new GridCoordinate1DTemplate<TcoordType, doSignChecks> (i + 5, t1);
     GridCoordinate1DTemplate<TcoordType, !doSignChecks> *coord1D_2 = new GridCoordinate1DTemplate<TcoordType, !doSignChecks> (i + 44, t1);
 
+    GridCoordinate1DTemplate<TcoordType, doSignChecks> coord1D__ (*coord1D);
+    ALWAYS_ASSERT (coord1D__ == *coord1D);
+
     ALWAYS_ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks> (coord1D->get1 (), t1) == *coord1D));
     ALWAYS_ASSERT ((GridCoordinate1DTemplate<TcoordType, doSignChecks> (*coord1D) == *coord1D));
 
@@ -47,6 +50,9 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
       coord2D = new GridCoordinate2DTemplate<TcoordType, doSignChecks> (i, 10 * i, t1, t2);
       coord2D_1 = new GridCoordinate2DTemplate<TcoordType, doSignChecks> (i + 5, 10 * i + 5, t1, t2);
       coord2D_2 = new GridCoordinate2DTemplate<TcoordType, !doSignChecks> (i + 44, 10 * i + 333, t1, t2);
+
+      GridCoordinate2DTemplate<TcoordType, doSignChecks> coord2D__ (*coord2D);
+      ALWAYS_ASSERT (coord2D__ == *coord2D);
 
       ALWAYS_ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks> (coord2D->get1 (), coord2D->get2 (), t1, t2) == *coord2D));
       ALWAYS_ASSERT ((GridCoordinate2DTemplate<TcoordType, doSignChecks> (*coord2D) == *coord2D));
@@ -61,8 +67,32 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
       coord3D_1 = new GridCoordinate3DTemplate<TcoordType, doSignChecks> (i + 5, 10 * i + 5, 17 * i + 5, t1, t2, t3);
       coord3D_2 = new GridCoordinate3DTemplate<TcoordType, !doSignChecks> (i + 44, 10 * i + 333, 17 * i + 941, t1, t2, t3);
 
+      GridCoordinate3DTemplate<TcoordType, doSignChecks> coord3D__ (*coord3D);
+      ALWAYS_ASSERT (coord3D__ == *coord3D);
+
       ALWAYS_ASSERT ((GridCoordinate3DTemplate<TcoordType, doSignChecks> (coord3D->get1 (), coord3D->get2 (), coord3D->get3 (), t1, t2, t3) == *coord3D));
       ALWAYS_ASSERT ((GridCoordinate3DTemplate<TcoordType, doSignChecks> (*coord3D) == *coord3D));
+    }
+
+    /*
+     * Operators
+     */
+    GridCoordinate1DTemplate<TcoordType, doSignChecks> coord1D___ (0, 0, 0, t1, t2, t3);
+    coord1D___ = *coord1D;
+    ALWAYS_ASSERT (coord1D___ == *coord1D);
+
+    if (correct2D)
+    {
+      GridCoordinate2DTemplate<TcoordType, doSignChecks> coord2D___ (0, 0, 0, t1, t2, t3);
+      coord2D___ = *coord2D;
+      ALWAYS_ASSERT (coord2D___ == *coord2D);
+    }
+
+    if (correct3D)
+    {
+      GridCoordinate3DTemplate<TcoordType, doSignChecks> coord3D___ (0, 0, 0, t1, t2, t3);
+      coord3D___ = *coord3D;
+      ALWAYS_ASSERT (coord3D___ == *coord3D);
     }
 
     /*
@@ -120,9 +150,12 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
      */
     *coord1D_1 = *coord1D + *coord1D_1;
     ALWAYS_ASSERT (coord1D_1->get1 () == TcoordType (2) * coord1D->get1 ());
-    ALWAYS_ASSERT ((*coord1D_1) == TcoordType (2) * (*coord1D));
+    ALWAYS_ASSERT ((*coord1D_1) == (*coord1D) * TcoordType (2));
     ALWAYS_ASSERT (coord1D_1->get1 () / TcoordType (2) == coord1D->get1 ());
     ALWAYS_ASSERT ((*coord1D_1) / TcoordType (2) == (*coord1D));
+
+    ALWAYS_ASSERT ((*coord1D_1 * *coord1D).get1 () == coord1D_1->get1 () * coord1D->get1 ());
+
     if (i > 0)
     {
       ALWAYS_ASSERT (*coord1D_1 != *coord1D);
@@ -140,10 +173,14 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
       *coord2D_1 = *coord2D + *coord2D_1;
       ALWAYS_ASSERT (coord2D_1->get1 () == TcoordType (2) * coord2D->get1 ());
       ALWAYS_ASSERT (coord2D_1->get2 () == TcoordType (2) * coord2D->get2 ());
-      ALWAYS_ASSERT (*coord2D_1 == TcoordType (2) * (*coord2D));
+      ALWAYS_ASSERT (*coord2D_1 == (*coord2D) * TcoordType (2));
       ALWAYS_ASSERT (coord2D_1->get1 () / TcoordType (2) == coord2D->get1 ());
       ALWAYS_ASSERT (coord2D_1->get2 () / TcoordType (2) == coord2D->get2 ());
       ALWAYS_ASSERT ((*coord2D_1) / TcoordType (2) == *coord2D);
+
+      ALWAYS_ASSERT ((*coord2D_1 * *coord2D).get1 () == coord2D_1->get1 () * coord2D->get1 ());
+      ALWAYS_ASSERT ((*coord2D_1 * *coord2D).get2 () == coord2D_1->get2 () * coord2D->get2 ());
+
       if (i > 0)
       {
         ALWAYS_ASSERT (*coord2D_1 != *coord2D);
@@ -164,11 +201,16 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
       ALWAYS_ASSERT (coord3D_1->get1 () == TcoordType (2) * coord3D->get1 ());
       ALWAYS_ASSERT (coord3D_1->get2 () == TcoordType (2) * coord3D->get2 ());
       ALWAYS_ASSERT (coord3D_1->get3 () == TcoordType (2) * coord3D->get3 ());
-      ALWAYS_ASSERT (*coord3D_1 == TcoordType (2) * (*coord3D));
+      ALWAYS_ASSERT (*coord3D_1 == (*coord3D) * TcoordType (2));
       ALWAYS_ASSERT (coord3D_1->get1 () / TcoordType (2) == coord3D->get1 ());
       ALWAYS_ASSERT (coord3D_1->get2 () / TcoordType (2) == coord3D->get2 ());
       ALWAYS_ASSERT (coord3D_1->get3 () / TcoordType (2) == coord3D->get3 ());
       ALWAYS_ASSERT ((*coord3D_1) / TcoordType (2) == *coord3D);
+
+      ALWAYS_ASSERT ((*coord3D_1 * *coord3D).get1 () == coord3D_1->get1 () * coord3D->get1 ());
+      ALWAYS_ASSERT ((*coord3D_1 * *coord3D).get2 () == coord3D_1->get2 () * coord3D->get2 ());
+      ALWAYS_ASSERT ((*coord3D_1 * *coord3D).get3 () == coord3D_1->get3 () * coord3D->get3 ());
+
       if (i > 0)
       {
         ALWAYS_ASSERT (*coord3D_1 != *coord3D);
@@ -187,14 +229,14 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
     /*
      * arithmetic operations with opposite sign checks
      */
-    ALWAYS_ASSERT ((*coord1D_1 + *coord1D_2 == TcoordType (2) * (*coord1D) + GridCoordinate1DTemplate<TcoordType, doSignChecks> (44, t1)));
+    ALWAYS_ASSERT ((*coord1D_1 + *coord1D_2 == (*coord1D) * TcoordType (2) + GridCoordinate1DTemplate<TcoordType, doSignChecks> (44, t1)));
     if (correct2D)
     {
-      ALWAYS_ASSERT ((*coord2D_1 + *coord2D_2 == TcoordType (2) * (*coord2D) + GridCoordinate2DTemplate<TcoordType, doSignChecks> (44, 333, t1, t2)));
+      ALWAYS_ASSERT ((*coord2D_1 + *coord2D_2 == (*coord2D) * TcoordType (2) + GridCoordinate2DTemplate<TcoordType, doSignChecks> (44, 333, t1, t2)));
     }
     if (correct3D)
     {
-      ALWAYS_ASSERT ((*coord3D_1 + *coord3D_2 == TcoordType (2) * (*coord3D) + GridCoordinate3DTemplate<TcoordType, doSignChecks> (44, 333, 941, t1, t2, t3)));
+      ALWAYS_ASSERT ((*coord3D_1 + *coord3D_2 == (*coord3D) * TcoordType (2) + GridCoordinate3DTemplate<TcoordType, doSignChecks> (44, 333, 941, t1, t2, t3)));
     }
 
     /*
