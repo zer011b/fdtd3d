@@ -2475,7 +2475,7 @@ ParallelGrid::nextTimeStep (bool performShareIfRequired)
 ParallelGridBase *
 ParallelGrid::gatherFullGrid () const
 {
-  ParallelGridBase *grid = new ParallelGridBase (totalSize, ParallelGridBase::timeStep, gridValues.size (), getName ());
+  ParallelGridBase *grid = new ParallelGridBase (totalSize, 0, gridValues.size (), getName ());
 
   return gatherFullGridPlacement (grid);
 } /* ParallelGrid::gatherFullGrid */
