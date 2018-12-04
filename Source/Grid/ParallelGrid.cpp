@@ -2492,11 +2492,7 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 {
   ParallelGridBase *grid = placementGrid;
 
-  std::vector<VectorFieldValues *> values (gridValues.size ());
-  for (int i = 0; i < gridValues.size (); ++i)
-  {
-    values[i] = new VectorFieldValues (size.calculateTotalCoord ());
-  }
+  VectorFieldValues values (totalSize.calculateTotalCoord ());
 
   /*
    * Each computational node broadcasts to all others its data
@@ -2566,28 +2562,84 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
      * Fill vectors with data for current computational node
      */
 
-    if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+    for (int t = 0; t < gridValues.size (); ++t)
     {
-      grid_coord left_coord, right_coord;
-      grid_coord down_coord, up_coord;
-      grid_coord back_coord, front_coord;
+      if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+      {
+        grid_coord left_coord, right_coord;
+        grid_coord down_coord, up_coord;
+        grid_coord back_coord, front_coord;
 
-      initBufferOffsets (left_coord, right_coord, down_coord, up_coord, back_coord, front_coord);
+        initBufferOffsets (left_coord, right_coord, down_coord, up_coord, back_coord, front_coord);
+
+        grid_coord index = 0;
+
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+        for (grid_coord i = left_coord; i < left_coord + sizeCoord.get1 (); ++i)
+        {
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+          for (grid_coord j = down_coord; j < down_coord + sizeCoord.get2 (); ++j)
+          {
+#endif /* GRID_2D || GRID_3D */
+#if defined (GRID_3D)
+            for (grid_coord k = back_coord; k < back_coord + sizeCoord.get3 (); ++k)
+            {
+#endif /* GRID_3D */
+
+#ifdef GRID_1D
+              ParallelGridCoordinate pos (i COORD_TYPES);
+#endif /* GRID_1D */
+#ifdef GRID_2D
+              ParallelGridCoordinate pos (i, j COORD_TYPES);
+#endif /* GRID_2D */
+#ifdef GRID_3D
+              ParallelGridCoordinate pos (i, j, k COORD_TYPES);
+#endif /* GRID_3D */
+
+              grid_coord coord = calculateIndexFromPosition (pos);
+
+              values[index] = (*gridValues[t])[coord];
+
+              ++index;
+
+#if defined (GRID_3D)
+            }
+#endif /* GRID_3D */
+#if defined (GRID_2D) || defined (GRID_3D)
+          }
+#endif /* GRID_2D || GRID_3D */
+#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
+        }
+#endif /* GRID_1D || GRID_2D || GRID_3D */
+
+        ASSERT (index == sizeCoord.calculateTotalCoord ());
+      }
+
+      /*
+       * Broadcast data
+       */
+
+      MPI_Bcast (values.data (), sizeCoord.calculateTotalCoord (), MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
 
       grid_coord index = 0;
 
+      /*
+       * Store data to corresponding coordinates of the resulting grid
+       */
+
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-      for (grid_coord i = left_coord; i < left_coord + sizeCoord.get1 (); ++i)
-      {
+      for (grid_coord i = startX; i < endX; ++i)
 #endif /* GRID_1D || GRID_2D || GRID_3D */
+      {
 #if defined (GRID_2D) || defined (GRID_3D)
-        for (grid_coord j = down_coord; j < down_coord + sizeCoord.get2 (); ++j)
-        {
+        for (grid_coord j = startY; j < endY; ++j)
 #endif /* GRID_2D || GRID_3D */
+        {
 #if defined (GRID_3D)
-          for (grid_coord k = back_coord; k < back_coord + sizeCoord.get3 (); ++k)
-          {
+          for (grid_coord k = startZ; k < endZ; ++k)
 #endif /* GRID_3D */
+          {
 
 #ifdef GRID_1D
             ParallelGridCoordinate pos (i COORD_TYPES);
@@ -2599,82 +2651,18 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
             ParallelGridCoordinate pos (i, j, k COORD_TYPES);
 #endif /* GRID_3D */
 
-            grid_coord coord = calculateIndexFromPosition (pos);
+            grid_coord coord = grid->calculateIndexFromPosition (pos);
 
-            for (int i = 0; i < gridValues.size (); ++i)
-            {
-              (*values[i])[index] = (*gridValues[i])[coord];
-            }
+            grid->setFieldValue (values[index], coord, t);
 
             ++index;
-
-#if defined (GRID_3D)
           }
-#endif /* GRID_3D */
-#if defined (GRID_2D) || defined (GRID_3D)
-        }
-#endif /* GRID_2D || GRID_3D */
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-      }
-#endif /* GRID_1D || GRID_2D || GRID_3D */
-    }
-
-    /*
-     * Broadcast data
-     */
-
-    for (int i = 0; i < gridValues.size (); ++i)
-    {
-      MPI_Bcast (values[i]->data (), values[i]->size (), MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
-    }
-
-    grid_coord index = 0;
-
-    /*
-     * Store data to corresponding coordinates of the resulting grid
-     */
-
-#if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-    for (grid_coord i = startX; i < endX; ++i)
-#endif /* GRID_1D || GRID_2D || GRID_3D */
-    {
-#if defined (GRID_2D) || defined (GRID_3D)
-      for (grid_coord j = startY; j < endY; ++j)
-#endif /* GRID_2D || GRID_3D */
-      {
-#if defined (GRID_3D)
-        for (grid_coord k = startZ; k < endZ; ++k)
-#endif /* GRID_3D */
-        {
-
-#ifdef GRID_1D
-          ParallelGridCoordinate pos (i COORD_TYPES);
-#endif /* GRID_1D */
-#ifdef GRID_2D
-          ParallelGridCoordinate pos (i, j COORD_TYPES);
-#endif /* GRID_2D */
-#ifdef GRID_3D
-          ParallelGridCoordinate pos (i, j, k COORD_TYPES);
-#endif /* GRID_3D */
-
-          grid_coord coord = grid->calculateIndexFromPosition (pos);
-
-          for (int i = 0; i < gridValues.size (); ++i)
-          {
-            grid->setFieldValue ((*values[i])[index], coord, i);
-          }
-
-          ++index;
         }
       }
+      ASSERT (index == sizeCoord.calculateTotalCoord ());
+
+      MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
     }
-
-    MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
-  }
-
-  for (int i = 0; i < gridValues.size (); ++i)
-  {
-    delete values[i];
   }
 
   return grid;
