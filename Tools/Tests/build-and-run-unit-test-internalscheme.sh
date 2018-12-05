@@ -72,18 +72,6 @@ function build
           exit 1
         fi
 
-        ./Tests/unit-test-internalscheme --time-steps 10 --use-pml --point-source-pos-x 10 --point-source-pos-y 10 --point-source-pos-z 10 --point-source-ex
-
-        if [[ "$?" -ne "0" ]]; then
-          exit 1
-        fi
-
-        ./Tests/unit-test-internalscheme --time-steps 10 --use-pml --point-source-pos-x 10 --point-source-pos-y 10 --point-source-pos-z 10 --point-source-ex --use-ca-cb --use-ca-cb-pml
-
-        if [[ "$?" -ne "0" ]]; then
-          exit 1
-        fi
-
         ./Tests/unit-test-internalscheme --time-steps 100 --use-tfsf
 
         if [[ "$?" -ne "0" ]]; then
@@ -91,18 +79,6 @@ function build
         fi
 
         ./Tests/unit-test-internalscheme --time-steps 100 --use-tfsf --use-ca-cb
-
-        if [[ "$?" -ne "0" ]]; then
-          exit 1
-        fi
-
-        ./Tests/unit-test-internalscheme --time-steps 100 --use-tfsf --use-pml
-
-        if [[ "$?" -ne "0" ]]; then
-          exit 1
-        fi
-
-        ./Tests/unit-test-internalscheme --time-steps 100 --use-tfsf --use-pml --use-ca-cb --use-ca-cb-pml
 
         if [[ "$?" -ne "0" ]]; then
           exit 1

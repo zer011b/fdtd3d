@@ -138,6 +138,10 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   ALWAYS_ASSERT (layout.getEpsSize () == size * (doubleMaterialPrecision ? 2 : 1));
   ALWAYS_ASSERT (layout.getMuSize () == size * (doubleMaterialPrecision ? 2 : 1));
 
+  ALWAYS_ASSERT (layout.getSigmaXSize () == layout.getEpsSize ());
+  ALWAYS_ASSERT (layout.getSigmaYSize () == layout.getEpsSize ());
+  ALWAYS_ASSERT (layout.getSigmaZSize () == layout.getEpsSize ());
+
   ALWAYS_ASSERT (layout.getExSize () == size);
   ALWAYS_ASSERT (layout.getEySize () == size);
   ALWAYS_ASSERT (layout.getEzSize () == size);
@@ -2582,7 +2586,7 @@ int main (int argc, char** argv)
         {
 #if defined (MODE_DIM3)
           testFunc<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (angle1, angle2, angle3, dMaterialPrecision);
-#endif /* MODE_DIM3 */          
+#endif /* MODE_DIM3 */
 
           for (grid_coord mult = 2; mult <= MULT; ++mult)
           {
