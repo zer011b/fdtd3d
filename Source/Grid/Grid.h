@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <vector>
 #include <string>
+#include <cstring>
 
 #include "Assert.h"
 #include "FieldValue.h"
