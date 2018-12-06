@@ -21,7 +21,7 @@ namespace InternalSchemeKernelHelpers
   void calculateFieldStepIterationKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme, /**< GPU internal scheme */
                                           GridCoordinate3D start3D, /**< start coordinate of block, for which computations are performed */
                                           GridCoordinate3D end3D, /**< end coordinate of block, for which computations are performed */
-                                          time_step t, /**< time step to compute */
+                                          FPValue timestep, /**< time step to compute */
                                           TCoord<grid_coord, false> diff11, /**< offset in layout */
                                           TCoord<grid_coord, false> diff12, /**< offset in layout */
                                           TCoord<grid_coord, false> diff21, /**< offset in layout */
@@ -101,7 +101,7 @@ namespace InternalSchemeKernelHelpers
 
     if (usePrecomputedGrids)
     {
-      gpuScheme->calculateFieldStepIteration<grid_type, true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+      gpuScheme->calculateFieldStepIteration<grid_type, true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                          grid, coordFP,
                                                          oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
                                                          usePML,
@@ -110,7 +110,7 @@ namespace InternalSchemeKernelHelpers
     }
     else
     {
-      gpuScheme->calculateFieldStepIteration<grid_type, false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+      gpuScheme->calculateFieldStepIteration<grid_type, false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                          grid, coordFP,
                                                          oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
                                                          usePML,
@@ -719,7 +719,7 @@ public:
 
   template <uint8_t grid_type, bool usePrecomputedGrids>
   ICUDA_DEVICE
-  void calculateFieldStepIteration (time_step, TC, TC, TCS, TCS, TCS, TCS, IGRID<TC> *, TCFP,
+  void calculateFieldStepIteration (FPValue, TC, TC, TCS, TCS, TCS, TCS, IGRID<TC> *, TCFP,
                                     IGRID<TC> *, IGRID<TC> *, SourceCallBack, IGRID<TC> *, IGRID<TC> *, bool,
                                     GridType, IGRID<TC> *, GridType, FPValue);
 
@@ -812,7 +812,7 @@ public:
   void calculateFieldStepIterationKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuScheme,
                                                 GridCoordinate3D start3D,
                                                 GridCoordinate3D end3D,
-                                                time_step t,
+                                                FPValue timestep,
                                                 TCS diff11,
                                                 TCS diff12,
                                                 TCS diff21,
@@ -833,7 +833,7 @@ public:
     GridCoordinate3D diff3D = end3D - start3D;
     SETUP_BLOCKS_AND_THREADS;
     InternalSchemeKernelHelpers::calculateFieldStepIterationKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
-      (d_gpuScheme, start3D, end3D, t, diff11, diff12, diff21, diff22, grid, oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb, ct1, ct2, ct3,
+      (d_gpuScheme, start3D, end3D, timestep, diff11, diff12, diff21, diff22, grid, oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb, ct1, ct2, ct3,
        usePML, gridType, materialGrid, materialGridType, materialModifier, usePrecomputedGrids);
     cudaCheckError ();
   }
@@ -2079,7 +2079,7 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 template<uint8_t grid_type, bool usePrecomputedGrids>
 ICUDA_DEVICE
 void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (time_step t,
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (FPValue timestep,
                                                                              TC pos,
                                                                              TC posAbs,
                                                                              TCS diff11,
@@ -2172,7 +2172,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (ti
 
   if (rightSideFunc != NULLPTR)
   {
-    prevRightSide = rightSideFunc (expandTo3D (coordFP * gridStep, ct1, ct2, ct3), t * gridTimeStep);
+    prevRightSide = rightSideFunc (expandTo3D (coordFP * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
   }
 
   FieldValue valNew = calcField (val, prev12, prev11, prev22, prev21, prevRightSide, valCa, valCb, gridStep);

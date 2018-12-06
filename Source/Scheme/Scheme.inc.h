@@ -960,12 +960,59 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
   // TODO: remove this check for each iteration
   if (t > 0)
   {
+    /*
+     * This timestep should be passed to rightside function, which is half step behind grid_type,
+     * i.e. exactly on the same time step as opposite fields.
+     */
+    FPValue timestep;
+
+    if (rightSideFunc != NULLPTR)
+    {
+      switch (grid_type)
+      {
+        case (static_cast<uint8_t> (GridType::EX)):
+        {
+          timestep = t;
+          break;
+        }
+        case (static_cast<uint8_t> (GridType::EY)):
+        {
+          timestep = t;
+          break;
+        }
+        case (static_cast<uint8_t> (GridType::EZ)):
+        {
+          timestep = t;
+          break;
+        }
+        case (static_cast<uint8_t> (GridType::HX)):
+        {
+          timestep = t + 0.5;
+          break;
+        }
+        case (static_cast<uint8_t> (GridType::HY)):
+        {
+          timestep = t + 0.5;
+          break;
+        }
+        case (static_cast<uint8_t> (GridType::HZ)):
+        {
+          timestep = t + 0.5;
+          break;
+        }
+        default:
+        {
+          UNREACHABLE;
+        }
+      }
+    }
+
 #ifdef CUDA_ENABLED
 
     // Launch kernel here
     gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <grid_type>
       (d_gpuIntSchemeOnGPU, start3D, end3D,
-        t, diff11, diff12, diff21, diff22,
+        timestep, diff11, diff12, diff21, diff22,
         d_grid,
         d_oppositeGrid1,
         d_oppositeGrid2,
@@ -1037,7 +1084,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
 
           if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
           {
-            intScheme->template calculateFieldStepIteration<grid_type, true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+            intScheme->template calculateFieldStepIteration<grid_type, true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                grid, coordFP,
                                                                oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
                                                                usePML,
@@ -1046,7 +1093,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
           }
           else
           {
-            intScheme->template calculateFieldStepIteration<grid_type, false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+            intScheme->template calculateFieldStepIteration<grid_type, false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                grid, coordFP,
                                                                oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
                                                                usePML,

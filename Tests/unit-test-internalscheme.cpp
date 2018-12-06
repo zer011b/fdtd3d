@@ -204,6 +204,46 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
   {
     DPRINTF (LOG_LEVEL_NONE, "calculating time step %d\n", t);
 
+    FPValue timestep;
+
+    switch (grid_type)
+    {
+      case (static_cast<uint8_t> (GridType::EX)):
+      {
+        timestep = t + 1;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EY)):
+      {
+        timestep = t + 1;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EZ)):
+      {
+        timestep = t + 1;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HX)):
+      {
+        timestep = t + 0.5;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HY)):
+      {
+        timestep = t + 0.5;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HZ)):
+      {
+        timestep = t + 0.5;
+        break;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+
 #ifdef CUDA_ENABLED
     TCoord<grid_coord, true> ExStart = gpuIntScheme->getDoNeedEx () ? gpuIntScheme->getEx ()->getComputationStart (gpuIntScheme->getYeeLayout ()->getExStartDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
     TCoord<grid_coord, true> ExEnd = gpuIntScheme->getDoNeedEx () ? gpuIntScheme->getEx ()->getComputationEnd (gpuIntScheme->getYeeLayout ()->getExEndDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
@@ -285,7 +325,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       // Launch kernel here
       gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::EX)> (d_gpuIntSchemeOnGPU, start3D, end3D,
-                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              timestep, diff11, diff12, diff21, diff22,
                                                                               gpuIntSchemeOnGPU->getEx (),
                                                                               gpuIntScheme->getDoNeedHz () ? gpuIntSchemeOnGPU->getHz () : NULLPTR,
                                                                               gpuIntScheme->getDoNeedHy () ? gpuIntSchemeOnGPU->getHy () : NULLPTR,
@@ -313,7 +353,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EX), true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EX), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEx (), coordFP,
                                                                  intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
                                                                  intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
@@ -325,7 +365,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EX), false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EX), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEx (), coordFP,
                                                                  intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
                                                                  intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
@@ -372,7 +412,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       // Launch kernel here
       gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::EY)> (d_gpuIntSchemeOnGPU, start3D, end3D,
-                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              timestep, diff11, diff12, diff21, diff22,
                                                                               gpuIntSchemeOnGPU->getEy (),
                                                                               gpuIntScheme->getDoNeedHx () ? gpuIntSchemeOnGPU->getHx () : NULLPTR,
                                                                               gpuIntScheme->getDoNeedHz () ? gpuIntSchemeOnGPU->getHz () : NULLPTR,
@@ -399,7 +439,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             TCoord<grid_coord, true> posAbs = intScheme->getEy ()->getTotalPosition (pos);
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EY) , true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EY) , true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEy (), coordFP,
                                                                  intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
                                                                  intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
@@ -411,7 +451,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EY) , false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EY) , false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEy (), coordFP,
                                                                  intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
                                                                  intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
@@ -458,7 +498,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       // Launch kernel here
       gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::EZ)> (d_gpuIntSchemeOnGPU, start3D, end3D,
-                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              timestep, diff11, diff12, diff21, diff22,
                                                                               gpuIntSchemeOnGPU->getEz (),
                                                                               gpuIntScheme->getDoNeedHy () ? gpuIntSchemeOnGPU->getHy () : NULLPTR,
                                                                               gpuIntScheme->getDoNeedHx () ? gpuIntSchemeOnGPU->getHx () : NULLPTR,
@@ -485,7 +525,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             TCoord<grid_coord, true> posAbs = intScheme->getEz ()->getTotalPosition (pos);
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EZ) , true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EZ) , true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEz (), coordFP,
                                                                  intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
                                                                  intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
@@ -497,7 +537,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EZ) , false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EZ) , false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getEz (), coordFP,
                                                                  intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
                                                                  intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
@@ -559,7 +599,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       // Launch kernel here
       gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::HX)> (d_gpuIntSchemeOnGPU, start3D, end3D,
-                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              timestep, diff11, diff12, diff21, diff22,
                                                                               gpuIntSchemeOnGPU->getHx (),
                                                                               gpuIntScheme->getDoNeedEy () ? gpuIntSchemeOnGPU->getEy () : NULLPTR,
                                                                               gpuIntScheme->getDoNeedEz () ? gpuIntSchemeOnGPU->getEz () : NULLPTR,
@@ -586,7 +626,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             TCoord<grid_coord, true> posAbs = intScheme->getHx ()->getTotalPosition (pos);
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HX), true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HX), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHx (), coordFP,
                                                                  intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
                                                                  intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
@@ -598,7 +638,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HX), false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HX), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHx (), coordFP,
                                                                  intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
                                                                  intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
@@ -645,7 +685,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       // Launch kernel here
       gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::HY)> (d_gpuIntSchemeOnGPU, start3D, end3D,
-                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              timestep, diff11, diff12, diff21, diff22,
                                                                               gpuIntSchemeOnGPU->getHy (),
                                                                               gpuIntScheme->getDoNeedEz () ? gpuIntSchemeOnGPU->getEz () : NULLPTR,
                                                                               gpuIntScheme->getDoNeedEx () ? gpuIntSchemeOnGPU->getEx () : NULLPTR,
@@ -672,7 +712,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             TCoord<grid_coord, true> posAbs = intScheme->getHy ()->getTotalPosition (pos);
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HY), true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HY), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHy (), coordFP,
                                                                  intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
                                                                  intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
@@ -684,7 +724,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HY), false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HY), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHy (), coordFP,
                                                                  intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
                                                                  intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
@@ -731,7 +771,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
       // Launch kernel here
       gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <static_cast<uint8_t> (GridType::HZ)> (d_gpuIntSchemeOnGPU, start3D, end3D,
-                                                                              t, diff11, diff12, diff21, diff22,
+                                                                              timestep, diff11, diff12, diff21, diff22,
                                                                               gpuIntSchemeOnGPU->getHz (),
                                                                               gpuIntScheme->getDoNeedEx () ? gpuIntSchemeOnGPU->getEx () : NULLPTR,
                                                                               gpuIntScheme->getDoNeedEy () ? gpuIntSchemeOnGPU->getEy () : NULLPTR,
@@ -758,7 +798,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             TCoord<grid_coord, true> posAbs = intScheme->getHz ()->getTotalPosition (pos);
             if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HZ), true> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HZ), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHz (), coordFP,
                                                                  intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
                                                                  intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
@@ -770,7 +810,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
             }
             else
             {
-              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HZ), false> (t, pos, posAbs, diff11, diff12, diff21, diff22,
+              intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HZ), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                                  intScheme->getHz (), coordFP,
                                                                  intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
                                                                  intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
