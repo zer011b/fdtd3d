@@ -101,7 +101,16 @@ typedef uint32_t time_step;
 extern CUDA_DEVICE CUDA_HOST FieldValue getFieldValueRealOnly (FPValue);
 extern CUDA_DEVICE CUDA_HOST FPValue getRealOnlyFromFieldValue (const FieldValue &);
 
+#ifdef FLOAT_VALUES
+#define FPEXACT_ACCURACY (FPValue(0.000001))
+#endif
+#ifdef DOUBLE_VALUES
 #define FPEXACT_ACCURACY (FPValue(0.0000001))
+#endif
+#ifdef LONG_DOUBLE_VALUES
+#define FPEXACT_ACCURACY (FPValue(0.0000001))
+#endif
+
 #define IS_FP_EXACT(a,b) \
   (((a) > (b) ? (a) - (b) : (b) - (a)) < FPEXACT_ACCURACY)
 
