@@ -2609,7 +2609,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPointSourceCalc (time_st
     *pointVal = FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
                             cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
 #else /* COMPLEX_FIELD_VALUES */
-    *pointVal = setCurValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
+    *pointVal = sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency);
 #endif /* !COMPLEX_FIELD_VALUES */
   }
 }
@@ -2658,14 +2658,14 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
       case GridType::EZ:
       case GridType::DZ:
       {
-        return yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                   *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                   *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
                                                   *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
                                                   *gridMaterial->getFieldValueByAbsolutePos (absPos31, 0),
                                                   *gridMaterial->getFieldValueByAbsolutePos (absPos32, 0),
                                                   *gridMaterial->getFieldValueByAbsolutePos (absPos41, 0),
-                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos42, 0)).real ();
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos42, 0)));
       }
       default:
       {
@@ -2684,8 +2684,8 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
       case GridType::EZ:
       case GridType::DZ:
       {
-        return yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
-                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0)).real ();
+        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0)));
       }
       case GridType::HX:
       case GridType::BX:
@@ -2694,10 +2694,10 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
       case GridType::HZ:
       case GridType::BZ:
       {
-        return yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                   *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                   *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
-                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0)).real ();
+                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0)));
       }
       default:
       {
@@ -2757,7 +2757,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
       case GridType::EZ:
       case GridType::DZ:
       {
-        return yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                       *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                       *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
                                                       *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
@@ -2781,7 +2781,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
                                                       *gridMaterialGamma->getFieldValueByAbsolutePos (absPos32, 0),
                                                       *gridMaterialGamma->getFieldValueByAbsolutePos (absPos41, 0),
                                                       *gridMaterialGamma->getFieldValueByAbsolutePos (absPos42, 0),
-                                                      omega, gamma).real ();
+                                                      omega, gamma));
       }
       default:
       {
@@ -2800,13 +2800,13 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
       case GridType::EZ:
       case GridType::DZ:
       {
-        return yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                       *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                       *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
                                                       *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
                                                       *gridMaterialGamma->getFieldValueByAbsolutePos (absPos11, 0),
                                                       *gridMaterialGamma->getFieldValueByAbsolutePos (absPos12, 0),
-                                                      omega, gamma).real ();
+                                                      omega, gamma));
       }
       case GridType::HX:
       case GridType::BX:
@@ -2815,7 +2815,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
       case GridType::HZ:
       case GridType::BZ:
       {
-        return yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                       *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                       *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
                                                       *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
@@ -2827,7 +2827,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
                                                       *gridMaterialGamma->getFieldValueByAbsolutePos (absPos12, 0),
                                                       *gridMaterialGamma->getFieldValueByAbsolutePos (absPos21, 0),
                                                       *gridMaterialGamma->getFieldValueByAbsolutePos (absPos22, 0),
-                                                      omega, gamma).real ();
+                                                      omega, gamma));
       }
       default:
       {
