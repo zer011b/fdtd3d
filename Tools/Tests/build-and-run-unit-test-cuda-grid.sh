@@ -30,10 +30,6 @@ function build
     for COMPLEX_FIELD_VALUES in ON OFF; do
       for LARGE_COORDINATES in ON OFF; do
 
-        if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
-          continue
-        fi
-
         cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=ReleaseWithAsserts \
           -DVALUE_TYPE=${VALUE_TYPE} \
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \

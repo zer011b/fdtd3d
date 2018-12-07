@@ -149,7 +149,7 @@ elseif ("${VALUE_TYPE}" STREQUAL "ld")
   endif ()
 
   if ("${CUDA_ENABLED}")
-    messsage(FATAL_ERROR "Long double values are not supported with Cuda")
+    message(FATAL_ERROR "Long double values are not supported with Cuda")
   endif ()
 
   message ("Floating point values: long double.")

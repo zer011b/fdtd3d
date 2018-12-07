@@ -204,45 +204,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
   {
     DPRINTF (LOG_LEVEL_NONE, "calculating time step %d\n", t);
 
-    FPValue timestep;
-
-    switch (grid_type)
-    {
-      case (static_cast<uint8_t> (GridType::EX)):
-      {
-        timestep = t + 1;
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EY)):
-      {
-        timestep = t + 1;
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::EZ)):
-      {
-        timestep = t + 1;
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HX)):
-      {
-        timestep = t + 0.5;
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HY)):
-      {
-        timestep = t + 0.5;
-        break;
-      }
-      case (static_cast<uint8_t> (GridType::HZ)):
-      {
-        timestep = t + 0.5;
-        break;
-      }
-      default:
-      {
-        UNREACHABLE;
-      }
-    }
+    FPValue timestep = 0;
 
 #ifdef CUDA_ENABLED
     TCoord<grid_coord, true> ExStart = gpuIntScheme->getDoNeedEx () ? gpuIntScheme->getEx ()->getComputationStart (gpuIntScheme->getYeeLayout ()->getExStartDiff ()) : TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
