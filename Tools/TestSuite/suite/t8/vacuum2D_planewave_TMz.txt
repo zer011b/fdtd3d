@@ -30,3 +30,8 @@
 --tfsf-sizex-right 10
 --tfsf-sizey-left 10
 --tfsf-sizey-right 10
+
+--num-cuda-gpus 0
+--num-cuda-threads-x 4
+--num-cuda-threads-y 4
+--num-cuda-threads-z 4

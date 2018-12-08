@@ -5,6 +5,13 @@ set -e
 BASE_DIR=$1
 SOURCE_DIR=$2
 
+USE_CUDA=$3
+
+CUDA_MODE=""
+if [[ "$USE_CUDA" -eq "1" ]]; then
+  CUDA_MODE="--num-cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+fi
+
 accuracy_percent="0.00001"
 
 function launch ()
@@ -17,7 +24,7 @@ function launch ()
 
   output_file=$(mktemp /tmp/fdtd3d.$size.$dx.XXXXXXXX)
 
-  ./fdtd3d --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
+  ./fdtd3d $CUDA_MODE --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
     --log-level 0 --use-sin1-border-condition --use-sin1-start-values --calc-sin1-diff-norm \
     --eps-normed --mu-normed --courant-factor 149896229 &> $output_file
 

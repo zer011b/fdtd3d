@@ -5,6 +5,13 @@ set -e
 BASE_DIR=$1
 SOURCE_DIR=$2
 
+USE_CUDA=$3
+
+CUDA_MODE=""
+if [[ "$USE_CUDA" -eq "1" ]]; then
+  CUDA_MODE="--num-cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+fi
+
 function launch ()
 {
   local num_time_steps=$1
@@ -28,7 +35,7 @@ function launch ()
 
   output_file=$(mktemp /tmp/fdtd3d.vacuum3D.XXXXXXXX)
 
-  ./fdtd3d --time-steps $num_time_steps --sizez $sizez --1d-eyhx --angle-teta 0 --angle-phi 90 --angle-psi 90 \
+  ./fdtd3d $CUDA_MODE --time-steps $num_time_steps --sizez $sizez --1d-eyhx --angle-teta 0 --angle-phi 90 --angle-psi 90 \
     --dx $dz --wavelength $4 --courant-factor 0.5 --log-level 2 --pml-sizez $pmlsize --use-pml \
     --use-tfsf --tfsf-sizez-left $tfsfsize --tfsf-sizez-right 0 \
     --eps-sphere $eps_sphere --eps-sphere-center-z $sphere_center --eps-sphere-radius $sphere_radius \
