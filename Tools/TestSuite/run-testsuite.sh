@@ -1,7 +1,5 @@
 #!/bin/bash
 
-USE_CUDA=$1
-
 set -ex
 
 # check exit code
@@ -32,16 +30,7 @@ for testdir in `ls $CUR_DIR/Tools/TestSuite/suite`; do
 
   echo "$test_num. Testing <$testdir> ($percent_before%):"
 
-  # build test
-  $CUR_DIR/Tools/TestSuite/suite/$testdir/build.sh $CUR_DIR/Tools/TestSuite $SOURCE_DIR ${USE_CUDA}
-  check_res
-
-  # run test
-  $CUR_DIR/Tools/TestSuite/suite/$testdir/run.sh $CUR_DIR/Tools/TestSuite $SOURCE_DIR ${USE_CUDA}
-  check_res
-
-  # cleanup
-  $CUR_DIR/Tools/TestSuite/suite/$testdir/cleanup.sh $CUR_DIR/Tools/TestSuite $SOURCE_DIR
+  $CUR_DIR/Tools/TestSuite/run-test.sh $testdir $CUR_DIR/Tools/TestSuite $SOURCE_DIR &> /dev/null
   check_res
 
   echo "OK!"

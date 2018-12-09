@@ -5,6 +5,15 @@ set -e
 BASE_DIR=$1
 SOURCE_DIR=$2
 
+USED_MODE=$3
+
+MODE=""
+RUNNER=""
+if [[ "$USED_MODE" -eq "2" ]]; then
+  MODE=" --parallel-grid"
+  RUNNER="mpirun -n 2"
+fi
+
 timestep="30"
 accuracy="0.0000001"
 
@@ -14,7 +23,11 @@ function launch ()
 
   output_file=$(mktemp /tmp/fdtd3d.vacuum3D.XXXXXXXX)
 
-  ./fdtd3d${binary_prefix} --cmd-from-file vacuum2D_planewave_TMz.txt &> $output_file
+  tmp_test_file=$(mktemp /tmp/vacuum2D_planewave_TMz.XXXXXXXX.txt)
+  cp vacuum2D_planewave_TMz.txt $tmp_test_file
+  echo $MODE >> $tmp_test_file
+
+  $RUNNER ./fdtd3d${binary_prefix} --cmd-from-file $tmp_test_file &> $output_file
 
   mv previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt.$binary_prefix
 

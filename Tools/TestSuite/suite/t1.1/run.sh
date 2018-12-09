@@ -5,11 +5,15 @@ set -e
 BASE_DIR=$1
 SOURCE_DIR=$2
 
-USE_CUDA=$3
+USED_MODE=$3
 
-CUDA_MODE=""
-if [[ "$USE_CUDA" -eq "1" ]]; then
-  CUDA_MODE="--num-cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+MODE=""
+RUNNER=""
+if [[ "$USED_MODE" -eq "1" ]]; then
+  MODE="--num-cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+elif [[ "$USED_MODE" -eq "2" ]]; then
+  MODE=" --parallel-grid"
+  RUNNER="mpirun -n 2"
 fi
 
 accuracy_exact="0.000001"
@@ -24,7 +28,7 @@ function launch ()
   local lambda="0.02"
   local length=$(echo $timesteps | awk '{print $1 - 10}')
 
-  ./fdtd3d $CUDA_MODE --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
+  $RUNNER ./fdtd3d $MODE --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
     --log-level 0 --save-res --save-tfsf-e-incident --save-as-txt --use-tfsf --tfsf-sizex-left 4 --tfsf-sizex-right 4 \
     --same-size-tfsf --courant-factor 1.0 &>/dev/null
 

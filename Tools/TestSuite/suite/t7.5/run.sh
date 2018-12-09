@@ -5,11 +5,15 @@ set -e
 BASE_DIR=$1
 SOURCE_DIR=$2
 
-USE_CUDA=$3
+USED_MODE=$3
 
-CUDA_MODE=""
-if [[ "$USE_CUDA" -eq "1" ]]; then
-  CUDA_MODE="--num-cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+MODE=""
+RUNNER=""
+if [[ "$USED_MODE" -eq "1" ]]; then
+  MODE="--num-cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+elif [[ "$USED_MODE" -eq "2" ]]; then
+  MODE=" --parallel-grid"
+  RUNNER="mpirun -n 2"
 fi
 
 function launch ()
@@ -35,7 +39,7 @@ function launch ()
 
   output_file=$(mktemp /tmp/fdtd3d.vacuum3D.XXXXXXXX)
 
-  ./fdtd3d $CUDA_MODE --time-steps $num_time_steps --sizey $sizez --1d-ezhx --angle-teta 90 --angle-phi 90 --angle-psi 90 \
+  $RUNNER ./fdtd3d $MODE --time-steps $num_time_steps --sizey $sizez --1d-ezhx --angle-teta 90 --angle-phi 90 --angle-psi 90 \
     --dx $dz --wavelength $4 --courant-factor 0.5 --log-level 2 --pml-sizey $pmlsize --use-pml \
     --use-tfsf --tfsf-sizey-left $tfsfsize --tfsf-sizey-right 0 \
     --eps-sphere $eps_sphere --eps-sphere-center-y $sphere_center --eps-sphere-radius $sphere_radius \
