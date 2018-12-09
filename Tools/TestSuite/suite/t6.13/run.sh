@@ -5,11 +5,24 @@ set -e
 BASE_DIR=$1
 SOURCE_DIR=$2
 
+USED_MODE=$3
+
+MODE=""
+RUNNER=""
+if [[ "$USED_MODE" -eq "2" ]]; then
+  MODE=" --parallel-grid"
+  RUNNER="mpirun -n 2"
+fi
+
 function launch ()
 {
   output_file=$(mktemp /tmp/fdtd3d.vacuum1D.XXXXXXXX)
 
-  ./fdtd3d --cmd-from-file ${SOURCE_DIR}/Examples/vacuum1D_EzHy.txt &> $output_file
+  tmp_test_file=$(mktemp /tmp/vacuum1D_EzHy.XXXXXXXX.txt)
+  cp ${SOURCE_DIR}/Examples/vacuum1D_EzHy.txt $tmp_test_file
+  echo $MODE >> $tmp_test_file
+
+  $RUNNER ./fdtd3d --cmd-from-file $tmp_test_file &> $output_file
 
   local ret=$?
 
