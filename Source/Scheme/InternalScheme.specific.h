@@ -101,8 +101,11 @@ InternalSchemeHelper::allocateGridsInc (InternalScheme<Type, TCoord, layout_type
 template <SchemeType_t Type, LayoutType layout_type>
 CUDA_HOST
 void
-InternalSchemeHelper::allocateParallelGrids (InternalScheme<Type, ParallelGridCoordinateTemplate, layout_type> *intScheme)
+InternalSchemeHelper::allocateParallelGrids1D (InternalScheme<Type, GridCoordinate1DTemplate, layout_type> *intScheme)
 {
+#ifndef GRID_1D
+  ALWAYS_ASSERT_MESSAGE ("Solver is not compiled with support of 1D parallel grids.");
+#else /* !GRID_1D */
   ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
                                                                                SOLVER_SETTINGS.getBufferSize (),
                                                                                SOLVER_SETTINGS.getBufferSize (),
@@ -119,6 +122,64 @@ InternalSchemeHelper::allocateParallelGrids (InternalScheme<Type, ParallelGridCo
 #include "Grids2.inc.h"
 #undef GRID_NAME
 #undef GRID_NAME_NO_CHECK
+
+#endif /* GRID_1D */
+}
+
+template <SchemeType_t Type, LayoutType layout_type>
+CUDA_HOST
+void
+InternalSchemeHelper::allocateParallelGrids2D (InternalScheme<Type, GridCoordinate2DTemplate, layout_type> *intScheme)
+{
+#ifndef GRID_2D
+  ALWAYS_ASSERT_MESSAGE ("Solver is not compiled with support of 2D parallel grids.");
+#else /* !GRID_1D */
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               intScheme->ct1, intScheme->ct2, intScheme->ct3);
+
+  ParallelYeeGridLayout<Type, layout_type> *pLayout = (ParallelYeeGridLayout<Type, layout_type> *) intScheme->yeeLayout;
+
+  int storedSteps = 3;
+
+#define GRID_NAME(x, y, steps) \
+  intScheme->x = intScheme->doNeed ## y ? new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x) : NULLPTR;
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  intScheme->x = new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x);
+#include "Grids2.inc.h"
+#undef GRID_NAME
+#undef GRID_NAME_NO_CHECK
+
+#endif /* GRID_2D */
+}
+
+template <SchemeType_t Type, LayoutType layout_type>
+CUDA_HOST
+void
+InternalSchemeHelper::allocateParallelGrids3D (InternalScheme<Type, GridCoordinate3DTemplate, layout_type> *intScheme)
+{
+#ifndef GRID_3D
+  ALWAYS_ASSERT_MESSAGE ("Solver is not compiled with support of 3D parallel grids.");
+#else /* !GRID_3D */
+  ParallelGridCoordinate bufSize = ParallelGridCoordinate::initAxesCoordinate (SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               SOLVER_SETTINGS.getBufferSize (),
+                                                                               intScheme->ct1, intScheme->ct2, intScheme->ct3);
+
+  ParallelYeeGridLayout<Type, layout_type> *pLayout = (ParallelYeeGridLayout<Type, layout_type> *) intScheme->yeeLayout;
+
+  int storedSteps = 3;
+
+#define GRID_NAME(x, y, steps) \
+  intScheme->x = intScheme->doNeed ## y ? new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x) : NULLPTR;
+#define GRID_NAME_NO_CHECK(x, y, steps) \
+  intScheme->x = new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x);
+#include "Grids2.inc.h"
+#undef GRID_NAME
+#undef GRID_NAME_NO_CHECK
+
+#endif /* GRID_3D */
 }
 
 #endif /* PARALLEL_GRID */
