@@ -7,7 +7,7 @@
   RET \
   CLASS<static_cast<SchemeType_t> (SchemeType::STYPE), COORD, LAYOUT_TYPE>::NAME ARGSND \
   { \
-    return HELPER::NAME_HELPER ARGS; \
+    HELPER::NAME_HELPER ARGS; \
   }
 
 #define SPECIALIZE_TEMPLATE_1D(CLASS, HELPER, RET1D, NAME, ARGS1D, ARGS, NAME2) \
@@ -50,7 +50,7 @@
   SPECIALIZE_TEMPLATE_2D(CLASS, HELPER, RET2D, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
   SPECIALIZE_TEMPLATE_3D(CLASS, HELPER, RET3D, NAME, ARGS3D, ARGS, _NAME(NAME, 3D)) \
 
-SPECIALIZE_TEMPLATE(InternalScheme, InternalSchemeHelper,
+SPECIALIZE_TEMPLATE(InternalScheme, return InternalSchemeHelper,
                     bool, bool, bool,
                     doSkipBorderFunc,
                     (GridCoordinate1D pos, Grid<GridCoordinate1D> *grid),
@@ -60,32 +60,26 @@ SPECIALIZE_TEMPLATE(InternalScheme, InternalSchemeHelper,
 
 #ifdef PARALLEL_GRID
 
-#ifdef GRID_1D
 SPECIALIZE_TEMPLATE_1D(InternalScheme, InternalSchemeHelper,
                        void,
                        allocateParallelGrids,
                        (),
                        (this),
-                       allocateParallelGrids)
-#endif /* GRID_1D */
+                       allocateParallelGrids1D)
 
-#ifdef GRID_2D
 SPECIALIZE_TEMPLATE_2D(InternalScheme, InternalSchemeHelper,
                        void,
                        allocateParallelGrids,
                        (),
                        (this),
-                       allocateParallelGrids)
-#endif /* GRID_2D */
+                       allocateParallelGrids2D)
 
-#ifdef GRID_3D
 SPECIALIZE_TEMPLATE_3D(InternalScheme, InternalSchemeHelper,
                        void,
                        allocateParallelGrids,
                        (),
                        (this),
-                       allocateParallelGrids)
-#endif /* GRID_3D */
+                       allocateParallelGrids3D)
 
 #endif /* PARALLEL_GRID */
 

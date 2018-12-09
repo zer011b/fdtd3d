@@ -404,7 +404,15 @@ public:
 #if defined (PARALLEL_GRID)
   template <SchemeType_t Type, LayoutType layout_type>
   ICUDA_HOST
-  static void allocateParallelGrids (InternalScheme<Type, ParallelGridCoordinateTemplate, layout_type> *intScheme);
+  static void allocateParallelGrids1D (InternalScheme<Type, GridCoordinate1DTemplate, layout_type> *intScheme);
+
+  template <SchemeType_t Type, LayoutType layout_type>
+  ICUDA_HOST
+  static void allocateParallelGrids2D (InternalScheme<Type, GridCoordinate2DTemplate, layout_type> *intScheme);
+
+  template <SchemeType_t Type, LayoutType layout_type>
+  ICUDA_HOST
+  static void allocateParallelGrids3D (InternalScheme<Type, GridCoordinate3DTemplate, layout_type> *intScheme);
 #endif /* PARALLEL_GRID */
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
