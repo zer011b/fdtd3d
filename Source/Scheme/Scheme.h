@@ -78,7 +78,7 @@ private:
 
   void performNSteps (time_step tStart, time_step N);
   void performNStepsForBlock (time_step tStart, time_step N, TC blockIdx);
-  
+
 #ifdef CUDA_ENABLED
   void shareE ();
   void shareH ();
@@ -89,6 +89,10 @@ private:
   void initCallBacks ();
   void initGrids ();
   void initBlocks (time_step t_total);
+
+#ifdef PARALLEL_GRID
+  void initParallelBlocks ();
+#endif
 
   uint64_t estimateCurrentSize ();
 
