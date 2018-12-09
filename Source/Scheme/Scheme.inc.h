@@ -1485,8 +1485,7 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
 #ifdef PARALLEL_GRID
     if (useParallel)
     {
-      ParallelYeeGridLayout<Type, layout_type> *parallelYeeLayout = (ParallelYeeGridLayout<Type, layout_type> *) yeeLayout;
-      blockSize = parallelYeeLayout->getSizeForCurNode ();
+      initParallelBlocks ();
     }
     else
 #endif

@@ -855,6 +855,43 @@ public:
     UNREACHABLE;
     return GRID_COORDINATE_3D (0, 0, 0, end.getType1 (), end.getType2 (), end.getType3 ());
   }
+
+#ifdef PARALLEL_GRID
+
+  template <SchemeType_t Type, LayoutType layout_type>
+  static void initParallelBlocks1D (Scheme<Type, GridCoordinate1DTemplate, layout_type> *scheme)
+  {
+#ifndef GRID_1D
+    ALWAYS_ASSERT_MESSAGE ("Solver is not compiled with support of 1D parallel grids.");
+#else /* !GRID_1D */
+    ParallelYeeGridLayout<Type, layout_type> *parallelYeeLayout = (ParallelYeeGridLayout<Type, layout_type> *) scheme->yeeLayout;
+    scheme->blockSize = parallelYeeLayout->getSizeForCurNode ();
+#endif /* GRID_1D */
+  }
+
+  template <SchemeType_t Type, LayoutType layout_type>
+  static void initParallelBlocks2D (Scheme<Type, GridCoordinate2DTemplate, layout_type> *scheme)
+  {
+#ifndef GRID_2D
+    ALWAYS_ASSERT_MESSAGE ("Solver is not compiled with support of 2D parallel grids.");
+#else /* !GRID_2D */
+    ParallelYeeGridLayout<Type, layout_type> *parallelYeeLayout = (ParallelYeeGridLayout<Type, layout_type> *) scheme->yeeLayout;
+    scheme->blockSize = parallelYeeLayout->getSizeForCurNode ();
+#endif /* GRID_2D */
+  }
+
+  template <SchemeType_t Type, LayoutType layout_type>
+  static void initParallelBlocks3D (Scheme<Type, GridCoordinate3DTemplate, layout_type> *scheme)
+  {
+#ifndef GRID_3D
+    ALWAYS_ASSERT_MESSAGE ("Solver is not compiled with support of 3D parallel grids.");
+#else /* !GRID_3D */
+    ParallelYeeGridLayout<Type, layout_type> *parallelYeeLayout = (ParallelYeeGridLayout<Type, layout_type> *) scheme->yeeLayout;
+    scheme->blockSize = parallelYeeLayout->getSizeForCurNode ();
+#endif /* GRID_3D */
+  }
+
+#endif /* PARALLEL_GRID */
 };
 
 #endif /* !SCHEME_HELPER_H */

@@ -13,9 +13,6 @@ CUR_DIR=`pwd`
 function check_res ()
 {
   if [ $? -ne 0 ]; then
-    echo "FAILED! ($percent_before%)"
-    echo ""
-    echo "==== Test suite: ERR ===="
     exit 1
   fi
 }

@@ -100,6 +100,15 @@ SPECIALIZE_TEMPLATE(void, void, void,
                      intScheme->getDoNeedHy (), intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR, &totalHy,
                      intScheme->getDoNeedHz (), intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR, &totalHz))
 
+#ifdef PARALLEL_GRID
+
+SPECIALIZE_TEMPLATE(void, void, void,
+                    initParallelBlocks,
+                    (), (), (),
+                    (this))
+
+#endif /* PARALLEL_GRID */
+
 /*
  * Specialization for Sigma
  */
