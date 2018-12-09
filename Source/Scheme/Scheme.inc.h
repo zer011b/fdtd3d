@@ -1204,7 +1204,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     GridCoordinate3D endBorder;
 
     expandTo3DStartEnd (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3),
-                        grid->getSize (),
+                        grid->getTotalSize (),
                         startBorder,
                         endBorder,
                         ct1, ct2, ct3);
@@ -1224,8 +1224,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
         // TODO: check that this loop is optimized out
         for (grid_coord k = startBorder.get3 (); k < endBorder.get3 (); ++k)
         {
-          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          intScheme->template calculateFieldStepIterationBorder<grid_type> (t, pos, grid, borderFunc);
+          TC posAbs = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+          intScheme->template calculateFieldStepIterationBorder<grid_type> (t, posAbs, grid, borderFunc);
         }
       }
     }
@@ -1242,8 +1242,14 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     FPValue maxIm = 0.0;
     FPValue maxMod = 0.0;
 
-    GridCoordinate3D startNorm = start3D;
-    GridCoordinate3D endNorm = end3D;
+    GridCoordinate3D startNorm;
+    GridCoordinate3D endNorm;
+
+    expandTo3DStartEnd (TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3),
+                        grid->getTotalSize () - TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3),
+                        startNorm,
+                        endNorm,
+                        ct1, ct2, ct3);
 
     if (SOLVER_SETTINGS.getExactSolutionCompareStartX () != 0)
     {
@@ -1298,32 +1304,107 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
         // TODO: check that this loop is optimized out
         for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
         {
-          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          intScheme->template calculateFieldStepIterationExact<grid_type> (t, pos, normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
+          TC posAbs = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+          intScheme->template calculateFieldStepIterationExact<grid_type> (t, posAbs, normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
         }
       }
     }
 #endif /* CUDA_ENABLED */
 
+#ifdef PARALLEL_GRID
+
+    FPValue normReTotal = FPValue (0);
+    FPValue maxReTotal = FPValue (0);
+
 #ifdef COMPLEX_FIELD_VALUES
-    normRe = sqrt (normRe / normGrid->getSize ().calculateTotalCoord ());
-    normIm = sqrt (normIm / normGrid->getSize ().calculateTotalCoord ());
-    normMod = sqrt (normMod / normGrid->getSize ().calculateTotalCoord ());
-
-    /*
-     * NOTE: do not change this! test suite depdends on the order of values in output
-     */
-    printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
-      normGrid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
-#else
-    normRe = sqrt (normRe / normGrid->getSize ().calculateTotalCoord ());
-
-    /*
-     * NOTE: do not change this! test suite depdends on the order of values in output
-     */
-    printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
-      normGrid->getName (), t, normRe, normRe * 100.0 / maxRe);
+    FPValue normImTotal = FPValue (0);
+    FPValue normModTotal = FPValue (0);
+    FPValue maxImTotal = FPValue (0);
+    FPValue maxModTotal = FPValue (0);
 #endif
+
+    /*
+     * In parallel mode need to share values with all nodes
+     */
+    for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
+    {
+      FPValue curRe = FPValue (0);
+      FPValue curMaxRe = FPValue (0);
+
+#ifdef COMPLEX_FIELD_VALUES
+      FPValue curIm = FPValue (0);
+      FPValue curMod = FPValue (0);
+      FPValue curMaxIm = FPValue (0);
+      FPValue curMaxMod = FPValue (0);
+#endif
+
+      if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+      {
+        curRe = normRe;
+        curMaxRe = maxRe;
+#ifdef COMPLEX_FIELD_VALUES
+        curIm = normIm;
+        curMod = normMod;
+        curMaxIm = maxIm;
+        curMaxMod = maxMod;
+#endif
+      }
+
+      MPI_Bcast (&curRe, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+      MPI_Bcast (&curMaxRe, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+#ifdef COMPLEX_FIELD_VALUES
+      MPI_Bcast (&curIm, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+      MPI_Bcast (&curMod, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+      MPI_Bcast (&curMaxIm, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+      MPI_Bcast (&curMaxMod, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+#endif
+
+      normReTotal += curRe;
+      maxReTotal += curMaxRe;
+#ifdef COMPLEX_FIELD_VALUES
+      normImTotal += curIm;
+      normModTotal += curMod;
+      maxImTotal += curMaxIm;
+      maxModTotal += curMaxMod;
+#endif
+
+      MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
+    }
+
+    normRe = normReTotal;
+    maxRe = maxReTotal;
+#ifdef COMPLEX_FIELD_VALUES
+    normIm = normImTotal;
+    normMod = normModTotal;
+    maxIm = maxImTotal;
+    maxMod = maxModTotal;
+#endif
+#endif /* PARALLEL_GRID */
+
+#ifdef PARALLEL_GRID
+    if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
+#endif /* PARALLEL_GRID */
+    {
+#ifdef COMPLEX_FIELD_VALUES
+      normRe = sqrt (normRe / normGrid->getTotalSize ().calculateTotalCoord ());
+      normIm = sqrt (normIm / normGrid->getTotalSize ().calculateTotalCoord ());
+      normMod = sqrt (normMod / normGrid->getTotalSize ().calculateTotalCoord ());
+
+      /*
+       * NOTE: do not change this! test suite depdends on the order of values in output
+       */
+      printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
+        normGrid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
+#else
+      normRe = sqrt (normRe / normGrid->getTotalSize ().calculateTotalCoord ());
+
+      /*
+       * NOTE: do not change this! test suite depdends on the order of values in output
+       */
+      printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
+        normGrid->getName (), t, normRe, normRe * 100.0 / maxRe);
+#endif
+    }
   }
 }
 

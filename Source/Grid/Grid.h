@@ -88,6 +88,16 @@ public:
   virtual FieldValue * getFieldValueByAbsolutePos (const TCoord &, int);
   virtual FieldValue * getFieldValueOrNullByAbsolutePos (const TCoord &, int);
 
+  virtual bool isBufferLeftPosition (const TCoord & pos)
+  {
+    return false;
+  }
+
+  virtual bool isBufferRightPosition (const TCoord & pos)
+  {
+    return false;
+  }
+
   void shiftInTime ();
   virtual void nextTimeStep (bool);
 

@@ -831,7 +831,7 @@ public:
    *
    * @return true, if position is in left buffer, false, otherwise
    */
-  bool isBufferLeftPosition (const ParallelGridCoordinate & pos) /**< position to check */
+  virtual bool isBufferLeftPosition (const ParallelGridCoordinate & pos) CXX11_OVERRIDE /**< position to check */
   {
     ASSERT (pos < totalSize);
     ParallelGridCoordinate chunkStart = getChunkStartPosition ();
@@ -851,7 +851,7 @@ public:
    *
    * @return true, if position is in right buffer, false, otherwise
    */
-  bool isBufferRightPosition (const ParallelGridCoordinate & pos) /**< position to check */
+  virtual bool isBufferRightPosition (const ParallelGridCoordinate & pos) CXX11_OVERRIDE /**< position to check */
   {
     ASSERT (pos < totalSize);
     ParallelGridCoordinate chunkEnd = getChunkStartPosition () + currentSize;

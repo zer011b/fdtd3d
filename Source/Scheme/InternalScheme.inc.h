@@ -243,9 +243,9 @@ namespace InternalSchemeKernelHelpers
       // skip kernels, which do not correspond to actual grid points
       return;
     }
-    TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
+    TCoord<grid_coord, true> posAbs = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
 
-    gpuScheme->calculateFieldStepIterationBorder<grid_type> (t, pos, grid, borderFunc);
+    gpuScheme->calculateFieldStepIterationBorder<grid_type> (t, posAbs, grid, borderFunc);
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, uint8_t grid_type>
@@ -269,9 +269,9 @@ namespace InternalSchemeKernelHelpers
       // skip kernels, which do not correspond to actual grid points
       return;
     }
-    TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
+    TCoord<grid_coord, true> posAbs = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
 
-    gpuScheme->calculateFieldStepIterationExact<grid_type> (t, pos, grid, exactFunc,
+    gpuScheme->calculateFieldStepIterationExact<grid_type> (t, posAbs, grid, exactFunc,
       gpuScheme->getd_norm ()[0], gpuScheme->getd_norm ()[1], gpuScheme->getd_norm ()[2], gpuScheme->getd_norm ()[3], gpuScheme->getd_norm ()[4], gpuScheme->getd_norm ()[5]);
   }
 
@@ -2384,13 +2384,12 @@ template <uint8_t grid_type>
 ICUDA_DEVICE
 void
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationBorder (time_step t,
-                                                                      TC pos,
+                                                                      TC posAbs,
                                                                       IGRID<TC> *grid,
                                                                       SourceCallBack borderFunc)
 {
-  TC posAbs = grid->getTotalPosition (pos);
-
-  if (doSkipBorderFunc (posAbs, grid))
+  if (doSkipBorderFunc (posAbs, grid)
+      || grid->getFieldValueOrNullByAbsolutePos (posAbs, 0) == NULL)
   {
     return;
   }
@@ -2441,6 +2440,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationBord
     }
   }
 
+  TC pos = grid->getRelativePosition (posAbs);
   grid->setFieldValue (borderFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep), pos, 0);
 }
 
@@ -2449,7 +2449,7 @@ template <uint8_t grid_type>
 ICUDA_DEVICE
 void
 INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationExact (time_step t,
-                                                                     TC pos,
+                                                                     TC posAbs,
                                                                      IGRID<TC> *grid,
                                                                      SourceCallBack exactFunc,
                                                                      FPValue &normRe,
@@ -2459,7 +2459,12 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationExac
                                                                      FPValue &maxIm,
                                                                      FPValue &maxMod)
 {
-  TC posAbs = grid->getTotalPosition (pos);
+  if (grid->getFieldValueOrNullByAbsolutePos (posAbs, 0) == NULL
+      || grid->isBufferLeftPosition (posAbs)
+      || grid->isBufferRightPosition (posAbs))
+  {
+    return;
+  }
 
   TCFP realCoord;
   FPValue timestep;
@@ -2507,14 +2512,14 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationExac
     }
   }
 
-  FieldValue numerical = *grid->getFieldValue (pos, 0);
+  FieldValue numerical = *grid->getFieldValueByAbsolutePos (posAbs, 0);
   FieldValue exact = exactFunc (expandTo3D (realCoord * gridStep, ct1, ct2, ct3), timestep * gridTimeStep);
 
 #ifdef COMPLEX_FIELD_VALUES
   FPValue modExact = sqrt (SQR (exact.real ()) + SQR (exact.imag ()));
   FPValue modNumerical = sqrt (SQR (numerical.real ()) + SQR (numerical.imag ()));
 
-  //printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact.real (), numerical.real ());
+  // printf ("EXACT %u %s %.20f %.20f\n", t, grid->getName (), exact.real (), numerical.real ());
 
   normRe += SQR (exact.real () - numerical.real ());
   normIm += SQR (exact.imag () - numerical.imag ());
