@@ -3471,7 +3471,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
         intScheme->getCaPMLEx ()->setFieldValue (FIELDVALUE (Ca, FPValue (0)), pos, 0);
         intScheme->getCbPMLEx ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
-        intScheme->getCcPMLEx ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
+        intScheme->getCcPMLEx ()->setFieldValue (FIELDVALUE (Cc, FPValue (0)), pos, 0);
       }
     }
 
@@ -3509,7 +3509,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
         intScheme->getCaPMLEy ()->setFieldValue (FIELDVALUE (Ca, FPValue (0)), pos, 0);
         intScheme->getCbPMLEy ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
-        intScheme->getCcPMLEy ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
+        intScheme->getCcPMLEy ()->setFieldValue (FIELDVALUE (Cc, FPValue (0)), pos, 0);
       }
     }
 
@@ -3547,7 +3547,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
         intScheme->getCaPMLEz ()->setFieldValue (FIELDVALUE (Ca, FPValue (0)), pos, 0);
         intScheme->getCbPMLEz ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
-        intScheme->getCcPMLEz ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
+        intScheme->getCcPMLEz ()->setFieldValue (FIELDVALUE (Cc, FPValue (0)), pos, 0);
       }
     }
 
@@ -3585,7 +3585,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
         intScheme->getDaPMLHx ()->setFieldValue (FIELDVALUE (Ca, FPValue (0)), pos, 0);
         intScheme->getDbPMLHx ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
-        intScheme->getDcPMLHx ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
+        intScheme->getDcPMLHx ()->setFieldValue (FIELDVALUE (Cc, FPValue (0)), pos, 0);
       }
     }
 
@@ -3623,7 +3623,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
         intScheme->getDaPMLHy ()->setFieldValue (FIELDVALUE (Ca, FPValue (0)), pos, 0);
         intScheme->getDbPMLHy ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
-        intScheme->getDcPMLHy ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
+        intScheme->getDcPMLHy ()->setFieldValue (FIELDVALUE (Cc, FPValue (0)), pos, 0);
       }
     }
 
@@ -3661,7 +3661,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
         intScheme->getDaPMLHz ()->setFieldValue (FIELDVALUE (Ca, FPValue (0)), pos, 0);
         intScheme->getDbPMLHz ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
-        intScheme->getDcPMLHz ()->setFieldValue (FIELDVALUE (Cb, FPValue (0)), pos, 0);
+        intScheme->getDcPMLHz ()->setFieldValue (FIELDVALUE (Cc, FPValue (0)), pos, 0);
       }
     }
   }
