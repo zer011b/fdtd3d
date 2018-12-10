@@ -54,19 +54,19 @@ SPECIALIZE_TEMPLATE(GridCoordinate1D, GridCoordinate2D, GridCoordinate3D,
                     (OrthogonalAxis orthogonalAxis, GridCoordinate3D end, GridCoordinate3D size),
                     (orthogonalAxis, end, size))
 
-// SPECIALIZE_TEMPLATE(NPair, NPair, NPair,
-//                     ntffN,
-//                     (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz),
-//                     (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz),
-//                     (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *curEz, Grid<GridCoordinate3D> *curHx, Grid<GridCoordinate3D> *curHy, Grid<GridCoordinate3D> *curHz),
-//                     (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), sourceWaveLength, HInc, curEz, curHx, curHy, curHz)) // TODO: check sourceWaveLengthNumerical here
-//
-// SPECIALIZE_TEMPLATE(NPair, NPair, NPair,
-//                     ntffL,
-//                     (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz),
-//                     (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz),
-//                     (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *curEx, Grid<GridCoordinate3D> *curEy, Grid<GridCoordinate3D> *curEz),
-//                     (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), sourceWaveLength, EInc, curEx, curEy, curEz)) // TODO: check sourceWaveLengthNumerical here
+SPECIALIZE_TEMPLATE(NPair, NPair, NPair,
+                    ntffN,
+                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz),
+                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz),
+                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *curEz, Grid<GridCoordinate3D> *curHx, Grid<GridCoordinate3D> *curHy, Grid<GridCoordinate3D> *curHz),
+                    (angleTeta, anglePhi, intScheme->getLeftNTFF (), intScheme->getRightNTFF (), yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), intScheme->getHInc (), curEz, curHx, curHy, curHz)) // TODO: check sourceWaveLengthNumerical here
+
+SPECIALIZE_TEMPLATE(NPair, NPair, NPair,
+                    ntffL,
+                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz),
+                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz),
+                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *curEx, Grid<GridCoordinate3D> *curEy, Grid<GridCoordinate3D> *curEz),
+                    (angleTeta, anglePhi, intScheme->getLeftNTFF (), intScheme->getRightNTFF (), yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), intScheme->getEInc (), curEx, curEy, curEz)) // TODO: check sourceWaveLengthNumerical here
 
 SPECIALIZE_TEMPLATE(bool, bool, bool,
                     doSkipMakeScattered,

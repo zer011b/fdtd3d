@@ -1257,6 +1257,12 @@ public:
   {
     return sourceFrequency;
   }
+  
+  ICUDA_HOST
+  FPValue getSourceWaveLength ()
+  {
+    return sourceWaveLength;
+  }
 
 #ifdef GPU_INTERNAL_SCHEME
   ICUDA_DEVICE
@@ -1266,6 +1272,18 @@ public:
     return d_norm;
   }
 #endif /* GPU_INTERNAL_SCHEME */
+
+  ICUDA_HOST
+  TC getLeftNTFF ()
+  {
+    return leftNTFF;
+  }
+  
+  ICUDA_HOST
+  TC getRightNTFF ()
+  {
+    return rightNTFF;
+  }
 };
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>

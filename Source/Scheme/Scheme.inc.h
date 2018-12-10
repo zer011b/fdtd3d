@@ -3893,77 +3893,77 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     }
   }
 }
-//
-// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-// FPValue
-// Scheme<Type, TCoord, layout_type>::Pointing_scat (FPValue angleTeta, FPValue anglePhi, Grid<TC> *curEx, Grid<TC> *curEy, Grid<TC> *curEz,
-//                        Grid<TC> *curHx, Grid<TC> *curHy, Grid<TC> *curHz)
-// {
-// #ifdef COMPLEX_FIELD_VALUES
-//   FPValue k = 2 * PhysicsConst::Pi / sourceWaveLength; // TODO: check numerical here
-//
-//   NPair N = ntffN (angleTeta, anglePhi, curEz, curHx, curHy, curHz);
-//   NPair L = ntffL (angleTeta, anglePhi, curEx, curEy, curEz);
-//
-//   int processId = 0;
-//
-//   if (useParallel)
-//   {
-// #ifdef PARALLEL_GRID
-//     processId = ParallelGrid::getParallelCore ()->getProcessId ();
-//
-//     FieldValue tmpArray[4];
-//     FieldValue tmpArrayRes[4];
-//     const int count = 4;
-//
-//     tmpArray[0] = N.nTeta;
-//     tmpArray[1] = N.nPhi;
-//     tmpArray[2] = L.nTeta;
-//     tmpArray[3] = L.nPhi;
-//
-//     // gather all sum_teta and sum_phi on 0 node
-//     MPI_Reduce (tmpArray, tmpArrayRes, count, MPI_FPVALUE, MPI_SUM, 0, ParallelGrid::getParallelCore ()->getCommunicator ());
-//
-//     if (processId == 0)
-//     {
-//       N.nTeta = FieldValue (tmpArrayRes[0]);
-//       N.nPhi = FieldValue (tmpArrayRes[1]);
-//
-//       L.nTeta = FieldValue (tmpArrayRes[2]);
-//       L.nPhi = FieldValue (tmpArrayRes[3]);
-//     }
-// #else
-//     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
-// #endif
-//   }
-//
-//   if (processId == 0)
-//   {
-//     FPValue n0 = sqrt (PhysicsConst::Mu0 / PhysicsConst::Eps0);
-//
-//     FieldValue first = -L.nPhi + N.nTeta * n0;
-//     FieldValue second = -L.nTeta - N.nPhi * n0;
-//
-//     FPValue first_abs2 = SQR (first.real ()) + SQR (first.imag ());
-//     FPValue second_abs2 = SQR (second.real ()) + SQR (second.imag ());
-//
-//     return SQR(k) / (8 * PhysicsConst::Pi * n0) * (first_abs2 + second_abs2);
-//   }
-//   else
-//   {
-//     return 0.0;
-//   }
-// #else
-//   ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
-// #endif
-// }
-//
-// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-// FPValue
-// Scheme<Type, TCoord, layout_type>::Pointing_inc (FPValue angleTeta, FPValue anglePhi)
-// {
-//   return sqrt (PhysicsConst::Eps0 / PhysicsConst::Mu0);
-// }
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+FPValue
+Scheme<Type, TCoord, layout_type>::Pointing_scat (FPValue angleTeta, FPValue anglePhi, Grid<TC> *curEx, Grid<TC> *curEy, Grid<TC> *curEz,
+                       Grid<TC> *curHx, Grid<TC> *curHy, Grid<TC> *curHz)
+{
+#ifdef COMPLEX_FIELD_VALUES
+  FPValue k = 2 * PhysicsConst::Pi / intScheme->getSourceWaveLength (); // TODO: check numerical here
+
+  NPair N = ntffN (angleTeta, anglePhi, curEz, curHx, curHy, curHz);
+  NPair L = ntffL (angleTeta, anglePhi, curEx, curEy, curEz);
+
+  int processId = 0;
+
+  if (useParallel)
+  {
+#ifdef PARALLEL_GRID
+    processId = ParallelGrid::getParallelCore ()->getProcessId ();
+
+    FieldValue tmpArray[4];
+    FieldValue tmpArrayRes[4];
+    const int count = 4;
+
+    tmpArray[0] = N.nTeta;
+    tmpArray[1] = N.nPhi;
+    tmpArray[2] = L.nTeta;
+    tmpArray[3] = L.nPhi;
+
+    // gather all sum_teta and sum_phi on 0 node
+    MPI_Reduce (tmpArray, tmpArrayRes, count, MPI_FPVALUE, MPI_SUM, 0, ParallelGrid::getParallelCore ()->getCommunicator ());
+
+    if (processId == 0)
+    {
+      N.nTeta = FieldValue (tmpArrayRes[0]);
+      N.nPhi = FieldValue (tmpArrayRes[1]);
+
+      L.nTeta = FieldValue (tmpArrayRes[2]);
+      L.nPhi = FieldValue (tmpArrayRes[3]);
+    }
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+  }
+
+  if (processId == 0)
+  {
+    FPValue n0 = sqrt (PhysicsConst::Mu0 / PhysicsConst::Eps0);
+
+    FieldValue first = -L.nPhi + N.nTeta * n0;
+    FieldValue second = -L.nTeta - N.nPhi * n0;
+
+    FPValue first_abs2 = SQR (first.real ()) + SQR (first.imag ());
+    FPValue second_abs2 = SQR (second.real ()) + SQR (second.imag ());
+
+    return SQR(k) / (8 * PhysicsConst::Pi * n0) * (first_abs2 + second_abs2);
+  }
+  else
+  {
+    return 0.0;
+  }
+#else
+  ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+#endif
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+FPValue
+Scheme<Type, TCoord, layout_type>::Pointing_inc (FPValue angleTeta, FPValue anglePhi)
+{
+  return sqrt (PhysicsConst::Eps0 / PhysicsConst::Mu0);
+}
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void
@@ -4384,93 +4384,93 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     }
   }
 }
-//
-// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-// void
-// Scheme<Type, TCoord, layout_type>::saveNTFF (bool isReverse, time_step t)
-// {
-//   int processId = 0;
-//
-//   if (useParallel)
-//   {
-// #ifdef PARALLEL_GRID
-//     processId = ParallelGrid::getParallelCore ()->getProcessId ();
-// #else
-//     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
-// #endif
-//   }
-//
-//   std::ofstream outfile;
-//   std::ostream *outs;
-//   const char *strName;
-//   FPValue start;
-//   FPValue end;
-//   FPValue step;
-//
-//   if (isReverse)
-//   {
-//     strName = "Reverse diagram";
-//     start = yeeLayout->getIncidentWaveAngle2 ();
-//     end = yeeLayout->getIncidentWaveAngle2 ();
-//     step = 1.0;
-//   }
-//   else
-//   {
-//     strName = "Forward diagram";
-//     start = 0.0;
-//     end = 2 * PhysicsConst::Pi + PhysicsConst::Pi / 180;
-//     step = PhysicsConst::Pi * SOLVER_SETTINGS.getAngleStepNTFF () / 180;
-//   }
-//
-//   if (processId == 0)
-//   {
-//     if (SOLVER_SETTINGS.getDoSaveNTFFToStdout ())
-//     {
-//       outs = &std::cout;
-//     }
-//     else
-//     {
-//       outfile.open (SOLVER_SETTINGS.getFileNameNTFF ().c_str ());
-//       outs = &outfile;
-//     }
-//     (*outs) << strName << std::endl << std::endl;
-//   }
-//
-//   for (FPValue angle = start; angle <= end; angle += step)
-//   {
-//     FPValue val = Pointing_scat (yeeLayout->getIncidentWaveAngle1 (),
-//                                  angle,
-//                                  internalScheme.Ex,
-//                                  internalScheme.Ey,
-//                                  internalScheme.Ez,
-//                                  internalScheme.Hx,
-//                                  internalScheme.Hy,
-//                                  internalScheme.Hz) / Pointing_inc (yeeLayout->getIncidentWaveAngle1 (), angle);
-//
-//     if (processId == 0)
-//     {
-//       (*outs) << "timestep = "
-//               << t
-//               << ", incident wave angle=("
-//               << yeeLayout->getIncidentWaveAngle1 () << ","
-//               << yeeLayout->getIncidentWaveAngle2 () << ","
-//               << yeeLayout->getIncidentWaveAngle3 () << ","
-//               << "), angle NTFF = "
-//               << angle
-//               << ", NTFF value = "
-//               << val
-//               << std::endl;
-//     }
-//   }
-//
-//   if (processId == 0)
-//   {
-//     if (!SOLVER_SETTINGS.getDoSaveNTFFToStdout ())
-//     {
-//       outfile.close ();
-//     }
-//   }
-// }
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+void
+Scheme<Type, TCoord, layout_type>::saveNTFF (bool isReverse, time_step t)
+{
+  int processId = 0;
+
+  if (useParallel)
+  {
+#ifdef PARALLEL_GRID
+    processId = ParallelGrid::getParallelCore ()->getProcessId ();
+#else
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif
+  }
+
+  std::ofstream outfile;
+  std::ostream *outs;
+  const char *strName;
+  FPValue start;
+  FPValue end;
+  FPValue step;
+
+  if (isReverse)
+  {
+    strName = "Reverse diagram";
+    start = yeeLayout->getIncidentWaveAngle2 ();
+    end = yeeLayout->getIncidentWaveAngle2 ();
+    step = 1.0;
+  }
+  else
+  {
+    strName = "Forward diagram";
+    start = 0.0;
+    end = 2 * PhysicsConst::Pi + PhysicsConst::Pi / 180;
+    step = PhysicsConst::Pi * SOLVER_SETTINGS.getAngleStepNTFF () / 180;
+  }
+
+  if (processId == 0)
+  {
+    if (SOLVER_SETTINGS.getDoSaveNTFFToStdout ())
+    {
+      outs = &std::cout;
+    }
+    else
+    {
+      outfile.open (SOLVER_SETTINGS.getFileNameNTFF ().c_str ());
+      outs = &outfile;
+    }
+    (*outs) << strName << std::endl << std::endl;
+  }
+
+  for (FPValue angle = start; angle <= end; angle += step)
+  {
+    FPValue val = Pointing_scat (yeeLayout->getIncidentWaveAngle1 (),
+                                 angle,
+                                 intScheme->getEx (),
+                                 intScheme->getEy (),
+                                 intScheme->getEz (),
+                                 intScheme->getHx (),
+                                 intScheme->getHy (),
+                                 intScheme->getHz ()) / Pointing_inc (yeeLayout->getIncidentWaveAngle1 (), angle);
+
+    if (processId == 0)
+    {
+      (*outs) << "timestep = "
+              << t
+              << ", incident wave angle=("
+              << yeeLayout->getIncidentWaveAngle1 () << ","
+              << yeeLayout->getIncidentWaveAngle2 () << ","
+              << yeeLayout->getIncidentWaveAngle3 () << ","
+              << "), angle NTFF = "
+              << angle
+              << ", NTFF value = "
+              << val
+              << std::endl;
+    }
+  }
+
+  if (processId == 0)
+  {
+    if (!SOLVER_SETTINGS.getDoSaveNTFFToStdout ())
+    {
+      outfile.close ();
+    }
+  }
+}
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 typename Scheme<Type, TCoord, layout_type>::TC

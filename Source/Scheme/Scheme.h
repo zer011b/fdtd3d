@@ -115,7 +115,7 @@ private:
   void makeGridScattered (Grid<TC> *, GridType);
   void gatherFieldsTotal (bool);
   void saveGrids (time_step);
-  // void saveNTFF (bool, time_step);
+  void saveNTFF (bool, time_step);
 
   TC getStartCoord (GridType, TC);
   TC getEndCoord (GridType, TC);
@@ -134,12 +134,12 @@ private:
    * 3D ntff
    * TODO: add 1D,2D modes
    */
-  // NPair ntffN (FPValue angleTeta, FPValue anglePhi, Grid<TC> *, Grid<TC> *, Grid<TC> *, Grid<TC> *);
-  // NPair ntffL (FPValue angleTeta, FPValue anglePhi, Grid<TC> *, Grid<TC> *, Grid<TC> *);
-  //
-  // FPValue Pointing_scat (FPValue angleTeta, FPValue anglePhi, Grid<TC> *, Grid<TC> *, Grid<TC> *, Grid<TC> *,
-  //                        Grid<TC> *, Grid<TC> *);
-  // FPValue Pointing_inc (FPValue angleTeta, FPValue anglePhi);
+  NPair ntffN (FPValue angleTeta, FPValue anglePhi, Grid<TC> *, Grid<TC> *, Grid<TC> *, Grid<TC> *);
+  NPair ntffL (FPValue angleTeta, FPValue anglePhi, Grid<TC> *, Grid<TC> *, Grid<TC> *);
+  
+  FPValue Pointing_scat (FPValue angleTeta, FPValue anglePhi, Grid<TC> *, Grid<TC> *, Grid<TC> *, Grid<TC> *,
+                         Grid<TC> *, Grid<TC> *);
+  FPValue Pointing_inc (FPValue angleTeta, FPValue anglePhi);
 
   void performCudaSteps ();
 
@@ -185,6 +185,11 @@ public:
     {
       gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
       saveGrids (totalTimeSteps);
+    }
+    
+    if (SOLVER_SETTINGS.getDoUseNTFF ())
+    {
+      saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), totalTimeSteps);
     }
 
     if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
