@@ -3894,6 +3894,9 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   }
 }
 
+/**
+ * Compute value of time-averaged Poynting vector of the scattered field
+ */
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
 Scheme<Type, TCoord, layout_type>::Pointing_scat (FPValue angleTeta, FPValue anglePhi, Grid<TC> *curEx, Grid<TC> *curEy, Grid<TC> *curEz,
@@ -3958,11 +3961,15 @@ Scheme<Type, TCoord, layout_type>::Pointing_scat (FPValue angleTeta, FPValue ang
 #endif
 }
 
+/**
+ * Compute value of time-averaged Poynting vector of the incident field
+ */
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
 Scheme<Type, TCoord, layout_type>::Pointing_inc (FPValue angleTeta, FPValue anglePhi)
 {
-  return sqrt (PhysicsConst::Eps0 / PhysicsConst::Mu0);
+  // TODO: consider amplitude here, i.e. compute |E|^2 of incident field, instead of considering it 1.0
+  return sqrt (PhysicsConst::Eps0 / PhysicsConst::Mu0) / FPValue (2);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
