@@ -1630,18 +1630,10 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
     }
 #else /* CUDA_ENABLED */
 
-#ifdef PARALLEL_GRID
-    if (useParallel)
-    {
-      time_step parallelBuf = (time_step) SOLVER_SETTINGS.getBufferSize ();
-      ALWAYS_ASSERT (parallelBuf >= 1);
-      NTimeSteps = parallelBuf;
-    }
-    else
-#endif /* PARALLEL_GRID */
-    {
-      NTimeSteps = totalTimeSteps;
-    }
+    /*
+     * For non-Cuda builds it's fine to perform single step for block
+     */
+    NTimeSteps = 1;
 
 #endif /* !CUDA_ENABLED */
   }
@@ -4437,7 +4429,11 @@ Scheme<Type, TCoord, layout_type>::saveNTFF (bool isReverse, time_step t)
     }
     else
     {
-      outfile.open (SOLVER_SETTINGS.getFileNameNTFF ().c_str ());
+      std::string ntffFileName = SOLVER_SETTINGS.getFileNameNTFF ()
+                                 + std::string ("_[timestep=")
+                                 + int64_to_string (t)
+                                 + std::string ("].txt");
+      outfile.open (ntffFileName.c_str ());
       outs = &outfile;
     }
     (*outs) << strName << std::endl << std::endl;

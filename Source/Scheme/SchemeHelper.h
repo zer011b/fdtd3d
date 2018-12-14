@@ -58,17 +58,17 @@ public:
 #endif
     scheme->rebalance ();
 
+    if (SOLVER_SETTINGS.getDoUseNTFF ()
+        && ((tStart) / SOLVER_SETTINGS.getIntermediateNTFFStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateNTFFStep ()))
+    {
+      scheme->saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), tStart + N);
+    }
+
     if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
     {
-      //scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
       scheme->saveGrids (tStart + N);
-    }
-
-    if (SOLVER_SETTINGS.getDoUseNTFF ()
-        && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
-    {
-      //scheme->saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), tStart + N);
     }
   }
 
@@ -95,17 +95,17 @@ public:
 #endif
     scheme->rebalance ();
 
+    if (SOLVER_SETTINGS.getDoUseNTFF ()
+        && ((tStart) / SOLVER_SETTINGS.getIntermediateNTFFStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateNTFFStep ()))
+    {
+      scheme->saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), tStart + N);
+    }
+
     if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
     {
-      //scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
       scheme->saveGrids (tStart + N);
-    }
-
-    if (SOLVER_SETTINGS.getDoUseNTFF ()
-        && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
-    {
-      //scheme->saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), tStart + N);
     }
   }
 
@@ -135,17 +135,17 @@ public:
 #endif
     scheme->rebalance ();
 
+    if (SOLVER_SETTINGS.getDoUseNTFF ()
+        && ((tStart) / SOLVER_SETTINGS.getIntermediateNTFFStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateNTFFStep ()))
+    {
+      scheme->saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), tStart + N);
+    }
+
     if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
     {
-      //scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
       scheme->saveGrids (tStart + N);
-    }
-
-    if (SOLVER_SETTINGS.getDoUseNTFF ()
-        && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
-    {
-      //scheme->saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), tStart + N);
     }
   }
 

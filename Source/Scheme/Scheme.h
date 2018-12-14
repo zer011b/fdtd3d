@@ -175,8 +175,8 @@ public:
       /*
        * Each NTimeSteps sharing will be performed.
        *
-       * For sequential solver, NTimeSteps == totalTimeSteps
-       * For parallel/cuda solver, NTimeSteps == min (bufSize, cudaBufSize)
+       * For non-Cuda solver (both sequential and parallel), NTimeSteps == 1
+       * For Cuda solver, NTimeSteps == bufSize - 1
        */
       performNSteps (t, NTimeSteps);
     }
@@ -185,11 +185,6 @@ public:
     {
       gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
       saveGrids (totalTimeSteps);
-    }
-    
-    if (SOLVER_SETTINGS.getDoUseNTFF ())
-    {
-      saveNTFF (SOLVER_SETTINGS.getDoCalcReverseNTFF (), totalTimeSteps);
     }
 
     if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
