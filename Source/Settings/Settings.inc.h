@@ -181,7 +181,7 @@ SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareEndZ, getExactSolutionCompareEn
  * NTFF
  */
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCalcReverseNTFF, getDoCalcReverseNTFF, bool, false, "--ntff-reverse", "Calculate NTFF reverse diagram")
-SETTINGS_ELEM_FIELD_TYPE_STRING(fileNameNTFF, getFileNameNTFF, std::string, "ntff-res.txt", "--ntff-filename", "File to save ntff result")
+SETTINGS_ELEM_FIELD_TYPE_STRING(fileNameNTFF, getFileNameNTFF, std::string, "ntff-res", "--ntff-filename", "File to save ntff result")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveNTFFToStdout, getDoSaveNTFFToStdout, bool, false, "--ntff-to-stdout", "Save NTFF for standard output")
 SETTINGS_ELEM_FIELD_TYPE_FLOAT(angleStepNTFF, getAngleStepNTFF, FPValue, 10.0, "--ntff-step-angle", "NTFF angle step")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCalcScatteredNTFF, getDoCalcScatteredNTFF, bool, false, "--ntff-scattered", "Calculate NTFF for scattered fields")
