@@ -25,17 +25,6 @@ InternalScheme<Type, TCoord, layout_type>::init (YeeGridLayout<Type, TCoord, lay
 
   initCoordTypes ();
 
-  if (SOLVER_SETTINGS.getDoUseNTFF ())
-  {
-    leftNTFF = TC::initAxesCoordinate (SOLVER_SETTINGS.getNTFFSizeX (), SOLVER_SETTINGS.getNTFFSizeY (), SOLVER_SETTINGS.getNTFFSizeZ (),
-                                       ct1, ct2, ct3);
-    rightNTFF = layout->getEzSize () - leftNTFF + TC (1, 1, 1
-#ifdef DEBUG_INFO
-                                                      , ct1, ct2, ct3
-#endif
-                                                      );
-  }
-
   if (useParallel)
   {
 #if defined (PARALLEL_GRID) && ! defined (__CUDA_ARCH__)
@@ -554,13 +543,6 @@ InternalSchemeGPU<Type, TCoord, layout_type>::initFromCPU (InternalScheme<Type, 
 #endif
           );
 
-  if (SOLVER_SETTINGS.getDoUseNTFF ())
-  {
-    leftNTFF = TC::initAxesCoordinate (SOLVER_SETTINGS.getNTFFSizeX (), SOLVER_SETTINGS.getNTFFSizeY (), SOLVER_SETTINGS.getNTFFSizeZ (),
-                                       ct1, ct2, ct3);
-    rightNTFF = cpuScheme->yeeLayout->getEzSize () - leftNTFF + one;
-  }
-
   allocateGridsFromCPU (cpuScheme, blockSize, bufSize);
 
   cudaCheckErrorCmd (cudaMalloc ((void **) &d_norm, 6 * sizeof(FPValue)));
@@ -595,13 +577,6 @@ InternalSchemeGPU<Type, TCoord, layout_type>::initOnGPU (InternalSchemeGPU<Type,
           , ct1, ct2, ct3
 #endif
           );
-
-  if (SOLVER_SETTINGS.getDoUseNTFF ())
-  {
-    leftNTFF = TC::initAxesCoordinate (SOLVER_SETTINGS.getNTFFSizeX (), SOLVER_SETTINGS.getNTFFSizeY (), SOLVER_SETTINGS.getNTFFSizeZ (),
-                                       ct1, ct2, ct3);
-    rightNTFF = gpuScheme->yeeLayout->getEzSize () - leftNTFF + one;
-  }
 
   cudaCheckErrorCmd (cudaMalloc ((void **) &yeeLayout, sizeof(YeeGridLayout<Type, TCoord, layout_type>)));
   cudaCheckErrorCmd (cudaMemcpy (yeeLayout, gpuScheme->yeeLayout, sizeof(YeeGridLayout<Type, TCoord, layout_type>), cudaMemcpyHostToDevice));
