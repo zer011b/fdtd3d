@@ -581,9 +581,6 @@ private:
    */
   FPValue gridTimeStep;
 
-  TC leftNTFF;
-  TC rightNTFF;
-
 #define CALLBACK_NAME(x) \
   SourceCallBack x;
 #include "Callbacks.inc.h"
@@ -1257,7 +1254,7 @@ public:
   {
     return sourceFrequency;
   }
-  
+
   ICUDA_HOST
   FPValue getSourceWaveLength ()
   {
@@ -1272,18 +1269,6 @@ public:
     return d_norm;
   }
 #endif /* GPU_INTERNAL_SCHEME */
-
-  ICUDA_HOST
-  TC getLeftNTFF ()
-  {
-    return leftNTFF;
-  }
-  
-  ICUDA_HOST
-  TC getRightNTFF ()
-  {
-    return rightNTFF;
-  }
 };
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>

@@ -134,11 +134,11 @@ private:
    * 3D ntff
    * TODO: add 1D,2D modes
    */
-  NPair ntffN (FPValue angleTeta, FPValue anglePhi, Grid<TC> *, Grid<TC> *, Grid<TC> *, Grid<TC> *);
-  NPair ntffL (FPValue angleTeta, FPValue anglePhi, Grid<TC> *, Grid<TC> *, Grid<TC> *);
-  
+  NPair ntffN (FPValue angleTeta, FPValue anglePhi, Grid<TC> *, Grid<TC> *, Grid<TC> *, Grid<TC> *, TC, TC);
+  NPair ntffL (FPValue angleTeta, FPValue anglePhi, Grid<TC> *, Grid<TC> *, Grid<TC> *, TC, TC);
+
   FPValue Pointing_scat (FPValue angleTeta, FPValue anglePhi, Grid<TC> *, Grid<TC> *, Grid<TC> *, Grid<TC> *,
-                         Grid<TC> *, Grid<TC> *);
+                         Grid<TC> *, Grid<TC> *, TC, TC);
   FPValue Pointing_inc (FPValue angleTeta, FPValue anglePhi);
 
   void performCudaSteps ();

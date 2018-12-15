@@ -76,6 +76,9 @@ SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeY, getNTFFSizeY, grid_coord, 3, "--ntff-siz
 SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeZ, getNTFFSizeZ, grid_coord, 3, "--ntff-sizez", "Size of NTFF area by z coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by z coordinate")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-ntff", "Use size of NTFF area by x coordinate for y and z coordinates too")
 
+SETTINGS_ELEM_FIELD_TYPE_INT(ntffDiff, getNTFFDiff, grid_coord, 1, "--ntff-diff", "Value to vary border of NTFF area.")
+
+
 /*
  * Time steps
  */

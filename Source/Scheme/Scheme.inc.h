@@ -3892,13 +3892,13 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
 Scheme<Type, TCoord, layout_type>::Pointing_scat (FPValue angleTeta, FPValue anglePhi, Grid<TC> *curEx, Grid<TC> *curEy, Grid<TC> *curEz,
-                       Grid<TC> *curHx, Grid<TC> *curHy, Grid<TC> *curHz)
+                       Grid<TC> *curHx, Grid<TC> *curHy, Grid<TC> *curHz, TC leftNTFF, TC rightNTFF)
 {
 #ifdef COMPLEX_FIELD_VALUES
   FPValue k = 2 * PhysicsConst::Pi / intScheme->getSourceWaveLength (); // TODO: check numerical here
 
-  NPair N = ntffN (angleTeta, anglePhi, curEz, curHx, curHy, curHz);
-  NPair L = ntffL (angleTeta, anglePhi, curEx, curEy, curEz);
+  NPair N = ntffN (angleTeta, anglePhi, curEz, curHx, curHy, curHz, leftNTFF, rightNTFF);
+  NPair L = ntffL (angleTeta, anglePhi, curEx, curEy, curEz, leftNTFF, rightNTFF);
 
   int processId = 0;
 
@@ -4388,6 +4388,8 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 void
 Scheme<Type, TCoord, layout_type>::saveNTFF (bool isReverse, time_step t)
 {
+  DPRINTF (LOG_LEVEL_STAGES, "Saving NTFF.\n");
+
   int processId = 0;
 
   if (useParallel)
@@ -4399,78 +4401,97 @@ Scheme<Type, TCoord, layout_type>::saveNTFF (bool isReverse, time_step t)
 #endif
   }
 
-  std::ofstream outfile;
-  std::ostream *outs;
-  const char *strName;
-  FPValue start;
-  FPValue end;
-  FPValue step;
+  for (grid_coord step_ntff = 0; step_ntff < SOLVER_SETTINGS.getNTFFDiff (); ++step_ntff)
+  {
+    TC stepNTFF = TC::initAxesCoordinate (step_ntff, step_ntff, step_ntff, ct1, ct2, ct3);
+    TC leftNTFF = TC::initAxesCoordinate (SOLVER_SETTINGS.getNTFFSizeX (), SOLVER_SETTINGS.getNTFFSizeY (), SOLVER_SETTINGS.getNTFFSizeZ (),
+                                          ct1, ct2, ct3);
+    TC rightNTFF = yeeLayout->getSize () - leftNTFF + TC_COORD (1, 1, 1, ct1, ct2, ct3);
 
-  if (isReverse)
-  {
-    strName = "Reverse diagram";
-    start = yeeLayout->getIncidentWaveAngle2 ();
-    end = yeeLayout->getIncidentWaveAngle2 ();
-    step = 1.0;
-  }
-  else
-  {
-    strName = "Forward diagram";
-    start = 0.0;
-    end = 2 * PhysicsConst::Pi + PhysicsConst::Pi / 180;
-    step = PhysicsConst::Pi * SOLVER_SETTINGS.getAngleStepNTFF () / 180;
-  }
+    leftNTFF = leftNTFF + stepNTFF;
+    rightNTFF = rightNTFF - stepNTFF;
 
-  if (processId == 0)
-  {
-    if (SOLVER_SETTINGS.getDoSaveNTFFToStdout ())
+    std::ofstream outfile;
+    std::ostream *outs;
+    const char *strName;
+    FPValue start;
+    FPValue end;
+    FPValue step;
+
+    if (isReverse)
     {
-      outs = &std::cout;
+      strName = "Reverse diagram";
+      start = yeeLayout->getIncidentWaveAngle2 ();
+      end = yeeLayout->getIncidentWaveAngle2 ();
+      step = 1.0;
     }
     else
     {
-      std::string ntffFileName = SOLVER_SETTINGS.getFileNameNTFF ()
-                                 + std::string ("_[timestep=")
-                                 + int64_to_string (t)
-                                 + std::string ("].txt");
-      outfile.open (ntffFileName.c_str ());
-      outs = &outfile;
+      strName = "Forward diagram";
+      start = 0.0;
+      end = 2 * PhysicsConst::Pi + PhysicsConst::Pi / 180;
+      step = PhysicsConst::Pi * SOLVER_SETTINGS.getAngleStepNTFF () / 180;
     }
-    (*outs) << strName << std::endl << std::endl;
-  }
-
-  for (FPValue angle = start; angle <= end; angle += step)
-  {
-    FPValue val = Pointing_scat (yeeLayout->getIncidentWaveAngle1 (),
-                                 angle,
-                                 intScheme->getEx (),
-                                 intScheme->getEy (),
-                                 intScheme->getEz (),
-                                 intScheme->getHx (),
-                                 intScheme->getHy (),
-                                 intScheme->getHz ()) / Pointing_inc (yeeLayout->getIncidentWaveAngle1 (), angle);
 
     if (processId == 0)
     {
-      (*outs) << "timestep = "
-              << t
-              << ", incident wave angle=("
-              << yeeLayout->getIncidentWaveAngle1 () << ","
-              << yeeLayout->getIncidentWaveAngle2 () << ","
-              << yeeLayout->getIncidentWaveAngle3 () << ","
-              << "), angle NTFF = "
-              << angle
-              << ", NTFF value = "
-              << val
-              << std::endl;
+      if (SOLVER_SETTINGS.getDoSaveNTFFToStdout ())
+      {
+        outs = &std::cout;
+        DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving NTFF[%d] to stdout.\n", step_ntff);
+      }
+      else
+      {
+        std::string ntffFileName = SOLVER_SETTINGS.getFileNameNTFF ()
+                                   + std::string ("_[timestep=")
+                                   + int64_to_string (t)
+                                   + std::string ("]_[step=")
+                                   + int64_to_string (step_ntff)
+                                   + std::string ("].txt");
+        outfile.open (ntffFileName.c_str ());
+        outs = &outfile;
+        DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Saving NTFF[%d] to %s.\n", step_ntff, ntffFileName.c_str ());
+      }
+      (*outs) << "==== NTFF (step=" << step_ntff << ") ====" << std::endl;
+      (*outs) << strName << std::endl << std::endl;
     }
-  }
 
-  if (processId == 0)
-  {
-    if (!SOLVER_SETTINGS.getDoSaveNTFFToStdout ())
+    for (FPValue angle = start; angle <= end; angle += step)
     {
-      outfile.close ();
+      FPValue val = Pointing_scat (yeeLayout->getIncidentWaveAngle1 (),
+                                   angle,
+                                   intScheme->getEx (),
+                                   intScheme->getEy (),
+                                   intScheme->getEz (),
+                                   intScheme->getHx (),
+                                   intScheme->getHy (),
+                                   intScheme->getHz (),
+                                   leftNTFF,
+                                   rightNTFF);
+      val /= Pointing_inc (yeeLayout->getIncidentWaveAngle1 (), angle);
+
+      if (processId == 0)
+      {
+        (*outs) << "timestep = "
+                << t
+                << ", incident wave angle=("
+                << yeeLayout->getIncidentWaveAngle1 () << ","
+                << yeeLayout->getIncidentWaveAngle2 () << ","
+                << yeeLayout->getIncidentWaveAngle3 () << ","
+                << "), angle NTFF = "
+                << angle
+                << ", NTFF value = "
+                << val
+                << std::endl;
+      }
+    }
+
+    if (processId == 0)
+    {
+      if (!SOLVER_SETTINGS.getDoSaveNTFFToStdout ())
+      {
+        outfile.close ();
+      }
     }
   }
 }
