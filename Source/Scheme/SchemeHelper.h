@@ -613,7 +613,6 @@ public:
                    GridCoordinate3D, GridCoordinate3D,
                    YL3D_Dim3 *,
                    FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *,
                    Grid<GridCoordinate3D> *,
                    Grid<GridCoordinate3D> *);
@@ -622,7 +621,6 @@ public:
                    GridCoordinate3D, GridCoordinate3D,
                    YL3D_Dim3 *,
                    FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *,
                    Grid<GridCoordinate3D> *,
                    Grid<GridCoordinate3D> *);
@@ -631,7 +629,6 @@ public:
                    GridCoordinate3D, GridCoordinate3D,
                    YL3D_Dim3 *,
                    FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *,
                    Grid<GridCoordinate3D> *,
                    Grid<GridCoordinate3D> *);
@@ -640,52 +637,46 @@ public:
                  GridCoordinate3D, GridCoordinate3D,
                  YL3D_Dim3 *,
                  FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *,
                  Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
-  
+
   template <SchemeType_t Type, LayoutType layout_type>
   static
   NPair ntffN2D (FPValue, FPValue,
                  GridCoordinate2D, GridCoordinate2D,
                  YeeGridLayout<Type, GridCoordinate2DTemplate, layout_type> *,
                  FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate2D> *, Grid<GridCoordinate2D> *,
                  Grid<GridCoordinate2D> *, Grid<GridCoordinate2D> *)
   {}
-  
+
   template <SchemeType_t Type, LayoutType layout_type>
   static
   NPair ntffN1D (FPValue, FPValue,
                  GridCoordinate1D, GridCoordinate1D,
                  YeeGridLayout<Type, GridCoordinate1DTemplate, layout_type> *,
                  FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate1D> *, Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate1D> *, Grid<GridCoordinate1D> *)
   {}
-  
+
   static
   NPair ntffL3D_x (grid_coord, FPValue, FPValue,
                    GridCoordinate3D, GridCoordinate3D,
                    YL3D_Dim3 *,
                    FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
   static
   NPair ntffL3D_y (grid_coord, FPValue, FPValue,
                    GridCoordinate3D, GridCoordinate3D,
                    YL3D_Dim3 *,
                    FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *, Grid<GridCoordinate3D> *);
   static
   NPair ntffL3D_z (grid_coord, FPValue, FPValue,
                    GridCoordinate3D, GridCoordinate3D,
                    YL3D_Dim3 *,
                    FPValue, FPValue,
-                   Grid<GridCoordinate1D> *,
                    Grid<GridCoordinate3D> *,
                    Grid<GridCoordinate3D> *,
                    Grid<GridCoordinate3D> *);
@@ -694,30 +685,27 @@ public:
                  GridCoordinate3D, GridCoordinate3D,
                  YL3D_Dim3 *,
                  FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate3D> *,
                  Grid<GridCoordinate3D> *,
                  Grid<GridCoordinate3D> *);
-  
+
   template <SchemeType_t Type, LayoutType layout_type>
   static
   NPair ntffL2D (FPValue, FPValue,
                  GridCoordinate2D, GridCoordinate2D,
                  YeeGridLayout<Type, GridCoordinate2DTemplate, layout_type> *,
                  FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate2D> *,
                  Grid<GridCoordinate2D> *,
                  Grid<GridCoordinate2D> *)
   {}
-  
+
   template <SchemeType_t Type, LayoutType layout_type>
   static
   NPair ntffL1D (FPValue, FPValue,
                  GridCoordinate1D, GridCoordinate1D,
                  YeeGridLayout<Type, GridCoordinate1DTemplate, layout_type> *,
                  FPValue, FPValue,
-                 Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate1D> *,
                  Grid<GridCoordinate1D> *)

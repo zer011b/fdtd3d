@@ -88,6 +88,11 @@ public:
   virtual FieldValue * getFieldValueByAbsolutePos (const TCoord &, int);
   virtual FieldValue * getFieldValueOrNullByAbsolutePos (const TCoord &, int);
 
+  virtual FieldValue * getFieldValueCurrentAfterShiftByAbsolutePos (const TCoord &);
+  virtual FieldValue * getFieldValueOrNullCurrentAfterShiftByAbsolutePos (const TCoord &);
+  virtual FieldValue * getFieldValuePreviousAfterShiftByAbsolutePos (const TCoord &);
+  virtual FieldValue * getFieldValueOrNullPreviousAfterShiftByAbsolutePos (const TCoord &);
+
   virtual bool isBufferLeftPosition (const TCoord & pos)
   {
     return false;
@@ -324,8 +329,44 @@ FieldValue *
 Grid<TCoord>::getFieldValueOrNullByAbsolutePos (const TCoord &relPosition, /**< relative coordinate in grid */
                                                 int time_step_back) /**< index of previous time step, starting from current (0) */
 {
-  return getFieldValue (relPosition, time_step_back);
+  return getFieldValueByAbsolutePos (relPosition, time_step_back);
 } /* Grid<TCoord>::getFieldValueOrNullByAbsolutePos */
+
+template <class TCoord>
+FieldValue *
+Grid<TCoord>::getFieldValueCurrentAfterShiftByAbsolutePos (const TCoord &relPosition) /**< relative coordinate in grid */
+{
+  return getFieldValue (relPosition, 1);
+}
+
+template <class TCoord>
+FieldValue *
+Grid<TCoord>::getFieldValueOrNullCurrentAfterShiftByAbsolutePos (const TCoord &relPosition) /**< relative coordinate in grid */
+{
+  return getFieldValueCurrentAfterShiftByAbsolutePos (relPosition);
+}
+
+template <class TCoord>
+FieldValue *
+Grid<TCoord>::getFieldValuePreviousAfterShiftByAbsolutePos (const TCoord &relPosition) /**< relative coordinate in grid */
+{
+  if (gridValues.size () > 2)
+  {
+    return getFieldValue (relPosition, 2);
+  }
+  else
+  {
+    return getFieldValue (relPosition, 0);
+  }
+}
+
+template <class TCoord>
+FieldValue *
+Grid<TCoord>::getFieldValueOrNullPreviousAfterShiftByAbsolutePos (const TCoord &relPosition) /**< relative coordinate in grid */
+{
+  return getFieldValuePreviousAfterShiftByAbsolutePos (relPosition);
+}
+
 
 /**
  * Switch to next time step
