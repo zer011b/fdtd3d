@@ -3887,7 +3887,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 }
 
 /**
- * Compute value of time-averaged Poynting vector of the scattered field
+ * Compute value of time-averaged Poynting vector of the scattered field (mulptiplied on 4*Pi*r^2)
  */
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 FPValue
@@ -3936,8 +3936,8 @@ Scheme<Type, TCoord, layout_type>::Pointing_scat (FPValue angleTeta, FPValue ang
   {
     FPValue n0 = sqrt (PhysicsConst::Mu0 / PhysicsConst::Eps0);
 
-    FieldValue first = -L.nPhi + N.nTeta * n0;
-    FieldValue second = -L.nTeta - N.nPhi * n0;
+    FieldValue first = L.nPhi + N.nTeta * n0;
+    FieldValue second = L.nTeta - N.nPhi * n0;
 
     FPValue first_abs2 = SQR (first.real ()) + SQR (first.imag ());
     FPValue second_abs2 = SQR (second.real ()) + SQR (second.imag ());

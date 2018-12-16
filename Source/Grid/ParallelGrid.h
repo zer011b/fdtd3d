@@ -663,10 +663,49 @@ public:
       return NULLPTR;
     }
 
-    ParallelGridCoordinate relPosition = getRelativePosition (absPosition);
-
-    return getFieldValue (relPosition, time_step_back);
+    return getFieldValueByAbsolutePos (getRelativePosition (absPosition), time_step_back);
   } /* getFieldValueOrNullByAbsolutePos */
+
+  virtual FieldValue * getFieldValueCurrentAfterShiftByAbsolutePos
+    (const ParallelGridCoordinate &absPosition) /**< absolute coordinate in grid */
+  {
+    return getFieldValue (getRelativePosition (absPosition), 1);
+  }
+
+  virtual FieldValue * getFieldValueOrNullCurrentAfterShiftByAbsolutePos
+    (const ParallelGridCoordinate &absPosition) /**< absolute coordinate in grid */
+  {
+    if (!hasValueForCoordinate (absPosition))
+    {
+      return NULLPTR;
+    }
+
+    return getFieldValueCurrentAfterShiftByAbsolutePos (absPosition);
+  }
+
+  virtual FieldValue * getFieldValuePreviousAfterShiftByAbsolutePos
+    (const ParallelGridCoordinate &absPosition) /**< absolute coordinate in grid */
+  {
+    if (gridValues.size () > 2)
+    {
+      return getFieldValue (getRelativePosition (absPosition), 2);
+    }
+    else
+    {
+      return getFieldValue (getRelativePosition (absPosition), 0);
+    }
+  }
+
+  virtual FieldValue * getFieldValueOrNullPreviousAfterShiftByAbsolutePos
+    (const ParallelGridCoordinate &absPosition) /**< absolute coordinate in grid */
+  {
+    if (!hasValueForCoordinate (absPosition))
+    {
+      return NULLPTR;
+    }
+
+    return getFieldValuePreviousAfterShiftByAbsolutePos (absPosition);
+  }
 
   /**
    * Check whether current node has value for coordinate
