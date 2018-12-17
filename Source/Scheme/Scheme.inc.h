@@ -2934,11 +2934,22 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                              SOLVER_SETTINGS.getEpsSphereCenterY (),
                                              SOLVER_SETTINGS.getEpsSphereCenterZ (),
                                              ct1, ct2, ct3);
-      *val = Approximation::approximateSphereAccurate (posAbs,
-                                                       center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
-                                                       SOLVER_SETTINGS.getEpsSphereRadius () * modifier,
-                                                       epsVal,
-                                                       getFieldValueRealOnly (1.0));
+      if (SOLVER_SETTINGS.getDoUseStairApproximation ())
+      {
+        *val = Approximation::approximateSphereStair (posAbs,
+                                                         center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
+                                                         SOLVER_SETTINGS.getEpsSphereRadius () * modifier,
+                                                         epsVal,
+                                                         getFieldValueRealOnly (1.0));
+      }
+      else
+      {
+        *val = Approximation::approximateSphereAccurate (posAbs,
+                                                         center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
+                                                         SOLVER_SETTINGS.getEpsSphereRadius () * modifier,
+                                                         epsVal,
+                                                         getFieldValueRealOnly (1.0));
+      }
     }
   }
   if (SOLVER_SETTINGS.getUseEpsAllNorm ())
@@ -2969,11 +2980,22 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                              SOLVER_SETTINGS.getMuSphereCenterY (),
                                              SOLVER_SETTINGS.getMuSphereCenterZ (),
                                              ct1, ct2, ct3);
-      *val = Approximation::approximateSphereAccurate (posAbs,
-                                                       center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
-                                                       SOLVER_SETTINGS.getMuSphereRadius () * modifier,
-                                                       muVal,
-                                                       getFieldValueRealOnly (1.0));
+      if (SOLVER_SETTINGS.getDoUseStairApproximation ())
+      {
+        *val = Approximation::approximateSphereStair (posAbs,
+                                                         center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
+                                                         SOLVER_SETTINGS.getMuSphereRadius () * modifier,
+                                                         muVal,
+                                                         getFieldValueRealOnly (1.0));
+      }
+      else
+      {
+        *val = Approximation::approximateSphereAccurate (posAbs,
+                                                         center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
+                                                         SOLVER_SETTINGS.getMuSphereRadius () * modifier,
+                                                         muVal,
+                                                         getFieldValueRealOnly (1.0));
+      }
     }
   }
   if (SOLVER_SETTINGS.getUseMuAllNorm ())
@@ -3005,15 +3027,22 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                 SOLVER_SETTINGS.getOmegaPESphereCenterY (),
                                                 SOLVER_SETTINGS.getOmegaPESphereCenterZ (),
                                                 ct1, ct2, ct3);
-        *val = Approximation::approximateSphereAccurate (posAbs,
-                                                                    center * modifier + TCFP (0.5, 0.5, 0.5
-#ifdef DEBUG_INFO
-                                                                                                          , ct1, ct2, ct3
-#endif
-                                                                                                          ),
+        if (SOLVER_SETTINGS.getDoUseStairApproximation ())
+        {
+          *val = Approximation::approximateSphereStair (posAbs,
+                                                                    center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
                                                                     SOLVER_SETTINGS.getOmegaPESphereRadius () * modifier,
                                                                     omegapeVal,
                                                                     getFieldValueRealOnly (0.0));
+        }
+        else
+        {
+          *val = Approximation::approximateSphereAccurate (posAbs,
+                                                                    center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
+                                                                    SOLVER_SETTINGS.getOmegaPESphereRadius () * modifier,
+                                                                    omegapeVal,
+                                                                    getFieldValueRealOnly (0.0));
+        }
       }
     }
 
@@ -3035,15 +3064,22 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                 SOLVER_SETTINGS.getOmegaPMSphereCenterY (),
                                                 SOLVER_SETTINGS.getOmegaPMSphereCenterZ (),
                                                 ct1, ct2, ct3);
-        *val = Approximation::approximateSphereAccurate (posAbs,
-                                                                    center * modifier + TCFP (0.5, 0.5, 0.5
-#ifdef DEBUG_INFO
-                                                                                                          , ct1, ct2, ct3
-#endif
-                                                                                                          ),
+        if (SOLVER_SETTINGS.getDoUseStairApproximation ())
+        {
+          *val = Approximation::approximateSphereStair (posAbs,
+                                                                    center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
                                                                     SOLVER_SETTINGS.getOmegaPMSphereRadius () * modifier,
                                                                     omegapmVal,
                                                                     getFieldValueRealOnly (0.0));
+        }
+        else
+        {
+          *val = Approximation::approximateSphereAccurate (posAbs,
+                                                                    center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
+                                                                    SOLVER_SETTINGS.getOmegaPMSphereRadius () * modifier,
+                                                                    omegapmVal,
+                                                                    getFieldValueRealOnly (0.0));
+        }
       }
     }
 

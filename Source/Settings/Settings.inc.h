@@ -243,6 +243,7 @@ SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterX, getEpsSphereCenterX, int, 0, "--e
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterY, getEpsSphereCenterY, int, 0, "--eps-sphere-center-y", "Center position by y coordinate of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterZ, getEpsSphereCenterZ, int, 0, "--eps-sphere-center-z", "Center position by z coordinate of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereRadius, getEpsSphereRadius, int, 0, "--eps-sphere-radius", "Radius of Eps material sphere")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseStairApproximation, getDoUseStairApproximation, bool, false, "--stair-sphere-approx", "Use stair sphere approximation")
 
 SETTINGS_ELEM_FIELD_TYPE_FLOAT(muSphere, getMuSphere, FPValue, 1.0, "--mu-sphere", "Permittivity of Mu material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(muSphereCenterX, getMuSphereCenterX, int, 0, "--mu-sphere-center-x", "Center position by x coordinate of Mu material sphere")
