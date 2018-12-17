@@ -653,3 +653,62 @@ Approximation::approximateSphereAccurate (GridCoordinateFP3D midPos,
 
   return eps * volume + outsideEps * (1 - volume);
 }
+
+FieldValue
+Approximation::approximateSphereStair (GridCoordinateFP1D midPos,
+                                          GridCoordinateFP1D center,
+                                          FPValue radius,
+                                          FieldValue eps,
+                                          FieldValue outsideEps)
+{
+  UNREACHABLE;
+  return FIELDVALUE (0,0);
+}
+
+FieldValue
+Approximation::approximateSphereStair (GridCoordinateFP2D midPos,
+                                          GridCoordinateFP2D center,
+                                          FPValue radius,
+                                          FieldValue eps,
+                                          FieldValue outsideEps)
+{
+  UNREACHABLE;
+  return FIELDVALUE (0,0);
+}
+
+FieldValue
+Approximation::approximateSphereStair (GridCoordinateFP3D midPos,
+                                          GridCoordinateFP3D center,
+                                          FPValue radius,
+                                          FieldValue eps,
+                                          FieldValue outsideEps)
+{
+  GridCoordinateFP3D coord1 = GRID_COORDINATE_FP_3D (midPos.get1 () - 0.5, midPos.get2 () - 0.5, midPos.get3 () - 0.5,
+                                                     midPos.getType1 (), midPos.getType2 (), midPos.getType3 ());
+  GridCoordinateFP3D coord2 = GRID_COORDINATE_FP_3D (midPos.get1 () + 0.5, midPos.get2 () - 0.5, midPos.get3 () - 0.5,
+                                                     midPos.getType1 (), midPos.getType2 (), midPos.getType3 ());
+  GridCoordinateFP3D coord3 = GRID_COORDINATE_FP_3D (midPos.get1 () - 0.5, midPos.get2 () + 0.5, midPos.get3 () - 0.5,
+                                                     midPos.getType1 (), midPos.getType2 (), midPos.getType3 ());
+  GridCoordinateFP3D coord4 = GRID_COORDINATE_FP_3D (midPos.get1 () + 0.5, midPos.get2 () + 0.5, midPos.get3 () - 0.5,
+                                                     midPos.getType1 (), midPos.getType2 (), midPos.getType3 ());
+  GridCoordinateFP3D coord5 = GRID_COORDINATE_FP_3D (midPos.get1 () - 0.5, midPos.get2 () - 0.5, midPos.get3 () + 0.5,
+                                                     midPos.getType1 (), midPos.getType2 (), midPos.getType3 ());
+  GridCoordinateFP3D coord6 = GRID_COORDINATE_FP_3D (midPos.get1 () + 0.5, midPos.get2 () - 0.5, midPos.get3 () + 0.5,
+                                                     midPos.getType1 (), midPos.getType2 (), midPos.getType3 ());
+  GridCoordinateFP3D coord7 = GRID_COORDINATE_FP_3D (midPos.get1 () - 0.5, midPos.get2 () + 0.5, midPos.get3 () + 0.5,
+                                                     midPos.getType1 (), midPos.getType2 (), midPos.getType3 ());
+  GridCoordinateFP3D coord8 = GRID_COORDINATE_FP_3D (midPos.get1 () + 0.5, midPos.get2 () + 0.5, midPos.get3 () + 0.5,
+                                                     midPos.getType1 (), midPos.getType2 (), midPos.getType3 ());
+
+#define DIST(coord) \
+  (sqrt (SQR (coord.get1 () - center.get1 ()) + SQR (coord.get2 () - center.get2 ()) + SQR (coord.get3 () - center.get3 ())))
+
+  if (DIST (coord1) <= radius && DIST (coord2) <= radius && DIST (coord3) <= radius && DIST (coord4) <= radius
+      && DIST (coord5) <= radius && DIST (coord6) <= radius && DIST (coord7) <= radius && DIST (coord8) <= radius)
+  {
+    return eps;
+  }
+#undef DIST
+
+  return outsideEps;
+}
