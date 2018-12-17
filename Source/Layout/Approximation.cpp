@@ -243,7 +243,7 @@ Approximation::approximateWaveNumber (FPValue delta,
                                       FPValue incidentWaveAngle1,
                                       FPValue incidentWaveAngle2)
 {
-  ASSERT (SQR (round (N_lambda) - N_lambda) < Approximation::getAccuracy ());
+  //ASSERT (SQR (round (N_lambda) - N_lambda) < Approximation::getAccuracy ());
 
   if ((incidentWaveAngle1 == 0
        || incidentWaveAngle1 == PhysicsConst::Pi / 2
@@ -298,7 +298,7 @@ Approximation::approximateWaveNumberGeneral (FPValue delta,
                                              FPValue incidentWaveAngle1,
                                              FPValue incidentWaveAngle2)
 {
-  ASSERT (SQR (round (N_lambda) - N_lambda) < Approximation::getAccuracy ());
+  //ASSERT (SQR (round (N_lambda) - N_lambda) < Approximation::getAccuracy ());
 
   FPValue k = 2 * PhysicsConst::Pi;
   FPValue k_prev = k + 2 * sqrt (Approximation::getAccuracy ());
@@ -333,7 +333,7 @@ Approximation::phaseVelocityIncidentWave (FPValue delta,
                                           FPValue incidentWaveAngle1,
                                           FPValue incidentWaveAngle2)
 {
-  ASSERT (SQR (round (N_lambda) - N_lambda) < Approximation::getAccuracy ());
+  //ASSERT (SQR (round (N_lambda) - N_lambda) < Approximation::getAccuracy ());
   return PhysicsConst::SpeedOfLight * 2 * PhysicsConst::Pi / freeSpaceWaveLentgh
          / approximateWaveNumber (delta, freeSpaceWaveLentgh, courantNum, N_lambda, incidentWaveAngle1, incidentWaveAngle2);
 }
