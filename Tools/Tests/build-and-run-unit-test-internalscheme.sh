@@ -72,13 +72,13 @@ function build
           exit 1
         fi
 
-        ./Tests/unit-test-internalscheme --time-steps 100 --use-tfsf
+        ./Tests/unit-test-internalscheme --time-steps 200 --use-tfsf
 
         if [[ "$?" -ne "0" ]]; then
           exit 1
         fi
 
-        ./Tests/unit-test-internalscheme --time-steps 100 --use-tfsf --use-ca-cb
+        ./Tests/unit-test-internalscheme --time-steps 200 --use-tfsf --use-ca-cb
 
         if [[ "$?" -ne "0" ]]; then
           exit 1

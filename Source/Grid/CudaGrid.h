@@ -179,6 +179,28 @@ public:
   {
     return hasRight;
   }
+
+  CUDA_DEVICE CUDA_HOST
+  bool isBufferLeftPosition (const TCoord & pos)
+  {
+    if (pos >= startOfBlock)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  CUDA_DEVICE CUDA_HOST
+  bool isBufferRightPosition (const TCoord & pos)
+  {
+    if (pos < endOfBlock)
+    {
+      return false;
+    }
+
+    return true;
+  }
 }; /* CudaGrid */
 
 /**

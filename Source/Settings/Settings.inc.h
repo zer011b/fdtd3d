@@ -324,6 +324,11 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCaCbPMLGrids, getDoUseCaCbPMLGrids, bool, fal
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCaCbPMLMetaGrids, getDoUseCaCbPMLMetaGrids, bool, false, "--use-ca-cb-pml-metamaterials", "Use helper grids (B0, B1, B2, A1, A2) with precomputed values for PML metamaterials FDTD computation")
 
 /*
+ * Layout
+ */
+SETTINGS_ELEM_FIELD_TYPE_INT(layoutType, getLayoutType, LayoutType, 0, "--layout-type", "Type of layout to use: 0 for E_CENTERED, 1 for H_CENTERED (check source code for exact values)")
+
+/*
  * Steps in time
  */
 SETTINGS_ELEM_FIELD_TYPE_INT(storedSteps, getStoredSteps, time_step, 2, "--stored-steps", "Number of time steps in time, for which grid values are stored")

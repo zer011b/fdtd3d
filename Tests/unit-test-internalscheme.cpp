@@ -15,7 +15,7 @@
 #define TFSF_SIZE 7
 
 #define LAMBDA 0.2
-#define DX 0.02
+#define DX 0.002
 
 #define ACCURACY 0.000018
 
@@ -1011,7 +1011,7 @@ void test1D_ExHy ()
   Grid<GridCoordinate1D> Ex_cmp (overallSize, 0, 1);
   cmp = &Ex_cmp;
 
-  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
@@ -1021,12 +1021,37 @@ void test1D_ExHy ()
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
 
-    Ex_cmp.setFieldValue (FIELDVALUE (0.79571497761748566, 0.60809029887445343), 7, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.27623647076707097, 0.96028222975360356), 8, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.34487117399285794, 0.93684404556633882), 9, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.83973252464642545, 0.55069841528912211), 10, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.99469300893775081, -0.062536805911835081), 11, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.77329299330101442, -0.62955147602001804), 12, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.21811863445648658, -0.97471655250974043), 7, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.27908260941002716, -0.96196058514825045), 8, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.3386998783352157, -0.93865257984534911), 9, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.39727542433754848, -0.92054926754400479), 10, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.45394742244500197, -0.88752443613856613), 11, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.50918770413007142, -0.8648309348268548), 12, 0);
+
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
+  {
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+
+    Ex_cmp.setFieldValue (FIELDVALUE (0.18730018750160604, -0.98158407156284588), 6, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.24860062193325649, -0.96833856882899538), 7, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.30889124387262124, -0.95030658249679933), 8, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.36798765133638245, -0.92960092369467662), 9, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.42561142339127539, -0.90403685184128513), 10, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.48156756328753614, -0.8761776854827098), 11, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.53562066322056501, -0.84355796057397081), 12, 0);
 
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
@@ -1088,7 +1113,7 @@ void test1D_ExHz ()
   Grid<GridCoordinate1D> Ex_cmp (overallSize, 0, 1);
   cmp = &Ex_cmp;
 
-  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
@@ -1098,12 +1123,37 @@ void test1D_ExHz ()
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
 
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.79571497761748566, -0.60809029887445343), 7, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.27623647076707097, -0.96028222975360356), 8, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.34487117399285794, -0.93684404556633882), 9, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.83973252464642545, -0.55069841528912211), 10, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.99469300893775081, 0.062536805911835081), 11, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.77329299330101442, 0.62955147602001804), 12, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.21811863445648658, 0.97471655250974043), 7, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.27908260941002716, 0.96196058514825045), 8, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.3386998783352157, 0.93865257984534911), 9, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.39727542433754848, 0.92054926754400479), 10, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.45394742244500197, 0.88752443613856613), 11, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.50918770413007142, 0.8648309348268548), 12, 0);
+
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
+  {
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.18730018750160604, 0.98158407156284588), 6, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.24860062193325649, 0.96833856882899538), 7, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.30889124387262124, 0.95030658249679933), 8, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.36798765133638245, 0.92960092369467662), 9, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.42561142339127539, 0.90403685184128513), 10, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.48156756328753614, 0.8761776854827098), 11, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.53562066322056501, 0.84355796057397081), 12, 0);
 
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
     Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
@@ -1165,7 +1215,7 @@ void test1D_EyHx ()
   Grid<GridCoordinate1D> Ey_cmp (overallSize, 0, 1);
   cmp = &Ey_cmp;
 
-  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
@@ -1175,12 +1225,37 @@ void test1D_EyHx ()
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
 
-    Ey_cmp.setFieldValue (FIELDVALUE (0.79571497761748566, 0.60809029887445343), 7, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.27623647076707097, 0.96028222975360356), 8, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (-0.34487117399285794, 0.93684404556633882), 9, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (-0.83973252464642545, 0.55069841528912211), 10, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (-0.99469300893775081, -0.062536805911835081), 11, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (-0.77329299330101442, -0.62955147602001804), 12, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.21811863445648658, -0.97471655250974043), 7, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.27908260941002716, -0.96196058514825045), 8, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.3386998783352157, -0.93865257984534911), 9, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.39727542433754848, -0.92054926754400479), 10, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.45394742244500197, -0.88752443613856613), 11, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.50918770413007142, -0.8648309348268548), 12, 0);
+
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
+  {
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+
+    Ey_cmp.setFieldValue (FIELDVALUE (0.18730018750160604, -0.98158407156284588), 6, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.24860062193325649, -0.96833856882899538), 7, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.30889124387262124, -0.95030658249679933), 8, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.36798765133638245, -0.92960092369467662), 9, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.42561142339127539, -0.90403685184128513), 10, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.48156756328753614, -0.8761776854827098), 11, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.53562066322056501, -0.84355796057397081), 12, 0);
 
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
@@ -1242,7 +1317,7 @@ void test1D_EyHz ()
   Grid<GridCoordinate1D> Ey_cmp (overallSize, 0, 1);
   cmp = &Ey_cmp;
 
-  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
@@ -1252,12 +1327,37 @@ void test1D_EyHz ()
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
 
-    Ey_cmp.setFieldValue (FIELDVALUE (0.79571497761748566, 0.60809029887445343), 7, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.27623647076707097, 0.96028222975360356), 8, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (-0.34487117399285794, 0.93684404556633882), 9, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (-0.83973252464642545, 0.55069841528912211), 10, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (-0.99469300893775081, -0.062536805911835081), 11, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (-0.77329299330101442, -0.62955147602001804), 12, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.21811863445648658, -0.97471655250974043), 7, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.27908260941002716, -0.96196058514825045), 8, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.3386998783352157, -0.93865257984534911), 9, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.39727542433754848, -0.92054926754400479), 10, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.45394742244500197, -0.88752443613856613), 11, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.50918770413007142, -0.8648309348268548), 12, 0);
+
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
+  {
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+
+    Ey_cmp.setFieldValue (FIELDVALUE (0.18730018750160604, -0.98158407156284588), 6, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.24860062193325649, -0.96833856882899538), 7, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.30889124387262124, -0.95030658249679933), 8, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.36798765133638245, -0.92960092369467662), 9, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.42561142339127539, -0.90403685184128513), 10, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.48156756328753614, -0.8761776854827098), 11, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.53562066322056501, -0.84355796057397081), 12, 0);
 
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
     Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
@@ -1319,7 +1419,7 @@ void test1D_EzHx ()
   Grid<GridCoordinate1D> Ez_cmp (overallSize, 0, 1);
   cmp = &Ez_cmp;
 
-  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
@@ -1329,12 +1429,37 @@ void test1D_EzHx ()
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
 
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.79571497761748566, -0.60809029887445343), 7, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.27623647076707097, -0.96028222975360356), 8, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0.34487117399285794, -0.93684404556633882), 9, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0.83973252464642545, -0.55069841528912211), 10, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0.99469300893775081, 0.062536805911835081), 11, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0.77329299330101442, 0.62955147602001804), 12, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.21811863445648658, 0.97471655250974043), 7, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.27908260941002716, 0.96196058514825045), 8, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.3386998783352157, 0.93865257984534911), 9, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.39727542433754848, 0.92054926754400479), 10, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.45394742244500197, 0.88752443613856613), 11, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.50918770413007142, 0.8648309348268548), 12, 0);
+
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
+  {
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.18730018750160604, 0.98158407156284588), 6, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.24860062193325649, 0.96833856882899538), 7, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.30889124387262124, 0.95030658249679933), 8, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.36798765133638245, 0.92960092369467662), 9, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.42561142339127539, 0.90403685184128513), 10, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.48156756328753614, 0.8761776854827098), 11, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.53562066322056501, 0.84355796057397081), 12, 0);
 
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
@@ -1396,7 +1521,7 @@ void test1D_EzHy ()
   Grid<GridCoordinate1D> Ez_cmp (overallSize, 0, 1);
   cmp = &Ez_cmp;
 
-  if (SOLVER_SETTINGS.getDoUseTFSF ())
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
@@ -1406,12 +1531,37 @@ void test1D_EzHy ()
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
 
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.79571497761748566, -0.60809029887445343), 7, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.27623647076707097, -0.96028222975360356), 8, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0.34487117399285794, -0.93684404556633882), 9, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0.83973252464642545, -0.55069841528912211), 10, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0.99469300893775081, 0.062536805911835081), 11, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0.77329299330101442, 0.62955147602001804), 12, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.21811863445648658, 0.97471655250974043), 7, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.27908260941002716, 0.96196058514825045), 8, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.3386998783352157, 0.93865257984534911), 9, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.39727542433754848, 0.92054926754400479), 10, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.45394742244500197, 0.88752443613856613), 11, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.50918770413007142, 0.8648309348268548), 12, 0);
+
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+  }
+  if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
+  {
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.18730018750160604, 0.98158407156284588), 6, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.24860062193325649, 0.96833856882899538), 7, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.30889124387262124, 0.95030658249679933), 8, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.36798765133638245, 0.92960092369467662), 9, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.42561142339127539, 0.90403685184128513), 10, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.48156756328753614, 0.8761776854827098), 11, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.53562066322056501, 0.84355796057397081), 12, 0);
 
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
     Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
@@ -1758,44 +1908,57 @@ int main (int argc, char** argv)
 
 #if defined (MODE_EX_HY)
   test1D_ExHy<E_CENTERED> ();
+  test1D_ExHy<H_CENTERED> ();
 #endif /* MODE_EX_HY */
 #if defined (MODE_EX_HZ)
   test1D_ExHz<E_CENTERED> ();
+  test1D_ExHz<H_CENTERED> ();
 #endif /* MODE_EX_HZ */
 #if defined (MODE_EY_HX)
   test1D_EyHx<E_CENTERED> ();
+  test1D_EyHx<H_CENTERED> ();
 #endif /* MODE_EY_HX */
 #if defined (MODE_EY_HZ)
   test1D_EyHz<E_CENTERED> ();
+  test1D_EyHz<H_CENTERED> ();
 #endif /* MODE_EY_HZ */
 #if defined (MODE_EZ_HX)
   test1D_EzHx<E_CENTERED> ();
+  test1D_EzHx<H_CENTERED> ();
 #endif /* MODE_EZ_HX */
 #if defined (MODE_EZ_HY)
   test1D_EzHy<E_CENTERED> ();
+  test1D_EzHy<H_CENTERED> ();
 #endif /* MODE_EZ_HY */
 
 #if defined (MODE_TEX)
   test2D_TEx<E_CENTERED> ();
+  test2D_TEx<H_CENTERED> ();
 #endif /* MODE_TEX */
 #if defined (MODE_TEY)
   test2D_TEy<E_CENTERED> ();
+  test2D_TEy<H_CENTERED> ();
 #endif /* MODE_TEY */
 #if defined (MODE_TEZ)
   test2D_TEz<E_CENTERED> ();
+  test2D_TEz<H_CENTERED> ();
 #endif /* MODE_TEZ */
 #if defined (MODE_TMX)
   test2D_TMx<E_CENTERED> ();
+  test2D_TMx<H_CENTERED> ();
 #endif /* MODE_TMX */
 #if defined (MODE_TMY)
   test2D_TMy<E_CENTERED> ();
+  test2D_TMy<H_CENTERED> ();
 #endif /* MODE_TMY */
 #if defined (MODE_TMZ)
   test2D_TMz<E_CENTERED> ();
+  test2D_TMz<H_CENTERED> ();
 #endif /* MODE_TMZ */
 
 #if defined (MODE_DIM3)
   test3D<E_CENTERED> ();
+  test3D<H_CENTERED> ();
 #endif /* MODE_DIM3 */
 
   solverSettings.Uninitialize ();

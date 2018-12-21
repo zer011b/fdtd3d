@@ -174,6 +174,7 @@ InternalSchemeHelper::allocateParallelGrids3D (InternalScheme<Type, GridCoordina
 #endif /* PARALLEL_GRID */
 
 #ifdef CUDA_ENABLED
+#ifdef CUDA_SOURCES
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 CUDA_HOST
@@ -631,4 +632,5 @@ InternalSchemeGPU<Type, TCoord, layout_type>::copyBackToCPU (time_step N,
   copyGridsBackToCPU (N, finalCopy);
 }
 
+#endif /* CUDA_SOURCES */
 #endif /* CUDA_ENABLED */

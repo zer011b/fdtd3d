@@ -237,6 +237,18 @@ public:
   } /* CComplex::operator-= */
 
   /**
+   * Operator *=
+   *
+   * @return result of multiplication
+   */
+  CUDA_DEVICE CUDA_HOST
+  CComplex<T> & operator *= (const CComplex<T> & x) /**< operand */
+  {
+    *this = *this * x;
+    return *this;
+  } /* CComplex::operator+= */
+
+  /**
    * Unary minus operator
    *
    * @return result of unary minus

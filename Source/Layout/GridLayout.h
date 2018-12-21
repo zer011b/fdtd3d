@@ -43,43 +43,4 @@ ENUM_CLASS (GridType, uint8_t,
   GAMMAM
 );
 
-/**
- * Type of field, which is placed at the center of the grid cell
- *
- * E_CENTERED:
- *
- *             Ex is:
- *                   1 <= x < 1 + size.getx()
- *                   0.5 <= y < 0.5 + size.getY()
- *                   0.5 <= z < 0.5 + size.getZ()
- *             Ey is:
- *                   0.5 <= x < 0.5 + size.getx()
- *                   1 <= y < 1 + size.getY()
- *                   0.5 <= z < 0.5 + size.getZ()
- *             Ez is:
- *                   0.5 <= x < 0.5 + size.getx()
- *                   0.5 <= y < 0.5 + size.getY()
- *                   1 <= z < 1 + size.getZ()
- *             Hx is:
- *                   0.5 <= x < 0.5 + size.getx()
- *                   1 <= y < 1 + size.getY()
- *                   1 <= z < 1 + size.getZ()
- *             Hy is:
- *                   1 <= x < 1 + size.getx()
- *                   0.5 <= y < 0.5 + size.getY()
- *                   1 <= z < 1 + size.getZ()
- *             Hz is:
- *                   1 <= z < 1 + size.getx()
- *                   1 <= y < 1 + size.getY()
- *                   0.5 <= z < 0.5 + size.getZ()
- *
- * H_CENTERED:
- * TODO: add description
- */
-enum LayoutType
-{
-  E_CENTERED,
-  H_CENTERED
-};
-
 #endif /* GRID_LAYOUT_H */

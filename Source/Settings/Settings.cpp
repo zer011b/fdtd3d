@@ -90,14 +90,14 @@ Settings::parseArg (int &index, /**< out: current argument index */
   { \
     ++index; \
     ASSERT (index >= 0 && index < argc); \
-    fieldName = STOI (argv[index]); \
+    fieldName = (fieldType) STOI (argv[index]); \
   }
 #define SETTINGS_ELEM_FIELD_TYPE_FLOAT(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
   else if (strcmp (argv[index], cmdArg) == 0) \
   { \
     ++index; \
     ASSERT (index >= 0 && index < argc); \
-    fieldName = STOF (argv[index]); \
+    fieldName = (fieldType) STOF (argv[index]); \
   }
 #define SETTINGS_ELEM_FIELD_TYPE_STRING(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
   else if (strcmp (argv[index], cmdArg) == 0) \

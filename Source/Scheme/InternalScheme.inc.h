@@ -1307,7 +1307,19 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
       doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::BACK);
       doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateExBorder (posAbs, LayoutDirection::FRONT);
 
-      isRevertVals = true;
+      if (layout_type == E_CENTERED)
+      {
+        isRevertVals = true;
+      }
+      else if (layout_type == H_CENTERED)
+      {
+        isRevertVals = false;
+      }
+      else
+      {
+        UNREACHABLE;
+      }
+
       break;
     }
     case (static_cast<uint8_t> (GridType::EY)):
@@ -1323,7 +1335,19 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
       doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::LEFT);
       doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateEyBorder (posAbs, LayoutDirection::RIGHT);
 
-      isRevertVals = true;
+      if (layout_type == E_CENTERED)
+      {
+        isRevertVals = true;
+      }
+      else if (layout_type == H_CENTERED)
+      {
+        isRevertVals = false;
+      }
+      else
+      {
+        UNREACHABLE;
+      }
+
       break;
     }
     case (static_cast<uint8_t> (GridType::EZ)):
@@ -1339,7 +1363,19 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
       doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::DOWN);
       doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateEzBorder (posAbs, LayoutDirection::UP);
 
-      isRevertVals = true;
+      if (layout_type == E_CENTERED)
+      {
+        isRevertVals = true;
+      }
+      else if (layout_type == H_CENTERED)
+      {
+        isRevertVals = false;
+      }
+      else
+      {
+        UNREACHABLE;
+      }
+
       break;
     }
     case (static_cast<uint8_t> (GridType::HX)):
@@ -1355,7 +1391,19 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
       doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::DOWN);
       doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateHxBorder (posAbs, LayoutDirection::UP);
 
-      isRevertVals = false;
+      if (layout_type == E_CENTERED)
+      {
+        isRevertVals = false;
+      }
+      else if (layout_type == H_CENTERED)
+      {
+        isRevertVals = true;
+      }
+      else
+      {
+        UNREACHABLE;
+      }
+
       break;
     }
     case (static_cast<uint8_t> (GridType::HY)):
@@ -1371,7 +1419,19 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
       doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::BACK);
       doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateHyBorder (posAbs, LayoutDirection::FRONT);
 
-      isRevertVals = false;
+      if (layout_type == E_CENTERED)
+      {
+        isRevertVals = false;
+      }
+      else if (layout_type == H_CENTERED)
+      {
+        isRevertVals = true;
+      }
+      else
+      {
+        UNREACHABLE;
+      }
+
       break;
     }
     case (static_cast<uint8_t> (GridType::HZ)):
@@ -1387,7 +1447,19 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
       doNeedUpdate21 = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::LEFT);
       doNeedUpdate22 = yeeLayout->doNeedTFSFUpdateHzBorder (posAbs, LayoutDirection::RIGHT);
 
-      isRevertVals = false;
+      if (layout_type == E_CENTERED)
+      {
+        isRevertVals = false;
+      }
+      else if (layout_type == H_CENTERED)
+      {
+        isRevertVals = true;
+      }
+      else
+      {
+        UNREACHABLE;
+      }
+
       break;
     }
     default:
@@ -1448,60 +1520,72 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
     {
       case (static_cast<uint8_t> (GridType::EX)):
       {
-        if (doNeedHz)
+        TCFP realCoord = yeeLayout->getHzCoordFP (Hz->getTotalPosition (auxPos1));
+        diff1 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        if (layout_type == H_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getHzCoordFP (Hz->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
+          diff1 *= FPValue (-1.0);
         }
 
         break;
       }
       case (static_cast<uint8_t> (GridType::EY)):
       {
-        if (doNeedHx)
+        TCFP realCoord = yeeLayout->getHxCoordFP (Hx->getTotalPosition (auxPos1));
+        diff1 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        if (layout_type == H_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getHxCoordFP (Hx->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (realCoord));
+          diff1 *= FPValue (-1.0);
         }
 
         break;
       }
       case (static_cast<uint8_t> (GridType::EZ)):
       {
-        if (doNeedHy)
+        TCFP realCoord = yeeLayout->getHyCoordFP (Hy->getTotalPosition (auxPos1));
+        diff1 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        if (layout_type == H_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getHyCoordFP (Hy->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (realCoord));
+          diff1 *= FPValue (-1.0);
         }
 
         break;
       }
       case (static_cast<uint8_t> (GridType::HX)):
       {
-        if (doNeedEy)
+        TCFP realCoord = yeeLayout->getEyCoordFP (Ey->getTotalPosition (auxPos1));
+        diff1 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        if (layout_type == E_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getEyCoordFP (Ey->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
+          diff1 *= FPValue (-1.0);
         }
 
         break;
       }
       case (static_cast<uint8_t> (GridType::HY)):
       {
-        if (doNeedEz)
+        TCFP realCoord = yeeLayout->getEzCoordFP (Ez->getTotalPosition (auxPos1));
+        diff1 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        if (layout_type == E_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getEzCoordFP (Ez->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
+          diff1 *= FPValue (-1.0);
         }
 
         break;
       }
       case (static_cast<uint8_t> (GridType::HZ)):
       {
-        if (doNeedEx)
+        TCFP realCoord = yeeLayout->getExCoordFP (Ex->getTotalPosition (auxPos1));
+        diff1 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        if (layout_type == E_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getExCoordFP (Ex->getTotalPosition (auxPos1));
-          diff1 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
+          diff1 *= FPValue (-1.0);
         }
 
         break;
@@ -1519,60 +1603,72 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateTFSF (TC posAbs,
     {
       case (static_cast<uint8_t> (GridType::EX)):
       {
-        if (doNeedHy)
+        TCFP realCoord = yeeLayout->getHyCoordFP (Hy->getTotalPosition (auxPos2));
+        diff2 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        if (layout_type == H_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getHyCoordFP (Hy->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getHyFromIncidentH (approximateIncidentWaveH (realCoord));
+          diff2 *= FPValue (-1.0);
         }
 
         break;
       }
       case (static_cast<uint8_t> (GridType::EY)):
       {
-        if (doNeedHz)
+        TCFP realCoord = yeeLayout->getHzCoordFP (Hz->getTotalPosition (auxPos2));
+        diff2 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        if (layout_type == H_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getHzCoordFP (Hz->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getHzFromIncidentH (approximateIncidentWaveH (realCoord));
+          diff2 *= FPValue (-1.0);
         }
 
         break;
       }
       case (static_cast<uint8_t> (GridType::EZ)):
       {
-        if (doNeedHx)
+        TCFP realCoord = yeeLayout->getHxCoordFP (Hx->getTotalPosition (auxPos2));
+        diff2 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (realCoord));
+
+        if (layout_type == H_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getHxCoordFP (Hx->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getHxFromIncidentH (approximateIncidentWaveH (realCoord));
+          diff2 *= FPValue (-1.0);
         }
 
         break;
       }
       case (static_cast<uint8_t> (GridType::HX)):
       {
-        if (doNeedEz)
+        TCFP realCoord = yeeLayout->getEzCoordFP (Ez->getTotalPosition (auxPos2));
+        diff2 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        if (layout_type == E_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getEzCoordFP (Ez->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getEzFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
+          diff2 *= FPValue (-1.0);
         }
 
         break;
       }
       case (static_cast<uint8_t> (GridType::HY)):
       {
-        if (doNeedEx)
+        TCFP realCoord = yeeLayout->getExCoordFP (Ex->getTotalPosition (auxPos2));
+        diff2 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        if (layout_type == E_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getExCoordFP (Ex->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getExFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
+          diff2 *= FPValue (-1.0);
         }
 
         break;
       }
       case (static_cast<uint8_t> (GridType::HZ)):
       {
-        if (doNeedEy)
+        TCFP realCoord = yeeLayout->getEyCoordFP (Ey->getTotalPosition (auxPos2));
+        diff2 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord));
+
+        if (layout_type == E_CENTERED)
         {
-          TCFP realCoord = yeeLayout->getEyCoordFP (Ey->getTotalPosition (auxPos2));
-          diff2 = yeeLayout->getEyFromIncidentE (approximateIncidentWaveE (realCoord)) * FPValue (-1.0);
+          diff2 *= FPValue (-1.0);
         }
 
         break;
@@ -2648,7 +2744,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
   TC absPos41;
   TC absPos42;
 
-  yeeLayout->template initCoordinates<false> (posAbs, typeOfField, absPos11, absPos12, absPos21, absPos22,
+  yeeLayout->template initMaterialCoordinates<false> (posAbs, typeOfField, absPos11, absPos12, absPos21, absPos22,
                           absPos31, absPos32, absPos41, absPos42);
 
   ASSERT (typeOfMaterial == GridType::EPS
@@ -2691,34 +2787,73 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
   }
   else
   {
-    switch (typeOfField)
+    if (layout_type == E_CENTERED)
     {
-      case GridType::EX:
-      case GridType::DX:
-      case GridType::EY:
-      case GridType::DY:
-      case GridType::EZ:
-      case GridType::DZ:
+      switch (typeOfField)
       {
-        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
-                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0)));
+        case GridType::EX:
+        case GridType::DX:
+        case GridType::EY:
+        case GridType::DY:
+        case GridType::EZ:
+        case GridType::DZ:
+        {
+          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                    *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0)));
+        }
+        case GridType::HX:
+        case GridType::BX:
+        case GridType::HY:
+        case GridType::BY:
+        case GridType::HZ:
+        case GridType::BZ:
+        {
+          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                    *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
+                                                    *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
+                                                    *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0)));
+        }
+        default:
+        {
+          UNREACHABLE;
+        }
       }
-      case GridType::HX:
-      case GridType::BX:
-      case GridType::HY:
-      case GridType::BY:
-      case GridType::HZ:
-      case GridType::BZ:
+    }
+    else if (layout_type == H_CENTERED)
+    {
+      switch (typeOfField)
       {
-        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
-                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
-                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
-                                                  *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0)));
+        case GridType::EX:
+        case GridType::DX:
+        case GridType::EY:
+        case GridType::DY:
+        case GridType::EZ:
+        case GridType::DZ:
+        {
+          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                    *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
+                                                    *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
+                                                    *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0)));
+        }
+        case GridType::HX:
+        case GridType::BX:
+        case GridType::HY:
+        case GridType::BY:
+        case GridType::HZ:
+        case GridType::BZ:
+        {
+          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                    *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0)));
+        }
+        default:
+        {
+          UNREACHABLE;
+        }
       }
-      default:
-      {
-        UNREACHABLE;
-      }
+    }
+    else
+    {
+      UNREACHABLE;
     }
   }
 
@@ -2750,7 +2885,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
   TC absPos41;
   TC absPos42;
 
-  yeeLayout->template initCoordinates<true> (posAbs, typeOfField, absPos11, absPos12, absPos21, absPos22,
+  yeeLayout->template initMaterialCoordinates<true> (posAbs, typeOfField, absPos11, absPos12, absPos21, absPos22,
                          absPos31, absPos32, absPos41, absPos42);
 
   ASSERT ((typeOfMaterialOmega == GridType::OMEGAPE && typeOfMaterialGamma == GridType::GAMMAE)
@@ -2807,48 +2942,101 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
   }
   else
   {
-    switch (typeOfField)
+    if (layout_type == E_CENTERED)
     {
-      case GridType::EX:
-      case GridType::DX:
-      case GridType::EY:
-      case GridType::DY:
-      case GridType::EZ:
-      case GridType::DZ:
+      switch (typeOfField)
       {
-        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
-                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
-                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
-                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
-                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos11, 0),
-                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos12, 0),
-                                                      omega, gamma));
+        case GridType::EX:
+        case GridType::DX:
+        case GridType::EY:
+        case GridType::DY:
+        case GridType::EZ:
+        case GridType::DZ:
+        {
+          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        omega, gamma));
+        }
+        case GridType::HX:
+        case GridType::BX:
+        case GridType::HY:
+        case GridType::BY:
+        case GridType::HZ:
+        case GridType::BZ:
+        {
+          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
+                                                        *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos21, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos22, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos21, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos22, 0),
+                                                        omega, gamma));
+        }
+        default:
+        {
+          UNREACHABLE;
+        }
       }
-      case GridType::HX:
-      case GridType::BX:
-      case GridType::HY:
-      case GridType::BY:
-      case GridType::HZ:
-      case GridType::BZ:
+    }
+    else if (layout_type == H_CENTERED)
+    {
+      switch (typeOfField)
       {
-        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
-                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
-                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
-                                                      *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
-                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
-                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
-                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos21, 0),
-                                                      *gridMaterialOmega->getFieldValueByAbsolutePos (absPos22, 0),
-                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos11, 0),
-                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos12, 0),
-                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos21, 0),
-                                                      *gridMaterialGamma->getFieldValueByAbsolutePos (absPos22, 0),
-                                                      omega, gamma));
+        case GridType::EX:
+        case GridType::DX:
+        case GridType::EY:
+        case GridType::DY:
+        case GridType::EZ:
+        case GridType::DZ:
+        {
+          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
+                                                        *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos21, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos22, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos21, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos22, 0),
+                                                        omega, gamma));
+        }
+        case GridType::HX:
+        case GridType::BX:
+        case GridType::HY:
+        case GridType::BY:
+        case GridType::HZ:
+        case GridType::BZ:
+        {
+          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos11, 0),
+                                                        *gridMaterialGamma->getFieldValueByAbsolutePos (absPos12, 0),
+                                                        omega, gamma));
+        }
+        default:
+        {
+          UNREACHABLE;
+        }
       }
-      default:
-      {
-        UNREACHABLE;
-      }
+    }
+    else
+    {
+      UNREACHABLE;
     }
   }
 
