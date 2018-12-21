@@ -189,82 +189,209 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
   ALWAYS_ASSERT ((layout.getMinMuCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 0.5, 0.5, ct1, ct2, ct3)));
 
   TCoord<grid_coord, true> coordEx = size / grid_coord (2);
-  ALWAYS_ASSERT ((layout.getExCoordFP (coordEx) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 0.5, ct1, ct2, ct3)));
-  ALWAYS_ASSERT (layout.getExCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 0.5, ct1, ct2, ct3)) == coordEx);
-  TCoord<grid_coord, true> coordHzD = coordEx - TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-  TCoord<grid_coord, true> coordHzU = coordEx;
-  TCoord<grid_coord, true> coordHyB = coordEx - TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-  TCoord<grid_coord, true> coordHyF = coordEx;
+  TCoord<grid_coord, true> coordHzD;
+  TCoord<grid_coord, true> coordHzU;
+  TCoord<grid_coord, true> coordHyB;
+  TCoord<grid_coord, true> coordHyF;
+  if (layout_type == E_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinExCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 0.5, 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getExCoordFP (coordEx) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getExCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 0.5, ct1, ct2, ct3)) == coordEx);
+    coordHzD = coordEx - TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+    coordHzU = coordEx;
+    coordHyB = coordEx - TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+    coordHyF = coordEx;
+  }
+  else if (layout_type == H_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinExCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 1, 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getExCoordFP (coordEx) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getExCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 1, ct1, ct2, ct3)) == coordEx);
+    coordHzD = coordEx;
+    coordHzU = coordEx + TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+    coordHyB = coordEx;
+    coordHyF = coordEx + TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+  }
+  else
+  {
+    UNREACHABLE;
+  }
   ALWAYS_ASSERT (coordEx + layout.getExCircuitElementDiff (LayoutDirection::DOWN) == coordHzD);
   ALWAYS_ASSERT (coordEx + layout.getExCircuitElementDiff (LayoutDirection::UP) == coordHzU);
   ALWAYS_ASSERT (coordEx + layout.getExCircuitElementDiff (LayoutDirection::BACK) == coordHyB);
   ALWAYS_ASSERT (coordEx + layout.getExCircuitElementDiff (LayoutDirection::FRONT) == coordHyF);
-  ALWAYS_ASSERT ((layout.getMinExCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 0.5, 0.5, ct1, ct2, ct3)));
 
   TCoord<grid_coord, true> coordEy = size / grid_coord (2);
-  ALWAYS_ASSERT ((layout.getEyCoordFP (coordEy) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)));
-  ALWAYS_ASSERT (layout.getEyCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)) == coordEy);
-  TCoord<grid_coord, true> coordHzL = coordEy - TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-  TCoord<grid_coord, true> coordHzR = coordEy;
-  TCoord<grid_coord, true> coordHxB = coordEy - TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-  TCoord<grid_coord, true> coordHxF = coordEy;
+  TCoord<grid_coord, true> coordHzL;
+  TCoord<grid_coord, true> coordHzR;
+  TCoord<grid_coord, true> coordHxB;
+  TCoord<grid_coord, true> coordHxF;
+  if (layout_type == E_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinEyCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 1, 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getEyCoordFP (coordEy) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getEyCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)) == coordEy);
+    coordHzL = coordEy - TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+    coordHzR = coordEy;
+    coordHxB = coordEy - TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+    coordHxF = coordEy;
+  }
+  else if (layout_type == H_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinEyCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 0.5, 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getEyCoordFP (coordEy) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getEyCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)) == coordEy);
+    coordHzL = coordEy;
+    coordHzR = coordEy + TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+    coordHxB = coordEy;
+    coordHxF = coordEy + TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+  }
+  else
+  {
+    UNREACHABLE;
+  }
   ALWAYS_ASSERT (coordEy + layout.getEyCircuitElementDiff (LayoutDirection::LEFT) == coordHzL);
   ALWAYS_ASSERT (coordEy + layout.getEyCircuitElementDiff (LayoutDirection::RIGHT) == coordHzR);
   ALWAYS_ASSERT (coordEy + layout.getEyCircuitElementDiff (LayoutDirection::BACK) == coordHxB);
   ALWAYS_ASSERT (coordEy + layout.getEyCircuitElementDiff (LayoutDirection::FRONT) == coordHxF);
-  ALWAYS_ASSERT ((layout.getMinEyCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 1, 0.5, ct1, ct2, ct3)));
 
   TCoord<grid_coord, true> coordEz = size / grid_coord (2);
-  ALWAYS_ASSERT ((layout.getEzCoordFP (coordEz) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)));
-  ALWAYS_ASSERT (layout.getEzCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)) == coordEz);
-  TCoord<grid_coord, true> coordHyL = coordEz - TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-  TCoord<grid_coord, true> coordHyR = coordEz;
-  TCoord<grid_coord, true> coordHxD = coordEz - TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-  TCoord<grid_coord, true> coordHxU = coordEz;
+  TCoord<grid_coord, true> coordHyL;
+  TCoord<grid_coord, true> coordHyR;
+  TCoord<grid_coord, true> coordHxD;
+  TCoord<grid_coord, true> coordHxU;
+  if (layout_type == E_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinEzCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 0.5, 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getEzCoordFP (coordEz) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getEzCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)) == coordEz);
+    coordHyL = coordEz - TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+    coordHyR = coordEz;
+    coordHxD = coordEz - TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+    coordHxU = coordEz;
+  }
+  else if (layout_type == H_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinEzCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 1, 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getEzCoordFP (coordEz) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getEzCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)) == coordEz);
+    coordHyL = coordEz;
+    coordHyR = coordEz + TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+    coordHxD = coordEz;
+    coordHxU = coordEz + TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+  }
+  else
+  {
+    UNREACHABLE;
+  }
   ALWAYS_ASSERT (coordEz + layout.getEzCircuitElementDiff (LayoutDirection::LEFT) == coordHyL);
   ALWAYS_ASSERT (coordEz + layout.getEzCircuitElementDiff (LayoutDirection::RIGHT) == coordHyR);
   ALWAYS_ASSERT (coordEz + layout.getEzCircuitElementDiff (LayoutDirection::DOWN) == coordHxD);
   ALWAYS_ASSERT (coordEz + layout.getEzCircuitElementDiff (LayoutDirection::UP) == coordHxU);
-  ALWAYS_ASSERT ((layout.getMinEzCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 0.5, 1, ct1, ct2, ct3)));
 
   TCoord<grid_coord, true> coordHx = size / grid_coord (2);
-  ALWAYS_ASSERT ((layout.getHxCoordFP (coordHx) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 1, ct1, ct2, ct3)));
-  ALWAYS_ASSERT (layout.getHxCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 1, ct1, ct2, ct3)) == coordHx);
-  TCoord<grid_coord, true> coordEzD = coordHx;
-  TCoord<grid_coord, true> coordEzU = coordHx + TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-  TCoord<grid_coord, true> coordEyB = coordHx;
-  TCoord<grid_coord, true> coordEyF = coordHx + TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+  TCoord<grid_coord, true> coordEzD;
+  TCoord<grid_coord, true> coordEzU;
+  TCoord<grid_coord, true> coordEyB;
+  TCoord<grid_coord, true> coordEyF;
+  if (layout_type == E_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinHxCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 1, 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getHxCoordFP (coordHx) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getHxCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 1, ct1, ct2, ct3)) == coordHx);
+    coordEzD = coordHx;
+    coordEzU = coordHx + TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+    coordEyB = coordHx;
+    coordEyF = coordHx + TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+  }
+  else if (layout_type == H_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinHxCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 0.5, 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getHxCoordFP (coordHx) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getHxCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 0.5, ct1, ct2, ct3)) == coordHx);
+    coordEzD = coordHx - TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+    coordEzU = coordHx;
+    coordEyB = coordHx - TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+    coordEyF = coordHx;
+  }
+  else
+  {
+    UNREACHABLE;
+  }
   ALWAYS_ASSERT (coordHx + layout.getHxCircuitElementDiff (LayoutDirection::DOWN) == coordEzD);
   ALWAYS_ASSERT (coordHx + layout.getHxCircuitElementDiff (LayoutDirection::UP) == coordEzU);
   ALWAYS_ASSERT (coordHx + layout.getHxCircuitElementDiff (LayoutDirection::BACK) == coordEyB);
   ALWAYS_ASSERT (coordHx + layout.getHxCircuitElementDiff (LayoutDirection::FRONT) == coordEyF);
-  ALWAYS_ASSERT ((layout.getMinHxCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 1, 1, ct1, ct2, ct3)));
+
 
   TCoord<grid_coord, true> coordHy = size / grid_coord (2);
-  ALWAYS_ASSERT ((layout.getHyCoordFP (coordHy) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)));
-  ALWAYS_ASSERT (layout.getHyCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)) == coordHy);
-  TCoord<grid_coord, true> coordEzL = coordHy;
-  TCoord<grid_coord, true> coordEzR = coordHy + TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-  TCoord<grid_coord, true> coordExB = coordHy;
-  TCoord<grid_coord, true> coordExF = coordHy + TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+  TCoord<grid_coord, true> coordEzL;
+  TCoord<grid_coord, true> coordEzR;
+  TCoord<grid_coord, true> coordExB;
+  TCoord<grid_coord, true> coordExF;
+  if (layout_type == E_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinHyCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 0.5, 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getHyCoordFP (coordHy) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getHyCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)) == coordHy);
+    coordEzL = coordHy;
+    coordEzR = coordHy + TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+    coordExB = coordHy;
+    coordExF = coordHy + TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+  }
+  else if (layout_type == H_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinHyCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 1, 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getHyCoordFP (coordHy) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getHyCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)) == coordHy);
+    coordEzL = coordHy - TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+    coordEzR = coordHy;
+    coordExB = coordHy - TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+    coordExF = coordHy;
+  }
+  else
+  {
+    UNREACHABLE;
+  }
   ALWAYS_ASSERT (coordHy + layout.getHyCircuitElementDiff (LayoutDirection::LEFT) == coordEzL);
   ALWAYS_ASSERT (coordHy + layout.getHyCircuitElementDiff (LayoutDirection::RIGHT) == coordEzR);
   ALWAYS_ASSERT (coordHy + layout.getHyCircuitElementDiff (LayoutDirection::BACK) == coordExB);
   ALWAYS_ASSERT (coordHy + layout.getHyCircuitElementDiff (LayoutDirection::FRONT) == coordExF);
-  ALWAYS_ASSERT ((layout.getMinHyCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 0.5, 1, ct1, ct2, ct3)));
 
   TCoord<grid_coord, true> coordHz = size / grid_coord (2);
-  ALWAYS_ASSERT ((layout.getHzCoordFP (coordHz) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)));
-  ALWAYS_ASSERT (layout.getHzCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)) == coordHz);
-  TCoord<grid_coord, true> coordEyL = coordHz;
-  TCoord<grid_coord, true> coordEyR = coordHz + TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-  TCoord<grid_coord, true> coordExD = coordHz;
-  TCoord<grid_coord, true> coordExU = coordHz + TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+  TCoord<grid_coord, true> coordEyL;
+  TCoord<grid_coord, true> coordEyR;
+  TCoord<grid_coord, true> coordExD;
+  TCoord<grid_coord, true> coordExU;
+  if (layout_type == E_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinHzCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 1, 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getHzCoordFP (coordHz) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getHzCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 1, sizey_h + 1, sizez_h + 0.5, ct1, ct2, ct3)) == coordHz);
+    coordEyL = coordHz;
+    coordEyR = coordHz + TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+    coordExD = coordHz;
+    coordExU = coordHz + TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+  }
+  else if (layout_type == H_CENTERED)
+  {
+    ALWAYS_ASSERT ((layout.getMinHzCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (0.5, 0.5, 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT ((layout.getHzCoordFP (coordHz) == TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)));
+    ALWAYS_ASSERT (layout.getHzCoord (TCoord<FPValue, true>::initAxesCoordinate (sizex_h + 0.5, sizey_h + 0.5, sizez_h + 1, ct1, ct2, ct3)) == coordHz);
+    coordEyL = coordHz - TCoord<grid_coord, true>::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+    coordEyR = coordHz;
+    coordExD = coordHz - TCoord<grid_coord, true>::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+    coordExU = coordHz;
+  }
+  else
+  {
+    UNREACHABLE;
+  }
   ALWAYS_ASSERT (coordHz + layout.getHzCircuitElementDiff (LayoutDirection::LEFT) == coordEyL);
   ALWAYS_ASSERT (coordHz + layout.getHzCircuitElementDiff (LayoutDirection::RIGHT) == coordEyR);
   ALWAYS_ASSERT (coordHz + layout.getHzCircuitElementDiff (LayoutDirection::DOWN) == coordExD);
   ALWAYS_ASSERT (coordHz + layout.getHzCircuitElementDiff (LayoutDirection::UP) == coordExU);
-  ALWAYS_ASSERT ((layout.getMinHzCoordFP () == TCoord<FPValue, true>::initAxesCoordinate (1, 1, 0.5, ct1, ct2, ct3)));
 
   switch (Type)
   {
@@ -420,7 +547,7 @@ void testFuncInternal (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
    *       getApproximateMetaMaterial
    *       getMetaMaterial
    *       getMaterial
-   *       initCoordinates
+   *       initMaterialCoordinates
    */
 }
 
@@ -542,40 +669,85 @@ void testFuncDim1_ExHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
     ALWAYS_ASSERT (!doNeedUpdateExL && !doNeedUpdateExR && !doNeedUpdateExD && !doNeedUpdateExU);
     ALWAYS_ASSERT (!doNeedUpdateHyL && !doNeedUpdateHyR && !doNeedUpdateHyD && !doNeedUpdateHyU);
 
-    if (coordExFP.get1 () == sizez_tfsf - 0.5)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateExB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExB);
-    }
+      if (coordExFP.get1 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExB);
+      }
 
-    if (coordExFP.get1 () == sizez - sizez_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateExF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExF);
-    }
+      if (coordExFP.get1 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExF);
+      }
 
-    if (coordHyFP.get1 () == sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyB);
-    }
+      if (coordHyFP.get1 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyB);
+      }
 
-    if (coordHyFP.get1 () == sizez - sizez_tfsf)
+      if (coordHyFP.get1 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyF);
+      }
+    }
+    else if (layout_type == H_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateHyF);
+      if (coordExFP.get1 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExB);
+      }
+
+      if (coordExFP.get1 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExF);
+      }
+
+      if (coordHyFP.get1 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyB);
+      }
+
+      if (coordHyFP.get1 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyF);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateHyF);
+      UNREACHABLE;
     }
   }
 }
@@ -641,40 +813,85 @@ void testFuncDim1_ExHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
     ALWAYS_ASSERT (!doNeedUpdateExL && !doNeedUpdateExR && !doNeedUpdateExB && !doNeedUpdateExF);
     ALWAYS_ASSERT (!doNeedUpdateHzL && !doNeedUpdateHzR && !doNeedUpdateHzB && !doNeedUpdateHzF);
 
-    if (coordExFP.get1 () == sizey_tfsf - 0.5)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateExD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExD);
-    }
+      if (coordExFP.get1 () == sizey_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExD);
+      }
 
-    if (coordExFP.get1 () == sizey - sizey_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateExU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExU);
-    }
+      if (coordExFP.get1 () == sizey - sizey_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExU);
+      }
 
-    if (coordHzFP.get1 () == sizey_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzD);
-    }
+      if (coordHzFP.get1 () == sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzD);
+      }
 
-    if (coordHzFP.get1 () == sizey - sizey_tfsf)
+      if (coordHzFP.get1 () == sizey - sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzU);
+      }
+    }
+    else if (layout_type == H_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateHzU);
+      if (coordExFP.get1 () == sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExD);
+      }
+
+      if (coordExFP.get1 () == sizey - sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExU);
+      }
+
+      if (coordHzFP.get1 () == sizey_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzD);
+      }
+
+      if (coordHzFP.get1 () == sizey - sizey_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzU);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateHzU);
+      UNREACHABLE;
     }
   }
 }
@@ -740,40 +957,85 @@ void testFuncDim1_EyHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
     ALWAYS_ASSERT (!doNeedUpdateEyL && !doNeedUpdateEyR && !doNeedUpdateEyD && !doNeedUpdateEyU);
     ALWAYS_ASSERT (!doNeedUpdateHxL && !doNeedUpdateHxR && !doNeedUpdateHxD && !doNeedUpdateHxU);
 
-    if (coordEyFP.get1 () == sizez_tfsf - 0.5)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateEyB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyB);
-    }
+      if (coordEyFP.get1 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyB);
+      }
 
-    if (coordEyFP.get1 () == sizez - sizez_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyF);
-    }
+      if (coordEyFP.get1 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyF);
+      }
 
-    if (coordHxFP.get1 () == sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxB);
-    }
+      if (coordHxFP.get1 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxB);
+      }
 
-    if (coordHxFP.get1 () == sizez - sizez_tfsf)
+      if (coordHxFP.get1 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxF);
+      }
+    }
+    else if (layout_type == H_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateHxF);
+      if (coordEyFP.get1 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyB);
+      }
+
+      if (coordEyFP.get1 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyF);
+      }
+
+      if (coordHxFP.get1 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxB);
+      }
+
+      if (coordHxFP.get1 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxF);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateHxF);
+      UNREACHABLE;
     }
   }
 }
@@ -839,40 +1101,85 @@ void testFuncDim1_EyHz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
     ALWAYS_ASSERT (!doNeedUpdateEyD && !doNeedUpdateEyU && !doNeedUpdateEyB && !doNeedUpdateEyF);
     ALWAYS_ASSERT (!doNeedUpdateHzD && !doNeedUpdateHzU && !doNeedUpdateHzB && !doNeedUpdateHzF);
 
-    if (coordEyFP.get1 () == sizex_tfsf - 0.5)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateEyL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyL);
-    }
+      if (coordEyFP.get1 () == sizex_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyL);
+      }
 
-    if (coordEyFP.get1 () == sizex - sizex_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyR);
-    }
+      if (coordEyFP.get1 () == sizex - sizex_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyR);
+      }
 
-    if (coordHzFP.get1 () == sizex_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzL);
-    }
+      if (coordHzFP.get1 () == sizex_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzL);
+      }
 
-    if (coordHzFP.get1 () == sizex - sizex_tfsf)
+      if (coordHzFP.get1 () == sizex - sizex_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzR);
+      }
+    }
+    else if (layout_type == H_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateHzR);
+      if (coordEyFP.get1 () == sizex_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyL);
+      }
+
+      if (coordEyFP.get1 () == sizex - sizex_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyR);
+      }
+
+      if (coordHzFP.get1 () == sizex_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzL);
+      }
+
+      if (coordHzFP.get1 () == sizex - sizex_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzR);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateHzR);
+      UNREACHABLE;
     }
   }
 }
@@ -938,40 +1245,85 @@ void testFuncDim1_EzHx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
     ALWAYS_ASSERT (!doNeedUpdateEzL && !doNeedUpdateEzR && !doNeedUpdateEzB && !doNeedUpdateEzF);
     ALWAYS_ASSERT (!doNeedUpdateHxL && !doNeedUpdateHxR && !doNeedUpdateHxB && !doNeedUpdateHxF);
 
-    if (coordEzFP.get1 () == sizey_tfsf - 0.5)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateEzD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzD);
-    }
+      if (coordEzFP.get1 () == sizey_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzD);
+      }
 
-    if (coordEzFP.get1 () == sizey - sizey_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzU);
-    }
+      if (coordEzFP.get1 () == sizey - sizey_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzU);
+      }
 
-    if (coordHxFP.get1 () == sizey_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxD);
-    }
+      if (coordHxFP.get1 () == sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxD);
+      }
 
-    if (coordHxFP.get1 () == sizey - sizey_tfsf)
+      if (coordHxFP.get1 () == sizey - sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxU);
+      }
+    }
+    else if (layout_type == H_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateHxU);
+      if (coordEzFP.get1 () == sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzD);
+      }
+
+      if (coordEzFP.get1 () == sizey - sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzU);
+      }
+
+      if (coordHxFP.get1 () == sizey_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxD);
+      }
+
+      if (coordHxFP.get1 () == sizey - sizey_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxU);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateHxU);
+      UNREACHABLE;
     }
   }
 }
@@ -1037,40 +1389,85 @@ void testFuncDim1_EzHy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3,
     ALWAYS_ASSERT (!doNeedUpdateEzD && !doNeedUpdateEzU && !doNeedUpdateEzB && !doNeedUpdateEzF);
     ALWAYS_ASSERT (!doNeedUpdateHyD && !doNeedUpdateHyU && !doNeedUpdateHyB && !doNeedUpdateHyF);
 
-    if (coordEzFP.get1 () == sizex_tfsf - 0.5)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateEzL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzL);
-    }
+      if (coordEzFP.get1 () == sizex_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzL);
+      }
 
-    if (coordEzFP.get1 () == sizex - sizex_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzR);
-    }
+      if (coordEzFP.get1 () == sizex - sizex_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzR);
+      }
 
-    if (coordHyFP.get1 () == sizex_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyL);
-    }
+      if (coordHyFP.get1 () == sizex_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyL);
+      }
 
-    if (coordHyFP.get1 () == sizex - sizex_tfsf)
+      if (coordHyFP.get1 () == sizex - sizex_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyR);
+      }
+    }
+    else if (layout_type == H_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateHyR);
+      if (coordEzFP.get1 () == sizex_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzL);
+      }
+
+      if (coordEzFP.get1 () == sizex - sizex_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzR);
+      }
+
+      if (coordHyFP.get1 () == sizex_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyL);
+      }
+
+      if (coordHyFP.get1 () == sizex - sizex_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyR);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateHyR);
+      UNREACHABLE;
     }
   }
 }
@@ -1152,86 +1549,173 @@ void testFuncDim2_TEx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
     ALWAYS_ASSERT (!doNeedUpdateEzL && !doNeedUpdateEzR && !doNeedUpdateEzB && !doNeedUpdateEzF);
     ALWAYS_ASSERT (!doNeedUpdateHxL && !doNeedUpdateHxR);
 
-    if (coordEyFP.get1 () > sizey_tfsf - 0.1 && coordEyFP.get1 () < sizey - sizey_tfsf + 0.1
-        && coordEyFP.get2 () == sizez_tfsf - 0.5)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateEyB);
+      if (coordEyFP.get1 () > sizey_tfsf - 0.1 && coordEyFP.get1 () < sizey - sizey_tfsf + 0.1
+          && coordEyFP.get2 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyB);
+      }
+
+      if (coordEyFP.get1 () > sizey_tfsf - 0.1 && coordEyFP.get1 () < sizey - sizey_tfsf + 0.1
+          && coordEyFP.get2 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyF);
+      }
+
+      if (coordEzFP.get1 () == sizey_tfsf - 0.5
+          && coordEzFP.get2 () > sizez_tfsf - 0.1 && coordEzFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzD);
+      }
+
+      if (coordEzFP.get1 () == sizey - sizey_tfsf + 0.5
+          && coordEzFP.get2 () > sizez_tfsf - 0.1 && coordEzFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzU);
+      }
+
+      if (coordHxFP.get1 () == sizey_tfsf
+          && coordHxFP.get2 () > sizez_tfsf - 0.1 && coordHxFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxD);
+      }
+
+      if (coordHxFP.get1 () == sizey - sizey_tfsf
+          && coordHxFP.get2 () > sizez_tfsf - 0.1 && coordHxFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxU);
+      }
+
+      if (coordHxFP.get1 () > sizey_tfsf - 0.1 && coordHxFP.get1 () < sizey - sizey_tfsf + 0.1
+          && coordHxFP.get2 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxB);
+      }
+
+      if (coordHxFP.get1 () > sizey_tfsf - 0.1 && coordHxFP.get1 () < sizey - sizey_tfsf + 0.1
+          && coordHxFP.get2 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxF);
+      }
+    }
+    else if (layout_type == H_CENTERED)
+    {
+      if (coordEyFP.get1 () > sizey_tfsf + 0.4 && coordEyFP.get1 () < sizey - sizey_tfsf - 0.4
+          && coordEyFP.get2 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyB);
+      }
+
+      if (coordEyFP.get1 () > sizey_tfsf + 0.4 && coordEyFP.get1 () < sizey - sizey_tfsf - 0.4
+          && coordEyFP.get2 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyF);
+      }
+
+      if (coordEzFP.get1 () == sizey_tfsf
+          && coordEzFP.get2 () > sizez_tfsf + 0.4 && coordEzFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzD);
+      }
+
+      if (coordEzFP.get1 () == sizey - sizey_tfsf
+          && coordEzFP.get2 () > sizez_tfsf + 0.4 && coordEzFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzU);
+      }
+
+      if (coordHxFP.get1 () == sizey_tfsf - 0.5
+          && coordHxFP.get2 () > sizez_tfsf + 0.4 && coordHxFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxD);
+      }
+
+      if (coordHxFP.get1 () == sizey - sizey_tfsf + 0.5
+          && coordHxFP.get2 () > sizez_tfsf + 0.4 && coordHxFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxU);
+      }
+
+      if (coordHxFP.get1 () > sizey_tfsf + 0.4 && coordHxFP.get1 () < sizey - sizey_tfsf - 0.4
+          && coordHxFP.get2 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxB);
+      }
+
+      if (coordHxFP.get1 () > sizey_tfsf + 0.4 && coordHxFP.get1 () < sizey - sizey_tfsf - 0.4
+          && coordHxFP.get2 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxF);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateEyB);
-    }
-
-    if (coordEyFP.get1 () > sizey_tfsf - 0.1 && coordEyFP.get1 () < sizey - sizey_tfsf + 0.1
-        && coordEyFP.get2 () == sizez - sizez_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyF);
-    }
-
-
-    if (coordEzFP.get1 () == sizey_tfsf - 0.5
-        && coordEzFP.get2 () > sizez_tfsf - 0.1 && coordEzFP.get2 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzD);
-    }
-
-    if (coordEzFP.get1 () == sizey - sizey_tfsf + 0.5
-        && coordEzFP.get2 () > sizez_tfsf - 0.1 && coordEzFP.get2 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzU);
-    }
-
-
-    if (coordHxFP.get1 () == sizey_tfsf
-        && coordHxFP.get2 () > sizez_tfsf - 0.1 && coordHxFP.get2 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxD);
-    }
-
-    if (coordHxFP.get1 () == sizey - sizey_tfsf
-        && coordHxFP.get2 () > sizez_tfsf - 0.1 && coordHxFP.get2 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxU);
-    }
-
-    if (coordHxFP.get1 () > sizey_tfsf - 0.1 && coordHxFP.get1 () < sizey - sizey_tfsf + 0.1
-        && coordHxFP.get2 () == sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxB);
-    }
-
-    if (coordHxFP.get1 () > sizey_tfsf - 0.1 && coordHxFP.get1 () < sizey - sizey_tfsf + 0.1
-        && coordHxFP.get2 () == sizez - sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxF);
+      UNREACHABLE;
     }
   }
 }
@@ -1313,86 +1797,173 @@ void testFuncDim2_TEy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
     ALWAYS_ASSERT (!doNeedUpdateEzD && !doNeedUpdateEzU && !doNeedUpdateEzB && !doNeedUpdateEzF);
     ALWAYS_ASSERT (!doNeedUpdateHyD && !doNeedUpdateHyU);
 
-    if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordExFP.get2 () == sizez_tfsf - 0.5)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateExB);
+      if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordExFP.get2 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExB);
+      }
+
+      if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordExFP.get2 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExF);
+      }
+
+      if (coordEzFP.get1 () == sizex_tfsf - 0.5
+          && coordEzFP.get2 () > sizez_tfsf - 0.1 && coordEzFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzL);
+      }
+
+      if (coordEzFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordEzFP.get2 () > sizez_tfsf - 0.1 && coordEzFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzR);
+      }
+
+      if (coordHyFP.get1 () == sizex_tfsf
+          && coordHyFP.get2 () > sizez_tfsf - 0.1 && coordHyFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyL);
+      }
+
+      if (coordHyFP.get1 () == sizex - sizex_tfsf
+          && coordHyFP.get2 () > sizez_tfsf - 0.1 && coordHyFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyR);
+      }
+
+      if (coordHyFP.get1 () > sizex_tfsf - 0.1 && coordHyFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHyFP.get2 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyB);
+      }
+
+      if (coordHyFP.get1 () > sizex_tfsf - 0.1 && coordHyFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHyFP.get2 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyF);
+      }
+    }
+    else if (layout_type == H_CENTERED)
+    {
+      if (coordExFP.get1 () > sizex_tfsf + 0.4 && coordExFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordExFP.get2 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExB);
+      }
+
+      if (coordExFP.get1 () > sizex_tfsf + 0.4 && coordExFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordExFP.get2 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExF);
+      }
+
+      if (coordEzFP.get1 () == sizex_tfsf
+          && coordEzFP.get2 () > sizez_tfsf + 0.4 && coordEzFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzL);
+      }
+
+      if (coordEzFP.get1 () == sizex - sizex_tfsf
+          && coordEzFP.get2 () > sizez_tfsf + 0.4 && coordEzFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzR);
+      }
+
+      if (coordHyFP.get1 () == sizex_tfsf - 0.5
+          && coordHyFP.get2 () > sizez_tfsf + 0.4 && coordHyFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyL);
+      }
+
+      if (coordHyFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordHyFP.get2 () > sizez_tfsf + 0.4 && coordHyFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyR);
+      }
+
+      if (coordHyFP.get1 () > sizex_tfsf + 0.4 && coordHyFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHyFP.get2 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyB);
+      }
+
+      if (coordHyFP.get1 () > sizex_tfsf + 0.4 && coordHyFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHyFP.get2 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyF);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateExB);
-    }
-
-    if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordExFP.get2 () == sizez - sizez_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateExF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExF);
-    }
-
-
-    if (coordEzFP.get1 () == sizex_tfsf - 0.5
-        && coordEzFP.get2 () > sizez_tfsf - 0.1 && coordEzFP.get2 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzL);
-    }
-
-    if (coordEzFP.get1 () == sizex - sizex_tfsf + 0.5
-        && coordEzFP.get2 () > sizez_tfsf - 0.1 && coordEzFP.get2 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzR);
-    }
-
-
-    if (coordHyFP.get1 () == sizex_tfsf
-        && coordHyFP.get2 () > sizez_tfsf - 0.1 && coordHyFP.get2 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyL);
-    }
-
-    if (coordHyFP.get1 () == sizex - sizex_tfsf
-        && coordHyFP.get2 () > sizez_tfsf - 0.1 && coordHyFP.get2 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyR);
-    }
-
-    if (coordHyFP.get1 () > sizex_tfsf - 0.1 && coordHyFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordHyFP.get2 () == sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyB);
-    }
-
-    if (coordHyFP.get1 () > sizex_tfsf - 0.1 && coordHyFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordHyFP.get2 () == sizez - sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyF);
+      UNREACHABLE;
     }
   }
 }
@@ -1474,86 +2045,173 @@ void testFuncDim2_TEz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
     ALWAYS_ASSERT (!doNeedUpdateEyD && !doNeedUpdateEyU && !doNeedUpdateEyB && !doNeedUpdateEyF);
     ALWAYS_ASSERT (!doNeedUpdateHzB && !doNeedUpdateHzF);
 
-    if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordExFP.get2 () == sizey_tfsf - 0.5)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateExD);
+      if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordExFP.get2 () == sizey_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExD);
+      }
+
+      if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordExFP.get2 () == sizey - sizey_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExU);
+      }
+
+      if (coordEyFP.get1 () == sizex_tfsf - 0.5
+          && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyL);
+      }
+
+      if (coordEyFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyR);
+      }
+
+      if (coordHzFP.get1 () == sizex_tfsf
+          && coordHzFP.get2 () > sizey_tfsf - 0.1 && coordHzFP.get2 () < sizey - sizey_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzL);
+      }
+
+      if (coordHzFP.get1 () == sizex - sizex_tfsf
+          && coordHzFP.get2 () > sizey_tfsf - 0.1 && coordHzFP.get2 () < sizey - sizey_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzR);
+      }
+
+      if (coordHzFP.get1 () > sizex_tfsf - 0.1 && coordHzFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHzFP.get2 () == sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzD);
+      }
+
+      if (coordHzFP.get1 () > sizex_tfsf - 0.1 && coordHzFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHzFP.get2 () == sizey - sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzU);
+      }
+    }
+    else if (layout_type == H_CENTERED)
+    {
+      if (coordExFP.get1 () > sizex_tfsf + 0.4 && coordExFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordExFP.get2 () == sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExD);
+      }
+
+      if (coordExFP.get1 () > sizex_tfsf + 0.4 && coordExFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordExFP.get2 () == sizey - sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExU);
+      }
+
+      if (coordEyFP.get1 () == sizex_tfsf
+          && coordEyFP.get2 () > sizey_tfsf + 0.4 && coordEyFP.get2 () < sizey - sizey_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyL);
+      }
+
+      if (coordEyFP.get1 () == sizex - sizex_tfsf
+          && coordEyFP.get2 () > sizey_tfsf + 0.4 && coordEyFP.get2 () < sizey - sizey_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyR);
+      }
+
+      if (coordHzFP.get1 () == sizex_tfsf - 0.5
+          && coordHzFP.get2 () > sizey_tfsf + 0.4 && coordHzFP.get2 () < sizey - sizey_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzL);
+      }
+
+      if (coordHzFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordHzFP.get2 () > sizey_tfsf + 0.4 && coordHzFP.get2 () < sizey - sizey_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzR);
+      }
+
+      if (coordHzFP.get1 () > sizex_tfsf + 0.4 && coordHzFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHzFP.get2 () == sizey_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzD);
+      }
+
+      if (coordHzFP.get1 () > sizex_tfsf + 0.4 && coordHzFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHzFP.get2 () == sizey - sizey_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzU);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateExD);
-    }
-
-    if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordExFP.get2 () == sizey - sizey_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateExU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExU);
-    }
-
-
-    if (coordEyFP.get1 () == sizex_tfsf - 0.5
-        && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyL);
-    }
-
-    if (coordEyFP.get1 () == sizex - sizex_tfsf + 0.5
-        && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyR);
-    }
-
-
-    if (coordHzFP.get1 () == sizex_tfsf
-        && coordHzFP.get2 () > sizey_tfsf - 0.1 && coordHzFP.get2 () < sizey - sizey_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzL);
-    }
-
-    if (coordHzFP.get1 () == sizex - sizex_tfsf
-        && coordHzFP.get2 () > sizey_tfsf - 0.1 && coordHzFP.get2 () < sizey - sizey_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzR);
-    }
-
-    if (coordHzFP.get1 () > sizex_tfsf - 0.1 && coordHzFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordHzFP.get2 () == sizey_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzD);
-    }
-
-    if (coordHzFP.get1 () > sizex_tfsf - 0.1 && coordHzFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordHzFP.get2 () == sizey - sizey_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzU);
+      UNREACHABLE;
     }
   }
 }
@@ -1635,87 +2293,173 @@ void testFuncDim2_TMx (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
     ALWAYS_ASSERT (!doNeedUpdateHyL && !doNeedUpdateHyR && !doNeedUpdateHyD && !doNeedUpdateHyU);
     ALWAYS_ASSERT (!doNeedUpdateHzL && !doNeedUpdateHzR && !doNeedUpdateHzB && !doNeedUpdateHzF);
 
-    if (coordExFP.get1 () == sizey_tfsf - 0.5
-        && coordExFP.get2 () > sizez_tfsf + 0.4 && coordExFP.get2 () < sizez - sizez_tfsf - 0.4)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateExD);
+      if (coordExFP.get1 () == sizey_tfsf - 0.5
+          && coordExFP.get2 () > sizez_tfsf + 0.4 && coordExFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExD);
+      }
+
+      if (coordExFP.get1 () == sizey - sizey_tfsf + 0.5
+          && coordExFP.get2 () > sizez_tfsf + 0.4 && coordExFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExU);
+      }
+
+      if (coordExFP.get1 () > sizey_tfsf + 0.4 && coordExFP.get1 () < sizey - sizey_tfsf - 0.4
+          && coordExFP.get2 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExB);
+      }
+
+      if (coordExFP.get1 () > sizey_tfsf + 0.4 && coordExFP.get1 () < sizey - sizey_tfsf - 0.4
+          && coordExFP.get2 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExF);
+      }
+
+      if (coordHyFP.get1 () > sizey_tfsf + 0.4 && coordHyFP.get1 () < sizey - sizey_tfsf - 0.4
+          && coordHyFP.get2 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyB);
+      }
+
+      if (coordHyFP.get1 () > sizey_tfsf + 0.4 && coordHyFP.get1 () < sizey - sizey_tfsf - 0.4
+          && coordHyFP.get2 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyF);
+      }
+
+      if (coordHzFP.get1 () == sizey_tfsf
+          && coordHzFP.get2 () > sizez_tfsf + 0.4 && coordHzFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzD);
+      }
+
+      if (coordHzFP.get1 () == sizey - sizey_tfsf
+          && coordHzFP.get2 () > sizez_tfsf + 0.4 && coordHzFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzU);
+      }
+    }
+    else if (layout_type == H_CENTERED)
+    {
+      if (coordExFP.get1 () == sizey_tfsf
+          && coordExFP.get2 () > sizez_tfsf - 0.1 && coordExFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExD);
+      }
+
+      if (coordExFP.get1 () == sizey - sizey_tfsf
+          && coordExFP.get2 () > sizez_tfsf - 0.1 && coordExFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExU);
+      }
+
+      if (coordExFP.get1 () > sizey_tfsf - 0.1 && coordExFP.get1 () < sizey - sizey_tfsf + 0.1
+          && coordExFP.get2 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExB);
+      }
+
+      if (coordExFP.get1 () > sizey_tfsf - 0.1 && coordExFP.get1 () < sizey - sizey_tfsf + 0.1
+          && coordExFP.get2 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExF);
+      }
+
+      if (coordHyFP.get1 () > sizey_tfsf - 0.1 && coordHyFP.get1 () < sizey - sizey_tfsf + 0.1
+          && coordHyFP.get2 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyB);
+      }
+
+      if (coordHyFP.get1 () > sizey_tfsf - 0.1 && coordHyFP.get1 () < sizey - sizey_tfsf + 0.1
+          && coordHyFP.get2 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyF);
+      }
+
+      if (coordHzFP.get1 () == sizey_tfsf - 0.5
+          && coordHzFP.get2 () > sizez_tfsf - 0.1 && coordHzFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzD);
+      }
+
+      if (coordHzFP.get1 () == sizey - sizey_tfsf + 0.5
+          && coordHzFP.get2 () > sizez_tfsf - 0.1 && coordHzFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzU);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateExD);
-    }
-
-    if (coordExFP.get1 () == sizey - sizey_tfsf + 0.5
-        && coordExFP.get2 () > sizez_tfsf + 0.4 && coordExFP.get2 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateExU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExU);
-    }
-
-
-    if (coordExFP.get1 () > sizey_tfsf + 0.4 && coordExFP.get1 () < sizey - sizey_tfsf - 0.4
-        && coordExFP.get2 () == sizez_tfsf - 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateExB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExB);
-    }
-
-    if (coordExFP.get1 () > sizey_tfsf + 0.4 && coordExFP.get1 () < sizey - sizey_tfsf - 0.4
-        && coordExFP.get2 () == sizez - sizez_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateExF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExF);
-    }
-
-
-    if (coordHyFP.get1 () > sizey_tfsf + 0.4 && coordHyFP.get1 () < sizey - sizey_tfsf - 0.4
-        && coordHyFP.get2 () == sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyB);
-    }
-
-    if (coordHyFP.get1 () > sizey_tfsf + 0.4 && coordHyFP.get1 () < sizey - sizey_tfsf - 0.4
-        && coordHyFP.get2 () == sizez - sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyF);
-    }
-
-
-    if (coordHzFP.get1 () == sizey_tfsf
-        && coordHzFP.get2 () > sizez_tfsf + 0.4 && coordHzFP.get2 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzD);
-    }
-
-    if (coordHzFP.get1 () == sizey - sizey_tfsf
-        && coordHzFP.get2 () > sizez_tfsf + 0.4 && coordHzFP.get2 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzU);
+      UNREACHABLE;
     }
   }
 }
@@ -1797,87 +2541,173 @@ void testFuncDim2_TMy (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
     ALWAYS_ASSERT (!doNeedUpdateHxL && !doNeedUpdateHxR && !doNeedUpdateHxD && !doNeedUpdateHxU);
     ALWAYS_ASSERT (!doNeedUpdateHzD && !doNeedUpdateHzU && !doNeedUpdateHzB && !doNeedUpdateHzF);
 
-    if (coordEyFP.get1 () == sizex_tfsf - 0.5
-        && coordEyFP.get2 () > sizez_tfsf + 0.4 && coordEyFP.get2 () < sizez - sizez_tfsf - 0.4)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateEyL);
+      if (coordEyFP.get1 () == sizex_tfsf - 0.5
+          && coordEyFP.get2 () > sizez_tfsf + 0.4 && coordEyFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyL);
+      }
+
+      if (coordEyFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordEyFP.get2 () > sizez_tfsf + 0.4 && coordEyFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyR);
+      }
+
+      if (coordEyFP.get1 () > sizex_tfsf + 0.4 && coordEyFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordEyFP.get2 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyB);
+      }
+
+      if (coordEyFP.get1 () > sizex_tfsf + 0.4 && coordEyFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordEyFP.get2 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyF);
+      }
+
+      if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHxFP.get2 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxB);
+      }
+
+      if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHxFP.get2 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxF);
+      }
+
+      if (coordHzFP.get1 () == sizex_tfsf
+          && coordHzFP.get2 () > sizez_tfsf + 0.4 && coordHzFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzL);
+      }
+
+      if (coordHzFP.get1 () == sizex - sizex_tfsf
+          && coordHzFP.get2 () > sizez_tfsf + 0.4 && coordHzFP.get2 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzR);
+      }
+    }
+    else if (layout_type == H_CENTERED)
+    {
+      if (coordEyFP.get1 () == sizex_tfsf
+          && coordEyFP.get2 () > sizez_tfsf - 0.1 && coordEyFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyL);
+      }
+
+      if (coordEyFP.get1 () == sizex - sizex_tfsf
+          && coordEyFP.get2 () > sizez_tfsf - 0.1 && coordEyFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyR);
+      }
+
+      if (coordEyFP.get1 () > sizex_tfsf - 0.1 && coordEyFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordEyFP.get2 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyB);
+      }
+
+      if (coordEyFP.get1 () > sizex_tfsf - 0.1 && coordEyFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordEyFP.get2 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyF);
+      }
+
+      if (coordHxFP.get1 () > sizex_tfsf - 0.1 && coordHxFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHxFP.get2 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxB);
+      }
+
+      if (coordHxFP.get1 () > sizex_tfsf - 0.1 && coordHxFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHxFP.get2 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxF);
+      }
+
+      if (coordHzFP.get1 () == sizex_tfsf - 0.5
+          && coordHzFP.get2 () > sizez_tfsf - 0.1 && coordHzFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzL);
+      }
+
+      if (coordHzFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordHzFP.get2 () > sizez_tfsf - 0.1 && coordHzFP.get2 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzR);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateEyL);
-    }
-
-    if (coordEyFP.get1 () == sizex - sizex_tfsf + 0.5
-        && coordEyFP.get2 () > sizez_tfsf + 0.4 && coordEyFP.get2 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyR);
-    }
-
-
-    if (coordEyFP.get1 () > sizex_tfsf + 0.4 && coordEyFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordEyFP.get2 () == sizez_tfsf - 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyB);
-    }
-
-    if (coordEyFP.get1 () > sizex_tfsf + 0.4 && coordEyFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordEyFP.get2 () == sizez - sizez_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyF);
-    }
-
-
-    if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordHxFP.get2 () == sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxB);
-    }
-
-    if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordHxFP.get2 () == sizez - sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxF);
-    }
-
-
-    if (coordHzFP.get1 () == sizex_tfsf
-        && coordHzFP.get2 () > sizez_tfsf + 0.4 && coordHzFP.get2 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzL);
-    }
-
-    if (coordHzFP.get1 () == sizex - sizex_tfsf
-        && coordHzFP.get2 () > sizez_tfsf + 0.4 && coordHzFP.get2 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzR);
+      UNREACHABLE;
     }
   }
 }
@@ -1959,87 +2789,173 @@ void testFuncDim2_TMz (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, 
     ALWAYS_ASSERT (!doNeedUpdateHxL && !doNeedUpdateHxR && !doNeedUpdateHxB && !doNeedUpdateHxF);
     ALWAYS_ASSERT (!doNeedUpdateHyD && !doNeedUpdateHyU && !doNeedUpdateHyB && !doNeedUpdateHyF);
 
-    if (coordEzFP.get1 () == sizex_tfsf - 0.5
-        && coordEzFP.get2 () > sizey_tfsf + 0.4 && coordEzFP.get2 () < sizey - sizey_tfsf - 0.4)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateEzL);
+      if (coordEzFP.get1 () == sizex_tfsf - 0.5
+          && coordEzFP.get2 () > sizey_tfsf + 0.4 && coordEzFP.get2 () < sizey - sizey_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzL);
+      }
+
+      if (coordEzFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordEzFP.get2 () > sizey_tfsf + 0.4 && coordEzFP.get2 () < sizey - sizey_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzR);
+      }
+
+      if (coordEzFP.get1 () > sizex_tfsf + 0.4 && coordEzFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordEzFP.get2 () == sizey_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzD);
+      }
+
+      if (coordEzFP.get1 () > sizex_tfsf + 0.4 && coordEzFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordEzFP.get2 () == sizey - sizey_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzU);
+      }
+
+      if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHxFP.get2 () == sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxD);
+      }
+
+      if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHxFP.get2 () == sizey - sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxU);
+      }
+
+      if (coordHyFP.get1 () == sizex_tfsf
+          && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyL);
+      }
+
+      if (coordHyFP.get1 () == sizex - sizex_tfsf
+          && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyR);
+      }
+    }
+    else if (layout_type == H_CENTERED)
+    {
+      if (coordEzFP.get1 () == sizex_tfsf
+          && coordEzFP.get2 () > sizey_tfsf - 0.1 && coordEzFP.get2 () < sizey - sizey_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzL);
+      }
+
+      if (coordEzFP.get1 () == sizex - sizex_tfsf
+          && coordEzFP.get2 () > sizey_tfsf - 0.1 && coordEzFP.get2 () < sizey - sizey_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzR);
+      }
+
+      if (coordEzFP.get1 () > sizex_tfsf - 0.1 && coordEzFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordEzFP.get2 () == sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzD);
+      }
+
+      if (coordEzFP.get1 () > sizex_tfsf - 0.1 && coordEzFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordEzFP.get2 () == sizey - sizey_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzU);
+      }
+
+      if (coordHxFP.get1 () > sizex_tfsf - 0.1 && coordHxFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHxFP.get2 () == sizey_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxD);
+      }
+
+      if (coordHxFP.get1 () > sizex_tfsf - 0.1 && coordHxFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHxFP.get2 () == sizey - sizey_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxU);
+      }
+
+      if (coordHyFP.get1 () == sizex_tfsf - 0.5
+          && coordHyFP.get2 () > sizey_tfsf - 0.1 && coordHyFP.get2 () < sizey - sizey_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyL);
+      }
+
+      if (coordHyFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordHyFP.get2 () > sizey_tfsf - 0.1 && coordHyFP.get2 () < sizey - sizey_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyR);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateEzL);
-    }
-
-    if (coordEzFP.get1 () == sizex - sizex_tfsf + 0.5
-        && coordEzFP.get2 () > sizey_tfsf + 0.4 && coordEzFP.get2 () < sizey - sizey_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzR);
-    }
-
-
-    if (coordEzFP.get1 () > sizex_tfsf + 0.4 && coordEzFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordEzFP.get2 () == sizey_tfsf - 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzD);
-    }
-
-    if (coordEzFP.get1 () > sizex_tfsf + 0.4 && coordEzFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordEzFP.get2 () == sizey - sizey_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzU);
-    }
-
-
-    if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordHxFP.get2 () == sizey_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxD);
-    }
-
-    if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordHxFP.get2 () == sizey - sizey_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxU);
-    }
-
-
-    if (coordHyFP.get1 () == sizex_tfsf
-        && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyL);
-    }
-
-    if (coordHyFP.get1 () == sizex - sizex_tfsf
-        && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyR);
+      UNREACHABLE;
     }
   }
 }
@@ -2163,286 +3079,577 @@ void testFuncDim3 (FPValue incAngle1, FPValue incAngle2, FPValue incAngle3, bool
     ALWAYS_ASSERT (!doNeedUpdateHyD && !doNeedUpdateHyU);
     ALWAYS_ASSERT (!doNeedUpdateHzB && !doNeedUpdateHzF);
 
-    /*
-     * Ex
-     */
-    if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordExFP.get2 () == sizey_tfsf - 0.5
-        && coordExFP.get3 () > sizez_tfsf + 0.4 && coordExFP.get3 () < sizez - sizez_tfsf - 0.4)
+    if (layout_type == E_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateExD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExD);
-    }
+      /*
+       * Ex
+       */
+      if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordExFP.get2 () == sizey_tfsf - 0.5
+          && coordExFP.get3 () > sizez_tfsf + 0.4 && coordExFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExD);
+      }
 
-    if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordExFP.get2 () == sizey - sizey_tfsf + 0.5
-        && coordExFP.get3 () > sizez_tfsf + 0.4 && coordExFP.get3 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateExU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExU);
-    }
+      if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordExFP.get2 () == sizey - sizey_tfsf + 0.5
+          && coordExFP.get3 () > sizez_tfsf + 0.4 && coordExFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExU);
+      }
 
-    if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordExFP.get2 () > sizey_tfsf + 0.4 && coordExFP.get2 () < sizey - sizey_tfsf - 0.4
-        && coordExFP.get3 () == sizez_tfsf - 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateExB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExB);
-    }
+      if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordExFP.get2 () > sizey_tfsf + 0.4 && coordExFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordExFP.get3 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExB);
+      }
 
-    if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordExFP.get2 () > sizey_tfsf + 0.4 && coordExFP.get2 () < sizey - sizey_tfsf - 0.4
-        && coordExFP.get3 () == sizez - sizez_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateExF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateExF);
-    }
+      if (coordExFP.get1 () > sizex_tfsf - 0.1 && coordExFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordExFP.get2 () > sizey_tfsf + 0.4 && coordExFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordExFP.get3 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExF);
+      }
 
-    /*
-     * Ey
-     */
-    if (coordEyFP.get1 () == sizex_tfsf - 0.5
-        && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1
-        && coordEyFP.get3 () > sizez_tfsf + 0.4 && coordEyFP.get3 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyL);
-    }
+      /*
+       * Ey
+       */
+      if (coordEyFP.get1 () == sizex_tfsf - 0.5
+          && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordEyFP.get3 () > sizez_tfsf + 0.4 && coordEyFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyL);
+      }
 
-    if (coordEyFP.get1 () == sizex - sizex_tfsf + 0.5
-        && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1
-        && coordEyFP.get3 () > sizez_tfsf + 0.4 && coordEyFP.get3 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyR);
-    }
+      if (coordEyFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordEyFP.get3 () > sizez_tfsf + 0.4 && coordEyFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyR);
+      }
 
-    if (coordEyFP.get1 () > sizex_tfsf + 0.4 && coordEyFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1
-        && coordEyFP.get3 () == sizez_tfsf - 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyB);
-    }
+      if (coordEyFP.get1 () > sizex_tfsf + 0.4 && coordEyFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordEyFP.get3 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyB);
+      }
 
-    if (coordEyFP.get1 () > sizex_tfsf + 0.4 && coordEyFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1
-        && coordEyFP.get3 () == sizez - sizez_tfsf + 0.5)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEyF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEyF);
-    }
+      if (coordEyFP.get1 () > sizex_tfsf + 0.4 && coordEyFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordEyFP.get2 () > sizey_tfsf - 0.1 && coordEyFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordEyFP.get3 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyF);
+      }
 
-    /*
-     * Ez
-     */
-    if (coordEzFP.get1 () == sizex_tfsf - 0.5
-        && coordEzFP.get2 () > sizey_tfsf + 0.4 && coordEzFP.get2 () < sizey - sizey_tfsf - 0.4
-        && coordEzFP.get3 () > sizez_tfsf - 0.1 && coordEzFP.get3 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzL);
-    }
+      /*
+       * Ez
+       */
+      if (coordEzFP.get1 () == sizex_tfsf - 0.5
+          && coordEzFP.get2 () > sizey_tfsf + 0.4 && coordEzFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordEzFP.get3 () > sizez_tfsf - 0.1 && coordEzFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzL);
+      }
 
-    if (coordEzFP.get1 () == sizex - sizex_tfsf + 0.5
-        && coordEzFP.get2 () > sizey_tfsf + 0.4 && coordEzFP.get2 () < sizey - sizey_tfsf - 0.4
-        && coordEzFP.get3 () > sizez_tfsf - 0.1 && coordEzFP.get3 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzR);
-    }
+      if (coordEzFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordEzFP.get2 () > sizey_tfsf + 0.4 && coordEzFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordEzFP.get3 () > sizez_tfsf - 0.1 && coordEzFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzR);
+      }
 
-    if (coordEzFP.get1 () > sizex_tfsf + 0.4 && coordEzFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordEzFP.get2 () == sizey_tfsf - 0.5
-        && coordEzFP.get3 () > sizez_tfsf - 0.1 && coordEzFP.get3 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzD);
-    }
+      if (coordEzFP.get1 () > sizex_tfsf + 0.4 && coordEzFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordEzFP.get2 () == sizey_tfsf - 0.5
+          && coordEzFP.get3 () > sizez_tfsf - 0.1 && coordEzFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzD);
+      }
 
-    if (coordEzFP.get1 () > sizex_tfsf + 0.4 && coordEzFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordEzFP.get2 () == sizey - sizey_tfsf + 0.5
-        && coordEzFP.get3 () > sizez_tfsf - 0.1 && coordEzFP.get3 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateEzU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateEzU);
-    }
+      if (coordEzFP.get1 () > sizex_tfsf + 0.4 && coordEzFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordEzFP.get2 () == sizey - sizey_tfsf + 0.5
+          && coordEzFP.get3 () > sizez_tfsf - 0.1 && coordEzFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzU);
+      }
 
-    /*
-     * Hx
-     */
-    if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordHxFP.get2 () == sizey_tfsf
-        && coordHxFP.get3 () > sizez_tfsf - 0.1 && coordHxFP.get3 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxD);
-    }
+      /*
+       * Hx
+       */
+      if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHxFP.get2 () == sizey_tfsf
+          && coordHxFP.get3 () > sizez_tfsf - 0.1 && coordHxFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxD);
+      }
 
-    if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordHxFP.get2 () == sizey - sizey_tfsf
-        && coordHxFP.get3 () > sizez_tfsf - 0.1 && coordHxFP.get3 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxU);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxU);
-    }
+      if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHxFP.get2 () == sizey - sizey_tfsf
+          && coordHxFP.get3 () > sizez_tfsf - 0.1 && coordHxFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxU);
+      }
 
-    if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordHxFP.get2 () > sizey_tfsf - 0.1 && coordHxFP.get2 () < sizey - sizey_tfsf + 0.1
-        && coordHxFP.get3 () == sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxB);
-    }
+      if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHxFP.get2 () > sizey_tfsf - 0.1 && coordHxFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordHxFP.get3 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxB);
+      }
 
-    if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
-        && coordHxFP.get2 () > sizey_tfsf - 0.1 && coordHxFP.get2 () < sizey - sizey_tfsf + 0.1
-        && coordHxFP.get3 () == sizez - sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHxF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHxF);
-    }
+      if (coordHxFP.get1 () > sizex_tfsf + 0.4 && coordHxFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHxFP.get2 () > sizey_tfsf - 0.1 && coordHxFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordHxFP.get3 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxF);
+      }
 
-    /*
-     * Hy
-     */
-    if (coordHyFP.get1 () == sizex_tfsf
-        && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4
-        && coordHyFP.get3 () > sizez_tfsf - 0.1 && coordHyFP.get3 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyL);
-    }
+      /*
+       * Hy
+       */
+      if (coordHyFP.get1 () == sizex_tfsf
+          && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordHyFP.get3 () > sizez_tfsf - 0.1 && coordHyFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyL);
+      }
 
-    if (coordHyFP.get1 () == sizex - sizex_tfsf
-        && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4
-        && coordHyFP.get3 () > sizez_tfsf - 0.1 && coordHyFP.get3 () < sizez - sizez_tfsf + 0.1)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyR);
-    }
+      if (coordHyFP.get1 () == sizex - sizex_tfsf
+          && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordHyFP.get3 () > sizez_tfsf - 0.1 && coordHyFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyR);
+      }
 
-    if (coordHyFP.get1 () > sizex_tfsf - 0.1 && coordHyFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4
-        && coordHyFP.get3 () == sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyB);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyB);
-    }
+      if (coordHyFP.get1 () > sizex_tfsf - 0.1 && coordHyFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordHyFP.get3 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyB);
+      }
 
-    if (coordHyFP.get1 () > sizex_tfsf - 0.1 && coordHyFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4
-        && coordHyFP.get3 () == sizez - sizez_tfsf)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHyF);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHyF);
-    }
+      if (coordHyFP.get1 () > sizex_tfsf - 0.1 && coordHyFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHyFP.get2 () > sizey_tfsf + 0.4 && coordHyFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordHyFP.get3 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyF);
+      }
 
-    /*
-     * Hz
-     */
-    if (coordHzFP.get1 () == sizex_tfsf
-        && coordHzFP.get2 () > sizey_tfsf - 0.1 && coordHzFP.get2 () < sizey - sizey_tfsf + 0.1
-        && coordHzFP.get3 () > sizez_tfsf + 0.4 && coordHzFP.get3 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzL);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzL);
-    }
+      /*
+       * Hz
+       */
+      if (coordHzFP.get1 () == sizex_tfsf
+          && coordHzFP.get2 () > sizey_tfsf - 0.1 && coordHzFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordHzFP.get3 () > sizez_tfsf + 0.4 && coordHzFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzL);
+      }
 
-    if (coordHzFP.get1 () == sizex - sizex_tfsf
-        && coordHzFP.get2 () > sizey_tfsf - 0.1 && coordHzFP.get2 () < sizey - sizey_tfsf + 0.1
-        && coordHzFP.get3 () > sizez_tfsf + 0.4 && coordHzFP.get3 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzR);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzR);
-    }
+      if (coordHzFP.get1 () == sizex - sizex_tfsf
+          && coordHzFP.get2 () > sizey_tfsf - 0.1 && coordHzFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordHzFP.get3 () > sizez_tfsf + 0.4 && coordHzFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzR);
+      }
 
-    if (coordHzFP.get1 () > sizex_tfsf - 0.1 && coordHzFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordHzFP.get2 () == sizey_tfsf
-        && coordHzFP.get3 () > sizez_tfsf + 0.4 && coordHzFP.get3 () < sizez - sizez_tfsf - 0.4)
-    {
-      ALWAYS_ASSERT (doNeedUpdateHzD);
-    }
-    else
-    {
-      ALWAYS_ASSERT (!doNeedUpdateHzD);
-    }
+      if (coordHzFP.get1 () > sizex_tfsf - 0.1 && coordHzFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHzFP.get2 () == sizey_tfsf
+          && coordHzFP.get3 () > sizez_tfsf + 0.4 && coordHzFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzD);
+      }
 
-    if (coordHzFP.get1 () > sizex_tfsf - 0.1 && coordHzFP.get1 () < sizex - sizex_tfsf + 0.1
-        && coordHzFP.get2 () == sizey - sizey_tfsf
-        && coordHzFP.get3 () > sizez_tfsf + 0.4 && coordHzFP.get3 () < sizez - sizez_tfsf - 0.4)
+      if (coordHzFP.get1 () > sizex_tfsf - 0.1 && coordHzFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHzFP.get2 () == sizey - sizey_tfsf
+          && coordHzFP.get3 () > sizez_tfsf + 0.4 && coordHzFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzU);
+      }
+    }
+    else if (layout_type == H_CENTERED)
     {
-      ALWAYS_ASSERT (doNeedUpdateHzU);
+      /*
+       * Ex
+       */
+      if (coordExFP.get1 () > sizex_tfsf + 0.4 && coordExFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordExFP.get2 () == sizey_tfsf
+          && coordExFP.get3 () > sizez_tfsf - 0.1 && coordExFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExD);
+      }
+
+      if (coordExFP.get1 () > sizex_tfsf + 0.4 && coordExFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordExFP.get2 () == sizey - sizey_tfsf
+          && coordExFP.get3 () > sizez_tfsf - 0.1 && coordExFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExU);
+      }
+
+      if (coordExFP.get1 () > sizex_tfsf + 0.4 && coordExFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordExFP.get2 () > sizey_tfsf - 0.1 && coordExFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordExFP.get3 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExB);
+      }
+
+      if (coordExFP.get1 () > sizex_tfsf + 0.4 && coordExFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordExFP.get2 () > sizey_tfsf - 0.1 && coordExFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordExFP.get3 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateExF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateExF);
+      }
+
+      /*
+       * Ey
+       */
+      if (coordEyFP.get1 () == sizex_tfsf
+          && coordEyFP.get2 () > sizey_tfsf + 0.4 && coordEyFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordEyFP.get3 () > sizez_tfsf - 0.1 && coordEyFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyL);
+      }
+
+      if (coordEyFP.get1 () == sizex - sizex_tfsf
+          && coordEyFP.get2 () > sizey_tfsf + 0.4 && coordEyFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordEyFP.get3 () > sizez_tfsf - 0.1 && coordEyFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyR);
+      }
+
+      if (coordEyFP.get1 () > sizex_tfsf - 0.1 && coordEyFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordEyFP.get2 () > sizey_tfsf + 0.4 && coordEyFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordEyFP.get3 () == sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyB);
+      }
+
+      if (coordEyFP.get1 () > sizex_tfsf - 0.1 && coordEyFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordEyFP.get2 () > sizey_tfsf + 0.4 && coordEyFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordEyFP.get3 () == sizez - sizez_tfsf)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEyF);
+      }
+
+      /*
+       * Ez
+       */
+      if (coordEzFP.get1 () == sizex_tfsf
+          && coordEzFP.get2 () > sizey_tfsf - 0.1 && coordEzFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordEzFP.get3 () > sizez_tfsf + 0.4 && coordEzFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzL);
+      }
+
+      if (coordEzFP.get1 () == sizex - sizex_tfsf
+          && coordEzFP.get2 () > sizey_tfsf - 0.1 && coordEzFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordEzFP.get3 () > sizez_tfsf + 0.4 && coordEzFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzR);
+      }
+
+      if (coordEzFP.get1 () > sizex_tfsf - 0.1 && coordEzFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordEzFP.get2 () == sizey_tfsf
+          && coordEzFP.get3 () > sizez_tfsf + 0.4 && coordEzFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzD);
+      }
+
+      if (coordEzFP.get1 () > sizex_tfsf - 0.1 && coordEzFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordEzFP.get2 () == sizey - sizey_tfsf
+          && coordEzFP.get3 () > sizez_tfsf + 0.4 && coordEzFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateEzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateEzU);
+      }
+
+      /*
+       * Hx
+       */
+      if (coordHxFP.get1 () > sizex_tfsf - 0.1 && coordHxFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHxFP.get2 () == sizey_tfsf - 0.5
+          && coordHxFP.get3 () > sizez_tfsf + 0.4 && coordHxFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxD);
+      }
+
+      if (coordHxFP.get1 () > sizex_tfsf - 0.1 && coordHxFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHxFP.get2 () == sizey - sizey_tfsf + 0.5
+          && coordHxFP.get3 () > sizez_tfsf + 0.4 && coordHxFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxU);
+      }
+
+      if (coordHxFP.get1 () > sizex_tfsf - 0.1 && coordHxFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHxFP.get2 () > sizey_tfsf + 0.4 && coordHxFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordHxFP.get3 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxB);
+      }
+
+      if (coordHxFP.get1 () > sizex_tfsf - 0.1 && coordHxFP.get1 () < sizex - sizex_tfsf + 0.1
+          && coordHxFP.get2 () > sizey_tfsf + 0.4 && coordHxFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordHxFP.get3 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHxF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHxF);
+      }
+
+      /*
+       * Hy
+       */
+      if (coordHyFP.get1 () == sizex_tfsf - 0.5
+          && coordHyFP.get2 () > sizey_tfsf - 0.1 && coordHyFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordHyFP.get3 () > sizez_tfsf + 0.4 && coordHyFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyL);
+      }
+
+      if (coordHyFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordHyFP.get2 () > sizey_tfsf - 0.1 && coordHyFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordHyFP.get3 () > sizez_tfsf + 0.4 && coordHyFP.get3 () < sizez - sizez_tfsf - 0.4)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyR);
+      }
+
+      if (coordHyFP.get1 () > sizex_tfsf + 0.4 && coordHyFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHyFP.get2 () > sizey_tfsf - 0.1 && coordHyFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordHyFP.get3 () == sizez_tfsf - 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyB);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyB);
+      }
+
+      if (coordHyFP.get1 () > sizex_tfsf + 0.4 && coordHyFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHyFP.get2 () > sizey_tfsf - 0.1 && coordHyFP.get2 () < sizey - sizey_tfsf + 0.1
+          && coordHyFP.get3 () == sizez - sizez_tfsf + 0.5)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHyF);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHyF);
+      }
+
+      /*
+       * Hz
+       */
+      if (coordHzFP.get1 () == sizex_tfsf - 0.5
+          && coordHzFP.get2 () > sizey_tfsf + 0.4 && coordHzFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordHzFP.get3 () > sizez_tfsf - 0.1 && coordHzFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzL);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzL);
+      }
+
+      if (coordHzFP.get1 () == sizex - sizex_tfsf + 0.5
+          && coordHzFP.get2 () > sizey_tfsf + 0.4 && coordHzFP.get2 () < sizey - sizey_tfsf - 0.4
+          && coordHzFP.get3 () > sizez_tfsf - 0.1 && coordHzFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzR);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzR);
+      }
+
+      if (coordHzFP.get1 () > sizex_tfsf + 0.4 && coordHzFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHzFP.get2 () == sizey_tfsf - 0.5
+          && coordHzFP.get3 () > sizez_tfsf - 0.1 && coordHzFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzD);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzD);
+      }
+
+      if (coordHzFP.get1 () > sizex_tfsf + 0.4 && coordHzFP.get1 () < sizex - sizex_tfsf - 0.4
+          && coordHzFP.get2 () == sizey - sizey_tfsf + 0.5
+          && coordHzFP.get3 () > sizez_tfsf - 0.1 && coordHzFP.get3 () < sizez - sizez_tfsf + 0.1)
+      {
+        ALWAYS_ASSERT (doNeedUpdateHzU);
+      }
+      else
+      {
+        ALWAYS_ASSERT (!doNeedUpdateHzU);
+      }
     }
     else
     {
-      ALWAYS_ASSERT (!doNeedUpdateHzU);
+      UNREACHABLE;
     }
   }
 }
@@ -2473,21 +3680,27 @@ int main (int argc, char** argv)
   {
 #if defined (MODE_EX_HY)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED> (0, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED> (0, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
 #endif /* MODE_EX_HY */
 #if defined (MODE_EX_HZ)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, 0, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, 0, dMaterialPrecision);
 #endif /* MODE_EX_HZ */
 #if defined (MODE_EY_HX)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED> (0, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED> (0, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
 #endif /* MODE_EY_HX */
 #if defined (MODE_EY_HZ)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, 0, 0, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED> (PhysicsConst::Pi / 2, 0, 0, dMaterialPrecision);
 #endif /* MODE_EY_HZ */
 #if defined (MODE_EZ_HX)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
 #endif /* MODE_EZ_HX */
 #if defined (MODE_EZ_HY)
     testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
+    testFunc<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED> (PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
 #endif /* MODE_EZ_HY */
 
     for (grid_coord mult = 2; mult <= MULT; ++mult)
@@ -2496,9 +3709,11 @@ int main (int argc, char** argv)
       {
 #if defined (MODE_EX_HY)
         testFuncDim1_ExHy<E_CENTERED> (0, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sz);
+        testFuncDim1_ExHy<H_CENTERED> (0, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sz);
 #endif /* MODE_EX_HY */
 #if defined (MODE_EY_HX)
         testFuncDim1_EyHx<E_CENTERED> (0, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sz);
+        testFuncDim1_EyHx<H_CENTERED> (0, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sz);
 #endif /* MODE_EY_HX */
       }
 
@@ -2506,9 +3721,11 @@ int main (int argc, char** argv)
       {
 #if defined (MODE_EX_HZ)
         testFuncDim1_ExHz<E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, 0, dMaterialPrecision, mult, sy);
+        testFuncDim1_ExHz<H_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, 0, dMaterialPrecision, mult, sy);
 #endif /* MODE_EX_HZ */
 #if defined (MODE_EZ_HX)
         testFuncDim1_EzHx<E_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sy);
+        testFuncDim1_EzHx<H_CENTERED> (PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sy);
 #endif /* MODE_EZ_HX */
       }
 
@@ -2516,9 +3733,11 @@ int main (int argc, char** argv)
       {
 #if defined (MODE_EY_HZ)
         testFuncDim1_EyHz<E_CENTERED> (PhysicsConst::Pi / 2, 0, 0, dMaterialPrecision, mult, sx);
+        testFuncDim1_EyHz<H_CENTERED> (PhysicsConst::Pi / 2, 0, 0, dMaterialPrecision, mult, sx);
 #endif /* MODE_EY_HZ */
 #if defined (MODE_EZ_HY)
         testFuncDim1_EzHy<E_CENTERED> (PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx);
+        testFuncDim1_EzHy<H_CENTERED> (PhysicsConst::Pi / 2, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx);
 #endif /* MODE_EZ_HY */
       }
     }
@@ -2527,21 +3746,27 @@ int main (int argc, char** argv)
     {
 #if defined (MODE_TEX)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED> (angle1, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED> (angle1, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision);
 #endif /* MODE_TEX */
 #if defined (MODE_TEY)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED> (angle1, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED> (angle1, 0, PhysicsConst::Pi / 2, dMaterialPrecision);
 #endif /* MODE_TEY */
 #if defined (MODE_TEZ)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, angle1, 0, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED> (PhysicsConst::Pi / 2, angle1, 0, dMaterialPrecision);
 #endif /* MODE_TEZ */
 #if defined (MODE_TMX)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED> (angle1, PhysicsConst::Pi / 2, 0, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED> (angle1, PhysicsConst::Pi / 2, 0, dMaterialPrecision);
 #endif /* MODE_TMX */
 #if defined (MODE_TMY)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED> (angle1, 0, 0, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED> (angle1, 0, 0, dMaterialPrecision);
 #endif /* MODE_TMY */
 #if defined (MODE_TMZ)
       testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED> (PhysicsConst::Pi / 2, angle1, PhysicsConst::Pi / 2, dMaterialPrecision);
+      testFunc<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED> (PhysicsConst::Pi / 2, angle1, PhysicsConst::Pi / 2, dMaterialPrecision);
 #endif /* MODE_TMZ */
 
       for (grid_coord mult = 2; mult <= MULT; ++mult)
@@ -2551,9 +3776,11 @@ int main (int argc, char** argv)
         {
 #if defined (MODE_TEX)
           testFuncDim2_TEx<E_CENTERED> (angle1, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sy, sz);
+          testFuncDim2_TEx<H_CENTERED> (angle1, PhysicsConst::Pi / 2, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sy, sz);
 #endif /* MODE_TEX */
 #if defined (MODE_TMX)
           testFuncDim2_TMx<E_CENTERED> (angle1, PhysicsConst::Pi / 2, 0, dMaterialPrecision, mult, sy, sz);
+          testFuncDim2_TMx<H_CENTERED> (angle1, PhysicsConst::Pi / 2, 0, dMaterialPrecision, mult, sy, sz);
 #endif /* MODE_TMX */
         }
 
@@ -2562,9 +3789,11 @@ int main (int argc, char** argv)
         {
 #if defined (MODE_TEY)
           testFuncDim2_TEy<E_CENTERED> (angle1, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx, sz);
+          testFuncDim2_TEy<H_CENTERED> (angle1, 0, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx, sz);
 #endif /* MODE_TEY */
 #if defined (MODE_TMY)
           testFuncDim2_TMy<E_CENTERED> (angle1, 0, 0, dMaterialPrecision, mult, sx, sz);
+          testFuncDim2_TMy<H_CENTERED> (angle1, 0, 0, dMaterialPrecision, mult, sx, sz);
 #endif /* MODE_TMY */
         }
 
@@ -2573,9 +3802,11 @@ int main (int argc, char** argv)
         {
 #if defined (MODE_TEZ)
           testFuncDim2_TEz<E_CENTERED> (PhysicsConst::Pi / 2, angle1, 0, dMaterialPrecision, mult, sx, sy);
+          testFuncDim2_TEz<H_CENTERED> (PhysicsConst::Pi / 2, angle1, 0, dMaterialPrecision, mult, sx, sy);
 #endif /* MODE_TEZ */
 #if defined (MODE_TMZ)
           testFuncDim2_TMz<E_CENTERED> (PhysicsConst::Pi / 2, angle1, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx, sy);
+          testFuncDim2_TMz<H_CENTERED> (PhysicsConst::Pi / 2, angle1, PhysicsConst::Pi / 2, dMaterialPrecision, mult, sx, sy);
 #endif /* MODE_TMZ */
         }
       }
@@ -2586,6 +3817,7 @@ int main (int argc, char** argv)
         {
 #if defined (MODE_DIM3)
           testFunc<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED> (angle1, angle2, angle3, dMaterialPrecision);
+          testFunc<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED> (angle1, angle2, angle3, dMaterialPrecision);
 #endif /* MODE_DIM3 */
 
           for (grid_coord mult = 2; mult <= MULT; ++mult)
@@ -2596,6 +3828,7 @@ int main (int argc, char** argv)
             {
 #if defined (MODE_DIM3)
               testFuncDim3<E_CENTERED> (angle1, angle2, angle3, dMaterialPrecision, mult, sx, sy, sz);
+              testFuncDim3<H_CENTERED> (angle1, angle2, angle3, dMaterialPrecision, mult, sx, sy, sz);
 #endif /* MODE_DIM3 */
             }
           }

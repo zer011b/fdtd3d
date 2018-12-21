@@ -43,6 +43,7 @@ class InternalSchemeHelperGPU;
  * ====================================
  */
 #ifdef CUDA_ENABLED
+#ifdef CUDA_SOURCES
 
 #define GPU_INTERNAL_SCHEME
 
@@ -54,6 +55,7 @@ class InternalSchemeHelperGPU;
 
 #include "InternalScheme.inc.h"
 
+#endif /* CUDA_SOURCES */
 #endif /* CUDA_ENABLED */
 
 #include "InternalScheme.specific.h"

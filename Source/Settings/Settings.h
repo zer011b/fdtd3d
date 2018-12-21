@@ -41,6 +41,70 @@ ENUM_CLASS (SchemeType, SchemeType_t,
   Dim3
 );
 
+
+/**
+ * Type of field, which is placed at the center of the grid cell
+ *
+ * E_CENTERED:
+ *
+ *             Ex is:
+ *                   1 <= x < 1 + size.getx()
+ *                   0.5 <= y < 0.5 + size.getY()
+ *                   0.5 <= z < 0.5 + size.getZ()
+ *             Ey is:
+ *                   0.5 <= x < 0.5 + size.getx()
+ *                   1 <= y < 1 + size.getY()
+ *                   0.5 <= z < 0.5 + size.getZ()
+ *             Ez is:
+ *                   0.5 <= x < 0.5 + size.getx()
+ *                   0.5 <= y < 0.5 + size.getY()
+ *                   1 <= z < 1 + size.getZ()
+ *             Hx is:
+ *                   0.5 <= x < 0.5 + size.getx()
+ *                   1 <= y < 1 + size.getY()
+ *                   1 <= z < 1 + size.getZ()
+ *             Hy is:
+ *                   1 <= x < 1 + size.getx()
+ *                   0.5 <= y < 0.5 + size.getY()
+ *                   1 <= z < 1 + size.getZ()
+ *             Hz is:
+ *                   1 <= z < 1 + size.getx()
+ *                   1 <= y < 1 + size.getY()
+ *                   0.5 <= z < 0.5 + size.getZ()
+ *
+ * H_CENTERED:
+ *
+ *             Hx is:
+ *                   1 <= x < 1 + size.getx()
+ *                   0.5 <= y < 0.5 + size.getY()
+ *                   0.5 <= z < 0.5 + size.getZ()
+ *             Hy is:
+ *                   0.5 <= x < 0.5 + size.getx()
+ *                   1 <= y < 1 + size.getY()
+ *                   0.5 <= z < 0.5 + size.getZ()
+ *             Hz is:
+ *                   0.5 <= x < 0.5 + size.getx()
+ *                   0.5 <= y < 0.5 + size.getY()
+ *                   1 <= z < 1 + size.getZ()
+ *             Ex is:
+ *                   0.5 <= x < 0.5 + size.getx()
+ *                   1 <= y < 1 + size.getY()
+ *                   1 <= z < 1 + size.getZ()
+ *             Ey is:
+ *                   1 <= x < 1 + size.getx()
+ *                   0.5 <= y < 0.5 + size.getY()
+ *                   1 <= z < 1 + size.getZ()
+ *             Ez is:
+ *                   1 <= z < 1 + size.getx()
+ *                   1 <= y < 1 + size.getY()
+ *                   0.5 <= z < 0.5 + size.getZ()
+ */
+enum LayoutType
+{
+  E_CENTERED,
+  H_CENTERED
+};
+
 /**
  * Settings for solver
  */
@@ -96,7 +160,7 @@ public:
     : dimension (0)
     , schemeType (SchemeType::NONE)
 #define SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
-    , fieldName (defaultVal)
+    , fieldName ((fieldType) defaultVal)
 #define SETTINGS_ELEM_FIELD_TYPE_INT(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
     SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_FIELD_TYPE_FLOAT(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \

@@ -3933,8 +3933,8 @@ Scheme<Type, TCoord, layout_type>::Pointing_scat (FPValue angleTeta, FPValue ang
 #ifdef COMPLEX_FIELD_VALUES
   FPValue k = 2 * PhysicsConst::Pi / intScheme->getSourceWaveLength (); // TODO: check numerical here
 
-  NPair N = ntffN (angleTeta, anglePhi, curEz, curHx, curHy, curHz, leftNTFF, rightNTFF);
-  NPair L = ntffL (angleTeta, anglePhi, curEx, curEy, curEz, leftNTFF, rightNTFF);
+  NPair N = ntffN (angleTeta, anglePhi, curEx, curEy, curEz, curHx, curHy, curHz, leftNTFF, rightNTFF);
+  NPair L = ntffL (angleTeta, anglePhi, curEx, curEy, curEz, curHx, curHy, curHz, leftNTFF, rightNTFF);
 
   int processId = 0;
 

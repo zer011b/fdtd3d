@@ -461,7 +461,7 @@ public:
                                                                FPValue &, FPValue &);
 
   template <bool isMetaMaterial>
-  CUDA_DEVICE CUDA_HOST void initCoordinates (const TC &, GridType, TC &, TC &, TC &, TC &, TC &, TC &, TC &, TC &);
+  CUDA_DEVICE CUDA_HOST void initMaterialCoordinates (const TC &, GridType, TC &, TC &, TC &, TC &, TC &, TC &, TC &, TC &);
 
 private:
 
@@ -786,7 +786,7 @@ YeeGridLayout<Type, TCoord, layout_type>::getApproximateMetaMaterial (const Fiel
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 template <bool isMetaMaterial>
 CUDA_DEVICE CUDA_HOST void
-YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
+YeeGridLayout<Type, TCoord, layout_type>::initMaterialCoordinates (const TC &posAbs,
                                      GridType typeOfField,
                                      TC &absPos11,
                                      TC &absPos12,
@@ -797,207 +797,226 @@ YeeGridLayout<Type, TCoord, layout_type>::initCoordinates (const TC &posAbs,
                                      TC &absPos41,
                                      TC &absPos42)
 {
+  TCFP realCoord;
+
   switch (typeOfField)
   {
     case GridType::EX:
     case GridType::DX:
     {
-      TCFP realCoord = getExCoordFP (posAbs);
-
-      if (isDoubleMaterialPrecision)
-      {
-        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-        absPos12 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
-
-        absPos21 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos22 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-
-        absPos31 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
-        absPos32 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
-
-        absPos41 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-        absPos42 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
-      }
-      else
-      {
-        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3));
-        absPos12 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3));
-      }
-
+      realCoord = getExCoordFP (posAbs);
       break;
     }
     case GridType::EY:
     case GridType::DY:
     {
-      TCFP realCoord = getEyCoordFP (posAbs);
-
-      if (isDoubleMaterialPrecision)
-      {
-        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-        absPos12 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
-
-        absPos21 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos22 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-
-        absPos31 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
-        absPos32 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
-
-        absPos41 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-        absPos42 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
-      }
-      else
-      {
-        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3));
-        absPos12 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3));
-      }
-
+      realCoord = getEyCoordFP (posAbs);
       break;
     }
     case GridType::EZ:
     case GridType::DZ:
     {
-      TCFP realCoord = getEzCoordFP (posAbs);
-
-      if (isDoubleMaterialPrecision)
-      {
-        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-        absPos12 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
-
-        absPos21 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
-        absPos22 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
-
-        absPos31 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos32 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-
-        absPos41 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-        absPos42 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
-      }
-      else
-      {
-        absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3));
-        absPos12 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3));
-      }
-
+      realCoord = getEzCoordFP (posAbs);
       break;
     }
     case GridType::HX:
     case GridType::BX:
     {
-      TCFP realCoord = getHxCoordFP (posAbs);
-      TCFP coord;
-
-      if (isDoubleMaterialPrecision)
-      {
-        coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, -0.5, ct1, ct2, ct3);
-        absPos11 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
-        absPos12 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
-
-        coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, 0.5, ct1, ct2, ct3);
-        absPos21 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-        absPos22 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
-
-        coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, -0.5, ct1, ct2, ct3);
-        absPos31 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-        absPos32 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
-
-        coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, 0.5, ct1, ct2, ct3);
-        absPos41 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos42 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-      }
-      else
-      {
-        coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, -0.5, ct1, ct2, ct3);
-        absPos11 = getEpsCoord (coord);
-        coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, 0.5, ct1, ct2, ct3);
-        absPos12 = getEpsCoord (coord);
-        coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, -0.5, ct1, ct2, ct3);
-        absPos21 = getEpsCoord (coord);
-        coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, 0.5, ct1, ct2, ct3);
-        absPos22 = getEpsCoord (coord);
-      }
-
+      realCoord = getHxCoordFP (posAbs);
       break;
     }
     case GridType::HY:
     case GridType::BY:
     {
-      TCFP realCoord = getHyCoordFP (posAbs);
-      TCFP coord;
-
-      if (isDoubleMaterialPrecision)
-      {
-        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, -0.5, ct1, ct2, ct3);
-        absPos11 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
-        absPos12 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
-
-        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, 0.5, ct1, ct2, ct3);
-        absPos21 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-        absPos22 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
-
-        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, -0.5, ct1, ct2, ct3);
-        absPos31 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-        absPos32 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
-
-        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, 0.5, ct1, ct2, ct3);
-        absPos41 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos42 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-      }
-      else
-      {
-        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, -0.5, ct1, ct2, ct3);
-        absPos11 = getEpsCoord (coord);
-        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, 0.5, ct1, ct2, ct3);
-        absPos12 = getEpsCoord (coord);
-        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, -0.5, ct1, ct2, ct3);
-        absPos21 = getEpsCoord (coord);
-        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, 0.5, ct1, ct2, ct3);
-        absPos22 = getEpsCoord (coord);
-      }
-
+      realCoord = getHyCoordFP (posAbs);
       break;
     }
     case GridType::HZ:
     case GridType::BZ:
     {
-      TCFP realCoord = getHzCoordFP (posAbs);
-      TCFP coord;
-
-      if (isDoubleMaterialPrecision)
-      {
-        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, -0.5, 0.0, ct1, ct2, ct3);
-        absPos11 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
-        absPos12 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
-
-        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.5, 0.0, ct1, ct2, ct3);
-        absPos21 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
-        absPos22 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
-
-        coord = realCoord + TCSFP::initAxesCoordinate (0.5, -0.5, 0.0, ct1, ct2, ct3);
-        absPos31 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
-        absPos32 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
-
-        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.5, 0.0, ct1, ct2, ct3);
-        absPos41 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
-        absPos42 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
-      }
-      else
-      {
-        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, -0.5, 0.0, ct1, ct2, ct3);
-        absPos11 = getEpsCoord (coord);
-        coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.5, 0.0, ct1, ct2, ct3);
-        absPos12 = getEpsCoord (coord);
-        coord = realCoord + TCSFP::initAxesCoordinate (0.5, -0.5, 0.0, ct1, ct2, ct3);
-        absPos21 = getEpsCoord (coord);
-        coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.5, 0.0, ct1, ct2, ct3);
-        absPos22 = getEpsCoord (coord);
-      }
-
+      realCoord = getHzCoordFP (posAbs);
       break;
     }
     default:
     {
       UNREACHABLE;
     }
+  }
+
+  if ((typeOfField == GridType::EX || typeOfField == GridType::DX) && layout_type == E_CENTERED
+      || (typeOfField == GridType::HX || typeOfField == GridType::BX) && layout_type == H_CENTERED)
+  {
+    if (isDoubleMaterialPrecision)
+    {
+      absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+      absPos12 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+
+      absPos21 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+      absPos22 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+
+      absPos31 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+      absPos32 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+
+      absPos41 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+      absPos42 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+    }
+    else
+    {
+      absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3));
+      absPos12 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0.5, 0, 0, ct1, ct2, ct3));
+    }
+  }
+  else if ((typeOfField == GridType::EY || typeOfField == GridType::DY) && layout_type == E_CENTERED
+           || (typeOfField == GridType::HY || typeOfField == GridType::BY) && layout_type == H_CENTERED)
+  {
+    if (isDoubleMaterialPrecision)
+    {
+      absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+      absPos12 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+
+      absPos21 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+      absPos22 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+
+      absPos31 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+      absPos32 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+
+      absPos41 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+      absPos42 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+    }
+    else
+    {
+      absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3));
+      absPos12 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0.5, 0, ct1, ct2, ct3));
+    }
+  }
+  else if ((typeOfField == GridType::EZ || typeOfField == GridType::DZ) && layout_type == E_CENTERED
+           || (typeOfField == GridType::HZ || typeOfField == GridType::BZ) && layout_type == H_CENTERED)
+  {
+    if (isDoubleMaterialPrecision)
+    {
+      absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+      absPos12 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+
+      absPos21 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+      absPos22 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+
+      absPos31 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+      absPos32 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+
+      absPos41 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+      absPos42 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3)) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+    }
+    else
+    {
+      absPos11 = getEpsCoord (realCoord - TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3));
+      absPos12 = getEpsCoord (realCoord + TCSFP::initAxesCoordinate (0, 0, 0.5, ct1, ct2, ct3));
+    }
+  }
+  else if ((typeOfField == GridType::HX || typeOfField == GridType::BX) && layout_type == E_CENTERED
+           || (typeOfField == GridType::EX || typeOfField == GridType::DX) && layout_type == H_CENTERED)
+  {
+    TCFP coord;
+    if (isDoubleMaterialPrecision)
+    {
+      coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, -0.5, ct1, ct2, ct3);
+      absPos11 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+      absPos12 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+
+      coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, 0.5, ct1, ct2, ct3);
+      absPos21 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+      absPos22 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+
+      coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, -0.5, ct1, ct2, ct3);
+      absPos31 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+      absPos32 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+
+      coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, 0.5, ct1, ct2, ct3);
+      absPos41 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+      absPos42 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+    }
+    else
+    {
+      coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, -0.5, ct1, ct2, ct3);
+      absPos11 = getEpsCoord (coord);
+      coord = realCoord + TCSFP::initAxesCoordinate (0.0, -0.5, 0.5, ct1, ct2, ct3);
+      absPos12 = getEpsCoord (coord);
+      coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, -0.5, ct1, ct2, ct3);
+      absPos21 = getEpsCoord (coord);
+      coord = realCoord + TCSFP::initAxesCoordinate (0.0, 0.5, 0.5, ct1, ct2, ct3);
+      absPos22 = getEpsCoord (coord);
+    }
+  }
+  else if ((typeOfField == GridType::HY || typeOfField == GridType::BY) && layout_type == E_CENTERED
+           || (typeOfField == GridType::EY || typeOfField == GridType::DY) && layout_type == H_CENTERED)
+  {
+    TCFP coord;
+    if (isDoubleMaterialPrecision)
+    {
+      coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, -0.5, ct1, ct2, ct3);
+      absPos11 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+      absPos12 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+
+      coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, 0.5, ct1, ct2, ct3);
+      absPos21 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+      absPos22 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+
+      coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, -0.5, ct1, ct2, ct3);
+      absPos31 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+      absPos32 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+
+      coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, 0.5, ct1, ct2, ct3);
+      absPos41 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+      absPos42 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+    }
+    else
+    {
+      coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, -0.5, ct1, ct2, ct3);
+      absPos11 = getEpsCoord (coord);
+      coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.0, 0.5, ct1, ct2, ct3);
+      absPos12 = getEpsCoord (coord);
+      coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, -0.5, ct1, ct2, ct3);
+      absPos21 = getEpsCoord (coord);
+      coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.0, 0.5, ct1, ct2, ct3);
+      absPos22 = getEpsCoord (coord);
+    }
+  }
+  else if ((typeOfField == GridType::HZ || typeOfField == GridType::BZ) && layout_type == E_CENTERED
+           || (typeOfField == GridType::EZ || typeOfField == GridType::DZ) && layout_type == H_CENTERED)
+  {
+    TCFP coord;
+    if (isDoubleMaterialPrecision)
+    {
+      coord = realCoord + TCSFP::initAxesCoordinate (-0.5, -0.5, 0.0, ct1, ct2, ct3);
+      absPos11 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 0, ct1, ct2, ct3);
+      absPos12 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+
+      coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.5, 0.0, ct1, ct2, ct3);
+      absPos21 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 0, ct1, ct2, ct3);
+      absPos22 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (1, 0, 1, ct1, ct2, ct3);
+
+      coord = realCoord + TCSFP::initAxesCoordinate (0.5, -0.5, 0.0, ct1, ct2, ct3);
+      absPos31 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 0, ct1, ct2, ct3);
+      absPos32 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 1, 1, ct1, ct2, ct3);
+
+      coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.5, 0.0, ct1, ct2, ct3);
+      absPos41 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
+      absPos42 = getEpsCoord (coord) * grid_coord (2) + TC::initAxesCoordinate (0, 0, 1, ct1, ct2, ct3);
+    }
+    else
+    {
+      coord = realCoord + TCSFP::initAxesCoordinate (-0.5, -0.5, 0.0, ct1, ct2, ct3);
+      absPos11 = getEpsCoord (coord);
+      coord = realCoord + TCSFP::initAxesCoordinate (-0.5, 0.5, 0.0, ct1, ct2, ct3);
+      absPos12 = getEpsCoord (coord);
+      coord = realCoord + TCSFP::initAxesCoordinate (0.5, -0.5, 0.0, ct1, ct2, ct3);
+      absPos21 = getEpsCoord (coord);
+      coord = realCoord + TCSFP::initAxesCoordinate (0.5, 0.5, 0.0, ct1, ct2, ct3);
+      absPos22 = getEpsCoord (coord);
+    }
+  }
+  else
+  {
+    UNREACHABLE;
   }
 }
 
@@ -1205,22 +1224,6 @@ YeeGridLayout<Type, TCoord, layout_type>::getHzCircuitElementDiff (LayoutDirecti
   return circuitHzLeftDiff;
 }
 
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_ExHy;
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_ExHz;
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_EyHx;
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_EyHz;
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_EzHx;
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, E_CENTERED> YL1D_Dim1_EzHy;
-
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TEx;
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TEy;
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TEz;
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TMx;
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TMy;
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, E_CENTERED> YL2D_Dim2_TMz;
-
-typedef YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, E_CENTERED> YL3D_Dim3;
-
 /* Dim1_ExHy */
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
@@ -1230,11 +1233,26 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return - valE;
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
@@ -1244,11 +1262,27 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
@@ -1257,7 +1291,21 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return - valH;
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
@@ -1272,11 +1320,26 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
@@ -1286,11 +1349,27 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
@@ -1300,7 +1379,21 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return - valH;
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH;
 }
@@ -1315,10 +1408,25 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return - valE;
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return - valE;
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
@@ -1328,10 +1436,25 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH;
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
@@ -1341,7 +1464,22 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
@@ -1357,10 +1495,25 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return - valE;
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return - valE;
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
@@ -1370,11 +1523,27 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
@@ -1384,7 +1553,21 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return - valH;
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH;
 }
@@ -1399,11 +1582,27 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
@@ -1412,10 +1611,24 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH;
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
@@ -1425,7 +1638,22 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
@@ -1441,6 +1669,14 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
@@ -1448,10 +1684,25 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   return valE;
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
@@ -1461,13 +1712,35 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   return - valH;
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return - valH;
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
@@ -1483,10 +1756,25 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) ( - cos (incidentWaveAngle1));
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) ( - cos (incidentWaveAngle1));
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
@@ -1495,10 +1783,24 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (sin (incidentWaveAngle1));
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH;
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH;
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
@@ -1508,7 +1810,22 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
@@ -1523,6 +1840,13 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (- cos (incidentWaveAngle1));
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
@@ -1530,10 +1854,25 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) (sin (incidentWaveAngle1));
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (sin (incidentWaveAngle1));
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
@@ -1543,13 +1882,35 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
 {
   return - valH;
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return - valH;
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
@@ -1564,10 +1925,24 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (sin (incidentWaveAngle2));
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) ( - cos (incidentWaveAngle2));
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) ( - cos (incidentWaveAngle2));
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
@@ -1577,11 +1952,27 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
@@ -1591,7 +1982,21 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return - valH;
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH;
 }
@@ -1605,11 +2010,26 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
@@ -1619,11 +2039,27 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
@@ -1632,7 +2068,20 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (cos (incidentWaveAngle1));
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return - valH * (FPValue) (sin (incidentWaveAngle1));
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH * (FPValue) (sin (incidentWaveAngle1));
 }
@@ -1647,10 +2096,25 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return - valE;
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return - valE;
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
@@ -1660,10 +2124,25 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH * (FPValue) (cos (incidentWaveAngle1));
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (cos (incidentWaveAngle1));
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
@@ -1673,7 +2152,21 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return - valH * (FPValue) (sin (incidentWaveAngle1));
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH * (FPValue) (sin (incidentWaveAngle1));
 }
@@ -1688,11 +2181,27 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   UNREACHABLE;
   return FPValue (0);
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
@@ -1701,10 +2210,24 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE;
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH * (FPValue) (sin (incidentWaveAngle2));
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (sin (incidentWaveAngle2));
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
@@ -1713,7 +2236,21 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2D
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (- cos (incidentWaveAngle2));
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  UNREACHABLE;
+  return FPValue (0);
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   UNREACHABLE;
   return FPValue (0);
@@ -1728,10 +2265,24 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>::getExFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (cos (incidentWaveAngle3) * sin (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getEyFromIncidentE (FieldValue valE) const
 {
   return valE * (FPValue) ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>::getEyFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) ( - cos (incidentWaveAngle3) * cos (incidentWaveAngle2) - sin (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getEzFromIncidentE (FieldValue valE) const
@@ -1740,10 +2291,24 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>::getEzFromIncidentE (FieldValue valE) const
+{
+  return valE * (FPValue) (sin (incidentWaveAngle3) * sin (incidentWaveAngle1));
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getHxFromIncidentH (FieldValue valH) const
 {
   return valH * (FPValue) (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
 }
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>::getHxFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (sin (incidentWaveAngle3) * sin (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * cos (incidentWaveAngle2));
+}
+
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getHyFromIncidentH (FieldValue valH) const
@@ -1752,7 +2317,20 @@ YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemp
 }
 template <>
 CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>::getHyFromIncidentH (FieldValue valH) const
+{
+  return valH * (FPValue) (- sin (incidentWaveAngle3) * cos (incidentWaveAngle2) + cos (incidentWaveAngle3) * cos (incidentWaveAngle1) * sin (incidentWaveAngle2));
+}
+
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
 YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::getHzFromIncidentH (FieldValue valH) const
+{
+  return - valH * (FPValue) (cos (incidentWaveAngle3) * sin (incidentWaveAngle1));
+}
+template <>
+CUDA_DEVICE CUDA_HOST inline FieldValue
+YeeGridLayout<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>::getHzFromIncidentH (FieldValue valH) const
 {
   return - valH * (FPValue) (cos (incidentWaveAngle3) * sin (incidentWaveAngle1));
 }

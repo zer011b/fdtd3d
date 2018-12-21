@@ -32,13 +32,30 @@
   SPECIALIZE_TEMPLATE_FUNC(RET1D, Dim1_EyHz, GridCoordinate1DTemplate, E_CENTERED, NAME, ARGS1D, ARGS, _NAME(NAME, 1D)) \
   SPECIALIZE_TEMPLATE_FUNC(RET1D, Dim1_EzHx, GridCoordinate1DTemplate, E_CENTERED, NAME, ARGS1D, ARGS, _NAME(NAME, 1D)) \
   SPECIALIZE_TEMPLATE_FUNC(RET1D, Dim1_EzHy, GridCoordinate1DTemplate, E_CENTERED, NAME, ARGS1D, ARGS, _NAME(NAME, 1D)) \
+  \
+  SPECIALIZE_TEMPLATE_FUNC(RET1D, Dim1_ExHy, GridCoordinate1DTemplate, H_CENTERED, NAME, ARGS1D, ARGS, _NAME(NAME, 1D)) \
+  SPECIALIZE_TEMPLATE_FUNC(RET1D, Dim1_ExHz, GridCoordinate1DTemplate, H_CENTERED, NAME, ARGS1D, ARGS, _NAME(NAME, 1D)) \
+  SPECIALIZE_TEMPLATE_FUNC(RET1D, Dim1_EyHx, GridCoordinate1DTemplate, H_CENTERED, NAME, ARGS1D, ARGS, _NAME(NAME, 1D)) \
+  SPECIALIZE_TEMPLATE_FUNC(RET1D, Dim1_EyHz, GridCoordinate1DTemplate, H_CENTERED, NAME, ARGS1D, ARGS, _NAME(NAME, 1D)) \
+  SPECIALIZE_TEMPLATE_FUNC(RET1D, Dim1_EzHx, GridCoordinate1DTemplate, H_CENTERED, NAME, ARGS1D, ARGS, _NAME(NAME, 1D)) \
+  SPECIALIZE_TEMPLATE_FUNC(RET1D, Dim1_EzHy, GridCoordinate1DTemplate, H_CENTERED, NAME, ARGS1D, ARGS, _NAME(NAME, 1D)) \
+  \
   SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TEx, GridCoordinate2DTemplate, E_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
   SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TEy, GridCoordinate2DTemplate, E_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
   SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TEz, GridCoordinate2DTemplate, E_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
   SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TMx, GridCoordinate2DTemplate, E_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
   SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TMy, GridCoordinate2DTemplate, E_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
   SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TMz, GridCoordinate2DTemplate, E_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
-  SPECIALIZE_TEMPLATE_FUNC(RET3D, Dim3, GridCoordinate3DTemplate, E_CENTERED, NAME, ARGS3D, ARGS, _NAME(NAME, 3D))
+  \
+  SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TEx, GridCoordinate2DTemplate, H_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
+  SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TEy, GridCoordinate2DTemplate, H_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
+  SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TEz, GridCoordinate2DTemplate, H_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
+  SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TMx, GridCoordinate2DTemplate, H_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
+  SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TMy, GridCoordinate2DTemplate, H_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
+  SPECIALIZE_TEMPLATE_FUNC(RET2D, Dim2_TMz, GridCoordinate2DTemplate, H_CENTERED, NAME, ARGS2D, ARGS, _NAME(NAME, 2D)) \
+  \
+  SPECIALIZE_TEMPLATE_FUNC(RET3D, Dim3, GridCoordinate3DTemplate, E_CENTERED, NAME, ARGS3D, ARGS, _NAME(NAME, 3D)) \
+  SPECIALIZE_TEMPLATE_FUNC(RET3D, Dim3, GridCoordinate3DTemplate, H_CENTERED, NAME, ARGS3D, ARGS, _NAME(NAME, 3D))
 
 SPECIALIZE_TEMPLATE(GridCoordinate1D, GridCoordinate2D, GridCoordinate3D,
                     getStartCoordRes,
@@ -53,20 +70,6 @@ SPECIALIZE_TEMPLATE(GridCoordinate1D, GridCoordinate2D, GridCoordinate3D,
                     (OrthogonalAxis orthogonalAxis, GridCoordinate2D end, GridCoordinate2D size),
                     (OrthogonalAxis orthogonalAxis, GridCoordinate3D end, GridCoordinate3D size),
                     (orthogonalAxis, end, size))
-
-SPECIALIZE_TEMPLATE(NPair, NPair, NPair,
-                    ntffN,
-                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF),
-                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF),
-                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *curEz, Grid<GridCoordinate3D> *curHx, Grid<GridCoordinate3D> *curHy, Grid<GridCoordinate3D> *curHz, GridCoordinate3D leftNTFF, GridCoordinate3D rightNTFF),
-                    (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEz, curHx, curHy, curHz)) // TODO: check sourceWaveLengthNumerical here
-
-SPECIALIZE_TEMPLATE(NPair, NPair, NPair,
-                    ntffL,
-                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF),
-                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF),
-                    (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *curEx, Grid<GridCoordinate3D> *curEy, Grid<GridCoordinate3D> *curEz, GridCoordinate3D leftNTFF, GridCoordinate3D rightNTFF),
-                    (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz)) // TODO: check sourceWaveLengthNumerical here
 
 SPECIALIZE_TEMPLATE(bool, bool, bool,
                     doSkipMakeScattered,
@@ -120,6 +123,13 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTempla
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
+}
 #endif /* MODE_EX_HY */
 
 #ifdef MODE_EX_HZ
@@ -128,6 +138,13 @@ void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
 {
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
+};
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
 };
 #endif /* MODE_EX_HZ */
@@ -140,6 +157,13 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTempla
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
+}
 #endif /* MODE_EY_HX */
 
 #ifdef MODE_EY_HZ
@@ -148,6 +172,13 @@ void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
 {
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
+}
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
 }
 #endif /* MODE_EY_HZ */
@@ -160,6 +191,13 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTempla
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
+}
 #endif /* MODE_EZ_HX */
 
 #ifdef MODE_EZ_HY
@@ -168,6 +206,13 @@ void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::initSigmas ()
 {
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
+}
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
 }
 #endif /* MODE_EZ_HY */
@@ -182,6 +227,15 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplat
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
+}
 #endif /* MODE_TEX */
 
 #ifdef MODE_TEY
@@ -192,6 +246,15 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplat
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
+}
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
 #endif /* MODE_TEY */
@@ -206,6 +269,15 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplat
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
+}
 #endif /* MODE_TEZ */
 
 #ifdef MODE_TMX
@@ -216,6 +288,15 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplat
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
+}
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
 #endif /* MODE_TMX */
@@ -230,6 +311,15 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplat
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
+}
 #endif /* MODE_TMY */
 
 #ifdef MODE_TMZ
@@ -240,6 +330,15 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplat
   SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
   SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
+}
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
 }
 #endif /* MODE_TMZ */
@@ -256,6 +355,17 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E
   SchemeHelper::initSigmaZ<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>
     (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>::initSigmas ()
+{
+  SchemeHelper::initSigmaX<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaX ());
+  SchemeHelper::initSigmaY<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaY ());
+  SchemeHelper::initSigmaZ<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>
+    (yeeLayout, intScheme->getGridStep (), intScheme->getSigmaZ ());
+}
 #endif /* MODE_DIM3 */
 
 
@@ -266,6 +376,12 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTempla
 {
   SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), E_CENTERED> (this, tStart, N);
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), H_CENTERED> (this, tStart, N);
+}
 #endif /* MODE_EX_HY */
 
 #ifdef MODE_EX_HZ
@@ -274,6 +390,12 @@ void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
 {
   SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), E_CENTERED> (this, tStart, N);
+}
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), H_CENTERED> (this, tStart, N);
 }
 #endif /* MODE_EX_HZ */
 
@@ -284,6 +406,12 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTempla
 {
   SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), E_CENTERED> (this, tStart, N);
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), H_CENTERED> (this, tStart, N);
+}
 #endif /* MODE_EY_HX */
 
 #ifdef MODE_EY_HZ
@@ -292,6 +420,12 @@ void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
 {
   SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), E_CENTERED> (this, tStart, N);
+}
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), H_CENTERED> (this, tStart, N);
 }
 #endif /* MODE_EY_HZ */
 
@@ -302,6 +436,12 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTempla
 {
   SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), E_CENTERED> (this, tStart, N);
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), H_CENTERED> (this, tStart, N);
+}
 #endif /* MODE_EZ_HX */
 
 #ifdef MODE_EZ_HY
@@ -310,6 +450,12 @@ void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
 {
   SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), E_CENTERED> (this, tStart, N);
+}
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps1D<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), H_CENTERED> (this, tStart, N);
 }
 #endif /* MODE_EZ_HY */
 
@@ -320,6 +466,12 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplat
 {
   SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), E_CENTERED> (this, tStart, N);
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), H_CENTERED> (this, tStart, N);
+}
 #endif /* MODE_TEX */
 
 #ifdef MODE_TEY
@@ -328,6 +480,12 @@ void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
 {
   SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), E_CENTERED> (this, tStart, N);
+}
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), H_CENTERED> (this, tStart, N);
 }
 #endif /* MODE_TEY */
 
@@ -338,6 +496,12 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplat
 {
   SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), E_CENTERED> (this, tStart, N);
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), H_CENTERED> (this, tStart, N);
+}
 #endif /* MODE_TEZ */
 
 #ifdef MODE_TMX
@@ -346,6 +510,12 @@ void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
 {
   SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), E_CENTERED> (this, tStart, N);
+}
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), H_CENTERED> (this, tStart, N);
 }
 #endif /* MODE_TMX */
 
@@ -356,6 +526,12 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplat
 {
   SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), E_CENTERED> (this, tStart, N);
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), H_CENTERED> (this, tStart, N);
+}
 #endif /* MODE_TMY */
 
 #ifdef MODE_TMZ
@@ -365,6 +541,12 @@ Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplat
 {
   SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), E_CENTERED> (this, tStart, N);
 }
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps2D<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), H_CENTERED> (this, tStart, N);
+}
 #endif /* MODE_TMZ */
 
 #ifdef MODE_DIM3
@@ -373,5 +555,365 @@ void
 Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::performNSteps (time_step tStart, time_step N)
 {
   SchemeHelper::performNSteps3D<static_cast<SchemeType_t> (SchemeType::Dim3), E_CENTERED> (this, tStart, N);
+}
+template <>
+void
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>::performNSteps (time_step tStart, time_step N)
+{
+  SchemeHelper::performNSteps3D<static_cast<SchemeType_t> (SchemeType::Dim3), H_CENTERED> (this, tStart, N);
+}
+#endif /* MODE_DIM3 */
+
+/*
+ * NTFF
+ */
+#ifdef MODE_EX_HY
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHy), GridCoordinate1DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_EX_HY */
+
+#ifdef MODE_EX_HZ
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_ExHz), GridCoordinate1DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_EX_HZ */
+
+#ifdef MODE_EY_HX
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHx), GridCoordinate1DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_EY_HX */
+
+#ifdef MODE_EY_HZ
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EyHz), GridCoordinate1DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_EY_HZ */
+
+#ifdef MODE_EZ_HX
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHx), GridCoordinate1DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_EZ_HX */
+
+#ifdef MODE_EZ_HY
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffN1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim1_EzHy), GridCoordinate1DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate1D> *curEx, Grid<GridCoordinate1D> *curEy, Grid<GridCoordinate1D> *curEz, Grid<GridCoordinate1D> *curHx, Grid<GridCoordinate1D> *curHy, Grid<GridCoordinate1D> *curHz, GridCoordinate1D leftNTFF, GridCoordinate1D rightNTFF)
+{
+  return SchemeHelper::ntffL1D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_EZ_HY */
+
+#ifdef MODE_TEX
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEx), GridCoordinate2DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_TEX */
+
+#ifdef MODE_TEY
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEy), GridCoordinate2DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_TEY */
+
+#ifdef MODE_TEZ
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TEz), GridCoordinate2DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_TEZ */
+
+#ifdef MODE_TMX
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMx), GridCoordinate2DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_TMX */
+
+#ifdef MODE_TMY
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMy), GridCoordinate2DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_TMY */
+
+#ifdef MODE_TMZ
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffN2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim2_TMz), GridCoordinate2DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate2D> *curEx, Grid<GridCoordinate2D> *curEy, Grid<GridCoordinate2D> *curEz, Grid<GridCoordinate2D> *curHx, Grid<GridCoordinate2D> *curHy, Grid<GridCoordinate2D> *curHz, GridCoordinate2D leftNTFF, GridCoordinate2D rightNTFF)
+{
+  return SchemeHelper::ntffL2D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+#endif /* MODE_TMZ */
+
+#ifdef MODE_DIM3
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *curEx, Grid<GridCoordinate3D> *curEy, Grid<GridCoordinate3D> *curEz, Grid<GridCoordinate3D> *curHx, Grid<GridCoordinate3D> *curHy, Grid<GridCoordinate3D> *curHz, GridCoordinate3D leftNTFF, GridCoordinate3D rightNTFF)
+{
+  return SchemeHelper::ntffN3D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>::ntffN (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *curEx, Grid<GridCoordinate3D> *curEy, Grid<GridCoordinate3D> *curEz, Grid<GridCoordinate3D> *curHx, Grid<GridCoordinate3D> *curHy, Grid<GridCoordinate3D> *curHz, GridCoordinate3D leftNTFF, GridCoordinate3D rightNTFF)
+{
+  return SchemeHelper::ntffN3D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, E_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *curEx, Grid<GridCoordinate3D> *curEy, Grid<GridCoordinate3D> *curEz, Grid<GridCoordinate3D> *curHx, Grid<GridCoordinate3D> *curHy, Grid<GridCoordinate3D> *curHz, GridCoordinate3D leftNTFF, GridCoordinate3D rightNTFF)
+{
+  return SchemeHelper::ntffL3D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
+}
+template <>
+NPair
+Scheme<static_cast<SchemeType_t> (SchemeType::Dim3), GridCoordinate3DTemplate, H_CENTERED>::ntffL (FPValue angleTeta, FPValue anglePhi, Grid<GridCoordinate3D> *curEx, Grid<GridCoordinate3D> *curEy, Grid<GridCoordinate3D> *curEz, Grid<GridCoordinate3D> *curHx, Grid<GridCoordinate3D> *curHy, Grid<GridCoordinate3D> *curHz, GridCoordinate3D leftNTFF, GridCoordinate3D rightNTFF)
+{
+  return SchemeHelper::ntffL3D (angleTeta, anglePhi, leftNTFF, rightNTFF, yeeLayout, intScheme->getGridStep (), intScheme->getSourceWaveLength (), curEx, curEy, curEz, curHx, curHy, curHz);
 }
 #endif /* MODE_DIM3 */
