@@ -183,7 +183,15 @@ public:
 
     if (SOLVER_SETTINGS.getDoSaveRes ())
     {
-      gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
+      if (!SOLVER_SETTINGS.getDoSaveResPerProcess ())
+      {
+        gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
+      }
+      else
+      {
+        ASSERT (!SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
+      }
+
       saveGrids (totalTimeSteps);
     }
 
