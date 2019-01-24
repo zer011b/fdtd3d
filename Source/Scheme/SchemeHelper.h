@@ -67,7 +67,15 @@ public:
     if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
     {
-      scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      if (!SOLVER_SETTINGS.getDoSaveResPerProcess ())
+      {
+        scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      }
+      else
+      {
+        ASSERT (!SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
+      }
+
       scheme->saveGrids (tStart + N);
     }
   }
@@ -104,7 +112,15 @@ public:
     if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
     {
-      scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      if (!SOLVER_SETTINGS.getDoSaveResPerProcess ())
+      {
+        scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      }
+      else
+      {
+        ASSERT (!SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
+      }
+
       scheme->saveGrids (tStart + N);
     }
   }
@@ -144,7 +160,15 @@ public:
     if (SOLVER_SETTINGS.getDoSaveIntermediateRes ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateSaveStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateSaveStep ()))
     {
-      scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      if (!SOLVER_SETTINGS.getDoSaveResPerProcess ())
+      {
+        scheme->gatherFieldsTotal (SOLVER_SETTINGS.getDoSaveScatteredFieldIntermediate ());
+      }
+      else
+      {
+        ASSERT (!SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
+      }
+
       scheme->saveGrids (tStart + N);
     }
   }
