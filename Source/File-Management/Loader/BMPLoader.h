@@ -23,7 +23,7 @@ private:
   void loadFromFile (Grid<TCoord> *grid, TCoord, TCoord, int);
 
   void loadGridInternal (Grid<TCoord> *grid, TCoord, TCoord, time_step, int);
-  
+
   void setupNames (std::string &, std::string &, std::string &,
                    std::string &, std::string &, std::string &, int, int) const;
 
@@ -68,7 +68,7 @@ BMPLoader<TCoord>::setupNames (std::string &real, std::string &realtxt,
     imag += std::string ("_[coord=") + int64_to_string (coord) + std::string ("]");
     mod += std::string ("_[coord=") + int64_to_string (coord) + std::string ("]");
   }
-  
+
   realtxt = real + std::string (".txt");
   imagtxt = imag + std::string (".txt");
   modtxt = mod + std::string (".txt");
@@ -88,9 +88,9 @@ BMPLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoo
                                      time_step timeStep, int time_step_back)
 {
   const TCoord& size = grid->getSize ();
-  
+
   if (time_step_back == -1)
-  {  
+  {
     std::cout << "Loading grid '" << grid->getName () << "' from BMP image. Time step: all"
               << ". Size: " << size.calculateTotalCoord () << " (from startCoord to endCoord). " << std::endl;
   }
@@ -99,7 +99,7 @@ BMPLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoo
     std::cout << "Loading grid '" << grid->getName () << "' from BMP image. Time step: " << time_step_back
               << ". Size: " << size.calculateTotalCoord () << " (from startCoord to endCoord). " << std::endl;
   }
-  
+
   if (time_step_back == -1)
   {
     /**
@@ -127,16 +127,16 @@ BMPLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCo
                              time_step timeStep, int time_step_back)
 {
   int pid = 0;
-  
+
 #ifdef PARALLEL_GRID
   if (SOLVER_SETTINGS.getDoUseParallelGrid ())
   {
-    int pid = ParallelGrid::getParallelCore ()->getProcessId ();
+    pid = ParallelGrid::getParallelCore ()->getProcessId ();
   }
 #endif /* PARALLEL_GRID */
 
   GridFileManager::setFileNames (grid->getCountStoredSteps (), timeStep, pid, std::string (grid->getName ()), FILE_TYPE_BMP);
-  
+
   loadGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
 }
 
@@ -150,7 +150,7 @@ BMPLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCo
                              const std::vector< std::string > & customNames)
 {
   GridFileManager::setCustomFileNames (customNames);
-  
+
   loadGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
 }
 

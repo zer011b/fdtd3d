@@ -15,7 +15,7 @@ class DATLoader: public Loader<TCoord>
 {
   // Load grid from file for specific layer.
   void loadFromFile (Grid<TCoord> *grid, TCoord, TCoord, int);
-  
+
   void loadGridInternal (Grid<TCoord> *grid, TCoord, TCoord, time_step, int);
 
 public:
@@ -64,7 +64,7 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid,
     {
       continue;
     }
-    
+
     if (time_step_back == -1)
     {
       for (int i = 0; i < grid->getCountStoredSteps (); ++i)
@@ -96,9 +96,9 @@ DATLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoo
                                      time_step timeStep, int time_step_back)
 {
   const TCoord& size = grid->getSize ();
-  
+
   if (time_step_back == -1)
-  {  
+  {
     std::cout << "Loading grid '" << grid->getName () << "' from binary. Time step: all"
               << ". Size: " << size.calculateTotalCoord () << " (from startCoord to endCoord). " << std::endl;
   }
@@ -107,7 +107,7 @@ DATLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoo
     std::cout << "Loading grid '" << grid->getName () << "' from binary. Time step: " << time_step_back
               << ". Size: " << size.calculateTotalCoord () << " (from startCoord to endCoord). " << std::endl;
   }
-  
+
   loadFromFile (grid, startCoord, endCoord, time_step_back);
 
   std::cout << "Loaded. " << std::endl;
@@ -122,16 +122,16 @@ DATLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCo
                              time_step timeStep, int time_step_back)
 {
   int pid = 0;
-  
+
 #ifdef PARALLEL_GRID
   if (SOLVER_SETTINGS.getDoUseParallelGrid ())
   {
-    int pid = ParallelGrid::getParallelCore ()->getProcessId ();
+    pid = ParallelGrid::getParallelCore ()->getProcessId ();
   }
 #endif /* PARALLEL_GRID */
 
   GridFileManager::setFileNames (time_step_back, timeStep, pid, std::string (grid->getName ()), FILE_TYPE_DAT);
-  
+
   loadGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
 }
 
@@ -145,7 +145,7 @@ DATLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCo
                              const std::vector< std::string > & customNames)
 {
   GridFileManager::setCustomFileNames (customNames);
-  
+
   loadGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
 }
 

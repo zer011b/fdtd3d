@@ -15,11 +15,11 @@ class TXTDumper: public Dumper<TCoord>
 {
   // Save grid to file for specific layer.
   void writeToFile (Grid<TCoord> *grid, TCoord, TCoord, int);
-  
+
   void dumpGridInternal (Grid<TCoord> *grid, TCoord, TCoord, time_step, int);
 
 public:
-  
+
   virtual ~TXTDumper () {}
 
   // Virtual method for grid saving.
@@ -38,9 +38,9 @@ TXTDumper<TCoord>::dumpGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoo
                                      time_step timeStep, int time_step_back)
 {
   const TCoord& size = grid->getSize ();
-  
+
   if (time_step_back == -1)
-  {  
+  {
     std::cout << "Saving grid '" << grid->getName () << "' to text. Time step: all"
               << ". Size: " << size.calculateTotalCoord () << " (from startCoord to endCoord). " << std::endl;
   }
@@ -49,7 +49,7 @@ TXTDumper<TCoord>::dumpGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoo
     std::cout << "Saving grid '" << grid->getName () << "' to text. Time step: " << time_step_back
               << ". Size: " << size.calculateTotalCoord () << " (from startCoord to endCoord). " << std::endl;
   }
-  
+
   if (time_step_back == -1)
   {
     /**
@@ -77,16 +77,16 @@ TXTDumper<TCoord>::dumpGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCo
                              time_step timeStep, int time_step_back)
 {
   int pid = 0;
-  
+
 #ifdef PARALLEL_GRID
   if (SOLVER_SETTINGS.getDoUseParallelGrid ())
   {
-    int pid = ParallelGrid::getParallelCore ()->getProcessId ();
+    pid = ParallelGrid::getParallelCore ()->getProcessId ();
   }
 #endif /* PARALLEL_GRID */
 
   GridFileManager::setFileNames (grid->getCountStoredSteps (), timeStep, pid, std::string (grid->getName ()), FILE_TYPE_TXT);
-  
+
   dumpGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
 }
 
@@ -100,7 +100,7 @@ TXTDumper<TCoord>::dumpGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCo
                              const std::vector< std::string > & customNames)
 {
   GridFileManager::setCustomFileNames (customNames);
-  
+
   dumpGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
 }
 
