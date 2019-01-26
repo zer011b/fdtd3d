@@ -37,6 +37,8 @@ include_directories ("${PROJECT_SOURCE_DIR}/Source/Scheme")
 add_subdirectory (Scheme)
 set (LIBS ${LIBS} InternalScheme Scheme)
 
+add_subdirectory (Tools)
+
 if ("${CUDA_ENABLED}")
   add_executable (fdtd3d main.cu)
   set_target_properties (fdtd3d PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
