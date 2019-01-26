@@ -3149,15 +3149,15 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
           }
         }
 
-        dumper[type]->dumpGrid (totalEps, startEps, endEps, 0, 0);
-        dumper[type]->dumpGrid (totalMu, startMu, endMu, 0, 0);
+        dumper[type]->dumpGrid (totalEps, startEps, endEps, 0, 0, processId);
+        dumper[type]->dumpGrid (totalMu, startMu, endMu, 0, 0, processId);
 
         if (SOLVER_SETTINGS.getDoUseMetamaterials ())
         {
-          dumper[type]->dumpGrid (totalOmegaPE, startOmegaPE, endOmegaPE, 0, 0);
-          dumper[type]->dumpGrid (totalOmegaPM, startOmegaPM, endOmegaPM, 0, 0);
-          dumper[type]->dumpGrid (totalGammaE, startGammaE, endGammaE, 0, 0);
-          dumper[type]->dumpGrid (totalGammaM, startGammaM, endGammaM, 0, 0);
+          dumper[type]->dumpGrid (totalOmegaPE, startOmegaPE, endOmegaPE, 0, 0, processId);
+          dumper[type]->dumpGrid (totalOmegaPM, startOmegaPM, endOmegaPM, 0, 0, processId);
+          dumper[type]->dumpGrid (totalGammaE, startGammaE, endGammaE, 0, 0, processId);
+          dumper[type]->dumpGrid (totalGammaM, startGammaM, endGammaM, 0, 0, processId);
         }
         //
         // if (SOLVER_SETTINGS.getDoUsePML ())
@@ -4330,11 +4330,11 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getEx (), zero, intScheme->getEx ()->getSize (), t, currentLayer);
+        dumper[type]->dumpGrid (intScheme->getEx (), zero, intScheme->getEx ()->getSize (), t, currentLayer, processId);
       }
       else if (processId == 0)
       {
-        dumper[type]->dumpGrid (totalEx, startEx, endEx, t, currentLayer);
+        dumper[type]->dumpGrid (totalEx, startEx, endEx, t, currentLayer, processId);
       }
     }
 
@@ -4342,11 +4342,11 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getEy (), zero, intScheme->getEy ()->getSize (), t, currentLayer);
+        dumper[type]->dumpGrid (intScheme->getEy (), zero, intScheme->getEy ()->getSize (), t, currentLayer, processId);
       }
       else if (processId == 0)
       {
-        dumper[type]->dumpGrid (totalEy, startEy, endEy, t, currentLayer);
+        dumper[type]->dumpGrid (totalEy, startEy, endEy, t, currentLayer, processId);
       }
     }
 
@@ -4354,11 +4354,11 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getEz (), zero, intScheme->getEz ()->getSize (), t, currentLayer);
+        dumper[type]->dumpGrid (intScheme->getEz (), zero, intScheme->getEz ()->getSize (), t, currentLayer, processId);
       }
       else if (processId == 0)
       {
-        dumper[type]->dumpGrid (totalEz, startEz, endEz, t, currentLayer);
+        dumper[type]->dumpGrid (totalEz, startEz, endEz, t, currentLayer, processId);
       }
     }
 
@@ -4366,11 +4366,11 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getHx (), zero, intScheme->getHx ()->getSize (), t, currentLayer);
+        dumper[type]->dumpGrid (intScheme->getHx (), zero, intScheme->getHx ()->getSize (), t, currentLayer, processId);
       }
       else if (processId == 0)
       {
-        dumper[type]->dumpGrid (totalHx, startHx, endHx, t, currentLayer);
+        dumper[type]->dumpGrid (totalHx, startHx, endHx, t, currentLayer, processId);
       }
     }
 
@@ -4378,11 +4378,11 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getHy (), zero, intScheme->getHy ()->getSize (), t, currentLayer);
+        dumper[type]->dumpGrid (intScheme->getHy (), zero, intScheme->getHy ()->getSize (), t, currentLayer, processId);
       }
       else if (processId == 0)
       {
-        dumper[type]->dumpGrid (totalHy, startHy, endHy, t, currentLayer);
+        dumper[type]->dumpGrid (totalHy, startHy, endHy, t, currentLayer, processId);
       }
     }
 
@@ -4390,11 +4390,11 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
     {
       if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
       {
-        dumper[type]->dumpGrid (intScheme->getHz (), zero, intScheme->getHz ()->getSize (), t, currentLayer);
+        dumper[type]->dumpGrid (intScheme->getHz (), zero, intScheme->getHz ()->getSize (), t, currentLayer, processId);
       }
       else if (processId == 0)
       {
-        dumper[type]->dumpGrid (totalHz, startHz, endHz, t, currentLayer);
+        dumper[type]->dumpGrid (totalHz, startHz, endHz, t, currentLayer, processId);
       }
     }
 
@@ -4405,7 +4405,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
         continue;
       }
 
-      dumper1D[type]->dumpGrid (intScheme->getEInc (), GRID_COORDINATE_1D (0, CoordinateType::X), intScheme->getEInc ()->getSize (), t, currentLayer);
+      dumper1D[type]->dumpGrid (intScheme->getEInc (), GRID_COORDINATE_1D (0, CoordinateType::X), intScheme->getEInc ()->getSize (), t, currentLayer, processId);
     }
 
     if (SOLVER_SETTINGS.getDoSaveTFSFHInc ())
@@ -4415,7 +4415,7 @@ Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
         continue;
       }
 
-      dumper1D[type]->dumpGrid (intScheme->getHInc (), GRID_COORDINATE_1D (0, CoordinateType::X), intScheme->getHInc ()->getSize (), t, currentLayer);
+      dumper1D[type]->dumpGrid (intScheme->getHInc (), GRID_COORDINATE_1D (0, CoordinateType::X), intScheme->getHInc ()->getSize (), t, currentLayer, processId);
     }
   }
 }

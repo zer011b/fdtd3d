@@ -20,7 +20,7 @@ public:
   virtual ~Loader () {}
 
   // Pure virtual method for grid loading.
-  virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int) = 0;
+  virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int, int) = 0;
   virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int, const std::vector< std::string > &) = 0;
 };
 

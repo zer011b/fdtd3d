@@ -23,7 +23,7 @@ public:
   virtual ~DATLoader () {}
 
   // Virtual method for grid loading.
-  virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int) CXX11_OVERRIDE;
+  virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int, int) CXX11_OVERRIDE;
   virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int,
                          const std::vector< std::string > &) CXX11_OVERRIDE;
 };
@@ -119,17 +119,8 @@ DATLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoo
 template <class TCoord>
 void
 DATLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
-                             time_step timeStep, int time_step_back)
+                             time_step timeStep, int time_step_back, int pid)
 {
-  int pid = 0;
-
-#ifdef PARALLEL_GRID
-  if (SOLVER_SETTINGS.getDoUseParallelGrid ())
-  {
-    pid = ParallelGrid::getParallelCore ()->getProcessId ();
-  }
-#endif /* PARALLEL_GRID */
-
   GridFileManager::setFileNames (time_step_back, timeStep, pid, std::string (grid->getName ()), FILE_TYPE_DAT);
 
   loadGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
