@@ -23,7 +23,7 @@ public:
   virtual ~TXTDumper () {}
 
   // Virtual method for grid saving.
-  virtual void dumpGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int) CXX11_OVERRIDE;
+  virtual void dumpGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int, int) CXX11_OVERRIDE;
   virtual void dumpGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int,
                          const std::vector< std::string > &) CXX11_OVERRIDE;
 };
@@ -74,17 +74,8 @@ TXTDumper<TCoord>::dumpGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoo
 template <class TCoord>
 void
 TXTDumper<TCoord>::dumpGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
-                             time_step timeStep, int time_step_back)
+                             time_step timeStep, int time_step_back, int pid)
 {
-  int pid = 0;
-
-#ifdef PARALLEL_GRID
-  if (SOLVER_SETTINGS.getDoUseParallelGrid ())
-  {
-    pid = ParallelGrid::getParallelCore ()->getProcessId ();
-  }
-#endif /* PARALLEL_GRID */
-
   GridFileManager::setFileNames (grid->getCountStoredSteps (), timeStep, pid, std::string (grid->getName ()), FILE_TYPE_TXT);
 
   dumpGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
