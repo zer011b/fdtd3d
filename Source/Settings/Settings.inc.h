@@ -309,6 +309,19 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceHy, getDoUsePointSourceHy, bool, f
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceHz, getDoUsePointSourceHz, bool, false, "--point-source-hz", "Point source Hz")
 
 /*
+ * Current source
+ */
+SETTINGS_ELEM_FIELD_TYPE_INT(currentSourcePositionX, getCurrentSourcePositionX, grid_coord, 0, "--current-source-pos-x", "Current source position by Ox axis")
+SETTINGS_ELEM_FIELD_TYPE_INT(currentSourcePositionY, getCurrentSourcePositionY, grid_coord, 0, "--current-source-pos-y", "Current source position by Oy axis")
+SETTINGS_ELEM_FIELD_TYPE_INT(currentSourcePositionZ, getCurrentSourcePositionZ, grid_coord, 0, "--current-source-pos-z", "Current source position by Oz axis")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCurrentSourceJx, getDoUseCurrentSourceJx, bool, false, "--current-source-jx", "Current source Jx")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCurrentSourceJy, getDoUseCurrentSourceJy, bool, false, "--current-source-jy", "Current source Jy")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCurrentSourceJz, getDoUseCurrentSourceJz, bool, false, "--current-source-jz", "Current source Jz")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCurrentSourceMx, getDoUseCurrentSourceMx, bool, false, "--current-source-mx", "Current source Mx")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCurrentSourceMy, getDoUseCurrentSourceMy, bool, false, "--current-source-my", "Current source My")
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCurrentSourceMz, getDoUseCurrentSourceMz, bool, false, "--current-source-mz", "Current source Mz")
+
+/*
  * Dynamic grid
  */
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseDynamicGrid, getDoUseDynamicGrid, bool, false, "--dynamic-grid", "Use dynamic grid (if fdtd3d is built with it)")
