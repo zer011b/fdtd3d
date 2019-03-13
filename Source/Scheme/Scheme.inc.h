@@ -965,45 +965,41 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
      * i.e. exactly on the same time step as opposite fields.
      */
     FPValue timestep;
-
-    if (rightSideFunc != NULLPTR)
+    switch (grid_type)
     {
-      switch (grid_type)
+      case (static_cast<uint8_t> (GridType::EX)):
       {
-        case (static_cast<uint8_t> (GridType::EX)):
-        {
-          timestep = t;
-          break;
-        }
-        case (static_cast<uint8_t> (GridType::EY)):
-        {
-          timestep = t;
-          break;
-        }
-        case (static_cast<uint8_t> (GridType::EZ)):
-        {
-          timestep = t;
-          break;
-        }
-        case (static_cast<uint8_t> (GridType::HX)):
-        {
-          timestep = t + 0.5;
-          break;
-        }
-        case (static_cast<uint8_t> (GridType::HY)):
-        {
-          timestep = t + 0.5;
-          break;
-        }
-        case (static_cast<uint8_t> (GridType::HZ)):
-        {
-          timestep = t + 0.5;
-          break;
-        }
-        default:
-        {
-          UNREACHABLE;
-        }
+        timestep = t;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EY)):
+      {
+        timestep = t;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EZ)):
+      {
+        timestep = t;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HX)):
+      {
+        timestep = t + 0.5;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HY)):
+      {
+        timestep = t + 0.5;
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HZ)):
+      {
+        timestep = t + 0.5;
+        break;
+      }
+      default:
+      {
+        UNREACHABLE;
       }
     }
 
@@ -1023,6 +1019,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
         gridType, d_materialGrid, materialGridType,
         materialModifier,
         SOLVER_SETTINGS.getDoUseCaCbGrids ());
+
+    // TODO: support current sources on GPU
 
 #else /* CUDA_ENABLED */
 
@@ -1104,6 +1102,88 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       }
     }
 #endif
+
+    bool doComputeCurrentSource = false;
+    switch (grid_type)
+    {
+      case (static_cast<uint8_t> (GridType::EX)):
+      {
+        if (SOLVER_SETTINGS.getDoUseCurrentSourceJx ())
+        {
+          doComputeCurrentSource = true;
+        }
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EY)):
+      {
+        if (SOLVER_SETTINGS.getDoUseCurrentSourceJy ())
+        {
+          doComputeCurrentSource = true;
+        }
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::EZ)):
+      {
+        if (SOLVER_SETTINGS.getDoUseCurrentSourceJz ())
+        {
+          doComputeCurrentSource = true;
+        }
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HX)):
+      {
+        if (SOLVER_SETTINGS.getDoUseCurrentSourceMx ())
+        {
+          doComputeCurrentSource = true;
+        }
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HY)):
+      {
+        if (SOLVER_SETTINGS.getDoUseCurrentSourceMy ())
+        {
+          doComputeCurrentSource = true;
+        }
+        break;
+      }
+      case (static_cast<uint8_t> (GridType::HZ)):
+      {
+        if (SOLVER_SETTINGS.getDoUseCurrentSourceMz ())
+        {
+          doComputeCurrentSource = true;
+        }
+        break;
+      }
+      default:
+      {
+        UNREACHABLE;
+      }
+    }
+
+    if (doComputeCurrentSource)
+    {
+      FieldValue current = FIELDVALUE (0, 0);
+
+#ifdef COMPLEX_FIELD_VALUES
+      current = FieldValue (sin (intScheme->getGridTimeStep () * timestep * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ()),
+                            cos (intScheme->getGridTimeStep () * timestep * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ()));
+#else /* COMPLEX_FIELD_VALUES */
+      current = sin (intScheme->getGridTimeStep () * timestep * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ());
+#endif /* !COMPLEX_FIELD_VALUES */
+
+#ifdef CUDA_ENABLED
+
+#else
+      if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+      {
+        intScheme->template calculateFieldStepIterationCurrent<grid_type, true> (current, grid, Ca, Cb, usePML, gridType, materialGrid, materialGridType, materialModifier);
+      }
+      else
+      {
+        intScheme->template calculateFieldStepIterationCurrent<grid_type, false> (current, grid, Ca, Cb, usePML, gridType, materialGrid, materialGridType, materialModifier);
+      }
+#endif
+    }
 
     if (usePML)
     {

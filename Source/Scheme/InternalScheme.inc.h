@@ -119,6 +119,45 @@ namespace InternalSchemeKernelHelpers
     }
   }
 
+  /**
+   * GPU kernel.
+   *
+   * Perform calculateFieldStepIteration for specific thread in block. Thread corresponds 1 to 1 to grid point.
+   */
+  template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, uint8_t grid_type>
+  __global__
+  void calculateFieldStepIterationCurrentKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme, /**< GPU internal scheme */
+                                                 FieldValue current, /**< value of current (J,M) */
+                                                 IGRID< TCoord<grid_coord, true> > *grid, /**< core grid to perform computations for */
+                                                 IGRID< TCoord<grid_coord, true> > *Ca, /**< grid with precomputed values */
+                                                 IGRID< TCoord<grid_coord, true> > *Cb, /**< grid with precomputed values */
+                                                 bool usePML, /**< flag whether to use PML */
+                                                 GridType gridType, /**< type of core grid */
+                                                 IGRID< TCoord<grid_coord, true> > *materialGrid, /**< material grid */
+                                                 GridType materialGridType, /**< type of material */
+                                                 FPValue materialModifier, /**< additional multiplier for material */
+                                                 bool usePrecomputedGrids) /**< flag whether to use precomputed values */
+  {
+    ASSERT (blockIdx.x == 0 && blockDim.x == 1 && threadIdx.x == 0);
+
+    if (usePrecomputedGrids)
+    {
+      gpuScheme->calculateFieldStepIterationCurrent<grid_type, true> (current
+                                                                      grid, Ca, Cb,
+                                                                      usePML,
+                                                                      gridType, materialGrid, materialGridType,
+                                                                      materialModifier);
+    }
+    else
+    {
+      gpuScheme->calculateFieldStepIterationCurrent<grid_type, false> (current
+                                                                      grid, Ca, Cb,
+                                                                      usePML,
+                                                                      gridType, materialGrid, materialGridType,
+                                                                      materialModifier);
+    }
+  }
+
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
   __global__
   void calculateFieldStepIterationPMLMetamaterialsKernel (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme,
@@ -716,6 +755,12 @@ private:
 
 public:
 
+  ICUDA_DEVICE
+  FieldValue calcCurrent (const FieldValue & current, const FieldValue & Cb, const FPValue & delta)
+  {
+    return current * delta * Cb;
+  }
+
   ICUDA_HOST
   INTERNAL_SCHEME_BASE ();
 
@@ -727,6 +772,11 @@ public:
   void calculateFieldStepIteration (FPValue, TC, TC, TCS, TCS, TCS, TCS, IGRID<TC> *, TCFP,
                                     IGRID<TC> *, IGRID<TC> *, SourceCallBack, IGRID<TC> *, IGRID<TC> *, bool,
                                     GridType, IGRID<TC> *, GridType, FPValue);
+
+  template <uint8_t grid_type, bool usePrecomputedGrids>
+  ICUDA_DEVICE
+  void calculateFieldStepIterationCurrent (FieldValue, IGRID<TC> *, IGRID<TC> *, IGRID<TC> *,
+                                           bool, GridType, IGRID<TC> *, GridType, FPValue);
 
   template <uint8_t grid_type, bool usePML, bool useMetamaterials>
   ICUDA_HOST
@@ -766,6 +816,12 @@ public:
   template<uint8_t EnumVal>
   ICUDA_DEVICE
   void performPointSourceCalc (time_step);
+
+  template <bool usePrecomputedGrids>
+  ICUDA_DEVICE
+  void computeCaCb (FieldValue &, FieldValue &, TC, TC,
+                    IGRID<TC> *, IGRID<TC> *, bool,
+                    GridType, IGRID<TC> *, GridType, FPValue);
 
 #ifdef GPU_INTERNAL_SCHEME
   ICUDA_HOST void initFromCPU (InternalScheme<Type, TCoord, layout_type> *cpuScheme, TC, TC);
@@ -839,6 +895,28 @@ public:
     SETUP_BLOCKS_AND_THREADS;
     InternalSchemeKernelHelpers::calculateFieldStepIterationKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
       (d_gpuScheme, start3D, end3D, timestep, diff11, diff12, diff21, diff22, grid, oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb, ct1, ct2, ct3,
+       usePML, gridType, materialGrid, materialGridType, materialModifier, usePrecomputedGrids);
+    cudaCheckError ();
+  }
+
+  template <uint8_t grid_type>
+  CUDA_HOST
+  void calculateFieldStepIterationCurrentKernelLaunch (InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuScheme,
+                                                       FieldValue current,
+                                                       IGRID<TC> *grid,
+                                                       IGRID<TC> *Ca,
+                                                       IGRID<TC> *Cb,
+                                                       bool usePML,
+                                                       GridType gridType,
+                                                       IGRID<TC> *materialGrid,
+                                                       GridType materialGridType,
+                                                       FPValue materialModifier,
+                                                       bool usePrecomputedGrids)
+  {
+    dim3 blocks (1, 1, 1);
+    dim3 threads (1, 1, 1);
+    InternalSchemeKernelHelpers::calculateFieldStepIterationCurrentKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
+      (d_gpuScheme, current, grid, Ca, Cb,
        usePML, gridType, materialGrid, materialGridType, materialModifier, usePrecomputedGrids);
     cudaCheckError ();
   }
@@ -2183,41 +2261,26 @@ SourceCallBack *rightSideFunc, SourceCallBack *borderFunc, SourceCallBack *exact
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-template<uint8_t grid_type, bool usePrecomputedGrids>
+template<bool usePrecomputedGrids>
 ICUDA_DEVICE
 void
-INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (FPValue timestep,
-                                                                             TC pos,
-                                                                             TC posAbs,
-                                                                             TCS diff11,
-                                                                             TCS diff12,
-                                                                             TCS diff21,
-                                                                             TCS diff22,
-                                                                             IGRID<TC> *grid,
-                                                                             TCFP coordFP,
-                                                                             IGRID<TC> *oppositeGrid1,
-                                                                             IGRID<TC> *oppositeGrid2,
-                                                                             SourceCallBack rightSideFunc,
-                                                                             IGRID<TC> *Ca,
-                                                                             IGRID<TC> *Cb,
-                                                                             bool usePML,
-                                                                             GridType gridType,
-                                                                             IGRID<TC> *materialGrid,
-                                                                             GridType materialGridType,
-                                                                             FPValue materialModifier)
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::computeCaCb (FieldValue &valCa,
+                                                              FieldValue &valCb,
+                                                              TC pos,
+                                                              TC posAbs,
+                                                              IGRID<TC> *Ca,
+                                                              IGRID<TC> *Cb,
+                                                              bool usePML,
+                                                              GridType gridType,
+                                                              IGRID<TC> *materialGrid,
+                                                              GridType materialGridType,
+                                                              FPValue materialModifier)
 {
-  // TODO: [possible] move 1D gridValues to 3D gridValues array
-  ASSERT (grid != NULLPTR);
-  grid_coord coord = grid->calculateIndexFromPosition (pos);
-  FieldValue val = *grid->getFieldValue (coord, 1);
-
-  FieldValue valCa = FIELDVALUE (0, 0);
-  FieldValue valCb = FIELDVALUE (0, 0);
-
   if (usePrecomputedGrids)
   {
     ASSERT (Ca != NULLPTR);
     ASSERT (Cb != NULLPTR);
+
     valCa = *Ca->getFieldValue (pos, 0);
     valCb = *Cb->getFieldValue (pos, 0);
   }
@@ -2249,6 +2312,41 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (FP
     valCa = FIELDVALUE (ca, 0);
     valCb = FIELDVALUE (cb, 0);
   }
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template<uint8_t grid_type, bool usePrecomputedGrids>
+ICUDA_DEVICE
+void
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (FPValue timestep,
+                                                                             TC pos,
+                                                                             TC posAbs,
+                                                                             TCS diff11,
+                                                                             TCS diff12,
+                                                                             TCS diff21,
+                                                                             TCS diff22,
+                                                                             IGRID<TC> *grid,
+                                                                             TCFP coordFP,
+                                                                             IGRID<TC> *oppositeGrid1,
+                                                                             IGRID<TC> *oppositeGrid2,
+                                                                             SourceCallBack rightSideFunc,
+                                                                             IGRID<TC> *Ca,
+                                                                             IGRID<TC> *Cb,
+                                                                             bool usePML,
+                                                                             GridType gridType,
+                                                                             IGRID<TC> *materialGrid,
+                                                                             GridType materialGridType,
+                                                                             FPValue materialModifier)
+{
+  // TODO: [possible] move 1D gridValues to 3D gridValues array
+  ASSERT (grid != NULLPTR);
+  grid_coord coord = grid->calculateIndexFromPosition (pos);
+  FieldValue val = *grid->getFieldValue (coord, 1);
+
+  FieldValue valCa = FIELDVALUE (0, 0);
+  FieldValue valCb = FIELDVALUE (0, 0);
+
+  computeCaCb<usePrecomputedGrids> (valCa, valCb, pos, posAbs, Ca, Cb, usePML, gridType, materialGrid, materialGridType, materialModifier);
 
   ASSERT (valCa != FIELDVALUE (0, 0));
   ASSERT (valCb != FIELDVALUE (0, 0));
@@ -2284,6 +2382,39 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (FP
 
   FieldValue valNew = calcField (val, prev12, prev11, prev22, prev21, prevRightSide, valCa, valCb, gridStep);
   grid->setFieldValue (valNew, coord, 0);
+}
+
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+template<uint8_t grid_type, bool usePrecomputedGrids>
+ICUDA_DEVICE
+void
+INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationCurrent (FieldValue current,
+                                                                             IGRID<TC> *grid,
+                                                                             IGRID<TC> *Ca,
+                                                                             IGRID<TC> *Cb,
+                                                                             bool usePML,
+                                                                             GridType gridType,
+                                                                             IGRID<TC> *materialGrid,
+                                                                             GridType materialGridType,
+                                                                             FPValue materialModifier)
+{
+  TC pos = TC::initAxesCoordinate (SOLVER_SETTINGS.getCurrentSourcePositionX (),
+                                   SOLVER_SETTINGS.getCurrentSourcePositionY (),
+                                   SOLVER_SETTINGS.getCurrentSourcePositionZ (),
+                                   ct1, ct2, ct3);
+  TC posAbs = grid->getTotalPosition (pos);
+
+  FieldValue* pointVal = grid->getFieldValueOrNullByAbsolutePos (pos, 0);
+
+  if (pointVal)
+  {
+    FieldValue valCa = FIELDVALUE (0, 0);
+    FieldValue valCb = FIELDVALUE (0, 0);
+
+    computeCaCb<usePrecomputedGrids> (valCa, valCb, pos, posAbs, Ca, Cb, usePML, gridType, materialGrid, materialGridType, materialModifier);
+
+    *pointVal += calcCurrent (current, valCb, getGridStep ());
+  }
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -2662,42 +2793,49 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPointSourceCalc (time_st
 {
   IGRID<TC> *grid = NULLPTR;
 
+  FPValue timestep;
   switch (EnumVal)
   {
     case (static_cast<uint8_t> (GridType::EX)):
     {
       grid = Ex;
       ASSERT (doNeedEx);
+      timestep = t + 0.5;
       break;
     }
     case (static_cast<uint8_t> (GridType::EY)):
     {
       grid = Ey;
       ASSERT (doNeedEy);
+      timestep = t + 0.5;
       break;
     }
     case (static_cast<uint8_t> (GridType::EZ)):
     {
       grid = Ez;
       ASSERT (doNeedEz);
+      timestep = t + 0.5;
       break;
     }
     case (static_cast<uint8_t> (GridType::HX)):
     {
       grid = Hx;
       ASSERT (doNeedHx);
+      timestep = t + 1.0;
       break;
     }
     case (static_cast<uint8_t> (GridType::HY)):
     {
       grid = Hy;
       ASSERT (doNeedHy);
+      timestep = t + 1.0;
       break;
     }
     case (static_cast<uint8_t> (GridType::HZ)):
     {
       grid = Hz;
       ASSERT (doNeedHz);
+      timestep = t + 1.0;
       break;
     }
     default:
@@ -2718,10 +2856,10 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPointSourceCalc (time_st
   if (pointVal)
   {
 #ifdef COMPLEX_FIELD_VALUES
-    *pointVal = FieldValue (sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency),
-                            cos (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency));
+    *pointVal = FieldValue (sin (gridTimeStep * timestep * 2 * PhysicsConst::Pi * sourceFrequency),
+                            cos (gridTimeStep * timestep * 2 * PhysicsConst::Pi * sourceFrequency));
 #else /* COMPLEX_FIELD_VALUES */
-    *pointVal = sin (gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency);
+    *pointVal = sin (gridTimeStep * timestep * 2 * PhysicsConst::Pi * sourceFrequency);
 #endif /* !COMPLEX_FIELD_VALUES */
   }
 }
