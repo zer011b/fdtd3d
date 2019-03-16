@@ -661,8 +661,21 @@ Approximation::approximateSphereStair (GridCoordinateFP1D midPos,
                                           FieldValue eps,
                                           FieldValue outsideEps)
 {
-  UNREACHABLE;
-  return FIELDVALUE (0,0);
+  GridCoordinateFP1D coord1 = GRID_COORDINATE_FP_1D (midPos.get1 () - 0.5,
+                                                     midPos.getType1 ());
+  GridCoordinateFP1D coord2 = GRID_COORDINATE_FP_1D (midPos.get1 () + 0.5,
+                                                     midPos.getType1 ());
+
+#define DIST(coord) \
+  (sqrt (SQR (coord.get1 () - center.get1 ())))
+
+  if (DIST (coord1) <= radius && DIST (coord2) <= radius)
+  {
+    return eps;
+  }
+#undef DIST
+
+  return outsideEps;
 }
 
 FieldValue
@@ -672,8 +685,25 @@ Approximation::approximateSphereStair (GridCoordinateFP2D midPos,
                                           FieldValue eps,
                                           FieldValue outsideEps)
 {
-  UNREACHABLE;
-  return FIELDVALUE (0,0);
+  GridCoordinateFP2D coord1 = GRID_COORDINATE_FP_2D (midPos.get1 () - 0.5, midPos.get2 () - 0.5,
+                                                     midPos.getType1 (), midPos.getType2 ());
+  GridCoordinateFP2D coord2 = GRID_COORDINATE_FP_2D (midPos.get1 () + 0.5, midPos.get2 () - 0.5,
+                                                     midPos.getType1 (), midPos.getType2 ());
+  GridCoordinateFP2D coord3 = GRID_COORDINATE_FP_2D (midPos.get1 () - 0.5, midPos.get2 () + 0.5,
+                                                     midPos.getType1 (), midPos.getType2 ());
+  GridCoordinateFP2D coord4 = GRID_COORDINATE_FP_2D (midPos.get1 () + 0.5, midPos.get2 () + 0.5,
+                                                     midPos.getType1 (), midPos.getType2 ());
+
+#define DIST(coord) \
+  (sqrt (SQR (coord.get1 () - center.get1 ()) + SQR (coord.get2 () - center.get2 ())))
+
+  if (DIST (coord1) <= radius && DIST (coord2) <= radius && DIST (coord3) <= radius && DIST (coord4) <= radius)
+  {
+    return eps;
+  }
+#undef DIST
+
+  return outsideEps;
 }
 
 FieldValue
