@@ -81,6 +81,7 @@ CUDA_HOST
 void
 InternalSchemeHelper::allocateGridsInc (InternalScheme<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout)
 {
+  // TODO: allocate considering number of time steps
   intScheme->EInc = new Grid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(layout->getSize ().get1 ()), CoordinateType::X), 0, 2, "EInc");
   intScheme->HInc = new Grid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(layout->getSize ().get1 ()), CoordinateType::X), 0, 2, "HInc");
 }

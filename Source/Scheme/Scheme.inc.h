@@ -1165,14 +1165,16 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       FieldValue current = FIELDVALUE (0, 0);
 
 #ifdef COMPLEX_FIELD_VALUES
-      current = FieldValue (sin (intScheme->getGridTimeStep () * timestep * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ()),
-                            cos (intScheme->getGridTimeStep () * timestep * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ()));
+      current = FieldValue (cos (intScheme->getGridTimeStep () * (timestep-1) * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ()),
+                             -sin (intScheme->getGridTimeStep () * (timestep-1) * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ()));
 #else /* COMPLEX_FIELD_VALUES */
       current = sin (intScheme->getGridTimeStep () * timestep * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ());
 #endif /* !COMPLEX_FIELD_VALUES */
 
-#ifdef CUDA_ENABLED
+      current = current * PhysicsConst::Mu0 / intScheme->getGridTimeStep () / 2.0;
 
+#ifdef CUDA_ENABLED
+      // TODO: add cuda call
 #else
       if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
       {

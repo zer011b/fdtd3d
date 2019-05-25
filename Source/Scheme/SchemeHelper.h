@@ -494,7 +494,7 @@ public:
 #endif
   }
 
-  static void initSigma (FieldValue *fieldValue, grid_coord dist, FPValue boundary, FPValue gridStep)
+  static void initSigma (FieldValue *fieldValue, FPValue dist, FPValue boundary, FPValue gridStep)
   {
     FPValue eps0 = PhysicsConst::Eps0;
     FPValue mu0 = PhysicsConst::Mu0;
@@ -508,6 +508,8 @@ public:
     FPValue x2 = dist * gridStep;       // lower bounds for point i
 
     FPValue val = boundaryFactor * (pow (x1, (exponent + 1)) - pow (x2, (exponent + 1)));    //   polynomial grading
+    //FPValue val = sigma_max_1 * pow((dist*gridStep/boundary), exponent);
+    //printf("SIGMA: val:%.20f, sigma_max_1:%.20f, dist:%.20f, boundary:%.20f\n", val, sigma_max_1, dist, boundary);
 
     *fieldValue = getFieldValueRealOnly (val);
   }
@@ -527,7 +529,7 @@ public:
       FieldValue valSigma;
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
 
-      TCoord<FPValue, true> size = layout->getEpsCoordFP (sigma->getTotalSize ());
+      TCoord<FPValue, true> size = convertCoord (sigma->getTotalSize ());
 
       /*
        * TODO: add layout coordinates for material: sigma, eps, etc.
@@ -535,12 +537,12 @@ public:
       ASSERT (FPValue (grid_coord (posAbs.get1 () - FPValue (0.5))) == posAbs.get1 () - FPValue (0.5));
       if (posAbs.get1 () < PMLSizeX)
       {
-        grid_coord dist = (grid_coord) (PMLSizeX - posAbs.get1 ());
+        FPValue dist = (PMLSizeX - posAbs.get1 ());
         SchemeHelper::initSigma (&valSigma, dist, boundary, dx);
       }
       else if (posAbs.get1 () >= size.get1 () - PMLSizeX)
       {
-        grid_coord dist = (grid_coord) (posAbs.get1 () - (size.get1 () - PMLSizeX));
+        FPValue dist = (posAbs.get1 () - (size.get1 () - PMLSizeX));
         SchemeHelper::initSigma (&valSigma, dist, boundary, dx);
       }
       else

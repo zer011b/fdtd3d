@@ -734,7 +734,7 @@ private:
                         const FieldValue & oppositeField22, const FieldValue & oppositeField21, const FieldValue & prevRightSide,
                         const FieldValue & Ca, const FieldValue & Cb, const FPValue & delta)
   {
-    FieldValue tmp = oppositeField12 - oppositeField11 - oppositeField22 + oppositeField21 + prevRightSide * delta;
+    FieldValue tmp = oppositeField12 - oppositeField11 - oppositeField22 + oppositeField21 - prevRightSide * delta;
     return prev * Ca + tmp * Cb;
   }
 
@@ -2413,7 +2413,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationCurr
 
     computeCaCb<usePrecomputedGrids> (valCa, valCb, pos, posAbs, Ca, Cb, usePML, gridType, materialGrid, materialGridType, materialModifier);
 
-    *pointVal += calcCurrent (current, valCb, getGridStep ());
+    *pointVal -= calcCurrent (current, valCb, getGridStep ());
   }
 }
 
@@ -3355,7 +3355,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::initScheme (FPValue dx, FPValue
                                       "\n\tnumerical wave length -> %.20f"
                                       "\n\tnumerical grid step -> %.20f"
                                       "\n\tnumerical time step -> %.20f"
-                                      "\n\twave length -> %.20f"
+                                      "\n\tfrequency -> %.20f"
                                       "\n",
            relPhaseVelocity, phaseVelocity0, phaseVelocity, 2*PhysicsConst::Pi/sourceWaveLength, k,
            sourceWaveLength, sourceWaveLengthNumerical, gridStep, gridTimeStep, sourceFrequency);
