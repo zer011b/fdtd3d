@@ -663,7 +663,7 @@ public:
       return NULLPTR;
     }
 
-    return getFieldValueByAbsolutePos (getRelativePosition (absPosition), time_step_back);
+    return getFieldValueByAbsolutePos (absPosition, time_step_back);
   } /* getFieldValueOrNullByAbsolutePos */
 
   virtual FieldValue * getFieldValueCurrentAfterShiftByAbsolutePos
