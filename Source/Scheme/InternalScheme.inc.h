@@ -142,7 +142,7 @@ namespace InternalSchemeKernelHelpers
 
     if (usePrecomputedGrids)
     {
-      gpuScheme->calculateFieldStepIterationCurrent<grid_type, true> (current
+      gpuScheme->calculateFieldStepIterationCurrent<grid_type, true> (current,
                                                                       grid, Ca, Cb,
                                                                       usePML,
                                                                       gridType, materialGrid, materialGridType,
@@ -150,7 +150,7 @@ namespace InternalSchemeKernelHelpers
     }
     else
     {
-      gpuScheme->calculateFieldStepIterationCurrent<grid_type, false> (current
+      gpuScheme->calculateFieldStepIterationCurrent<grid_type, false> (current,
                                                                       grid, Ca, Cb,
                                                                       usePML,
                                                                       gridType, materialGrid, materialGridType,
