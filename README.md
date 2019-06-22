@@ -124,9 +124,11 @@ firefox docs/index.html
 
 # How to cite
 
-You can site the following paper about the techniques used in fdtd3d:
+You can site the following papers about the techniques used in fdtd3d:
 
-Balykov G. (2017) Parallel FDTD Solver with Optimal Topology and Dynamic Balancing. In: Voevodin V., Sobolev S. (eds) Supercomputing. RuSCDays 2017. Communications in Computer and Information Science, vol 793. Springer, Cham
+Balykov G. (2017) Parallel FDTD Solver with Optimal Topology and Dynamic Balancing. In: Voevodin V., Sobolev S. (eds) Supercomputing. RuSCDays 2017. Communications in Computer and Information Science, vol 793. Springer, Cham. https://doi.org/10.1007/978-3-319-71255-0_27
+
+Balykov G. (2019) Parallel FDTD Solver with Static and Dynamic Load Balancing. In: Voevodin V., Sobolev S. (eds) Supercomputing. RuSCDays 2018. Communications in Computer and Information Science, vol 965. Springer, Cham. https://doi.org/10.1007/978-3-030-05807-4_26.
 
 # About
 
