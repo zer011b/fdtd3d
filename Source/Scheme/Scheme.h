@@ -37,6 +37,11 @@ protected:
   TC blockCount;
   TC blockSize;
 
+#ifdef PARALLEL_GRID
+  ParallelGridGroup *eGroup;
+  ParallelGridGroup *hGroup;
+#endif /* PARALLEL_GRID */
+
 private:
 
   bool useParallel;
@@ -79,10 +84,12 @@ private:
   void performNSteps (time_step tStart, time_step N);
   void performNStepsForBlock (time_step tStart, time_step N, TC blockIdx);
 
-#ifdef CUDA_ENABLED
+#ifdef PARALLEL_GRID
+  void tryShareE ();
+  void tryShareH ();
   void shareE ();
   void shareH ();
-#endif
+#endif /* PARALLEL_GRID */
 
   void rebalance ();
 
@@ -107,10 +114,6 @@ private:
   void calculateFieldStep (time_step, TC, TC);
 
 private:
-
-  // void performAmplitudeSteps (time_step);
-
-  //int updateAmplitude (FPValue, FieldPointValue *, FPValue *);
 
   void makeGridScattered (Grid<TC> *, GridType);
   void gatherFieldsTotal (bool);
@@ -160,12 +163,7 @@ public:
 
     if (useParallel)
     {
-#ifdef PARALLEL_GRID
-      if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-      {
-        ASSERT_MESSAGE ("Parallel amplitude mode is not implemented");
-      }
-#else /* PARALLEL_GRID */
+#ifndef PARALLEL_GRID
       ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif /* !PARALLEL_GRID */
     }
@@ -173,7 +171,7 @@ public:
     for (time_step t = 0; t < totalTimeSteps; t += NTimeSteps)
     {
       /*
-       * Each NTimeSteps sharing will be performed.
+       * Each NTimeSteps sharing will be performed for parallel builds.
        *
        * For non-Cuda solver (both sequential and parallel), NTimeSteps == 1
        * For Cuda solver, NTimeSteps == bufSize - 1
@@ -189,16 +187,10 @@ public:
       }
       else
       {
-        ASSERT (!SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
+        ALWAYS_ASSERT (!SOLVER_SETTINGS.getDoSaveScatteredFieldRes ());
       }
 
       saveGrids (totalTimeSteps);
-    }
-
-    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-    {
-      UNREACHABLE;
-      //performAmplitudeSteps (totalStep);
     }
   }
 

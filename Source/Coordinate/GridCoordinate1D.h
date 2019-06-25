@@ -192,6 +192,28 @@ public:
   } /* GridCoordinate1DTemplate::get1 */
 
   /**
+   * Get fake second coordinate
+   *
+   * @return fake second coordinate
+   */
+  CUDA_DEVICE CUDA_HOST
+  const TcoordType get2 () const
+  {
+    return TcoordType (0);
+  } /* GridCoordinate1DTemplate::get2 */
+
+  /**
+   * Get fake third coordinate
+   *
+   * @return fake third coordinate
+   */
+  CUDA_DEVICE CUDA_HOST
+  const TcoordType get3 () const
+  {
+    return TcoordType (0);
+  } /* GridCoordinate1DTemplate::get3 */
+
+  /**
    * Set first coordinate
    */
   CUDA_DEVICE CUDA_HOST

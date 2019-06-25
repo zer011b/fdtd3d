@@ -22,11 +22,10 @@ void testFunc (TCoord overallSize, int storedSteps, CoordinateType ct1, Coordina
   TCoord test_coord = TCoord::initAxesCoordinate (16, 16, 16, ct1, ct2, ct3);
   TCoord zero = TCoord::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
 
-  Grid<TCoord> grid (overallSize, 0, storedSteps);
+  Grid<TCoord> grid (overallSize, storedSteps);
 
   ASSERT (grid.getSize () == overallSize);
   ASSERT (grid.getTotalSize () == overallSize);
-  ASSERT (grid.getTimeStep () == 0);
 
   ASSERT (grid.getTotalPosition (test_coord) == test_coord);
   ASSERT (grid.getRelativePosition (test_coord) == test_coord);
@@ -54,12 +53,6 @@ void testFunc (TCoord overallSize, int storedSteps, CoordinateType ct1, Coordina
     ASSERT (*grid.getFieldValueOrNullByAbsolutePos (test_coord, j) == FIELDVALUE (1502 * i, 189 * i));
   }
 
-  grid.nextTimeStep (false);
-
-#ifdef DEBUG_INFO
-  ASSERT (grid.getTimeStep () == 1);
-#endif /* DEBUG_INFO */
-  
   grid.initialize (FIELDVALUE (127, 1982));
   for (grid_coord i = 0; i < grid.getSize ().calculateTotalCoord (); ++i)
   {
