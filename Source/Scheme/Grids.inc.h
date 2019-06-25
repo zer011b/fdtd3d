@@ -124,16 +124,6 @@ GRID_NAME(DA1Hz)
 GRID_NAME(DA2Hz)
 
 /**
- * Amplitude field grids
- */
-GRID_NAME(ExAmplitude)
-GRID_NAME(EyAmplitude)
-GRID_NAME(EzAmplitude)
-GRID_NAME(HxAmplitude)
-GRID_NAME(HyAmplitude)
-GRID_NAME(HzAmplitude)
-
-/**
  * Metamaterial grids
  */
 GRID_NAME(OmegaPE)

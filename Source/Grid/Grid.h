@@ -34,13 +34,6 @@ protected:
    */
   std::vector<VectorFieldValues *> gridValues;
 
-#ifdef DEBUG_INFO
-  /**
-   * Current time step.
-   */
-  time_step timeStep;
-#endif /* DEBUG_INFO */
-
   /**
    * Name of the grid.
    */
@@ -66,8 +59,8 @@ protected:
 
 public:
 
-  Grid (const TCoord&, time_step, int, const char * = "unnamed");
-  Grid (time_step, int, const char * = "unnamed");
+  Grid (const TCoord&, int, const char * = "unnamed");
+  Grid (int, const char * = "unnamed");
   virtual ~Grid ();
 
   const TCoord & getSize () const;
@@ -93,24 +86,19 @@ public:
   virtual FieldValue * getFieldValuePreviousAfterShiftByAbsolutePos (const TCoord &);
   virtual FieldValue * getFieldValueOrNullPreviousAfterShiftByAbsolutePos (const TCoord &);
 
-  virtual bool isBufferLeftPosition (const TCoord & pos)
+  virtual bool isBufferLeftPosition (const TCoord & pos) const
   {
     return false;
   }
 
-  virtual bool isBufferRightPosition (const TCoord & pos)
+  virtual bool isBufferRightPosition (const TCoord & pos) const
   {
     return false;
   }
 
   void shiftInTime ();
-  virtual void nextTimeStep (bool);
 
   const char * getName () const;
-
-#ifdef DEBUG_INFO
-  time_step getTimeStep () const;
-#endif /* DEBUG_INFO */
 
   void initialize (const FieldValue &);
 
@@ -141,14 +129,10 @@ public:
  */
 template <class TCoord>
 Grid<TCoord>::Grid (const TCoord &s, /**< size of grid */
-                    time_step step, /**< default time step */
                     int storedSteps, /**< number of steps in time for which to store grid values */
                     const char *name) /**< name of grid */
   : size (s)
   , gridValues (storedSteps)
-#ifdef DEBUG_INFO
-  , timeStep (step)
-#endif /* DEBUG_INFO */
   , gridName (name)
 {
   ASSERT (storedSteps > 0);
@@ -158,21 +142,17 @@ Grid<TCoord>::Grid (const TCoord &s, /**< size of grid */
     gridValues[i] = new VectorFieldValues (size.calculateTotalCoord ());
   }
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with %lu stored steps and raw size: " COORD_MOD ".\n",
-    gridName.data (), gridValues.size (), size.calculateTotalCoord ());
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with %lu stored steps and raw size: %llu.\n",
+    gridName.data (), gridValues.size (), (unsigned long long)size.calculateTotalCoord ());
 } /* Grid<TCoord>::Grid */
 
 /**
  * Constructor of grid without size
  */
 template <class TCoord>
-Grid<TCoord>::Grid (time_step step, /**< default time step */
-                    int storedSteps, /**< number of steps in time for which to store grid values */
+Grid<TCoord>::Grid (int storedSteps, /**< number of steps in time for which to store grid values */
                     const char *name) /**< name of grid */
   : gridValues (storedSteps)
-#ifdef DEBUG_INFO
-  , timeStep (step)
-#endif /* DEBUG_INFO */
   , gridName (name)
 {
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with %lu stored steps without size.\n",
@@ -367,19 +347,6 @@ Grid<TCoord>::getFieldValueOrNullPreviousAfterShiftByAbsolutePos (const TCoord &
   return getFieldValuePreviousAfterShiftByAbsolutePos (relPosition);
 }
 
-
-/**
- * Switch to next time step
- */
-template <class TCoord>
-void
-Grid<TCoord>::nextTimeStep (bool performShareIfRequired)
-{
-#ifdef DEBUG_INFO
-  ++timeStep;
-#endif /* DEBUG_INFO */
-} /* Grid<TCoord>::nextTimeStep */
-
 /**
  * Get total position in grid. Is equal to position in non-parallel grid
  *
@@ -427,22 +394,6 @@ Grid<TCoord>::getName () const
 {
   return gridName.c_str ();
 } /* Grid<TCoord>::getName */
-
-#ifdef DEBUG_INFO
-
-/**
- * Get time step
- *
- * @return time step
- */
-template <class TCoord>
-time_step
-Grid<TCoord>::getTimeStep () const
-{
-  return timeStep;
-} /* Grid<TCoord>::getTimeStep */
-
-#endif /* DEBUG_INFO */
 
 /**
  * Initialize current grid field values with default values

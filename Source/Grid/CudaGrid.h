@@ -248,8 +248,8 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
 
   helperGridValues = new FieldValue [sizeGridValues];
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New Cuda grid '%s' with %d stored steps and with raw size: " COORD_MOD ".\n",
-    grid->getName (), storedSteps, sizeGridValues);
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New Cuda grid '%s' with %d stored steps and with raw size: %llu.\n",
+    grid->getName (), storedSteps, (unsigned long long)sizeGridValues);
 } /* CudaGrid<TCoord>::CudaGrid */
 
 /**

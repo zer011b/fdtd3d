@@ -67,10 +67,10 @@ InternalSchemeHelper::allocateGrids (InternalScheme<Type, TCoord, layout_type> *
     storedSteps = 3;
   }
 
-#define GRID_NAME(x, y, steps) \
-  intScheme->x = intScheme->doNeed ## y ? new Grid<TC> (layout->get ## y ## Size (), 0, steps, #x) : NULLPTR;
-#define GRID_NAME_NO_CHECK(x, y, steps) \
-  intScheme->x = new Grid<TC> (layout->get ## y ## Size (), 0, steps, #x);
+#define GRID_NAME(x, y, steps, group_id) \
+  intScheme->x = intScheme->doNeed ## y ? new Grid<TC> (layout->get ## y ## Size (), steps, #x) : NULLPTR;
+#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
+  intScheme->x = new Grid<TC> (layout->get ## y ## Size (), steps, #x);
 #include "Grids2.inc.h"
 #undef GRID_NAME
 #undef GRID_NAME_NO_CHECK
@@ -82,8 +82,8 @@ void
 InternalSchemeHelper::allocateGridsInc (InternalScheme<Type, TCoord, layout_type> *intScheme, YeeGridLayout<Type, TCoord, layout_type> *layout)
 {
   // TODO: allocate considering number of time steps
-  intScheme->EInc = new Grid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(layout->getSize ().get1 ()), CoordinateType::X), 0, 2, "EInc");
-  intScheme->HInc = new Grid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(layout->getSize ().get1 ()), CoordinateType::X), 0, 2, "HInc");
+  intScheme->EInc = new Grid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(layout->getSize ().get1 ()), CoordinateType::X), 2, "EInc");
+  intScheme->HInc = new Grid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(layout->getSize ().get1 ()), CoordinateType::X), 2, "HInc");
 }
 
 #ifdef PARALLEL_GRID
@@ -105,10 +105,10 @@ InternalSchemeHelper::allocateParallelGrids1D (InternalScheme<Type, GridCoordina
 
   int storedSteps = 3;
 
-#define GRID_NAME(x, y, steps) \
-  intScheme->x = intScheme->doNeed ## y ? new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x) : NULLPTR;
-#define GRID_NAME_NO_CHECK(x, y, steps) \
-  intScheme->x = new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x);
+#define GRID_NAME(x, y, steps, time_offset) \
+  intScheme->x = intScheme->doNeed ## y ? new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 1, pLayout->get ## y ## SizeForCurNode (), steps, time_offset, #x) : NULLPTR;
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
+  intScheme->x = new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 1, pLayout->get ## y ## SizeForCurNode (), steps, time_offset, #x);
 #include "Grids2.inc.h"
 #undef GRID_NAME
 #undef GRID_NAME_NO_CHECK
@@ -133,10 +133,10 @@ InternalSchemeHelper::allocateParallelGrids2D (InternalScheme<Type, GridCoordina
 
   int storedSteps = 3;
 
-#define GRID_NAME(x, y, steps) \
-  intScheme->x = intScheme->doNeed ## y ? new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x) : NULLPTR;
-#define GRID_NAME_NO_CHECK(x, y, steps) \
-  intScheme->x = new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x);
+#define GRID_NAME(x, y, steps, time_offset) \
+  intScheme->x = intScheme->doNeed ## y ? new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 1, pLayout->get ## y ## SizeForCurNode (), steps, time_offset, #x) : NULLPTR;
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
+  intScheme->x = new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 1, pLayout->get ## y ## SizeForCurNode (), steps, time_offset, #x);
 #include "Grids2.inc.h"
 #undef GRID_NAME
 #undef GRID_NAME_NO_CHECK
@@ -161,10 +161,10 @@ InternalSchemeHelper::allocateParallelGrids3D (InternalScheme<Type, GridCoordina
 
   int storedSteps = 3;
 
-#define GRID_NAME(x, y, steps) \
-  intScheme->x = intScheme->doNeed ## y ? new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x) : NULLPTR;
-#define GRID_NAME_NO_CHECK(x, y, steps) \
-  intScheme->x = new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 0, pLayout->get ## y ## SizeForCurNode (), steps, #x);
+#define GRID_NAME(x, y, steps, time_offset) \
+  intScheme->x = intScheme->doNeed ## y ? new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 1, pLayout->get ## y ## SizeForCurNode (), steps, time_offset, #x) : NULLPTR;
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
+  intScheme->x = new ParallelGrid (pLayout->get ## y ## Size (), bufSize, 1, pLayout->get ## y ## SizeForCurNode (), steps, time_offset, #x);
 #include "Grids2.inc.h"
 #undef GRID_NAME
 #undef GRID_NAME_NO_CHECK
@@ -188,9 +188,9 @@ InternalSchemeHelperGPU::allocateGridsFromCPU (InternalSchemeGPU<Type, TCoord, l
   typedef TCoord<FPValue, true> TCFP;
   typedef TCoord<FPValue, false> TCSFP;
 
-#define GRID_NAME(x, y, steps) \
+#define GRID_NAME(x, y, steps, group_id) \
   intScheme->x = intScheme->doNeed ## y ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->x) : NULLPTR;
-#define GRID_NAME_NO_CHECK(x, y, steps) \
+#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
   intScheme->x = new CudaGrid<TC> (blockSize, bufSize, cpuScheme->x);
 #include "Grids2.inc.h"
 #undef GRID_NAME
@@ -209,11 +209,11 @@ CUDA_HOST
 void
 InternalSchemeHelperGPU::freeGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme)
 {
-#define GRID_NAME(x, y, steps) \
+#define GRID_NAME(x, y, steps, group_id) \
   delete intScheme->x; \
   intScheme->x = NULLPTR;
-#define GRID_NAME_NO_CHECK(x, y, steps) \
-  GRID_NAME(x, y, steps)
+#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
+  GRID_NAME(x, y, steps, group_id)
 #include "Grids2.inc.h"
 #undef GRID_NAME
 #undef GRID_NAME_NO_CHECK
@@ -231,10 +231,10 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 CUDA_HOST
 InternalSchemeGPU<Type, TCoord, layout_type>::~InternalSchemeGPU ()
 {
-#define GRID_NAME(x, y, steps) \
+#define GRID_NAME(x, y, steps, group_id) \
   ASSERT (x == NULLPTR);
-#define GRID_NAME_NO_CHECK(x, y, steps) \
-  GRID_NAME(x, y, steps)
+#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
+  GRID_NAME(x, y, steps, group_id)
 #include "Grids2.inc.h"
 #undef GRID_NAME
 #undef GRID_NAME_NO_CHECK
@@ -253,9 +253,9 @@ InternalSchemeHelperGPU::allocateGridsOnGPU (InternalSchemeGPU<Type, TCoord, lay
   typedef TCoord<FPValue, true> TCFP;
   typedef TCoord<FPValue, false> TCSFP;
 
-#define GRID_NAME(x, y, steps) \
+#define GRID_NAME(x, y, steps, group_id) \
   if (gpuScheme->doNeed ## y) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->x, sizeof(CudaGrid<TC>))); }
-#define GRID_NAME_NO_CHECK(x, y, steps) \
+#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
   cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->x, sizeof(CudaGrid<TC>)));
 #include "Grids2.inc.h"
 #undef GRID_NAME
@@ -274,9 +274,9 @@ CUDA_HOST
 void
 InternalSchemeHelperGPU::freeGridsOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
 {
-#define GRID_NAME(x, y, steps) \
+#define GRID_NAME(x, y, steps, group_id) \
   if (gpuScheme->doNeed ## y) { cudaCheckErrorCmd (cudaFree (gpuScheme->x)); gpuScheme->x = NULLPTR; }
-#define GRID_NAME_NO_CHECK(x, y, steps) \
+#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
   cudaCheckErrorCmd (cudaFree (gpuScheme->x)); gpuScheme->x = NULLPTR;
 #include "Grids2.inc.h"
 #undef GRID_NAME
@@ -298,9 +298,9 @@ InternalSchemeHelperGPU::copyGridsFromCPU (InternalSchemeGPU<Type, TCoord, layou
                   TCoord<grid_coord, true> start,
                   TCoord<grid_coord, true> end)
 {
-#define GRID_NAME(x, y, steps) \
+#define GRID_NAME(x, y, steps, group_id) \
   if (gpuScheme->doNeed ## y) { gpuScheme->x->copyFromCPU (start, end); }
-#define GRID_NAME_NO_CHECK(x, y, steps) \
+#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
   gpuScheme->x->copyFromCPU (start, end);
 #include "Grids2.inc.h"
 #undef GRID_NAME
@@ -325,9 +325,9 @@ InternalSchemeHelperGPU::copyGridsToGPU (InternalSchemeGPU<Type, TCoord, layout_
   typedef TCoord<FPValue, true> TCFP;
   typedef TCoord<FPValue, false> TCSFP;
 
-#define GRID_NAME(x, y, steps) \
+#define GRID_NAME(x, y, steps, group_id) \
   if (gpuScheme->doNeed ## y) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->x, intScheme->x, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-#define GRID_NAME_NO_CHECK(x, y, steps) \
+#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
   cudaCheckErrorCmd (cudaMemcpy (gpuScheme->x, intScheme->x, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice));
 #include "Grids2.inc.h"
 #undef GRID_NAME
@@ -366,13 +366,6 @@ InternalSchemeHelperGPU::copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, lay
         gpuScheme->D1x->zeroShareStep ();
       }
     }
-
-    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-    {
-      ASSERT (gpuScheme->ExAmplitude->getShareStep () == N);
-      gpuScheme->ExAmplitude->copyToCPU ();
-      gpuScheme->ExAmplitude->zeroShareStep ();
-    }
   }
 
   if (gpuScheme->doNeedEy)
@@ -393,13 +386,6 @@ InternalSchemeHelperGPU::copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, lay
         gpuScheme->D1y->copyToCPU ();
         gpuScheme->D1y->zeroShareStep ();
       }
-    }
-
-    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-    {
-      ASSERT (gpuScheme->EyAmplitude->getShareStep () == N);
-      gpuScheme->EyAmplitude->copyToCPU ();
-      gpuScheme->EyAmplitude->zeroShareStep ();
     }
   }
 
@@ -422,13 +408,6 @@ InternalSchemeHelperGPU::copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, lay
         gpuScheme->D1z->zeroShareStep ();
       }
     }
-
-    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-    {
-      ASSERT (gpuScheme->EzAmplitude->getShareStep () == N);
-      gpuScheme->EzAmplitude->copyToCPU ();
-      gpuScheme->EzAmplitude->zeroShareStep ();
-    }
   }
 
   if (gpuScheme->doNeedHx)
@@ -449,13 +428,6 @@ InternalSchemeHelperGPU::copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, lay
         gpuScheme->B1x->copyToCPU ();
         gpuScheme->B1x->zeroShareStep ();
       }
-    }
-
-    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-    {
-      ASSERT (gpuScheme->HxAmplitude->getShareStep () == N);
-      gpuScheme->HxAmplitude->copyToCPU ();
-      gpuScheme->HxAmplitude->zeroShareStep ();
     }
   }
 
@@ -478,13 +450,6 @@ InternalSchemeHelperGPU::copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, lay
         gpuScheme->B1y->zeroShareStep ();
       }
     }
-
-    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-    {
-      ASSERT (gpuScheme->HyAmplitude->getShareStep () == N);
-      gpuScheme->HyAmplitude->copyToCPU ();
-      gpuScheme->HyAmplitude->zeroShareStep ();
-    }
   }
 
   if (gpuScheme->doNeedHz)
@@ -505,13 +470,6 @@ InternalSchemeHelperGPU::copyGridsBackToCPU (InternalSchemeGPU<Type, TCoord, lay
         gpuScheme->B1z->copyToCPU ();
         gpuScheme->B1z->zeroShareStep ();
       }
-    }
-
-    if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-    {
-      ASSERT (gpuScheme->HzAmplitude->getShareStep () == N);
-      gpuScheme->HzAmplitude->copyToCPU ();
-      gpuScheme->HzAmplitude->zeroShareStep ();
     }
   }
 

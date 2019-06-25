@@ -48,7 +48,7 @@ void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
   }
 
   BufferPosition opposite = ParallelGrid::getParallelCore ()->getOppositeDirections ()[dir];
-  ParallelGridCoordinate posInNeighbor = pos - grid->getRecvStart ()[opposite] + neighborSendStart[dir];
+  ParallelGridCoordinate posInNeighbor = pos - grid->getRecvStart (opposite) + neighborSendStart[dir];
 
 #ifdef GRID_1D
   FPValue multiplier = posInNeighbor.get1 ();
@@ -63,7 +63,7 @@ void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
   int pidSender = ParallelGrid::getParallelCore ()->getNodeForDirection (dir);
   ASSERT (pidSender != PID_NONE);
 
-  ParallelGridCoordinate sendStart = grid->getSendStart ()[dir];
+  ParallelGridCoordinate sendStart = grid->getSendStart (dir);
 
   FieldValue cur = *grid->getFieldValue (coord, 0);
 #ifdef COMPLEX_FIELD_VALUES
@@ -95,7 +95,7 @@ ParallelGrid * initGrid (ParallelGridCoordinate overallSize,
                          ParallelGridCoordinate sizeForCurNode,
                          bool isAbsVal)
 {
-  ParallelGrid *grid = new ParallelGrid (overallSize, bufferSize, 0, sizeForCurNode, 3);
+  ParallelGrid *grid = new ParallelGrid (overallSize, bufferSize, 1, sizeForCurNode, 3, 0);
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
   for (grid_coord i = 0; i < grid->getSize ().get1 (); ++i)
@@ -184,17 +184,17 @@ int main (int argc, char** argv)
   MPI_Comm_size (MPI_COMM_WORLD, &numProcs);
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  DPRINTF (LOG_LEVEL_STAGES, "X: PID %d of %d, grid size x: " COORD_MOD "\n", rank, numProcs, gridSizeX);
+  DPRINTF (LOG_LEVEL_STAGES, "X: PID %d of %d, grid size x: %llu\n", rank, numProcs, (unsigned long long)gridSizeX);
   ASSERT (gridSizeX % numProcs == 0);
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 
 #if defined (GRID_2D) || defined (GRID_3D)
-  DPRINTF (LOG_LEVEL_STAGES, "Y: PID %d of %d, grid size y: " COORD_MOD "\n", rank, numProcs, gridSizeY);
+  DPRINTF (LOG_LEVEL_STAGES, "Y: PID %d of %d, grid size y: %llu\n", rank, numProcs, (unsigned long long)gridSizeY);
   ASSERT (gridSizeY % numProcs == 0);
 #endif /* GRID_2D || GRID_3D */
 
 #if defined (GRID_3D)
-  DPRINTF (LOG_LEVEL_STAGES, "Z: PID %d of %d, grid size x: " COORD_MOD "\n", rank, numProcs, gridSizeZ);
+  DPRINTF (LOG_LEVEL_STAGES, "Z: PID %d of %d, grid size x: %llu\n", rank, numProcs, (unsigned long long)gridSizeZ);
   ASSERT (gridSizeZ % numProcs == 0);
 #endif /* GRID_3D */
 
@@ -256,8 +256,8 @@ int main (int argc, char** argv)
     if (processTo != PID_NONE
         && processFrom == PID_NONE)
     {
-      ParallelGridCoordinate sendStart = grid->getSendStart ()[buf];
-      ParallelGridCoordinate sendEnd = grid->getSendEnd ()[buf];
+      ParallelGridCoordinate sendStart = grid->getSendStart (buf);
+      ParallelGridCoordinate sendEnd = grid->getSendEnd (buf);
 
 #ifdef GRID_1D
       grid_coord coordStart[1];
@@ -292,8 +292,8 @@ int main (int argc, char** argv)
     else if (processTo != PID_NONE
              && processFrom != PID_NONE)
     {
-      ParallelGridCoordinate sendStart = grid->getSendStart ()[buf];
-      ParallelGridCoordinate sendEnd = grid->getSendEnd ()[buf];
+      ParallelGridCoordinate sendStart = grid->getSendStart (buf);
+      ParallelGridCoordinate sendEnd = grid->getSendEnd (buf);
 
 #ifdef GRID_1D
       grid_coord coordStart[1];
@@ -348,8 +348,8 @@ int main (int argc, char** argv)
                     _coordEnd, _size, MPI_COORD, processFrom, processFrom,
                     ParallelGrid::getParallelCore ()->getCommunicator (), &status);
 
-      neighborSendStart[opposite] = grid->getSendStart ()[buf];
-      neighborSendEnd[opposite] = grid->getSendStart ()[buf];
+      neighborSendStart[opposite] = grid->getSendStart (buf);
+      neighborSendEnd[opposite] = grid->getSendStart (buf);
 
 #ifdef GRID_1D
       neighborSendStart[opposite].set1 (_coordStart[0]);
@@ -393,8 +393,8 @@ int main (int argc, char** argv)
       MPI_Recv (coordStart, size, MPI_COORD, processFrom, processFrom, ParallelGrid::getParallelCore ()->getCommunicator (), &status);
       MPI_Recv (coordEnd, size, MPI_COORD, processFrom, processFrom, ParallelGrid::getParallelCore ()->getCommunicator (), &status);
 
-      neighborSendStart[opposite] = grid->getSendStart ()[buf];
-      neighborSendEnd[opposite] = grid->getSendStart ()[buf];
+      neighborSendStart[opposite] = grid->getSendStart (buf);
+      neighborSendEnd[opposite] = grid->getSendStart (buf);
 
 #ifdef GRID_1D
       neighborSendStart[opposite].set1 (coordStart[0]);

@@ -83,11 +83,9 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->performPlaneWaveEStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getEInc ()->getSize ());
       gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEInc ()->nextTimeStep ();
 #else /* CUDA_ENABLED */
       intScheme->performPlaneWaveESteps (t, zero1D, intScheme->getEInc ()->getSize ());
       intScheme->getEInc ()->shiftInTime ();
-      intScheme->getEInc ()->nextTimeStep (true);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -138,31 +136,25 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     {
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEx ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDx (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getDx ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1x (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getD1x ()->nextTimeStep ();
       }
 #else
       intScheme->getEx ()->shiftInTime ();
-      intScheme->getEx ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getDx ()->shiftInTime ();
-        intScheme->getDx ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getD1x ()->shiftInTime ();
-        intScheme->getD1x ()->nextTimeStep (true);
       }
 #endif
     }
@@ -171,31 +163,25 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     {
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEy ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDy (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getDy ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1y (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getD1y ()->nextTimeStep ();
       }
 #else
       intScheme->getEy ()->shiftInTime ();
-      intScheme->getEy ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getDy ()->shiftInTime ();
-        intScheme->getDy ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getD1y ()->shiftInTime ();
-        intScheme->getD1y ()->nextTimeStep (true);
       }
 #endif
     }
@@ -204,34 +190,34 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     {
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEz ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDz (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getDz ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1z (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getD1z ()->nextTimeStep ();
       }
 #else
       intScheme->getEz ()->shiftInTime ();
-      intScheme->getEz ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getDz ()->shiftInTime ();
-        intScheme->getDz ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getD1z ()->shiftInTime ();
-        intScheme->getD1z ()->nextTimeStep (true);
       }
 #endif
     }
+
+#ifdef PARALLEL_GRID
+#ifndef CUDA_ENABLED
+    tryShareE ();
+#endif /* !CUDA_ENABLED */
+#endif /* PARALLEL_GRID */
 
     if (SOLVER_SETTINGS.getDoUseTFSF ())
     {
@@ -240,11 +226,9 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->performPlaneWaveHStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getHInc ()->getSize ());
       gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHInc ()->nextTimeStep ();
 #else /* CUDA_ENABLED */
       intScheme->performPlaneWaveHSteps (t, zero1D, intScheme->getHInc ()->getSize ());
       intScheme->getHInc ()->shiftInTime ();
-      intScheme->getHInc ()->nextTimeStep (true);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -295,31 +279,25 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     {
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHx ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBx (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getBx ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1x (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getB1x ()->nextTimeStep ();
       }
 #else
       intScheme->getHx ()->shiftInTime ();
-      intScheme->getHx ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getBx ()->shiftInTime ();
-        intScheme->getBx ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getB1x ()->shiftInTime ();
-        intScheme->getB1x ()->nextTimeStep (true);
       }
 #endif
     }
@@ -328,31 +306,25 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     {
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHy ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBy (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getBy ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1y (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getB1y ()->nextTimeStep ();
       }
 #else
       intScheme->getHy ()->shiftInTime ();
-      intScheme->getHy ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getBy ()->shiftInTime ();
-        intScheme->getBy ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getB1y ()->shiftInTime ();
-        intScheme->getB1y ()->nextTimeStep (true);
       }
 #endif
     }
@@ -361,34 +333,34 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     {
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHz ()->nextTimeStep ();
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBz (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getBz ()->nextTimeStep ();
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1z (d_gpuIntSchemeOnGPU);
-        gpuIntScheme->getB1z ()->nextTimeStep ();
       }
 #else
       intScheme->getHz ()->shiftInTime ();
-      intScheme->getHz ()->nextTimeStep (true);
 
       if (SOLVER_SETTINGS.getDoUsePML ())
       {
         intScheme->getBz ()->shiftInTime ();
-        intScheme->getBz ()->nextTimeStep (true);
       }
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
         intScheme->getB1z ()->shiftInTime ();
-        intScheme->getB1z ()->nextTimeStep (true);
       }
 #endif
     }
+
+#ifdef PARALLEL_GRID
+#ifndef CUDA_ENABLED
+    tryShareH ();
+#endif /* !CUDA_ENABLED */
+#endif /* PARALLEL_GRID */
   }
 
 #ifdef CUDA_ENABLED
@@ -400,17 +372,58 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
 #endif /* CUDA_ENABLED */
 }
 
-#ifdef CUDA_ENABLED
+#ifdef PARALLEL_GRID
+/**
+ * Perform share operations with checks
+ */
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+void
+Scheme<Type, TCoord, layout_type>::tryShareE ()
+{
+  if (!useParallel)
+  {
+    return;
+  }
+
+  eGroup->nextShareStep ();
+
+  if (eGroup->isShareTime ())
+  {
+    ASSERT (eGroup->getShareStep () == NTimeSteps);
+
+    shareE ();
+  }
+}
+
+/**
+ * Perform share operations with checks
+ */
+template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
+void
+Scheme<Type, TCoord, layout_type>::tryShareH ()
+{
+  if (!useParallel)
+  {
+    return;
+  }
+
+  hGroup->nextShareStep ();
+
+  if (hGroup->isShareTime ())
+  {
+    ASSERT (hGroup->getShareStep () == NTimeSteps);
+
+    shareH ();
+  }
+}
+
 /**
  * Perform share operations, required for grids
- *
- * NOTE: this basically should be non-empty for ParallelGrids only
  */
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void
 Scheme<Type, TCoord, layout_type>::shareE ()
 {
-#ifdef PARALLEL_GRID
   if (!useParallel)
   {
     return;
@@ -418,133 +431,103 @@ Scheme<Type, TCoord, layout_type>::shareE ()
 
   if (intScheme->getDoNeedEx ())
   {
-    ASSERT (((ParallelGrid *) intScheme->getEx ())->getShareStep () == NTimeSteps);
     ((ParallelGrid *) intScheme->getEx ())->share ();
-    ((ParallelGrid *) intScheme->getEx ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getDx ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getDx ())->share ();
-      ((ParallelGrid *) intScheme->getDx ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getD1x ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getD1x ())->share ();
-      ((ParallelGrid *) intScheme->getD1x ())->zeroShareStep ();
     }
   }
 
   if (intScheme->getDoNeedEy ())
   {
-    ASSERT (((ParallelGrid *) intScheme->getEy ())->getShareStep () == NTimeSteps);
     ((ParallelGrid *) intScheme->getEy ())->share ();
-    ((ParallelGrid *) intScheme->getEy ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getDy ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getDy ())->share ();
-      ((ParallelGrid *) intScheme->getDy ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getD1y ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getD1y ())->share ();
-      ((ParallelGrid *) intScheme->getD1y ())->zeroShareStep ();
     }
   }
 
   if (intScheme->getDoNeedEz ())
   {
-    ASSERT (((ParallelGrid *) intScheme->getEz ())->getShareStep () == NTimeSteps);
     ((ParallelGrid *) intScheme->getEz ())->share ();
-    ((ParallelGrid *) intScheme->getEz ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getDz ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getDz ())->share ();
-      ((ParallelGrid *) intScheme->getDz ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getD1z ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getD1z ())->share ();
-      ((ParallelGrid *) intScheme->getD1z ())->zeroShareStep ();
     }
   }
-#endif
+
+  eGroup->zeroShareStep ();
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void
 Scheme<Type, TCoord, layout_type>::shareH ()
 {
-#ifdef PARALLEL_GRID
+  if (!useParallel)
+  {
+    return;
+  }
+
   if (intScheme->getDoNeedHx ())
   {
-    ASSERT (((ParallelGrid *) intScheme->getHx ())->getShareStep () == NTimeSteps);
     ((ParallelGrid *) intScheme->getHx ())->share ();
-    ((ParallelGrid *) intScheme->getHx ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getBx ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getBx ())->share ();
-      ((ParallelGrid *) intScheme->getBx ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getB1x ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getB1x ())->share ();
-      ((ParallelGrid *) intScheme->getB1x ())->zeroShareStep ();
     }
   }
 
   if (intScheme->getDoNeedHy ())
   {
-    ASSERT (((ParallelGrid *) intScheme->getHy ())->getShareStep () == NTimeSteps);
     ((ParallelGrid *) intScheme->getHy ())->share ();
-    ((ParallelGrid *) intScheme->getHy ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getBy ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getBy ())->share ();
-      ((ParallelGrid *) intScheme->getBy ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getB1y ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getB1y ())->share ();
-      ((ParallelGrid *) intScheme->getB1y ())->zeroShareStep ();
     }
   }
 
   if (intScheme->getDoNeedHz ())
   {
-    ASSERT (((ParallelGrid *) intScheme->getHz ())->getShareStep () == NTimeSteps);
     ((ParallelGrid *) intScheme->getHz ())->share ();
-    ((ParallelGrid *) intScheme->getHz ())->zeroShareStep ();
 
     if (SOLVER_SETTINGS.getDoUsePML ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getBz ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getBz ())->share ();
-      ((ParallelGrid *) intScheme->getBz ())->zeroShareStep ();
     }
     if (SOLVER_SETTINGS.getDoUseMetamaterials ())
     {
-      ASSERT (((ParallelGrid *) intScheme->getB1z ())->getShareStep () == NTimeSteps);
       ((ParallelGrid *) intScheme->getB1z ())->share ();
-      ((ParallelGrid *) intScheme->getB1z ())->zeroShareStep ();
     }
   }
-#endif /* PARALLEL_GRID */
+
+  hGroup->zeroShareStep ();
 }
-#endif
+#endif /* PARALLEL_GRID */
 
 /**
  * Perform balancing operations
@@ -671,35 +654,6 @@ Scheme<Type, TCoord, layout_type>::rebalance ()
   //         if (internalScheme.doNeedSigmaZ)
   //         {
   //           ((ParallelGrid *) internalScheme.SigmaZ)->Resize (parallelYeeLayout->getEpsSizeForCurNode ());
-  //         }
-  //       }
-  //
-  //       if (SOLVER_SETTINGS.getDoUseAmplitudeMode ())
-  //       {
-  //         if (internalScheme.doNeedEx)
-  //         {
-  //           ((ParallelGrid *) internalScheme.ExAmplitude)->Resize (parallelYeeLayout->getExSizeForCurNode ());
-  //         }
-  //         if (internalScheme.doNeedEy)
-  //         {
-  //           ((ParallelGrid *) internalScheme.EyAmplitude)->Resize (parallelYeeLayout->getEySizeForCurNode ());
-  //         }
-  //         if (internalScheme.doNeedEz)
-  //         {
-  //           ((ParallelGrid *) internalScheme.EzAmplitude)->Resize (parallelYeeLayout->getEzSizeForCurNode ());
-  //         }
-  //
-  //         if (internalScheme.doNeedHx)
-  //         {
-  //           ((ParallelGrid *) internalScheme.HxAmplitude)->Resize (parallelYeeLayout->getHxSizeForCurNode ());
-  //         }
-  //         if (internalScheme.doNeedHy)
-  //         {
-  //           ((ParallelGrid *) internalScheme.HyAmplitude)->Resize (parallelYeeLayout->getHySizeForCurNode ());
-  //         }
-  //         if (internalScheme.doNeedHz)
-  //         {
-  //           ((ParallelGrid *) internalScheme.HzAmplitude)->Resize (parallelYeeLayout->getHzSizeForCurNode ());
   //         }
   //       }
   //
@@ -1500,10 +1454,10 @@ Scheme<Type, TCoord, layout_type>::estimateCurrentSize ()
    * Estimation is just size of grid plus size of Grid class
    */
 
-#define GRID_NAME(x, y, steps) \
+#define GRID_NAME(x, y, steps, group_id) \
   size += intScheme->has ## x () ? intScheme->get ## x ()->getSize ().calculateTotalCoord () * intScheme->get ## x ()->getCountStoredSteps () * sizeof (FieldValue) + sizeof (Grid<TC>) : 0;
-#define GRID_NAME_NO_CHECK(x, y, steps) \
-  GRID_NAME(x, y, steps)
+#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
+  GRID_NAME(x, y, steps, group_id)
 #include "Grids2.inc.h"
 #undef GRID_NAME
 
@@ -1743,6 +1697,10 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
                                            time_step tStep)
   : useParallel (false)
   , intScheme (new InternalScheme<Type, TCoord, layout_type> ())
+#ifdef PARALLEL_GRID
+  , eGroup (NULLPTR)
+  , hGroup (NULLPTR)
+#endif /* PARALLEL_GRID */
   , totalTimeSteps (0)
   , NTimeSteps (0)
 #ifdef CUDA_ENABLED
@@ -1779,13 +1737,6 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
   ASSERT (!SOLVER_SETTINGS.getDoUsePML ()
           || (SOLVER_SETTINGS.getDoUsePML () && (yeeLayout->getSizePML () != TC (0, 0, 0, ct1, ct2, ct3))));
 
-  ASSERT (!SOLVER_SETTINGS.getDoUseAmplitudeMode ()
-          || SOLVER_SETTINGS.getDoUseAmplitudeMode () && SOLVER_SETTINGS.getNumAmplitudeSteps () != 0);
-
-#ifdef COMPLEX_FIELD_VALUES
-  ASSERT (!SOLVER_SETTINGS.getDoUseAmplitudeMode ());
-#endif /* COMPLEX_FIELD_VALUES */
-
   if (SOLVER_SETTINGS.getDoUseParallelGrid ())
   {
 #ifndef PARALLEL_GRID
@@ -1817,17 +1768,56 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
   }
   else
   {
+#ifdef PARALLEL_GRID
+    /*
+     * We consider two groups here, E and H!
+     */
+    if (intScheme->getDoNeedEx ())
+    {
+      eGroup = ((ParallelGrid *) intScheme->getEx ())->getGroup ();
+    }
+    if (intScheme->getDoNeedEy ())
+    {
+      ASSERT (eGroup == NULLPTR || eGroup == ((ParallelGrid *) intScheme->getEy ())->getGroup ());
+      eGroup = ((ParallelGrid *) intScheme->getEy ())->getGroup ();
+    }
+    if (intScheme->getDoNeedEz ())
+    {
+      ASSERT (eGroup == NULLPTR || eGroup == ((ParallelGrid *) intScheme->getEz ())->getGroup ());
+      eGroup = ((ParallelGrid *) intScheme->getEz ())->getGroup ();
+    }
+
+    ASSERT (eGroup != NULLPTR);
+
+    if (intScheme->getDoNeedHx ())
+    {
+      hGroup = ((ParallelGrid *) intScheme->getHx ())->getGroup ();
+    }
+    if (intScheme->getDoNeedHy ())
+    {
+      ASSERT (hGroup == NULLPTR || hGroup == ((ParallelGrid *) intScheme->getHy ())->getGroup ());
+      hGroup = ((ParallelGrid *) intScheme->getHy ())->getGroup ();
+    }
+    if (intScheme->getDoNeedHz ())
+    {
+      ASSERT (hGroup == NULLPTR || hGroup == ((ParallelGrid *) intScheme->getHz ())->getGroup ());
+      hGroup = ((ParallelGrid *) intScheme->getHz ())->getGroup ();
+    }
+
+    ASSERT (hGroup != NULLPTR);
+#endif /* PARALLEL_GRID */
+
     if (SOLVER_SETTINGS.getDoSaveMaterials ())
     {
-      totalEps = new Grid<TC> (yeeLayout->getEpsSize (), 0, intScheme->getEps ()->getCountStoredSteps (), "Eps");
-      totalMu = new Grid<TC> (yeeLayout->getMuSize (), 0, intScheme->getMu ()->getCountStoredSteps (), "Mu");
+      totalEps = new Grid<TC> (yeeLayout->getEpsSize (), intScheme->getEps ()->getCountStoredSteps (), "Eps");
+      totalMu = new Grid<TC> (yeeLayout->getMuSize (), intScheme->getMu ()->getCountStoredSteps (), "Mu");
 
       if (SOLVER_SETTINGS.getDoUseMetamaterials ())
       {
-        totalOmegaPE = new Grid<TC> (yeeLayout->getEpsSize (), 0, intScheme->getOmegaPE ()->getCountStoredSteps (), "OmegaPE");
-        totalOmegaPM = new Grid<TC> (yeeLayout->getEpsSize (), 0, intScheme->getOmegaPM ()->getCountStoredSteps (), "OmegaPM");
-        totalGammaE = new Grid<TC> (yeeLayout->getEpsSize (), 0, intScheme->getGammaE ()->getCountStoredSteps (), "GammaE");
-        totalGammaM = new Grid<TC> (yeeLayout->getEpsSize (), 0, intScheme->getGammaM ()->getCountStoredSteps (), "GammaM");
+        totalOmegaPE = new Grid<TC> (yeeLayout->getEpsSize (), intScheme->getOmegaPE ()->getCountStoredSteps (), "OmegaPE");
+        totalOmegaPM = new Grid<TC> (yeeLayout->getEpsSize (), intScheme->getOmegaPM ()->getCountStoredSteps (), "OmegaPM");
+        totalGammaE = new Grid<TC> (yeeLayout->getEpsSize (), intScheme->getGammaE ()->getCountStoredSteps (), "GammaE");
+        totalGammaM = new Grid<TC> (yeeLayout->getEpsSize (), intScheme->getGammaM ()->getCountStoredSteps (), "GammaM");
       }
     }
   }
@@ -2008,333 +1998,6 @@ Scheme<Type, TCoord, layout_type>::~Scheme ()
   delete dumper1D[FILE_TYPE_DAT];
   delete dumper1D[FILE_TYPE_TXT];
 }
-
-//
-// template <SchemeType_t Type, template <typename, bool> class TCoord, typename Layout>
-// void
-// Scheme<Type, TCoord, Layout>::performAmplitudeSteps (time_step startStep)
-// {
-// #ifdef COMPLEX_FIELD_VALUES
-//   UNREACHABLE;
-// #else /* COMPLEX_FIELD_VALUES */
-//
-//   ASSERT_MESSAGE ("Temporary unsupported");
-//
-//   int processId = 0;
-//
-//   if (SOLVER_SETTINGS.getDoUseParallelGrid ())
-//   {
-// #ifdef PARALLEL_GRID
-//     processId = ParallelGrid::getParallelCore ()->getProcessId ();
-// #else /* PARALLEL_GRID */
-//     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
-// #endif /* !PARALLEL_GRID */
-//   }
-//
-//   int is_stable_state = 0;
-//
-//   GridCoordinate3D EzSize = internalScheme.Ez->getSize ();
-//
-//   time_step t = startStep;
-//
-//   while (is_stable_state == 0 && t < SOLVER_SETTINGS.getNumAmplitudeSteps ())
-//   {
-//     FPValue maxAccuracy = -1;
-//
-//     //is_stable_state = 1;
-//
-//     GridCoordinate3D ExStart = internalScheme.Ex->getComputationStart (yeeLayout->getExStartDiff ());
-//     GridCoordinate3D ExEnd = internalScheme.Ex->getComputationEnd (yeeLayout->getExEndDiff ());
-//
-//     GridCoordinate3D EyStart = internalScheme.Ey->getComputationStart (yeeLayout->getEyStartDiff ());
-//     GridCoordinate3D EyEnd = internalScheme.Ey->getComputationEnd (yeeLayout->getEyEndDiff ());
-//
-//     GridCoordinate3D EzStart = internalScheme.Ez->getComputationStart (yeeLayout->getEzStartDiff ());
-//     GridCoordinate3D EzEnd = internalScheme.Ez->getComputationEnd (yeeLayout->getEzEndDiff ());
-//
-//     GridCoordinate3D HxStart = internalScheme.Hx->getComputationStart (yeeLayout->getHxStartDiff ());
-//     GridCoordinate3D HxEnd = internalScheme.Hx->getComputationEnd (yeeLayout->getHxEndDiff ());
-//
-//     GridCoordinate3D HyStart = internalScheme.Hy->getComputationStart (yeeLayout->getHyStartDiff ());
-//     GridCoordinate3D HyEnd = internalScheme.Hy->getComputationEnd (yeeLayout->getHyEndDiff ());
-//
-//     GridCoordinate3D HzStart = internalScheme.Hz->getComputationStart (yeeLayout->getHzStartDiff ());
-//     GridCoordinate3D HzEnd = internalScheme.Hz->getComputationEnd (yeeLayout->getHzEndDiff ());
-//
-//     if (SOLVER_SETTINGS.getDoUseTFSF ())
-//     {
-//       performPlaneWaveESteps (t);
-//     }
-//
-//     performFieldSteps<static_cast<uint8_t> (GridType::EX)> (t, ExStart, ExEnd);
-//     performFieldSteps<static_cast<uint8_t> (GridType::EY)> (t, EyStart, EyEnd);
-//     performFieldSteps<static_cast<uint8_t> (GridType::EZ)> (t, EzStart, EzEnd);
-//
-//     for (int i = ExStart.get1 (); i < ExEnd.get1 (); ++i)
-//     {
-//       for (int j = ExStart.get2 (); j < ExEnd.get2 (); ++j)
-//       {
-//         for (int k = ExStart.get3 (); k < ExEnd.get3 (); ++k)
-//         {
-//           GridCoordinate3D pos (i, j, k);
-//
-//           if (!yeeLayout->isExInPML (internalScheme.Ex->getTotalPosition (pos)))
-//           {
-//             FieldPointValue* tmp = internalScheme.Ex->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = internalScheme.ExAmplitude->getFieldPointValue (pos);
-//
-//             GridCoordinateFP3D realCoord = yeeLayout->getExCoordFP (internalScheme.Ex->getTotalPosition (pos));
-//
-//             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
-//             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
-//
-//             FPValue val = tmp->getCurValue ();
-//
-//             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
-//             {
-//               is_stable_state = 0;
-//             }
-//           }
-//         }
-//       }
-//     }
-//
-//     for (int i = EyStart.get1 (); i < EyEnd.get1 (); ++i)
-//     {
-//       for (int j = EyStart.get2 (); j < EyEnd.get2 (); ++j)
-//       {
-//         for (int k = EyStart.get3 (); k < EyEnd.get3 (); ++k)
-//         {
-//           GridCoordinate3D pos (i, j, k);
-//
-//           if (!yeeLayout->isEyInPML (internalScheme.Ey->getTotalPosition (pos)))
-//           {
-//             FieldPointValue* tmp = internalScheme.Ey->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = internalScheme.EyAmplitude->getFieldPointValue (pos);
-//
-//             GridCoordinateFP3D realCoord = yeeLayout->getEyCoordFP (internalScheme.Ey->getTotalPosition (pos));
-//
-//             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
-//             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
-//
-//             FPValue val = tmp->getCurValue ();
-//
-//             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
-//             {
-//               is_stable_state = 0;
-//             }
-//           }
-//         }
-//       }
-//     }
-//
-//     for (int i = EzStart.get1 (); i < EzEnd.get1 (); ++i)
-//     {
-//       for (int j = EzStart.get2 (); j < EzEnd.get2 (); ++j)
-//       {
-//         for (int k = EzStart.get3 (); k < EzEnd.get3 (); ++k)
-//         {
-//           GridCoordinate3D pos (i, j, k);
-//
-//           if (!yeeLayout->isEzInPML (internalScheme.Ez->getTotalPosition (pos)))
-//           {
-//             FieldPointValue* tmp = internalScheme.Ez->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = internalScheme.EzAmplitude->getFieldPointValue (pos);
-//
-//             GridCoordinateFP3D realCoord = yeeLayout->getEzCoordFP (internalScheme.Ez->getTotalPosition (pos));
-//
-//             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
-//             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
-//
-//             FPValue val = tmp->getCurValue ();
-//
-//             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
-//             {
-//               is_stable_state = 0;
-//             }
-//           }
-//         }
-//       }
-//     }
-//
-//     internalScheme.Ex->nextTimeStep ();
-//     internalScheme.Ey->nextTimeStep ();
-//     internalScheme.Ez->nextTimeStep ();
-//
-//     if (SOLVER_SETTINGS.getDoUsePML ())
-//     {
-//       internalScheme.Dx->nextTimeStep ();
-//       internalScheme.Dy->nextTimeStep ();
-//       internalScheme.Dz->nextTimeStep ();
-//     }
-//
-//     if (SOLVER_SETTINGS.getDoUseTFSF ())
-//     {
-//       performPlaneWaveHSteps (t);
-//     }
-//
-//     performFieldSteps<static_cast<uint8_t> (GridType::HX)> (t, HxStart, HxEnd);
-//     performFieldSteps<static_cast<uint8_t> (GridType::HY)> (t, HyStart, HyEnd);
-//     performFieldSteps<static_cast<uint8_t> (GridType::HZ)> (t, HzStart, HzEnd);
-//
-//     for (int i = HxStart.get1 (); i < HxEnd.get1 (); ++i)
-//     {
-//       for (int j = HxStart.get2 (); j < HxEnd.get2 (); ++j)
-//       {
-//         for (int k = HxStart.get3 (); k < HxEnd.get3 (); ++k)
-//         {
-//           GridCoordinate3D pos (i, j, k);
-//
-//           if (!yeeLayout->isHxInPML (internalScheme.Hx->getTotalPosition (pos)))
-//           {
-//             FieldPointValue* tmp = internalScheme.Hx->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = internalScheme.HxAmplitude->getFieldPointValue (pos);
-//
-//             GridCoordinateFP3D realCoord = yeeLayout->getHxCoordFP (internalScheme.Hx->getTotalPosition (pos));
-//
-//             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
-//             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
-//
-//             FPValue val = tmp->getCurValue ();
-//
-//             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
-//             {
-//               is_stable_state = 0;
-//             }
-//           }
-//         }
-//       }
-//     }
-//
-//     for (int i = HyStart.get1 (); i < HyEnd.get1 (); ++i)
-//     {
-//       for (int j = HyStart.get2 (); j < HyEnd.get2 (); ++j)
-//       {
-//         for (int k = HyStart.get3 (); k < HyEnd.get3 (); ++k)
-//         {
-//           GridCoordinate3D pos (i, j, k);
-//
-//           if (!yeeLayout->isHyInPML (internalScheme.Hy->getTotalPosition (pos)))
-//           {
-//             FieldPointValue* tmp = internalScheme.Hy->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = internalScheme.HyAmplitude->getFieldPointValue (pos);
-//
-//             GridCoordinateFP3D realCoord = yeeLayout->getHyCoordFP (internalScheme.Hy->getTotalPosition (pos));
-//
-//             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
-//             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
-//
-//             FPValue val = tmp->getCurValue ();
-//
-//             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
-//             {
-//               is_stable_state = 0;
-//             }
-//           }
-//         }
-//       }
-//     }
-//
-//     for (int i = HzStart.get1 (); i < HzEnd.get1 (); ++i)
-//     {
-//       for (int j = HzStart.get2 (); j < HzEnd.get2 (); ++j)
-//       {
-//         for (int k = HzStart.get3 (); k < HzEnd.get3 (); ++k)
-//         {
-//           GridCoordinate3D pos (i, j, k);
-//
-//           if (!yeeLayout->isHzInPML (internalScheme.Hz->getTotalPosition (pos)))
-//           {
-//             FieldPointValue* tmp = internalScheme.Hz->getFieldPointValue (pos);
-//             FieldPointValue* tmpAmp = internalScheme.HzAmplitude->getFieldPointValue (pos);
-//
-//             GridCoordinateFP3D realCoord = yeeLayout->getHzCoordFP (internalScheme.Hz->getTotalPosition (pos));
-//
-//             GridCoordinateFP3D leftBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getLeftBorderTFSF ());
-//             GridCoordinateFP3D rightBorder = GridCoordinateFP3D (0, 0, 0) + convertCoord (yeeLayout->getRightBorderTFSF ());
-//
-//             FPValue val = tmp->getCurValue ();
-//
-//             if (updateAmplitude (val, tmpAmp, &maxAccuracy) == 0)
-//             {
-//               is_stable_state = 0;
-//             }
-//           }
-//         }
-//       }
-//     }
-//
-//     internalScheme.Hx->nextTimeStep ();
-//     internalScheme.Hy->nextTimeStep ();
-//     internalScheme.Hz->nextTimeStep ();
-//
-//     if (SOLVER_SETTINGS.getDoUsePML ())
-//     {
-//       internalScheme.Bx->nextTimeStep ();
-//       internalScheme.By->nextTimeStep ();
-//       internalScheme.Bz->nextTimeStep ();
-//     }
-//
-//     ++t;
-//
-//     if (maxAccuracy < 0)
-//     {
-//       is_stable_state = 0;
-//     }
-//
-//     DPRINTF (LOG_LEVEL_STAGES, "%d amplitude calculation step: max accuracy " FP_MOD ". \n", t, maxAccuracy);
-//   }
-//
-//   if (is_stable_state == 0)
-//   {
-//     ASSERT_MESSAGE ("Stable state is not reached. Increase number of steps.");
-//   }
-//
-// #endif /* !COMPLEX_FIELD_VALUES */
-// }
-
-// template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-// int
-// Scheme<Type, TCoord, layout_type>::updateAmplitude (FPValue val, FieldPointValue *amplitudeValue, FPValue *maxAccuracy)
-// {
-// #ifdef COMPLEX_FIELD_VALUES
-//   UNREACHABLE;
-// #else /* COMPLEX_FIELD_VALUES */
-//
-//   int is_stable_state = 1;
-//
-//   FPValue valAmp = amplitudeValue->getCurValue ();
-//
-//   val = val >= 0 ? val : -val;
-//
-//   if (val >= valAmp)
-//   {
-//     FPValue accuracy = val - valAmp;
-//     if (valAmp != 0)
-//     {
-//       accuracy /= valAmp;
-//     }
-//     else if (val != 0)
-//     {
-//       accuracy /= val;
-//     }
-//
-//     if (accuracy > PhysicsConst::accuracy)
-//     {
-//       is_stable_state = 0;
-//
-//       amplitudeValue->setCurValue (val);
-//     }
-//
-//     if (accuracy > *maxAccuracy)
-//     {
-//       *maxAccuracy = accuracy;
-//     }
-//   }
-//
-//   return is_stable_state;
-// #endif /* !COMPLEX_FIELD_VALUES */
-// }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
 void
@@ -4242,33 +3905,33 @@ Scheme<Type, TCoord, layout_type>::gatherFieldsTotal (bool scattered)
       {
         if (intScheme->getDoNeedEx ())
         {
-          totalEx = new Grid<TC> (yeeLayout->getExSize (), 0, intScheme->getEx ()->getCountStoredSteps (), "Ex");
+          totalEx = new Grid<TC> (yeeLayout->getExSize (), intScheme->getEx ()->getCountStoredSteps (), "Ex");
           totalEx->copy (intScheme->getEx ());
         }
         if (intScheme->getDoNeedEy ())
         {
-          totalEy = new Grid<TC> (yeeLayout->getEySize (), 0, intScheme->getEy ()->getCountStoredSteps (), "Ey");
+          totalEy = new Grid<TC> (yeeLayout->getEySize (), intScheme->getEy ()->getCountStoredSteps (), "Ey");
           totalEy->copy (intScheme->getEy ());
         }
         if (intScheme->getDoNeedEz ())
         {
-          totalEz = new Grid<TC> (yeeLayout->getEzSize (), 0, intScheme->getEz ()->getCountStoredSteps (), "Ez");
+          totalEz = new Grid<TC> (yeeLayout->getEzSize (), intScheme->getEz ()->getCountStoredSteps (), "Ez");
           totalEz->copy (intScheme->getEz ());
         }
 
         if (intScheme->getDoNeedHx ())
         {
-          totalHx = new Grid<TC> (yeeLayout->getHxSize (), 0, intScheme->getHx ()->getCountStoredSteps (), "Hx");
+          totalHx = new Grid<TC> (yeeLayout->getHxSize (), intScheme->getHx ()->getCountStoredSteps (), "Hx");
           totalHx->copy (intScheme->getHx ());
         }
         if (intScheme->getDoNeedHy ())
         {
-          totalHy = new Grid<TC> (yeeLayout->getHySize (), 0, intScheme->getHy ()->getCountStoredSteps (), "Hy");
+          totalHy = new Grid<TC> (yeeLayout->getHySize (), intScheme->getHy ()->getCountStoredSteps (), "Hy");
           totalHy->copy (intScheme->getHy ());
         }
         if (intScheme->getDoNeedHz ())
         {
-          totalHz = new Grid<TC> (yeeLayout->getHzSize (), 0, intScheme->getHz ()->getCountStoredSteps (), "Hz");
+          totalHz = new Grid<TC> (yeeLayout->getHzSize (), intScheme->getHz ()->getCountStoredSteps (), "Hz");
           totalHz->copy (intScheme->getHz ());
         }
 

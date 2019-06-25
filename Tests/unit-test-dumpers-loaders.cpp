@@ -235,9 +235,9 @@ int main (int argc, char** argv)
 #endif
                                   );
 
-  Grid<GridCoordinate1D> grid1D (overallSize1D, 0, 3, "1D");
-  Grid<GridCoordinate2D> grid2D (overallSize2D, 0, 3, "2D");
-  Grid<GridCoordinate3D> grid3D (overallSize3D, 0, 3, "3D");
+  Grid<GridCoordinate1D> grid1D (overallSize1D, 3, "1D");
+  Grid<GridCoordinate2D> grid2D (overallSize2D, 3, "2D");
+  Grid<GridCoordinate3D> grid3D (overallSize3D, 3, "3D");
 
   for (grid_coord i = 0; i < gridSizeX; ++i)
   {

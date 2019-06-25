@@ -52,11 +52,17 @@ public:
       scheme->performNStepsForBlock (tStart, N, blockIdx);
     }
 
+#ifdef PARALLEL_GRID
 #ifdef CUDA_ENABLED
+    /*
+     * Don't need to check here for is share time, because this is either sequential and we've finished computations or
+     * this is parallel+gpu, then we've returned from gpu right at the share time
+     */
     scheme->shareE ();
     scheme->shareH ();
-#endif
+#endif /* CUDA_ENABLED */
     scheme->rebalance ();
+#endif /* PARALLEL_GRID */
 
     if (SOLVER_SETTINGS.getDoUseNTFF ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateNTFFStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateNTFFStep ()))
@@ -97,11 +103,17 @@ public:
       }
     }
 
+#ifdef PARALLEL_GRID
 #ifdef CUDA_ENABLED
+    /*
+     * Don't need to check here for is share time, because this is either sequential and we've finished computations or
+     * this is parallel+gpu, then we've returned from gpu right at the share time
+     */
     scheme->shareE ();
     scheme->shareH ();
-#endif
+#endif /* CUDA_ENABLED */
     scheme->rebalance ();
+#endif /* PARALLEL_GRID */
 
     if (SOLVER_SETTINGS.getDoUseNTFF ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateNTFFStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateNTFFStep ()))
@@ -145,11 +157,17 @@ public:
       }
     }
 
+#ifdef PARALLEL_GRID
 #ifdef CUDA_ENABLED
+    /*
+     * Don't need to check here for is share time, because this is either sequential and we've finished computations or
+     * this is parallel+gpu, then we've returned from gpu right at the share time
+     */
     scheme->shareE ();
     scheme->shareH ();
-#endif
+#endif /* CUDA_ENABLED */
     scheme->rebalance ();
+#endif /* PARALLEL_GRID */
 
     if (SOLVER_SETTINGS.getDoUseNTFF ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateNTFFStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateNTFFStep ()))

@@ -36,8 +36,8 @@ int main (int argc, char** argv)
   MPI_Comm_rank (MPI_COMM_WORLD, &rank);
   MPI_Comm_size (MPI_COMM_WORLD, &numProcs);
 
-  printf ("X: PID %d of %d, grid size (" COORD_MOD "," COORD_MOD "," COORD_MOD ")\n",
-    rank, numProcs, gridSizeX, gridSizeY, gridSizeZ);
+  printf ("X: PID %d of %d, grid size (%llu, %llu, %llu)\n",
+    rank, numProcs, (unsigned long long)gridSizeX, (unsigned long long)gridSizeY, (unsigned long long)gridSizeZ);
 
   printf ("Start process %d of %d\n", rank, numProcs);
 
@@ -230,7 +230,13 @@ int main (int argc, char** argv)
 #endif
 
     grid.shiftInTime (zero, grid->getSize ());
-    grid.nextTimeStep ();
+    ParallelGridGroup *group = ParallelGrid::getGroup (0)
+    group->nextShareStep ();
+    if (group->isShareTime ())
+    {
+      grid.share ();
+      group->zeroShareStep ();
+    }
 
 #ifdef DYNAMIC_GRID
     if (t > 0 && t % SHARE_TIME_STEP == 0)

@@ -251,11 +251,9 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->performPlaneWaveEStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getEInc ()->getSize ());
       gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEInc ()->nextTimeStep ();
 #else /* CUDA_ENABLED */
       intScheme->performPlaneWaveESteps (t, zero1D, intScheme->getEInc ()->getSize ());
       intScheme->getEInc ()->shiftInTime ();
-      intScheme->getEInc ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -300,7 +298,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                               SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEx ()->nextTimeStep ();
 
 #else /* CUDA_ENABLED */
 
@@ -342,7 +339,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getEx ()->shiftInTime ();
-      intScheme->getEx ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -387,7 +383,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                               SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEy ()->nextTimeStep ();
 
 #else /* CUDA_ENABLED */
 
@@ -428,7 +423,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getEy ()->shiftInTime ();
-      intScheme->getEy ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -473,7 +467,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                               SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getEz ()->nextTimeStep ();
 
 #else /* CUDA_ENABLED */
 
@@ -514,7 +507,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getEz ()->shiftInTime ();
-      intScheme->getEz ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -525,11 +517,9 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 #ifdef CUDA_ENABLED
       gpuIntSchemeOnGPU->performPlaneWaveHStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getHInc ()->getSize ());
       gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHInc ()->nextTimeStep ();
 #else /* CUDA_ENABLED */
       intScheme->performPlaneWaveHSteps (t, zero1D, intScheme->getHInc ()->getSize ());
       intScheme->getHInc ()->shiftInTime ();
-      intScheme->getHInc ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -574,7 +564,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                               SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHx ()->nextTimeStep ();
 
 #else /* CUDA_ENABLED */
 
@@ -615,7 +604,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getHx ()->shiftInTime ();
-      intScheme->getHx ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -660,7 +648,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                               SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHy ()->nextTimeStep ();
 
 #else /* CUDA_ENABLED */
 
@@ -701,7 +688,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getHy ()->shiftInTime ();
-      intScheme->getHy ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
 
@@ -746,7 +732,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                               SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
       gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU);
-      gpuIntScheme->getHz ()->nextTimeStep ();
 
 #else /* CUDA_ENABLED */
 
@@ -787,7 +772,6 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       }
 
       intScheme->getHz ()->shiftInTime ();
-      intScheme->getHz ()->nextTimeStep (false);
 #endif /* !CUDA_ENABLED */
     }
   }
@@ -1008,7 +992,7 @@ void test1D_ExHy ()
 
   Grid<GridCoordinate1D> * cmp = NULLPTR;
 #ifdef DOUBLE_VALUES
-  Grid<GridCoordinate1D> Ex_cmp (overallSize, 0, 1);
+  Grid<GridCoordinate1D> Ex_cmp (overallSize, 1);
   cmp = &Ex_cmp;
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
@@ -1110,7 +1094,7 @@ void test1D_ExHz ()
 
   Grid<GridCoordinate1D> * cmp = NULLPTR;
 #ifdef DOUBLE_VALUES
-  Grid<GridCoordinate1D> Ex_cmp (overallSize, 0, 1);
+  Grid<GridCoordinate1D> Ex_cmp (overallSize, 1);
   cmp = &Ex_cmp;
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
@@ -1212,7 +1196,7 @@ void test1D_EyHx ()
 
   Grid<GridCoordinate1D> * cmp = NULLPTR;
 #ifdef DOUBLE_VALUES
-  Grid<GridCoordinate1D> Ey_cmp (overallSize, 0, 1);
+  Grid<GridCoordinate1D> Ey_cmp (overallSize, 1);
   cmp = &Ey_cmp;
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
@@ -1314,7 +1298,7 @@ void test1D_EyHz ()
 
   Grid<GridCoordinate1D> * cmp = NULLPTR;
 #ifdef DOUBLE_VALUES
-  Grid<GridCoordinate1D> Ey_cmp (overallSize, 0, 1);
+  Grid<GridCoordinate1D> Ey_cmp (overallSize, 1);
   cmp = &Ey_cmp;
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
@@ -1416,7 +1400,7 @@ void test1D_EzHx ()
 
   Grid<GridCoordinate1D> * cmp = NULLPTR;
 #ifdef DOUBLE_VALUES
-  Grid<GridCoordinate1D> Ez_cmp (overallSize, 0, 1);
+  Grid<GridCoordinate1D> Ez_cmp (overallSize, 1);
   cmp = &Ez_cmp;
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
@@ -1518,7 +1502,7 @@ void test1D_EzHy ()
 
   Grid<GridCoordinate1D> * cmp = NULLPTR;
 #ifdef DOUBLE_VALUES
-  Grid<GridCoordinate1D> Ez_cmp (overallSize, 0, 1);
+  Grid<GridCoordinate1D> Ez_cmp (overallSize, 1);
   cmp = &Ez_cmp;
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
