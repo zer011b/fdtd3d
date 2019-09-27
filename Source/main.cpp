@@ -74,15 +74,6 @@ void initParallel (ParallelYeeGridLayout<Type, layout_type> **yeeLayout,
 #endif /* DEBUG_INFO */
                                    );
 
-  MPI_Init(&argc, &argv);
-
-#ifdef MPI_CLOCK
-  DPRINTF (LOG_LEVEL_1, "MPI_Wtime resolution %.10f (seconds)\n", MPI_Wtick ());
-#endif /* MPI_CLOCK */
-
-  MPI_Comm_rank(MPI_COMM_WORLD, rank);
-  MPI_Comm_size(MPI_COMM_WORLD, numProcs);
-
   *parallelGridCore = new ParallelGridCore (*rank, *numProcs, overallSize,
                                             solverSettings.getDoUseManualVirtualTopology (),
                                             topology);
@@ -1091,24 +1082,26 @@ int runMode (int argc, char** argv)
 
   bool isParallel = false;
 
-  if (solverSettings.getDoUseParallelGrid ())
-  {
 #if defined (PARALLEL_GRID)
-    if (TCoord<grid_coord, false>::dimension != ParallelGridCoordinateTemplate<grid_coord, false>::dimension)
-    {
-      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid for this dimension. "
-                      "Recompile it with -DPARALLEL_GRID=ON.");
-    }
-    else
-    {
-      isParallel = true;
-      initParallel (&yeeLayout, &parallelGridCore, &rank, &numProcs, &skipProcess, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, argc, argv);
-    }
-#else
-    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
-#endif
+  MPI_Init(&argc, &argv);
+
+#ifdef MPI_CLOCK
+  DPRINTF (LOG_LEVEL_1, "MPI_Wtime resolution %.10f (seconds)\n", MPI_Wtick ());
+#endif /* MPI_CLOCK */
+
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
+
+  isParallel = numProcs > 1;
+
+  if (isParallel)
+  {
+    ALWAYS_ASSERT ((TCoord<grid_coord, false>::dimension == ParallelGridCoordinateTemplate<grid_coord, false>::dimension));
+
+    initParallel (&yeeLayout, &parallelGridCore, &rank, &numProcs, &skipProcess, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, argc, argv);
   }
   else
+#endif
   {
     yeeLayout = new YeeGridLayout<Type, TCoord, layout_type> (
                 overallSize,
@@ -1128,7 +1121,7 @@ int runMode (int argc, char** argv)
 #ifdef CUDA_ENABLED
     cudaInfo ();
 
-    if (solverSettings.getDoUseParallelGrid ())
+    if (isParallel)
     {
 #if defined (PARALLEL_GRID)
       if (TCoord<grid_coord, false>::dimension != ParallelGridCoordinateTemplate<grid_coord, false>::dimension)
@@ -1168,7 +1161,7 @@ int runMode (int argc, char** argv)
 
   delete yeeLayout;
 
-  if (solverSettings.getDoUseParallelGrid ())
+  if (isParallel)
   {
 #if defined (PARALLEL_GRID)
     if (TCoord<grid_coord, false>::dimension != ParallelGridCoordinateTemplate<grid_coord, false>::dimension)
@@ -1211,9 +1204,9 @@ int runMode (int argc, char** argv)
 #endif
 
     printf ("\n-------- Details --------\n");
-    printf ("Parallel grid: %d\n", solverSettings.getDoUseParallelGrid ());
+    printf ("Parallel grid: %d\n", isParallel);
 
-    if (solverSettings.getDoUseParallelGrid ())
+    if (isParallel)
     {
 #if defined (PARALLEL_GRID)
       printf ("Number of processes: %d\n", numProcs);

@@ -1737,19 +1737,14 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
   ASSERT (!SOLVER_SETTINGS.getDoUsePML ()
           || (SOLVER_SETTINGS.getDoUsePML () && (yeeLayout->getSizePML () != TC (0, 0, 0, ct1, ct2, ct3))));
 
-  if (SOLVER_SETTINGS.getDoUseParallelGrid ())
-  {
-#ifndef PARALLEL_GRID
-    ALWAYS_ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.")
-#endif
-
-    ALWAYS_ASSERT (parallelLayout);
 #ifdef PARALLEL_GRID
+  if (parallelLayout)
+  {
     ALWAYS_ASSERT ((TCoord<grid_coord, false>::dimension == ParallelGridCoordinateTemplate<grid_coord, false>::dimension));
-#endif
 
     useParallel = true;
   }
+#endif
 
   intScheme->init (layout, useParallel);
 

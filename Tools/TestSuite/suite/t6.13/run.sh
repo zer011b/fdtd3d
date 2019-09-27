@@ -10,7 +10,7 @@ USED_MODE=$3
 MODE=""
 RUNNER=""
 if [[ "$USED_MODE" -eq "2" ]]; then
-  MODE=" --parallel-grid"
+  MODE=""
   RUNNER="mpirun -n 2"
 fi
 

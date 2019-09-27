@@ -12,7 +12,7 @@ RUNNER=""
 if [[ "$USED_MODE" -eq "1" ]]; then
   MODE="--num-cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
 elif [[ "$USED_MODE" -eq "2" ]]; then
-  MODE=" --parallel-grid"
+  MODE=""
   RUNNER="mpirun -n 2"
 fi
 
