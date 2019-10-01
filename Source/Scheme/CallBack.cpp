@@ -19,12 +19,12 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom1_hy (GridCoordinateFP3D coord
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom1_jz (GridCoordinateFP3D coord, FPValue t)
 {
-  return SQR (PhysicsConst::SpeedOfLight) * PhysicsConst::Eps0 * (-2 * coord.get1 () * t + SQR (coord.get1 ()));
+  return - SQR (PhysicsConst::SpeedOfLight) * PhysicsConst::Eps0 * (-2 * coord.get1 () * t + SQR (coord.get1 ()));
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom1_my (GridCoordinateFP3D coord, FPValue t)
 {
-  return SQR (PhysicsConst::SpeedOfLight) * (-2 * coord.get1 () * t
+  return - SQR (PhysicsConst::SpeedOfLight) * (-2 * coord.get1 () * t
     + SQR (coord.get1 ()) * PhysicsConst::Eps0 * PhysicsConst::Mu0);
 }
 
@@ -60,34 +60,34 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_hz (GridCoordinateFP3D coord
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_jx (GridCoordinateFP3D coord, FPValue t)
 {
-  return SQR (PhysicsConst::SpeedOfLight) * PhysicsConst::Eps0 * (2 * t * (coord.get3 () - coord.get2 ()) + SQR (coord.get2 ()) + SQR (coord.get3 ()));
+  return - SQR (PhysicsConst::SpeedOfLight) * PhysicsConst::Eps0 * (2 * t * (coord.get3 () - coord.get2 ()) + SQR (coord.get2 ()) + SQR (coord.get3 ()));
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_jy (GridCoordinateFP3D coord, FPValue t)
 {
-  return SQR (PhysicsConst::SpeedOfLight) * PhysicsConst::Eps0 * (2 * t * (coord.get1 () - coord.get3 ()) + SQR (coord.get1 ()) + SQR (coord.get3 ()));
+  return - SQR (PhysicsConst::SpeedOfLight) * PhysicsConst::Eps0 * (2 * t * (coord.get1 () - coord.get3 ()) + SQR (coord.get1 ()) + SQR (coord.get3 ()));
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_jz (GridCoordinateFP3D coord, FPValue t)
 {
-  return SQR (PhysicsConst::SpeedOfLight) * PhysicsConst::Eps0 * (2 * t * (coord.get2 () - coord.get1 ()) + SQR (coord.get1 ()) + SQR (coord.get2 ()));
+  return - SQR (PhysicsConst::SpeedOfLight) * PhysicsConst::Eps0 * (2 * t * (coord.get2 () - coord.get1 ()) + SQR (coord.get1 ()) + SQR (coord.get2 ()));
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_mx (GridCoordinateFP3D coord, FPValue t)
 {
-  return SQR (PhysicsConst::SpeedOfLight) * (2 * t * (coord.get2 () - coord.get3 ())
+  return - SQR (PhysicsConst::SpeedOfLight) * (2 * t * (coord.get2 () - coord.get3 ())
     + PhysicsConst::Eps0 * PhysicsConst::Mu0 * (SQR (coord.get2 ()) + SQR (coord.get3 ())));
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_my (GridCoordinateFP3D coord, FPValue t)
 {
-  return SQR (PhysicsConst::SpeedOfLight) * (2 * t * (coord.get3 () - coord.get1 ())
+  return - SQR (PhysicsConst::SpeedOfLight) * (2 * t * (coord.get3 () - coord.get1 ())
     + PhysicsConst::Eps0 * PhysicsConst::Mu0 * (SQR (coord.get1 ()) + SQR (coord.get3 ())));
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_mz (GridCoordinateFP3D coord, FPValue t)
 {
-  return SQR (PhysicsConst::SpeedOfLight) * (2 * t * (coord.get1 () - coord.get2 ())
+  return - SQR (PhysicsConst::SpeedOfLight) * (2 * t * (coord.get1 () - coord.get2 ())
     + PhysicsConst::Eps0 * PhysicsConst::Mu0 * (SQR (coord.get1 ()) + SQR (coord.get2 ())));
 }
 
@@ -103,12 +103,12 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom3_hy (GridCoordinateFP3D coord
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom3_jz (GridCoordinateFP3D coord, FPValue t)
 {
-  return SQR (PhysicsConst::SpeedOfLight) * 2 * PhysicsConst::Eps0 * coord.get1 () * t * (coord.get1 () - t);
+  return - SQR (PhysicsConst::SpeedOfLight) * 2 * PhysicsConst::Eps0 * coord.get1 () * t * (coord.get1 () - t);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom3_my (GridCoordinateFP3D coord, FPValue t)
 {
-  return SQR (PhysicsConst::SpeedOfLight) * 2 * coord.get1 () * t
+  return - SQR (PhysicsConst::SpeedOfLight) * 2 * coord.get1 () * t
     * (PhysicsConst::Eps0 * PhysicsConst::Mu0 * coord.get1 () - t);
 }
 
