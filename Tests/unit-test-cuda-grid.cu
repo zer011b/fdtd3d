@@ -107,7 +107,7 @@ __global__ void cudaCalculate (CudaExitStatus *retval,
 #if defined (MODE_DIM1)
 void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
 {
-  Grid<GridCoordinate1D> cpuGrid (overallSize, 0, 2);
+  Grid<GridCoordinate1D> cpuGrid (overallSize, 2);
   cpuGrid.initialize (FIELDVALUE (17, 1022));
 
   GridCoordinate1D zero = GRID_COORDINATE_1D (0, overallSize.getType1 ());
@@ -147,7 +147,6 @@ void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
   dim3 threads_shift (1, 1, 1);
   cudaCheckExitStatus (shiftInTime <<< blocks_shift, threads_shift >>> (exitStatusCuda, d_cudaGrid));
   cudaGrid.nextTimeStep ();
-  ASSERT (cudaGrid.getTimeStep () == 1);
 
   dim3 blocks (cudaGrid.getSize ().get1 () / 2, 1, 1);
   dim3 threads (2, 1, 1);
@@ -210,7 +209,7 @@ void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
 #if defined (MODE_DIM2)
 void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
 {
-  Grid<GridCoordinate2D> cpuGrid (overallSize, 0, 2);
+  Grid<GridCoordinate2D> cpuGrid (overallSize, 2);
   cpuGrid.initialize (FIELDVALUE (17, 1022));
 
   GridCoordinate2D zero = GRID_COORDINATE_2D (0, 0, overallSize.getType1 (), overallSize.getType2 ());
@@ -250,7 +249,6 @@ void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
   dim3 threads_shift (1, 1, 1);
   cudaCheckExitStatus (shiftInTime <<< blocks_shift, threads_shift >>> (exitStatusCuda, d_cudaGrid));
   cudaGrid.nextTimeStep ();
-  ASSERT (cudaGrid.getTimeStep () == 1);
 
   dim3 blocks (cudaGrid.getSize ().get1 () / 2, cudaGrid.getSize ().get2 () / 2, 1);
   dim3 threads (2, 2, 1);
@@ -320,7 +318,7 @@ void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
 #if defined (MODE_DIM3)
 void testFunc3D (GridCoordinate3D overallSize, GridCoordinate3D bufSize)
 {
-  Grid<GridCoordinate3D> cpuGrid (overallSize, 0, 2);
+  Grid<GridCoordinate3D> cpuGrid (overallSize, 2);
   cpuGrid.initialize (FIELDVALUE (17, 1022));
 
   GridCoordinate3D zero = GRID_COORDINATE_3D (0, 0, 0, overallSize.getType1 (), overallSize.getType2 (), overallSize.getType3 ());
@@ -360,7 +358,6 @@ void testFunc3D (GridCoordinate3D overallSize, GridCoordinate3D bufSize)
   dim3 threads_shift (1, 1, 1);
   cudaCheckExitStatus (shiftInTime <<< blocks_shift, threads_shift >>> (exitStatusCuda, d_cudaGrid));
   cudaGrid.nextTimeStep ();
-  ASSERT (cudaGrid.getTimeStep () == 1);
 
   dim3 blocks (cudaGrid.getSize ().get1 () / 2, cudaGrid.getSize ().get2 () / 2, cudaGrid.getSize ().get3 () / 2);
   dim3 threads (2, 2, 2);

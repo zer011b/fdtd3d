@@ -75,13 +75,6 @@ protected:
 
   FieldValue *helperGridValues;
 
-#ifdef DEBUG_INFO
-  /**
-   * Current time step.
-   */
-  time_step timeStep;
-#endif /* DEBUG_INFO */
-
   /**
    * Step at which to perform share operations for synchronization of computational nodes
    */
@@ -164,7 +157,6 @@ public:
 
   CUDA_DEVICE void shiftInTime ();
   CUDA_HOST void nextTimeStep ();
-  CUDA_HOST time_step getTimeStep ();
 
   CUDA_HOST void nextShareStep ();
   CUDA_HOST void zeroShareStep ();
@@ -223,9 +215,6 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
   , d_gridValues (NULLPTR)
   , gridValuesDevicePointers (NULLPTR)
   , helperGridValues (NULLPTR)
-#ifdef DEBUG_INFO
-  , timeStep (0)
-#endif /* DEBUG_INFO */
   , shareStep (0)
   , hasLeft (TCoord ())
   , hasRight (TCoord ())
@@ -460,26 +449,7 @@ CudaGrid<TCoord>::nextTimeStep ()
   shift (gridValuesDevicePointers);
 
   nextShareStep ();
-
-#ifdef DEBUG_INFO
-  ++timeStep;
-#endif /* DEBUG_INFO */
 } /* CudaGrid<TCoord>::nextTimeStep */
-
-#ifdef DEBUG_INFO
-
-/**
- * Set time step
- */
-template <class TCoord>
-CUDA_HOST
-time_step
-CudaGrid<TCoord>::getTimeStep ()
-{
-  return timeStep;
-} /* CudaGrid<TCoord>::getTimeStep */
-
-#endif /* DEBUG_INFO */
 
 /**
  * Increase share step
