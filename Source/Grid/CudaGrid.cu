@@ -444,9 +444,6 @@ CudaGrid<GridCoordinate1D>::copyFromCPU (const GridCoordinate1D &start, /**< abs
 
   startOfBlock = start;
   endOfBlock = end;
-#ifdef DEBUG_INFO
-  timeStep = cpuGrid->getTimeStep ();
-#endif /* DEBUG_INFO */
 
   hasLeft = GridCoordinate1D (1
 #ifdef DEBUG_INFO
@@ -588,9 +585,6 @@ CudaGrid<GridCoordinate2D>::copyFromCPU (const GridCoordinate2D &start, /**< abs
 
   startOfBlock = start;
   endOfBlock = end;
-#ifdef DEBUG_INFO
-  timeStep = cpuGrid->getTimeStep ();
-#endif /* DEBUG_INFO */
 
   hasLeft = GridCoordinate2D (1, 1
 #ifdef DEBUG_INFO
@@ -768,9 +762,6 @@ CudaGrid<GridCoordinate3D>::copyFromCPU (const GridCoordinate3D &start, /**< abs
 
   startOfBlock = start;
   endOfBlock = end;
-#ifdef DEBUG_INFO
-  timeStep = cpuGrid->getTimeStep ();
-#endif /* DEBUG_INFO */
 
   hasLeft = GridCoordinate3D (1, 1, 1
 #ifdef DEBUG_INFO
