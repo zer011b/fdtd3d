@@ -156,26 +156,19 @@ public:
    */
   void performSteps ()
   {
-    if (SOLVER_SETTINGS.getDoUseMetamaterials () && !SOLVER_SETTINGS.getDoUsePML ())
+    /*
+     * Each NTimeSteps sharing will be performed for parallel builds.
+     *
+     * For non-Cuda solver (both sequential and parallel), NTimeSteps == 1
+     * For Cuda solver, NTimeSteps == bufSize - 1
+     */
+    if (!SOLVER_SETTINGS.getDoUseCuda ())
     {
-      ASSERT_MESSAGE ("Metamaterials without pml are not implemented");
-    }
-
-    if (useParallel)
-    {
-#ifndef PARALLEL_GRID
-      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
-#endif /* !PARALLEL_GRID */
+      ASSERT (NTimeSteps == 1);
     }
 
     for (time_step t = 0; t < totalTimeSteps; t += NTimeSteps)
     {
-      /*
-       * Each NTimeSteps sharing will be performed for parallel builds.
-       *
-       * For non-Cuda solver (both sequential and parallel), NTimeSteps == 1
-       * For Cuda solver, NTimeSteps == bufSize - 1
-       */
       performNSteps (t, NTimeSteps);
     }
 

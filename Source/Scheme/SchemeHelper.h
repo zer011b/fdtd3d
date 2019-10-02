@@ -44,25 +44,36 @@ public:
                         time_step tStart,
                         time_step N)
   {
+    bool doSaveToPrevStorage = SOLVER_SETTINGS.getDoUseCuda () && scheme->blockCount.get1 () > 1;
+
     for (grid_coord c1 = 0; c1 < scheme->blockCount.get1 (); ++c1)
     {
       GridCoordinate1D blockIdx = GRID_COORDINATE_1D (c1, scheme->ct1);
 
-      // TODO: save block to prev blocks storage
+      if (doSaveToPrevStorage)
+      {
+        // TODO: save block to prev blocks storage
+      }
+
       scheme->performNStepsForBlock (tStart, N, blockIdx);
     }
 
 #ifdef PARALLEL_GRID
 #ifdef CUDA_ENABLED
-    /*
-     * Don't need to check here for is share time, because this is either sequential and we've finished computations or
-     * this is parallel+gpu, then we've returned from gpu right at the share time
-     */
-    scheme->shareE ();
-    scheme->shareH ();
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      scheme->shareE ();
+      scheme->shareH ();
+    }
 #endif /* CUDA_ENABLED */
     scheme->rebalance ();
 #endif /* PARALLEL_GRID */
+
+    /*
+     * This will save intermediate results for tStart + N, even if intermediate step was in range [tStart, tStart+N].
+     * For CPU computatios N is 1, so range length is 1. For GPU computations range is longer and some steps are not
+     * obtained on CPU at all.
+     */
 
     if (SOLVER_SETTINGS.getDoUseNTFF ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateNTFFStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateNTFFStep ()))
@@ -92,28 +103,40 @@ public:
                         time_step tStart,
                         time_step N)
   {
+    bool doSaveToPrevStorage = SOLVER_SETTINGS.getDoUseCuda ()
+                               && (scheme->blockCount.get1 () > 1 || scheme->blockCount.get2 () > 1);
+
     for (grid_coord c1 = 0; c1 < scheme->blockCount.get1 (); ++c1)
     {
       for (grid_coord c2 = 0; c2 < scheme->blockCount.get2 (); ++c2)
       {
         GridCoordinate2D blockIdx = GRID_COORDINATE_2D (c1, c2, scheme->ct1, scheme->ct2);
 
-        // TODO: save block to prev blocks storage
+        if (doSaveToPrevStorage)
+        {
+          // TODO: save block to prev blocks storage
+        }
+
         scheme->performNStepsForBlock (tStart, N, blockIdx);
       }
     }
 
 #ifdef PARALLEL_GRID
 #ifdef CUDA_ENABLED
-    /*
-     * Don't need to check here for is share time, because this is either sequential and we've finished computations or
-     * this is parallel+gpu, then we've returned from gpu right at the share time
-     */
-    scheme->shareE ();
-    scheme->shareH ();
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      scheme->shareE ();
+      scheme->shareH ();
+    }
 #endif /* CUDA_ENABLED */
     scheme->rebalance ();
 #endif /* PARALLEL_GRID */
+
+    /*
+     * This will save intermediate results for tStart + N, even if intermediate step was in range [tStart, tStart+N].
+     * For CPU computatios N is 1, so range length is 1. For GPU computations range is longer and some steps are not
+     * obtained on CPU at all.
+     */
 
     if (SOLVER_SETTINGS.getDoUseNTFF ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateNTFFStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateNTFFStep ()))
@@ -143,6 +166,9 @@ public:
                         time_step tStart,
                         time_step N)
   {
+    bool doSaveToPrevStorage = SOLVER_SETTINGS.getDoUseCuda ()
+                               && (scheme->blockCount.get1 () > 1 || scheme->blockCount.get2 () > 1 || scheme->blockCount.get3 () > 1);
+
     for (grid_coord c1 = 0; c1 < scheme->blockCount.get1 (); ++c1)
     {
       for (grid_coord c2 = 0; c2 < scheme->blockCount.get2 (); ++c2)
@@ -151,7 +177,11 @@ public:
         {
           GridCoordinate3D blockIdx = GRID_COORDINATE_3D (c1, c2, c3, scheme->ct1, scheme->ct2, scheme->ct3);
 
-          // TODO: save block to prev blocks storage
+          if (doSaveToPrevStorage)
+          {
+            // TODO: save block to prev blocks storage
+          }
+
           scheme->performNStepsForBlock (tStart, N, blockIdx);
         }
       }
@@ -159,15 +189,20 @@ public:
 
 #ifdef PARALLEL_GRID
 #ifdef CUDA_ENABLED
-    /*
-     * Don't need to check here for is share time, because this is either sequential and we've finished computations or
-     * this is parallel+gpu, then we've returned from gpu right at the share time
-     */
-    scheme->shareE ();
-    scheme->shareH ();
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      scheme->shareE ();
+      scheme->shareH ();
+    }
 #endif /* CUDA_ENABLED */
     scheme->rebalance ();
 #endif /* PARALLEL_GRID */
+
+    /*
+     * This will save intermediate results for tStart + N, even if intermediate step was in range [tStart, tStart+N].
+     * For CPU computatios N is 1, so range length is 1. For GPU computations range is longer and some steps are not
+     * obtained on CPU at all.
+     */
 
     if (SOLVER_SETTINGS.getDoUseNTFF ()
         && ((tStart) / SOLVER_SETTINGS.getIntermediateNTFFStep () < (tStart + N) / SOLVER_SETTINGS.getIntermediateNTFFStep ()))
