@@ -95,12 +95,7 @@ SETTINGS_ELEM_FIELD_TYPE_FLOAT(incidentWaveAngle3, getIncidentWaveAngle3, FPValu
  * Concurrency
  */
 SETTINGS_ELEM_FIELD_TYPE_INT(bufferSize, getBufferSize, int, 1, "--buffer-size", "Size of buffer for parallel grid")
-SETTINGS_ELEM_FIELD_TYPE_INT(numCudaGPUs, getNumCudaGPUs, int, 1, "--num-cuda-gpus", "Number of GPUs to use in computations")
-SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsX, getNumCudaThreadsX, int, 4, "--num-cuda-threads-x", "Number of GPU threads by x coordinate to use in computations")
-SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsY, getNumCudaThreadsY, int, 4, "--num-cuda-threads-y", "Number of GPU threads by y coordinate to use in computations")
-SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsZ, getNumCudaThreadsZ, int, 4, "--num-cuda-threads-z", "Number of GPU threads by z coordinate to use in computations")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseManualVirtualTopology, getDoUseManualVirtualTopology, bool, false, "--manual-topology", "Use manual topology for parallel grid")
-
 SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeX, getTopologySizeX, int, 1, "--topology-sizex", "Size by x coordinate of virtual topology")
 SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeY, getTopologySizeY, int, 1, "--topology-sizey", "Size by y coordinate of virtual topology")
 SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeZ, getTopologySizeZ, int, 1, "--topology-sizez", "Size by z coordinate of virtual topology")
@@ -109,7 +104,12 @@ SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-topology", "Use size of topology by 
 /*
  * CUDA
  */
+SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCuda, getDoUseCuda, bool, false, "--use-cuda", "Use cuda")
 SETTINGS_ELEM_FIELD_TYPE_INT(cudaBlocksBufferSize, getCudaBlocksBufferSize, int, 1, "--cuda-buffer-size", "Size of buffer for blocks for cuda grid")
+SETTINGS_ELEM_FIELD_TYPE_INT(numCudaGPUs, getNumCudaGPUs, int, 1, "--num-cuda-gpus", "Number of GPUs to use in computations")
+SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsX, getNumCudaThreadsX, int, 4, "--num-cuda-threads-x", "Number of GPU threads by x coordinate to use in computations")
+SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsY, getNumCudaThreadsY, int, 4, "--num-cuda-threads-y", "Number of GPU threads by y coordinate to use in computations")
+SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsZ, getNumCudaThreadsZ, int, 4, "--num-cuda-threads-z", "Number of GPU threads by z coordinate to use in computations")
 
 /*
  * Computation mode flags

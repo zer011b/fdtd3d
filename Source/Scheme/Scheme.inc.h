@@ -23,12 +23,15 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
   }
 
 #ifdef CUDA_ENABLED
-  /*
-   * Copy InternalScheme to GPU
-   */
-  gpuIntScheme->copyFromCPU (blockIdx * blockSize, blockSize);
-  gpuIntSchemeOnGPU->copyToGPU (gpuIntScheme);
-  cudaCheckErrorCmd (cudaMemcpy (d_gpuIntSchemeOnGPU, gpuIntSchemeOnGPU, sizeof(InternalSchemeGPU<Type, TCoord, layout_type>), cudaMemcpyHostToDevice));
+  if (SOLVER_SETTINGS.getDoUseCuda ())
+  {
+    /*
+     * Copy InternalScheme to GPU
+     */
+    gpuIntScheme->copyFromCPU (blockIdx * blockSize, blockSize);
+    gpuIntSchemeOnGPU->copyToGPU (gpuIntScheme);
+    cudaCheckErrorCmd (cudaMemcpy (d_gpuIntSchemeOnGPU, gpuIntSchemeOnGPU, sizeof(InternalSchemeGPU<Type, TCoord, layout_type>), cudaMemcpyHostToDevice));
+  }
 #endif /* CUDA_ENABLED */
 
   for (time_step t = tStart; t < tStart + N; ++t)
@@ -38,68 +41,81 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       DPRINTF (LOG_LEVEL_STAGES, "Calculating time step %u...\n", t);
     }
 
+    TC ExStart, ExEnd;
+    TC EyStart, EyEnd;
+    TC EzStart, EzEnd;
+    TC HxStart, HxEnd;
+    TC HyStart, HyEnd;
+    TC HzStart, HzEnd;
+
 #ifdef CUDA_ENABLED
-    TC ExStart = gpuIntScheme->getDoNeedEx () ? gpuIntScheme->getEx ()->getComputationStart (yeeLayout->getExStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC ExEnd = gpuIntScheme->getDoNeedEx () ? gpuIntScheme->getEx ()->getComputationEnd (yeeLayout->getExEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      ExStart = gpuIntScheme->getDoNeedEx () ? gpuIntScheme->getEx ()->getComputationStart (yeeLayout->getExStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      ExEnd = gpuIntScheme->getDoNeedEx () ? gpuIntScheme->getEx ()->getComputationEnd (yeeLayout->getExEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
 
-    TC EyStart = gpuIntScheme->getDoNeedEy () ? gpuIntScheme->getEy ()->getComputationStart (yeeLayout->getEyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC EyEnd = gpuIntScheme->getDoNeedEy () ? gpuIntScheme->getEy ()->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      EyStart = gpuIntScheme->getDoNeedEy () ? gpuIntScheme->getEy ()->getComputationStart (yeeLayout->getEyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      EyEnd = gpuIntScheme->getDoNeedEy () ? gpuIntScheme->getEy ()->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
 
-    TC EzStart = gpuIntScheme->getDoNeedEz () ? gpuIntScheme->getEz ()->getComputationStart (yeeLayout->getEzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC EzEnd = gpuIntScheme->getDoNeedEz () ? gpuIntScheme->getEz ()->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      EzStart = gpuIntScheme->getDoNeedEz () ? gpuIntScheme->getEz ()->getComputationStart (yeeLayout->getEzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      EzEnd = gpuIntScheme->getDoNeedEz () ? gpuIntScheme->getEz ()->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
 
-    TC HxStart = gpuIntScheme->getDoNeedHx () ? gpuIntScheme->getHx ()->getComputationStart (yeeLayout->getHxStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HxEnd = gpuIntScheme->getDoNeedHx () ? gpuIntScheme->getHx ()->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      HxStart = gpuIntScheme->getDoNeedHx () ? gpuIntScheme->getHx ()->getComputationStart (yeeLayout->getHxStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      HxEnd = gpuIntScheme->getDoNeedHx () ? gpuIntScheme->getHx ()->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
 
-    TC HyStart = gpuIntScheme->getDoNeedHy () ? gpuIntScheme->getHy ()->getComputationStart (yeeLayout->getHyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HyEnd = gpuIntScheme->getDoNeedHy () ? gpuIntScheme->getHy ()->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      HyStart = gpuIntScheme->getDoNeedHy () ? gpuIntScheme->getHy ()->getComputationStart (yeeLayout->getHyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      HyEnd = gpuIntScheme->getDoNeedHy () ? gpuIntScheme->getHy ()->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
 
-    TC HzStart = gpuIntScheme->getDoNeedHz () ? gpuIntScheme->getHz ()->getComputationStart (yeeLayout->getHzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HzEnd = gpuIntScheme->getDoNeedHz () ? gpuIntScheme->getHz ()->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-#else /* CUDA_ENABLED */
-    TC ExStart = intScheme->getDoNeedEx () ? intScheme->getEx ()->getComputationStart (yeeLayout->getExStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC ExEnd = intScheme->getDoNeedEx () ? intScheme->getEx ()->getComputationEnd (yeeLayout->getExEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC EyStart = intScheme->getDoNeedEy () ? intScheme->getEy ()->getComputationStart (yeeLayout->getEyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC EyEnd = intScheme->getDoNeedEy () ? intScheme->getEy ()->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC EzStart = intScheme->getDoNeedEz () ? intScheme->getEz ()->getComputationStart (yeeLayout->getEzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC EzEnd = intScheme->getDoNeedEz () ? intScheme->getEz ()->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC HxStart = intScheme->getDoNeedHx () ? intScheme->getHx ()->getComputationStart (yeeLayout->getHxStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HxEnd = intScheme->getDoNeedHx () ? intScheme->getHx ()->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC HyStart = intScheme->getDoNeedHy () ? intScheme->getHy ()->getComputationStart (yeeLayout->getHyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HyEnd = intScheme->getDoNeedHy () ? intScheme->getHy ()->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-
-    TC HzStart = intScheme->getDoNeedHz () ? intScheme->getHz ()->getComputationStart (yeeLayout->getHzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
-    TC HzEnd = intScheme->getDoNeedHz () ? intScheme->getHz ()->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      HzStart = gpuIntScheme->getDoNeedHz () ? gpuIntScheme->getHz ()->getComputationStart (yeeLayout->getHzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      HzEnd = gpuIntScheme->getDoNeedHz () ? gpuIntScheme->getHz ()->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    }
+    else
 #endif /* CUDA_ENABLED */
+    {
+      ExStart = intScheme->getDoNeedEx () ? intScheme->getEx ()->getComputationStart (yeeLayout->getExStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      ExEnd = intScheme->getDoNeedEx () ? intScheme->getEx ()->getComputationEnd (yeeLayout->getExEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+      EyStart = intScheme->getDoNeedEy () ? intScheme->getEy ()->getComputationStart (yeeLayout->getEyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      EyEnd = intScheme->getDoNeedEy () ? intScheme->getEy ()->getComputationEnd (yeeLayout->getEyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+      EzStart = intScheme->getDoNeedEz () ? intScheme->getEz ()->getComputationStart (yeeLayout->getEzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      EzEnd = intScheme->getDoNeedEz () ? intScheme->getEz ()->getComputationEnd (yeeLayout->getEzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+      HxStart = intScheme->getDoNeedHx () ? intScheme->getHx ()->getComputationStart (yeeLayout->getHxStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      HxEnd = intScheme->getDoNeedHx () ? intScheme->getHx ()->getComputationEnd (yeeLayout->getHxEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+      HyStart = intScheme->getDoNeedHy () ? intScheme->getHy ()->getComputationStart (yeeLayout->getHyStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      HyEnd = intScheme->getDoNeedHy () ? intScheme->getHy ()->getComputationEnd (yeeLayout->getHyEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+
+      HzStart = intScheme->getDoNeedHz () ? intScheme->getHz ()->getComputationStart (yeeLayout->getHzStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+      HzEnd = intScheme->getDoNeedHz () ? intScheme->getHz ()->getComputationEnd (yeeLayout->getHzEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    }
 
     if (SOLVER_SETTINGS.getDoUseTFSF ())
     {
       GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
 
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->performPlaneWaveEStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getEInc ()->getSize ());
-      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU);
-#else /* CUDA_ENABLED */
-      intScheme->performPlaneWaveESteps (t, zero1D, intScheme->getEInc ()->getSize ());
-      intScheme->getEInc ()->shiftInTime ();
-#endif /* !CUDA_ENABLED */
+      if (SOLVER_SETTINGS.getDoUseCuda ())
+      {
+        gpuIntSchemeOnGPU->performPlaneWaveEStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getEInc ()->getSize ());
+        gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU);
+      }
+      else
+#endif /* CUDA_ENABLED */
+      {
+        intScheme->performPlaneWaveESteps (t, zero1D, intScheme->getEInc ()->getSize ());
+        intScheme->getEInc ()->shiftInTime ();
+      }
     }
 
     if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
     {
-#ifdef CUDA_ENABLED
-      ASSERT_MESSAGE ("Balancing is WIP for Cuda builds");
-#endif
-
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StartCalcClock ();
 #else
-      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. "
-                      "Recompile it with -DPARALLEL_GRID=ON and -DDYNAMIC_GRID=ON.");
+      ASSERT_MESSAGE ("Solver is not compiled with support of dynamic grid. "
+                      "Recompile it with -DDYNAMIC_GRID=ON.");
 #endif
     }
 
@@ -120,97 +136,108 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
 
     if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
     {
-#ifdef CUDA_ENABLED
-      ASSERT_MESSAGE ("Balancing is WIP for Cuda builds");
-#endif
-
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StopCalcClock ();
 #else
-      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. "
-                      "Recompile it with -DPARALLEL_GRID=ON and -DDYNAMIC_GRID=ON.");
+      ASSERT_MESSAGE ("Solver is not compiled with support of dynamic grid. "
+                      "Recompile it with -DDYNAMIC_GRID=ON.");
 #endif
     }
 
     if (intScheme->getDoNeedEx ())
     {
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU);
+      if (SOLVER_SETTINGS.getDoUseCuda ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU);
 
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDx (d_gpuIntSchemeOnGPU);
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDx (d_gpuIntSchemeOnGPU);
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1x (d_gpuIntSchemeOnGPU);
+        }
       }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1x (d_gpuIntSchemeOnGPU);
-      }
-#else
-      intScheme->getEx ()->shiftInTime ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        intScheme->getDx ()->shiftInTime ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        intScheme->getD1x ()->shiftInTime ();
-      }
+      else
 #endif
+      {
+        intScheme->getEx ()->shiftInTime ();
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          intScheme->getDx ()->shiftInTime ();
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          intScheme->getD1x ()->shiftInTime ();
+        }
+      }
     }
 
     if (intScheme->getDoNeedEy ())
     {
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU);
+      if (SOLVER_SETTINGS.getDoUseCuda ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU);
 
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDy (d_gpuIntSchemeOnGPU);
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDy (d_gpuIntSchemeOnGPU);
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1y (d_gpuIntSchemeOnGPU);
+        }
       }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1y (d_gpuIntSchemeOnGPU);
-      }
-#else
-      intScheme->getEy ()->shiftInTime ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        intScheme->getDy ()->shiftInTime ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        intScheme->getD1y ()->shiftInTime ();
-      }
+      else
 #endif
+      {
+        intScheme->getEy ()->shiftInTime ();
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          intScheme->getDy ()->shiftInTime ();
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          intScheme->getD1y ()->shiftInTime ();
+        }
+      }
     }
 
     if (intScheme->getDoNeedEz ())
     {
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU);
+      if (SOLVER_SETTINGS.getDoUseCuda ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU);
 
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDz (d_gpuIntSchemeOnGPU);
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDz (d_gpuIntSchemeOnGPU);
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1z (d_gpuIntSchemeOnGPU);
+        }
       }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1z (d_gpuIntSchemeOnGPU);
-      }
-#else
-      intScheme->getEz ()->shiftInTime ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        intScheme->getDz ()->shiftInTime ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        intScheme->getD1z ()->shiftInTime ();
-      }
+      else
 #endif
+      {
+        intScheme->getEz ()->shiftInTime ();
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          intScheme->getDz ()->shiftInTime ();
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          intScheme->getD1z ()->shiftInTime ();
+        }
+      }
     }
 
 #ifdef PARALLEL_GRID
@@ -224,25 +251,26 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
 
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->performPlaneWaveHStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getHInc ()->getSize ());
-      gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU);
-#else /* CUDA_ENABLED */
-      intScheme->performPlaneWaveHSteps (t, zero1D, intScheme->getHInc ()->getSize ());
-      intScheme->getHInc ()->shiftInTime ();
-#endif /* !CUDA_ENABLED */
+      if (SOLVER_SETTINGS.getDoUseCuda ())
+      {
+        gpuIntSchemeOnGPU->performPlaneWaveHStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getHInc ()->getSize ());
+        gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU);
+      }
+      else
+#endif /* CUDA_ENABLED */
+      {
+        intScheme->performPlaneWaveHSteps (t, zero1D, intScheme->getHInc ()->getSize ());
+        intScheme->getHInc ()->shiftInTime ();
+      }
     }
 
     if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
     {
-#ifdef CUDA_ENABLED
-      ASSERT_MESSAGE ("Balancing is WIP for Cuda builds");
-#endif
-
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StartCalcClock ();
 #else
-      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. "
-                      "Recompile it with -DPARALLEL_GRID=ON and -DDYNAMIC_GRID=ON.");
+      ASSERT_MESSAGE ("Solver is not compiled with support of dynamic grid. "
+                      "Recompile it with -DDYNAMIC_GRID=ON.");
 #endif
     }
 
@@ -263,97 +291,108 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
 
     if (useParallel && SOLVER_SETTINGS.getDoUseDynamicGrid ())
     {
-#ifdef CUDA_ENABLED
-      ASSERT_MESSAGE ("Balancing is WIP for Cuda builds");
-#endif
-
 #if defined (PARALLEL_GRID) && defined (DYNAMIC_GRID)
       ParallelGrid::getParallelCore ()->StopCalcClock ();
 #else
-      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. "
-                      "Recompile it with -DPARALLEL_GRID=ON and -DDYNAMIC_GRID=ON.");
+      ASSERT_MESSAGE ("Solver is not compiled with support of dynamic grid. "
+                      "Recompile it with -DDYNAMIC_GRID=ON.");
 #endif
     }
 
     if (intScheme->getDoNeedHx ())
     {
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU);
+      if (SOLVER_SETTINGS.getDoUseCuda ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU);
 
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBx (d_gpuIntSchemeOnGPU);
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBx (d_gpuIntSchemeOnGPU);
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1x (d_gpuIntSchemeOnGPU);
+        }
       }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1x (d_gpuIntSchemeOnGPU);
-      }
-#else
-      intScheme->getHx ()->shiftInTime ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        intScheme->getBx ()->shiftInTime ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        intScheme->getB1x ()->shiftInTime ();
-      }
+      else
 #endif
+      {
+        intScheme->getHx ()->shiftInTime ();
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          intScheme->getBx ()->shiftInTime ();
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          intScheme->getB1x ()->shiftInTime ();
+        }
+      }
     }
 
     if (intScheme->getDoNeedHy ())
     {
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU);
+      if (SOLVER_SETTINGS.getDoUseCuda ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU);
 
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBy (d_gpuIntSchemeOnGPU);
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBy (d_gpuIntSchemeOnGPU);
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1y (d_gpuIntSchemeOnGPU);
+        }
       }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1y (d_gpuIntSchemeOnGPU);
-      }
-#else
-      intScheme->getHy ()->shiftInTime ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        intScheme->getBy ()->shiftInTime ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        intScheme->getB1y ()->shiftInTime ();
-      }
+      else
 #endif
+      {
+        intScheme->getHy ()->shiftInTime ();
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          intScheme->getBy ()->shiftInTime ();
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          intScheme->getB1y ()->shiftInTime ();
+        }
+      }
     }
 
     if (intScheme->getDoNeedHz ())
     {
 #ifdef CUDA_ENABLED
-      gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU);
+      if (SOLVER_SETTINGS.getDoUseCuda ())
+      {
+        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU);
 
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBz (d_gpuIntSchemeOnGPU);
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBz (d_gpuIntSchemeOnGPU);
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1z (d_gpuIntSchemeOnGPU);
+        }
       }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1z (d_gpuIntSchemeOnGPU);
-      }
-#else
-      intScheme->getHz ()->shiftInTime ();
-
-      if (SOLVER_SETTINGS.getDoUsePML ())
-      {
-        intScheme->getBz ()->shiftInTime ();
-      }
-      if (SOLVER_SETTINGS.getDoUseMetamaterials ())
-      {
-        intScheme->getB1z ()->shiftInTime ();
-      }
+      else
 #endif
+      {
+        intScheme->getHz ()->shiftInTime ();
+
+        if (SOLVER_SETTINGS.getDoUsePML ())
+        {
+          intScheme->getBz ()->shiftInTime ();
+        }
+        if (SOLVER_SETTINGS.getDoUseMetamaterials ())
+        {
+          intScheme->getB1z ()->shiftInTime ();
+        }
+      }
     }
 
 #ifdef PARALLEL_GRID
@@ -364,11 +403,15 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
   }
 
 #ifdef CUDA_ENABLED
-  /*
-   * Copy back from GPU to CPU
-   */
-  bool finalCopy = blockIdx + TC_COORD (1, 1, 1, ct1, ct2, ct3) == blockCount;
-  gpuIntScheme->copyBackToCPU (NTimeSteps, finalCopy);
+  if (SOLVER_SETTINGS.getDoUseCuda ())
+  {
+    /*
+     * Copy back from GPU to CPU
+     */
+    // TODO: finalCopy is setup incorrectly for multidim case of block splitting
+    bool finalCopy = blockIdx + TC_COORD (1, 1, 1, ct1, ct2, ct3) == blockCount;
+    gpuIntScheme->copyBackToCPU (NTimeSteps, finalCopy);
+  }
 #endif /* CUDA_ENABLED */
 }
 
@@ -754,10 +797,15 @@ Scheme<Type, TCoord, layout_type>::performFieldSteps (time_step t, /**< time ste
   if (doUsePointSource)
   {
 #ifdef CUDA_ENABLED
-    gpuIntSchemeOnGPU->template performPointSourceCalcKernelLaunch<grid_type> (d_gpuIntSchemeOnGPU, t);
-#else /* CUDA_ENABLED */
-    intScheme->template performPointSourceCalc<grid_type> (t);
-#endif /* !CUDA_ENABLED */
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      gpuIntSchemeOnGPU->template performPointSourceCalcKernelLaunch<grid_type> (d_gpuIntSchemeOnGPU, t);
+    }
+    else
+#endif /* CUDA_ENABLED */
+    {
+      intScheme->template performPointSourceCalc<grid_type> (t);
+    }
   }
 }
 
@@ -896,12 +944,15 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
 
   FPValue _materialModifier;
 
-  gpuIntSchemeOnGPU->template calculateFieldStepInit<grid_type, usePML, useMetamaterials> (&d_grid, &_gridType,
-    &d_materialGrid, &_materialGridType, &d_materialGrid1, &_materialGridType1, &d_materialGrid2, &_materialGridType2,
-    &d_materialGrid3, &_materialGridType3, &d_materialGrid4, &_materialGridType4, &d_materialGrid5, &_materialGridType5,
-    &d_oppositeGrid1, &d_oppositeGrid2, &d_gridPML1, &_gridPMLType1, &d_gridPML2, &_gridPMLType2,
-    &_rightSideFunc, &_borderFunc, &_exactFunc, &_materialModifier, &d_Ca, &d_Cb,
-    &d_CB0, &d_CB1, &d_CB2, &d_CA1, &d_CA2, &d_CaPML, &d_CbPML, &d_CcPML);
+  if (SOLVER_SETTINGS.getDoUseCuda ())
+  {
+    gpuIntSchemeOnGPU->template calculateFieldStepInit<grid_type, usePML, useMetamaterials> (&d_grid, &_gridType,
+      &d_materialGrid, &_materialGridType, &d_materialGrid1, &_materialGridType1, &d_materialGrid2, &_materialGridType2,
+      &d_materialGrid3, &_materialGridType3, &d_materialGrid4, &_materialGridType4, &d_materialGrid5, &_materialGridType5,
+      &d_oppositeGrid1, &d_oppositeGrid2, &d_gridPML1, &_gridPMLType1, &d_gridPML2, &_gridPMLType2,
+      &_rightSideFunc, &_borderFunc, &_exactFunc, &_materialModifier, &d_Ca, &d_Cb,
+      &d_CB0, &d_CB1, &d_CB2, &d_CA1, &d_CA2, &d_CaPML, &d_CbPML, &d_CcPML);
+  }
 
 #endif /* CUDA_ENABLED */
 
@@ -958,104 +1009,103 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     }
 
 #ifdef CUDA_ENABLED
-
-    // Launch kernel here
-    gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <grid_type>
-      (d_gpuIntSchemeOnGPU, start3D, end3D,
-        timestep, diff11, diff12, diff21, diff22,
-        d_grid,
-        d_oppositeGrid1,
-        d_oppositeGrid2,
-        rightSideFunc,
-        d_Ca,
-        d_Cb,
-        usePML,
-        gridType, d_materialGrid, materialGridType,
-        materialModifier,
-        SOLVER_SETTINGS.getDoUseCaCbGrids ());
-
-    // TODO: support current sources on GPU
-
-#else /* CUDA_ENABLED */
-
-    for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+    if (SOLVER_SETTINGS.getDoUseCuda ())
     {
-      // TODO: check that this loop is optimized out
-      for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+      gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <grid_type>
+        (d_gpuIntSchemeOnGPU, start3D, end3D,
+          timestep, diff11, diff12, diff21, diff22,
+          d_grid,
+          d_oppositeGrid1,
+          d_oppositeGrid2,
+          rightSideFunc,
+          d_Ca,
+          d_Cb,
+          usePML,
+          gridType, d_materialGrid, materialGridType,
+          materialModifier,
+          SOLVER_SETTINGS.getDoUseCaCbGrids ());
+    }
+    else
+#endif /* CUDA_ENABLED */
+    {
+      for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
       {
-        // TODO: check that this is optimized out in case 2D mode
-        for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
+        // TODO: check that this loop is optimized out
+        for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
         {
-          TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-
-          // TODO: add getTotalPositionDiff here, which will be called before loop
-          TC posAbs = grid->getTotalPosition (pos);
-
-          TCFP coordFP;
-
-          if (rightSideFunc != NULLPTR)
+          // TODO: check that this is optimized out in case 2D mode
+          for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
           {
-            switch (grid_type)
+            TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+
+            // TODO: add getTotalPositionDiff here, which will be called before loop
+            TC posAbs = grid->getTotalPosition (pos);
+
+            TCFP coordFP;
+
+            if (rightSideFunc != NULLPTR)
             {
-              case (static_cast<uint8_t> (GridType::EX)):
+              switch (grid_type)
               {
-                coordFP = yeeLayout->getExCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::EY)):
-              {
-                coordFP = yeeLayout->getEyCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::EZ)):
-              {
-                coordFP = yeeLayout->getEzCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HX)):
-              {
-                coordFP = yeeLayout->getHxCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HY)):
-              {
-                coordFP = yeeLayout->getHyCoordFP (posAbs);
-                break;
-              }
-              case (static_cast<uint8_t> (GridType::HZ)):
-              {
-                coordFP = yeeLayout->getHzCoordFP (posAbs);
-                break;
-              }
-              default:
-              {
-                UNREACHABLE;
+                case (static_cast<uint8_t> (GridType::EX)):
+                {
+                  coordFP = yeeLayout->getExCoordFP (posAbs);
+                  break;
+                }
+                case (static_cast<uint8_t> (GridType::EY)):
+                {
+                  coordFP = yeeLayout->getEyCoordFP (posAbs);
+                  break;
+                }
+                case (static_cast<uint8_t> (GridType::EZ)):
+                {
+                  coordFP = yeeLayout->getEzCoordFP (posAbs);
+                  break;
+                }
+                case (static_cast<uint8_t> (GridType::HX)):
+                {
+                  coordFP = yeeLayout->getHxCoordFP (posAbs);
+                  break;
+                }
+                case (static_cast<uint8_t> (GridType::HY)):
+                {
+                  coordFP = yeeLayout->getHyCoordFP (posAbs);
+                  break;
+                }
+                case (static_cast<uint8_t> (GridType::HZ)):
+                {
+                  coordFP = yeeLayout->getHzCoordFP (posAbs);
+                  break;
+                }
+                default:
+                {
+                  UNREACHABLE;
+                }
               }
             }
-          }
 
-          if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
-          {
-            intScheme->template calculateFieldStepIteration<grid_type, true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                               grid, coordFP,
-                                                               oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
-                                                               usePML,
-                                                               gridType, materialGrid, materialGridType,
-                                                               materialModifier);
-          }
-          else
-          {
-            intScheme->template calculateFieldStepIteration<grid_type, false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                               grid, coordFP,
-                                                               oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
-                                                               usePML,
-                                                               gridType, materialGrid, materialGridType,
-                                                               materialModifier);
+            if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+            {
+              intScheme->template calculateFieldStepIteration<grid_type, true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                                 grid, coordFP,
+                                                                 oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
+                                                                 usePML,
+                                                                 gridType, materialGrid, materialGridType,
+                                                                 materialModifier);
+            }
+            else
+            {
+              intScheme->template calculateFieldStepIteration<grid_type, false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                                 grid, coordFP,
+                                                                 oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
+                                                                 usePML,
+                                                                 gridType, materialGrid, materialGridType,
+                                                                 materialModifier);
+            }
           }
         }
       }
     }
-#endif
 
     bool doComputeCurrentSource = false;
     switch (grid_type)
@@ -1128,17 +1178,23 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       current = current * PhysicsConst::Mu0 / intScheme->getGridTimeStep () / 2.0;
 
 #ifdef CUDA_ENABLED
-      // TODO: add cuda call
-#else
-      if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+      if (SOLVER_SETTINGS.getDoUseCuda ())
       {
-        intScheme->template calculateFieldStepIterationCurrent<grid_type, true> (current, grid, Ca, Cb, usePML, gridType, materialGrid, materialGridType, materialModifier);
+        // TODO: add cuda call
+        ALWAYS_ASSERT (0);
       }
       else
-      {
-        intScheme->template calculateFieldStepIterationCurrent<grid_type, false> (current, grid, Ca, Cb, usePML, gridType, materialGrid, materialGridType, materialModifier);
-      }
 #endif
+      {
+        if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+        {
+          intScheme->template calculateFieldStepIterationCurrent<grid_type, true> (current, grid, Ca, Cb, usePML, gridType, materialGrid, materialGridType, materialModifier);
+        }
+        else
+        {
+          intScheme->template calculateFieldStepIterationCurrent<grid_type, false> (current, grid, Ca, Cb, usePML, gridType, materialGrid, materialGridType, materialModifier);
+        }
+      }
     }
 
     if (usePML)
@@ -1146,21 +1202,66 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       if (useMetamaterials)
       {
 #ifdef CUDA_ENABLED
+        if (SOLVER_SETTINGS.getDoUseCuda ())
+        {
+          gpuIntSchemeOnGPU->calculateFieldStepIterationPMLMetamaterialsKernelLaunch
+            (d_gpuIntSchemeOnGPU, start3D, end3D,
+             t, d_grid, d_gridPML1,
+             d_CB0, d_CB1, d_CB2, d_CA1, d_CA2,
+             gridType,
+             d_materialGrid1, materialGridType1,
+             d_materialGrid2, materialGridType2,
+             d_materialGrid3, materialGridType3,
+             materialModifier,
+             SOLVER_SETTINGS.getDoUseCaCbPMLMetaGrids ());
+        }
+        else
+#endif /* CUDA_ENABLED */
+        {
+          for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+          {
+            // TODO: check that this loop is optimized out
+            for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+            {
+              // TODO: check that this loop is optimized out
+              for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
+              {
+                TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
 
-        // Launch kernel here
-        gpuIntSchemeOnGPU->calculateFieldStepIterationPMLMetamaterialsKernelLaunch
-          (d_gpuIntSchemeOnGPU, start3D, end3D,
-           t, d_grid, d_gridPML1,
-           d_CB0, d_CB1, d_CB2, d_CA1, d_CA2,
-           gridType,
-           d_materialGrid1, materialGridType1,
-           d_materialGrid2, materialGridType2,
-           d_materialGrid3, materialGridType3,
-           materialModifier,
-           SOLVER_SETTINGS.getDoUseCaCbPMLMetaGrids ());
+                if (SOLVER_SETTINGS.getDoUseCaCbPMLMetaGrids ())
+                {
+                  intScheme->template calculateFieldStepIterationPMLMetamaterials<true> (t, pos, grid, gridPML1,
+                    CB0, CB1, CB2, CA1, CA2,
+                    gridType,
+                    materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
+                    materialModifier);
+                }
+                else
+                {
+                  intScheme->template calculateFieldStepIterationPMLMetamaterials<false> (t, pos, grid, gridPML1,
+                    CB0, CB1, CB2, CA1, CA2,
+                    gridType,
+                    materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
+                    materialModifier);
+                }
+              }
+            }
+          }
+        }
+      }
 
-#else /* CUDA_ENABLED */
-
+#ifdef CUDA_ENABLED
+      if (SOLVER_SETTINGS.getDoUseCuda ())
+      {
+        gpuIntSchemeOnGPU->template calculateFieldStepIterationPMLKernelLaunch <useMetamaterials> (d_gpuIntSchemeOnGPU, start3D, end3D,
+          t, d_grid, d_gridPML1, d_gridPML2, d_CaPML, d_CbPML, d_CcPML, gridPMLType1,
+          d_materialGrid1, materialGridType1, d_materialGrid4, materialGridType4, d_materialGrid5, materialGridType5,
+          materialModifier,
+          SOLVER_SETTINGS.getDoUseCaCbPMLGrids ());
+      }
+      else
+#endif /* CUDA_ENABLED */
+      {
         for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
         {
           // TODO: check that this loop is optimized out
@@ -1171,66 +1272,22 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
             {
               TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
 
-              if (SOLVER_SETTINGS.getDoUseCaCbPMLMetaGrids ())
+              if (SOLVER_SETTINGS.getDoUseCaCbPMLGrids ())
               {
-                intScheme->template calculateFieldStepIterationPMLMetamaterials<true> (t, pos, grid, gridPML1,
-                  CB0, CB1, CB2, CA1, CA2,
-                  gridType,
-                  materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
+                intScheme->template calculateFieldStepIterationPML<useMetamaterials, true> (t, pos, grid, gridPML1, gridPML2, CaPML, CbPML, CcPML, gridPMLType1,
+                  materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
                   materialModifier);
               }
               else
               {
-                intScheme->template calculateFieldStepIterationPMLMetamaterials<false> (t, pos, grid, gridPML1,
-                  CB0, CB1, CB2, CA1, CA2,
-                  gridType,
-                  materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
+                intScheme->template calculateFieldStepIterationPML<useMetamaterials, false> (t, pos, grid, gridPML1, gridPML2, CaPML, CbPML, CcPML, gridPMLType1,
+                  materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
                   materialModifier);
               }
             }
           }
         }
-
-#endif /* !CUDA_ENABLED */
       }
-
-#ifdef CUDA_ENABLED
-
-      gpuIntSchemeOnGPU->template calculateFieldStepIterationPMLKernelLaunch <useMetamaterials> (d_gpuIntSchemeOnGPU, start3D, end3D,
-        t, d_grid, d_gridPML1, d_gridPML2, d_CaPML, d_CbPML, d_CcPML, gridPMLType1,
-        d_materialGrid1, materialGridType1, d_materialGrid4, materialGridType4, d_materialGrid5, materialGridType5,
-        materialModifier,
-        SOLVER_SETTINGS.getDoUseCaCbPMLGrids ());
-
-#else /* CUDA_ENABLED */
-
-      for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
-      {
-        // TODO: check that this loop is optimized out
-        for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-        {
-          // TODO: check that this loop is optimized out
-          for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-          {
-            TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-
-            if (SOLVER_SETTINGS.getDoUseCaCbPMLGrids ())
-            {
-              intScheme->template calculateFieldStepIterationPML<useMetamaterials, true> (t, pos, grid, gridPML1, gridPML2, CaPML, CbPML, CcPML, gridPMLType1,
-                materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
-                materialModifier);
-            }
-            else
-            {
-              intScheme->template calculateFieldStepIterationPML<useMetamaterials, false> (t, pos, grid, gridPML1, gridPML2, CaPML, CbPML, CcPML, gridPMLType1,
-                materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
-                materialModifier);
-            }
-          }
-        }
-      }
-
-#endif /* !CUDA_ENABLED */
     }
   }
 
@@ -1246,26 +1303,28 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
                         ct1, ct2, ct3);
 
 #ifdef CUDA_ENABLED
-
-    gpuIntSchemeOnGPU->template calculateFieldStepIterationBorderKernelLaunch<grid_type>
-      (d_gpuIntSchemeOnGPU, startBorder, endBorder, t, d_grid, borderFunc);
-
-#else
-
-    for (grid_coord i = startBorder.get1 (); i < endBorder.get1 (); ++i)
+    if (SOLVER_SETTINGS.getDoUseCuda ())
     {
-      // TODO: check that this loop is optimized out
-      for (grid_coord j = startBorder.get2 (); j < endBorder.get2 (); ++j)
+      gpuIntSchemeOnGPU->template calculateFieldStepIterationBorderKernelLaunch<grid_type>
+        (d_gpuIntSchemeOnGPU, startBorder, endBorder, t, d_grid, borderFunc);
+    }
+    else
+#endif
+    {
+      for (grid_coord i = startBorder.get1 (); i < endBorder.get1 (); ++i)
       {
         // TODO: check that this loop is optimized out
-        for (grid_coord k = startBorder.get3 (); k < endBorder.get3 (); ++k)
+        for (grid_coord j = startBorder.get2 (); j < endBorder.get2 (); ++j)
         {
-          TC posAbs = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          intScheme->template calculateFieldStepIterationBorder<grid_type> (t, posAbs, grid, borderFunc);
+          // TODO: check that this loop is optimized out
+          for (grid_coord k = startBorder.get3 (); k < endBorder.get3 (); ++k)
+          {
+            TC posAbs = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+            intScheme->template calculateFieldStepIterationBorder<grid_type> (t, posAbs, grid, borderFunc);
+          }
         }
       }
     }
-#endif
   }
 
   if (exactFunc != NULLPTR)
@@ -1320,32 +1379,34 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     }
 
 #ifdef CUDA_ENABLED
-
-    CudaGrid<TC> *d_normGrid = d_grid;
-    if (usePML)
+    if (SOLVER_SETTINGS.getDoUseCuda ())
     {
-      d_normGrid = d_gridPML2;
+      CudaGrid<TC> *d_normGrid = d_grid;
+      if (usePML)
+      {
+        d_normGrid = d_gridPML2;
+      }
+
+      gpuIntSchemeOnGPU->template calculateFieldStepIterationExactKernelLaunch<grid_type>
+        (d_gpuIntSchemeOnGPU, gpuIntSchemeOnGPU, startNorm, endNorm, t, d_normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
     }
-
-    gpuIntSchemeOnGPU->template calculateFieldStepIterationExactKernelLaunch<grid_type>
-      (d_gpuIntSchemeOnGPU, gpuIntSchemeOnGPU, startNorm, endNorm, t, d_normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
-
-#else /* CUDA_ENABLED */
-
-    for (grid_coord i = startNorm.get1 (); i < endNorm.get1 (); ++i)
+    else
+#endif /* CUDA_ENABLED */
     {
-      // TODO: check that this loop is optimized out
-      for (grid_coord j = startNorm.get2 (); j < endNorm.get2 (); ++j)
+      for (grid_coord i = startNorm.get1 (); i < endNorm.get1 (); ++i)
       {
         // TODO: check that this loop is optimized out
-        for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
+        for (grid_coord j = startNorm.get2 (); j < endNorm.get2 (); ++j)
         {
-          TC posAbs = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-          intScheme->template calculateFieldStepIterationExact<grid_type> (t, posAbs, normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
+          // TODO: check that this loop is optimized out
+          for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
+          {
+            TC posAbs = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+            intScheme->template calculateFieldStepIterationExact<grid_type> (t, posAbs, normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
+          }
         }
       }
     }
-#endif /* CUDA_ENABLED */
 
 #ifdef PARALLEL_GRID
 
@@ -1611,7 +1672,10 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
     }
 
 #ifdef CUDA_ENABLED
-    setupBlocksForGPU (blockCount, blockSize);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      setupBlocksForGPU (blockCount, blockSize);
+    }
 #endif
   }
 
@@ -1623,70 +1687,76 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
 
   {
 #ifdef CUDA_ENABLED
-    time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
-
-    if (blockCount.calculateTotalCoord () > 1
-#ifdef PARALLEL_GRID
-        || useParallel
-#endif
-        )
+    if (SOLVER_SETTINGS.getDoUseCuda ())
     {
-      /*
-       * More than one block is used, have to consider buffers now
-       */
+      time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
 
-      /*
-       * Buf can't be 1, because this will lead to usage of incorrect data from buffers, as share operations in CUDA
-       * mode are delayed until both computations for E and H are finished.
-       * That's why additional buffer layer is required for computaions, which basically means, that cudaBuf - 1 time
-       * steps can be performed before share operations are required.
-       */
-      ALWAYS_ASSERT (cudaBuf > 1);
-      NTimeSteps = cudaBuf - 1;
-
+      if (blockCount.calculateTotalCoord () > 1
 #ifdef PARALLEL_GRID
-      if (useParallel)
+          || useParallel
+#endif
+          )
       {
         /*
-         * Cuda grid buffer can't be greater than parallel grid buffer, because there will be no data to fill it with.
-         * If cuda grid buffer is less than parallel grid buffer, then parallel grid buffer won't be used fully, which
-         * is undesirable. So, restrict buffers to be identical for the case of both parallel mode and cuda mode.
+         * More than one block is used, have to consider buffers now
          */
-        ALWAYS_ASSERT (cudaBuf == (time_step) SOLVER_SETTINGS.getBufferSize ())
-      }
+
+        /*
+         * Buf can't be 1, because this will lead to usage of incorrect data from buffers, as share operations in CUDA
+         * mode are delayed until both computations for E and H are finished.
+         * That's why additional buffer layer is required for computaions, which basically means, that cudaBuf - 1 time
+         * steps can be performed before share operations are required.
+         */
+        ALWAYS_ASSERT (cudaBuf > 1);
+        NTimeSteps = cudaBuf - 1;
+
+#ifdef PARALLEL_GRID
+        if (useParallel)
+        {
+          /*
+           * Cuda grid buffer can't be greater than parallel grid buffer, because there will be no data to fill it with.
+           * If cuda grid buffer is less than parallel grid buffer, then parallel grid buffer won't be used fully, which
+           * is undesirable. So, restrict buffers to be identical for the case of both parallel mode and cuda mode.
+           */
+          ALWAYS_ASSERT (cudaBuf == (time_step) SOLVER_SETTINGS.getBufferSize ())
+        }
 #endif /* PARALLEL_GRID */
+      }
+      else
+      {
+        NTimeSteps = totalTimeSteps;
+        /*
+         * Minimum buffer could be used
+         */
+        ALWAYS_ASSERT (cudaBuf == 1);
+      }
     }
     else
+#endif /* CUDA_ENABLED */
     {
-      NTimeSteps = totalTimeSteps;
       /*
-       * Minimum buffer could be used
+       * For non-Cuda builds it's fine to perform single step for block
        */
-      ALWAYS_ASSERT (cudaBuf == 1);
+      NTimeSteps = 1;
     }
-#else /* CUDA_ENABLED */
-
-    /*
-     * For non-Cuda builds it's fine to perform single step for block
-     */
-    NTimeSteps = 1;
-
-#endif /* !CUDA_ENABLED */
   }
 
 #ifdef CUDA_ENABLED
-  /*
-   * Init InternalScheme on GPU
-   */
-  time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
+  if (SOLVER_SETTINGS.getDoUseCuda ())
+  {
+    /*
+     * Init InternalScheme on GPU
+     */
+    time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
 
-  gpuIntScheme = new InternalSchemeGPU<Type, TCoord, layout_type> ();
-  gpuIntSchemeOnGPU = new InternalSchemeGPU<Type, TCoord, layout_type> ();
+    gpuIntScheme = new InternalSchemeGPU<Type, TCoord, layout_type> ();
+    gpuIntSchemeOnGPU = new InternalSchemeGPU<Type, TCoord, layout_type> ();
 
-  gpuIntScheme->initFromCPU (intScheme, blockSize, TC_COORD (cudaBuf, cudaBuf, cudaBuf, ct1, ct2, ct3));
-  gpuIntSchemeOnGPU->initOnGPU (gpuIntScheme);
+    gpuIntScheme->initFromCPU (intScheme, blockSize, TC_COORD (cudaBuf, cudaBuf, cudaBuf, ct1, ct2, ct3));
+    gpuIntSchemeOnGPU->initOnGPU (gpuIntScheme);
 
-  cudaCheckErrorCmd (cudaMalloc ((void **) &d_gpuIntSchemeOnGPU, sizeof(InternalSchemeGPU<Type, TCoord, layout_type>)));
+    cudaCheckErrorCmd (cudaMalloc ((void **) &d_gpuIntSchemeOnGPU, sizeof(InternalSchemeGPU<Type, TCoord, layout_type>)));
+  }
 #endif /* CUDA_ENABLED */
 }
 
@@ -1736,6 +1806,11 @@ Scheme<Type, TCoord, layout_type>::Scheme (YeeGridLayout<Type, TCoord, layout_ty
 
   ASSERT (!SOLVER_SETTINGS.getDoUsePML ()
           || (SOLVER_SETTINGS.getDoUsePML () && (yeeLayout->getSizePML () != TC (0, 0, 0, ct1, ct2, ct3))));
+
+  if (SOLVER_SETTINGS.getDoUseMetamaterials () && !SOLVER_SETTINGS.getDoUsePML ())
+  {
+    ASSERT_MESSAGE ("Metamaterials without pml are not implemented");
+  }
 
 #ifdef PARALLEL_GRID
   if (parallelLayout)
@@ -1934,25 +2009,28 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 Scheme<Type, TCoord, layout_type>::~Scheme ()
 {
 #ifdef CUDA_ENABLED
-  /*
-   * Free memory
-   */
-  if (d_gpuIntSchemeOnGPU)
+  if (SOLVER_SETTINGS.getDoUseCuda ())
   {
-    cudaCheckErrorCmd (cudaFree (d_gpuIntSchemeOnGPU));
-  }
+    /*
+     * Free memory
+     */
+    if (d_gpuIntSchemeOnGPU)
+    {
+      cudaCheckErrorCmd (cudaFree (d_gpuIntSchemeOnGPU));
+    }
 
-  if (gpuIntSchemeOnGPU)
-  {
-    gpuIntSchemeOnGPU->uninitOnGPU ();
-  }
-  if (gpuIntScheme)
-  {
-    gpuIntScheme->uninitFromCPU ();
-  }
+    if (gpuIntSchemeOnGPU)
+    {
+      gpuIntSchemeOnGPU->uninitOnGPU ();
+    }
+    if (gpuIntScheme)
+    {
+      gpuIntScheme->uninitFromCPU ();
+    }
 
-  delete gpuIntSchemeOnGPU;
-  delete gpuIntScheme;
+    delete gpuIntSchemeOnGPU;
+    delete gpuIntScheme;
+  }
 #endif /* CUDA_ENABLED */
 
   if (totalInitialized)
@@ -2017,68 +2095,88 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   if (SOLVER_SETTINGS.getDoUsePolinom1BorderCondition ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_ez, sizeof(SourceCallBack));
-    intScheme->setCallbackEzBorder (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_hy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyBorder (tmp);
-#else
-    intScheme->setCallbackEzBorder (CallBack::polinom1_ez);
-    intScheme->setCallbackHyBorder (CallBack::polinom1_hy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_ez, sizeof(SourceCallBack));
+      intScheme->setCallbackEzBorder (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_hy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyBorder (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzBorder (CallBack::polinom1_ez);
+      intScheme->setCallbackHyBorder (CallBack::polinom1_hy);
+    }
   }
   else if (SOLVER_SETTINGS.getDoUsePolinom2BorderCondition ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ex, sizeof(SourceCallBack));
-    intScheme->setCallbackExBorder (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ey, sizeof(SourceCallBack));
-    intScheme->setCallbackEyBorder (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ez, sizeof(SourceCallBack));
-    intScheme->setCallbackEzBorder (tmp);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ex, sizeof(SourceCallBack));
+      intScheme->setCallbackExBorder (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ey, sizeof(SourceCallBack));
+      intScheme->setCallbackEyBorder (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ez, sizeof(SourceCallBack));
+      intScheme->setCallbackEzBorder (tmp);
 
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hx, sizeof(SourceCallBack));
-    intScheme->setCallbackHxBorder (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyBorder (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hz, sizeof(SourceCallBack));
-    intScheme->setCallbackHzBorder (tmp);
-#else
-    intScheme->setCallbackExBorder (CallBack::polinom2_ex);
-    intScheme->setCallbackEyBorder (CallBack::polinom2_ey);
-    intScheme->setCallbackEzBorder (CallBack::polinom2_ez);
-
-    intScheme->setCallbackHxBorder (CallBack::polinom2_hx);
-    intScheme->setCallbackHyBorder (CallBack::polinom2_hy);
-    intScheme->setCallbackHzBorder (CallBack::polinom2_hz);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hx, sizeof(SourceCallBack));
+      intScheme->setCallbackHxBorder (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyBorder (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hz, sizeof(SourceCallBack));
+      intScheme->setCallbackHzBorder (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackExBorder (CallBack::polinom2_ex);
+      intScheme->setCallbackEyBorder (CallBack::polinom2_ey);
+      intScheme->setCallbackEzBorder (CallBack::polinom2_ez);
+
+      intScheme->setCallbackHxBorder (CallBack::polinom2_hx);
+      intScheme->setCallbackHyBorder (CallBack::polinom2_hy);
+      intScheme->setCallbackHzBorder (CallBack::polinom2_hz);
+    }
   }
   else if (SOLVER_SETTINGS.getDoUsePolinom3BorderCondition ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_ez, sizeof(SourceCallBack));
-    intScheme->setCallbackEzBorder (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_hy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyBorder (tmp);
-#else
-    intScheme->setCallbackEzBorder (CallBack::polinom3_ez);
-    intScheme->setCallbackHyBorder (CallBack::polinom3_hy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_ez, sizeof(SourceCallBack));
+      intScheme->setCallbackEzBorder (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_hy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyBorder (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzBorder (CallBack::polinom3_ez);
+      intScheme->setCallbackHyBorder (CallBack::polinom3_hy);
+    }
   }
   else if (SOLVER_SETTINGS.getDoUseSin1BorderCondition ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::sin1_ez, sizeof(SourceCallBack));
-    intScheme->setCallbackEzBorder (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::sin1_hy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyBorder (tmp);
-#else
-    intScheme->setCallbackEzBorder (CallBack::sin1_ez);
-    intScheme->setCallbackHyBorder (CallBack::sin1_hy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::sin1_ez, sizeof(SourceCallBack));
+      intScheme->setCallbackEzBorder (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::sin1_hy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyBorder (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzBorder (CallBack::sin1_ez);
+      intScheme->setCallbackHyBorder (CallBack::sin1_hy);
+    }
   }
 
   if (SOLVER_SETTINGS.getDoUsePolinom1StartValues ())
@@ -2110,361 +2208,486 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   if (SOLVER_SETTINGS.getDoUsePolinom1RightSide ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_jz, sizeof(SourceCallBack));
-    intScheme->setCallbackJz (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_my, sizeof(SourceCallBack));
-    intScheme->setCallbackMy (tmp);
-#else
-    intScheme->setCallbackJz (CallBack::polinom1_jz);
-    intScheme->setCallbackMy (CallBack::polinom1_my);
-#endif /* !CUDA_ENABLED */
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_jz, sizeof(SourceCallBack));
+      intScheme->setCallbackJz (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_my, sizeof(SourceCallBack));
+      intScheme->setCallbackMy (tmp);
+    }
+    else
+#endif
+    {
+      intScheme->setCallbackJz (CallBack::polinom1_jz);
+      intScheme->setCallbackMy (CallBack::polinom1_my);
+    }
   }
   else if (SOLVER_SETTINGS.getDoUsePolinom2RightSide ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jx, sizeof(SourceCallBack));
-    intScheme->setCallbackJx (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jy, sizeof(SourceCallBack));
-    intScheme->setCallbackJy (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jz, sizeof(SourceCallBack));
-    intScheme->setCallbackJz (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_mx, sizeof(SourceCallBack));
-    intScheme->setCallbackMx (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_my, sizeof(SourceCallBack));
-    intScheme->setCallbackMy (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_mz, sizeof(SourceCallBack));
-    intScheme->setCallbackMz (tmp);
-#else
-    intScheme->setCallbackJx (CallBack::polinom2_jx);
-    intScheme->setCallbackJy (CallBack::polinom2_jy);
-    intScheme->setCallbackJz (CallBack::polinom2_jz);
-
-    intScheme->setCallbackMx (CallBack::polinom2_mx);
-    intScheme->setCallbackMy (CallBack::polinom2_my);
-    intScheme->setCallbackMz (CallBack::polinom2_mz);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jx, sizeof(SourceCallBack));
+      intScheme->setCallbackJx (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jy, sizeof(SourceCallBack));
+      intScheme->setCallbackJy (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jz, sizeof(SourceCallBack));
+      intScheme->setCallbackJz (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_mx, sizeof(SourceCallBack));
+      intScheme->setCallbackMx (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_my, sizeof(SourceCallBack));
+      intScheme->setCallbackMy (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_mz, sizeof(SourceCallBack));
+      intScheme->setCallbackMz (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackJx (CallBack::polinom2_jx);
+      intScheme->setCallbackJy (CallBack::polinom2_jy);
+      intScheme->setCallbackJz (CallBack::polinom2_jz);
+
+      intScheme->setCallbackMx (CallBack::polinom2_mx);
+      intScheme->setCallbackMy (CallBack::polinom2_my);
+      intScheme->setCallbackMz (CallBack::polinom2_mz);
+    }
   }
   else if (SOLVER_SETTINGS.getDoUsePolinom3RightSide ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_jz, sizeof(SourceCallBack));
-    intScheme->setCallbackJz (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_my, sizeof(SourceCallBack));
-    intScheme->setCallbackMy (tmp);
-#else
-    intScheme->setCallbackJz (CallBack::polinom3_jz);
-    intScheme->setCallbackMy (CallBack::polinom3_my);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_jz, sizeof(SourceCallBack));
+      intScheme->setCallbackJz (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_my, sizeof(SourceCallBack));
+      intScheme->setCallbackMy (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackJz (CallBack::polinom3_jz);
+      intScheme->setCallbackMy (CallBack::polinom3_my);
+    }
   }
 
   if (SOLVER_SETTINGS.getDoCalculatePolinom1DiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_ez, sizeof(SourceCallBack));
-    intScheme->setCallbackEzExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_hy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyExact (tmp);
-#else
-    intScheme->setCallbackEzExact (CallBack::polinom1_ez);
-    intScheme->setCallbackHyExact (CallBack::polinom1_hy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_ez, sizeof(SourceCallBack));
+      intScheme->setCallbackEzExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_hy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzExact (CallBack::polinom1_ez);
+      intScheme->setCallbackHyExact (CallBack::polinom1_hy);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculatePolinom2DiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ex, sizeof(SourceCallBack));
-    intScheme->setCallbackExExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ey, sizeof(SourceCallBack));
-    intScheme->setCallbackEyExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ez, sizeof(SourceCallBack));
-    intScheme->setCallbackEzExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hx, sizeof(SourceCallBack));
-    intScheme->setCallbackHxExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hz, sizeof(SourceCallBack));
-    intScheme->setCallbackHzExact (tmp);
-#else
-    intScheme->setCallbackExExact (CallBack::polinom2_ex);
-    intScheme->setCallbackEyExact (CallBack::polinom2_ey);
-    intScheme->setCallbackEzExact (CallBack::polinom2_ez);
-
-    intScheme->setCallbackHxExact (CallBack::polinom2_hx);
-    intScheme->setCallbackHyExact (CallBack::polinom2_hy);
-    intScheme->setCallbackHzExact (CallBack::polinom2_hz);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ex, sizeof(SourceCallBack));
+      intScheme->setCallbackExExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ey, sizeof(SourceCallBack));
+      intScheme->setCallbackEyExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ez, sizeof(SourceCallBack));
+      intScheme->setCallbackEzExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hx, sizeof(SourceCallBack));
+      intScheme->setCallbackHxExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hz, sizeof(SourceCallBack));
+      intScheme->setCallbackHzExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackExExact (CallBack::polinom2_ex);
+      intScheme->setCallbackEyExact (CallBack::polinom2_ey);
+      intScheme->setCallbackEzExact (CallBack::polinom2_ez);
+
+      intScheme->setCallbackHxExact (CallBack::polinom2_hx);
+      intScheme->setCallbackHyExact (CallBack::polinom2_hy);
+      intScheme->setCallbackHzExact (CallBack::polinom2_hz);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculatePolinom3DiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_ez, sizeof(SourceCallBack));
-    intScheme->setCallbackEzExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_hy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyExact (tmp);
-#else
-    intScheme->setCallbackEzExact (CallBack::polinom3_ez);
-    intScheme->setCallbackHyExact (CallBack::polinom3_hy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_ez, sizeof(SourceCallBack));
+      intScheme->setCallbackEzExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_hy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzExact (CallBack::polinom3_ez);
+      intScheme->setCallbackHyExact (CallBack::polinom3_hy);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateSin1DiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::sin1_ez, sizeof(SourceCallBack));
-    intScheme->setCallbackEzExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::sin1_hy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyExact (tmp);
-#else
-    intScheme->setCallbackEzExact (CallBack::sin1_ez);
-    intScheme->setCallbackHyExact (CallBack::sin1_hy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::sin1_ez, sizeof(SourceCallBack));
+      intScheme->setCallbackEzExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::sin1_hy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzExact (CallBack::sin1_ez);
+      intScheme->setCallbackHyExact (CallBack::sin1_hy);
+    }
   }
 #endif
 
   if (SOLVER_SETTINGS.getDoCalculateExp1ExHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ex_exhy, sizeof(SourceCallBack));
-    intScheme->setCallbackExExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hy_exhy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyExact (tmp);
-#else
-    intScheme->setCallbackExExact (CallBack::exp1_ex_exhy);
-    intScheme->setCallbackHyExact (CallBack::exp1_hy_exhy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ex_exhy, sizeof(SourceCallBack));
+      intScheme->setCallbackExExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hy_exhy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackExExact (CallBack::exp1_ex_exhy);
+      intScheme->setCallbackHyExact (CallBack::exp1_hy_exhy);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp2ExHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ex_exhy, sizeof(SourceCallBack));
-    intScheme->setCallbackExExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hy_exhy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyExact (tmp);
-#else
-    intScheme->setCallbackExExact (CallBack::exp2_ex_exhy);
-    intScheme->setCallbackHyExact (CallBack::exp2_hy_exhy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ex_exhy, sizeof(SourceCallBack));
+      intScheme->setCallbackExExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hy_exhy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackExExact (CallBack::exp2_ex_exhy);
+      intScheme->setCallbackHyExact (CallBack::exp2_hy_exhy);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp3ExHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ex_exhy, sizeof(SourceCallBack));
-    intScheme->setCallbackExExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hy_exhy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyExact (tmp);
-#else
-    intScheme->setCallbackExExact (CallBack::exp3_ex_exhy);
-    intScheme->setCallbackHyExact (CallBack::exp3_hy_exhy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ex_exhy, sizeof(SourceCallBack));
+      intScheme->setCallbackExExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hy_exhy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackExExact (CallBack::exp3_ex_exhy);
+      intScheme->setCallbackHyExact (CallBack::exp3_hy_exhy);
+    }
   }
 
   if (SOLVER_SETTINGS.getDoCalculateExp1ExHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ex_exhz, sizeof(SourceCallBack));
-    intScheme->setCallbackExExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hz_exhz, sizeof(SourceCallBack));
-    intScheme->setCallbackHzExact (tmp);
-#else
-    intScheme->setCallbackExExact (CallBack::exp1_ex_exhz);
-    intScheme->setCallbackHzExact (CallBack::exp1_hz_exhz);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ex_exhz, sizeof(SourceCallBack));
+      intScheme->setCallbackExExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hz_exhz, sizeof(SourceCallBack));
+      intScheme->setCallbackHzExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackExExact (CallBack::exp1_ex_exhz);
+      intScheme->setCallbackHzExact (CallBack::exp1_hz_exhz);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp2ExHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ex_exhz, sizeof(SourceCallBack));
-    intScheme->setCallbackExExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hz_exhz, sizeof(SourceCallBack));
-    intScheme->setCallbackHzExact (tmp);
-#else
-    intScheme->setCallbackExExact (CallBack::exp2_ex_exhz);
-    intScheme->setCallbackHzExact (CallBack::exp2_hz_exhz);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ex_exhz, sizeof(SourceCallBack));
+      intScheme->setCallbackExExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hz_exhz, sizeof(SourceCallBack));
+      intScheme->setCallbackHzExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackExExact (CallBack::exp2_ex_exhz);
+      intScheme->setCallbackHzExact (CallBack::exp2_hz_exhz);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp3ExHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ex_exhz, sizeof(SourceCallBack));
-    intScheme->setCallbackExExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hz_exhz, sizeof(SourceCallBack));
-    intScheme->setCallbackHzExact (tmp);
-#else
-    intScheme->setCallbackExExact (CallBack::exp3_ex_exhz);
-    intScheme->setCallbackHzExact (CallBack::exp3_hz_exhz);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ex_exhz, sizeof(SourceCallBack));
+      intScheme->setCallbackExExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hz_exhz, sizeof(SourceCallBack));
+      intScheme->setCallbackHzExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackExExact (CallBack::exp3_ex_exhz);
+      intScheme->setCallbackHzExact (CallBack::exp3_hz_exhz);
+    }
   }
 
   if (SOLVER_SETTINGS.getDoCalculateExp1EyHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ey_eyhx, sizeof(SourceCallBack));
-    intScheme->setCallbackEyExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hx_eyhx, sizeof(SourceCallBack));
-    intScheme->setCallbackHxExact (tmp);
-#else
-    intScheme->setCallbackEyExact (CallBack::exp1_ey_eyhx);
-    intScheme->setCallbackHxExact (CallBack::exp1_hx_eyhx);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ey_eyhx, sizeof(SourceCallBack));
+      intScheme->setCallbackEyExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hx_eyhx, sizeof(SourceCallBack));
+      intScheme->setCallbackHxExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEyExact (CallBack::exp1_ey_eyhx);
+      intScheme->setCallbackHxExact (CallBack::exp1_hx_eyhx);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp2EyHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ey_eyhx, sizeof(SourceCallBack));
-    intScheme->setCallbackEyExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hx_eyhx, sizeof(SourceCallBack));
-    intScheme->setCallbackHxExact (tmp);
-#else
-    intScheme->setCallbackEyExact (CallBack::exp2_ey_eyhx);
-    intScheme->setCallbackHxExact (CallBack::exp2_hx_eyhx);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ey_eyhx, sizeof(SourceCallBack));
+      intScheme->setCallbackEyExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hx_eyhx, sizeof(SourceCallBack));
+      intScheme->setCallbackHxExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEyExact (CallBack::exp2_ey_eyhx);
+      intScheme->setCallbackHxExact (CallBack::exp2_hx_eyhx);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp3EyHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ey_eyhx, sizeof(SourceCallBack));
-    intScheme->setCallbackEyExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hx_eyhx, sizeof(SourceCallBack));
-    intScheme->setCallbackHxExact (tmp);
-#else
-    intScheme->setCallbackEyExact (CallBack::exp3_ey_eyhx);
-    intScheme->setCallbackHxExact (CallBack::exp3_hx_eyhx);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ey_eyhx, sizeof(SourceCallBack));
+      intScheme->setCallbackEyExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hx_eyhx, sizeof(SourceCallBack));
+      intScheme->setCallbackHxExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEyExact (CallBack::exp3_ey_eyhx);
+      intScheme->setCallbackHxExact (CallBack::exp3_hx_eyhx);
+    }
   }
 
   if (SOLVER_SETTINGS.getDoCalculateExp1EyHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ey_eyhz, sizeof(SourceCallBack));
-    intScheme->setCallbackEyExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hz_eyhz, sizeof(SourceCallBack));
-    intScheme->setCallbackHzExact (tmp);
-#else
-    intScheme->setCallbackEyExact (CallBack::exp1_ey_eyhz);
-    intScheme->setCallbackHzExact (CallBack::exp1_hz_eyhz);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ey_eyhz, sizeof(SourceCallBack));
+      intScheme->setCallbackEyExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hz_eyhz, sizeof(SourceCallBack));
+      intScheme->setCallbackHzExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEyExact (CallBack::exp1_ey_eyhz);
+      intScheme->setCallbackHzExact (CallBack::exp1_hz_eyhz);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp2EyHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ey_eyhz, sizeof(SourceCallBack));
-    intScheme->setCallbackEyExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hz_eyhz, sizeof(SourceCallBack));
-    intScheme->setCallbackHzExact (tmp);
-#else
-    intScheme->setCallbackEyExact (CallBack::exp2_ey_eyhz);
-    intScheme->setCallbackHzExact (CallBack::exp2_hz_eyhz);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ey_eyhz, sizeof(SourceCallBack));
+      intScheme->setCallbackEyExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hz_eyhz, sizeof(SourceCallBack));
+      intScheme->setCallbackHzExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEyExact (CallBack::exp2_ey_eyhz);
+      intScheme->setCallbackHzExact (CallBack::exp2_hz_eyhz);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp3EyHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ey_eyhz, sizeof(SourceCallBack));
-    intScheme->setCallbackEyExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hz_eyhz, sizeof(SourceCallBack));
-    intScheme->setCallbackHzExact (tmp);
-#else
-    intScheme->setCallbackEyExact (CallBack::exp3_ey_eyhz);
-    intScheme->setCallbackHzExact (CallBack::exp3_hz_eyhz);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ey_eyhz, sizeof(SourceCallBack));
+      intScheme->setCallbackEyExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hz_eyhz, sizeof(SourceCallBack));
+      intScheme->setCallbackHzExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEyExact (CallBack::exp3_ey_eyhz);
+      intScheme->setCallbackHzExact (CallBack::exp3_hz_eyhz);
+    }
   }
 
   if (SOLVER_SETTINGS.getDoCalculateExp1EzHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ez_ezhx, sizeof(SourceCallBack));
-    intScheme->setCallbackEzExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hx_ezhx, sizeof(SourceCallBack));
-    intScheme->setCallbackHxExact (tmp);
-#else
-    intScheme->setCallbackEzExact (CallBack::exp1_ez_ezhx);
-    intScheme->setCallbackHxExact (CallBack::exp1_hx_ezhx);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ez_ezhx, sizeof(SourceCallBack));
+      intScheme->setCallbackEzExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hx_ezhx, sizeof(SourceCallBack));
+      intScheme->setCallbackHxExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzExact (CallBack::exp1_ez_ezhx);
+      intScheme->setCallbackHxExact (CallBack::exp1_hx_ezhx);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp2EzHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ez_ezhx, sizeof(SourceCallBack));
-    intScheme->setCallbackEzExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hx_ezhx, sizeof(SourceCallBack));
-    intScheme->setCallbackHxExact (tmp);
-#else
-    intScheme->setCallbackEzExact (CallBack::exp2_ez_ezhx);
-    intScheme->setCallbackHxExact (CallBack::exp2_hx_ezhx);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ez_ezhx, sizeof(SourceCallBack));
+      intScheme->setCallbackEzExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hx_ezhx, sizeof(SourceCallBack));
+      intScheme->setCallbackHxExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzExact (CallBack::exp2_ez_ezhx);
+      intScheme->setCallbackHxExact (CallBack::exp2_hx_ezhx);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp3EzHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ez_ezhx, sizeof(SourceCallBack));
-    intScheme->setCallbackEzExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hx_ezhx, sizeof(SourceCallBack));
-    intScheme->setCallbackHxExact (tmp);
-#else
-    intScheme->setCallbackEzExact (CallBack::exp3_ez_ezhx);
-    intScheme->setCallbackHxExact (CallBack::exp3_hx_ezhx);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ez_ezhx, sizeof(SourceCallBack));
+      intScheme->setCallbackEzExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hx_ezhx, sizeof(SourceCallBack));
+      intScheme->setCallbackHxExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzExact (CallBack::exp3_ez_ezhx);
+      intScheme->setCallbackHxExact (CallBack::exp3_hx_ezhx);
+    }
   }
 
   if (SOLVER_SETTINGS.getDoCalculateExp1EzHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ez_ezhy, sizeof(SourceCallBack));
-    intScheme->setCallbackEzExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hy_ezhy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyExact (tmp);
-#else
-    intScheme->setCallbackEzExact (CallBack::exp1_ez_ezhy);
-    intScheme->setCallbackHyExact (CallBack::exp1_hy_ezhy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ez_ezhy, sizeof(SourceCallBack));
+      intScheme->setCallbackEzExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hy_ezhy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzExact (CallBack::exp1_ez_ezhy);
+      intScheme->setCallbackHyExact (CallBack::exp1_hy_ezhy);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp2EzHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ez_ezhy, sizeof(SourceCallBack));
-    intScheme->setCallbackEzExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hy_ezhy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyExact (tmp);
-#else
-    intScheme->setCallbackEzExact (CallBack::exp2_ez_ezhy);
-    intScheme->setCallbackHyExact (CallBack::exp2_hy_ezhy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ez_ezhy, sizeof(SourceCallBack));
+      intScheme->setCallbackEzExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hy_ezhy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzExact (CallBack::exp2_ez_ezhy);
+      intScheme->setCallbackHyExact (CallBack::exp2_hy_ezhy);
+    }
   }
   else if (SOLVER_SETTINGS.getDoCalculateExp3EzHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    SourceCallBack tmp;
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ez_ezhy, sizeof(SourceCallBack));
-    intScheme->setCallbackEzExact (tmp);
-    cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hy_ezhy, sizeof(SourceCallBack));
-    intScheme->setCallbackHyExact (tmp);
-#else
-    intScheme->setCallbackEzExact (CallBack::exp3_ez_ezhy);
-    intScheme->setCallbackHyExact (CallBack::exp3_hy_ezhy);
+    if (SOLVER_SETTINGS.getDoUseCuda ())
+    {
+      SourceCallBack tmp;
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ez_ezhy, sizeof(SourceCallBack));
+      intScheme->setCallbackEzExact (tmp);
+      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hy_ezhy, sizeof(SourceCallBack));
+      intScheme->setCallbackHyExact (tmp);
+    }
+    else
 #endif
+    {
+      intScheme->setCallbackEzExact (CallBack::exp3_ez_ezhy);
+      intScheme->setCallbackHyExact (CallBack::exp3_hy_ezhy);
+    }
   }
 }
 

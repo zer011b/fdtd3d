@@ -1119,31 +1119,34 @@ int runMode (int argc, char** argv)
 #endif
   {
 #ifdef CUDA_ENABLED
-    cudaInfo ();
-
-    if (isParallel)
+    if (SOLVER_SETTINGS.getDoUseCuda ())
     {
-#if defined (PARALLEL_GRID)
-      if (TCoord<grid_coord, false>::dimension != ParallelGridCoordinateTemplate<grid_coord, false>::dimension)
+      cudaInfo ();
+
+      if (isParallel)
       {
+#if defined (PARALLEL_GRID)
+        if (TCoord<grid_coord, false>::dimension != ParallelGridCoordinateTemplate<grid_coord, false>::dimension)
+        {
+          UNREACHABLE;
+        }
+        else
+        {
+          cudaInit (rank % solverSettings.getNumCudaGPUs ());
+        }
+#else
         UNREACHABLE;
+#endif
       }
       else
       {
-        cudaInit (rank % solverSettings.getNumCudaGPUs ());
+        cudaInit (solverSettings.getNumCudaGPUs ());
       }
-#else
-      UNREACHABLE;
-#endif
-    }
-    else
-    {
-      cudaInit (solverSettings.getNumCudaGPUs ());
-    }
 
-    cudaThreadsX = solverSettings.getNumCudaThreadsX ();
-    cudaThreadsY = solverSettings.getNumCudaThreadsY ();
-    cudaThreadsZ = solverSettings.getNumCudaThreadsZ ();
+      cudaThreadsX = solverSettings.getNumCudaThreadsX ();
+      cudaThreadsY = solverSettings.getNumCudaThreadsY ();
+      cudaThreadsZ = solverSettings.getNumCudaThreadsZ ();
+    }
 #endif
 
     Scheme<Type, TCoord, layout_type > scheme (yeeLayout,

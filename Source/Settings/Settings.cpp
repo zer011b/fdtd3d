@@ -19,7 +19,10 @@ void
 Settings::Initialize ()
 {
 #ifdef CUDA_ENABLED
-  prepareDeviceSettings ();
+  if (getDoUseCuda ())
+  {
+    prepareDeviceSettings ();
+  }
 #endif /* CUDA_ENABLED */
 } /* Settings::Initialize */
 
@@ -31,7 +34,10 @@ void
 Settings::Uninitialize ()
 {
 #ifdef CUDA_ENABLED
-  freeDeviceSettings ();
+  if (getDoUseCuda ())
+  {
+    freeDeviceSettings ();
+  }
 #endif /* CUDA_ENABLED */
 } /* Settings::Uninitialize */
 
