@@ -100,6 +100,7 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       {
         gpuIntSchemeOnGPU->performPlaneWaveEStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getEInc ()->getSize ());
         gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getEInc ()->shiftInTime ();
       }
       else
 #endif /* CUDA_ENABLED */
@@ -150,14 +151,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       if (SOLVER_SETTINGS.getDoUseCuda ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getEx ()->shiftInTime ();
 
         if (SOLVER_SETTINGS.getDoUsePML ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDx (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getDx ()->shiftInTime ();
         }
         if (SOLVER_SETTINGS.getDoUseMetamaterials ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1x (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getD1x ()->shiftInTime ();
         }
       }
       else
@@ -182,14 +186,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       if (SOLVER_SETTINGS.getDoUseCuda ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getEy ()->shiftInTime ();
 
         if (SOLVER_SETTINGS.getDoUsePML ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDy (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getDy ()->shiftInTime ();
         }
         if (SOLVER_SETTINGS.getDoUseMetamaterials ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1y (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getD1y ()->shiftInTime ();
         }
       }
       else
@@ -214,14 +221,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       if (SOLVER_SETTINGS.getDoUseCuda ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getEz ()->shiftInTime ();
 
         if (SOLVER_SETTINGS.getDoUsePML ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchDz (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getDz ()->shiftInTime ();
         }
         if (SOLVER_SETTINGS.getDoUseMetamaterials ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchD1z (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getD1z ()->shiftInTime ();
         }
       }
       else
@@ -255,6 +265,7 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       {
         gpuIntSchemeOnGPU->performPlaneWaveHStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getHInc ()->getSize ());
         gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getHInc ()->shiftInTime ();
       }
       else
 #endif /* CUDA_ENABLED */
@@ -305,14 +316,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       if (SOLVER_SETTINGS.getDoUseCuda ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getHx ()->shiftInTime ();
 
         if (SOLVER_SETTINGS.getDoUsePML ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBx (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getBx ()->shiftInTime ();
         }
         if (SOLVER_SETTINGS.getDoUseMetamaterials ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1x (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getB1x ()->shiftInTime ();
         }
       }
       else
@@ -337,14 +351,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       if (SOLVER_SETTINGS.getDoUseCuda ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getHy ()->shiftInTime ();
 
         if (SOLVER_SETTINGS.getDoUsePML ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBy (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getBy ()->shiftInTime ();
         }
         if (SOLVER_SETTINGS.getDoUseMetamaterials ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1y (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getB1y ()->shiftInTime ();
         }
       }
       else
@@ -369,14 +386,17 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       if (SOLVER_SETTINGS.getDoUseCuda ())
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getHz ()->shiftInTime ();
 
         if (SOLVER_SETTINGS.getDoUsePML ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchBz (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getBz ()->shiftInTime ();
         }
         if (SOLVER_SETTINGS.getDoUseMetamaterials ())
         {
           gpuIntSchemeOnGPU->shiftInTimeKernelLaunchB1z (d_gpuIntSchemeOnGPU);
+          gpuIntScheme->getB1z ()->shiftInTime ();
         }
       }
       else

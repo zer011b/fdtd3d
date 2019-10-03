@@ -68,17 +68,34 @@ protected:
   Grid<TCoord> *cpuGrid;
 
   /**
-   * Vector of points in grid
+   * Vector of points in grid, containing GPU pointers to arrays
+   *
+   * d_gridValue -> FieldValue*, FieldValue*, ... , FieldValue*  | GPU
+   *                     |            |                  |       |----
+   *                   arrays       arrays             arrays    | GPU
    */
   FieldValue **d_gridValues;
+
+  /**
+   * Vector of points in grid, containing CPU pointers to arrays
+   *
+   * gridValuesDevicePointers -> FieldValue*, FieldValue*, ... , FieldValue*  | CPU
+   *                                  |            |                  |       |----
+   *                                arrays       arrays             arrays    | GPU
+   */
   FieldValue **gridValuesDevicePointers;
 
+  /**
+   * Helper array, which is used for copying data from/to GPU
+   */
   FieldValue *helperGridValues;
 
+#ifdef DEBUG_INFO
   /**
    * Step at which to perform share operations for synchronization of computational nodes
    */
   time_step shareStep;
+#endif
 
   TCoord hasLeft;
   TCoord hasRight;
@@ -115,7 +132,10 @@ public:
   CUDA_DEVICE CUDA_HOST const TCoord & getSize () const;
   CUDA_DEVICE CUDA_HOST const TCoord & getBufSize () const;
   CUDA_DEVICE CUDA_HOST grid_coord getSizeGridValues () const;
+
+#ifdef DEBUG_INFO
   CUDA_DEVICE CUDA_HOST time_step getShareStep () const;
+#endif
 
   CUDA_DEVICE CUDA_HOST TCoord getTotalSize () const;
   CUDA_DEVICE CUDA_HOST
@@ -155,11 +175,12 @@ public:
   CUDA_DEVICE CUDA_HOST FieldValue * getFieldValue (const TCoord &, int);
   CUDA_DEVICE CUDA_HOST FieldValue * getFieldValue (grid_coord, int);
 
-  CUDA_DEVICE void shiftInTime ();
-  CUDA_HOST void nextTimeStep ();
+  CUDA_DEVICE CUDA_HOST void shiftInTime ();
 
+#ifdef DEBUG_INFO
   CUDA_HOST void nextShareStep ();
   CUDA_HOST void zeroShareStep ();
+#endif
 
   CUDA_DEVICE CUDA_HOST
   TCoord getHasLeft () const
@@ -215,7 +236,9 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
   , d_gridValues (NULLPTR)
   , gridValuesDevicePointers (NULLPTR)
   , helperGridValues (NULLPTR)
+#ifdef DEBUG_INFO
   , shareStep (0)
+#endif
   , hasLeft (TCoord ())
   , hasRight (TCoord ())
 {
@@ -261,14 +284,19 @@ CudaGrid<TCoord>::~CudaGrid ()
  * Replace previous time layer with current and so on
  */
 template <class TCoord>
-CUDA_DEVICE
+CUDA_DEVICE CUDA_HOST
 void
 CudaGrid<TCoord>::shiftInTime ()
 {
-  /*
-   * Reuse oldest grid as new current
-   */
+#ifdef __CUDA_ARCH__
   shift (d_gridValues);
+#else
+  shift (gridValuesDevicePointers);
+
+#ifdef DEBUG_INFO
+  nextShareStep ();
+#endif
+#endif
 } /* CudaGrid<TCoord>::shiftInTime */
 
 template <class TCoord>
@@ -276,6 +304,9 @@ CUDA_DEVICE CUDA_HOST
 void
 CudaGrid<TCoord>::shift (FieldValue **grid)
 {
+  /*
+   * Reuse oldest grid as new current
+   */
   ASSERT (storedSteps > 0);
 
   FieldValue *oldest = grid[storedSteps - 1];
@@ -353,6 +384,7 @@ CudaGrid<TCoord>::getSizeGridValues () const
   return sizeGridValues;
 } /* CudaGrid<TCoord>::getSizeGridValues */
 
+#ifdef DEBUG_INFO
 /**
  * Get share step
  *
@@ -365,6 +397,7 @@ CudaGrid<TCoord>::getShareStep () const
 {
   return shareStep;
 } /* CudaGrid<TCoord>::getSizeGridValues */
+#endif
 
 /**
  * Set field value at coordinate in grid
@@ -438,19 +471,7 @@ CudaGrid<TCoord>::getFieldValue (grid_coord coord, /**< index in grid */
 #endif /* !__CUDA_ARCH__ */
 } /* CudaGrid<TCoord>::getFieldValue */
 
-/**
- * Switch to next time step
- */
-template <class TCoord>
-CUDA_HOST
-void
-CudaGrid<TCoord>::nextTimeStep ()
-{
-  shift (gridValuesDevicePointers);
-
-  nextShareStep ();
-} /* CudaGrid<TCoord>::nextTimeStep */
-
+#ifdef DEBUG_INFO
 /**
  * Increase share step
  */
@@ -472,6 +493,7 @@ CudaGrid<TCoord>::zeroShareStep ()
 {
   shareStep = 0;
 } /* CudaGrid<TCoord>::zeroShareStep */
+#endif
 
 /**
  * Get total size of grid. Is equal to size in non-parallel grid

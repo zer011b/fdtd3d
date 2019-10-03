@@ -174,16 +174,19 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
   }
 
 #ifdef CUDA_ENABLED
+  InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntScheme = NULLPTR;
+  InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntSchemeOnGPU = NULLPTR;
+  InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuIntSchemeOnGPU = NULLPTR;
+
   if (SOLVER_SETTINGS.getDoUseCuda ())
   {
     int cudaBuf = 1;
 
-    InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntScheme = new InternalSchemeGPU<Type, TCoord, layout_type> ();
-    InternalSchemeGPU<Type, TCoord, layout_type> *gpuIntSchemeOnGPU = new InternalSchemeGPU<Type, TCoord, layout_type> ();
-    InternalSchemeGPU<Type, TCoord, layout_type> *d_gpuIntSchemeOnGPU = NULLPTR;
+    gpuIntScheme = new InternalSchemeGPU<Type, TCoord, layout_type> ();
+    gpuIntSchemeOnGPU = new InternalSchemeGPU<Type, TCoord, layout_type> ();
 
-    TCoord<grid_coord, true> buf = TC_COORD (cudaBuf, cudaBuf, cudaBuf, ct1, ct2, ct3);
-    TCoord<grid_coord, true> zero = TC_COORD (0, 0, 0, ct1, ct2, ct3);
+    TCoord<grid_coord, true> buf = TCoord<grid_coord, true>::initAxesCoordinate (cudaBuf, cudaBuf, cudaBuf, ct1, ct2, ct3);
+    TCoord<grid_coord, true> zero = TCoord<grid_coord, true>::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3);
 
     gpuIntScheme->initFromCPU (intScheme, intScheme->getYeeLayout ()->getSize (), buf);
     gpuIntSchemeOnGPU->initOnGPU (gpuIntScheme);
@@ -260,6 +263,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       {
         gpuIntSchemeOnGPU->performPlaneWaveEStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getEInc ()->getSize ());
         gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getEInc ()->shiftInTime ();
       }
       else
 #endif /* CUDA_ENABLED */
@@ -310,6 +314,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                                 SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getEx ()->shiftInTime ();
       }
       else
 #endif /* CUDA_ENABLED */
@@ -396,6 +401,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                                 SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getEy ()->shiftInTime ();
       }
       else
 #endif /* CUDA_ENABLED */
@@ -481,6 +487,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                                 SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getEz ()->shiftInTime ();
       }
       else
 #endif /* CUDA_ENABLED */
@@ -534,6 +541,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       {
         gpuIntSchemeOnGPU->performPlaneWaveHStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getHInc ()->getSize ());
         gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getHInc ()->shiftInTime ();
       }
       else
 #endif /* CUDA_ENABLED */
@@ -584,6 +592,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                                 SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getHx ()->shiftInTime ();
       }
       else
 #endif /* CUDA_ENABLED */
@@ -669,6 +678,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                                 SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getHy ()->shiftInTime ();
       }
       else
 #endif /* CUDA_ENABLED */
@@ -754,6 +764,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
                                                                                 SOLVER_SETTINGS.getDoUseCaCbGrids ());
 
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU);
+        gpuIntScheme->getHz ()->shiftInTime ();
       }
       else
 #endif /* CUDA_ENABLED */

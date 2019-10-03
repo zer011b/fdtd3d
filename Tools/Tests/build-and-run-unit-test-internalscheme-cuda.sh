@@ -69,28 +69,28 @@ function build
 
         if [[ DO_LAUNCH -eq 1 ]]; then
           ./Tests/unit-test-internalscheme --time-steps 10 --point-source-pos-x 10 --point-source-pos-y 10 --point-source-pos-z 10 --point-source-ex \
-            --num-cuda-gpus $DEVICE --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4
+            --num-cuda-gpus $DEVICE --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4 --use-cuda
 
           if [[ "$?" -ne "0" ]]; then
             exit 1
           fi
 
           ./Tests/unit-test-internalscheme --time-steps 10 --point-source-pos-x 10 --point-source-pos-y 10 --point-source-pos-z 10 --point-source-ex --use-ca-cb \
-            --num-cuda-gpus $DEVICE --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4
+            --num-cuda-gpus $DEVICE --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4 --use-cuda
 
           if [[ "$?" -ne "0" ]]; then
             exit 1
           fi
 
-          ./Tests/unit-test-internalscheme --time-steps 100 --use-tfsf \
-            --num-cuda-gpus $DEVICE --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4
+          ./Tests/unit-test-internalscheme --time-steps 200 --use-tfsf \
+            --num-cuda-gpus $DEVICE --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4 --use-cuda
 
           if [[ "$?" -ne "0" ]]; then
             exit 1
           fi
 
-          ./Tests/unit-test-internalscheme --time-steps 100 --use-tfsf --use-ca-cb \
-            --num-cuda-gpus $DEVICE --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4
+          ./Tests/unit-test-internalscheme --time-steps 200 --use-tfsf --use-ca-cb \
+            --num-cuda-gpus $DEVICE --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4 --use-cuda
 
           if [[ "$?" -ne "0" ]]; then
             exit 1

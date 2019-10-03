@@ -445,16 +445,8 @@ CudaGrid<GridCoordinate1D>::copyFromCPU (const GridCoordinate1D &start, /**< abs
   startOfBlock = start;
   endOfBlock = end;
 
-  hasLeft = GridCoordinate1D (1
-#ifdef DEBUG_INFO
-                              , start.getType1 ()
-#endif /* DEBUG_INFO */
-                              );
-  hasRight = GridCoordinate1D (1
-#ifdef DEBUG_INFO
-                               , start.getType1 ()
-#endif /* DEBUG_INFO */
-                               );
+  hasLeft = GRID_COORDINATE_1D (1, start.getType1 ());
+  hasRight = GRID_COORDINATE_1D (1, start.getType1 ());
 
   if (start.get1 () == grid_coord (0))
   {
@@ -586,18 +578,8 @@ CudaGrid<GridCoordinate2D>::copyFromCPU (const GridCoordinate2D &start, /**< abs
   startOfBlock = start;
   endOfBlock = end;
 
-  hasLeft = GridCoordinate2D (1, 1
-#ifdef DEBUG_INFO
-                              , start.getType1 ()
-                              , start.getType2 ()
-#endif /* DEBUG_INFO */
-                              );
-  hasRight = GridCoordinate2D (1, 1
-#ifdef DEBUG_INFO
-                               , start.getType1 ()
-                               , start.getType2 ()
-#endif /* DEBUG_INFO */
-                               );
+  hasLeft = GRID_COORDINATE_2D (1, 1, start.getType1 (), start.getType2 ());
+  hasRight = GRID_COORDINATE_2D (1, 1, start.getType1 (), start.getType2 ());
 
   if (start.get1 () == grid_coord (0))
   {
@@ -763,20 +745,8 @@ CudaGrid<GridCoordinate3D>::copyFromCPU (const GridCoordinate3D &start, /**< abs
   startOfBlock = start;
   endOfBlock = end;
 
-  hasLeft = GridCoordinate3D (1, 1, 1
-#ifdef DEBUG_INFO
-                              , start.getType1 ()
-                              , start.getType2 ()
-                              , start.getType3 ()
-#endif /* DEBUG_INFO */
-                              );
-  hasRight = GridCoordinate3D (1, 1, 1
-#ifdef DEBUG_INFO
-                               , start.getType1 ()
-                               , start.getType2 ()
-                               , start.getType3 ()
-#endif /* DEBUG_INFO */
-                               );
+  hasLeft = GRID_COORDINATE_3D (1, 1, 1, start.getType1 (), start.getType2 (), start.getType3 ());
+  hasRight = GRID_COORDINATE_3D (1, 1, 1, start.getType1 (), start.getType2 (), start.getType3 ());
 
   if (start.get1 () == grid_coord (0))
   {
