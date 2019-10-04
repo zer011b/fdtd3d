@@ -4,11 +4,7 @@
 #include "GridInterface.h"
 #include "PhysicsConst.h"
 #include "YeeGridLayout.h"
-
-#ifndef CUDA_SOURCES
 #include "ParallelYeeGridLayout.h"
-#endif
-
 #include "CallBack.h"
 
 /**
