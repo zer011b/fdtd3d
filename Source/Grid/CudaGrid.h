@@ -90,12 +90,10 @@ protected:
    */
   FieldValue *helperGridValues;
 
-#ifdef DEBUG_INFO
   /**
    * Step at which to perform share operations for synchronization of computational nodes
    */
   time_step shareStep;
-#endif
 
   TCoord hasLeft;
   TCoord hasRight;
@@ -133,9 +131,7 @@ public:
   CUDA_DEVICE CUDA_HOST const TCoord & getBufSize () const;
   CUDA_DEVICE CUDA_HOST grid_coord getSizeGridValues () const;
 
-#ifdef DEBUG_INFO
   CUDA_DEVICE CUDA_HOST time_step getShareStep () const;
-#endif
 
   CUDA_DEVICE CUDA_HOST TCoord getTotalSize () const;
   CUDA_DEVICE CUDA_HOST
@@ -177,10 +173,8 @@ public:
 
   CUDA_DEVICE CUDA_HOST void shiftInTime ();
 
-#ifdef DEBUG_INFO
   CUDA_HOST void nextShareStep ();
   CUDA_HOST void zeroShareStep ();
-#endif
 
   CUDA_DEVICE CUDA_HOST
   TCoord getHasLeft () const
@@ -236,9 +230,7 @@ CudaGrid<TCoord>::CudaGrid (const TCoord & s, /**< size of this Cuda grid */
   , d_gridValues (NULLPTR)
   , gridValuesDevicePointers (NULLPTR)
   , helperGridValues (NULLPTR)
-#ifdef DEBUG_INFO
   , shareStep (0)
-#endif
   , hasLeft (TCoord ())
   , hasRight (TCoord ())
 {
@@ -384,7 +376,6 @@ CudaGrid<TCoord>::getSizeGridValues () const
   return sizeGridValues;
 } /* CudaGrid<TCoord>::getSizeGridValues */
 
-#ifdef DEBUG_INFO
 /**
  * Get share step
  *
@@ -397,7 +388,6 @@ CudaGrid<TCoord>::getShareStep () const
 {
   return shareStep;
 } /* CudaGrid<TCoord>::getSizeGridValues */
-#endif
 
 /**
  * Set field value at coordinate in grid
@@ -471,7 +461,6 @@ CudaGrid<TCoord>::getFieldValue (grid_coord coord, /**< index in grid */
 #endif /* !__CUDA_ARCH__ */
 } /* CudaGrid<TCoord>::getFieldValue */
 
-#ifdef DEBUG_INFO
 /**
  * Increase share step
  */
@@ -493,7 +482,6 @@ CudaGrid<TCoord>::zeroShareStep ()
 {
   shareStep = 0;
 } /* CudaGrid<TCoord>::zeroShareStep */
-#endif
 
 /**
  * Get total size of grid. Is equal to size in non-parallel grid
