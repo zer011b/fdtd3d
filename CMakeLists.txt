@@ -114,12 +114,12 @@ if ("${CUDA_ENABLED}")
       message (FATAL_ERROR "Debug CUDA builds with all dimension modes (ALL) are too heavy in terms of compilation time. Use specific dimension.")
     endif ()
 
-    set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O0 -g -G -lineinfo")
+    set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O0 -g -G")
   else ()
-    set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3")
+    set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3")
   endif ()
 
-  set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch ${CUDA_ARCH_SM_TYPE} -coda ${CUDA_ARCH_SM_TYPE} -x cu -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64 -keep -v")
+  #set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch ${CUDA_ARCH_SM_TYPE} -coda ${CUDA_ARCH_SM_TYPE} -x cu -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64 -keep -v")
 endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
@@ -340,10 +340,11 @@ message ("Project dir: ${PROJECT_SOURCE_DIR}")
 # Include MPI
 if ("${PARALLEL_GRID}")
   find_package (MPI REQUIRED)
-  message ("${MPI_INCLUDE_PATH}")
+  message ("MPI_CXX_INCLUDE_DIRS: ${MPI_CXX_INCLUDE_DIRS}")
+  message ("MPI_CXX_LIBRARIES: ${MPI_CXX_LIBRARIES}")
 
-  include_directories (${MPI_INCLUDE_PATH})
-  set (LIBS ${LIBS} ${MPI_LIBRARIES})
+  include_directories (${MPI_CXX_INCLUDE_DIRS})
+  set (LIBS ${LIBS} ${MPI_CXX_LIBRARIES})
 endif()
 
 message ("Compile flags: ${CMAKE_CXX_FLAGS}")
