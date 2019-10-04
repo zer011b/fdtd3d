@@ -27,3 +27,5 @@ To run each individual test on GPU execute next script from home folder of fdtd3
 ```
 ./Tools/TestSuite/run-test-gpu.sh t1.1 `pwd`/Tools/TestSuite `pwd`
 ```
+
+Do not forget to use `cmake >= 3.8` for Cuda builds.

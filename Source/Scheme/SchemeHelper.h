@@ -1183,6 +1183,7 @@ SchemeHelper::ntffN3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
   return NPair (sum_teta, sum_phi);
 #else
   ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+  return NPair (FPValue (0), FPValue (0));
 #endif
 }
 
@@ -1368,6 +1369,7 @@ SchemeHelper::ntffN3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
   return NPair (sum_teta, sum_phi);
 #else
   ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+  return NPair (FPValue (0), FPValue (0));
 #endif
 }
 
@@ -1554,6 +1556,7 @@ SchemeHelper::ntffN3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
   return NPair (sum_teta, sum_phi);
 #else
   ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+  return NPair (FPValue (0), FPValue (0));
 #endif
 }
 
@@ -1721,6 +1724,7 @@ SchemeHelper::ntffL3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
   return NPair (sum_teta, sum_phi);
 #else
   ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+  return NPair (FPValue (0), FPValue (0));
 #endif
 }
 
@@ -1888,6 +1892,7 @@ SchemeHelper::ntffL3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
   return NPair (sum_teta, sum_phi);
 #else
   ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+  return NPair (FPValue (0), FPValue (0));
 #endif
 }
 
@@ -2056,6 +2061,7 @@ SchemeHelper::ntffL3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
   return NPair (sum_teta, sum_phi);
 #else
   ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+  return NPair (FPValue (0), FPValue (0));
 #endif
 }
 

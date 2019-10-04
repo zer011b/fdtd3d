@@ -9,15 +9,7 @@ template <>
 GridCoordinate1D
 Grid<GridCoordinate1D>::getComputationStart (const GridCoordinate1D & diffPosStart) const /**< offset from the left border */
 {
-  CoordinateType ct1 = CoordinateType::NONE;
-#ifdef DEBUG_INFO
-  ct1 = getSize ().getType1 ();
-#endif /* !DEBUG_INFO */
-  return GridCoordinate1D (0
-#ifdef DEBUG_INFO
-                           , ct1
-#endif /* DEBUG_INFO */
-                           ) + diffPosStart;
+  return GRID_COORDINATE_1D (0, getSize ().getType1 ()) + diffPosStart;
 } /* Grid<GridCoordinate1D>::getComputationStart */
 
 #if defined (MODE_DIM2) || defined (MODE_DIM3)
@@ -31,17 +23,7 @@ template <>
 GridCoordinate2D
 Grid<GridCoordinate2D>::getComputationStart (const GridCoordinate2D & diffPosStart) const /**< offset from the left border */
 {
-  CoordinateType ct1 = CoordinateType::NONE;
-  CoordinateType ct2 = CoordinateType::NONE;
-#ifdef DEBUG_INFO
-  ct1 = getSize ().getType1 ();
-  ct2 = getSize ().getType2 ();
-#endif /* !DEBUG_INFO */
-  return GridCoordinate2D (0, 0
-#ifdef DEBUG_INFO
-                           , ct1, ct2
-#endif /* DEBUG_INFO */
-                           ) + diffPosStart;
+  return GRID_COORDINATE_2D (0, 0, getSize ().getType1 (), getSize ().getType2 ()) + diffPosStart;
 } /* Grid<GridCoordinate2D>::getComputationStart */
 
 #endif /* MODE_DIM2 || MODE_DIM3 */
@@ -57,19 +39,7 @@ template <>
 GridCoordinate3D
 Grid<GridCoordinate3D>::getComputationStart (const GridCoordinate3D & diffPosStart) const /**< offset from the left border */
 {
-  CoordinateType ct1 = CoordinateType::NONE;
-  CoordinateType ct2 = CoordinateType::NONE;
-  CoordinateType ct3 = CoordinateType::NONE;
-#ifdef DEBUG_INFO
-  ct1 = getSize ().getType1 ();
-  ct2 = getSize ().getType2 ();
-  ct3 = getSize ().getType3 ();
-#endif /* !DEBUG_INFO */
-  return GridCoordinate3D (0, 0, 0
-#ifdef DEBUG_INFO
-                           , ct1, ct2, ct3
-#endif /* DEBUG_INFO */
-                           ) + diffPosStart;
+  return GRID_COORDINATE_3D (0, 0, 0, getSize ().getType1 (), getSize ().getType2 (), getSize ().getType3 ()) + diffPosStart;
 } /* Grid<GridCoordinate3D>::getComputationStart */
 
 #endif /* MODE_DIM3 */
@@ -227,15 +197,7 @@ template <>
 GridCoordinate1D
 Grid<GridCoordinate1D>::calculatePositionFromIndex (grid_coord index) const /**< index in grid */
 {
-  CoordinateType ct1 = CoordinateType::NONE;
-#ifdef DEBUG_INFO
-  ct1 = getSize ().getType1 ();
-#endif /* !DEBUG_INFO */
-  return GridCoordinate1D (index
-#ifdef DEBUG_INFO
-                           , ct1
-#endif /* DEBUG_INFO */
-                           );
+  return GRID_COORDINATE_1D (index, getSize ().getType1 ());
 } /* Grid<GridCoordinate1D>::calculatePositionFromIndex */
 
 #if defined (MODE_DIM2) || defined (MODE_DIM3)
@@ -254,18 +216,7 @@ Grid<GridCoordinate2D>::calculatePositionFromIndex (grid_coord index) const /**<
   index %= sy;
   grid_coord y = index;
 
-  CoordinateType ct1 = CoordinateType::NONE;
-  CoordinateType ct2 = CoordinateType::NONE;
-#ifdef DEBUG_INFO
-  ct1 = getSize ().getType1 ();
-  ct2 = getSize ().getType2 ();
-#endif /* !DEBUG_INFO */
-
-  return GridCoordinate2D (x, y
-#ifdef DEBUG_INFO
-                           , ct1, ct2
-#endif /* DEBUG_INFO */
-                           );
+  return GRID_COORDINATE_2D (x, y, getSize ().getType1 (), getSize ().getType2 ());
 } /* Grid<GridCoordinate2D>::calculatePositionFromIndex */
 
 #endif /* MODE_DIM2 || MODE_DIM3 */
@@ -289,20 +240,7 @@ Grid<GridCoordinate3D>::calculatePositionFromIndex (grid_coord index) const /**<
   index %= sz;
   grid_coord z = index;
 
-  CoordinateType ct1 = CoordinateType::NONE;
-  CoordinateType ct2 = CoordinateType::NONE;
-  CoordinateType ct3 = CoordinateType::NONE;
-#ifdef DEBUG_INFO
-  ct1 = getSize ().getType1 ();
-  ct2 = getSize ().getType2 ();
-  ct3 = getSize ().getType3 ();
-#endif /* !DEBUG_INFO */
-
-  return GridCoordinate3D (x, y, z
-#ifdef DEBUG_INFO
-                           , ct1, ct2, ct3
-#endif /* DEBUG_INFO */
-                           );
+  return GRID_COORDINATE_3D (x, y, z, getSize ().getType1 (), getSize ().getType2 (), getSize ().getType3 ());
 } /* Grid<GridCoordinate3D>::calculatePositionFromIndex */
 
 #endif /* MODE_DIM3 */

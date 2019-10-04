@@ -1097,15 +1097,7 @@ CUDA_DEVICE CUDA_HOST
 GridCoordinate1D
 CudaGrid<GridCoordinate1D>::calculatePositionFromIndex (grid_coord index) const /**< index in grid */
 {
-  CoordinateType ct1 = CoordinateType::NONE;
-#ifdef DEBUG_INFO
-  ct1 = getSize ().getType1 ();
-#endif /* !DEBUG_INFO */
-  return GridCoordinate1D (index
-#ifdef DEBUG_INFO
-                           , ct1
-#endif /* DEBUG_INFO */
-                           );
+  return GRID_COORDINATE_1D (index, getSize ().getType1 ());
 } /* CudaGrid<GridCoordinate1D>::calculatePositionFromIndex */
 
 #if defined (MODE_DIM2) || defined (MODE_DIM3)
@@ -1124,18 +1116,7 @@ CudaGrid<GridCoordinate2D>::calculatePositionFromIndex (grid_coord index) const 
   index %= sy;
   grid_coord y = index;
 
-  CoordinateType ct1 = CoordinateType::NONE;
-  CoordinateType ct2 = CoordinateType::NONE;
-#ifdef DEBUG_INFO
-  ct1 = getSize ().getType1 ();
-  ct2 = getSize ().getType2 ();
-#endif /* !DEBUG_INFO */
-
-  return GridCoordinate2D (x, y
-#ifdef DEBUG_INFO
-                           , ct1, ct2
-#endif /* DEBUG_INFO */
-                           );
+  return GRID_COORDINATE_2D (x, y, getSize ().getType1 (), getSize ().getType2 ());
 } /* CudaGrid<GridCoordinate2D>::calculatePositionFromIndex */
 
 #endif /* MODE_DIM2 || MODE_DIM3 */
@@ -1160,20 +1141,7 @@ CudaGrid<GridCoordinate3D>::calculatePositionFromIndex (grid_coord index) const 
   index %= sz;
   grid_coord z = index;
 
-  CoordinateType ct1 = CoordinateType::NONE;
-  CoordinateType ct2 = CoordinateType::NONE;
-  CoordinateType ct3 = CoordinateType::NONE;
-#ifdef DEBUG_INFO
-  ct1 = getSize ().getType1 ();
-  ct2 = getSize ().getType2 ();
-  ct3 = getSize ().getType3 ();
-#endif /* !DEBUG_INFO */
-
-  return GridCoordinate3D (x, y, z
-#ifdef DEBUG_INFO
-                           , ct1, ct2, ct3
-#endif /* DEBUG_INFO */
-                           );
+  return GRID_COORDINATE_3D (x, y, z, getSize ().getType1 (), getSize ().getType2 (), getSize ().getType3 ());
 } /* CudaGrid<GridCoordinate3D>::calculatePositionFromIndex */
 
 #endif /* MODE_DIM3 */

@@ -3965,10 +3965,11 @@ Scheme<Type, TCoord, layout_type>::Pointing_scat (FPValue angleTeta, FPValue ang
   }
   else
   {
-    return 0.0;
+    return FPValue (0);
   }
 #else
   ASSERT_MESSAGE ("Solver is not compiled with support of complex values. Recompile it with -DCOMPLEX_FIELD_VALUES=ON.");
+  return FPValue (0);
 #endif
 }
 
