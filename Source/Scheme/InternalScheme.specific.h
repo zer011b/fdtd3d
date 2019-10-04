@@ -27,7 +27,7 @@ InternalScheme<Type, TCoord, layout_type>::init (YeeGridLayout<Type, TCoord, lay
 
   if (useParallel)
   {
-#if defined (PARALLEL_GRID) && ! defined (__CUDA_ARCH__)
+#if defined (PARALLEL_GRID) && ! defined (CUDA_SOURCES)
     allocateParallelGrids ();
 #else
     ALWAYS_ASSERT (false);
@@ -87,6 +87,7 @@ InternalSchemeHelper::allocateGridsInc (InternalScheme<Type, TCoord, layout_type
 }
 
 #ifdef PARALLEL_GRID
+#ifndef CUDA_SOURCES
 
 template <SchemeType_t Type, LayoutType layout_type>
 CUDA_HOST
@@ -172,6 +173,7 @@ InternalSchemeHelper::allocateParallelGrids3D (InternalScheme<Type, GridCoordina
 #endif /* GRID_3D */
 }
 
+#endif /* !CUDA_SOURCES */
 #endif /* PARALLEL_GRID */
 
 #ifdef CUDA_ENABLED
