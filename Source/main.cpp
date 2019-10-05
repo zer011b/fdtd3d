@@ -1123,6 +1123,28 @@ int runMode (int argc, char** argv)
     {
       cudaInfo ();
 
+      // Parse GPU indexes
+      std::vector<int> idxGPU;
+      std::string idxGPUStr = SOLVER_SETTINGS.getCudaGPUs ();
+      std::string delimiter = ",";
+
+      size_t pos = 0;
+      size_t pos_old = 0;
+      std::string token;
+      do
+      {
+        pos = idxGPUStr.find(delimiter, pos_old);
+        token = idxGPUStr.substr(pos_old, pos);
+        idxGPU.push_back (STOI (token.c_str ()));
+        pos_old = pos + delimiter.length ();
+      }
+      while (pos != std::string::npos);
+
+      ALWAYS_ASSERT (idxGPU.size () == numProcs);
+      ALWAYS_ASSERT (rank < idxGPU.size ());
+      // TODO: check here for -1, which will mean that GPU is not used on the node
+      cudaInit (idxGPU[rank]);
+
       if (isParallel)
       {
 #if defined (PARALLEL_GRID)
@@ -1130,17 +1152,9 @@ int runMode (int argc, char** argv)
         {
           UNREACHABLE;
         }
-        else
-        {
-          cudaInit (rank % solverSettings.getNumCudaGPUs ());
-        }
 #else
         UNREACHABLE;
 #endif
-      }
-      else
-      {
-        cudaInit (solverSettings.getNumCudaGPUs ());
       }
 
       cudaThreadsX = solverSettings.getNumCudaThreadsX ();
