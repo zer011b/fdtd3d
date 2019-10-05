@@ -251,9 +251,12 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     }
 
 #ifdef PARALLEL_GRID
-#ifndef CUDA_ENABLED
-    tryShareE ();
-#endif /* !CUDA_ENABLED */
+#ifdef CUDA_ENABLED
+    if (!SOLVER_SETTINGS.getDoUseCuda ())
+#endif
+    {
+      tryShareE ();
+    }
 #endif /* PARALLEL_GRID */
 
     if (SOLVER_SETTINGS.getDoUseTFSF ())
@@ -416,9 +419,12 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     }
 
 #ifdef PARALLEL_GRID
-#ifndef CUDA_ENABLED
-    tryShareH ();
-#endif /* !CUDA_ENABLED */
+#ifdef CUDA_ENABLED
+    if (!SOLVER_SETTINGS.getDoUseCuda ())
+#endif
+    {
+      tryShareH ();
+    }
 #endif /* PARALLEL_GRID */
   }
 
