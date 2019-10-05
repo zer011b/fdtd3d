@@ -106,7 +106,7 @@ SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-topology", "Use size of topology by 
  */
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCuda, getDoUseCuda, bool, false, "--use-cuda", "Use cuda")
 SETTINGS_ELEM_FIELD_TYPE_INT(cudaBlocksBufferSize, getCudaBlocksBufferSize, int, 1, "--cuda-buffer-size", "Size of buffer for blocks for cuda grid")
-SETTINGS_ELEM_FIELD_TYPE_INT(numCudaGPUs, getNumCudaGPUs, int, 1, "--num-cuda-gpus", "Number of GPUs to use in computations")
+SETTINGS_ELEM_FIELD_TYPE_STRING(cudaGPUs, getCudaGPUs, std::string, "0", "--cuda-gpus", "Indexes of GPUs to use in computations (in format <id0>,<id1>,<id2>, eg. --cuda-gpus 0,1,2)")
 SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsX, getNumCudaThreadsX, int, 4, "--num-cuda-threads-x", "Number of GPU threads by x coordinate to use in computations")
 SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsY, getNumCudaThreadsY, int, 4, "--num-cuda-threads-y", "Number of GPU threads by y coordinate to use in computations")
 SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsZ, getNumCudaThreadsZ, int, 4, "--num-cuda-threads-z", "Number of GPU threads by z coordinate to use in computations")

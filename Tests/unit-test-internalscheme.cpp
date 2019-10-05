@@ -1926,7 +1926,7 @@ int main (int argc, char** argv)
 #ifdef CUDA_ENABLED
   if (SOLVER_SETTINGS.getDoUseCuda ())
   {
-    cudaCheckErrorCmd (cudaSetDevice(solverSettings.getNumCudaGPUs ()));
+    cudaCheckErrorCmd (cudaSetDevice(STOI (SOLVER_SETTINGS.getCudaGPUs ())));
   }
 #endif /* CUDA_ENABLED */
 
