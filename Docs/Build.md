@@ -1,3 +1,7 @@
+# MPI+Cuda Build
+
+To build parallel mode with GPU support (MPI+Cuda) do not use mpicc and mpicxx compiler wrappers, because they do not set `MPI_CXX_INCLUDE_DIRS` and `MPI_CXX_LINK_FLAGS`. These are required to be passed to `nvcc`.
+
 # Build for BlueGene\P
 
 BlueGene\P doesn't have cmake provided, so it should be built from source. Download cmake source and then do the following

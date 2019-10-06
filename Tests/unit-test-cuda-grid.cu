@@ -445,6 +445,13 @@ int main (int argc, char** argv)
               GridCoordinate1D (1, CoordinateType::Y));
   testFunc1D (GridCoordinate1D (gridSizeZ, CoordinateType::Z),
               GridCoordinate1D (1, CoordinateType::Z));
+
+  testFunc1D (GridCoordinate1D (gridSizeX, CoordinateType::X),
+              GridCoordinate1D (0, CoordinateType::X));
+  testFunc1D (GridCoordinate1D (gridSizeY, CoordinateType::Y),
+              GridCoordinate1D (0, CoordinateType::Y));
+  testFunc1D (GridCoordinate1D (gridSizeZ, CoordinateType::Z),
+              GridCoordinate1D (0, CoordinateType::Z));
 #endif /* MODE_DIM1 */
 
 #if defined (MODE_DIM2)
@@ -454,11 +461,20 @@ int main (int argc, char** argv)
               GridCoordinate2D (1, 1, CoordinateType::Y, CoordinateType::Z));
   testFunc2D (GridCoordinate2D (gridSizeX, gridSizeZ, CoordinateType::X, CoordinateType::Z),
               GridCoordinate2D (1, 1, CoordinateType::X, CoordinateType::Z));
+
+  testFunc2D (GridCoordinate2D (gridSizeX, gridSizeY, CoordinateType::X, CoordinateType::Y),
+              GridCoordinate2D (0, 0, CoordinateType::X, CoordinateType::Y));
+  testFunc2D (GridCoordinate2D (gridSizeY, gridSizeZ, CoordinateType::Y, CoordinateType::Z),
+              GridCoordinate2D (0, 0, CoordinateType::Y, CoordinateType::Z));
+  testFunc2D (GridCoordinate2D (gridSizeX, gridSizeZ, CoordinateType::X, CoordinateType::Z),
+              GridCoordinate2D (0, 0, CoordinateType::X, CoordinateType::Z));
 #endif /* MODE_DIM2 */
 
 #if defined (MODE_DIM3)
   testFunc3D (GridCoordinate3D (gridSizeX, gridSizeY, gridSizeZ, CoordinateType::X, CoordinateType::Y, CoordinateType::Z),
               GridCoordinate3D (1, 1, 1, CoordinateType::X, CoordinateType::Y, CoordinateType::Z));
+  testFunc3D (GridCoordinate3D (gridSizeX, gridSizeY, gridSizeZ, CoordinateType::X, CoordinateType::Y, CoordinateType::Z),
+              GridCoordinate3D (0, 0, 0, CoordinateType::X, CoordinateType::Y, CoordinateType::Z));
 #endif /* MODE_DIM3 */
 
   solverSettings.Uninitialize ();
