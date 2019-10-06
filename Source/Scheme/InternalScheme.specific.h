@@ -198,9 +198,9 @@ InternalSchemeHelperGPU::allocateGridsFromCPU (InternalSchemeGPU<Type, TCoord, l
 
   if (SOLVER_SETTINGS.getDoUseTFSF ())
   {
-    GridCoordinate1D one = GRID_COORDINATE_1D (1, CoordinateType::X);
-    intScheme->EInc = new CudaGrid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(cpuScheme->yeeLayout->getSize ().get1 ()), CoordinateType::X), one, cpuScheme->EInc);
-    intScheme->HInc = new CudaGrid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(cpuScheme->yeeLayout->getSize ().get1 ()), CoordinateType::X), one, cpuScheme->HInc);
+    GridCoordinate1D zero = GRID_COORDINATE_1D (0, CoordinateType::X);
+    intScheme->EInc = new CudaGrid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(cpuScheme->yeeLayout->getSize ().get1 ()), CoordinateType::X), zero, cpuScheme->EInc);
+    intScheme->HInc = new CudaGrid<GridCoordinate1D> (GRID_COORDINATE_1D (500*(cpuScheme->yeeLayout->getSize ().get1 ()), CoordinateType::X), zero, cpuScheme->HInc);
   }
 }
 
@@ -496,12 +496,6 @@ InternalSchemeGPU<Type, TCoord, layout_type>::initFromCPU (InternalScheme<Type, 
   initScheme (cpuScheme->gridStep, cpuScheme->sourceWaveLength);
 
   initCoordTypes ();
-
-  TC one (1, 1, 1
-#ifdef DEBUG_INFO
-          , ct1, ct2, ct3
-#endif
-          );
 
   allocateGridsFromCPU (cpuScheme, blockSize, bufSize);
 

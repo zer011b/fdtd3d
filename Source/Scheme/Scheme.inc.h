@@ -1773,7 +1773,12 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
     /*
      * Init InternalScheme on GPU
      */
-    time_step cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
+    time_step cudaBuf = 0;
+
+    if (blockCount.calculateTotalCoord () > 1)
+    {
+      cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
+    }
 
     gpuIntScheme = new InternalSchemeGPU<Type, TCoord, layout_type> ();
     gpuIntSchemeOnGPU = new InternalSchemeGPU<Type, TCoord, layout_type> ();

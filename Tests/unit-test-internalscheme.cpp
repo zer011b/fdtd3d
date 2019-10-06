@@ -180,7 +180,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
   if (SOLVER_SETTINGS.getDoUseCuda ())
   {
-    int cudaBuf = 1;
+    int cudaBuf = 0;
 
     gpuIntScheme = new InternalSchemeGPU<Type, TCoord, layout_type> ();
     gpuIntSchemeOnGPU = new InternalSchemeGPU<Type, TCoord, layout_type> ();
