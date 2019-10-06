@@ -115,6 +115,8 @@ if ("${CUDA_ENABLED}")
     endif ()
 
     set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O0 -g -G")
+  elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "ReleaseWithAsserts")
+    set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O1")
   else ()
     set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3")
   endif ()
