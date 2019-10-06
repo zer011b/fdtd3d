@@ -50,7 +50,10 @@ function launch ()
     return $ret
   fi
 
-  ./fdtd3d --cmd-from-file ${SOURCE_DIR}/Examples/vacuum1D_ExHy_scattered.txt &> $output_file
+  cp ${SOURCE_DIR}/Examples/vacuum1D_ExHy_scattered.txt $tmp_test_file
+  echo $MODE >> $tmp_test_file
+
+  $RUNNER ./fdtd3d --cmd-from-file $tmp_test_file &> $output_file
 
   ret=$?
 
