@@ -122,7 +122,141 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::sin1_hy (GridCoordinateFP3D coord, FP
   return - PhysicsConst::SpeedOfLight * sin (t - coord.get1 ());
 }
 
-#endif /* !COMPLEX_FIELD_VALUES */
+#else /* !COMPLEX_FIELD_VALUES */
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom1_ez (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom1_hy (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom1_jz (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom1_my (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_ex (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_ey (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_ez (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_hx (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_hy (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_hz (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_jx (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_jy (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_jz (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_mx (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_my (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom2_mz (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom3_ez (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom3_hy (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom3_jz (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::polinom3_my (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::sin1_ez (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+CUDA_DEVICE CUDA_HOST FieldValue CallBack::sin1_hy (GridCoordinateFP3D coord, FPValue t)
+{
+  UNREACHABLE;
+  return FieldValue (0, 0);
+}
+
+#endif /* COMPLEX_FIELD_VALUES */
 
 /*
  * ExHy
