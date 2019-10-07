@@ -2129,9 +2129,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_ez, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzBorder (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_hy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_hy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyBorder (tmp);
     }
     else
@@ -2147,18 +2147,18 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ex, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ex, sizeof(SourceCallBack)));
       intScheme->setCallbackExBorder (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ey, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ey, sizeof(SourceCallBack)));
       intScheme->setCallbackEyBorder (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ez, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzBorder (tmp);
 
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_hx, sizeof(SourceCallBack)));
       intScheme->setCallbackHxBorder (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_hy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyBorder (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_hz, sizeof(SourceCallBack)));
       intScheme->setCallbackHzBorder (tmp);
     }
     else
@@ -2179,9 +2179,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_ez, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzBorder (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_hy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_hy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyBorder (tmp);
     }
     else
@@ -2197,9 +2197,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::sin1_ez, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_sin1_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzBorder (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::sin1_hy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_sin1_hy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyBorder (tmp);
     }
     else
@@ -2242,9 +2242,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_jz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_jz, sizeof(SourceCallBack)));
       intScheme->setCallbackJz (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_my, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_my, sizeof(SourceCallBack)));
       intScheme->setCallbackMy (tmp);
     }
     else
@@ -2260,17 +2260,17 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_jx, sizeof(SourceCallBack)));
       intScheme->setCallbackJx (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_jy, sizeof(SourceCallBack)));
       intScheme->setCallbackJy (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_jz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_jz, sizeof(SourceCallBack)));
       intScheme->setCallbackJz (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_mx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_mx, sizeof(SourceCallBack)));
       intScheme->setCallbackMx (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_my, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_my, sizeof(SourceCallBack)));
       intScheme->setCallbackMy (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_mz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_mz, sizeof(SourceCallBack)));
       intScheme->setCallbackMz (tmp);
     }
     else
@@ -2291,9 +2291,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_jz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_jz, sizeof(SourceCallBack)));
       intScheme->setCallbackJz (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_my, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_my, sizeof(SourceCallBack)));
       intScheme->setCallbackMy (tmp);
     }
     else
@@ -2310,9 +2310,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_ez, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom1_hy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_hy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyExact (tmp);
     }
     else
@@ -2328,17 +2328,17 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ex, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ex, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ey, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ey, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_ez, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_hx, sizeof(SourceCallBack)));
       intScheme->setCallbackHxExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_hy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom2_hz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_hz, sizeof(SourceCallBack)));
       intScheme->setCallbackHzExact (tmp);
     }
     else
@@ -2359,9 +2359,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_ez, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::polinom3_hy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_hy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyExact (tmp);
     }
     else
@@ -2377,9 +2377,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::sin1_ez, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_sin1_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::sin1_hy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_sin1_hy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyExact (tmp);
     }
     else
@@ -2397,9 +2397,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ex_exhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ex_exhy, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hy_exhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hy_exhy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyExact (tmp);
     }
     else
@@ -2415,9 +2415,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ex_exhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ex_exhy, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hy_exhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hy_exhy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyExact (tmp);
     }
     else
@@ -2433,9 +2433,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ex_exhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ex_exhy, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hy_exhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hy_exhy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyExact (tmp);
     }
     else
@@ -2452,9 +2452,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ex_exhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ex_exhz, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hz_exhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hz_exhz, sizeof(SourceCallBack)));
       intScheme->setCallbackHzExact (tmp);
     }
     else
@@ -2470,9 +2470,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ex_exhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ex_exhz, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hz_exhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hz_exhz, sizeof(SourceCallBack)));
       intScheme->setCallbackHzExact (tmp);
     }
     else
@@ -2488,9 +2488,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ex_exhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ex_exhz, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hz_exhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hz_exhz, sizeof(SourceCallBack)));
       intScheme->setCallbackHzExact (tmp);
     }
     else
@@ -2507,9 +2507,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ey_eyhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ey_eyhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hx_eyhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hx_eyhx, sizeof(SourceCallBack)));
       intScheme->setCallbackHxExact (tmp);
     }
     else
@@ -2525,9 +2525,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ey_eyhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ey_eyhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hx_eyhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hx_eyhx, sizeof(SourceCallBack)));
       intScheme->setCallbackHxExact (tmp);
     }
     else
@@ -2543,9 +2543,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ey_eyhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ey_eyhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hx_eyhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hx_eyhx, sizeof(SourceCallBack)));
       intScheme->setCallbackHxExact (tmp);
     }
     else
@@ -2562,9 +2562,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ey_eyhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ey_eyhz, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hz_eyhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hz_eyhz, sizeof(SourceCallBack)));
       intScheme->setCallbackHzExact (tmp);
     }
     else
@@ -2580,9 +2580,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ey_eyhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ey_eyhz, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hz_eyhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hz_eyhz, sizeof(SourceCallBack)));
       intScheme->setCallbackHzExact (tmp);
     }
     else
@@ -2598,9 +2598,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ey_eyhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ey_eyhz, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hz_eyhz, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hz_eyhz, sizeof(SourceCallBack)));
       intScheme->setCallbackHzExact (tmp);
     }
     else
@@ -2617,9 +2617,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ez_ezhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ez_ezhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hx_ezhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hx_ezhx, sizeof(SourceCallBack)));
       intScheme->setCallbackHxExact (tmp);
     }
     else
@@ -2635,9 +2635,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ez_ezhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ez_ezhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hx_ezhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hx_ezhx, sizeof(SourceCallBack)));
       intScheme->setCallbackHxExact (tmp);
     }
     else
@@ -2653,9 +2653,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ez_ezhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ez_ezhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hx_ezhx, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hx_ezhx, sizeof(SourceCallBack)));
       intScheme->setCallbackHxExact (tmp);
     }
     else
@@ -2672,9 +2672,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_ez_ezhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ez_ezhy, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp1_hy_ezhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hy_ezhy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyExact (tmp);
     }
     else
@@ -2690,9 +2690,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_ez_ezhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ez_ezhy, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp2_hy_ezhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hy_ezhy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyExact (tmp);
     }
     else
@@ -2708,9 +2708,9 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ())
     {
       SourceCallBack tmp;
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_ez_ezhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ez_ezhy, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
-      cudaMemcpyFromSymbol (&tmp, CallBack::exp3_hy_ezhy, sizeof(SourceCallBack));
+      cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hy_ezhy, sizeof(SourceCallBack)));
       intScheme->setCallbackHyExact (tmp);
     }
     else

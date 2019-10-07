@@ -6,78 +6,159 @@
 
 typedef FieldValue (*SourceCallBack) (GridCoordinateFP3D, FPValue);
 
+#ifdef CUDA_ENABLED
+#define CALLBACK(CALLBACK_NAME) \
+  extern CUDA_DEVICE SourceCallBack d_ ##CALLBACK_NAME;
+
+CALLBACK (polinom1_ez)
+CALLBACK (polinom1_hy)
+CALLBACK (polinom1_jz)
+CALLBACK (polinom1_my)
+
+CALLBACK (polinom2_ex)
+CALLBACK (polinom2_ey)
+CALLBACK (polinom2_ez)
+CALLBACK (polinom2_hx)
+CALLBACK (polinom2_hy)
+CALLBACK (polinom2_hz)
+
+CALLBACK (polinom2_jx)
+CALLBACK (polinom2_jy)
+CALLBACK (polinom2_jz)
+CALLBACK (polinom2_mx)
+CALLBACK (polinom2_my)
+CALLBACK (polinom2_mz)
+
+CALLBACK (polinom3_ez)
+CALLBACK (polinom3_hy)
+CALLBACK (polinom3_jz)
+CALLBACK (polinom3_my)
+
+CALLBACK (sin1_ez)
+CALLBACK (sin1_hy)
+
+CALLBACK (exp1_ex_exhy)
+CALLBACK (exp2_ex_exhy)
+CALLBACK (exp3_ex_exhy)
+CALLBACK (exp1_hy_exhy)
+CALLBACK (exp2_hy_exhy)
+CALLBACK (exp3_hy_exhy)
+
+CALLBACK (exp1_ex_exhz)
+CALLBACK (exp2_ex_exhz)
+CALLBACK (exp3_ex_exhz)
+CALLBACK (exp1_hz_exhz)
+CALLBACK (exp2_hz_exhz)
+CALLBACK (exp3_hz_exhz)
+
+CALLBACK (exp1_ey_eyhx)
+CALLBACK (exp2_ey_eyhx)
+CALLBACK (exp3_ey_eyhx)
+CALLBACK (exp1_hx_eyhx)
+CALLBACK (exp2_hx_eyhx)
+CALLBACK (exp3_hx_eyhx)
+
+CALLBACK (exp1_ey_eyhz)
+CALLBACK (exp2_ey_eyhz)
+CALLBACK (exp3_ey_eyhz)
+CALLBACK (exp1_hz_eyhz)
+CALLBACK (exp2_hz_eyhz)
+CALLBACK (exp3_hz_eyhz)
+
+CALLBACK (exp1_ez_ezhx)
+CALLBACK (exp2_ez_ezhx)
+CALLBACK (exp3_ez_ezhx)
+CALLBACK (exp1_hx_ezhx)
+CALLBACK (exp2_hx_ezhx)
+CALLBACK (exp3_hx_ezhx)
+
+CALLBACK (exp1_ez_ezhy)
+CALLBACK (exp2_ez_ezhy)
+CALLBACK (exp3_ez_ezhy)
+CALLBACK (exp1_hy_ezhy)
+CALLBACK (exp2_hy_ezhy)
+CALLBACK (exp3_hy_ezhy)
+
+#undef CALLBACK
+#endif /* CUDA_ENABLED */
+
 class CallBack
 {
 public:
 
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom1_ez (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom1_hy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom1_jz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom1_my (GridCoordinateFP3D, FPValue);
+#define CALLBACK(CALLBACK_NAME) \
+  static CUDA_DEVICE CUDA_HOST FieldValue CALLBACK_NAME (GridCoordinateFP3D, FPValue);
 
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_ex (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_ey (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_ez (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_hx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_hy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_hz (GridCoordinateFP3D, FPValue);
+  CALLBACK (polinom1_ez)
+  CALLBACK (polinom1_hy)
+  CALLBACK (polinom1_jz)
+  CALLBACK (polinom1_my)
 
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_jx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_jy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_jz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_mx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_my (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom2_mz (GridCoordinateFP3D, FPValue);
+  CALLBACK (polinom2_ex)
+  CALLBACK (polinom2_ey)
+  CALLBACK (polinom2_ez)
+  CALLBACK (polinom2_hx)
+  CALLBACK (polinom2_hy)
+  CALLBACK (polinom2_hz)
 
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom3_ez (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom3_hy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom3_jz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue polinom3_my (GridCoordinateFP3D, FPValue);
+  CALLBACK (polinom2_jx)
+  CALLBACK (polinom2_jy)
+  CALLBACK (polinom2_jz)
+  CALLBACK (polinom2_mx)
+  CALLBACK (polinom2_my)
+  CALLBACK (polinom2_mz)
 
-  static CUDA_DEVICE CUDA_HOST FieldValue sin1_ez (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue sin1_hy (GridCoordinateFP3D, FPValue);
+  CALLBACK (polinom3_ez)
+  CALLBACK (polinom3_hy)
+  CALLBACK (polinom3_jz)
+  CALLBACK (polinom3_my)
 
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_ex_exhy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_ex_exhy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_ex_exhy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_hy_exhy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_hy_exhy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_hy_exhy (GridCoordinateFP3D, FPValue);
+  CALLBACK (sin1_ez)
+  CALLBACK (sin1_hy)
 
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_ex_exhz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_ex_exhz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_ex_exhz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_hz_exhz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_hz_exhz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_hz_exhz (GridCoordinateFP3D, FPValue);
+  CALLBACK (exp1_ex_exhy)
+  CALLBACK (exp2_ex_exhy)
+  CALLBACK (exp3_ex_exhy)
+  CALLBACK (exp1_hy_exhy)
+  CALLBACK (exp2_hy_exhy)
+  CALLBACK (exp3_hy_exhy)
 
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_ey_eyhx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_ey_eyhx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_ey_eyhx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_hx_eyhx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_hx_eyhx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_hx_eyhx (GridCoordinateFP3D, FPValue);
+  CALLBACK (exp1_ex_exhz)
+  CALLBACK (exp2_ex_exhz)
+  CALLBACK (exp3_ex_exhz)
+  CALLBACK (exp1_hz_exhz)
+  CALLBACK (exp2_hz_exhz)
+  CALLBACK (exp3_hz_exhz)
 
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_ey_eyhz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_ey_eyhz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_ey_eyhz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_hz_eyhz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_hz_eyhz (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_hz_eyhz (GridCoordinateFP3D, FPValue);
+  CALLBACK (exp1_ey_eyhx)
+  CALLBACK (exp2_ey_eyhx)
+  CALLBACK (exp3_ey_eyhx)
+  CALLBACK (exp1_hx_eyhx)
+  CALLBACK (exp2_hx_eyhx)
+  CALLBACK (exp3_hx_eyhx)
 
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_ez_ezhx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_ez_ezhx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_ez_ezhx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_hx_ezhx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_hx_ezhx (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_hx_ezhx (GridCoordinateFP3D, FPValue);
+  CALLBACK (exp1_ey_eyhz)
+  CALLBACK (exp2_ey_eyhz)
+  CALLBACK (exp3_ey_eyhz)
+  CALLBACK (exp1_hz_eyhz)
+  CALLBACK (exp2_hz_eyhz)
+  CALLBACK (exp3_hz_eyhz)
 
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_ez_ezhy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_ez_ezhy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_ez_ezhy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp1_hy_ezhy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp2_hy_ezhy (GridCoordinateFP3D, FPValue);
-  static CUDA_DEVICE CUDA_HOST FieldValue exp3_hy_ezhy (GridCoordinateFP3D, FPValue);
+  CALLBACK (exp1_ez_ezhx)
+  CALLBACK (exp2_ez_ezhx)
+  CALLBACK (exp3_ez_ezhx)
+  CALLBACK (exp1_hx_ezhx)
+  CALLBACK (exp2_hx_ezhx)
+  CALLBACK (exp3_hx_ezhx)
+
+  CALLBACK (exp1_ez_ezhy)
+  CALLBACK (exp2_ez_ezhy)
+  CALLBACK (exp3_ez_ezhy)
+  CALLBACK (exp1_hy_ezhy)
+  CALLBACK (exp2_hy_ezhy)
+  CALLBACK (exp3_hy_ezhy)
+
+#undef CALLBACK
 
 private:
   static CUDA_DEVICE CUDA_HOST FieldValue exp1_e (FPValue, FPValue, FPValue);
