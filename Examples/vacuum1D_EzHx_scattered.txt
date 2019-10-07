@@ -7,7 +7,7 @@
 
 --1d-ezhx
 
---angle-teta 0
+--angle-teta 90
 --angle-phi 90
 --angle-psi 90
 
