@@ -524,6 +524,8 @@ InternalSchemeGPU<Type, TCoord, layout_type>::initOnGPU (InternalSchemeGPU<Type,
   yeeLayout = gpuScheme->yeeLayout;
   initScheme (gpuScheme->gridStep, gpuScheme->sourceWaveLength);
 
+  d_norm = gpuScheme->d_norm;
+
   initCoordTypes ();
 
   TC one (1, 1, 1
