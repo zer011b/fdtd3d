@@ -98,10 +98,10 @@ jobs:
       - . Tools/travis-helper.sh
       - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
-# ---- ReleaseWithAsserts, Cxx11, no message print build ----
+# ---- RelWithDebInfo, Cxx11, no message print build ----
     - stage: build
       env:
-        - BUILD_MODE=ReleaseWithAsserts
+        - BUILD_MODE=RelWithDebInfo
         - CXX11=ON
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
@@ -111,7 +111,7 @@ jobs:
 
     - stage: build
       env:
-        - BUILD_MODE=ReleaseWithAsserts
+        - BUILD_MODE=RelWithDebInfo
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
@@ -119,10 +119,10 @@ jobs:
       - . Tools/travis-helper.sh
       - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
-# ---- ReleaseWithAsserts, non-Cxx11, no message print build ----
+# ---- RelWithDebInfo, non-Cxx11, no message print build ----
     - stage: build
       env:
-        - BUILD_MODE=ReleaseWithAsserts
+        - BUILD_MODE=RelWithDebInfo
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=OFF
@@ -132,7 +132,7 @@ jobs:
 
     - stage: build
       env:
-        - BUILD_MODE=ReleaseWithAsserts
+        - BUILD_MODE=RelWithDebInfo
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
@@ -140,10 +140,10 @@ jobs:
       - . Tools/travis-helper.sh
       - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
-# ---- ReleaseWithAsserts, Cxx11, message print build ----
+# ---- RelWithDebInfo, Cxx11, message print build ----
     - stage: build
       env:
-        - BUILD_MODE=ReleaseWithAsserts
+        - BUILD_MODE=RelWithDebInfo
         - CXX11=ON
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
@@ -153,7 +153,7 @@ jobs:
 
     - stage: build
       env:
-        - BUILD_MODE=ReleaseWithAsserts
+        - BUILD_MODE=RelWithDebInfo
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
@@ -161,10 +161,10 @@ jobs:
       - . Tools/travis-helper.sh
       - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
-# ---- ReleaseWithAsserts, non-Cxx11, message print build ----
+# ---- RelWithDebInfo, non-Cxx11, message print build ----
     - stage: build
       env:
-        - BUILD_MODE=ReleaseWithAsserts
+        - BUILD_MODE=RelWithDebInfo
         - CXX11=OFF
         - COMPLEX_VALUES=ON
         - PRINT_MESSAGE=ON
@@ -174,7 +174,7 @@ jobs:
 
     - stage: build
       env:
-        - BUILD_MODE=ReleaseWithAsserts
+        - BUILD_MODE=RelWithDebInfo
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON

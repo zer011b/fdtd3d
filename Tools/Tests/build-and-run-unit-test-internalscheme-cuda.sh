@@ -36,7 +36,7 @@ function build
       for LARGE_COORDINATES in ON OFF; do
 
         cmake ${HOME_DIR} -DSOLVER_DIM_MODES=$MODE \
-          -DCMAKE_BUILD_TYPE=ReleaseWithAsserts \
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
           -DVALUE_TYPE=${VALUE_TYPE} \
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
           -DPARALLEL_GRID_DIMENSION=3 \

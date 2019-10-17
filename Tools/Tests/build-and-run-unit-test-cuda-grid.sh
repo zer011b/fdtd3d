@@ -30,7 +30,7 @@ function build
     for COMPLEX_FIELD_VALUES in ON OFF; do
       for LARGE_COORDINATES in ON OFF; do
 
-        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=ReleaseWithAsserts \
+        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=RelWithDebInfo \
           -DVALUE_TYPE=${VALUE_TYPE} \
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
           -DPARALLEL_GRID_DIMENSION=3 \
