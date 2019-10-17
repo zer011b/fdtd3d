@@ -1016,6 +1016,7 @@ public:
                                                 FPValue & maxMod)
   {
     GridCoordinate3D diff3D = end3D - start3D;
+    cudaCheckErrorCmd (cudaMemset (gpuScheme->d_norm, 0, 6 * sizeof(FPValue)));
     SETUP_BLOCKS_AND_THREADS;
     InternalSchemeKernelHelpers::calculateFieldStepIterationExactKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
       (d_gpuScheme, start3D, end3D, t, grid, exactFunc, ct1, ct2, ct3);
