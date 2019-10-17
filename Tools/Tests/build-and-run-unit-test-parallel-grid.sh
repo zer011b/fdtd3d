@@ -36,7 +36,7 @@ function build
           continue
         fi
 
-        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=ReleaseWithAsserts \
+        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=RelWithDebInfo \
           -DVALUE_TYPE=${VALUE_TYPE} \
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
           -DPARALLEL_GRID_DIMENSION=${PARALLEL_GRID_DIM} \

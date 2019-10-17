@@ -15,7 +15,7 @@ elif [[ "$USED_MODE" -eq "2" ]]; then
 fi
 
 if [[ "$USED_MODE" -eq "0" || "$USED_MODE" -eq "2" ]]; then
-  MODE="$MODE -DCMAKE_BUILD_TYPE=ReleaseWithAsserts"
+  MODE="$MODE -DCMAKE_BUILD_TYPE=RelWithDebInfo"
 elif [[ "$USED_MODE" -eq "1" ]]; then
   MODE="$MODE -DCMAKE_BUILD_TYPE=Debug"
 fi

@@ -14,7 +14,7 @@ CXX_COMPILER=$3
 # C compiler
 C_COMPILER=$4
 
-# Release, ReleaseWithAsserts, Debug
+# Release, RelWithDebInfo, Debug
 BUILD_MODE=$5
 
 # ON or OFF
