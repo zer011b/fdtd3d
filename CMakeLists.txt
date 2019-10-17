@@ -114,11 +114,7 @@ if ("${CUDA_ENABLED}")
       message (FATAL_ERROR "Debug CUDA builds with all dimension modes (ALL) are too heavy in terms of compilation time. Use specific dimension.")
     endif ()
 
-    set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O0 -g -G")
-  elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
-    set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O1")
-  else ()
-    set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3")
+    set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O0 -G")
   endif ()
 
   #set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch ${CUDA_ARCH_SM_TYPE} -coda ${CUDA_ARCH_SM_TYPE} -x cu -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64 -keep -v")
@@ -321,14 +317,6 @@ set (WARNING_FLAGS "")
 #set (WARNING_FLAGS "${WARNING_FLAGS} -Winit-self -Wno-stack-protector")
 #set (WARNING_FLAGS "${WARNING_FLAGS} -Wconversion -Wsign-conversion")
 #set (WARNING_FLAGS "${WARNING_FLAGS} -Wmissing-declarations")
-
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-  set (BUILD_FLAGS "${BUILD_FLAGS} -O3")
-endif ()
-
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
-  set (BUILD_FLAGS "${BUILD_FLAGS} -O1")
-endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   set (BUILD_FLAGS "${BUILD_FLAGS} -O0")
