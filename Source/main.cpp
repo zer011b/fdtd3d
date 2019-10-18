@@ -1142,8 +1142,12 @@ int runMode (int argc, char** argv)
 
       ALWAYS_ASSERT (idxGPU.size () == numProcs);
       ALWAYS_ASSERT (rank < idxGPU.size ());
-      // TODO: check here for -1, which will mean that GPU is not used on the node
-      cudaInit (idxGPU[rank]);
+      solverSettings.setIndexOfGPUForCurrentNode (idxGPU[rank]);
+
+      if (idxGPU[rank] != NO_GPU)
+      {
+        cudaInit (idxGPU[rank]);
+      }
 
       if (isParallel)
       {

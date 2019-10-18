@@ -23,7 +23,8 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
   }
 
 #ifdef CUDA_ENABLED
-  if (SOLVER_SETTINGS.getDoUseCuda ())
+  if (SOLVER_SETTINGS.getDoUseCuda ()
+      && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
   {
     /*
      * Copy InternalScheme to GPU
@@ -49,7 +50,8 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     TC HzStart, HzEnd;
 
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       ExStart = gpuIntScheme->getDoNeedEx () ? gpuIntScheme->getEx ()->getComputationStart (yeeLayout->getExStartDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
       ExEnd = gpuIntScheme->getDoNeedEx () ? gpuIntScheme->getEx ()->getComputationEnd (yeeLayout->getExEndDiff ()) : TC_COORD (0, 0, 0, ct1, ct2, ct3);
@@ -96,7 +98,8 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
 
 #ifdef CUDA_ENABLED
-      if (SOLVER_SETTINGS.getDoUseCuda ())
+      if (SOLVER_SETTINGS.getDoUseCuda ()
+          && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
       {
         gpuIntSchemeOnGPU->performPlaneWaveEStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getEInc ()->getSize ());
         gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchEInc (d_gpuIntSchemeOnGPU);
@@ -148,7 +151,8 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     if (intScheme->getDoNeedEx ())
     {
 #ifdef CUDA_ENABLED
-      if (SOLVER_SETTINGS.getDoUseCuda ())
+      if (SOLVER_SETTINGS.getDoUseCuda ()
+          && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEx (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getEx ()->shiftInTime ();
@@ -183,7 +187,8 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     if (intScheme->getDoNeedEy ())
     {
 #ifdef CUDA_ENABLED
-      if (SOLVER_SETTINGS.getDoUseCuda ())
+      if (SOLVER_SETTINGS.getDoUseCuda ()
+          && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEy (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getEy ()->shiftInTime ();
@@ -218,7 +223,8 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     if (intScheme->getDoNeedEz ())
     {
 #ifdef CUDA_ENABLED
-      if (SOLVER_SETTINGS.getDoUseCuda ())
+      if (SOLVER_SETTINGS.getDoUseCuda ()
+          && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchEz (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getEz ()->shiftInTime ();
@@ -264,7 +270,8 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
       GridCoordinate1D zero1D = GRID_COORDINATE_1D (0, CoordinateType::X);
 
 #ifdef CUDA_ENABLED
-      if (SOLVER_SETTINGS.getDoUseCuda ())
+      if (SOLVER_SETTINGS.getDoUseCuda ()
+          && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
       {
         gpuIntSchemeOnGPU->performPlaneWaveHStepsKernelLaunch (d_gpuIntSchemeOnGPU, t, zero1D, gpuIntScheme->getHInc ()->getSize ());
         gpuIntSchemeOnGPU->shiftInTimePlaneWaveKernelLaunchHInc (d_gpuIntSchemeOnGPU);
@@ -316,7 +323,8 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     if (intScheme->getDoNeedHx ())
     {
 #ifdef CUDA_ENABLED
-      if (SOLVER_SETTINGS.getDoUseCuda ())
+      if (SOLVER_SETTINGS.getDoUseCuda ()
+          && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHx (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getHx ()->shiftInTime ();
@@ -351,7 +359,8 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     if (intScheme->getDoNeedHy ())
     {
 #ifdef CUDA_ENABLED
-      if (SOLVER_SETTINGS.getDoUseCuda ())
+      if (SOLVER_SETTINGS.getDoUseCuda ()
+          && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHy (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getHy ()->shiftInTime ();
@@ -386,7 +395,8 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
     if (intScheme->getDoNeedHz ())
     {
 #ifdef CUDA_ENABLED
-      if (SOLVER_SETTINGS.getDoUseCuda ())
+      if (SOLVER_SETTINGS.getDoUseCuda ()
+          && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
       {
         gpuIntSchemeOnGPU->shiftInTimeKernelLaunchHz (d_gpuIntSchemeOnGPU);
         gpuIntScheme->getHz ()->shiftInTime ();
@@ -429,7 +439,8 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
   }
 
 #ifdef CUDA_ENABLED
-  if (SOLVER_SETTINGS.getDoUseCuda ())
+  if (SOLVER_SETTINGS.getDoUseCuda ()
+      && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
   {
     /*
      * Copy back from GPU to CPU
@@ -823,7 +834,8 @@ Scheme<Type, TCoord, layout_type>::performFieldSteps (time_step t, /**< time ste
   if (doUsePointSource)
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       gpuIntSchemeOnGPU->template performPointSourceCalcKernelLaunch<grid_type> (d_gpuIntSchemeOnGPU, t);
     }
@@ -970,7 +982,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
 
   FPValue _materialModifier;
 
-  if (SOLVER_SETTINGS.getDoUseCuda ())
+  if (SOLVER_SETTINGS.getDoUseCuda ()
+      && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
   {
     gpuIntSchemeOnGPU->template calculateFieldStepInit<grid_type, usePML, useMetamaterials> (&d_grid, &_gridType,
       &d_materialGrid, &_materialGridType, &d_materialGrid1, &_materialGridType1, &d_materialGrid2, &_materialGridType2,
@@ -1035,7 +1048,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     }
 
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       gpuIntSchemeOnGPU->template calculateFieldStepIterationKernelLaunch <grid_type>
         (d_gpuIntSchemeOnGPU, start3D, end3D,
@@ -1204,7 +1218,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       current = current * PhysicsConst::Mu0 / intScheme->getGridTimeStep () / 2.0;
 
 #ifdef CUDA_ENABLED
-      if (SOLVER_SETTINGS.getDoUseCuda ())
+      if (SOLVER_SETTINGS.getDoUseCuda ()
+          && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
       {
         // TODO: add cuda call
         ALWAYS_ASSERT (0);
@@ -1228,7 +1243,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       if (useMetamaterials)
       {
 #ifdef CUDA_ENABLED
-        if (SOLVER_SETTINGS.getDoUseCuda ())
+        if (SOLVER_SETTINGS.getDoUseCuda ()
+            && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
         {
           gpuIntSchemeOnGPU->calculateFieldStepIterationPMLMetamaterialsKernelLaunch
             (d_gpuIntSchemeOnGPU, start3D, end3D,
@@ -1277,7 +1293,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       }
 
 #ifdef CUDA_ENABLED
-      if (SOLVER_SETTINGS.getDoUseCuda ())
+      if (SOLVER_SETTINGS.getDoUseCuda ()
+          && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
       {
         gpuIntSchemeOnGPU->template calculateFieldStepIterationPMLKernelLaunch <useMetamaterials> (d_gpuIntSchemeOnGPU, start3D, end3D,
           t, d_grid, d_gridPML1, d_gridPML2, d_CaPML, d_CbPML, d_CcPML, gridPMLType1,
@@ -1329,7 +1346,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
                         ct1, ct2, ct3);
 
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       gpuIntSchemeOnGPU->template calculateFieldStepIterationBorderKernelLaunch<grid_type>
         (d_gpuIntSchemeOnGPU, startBorder, endBorder, t, d_grid, borderFunc);
@@ -1405,7 +1423,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     }
 
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       CudaGrid<TC> *d_normGrid = d_grid;
       if (usePML)
@@ -1698,7 +1717,8 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
     }
 
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       setupBlocksForGPU (blockCount, blockSize);
     }
@@ -1768,7 +1788,8 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
   }
 
 #ifdef CUDA_ENABLED
-  if (SOLVER_SETTINGS.getDoUseCuda ())
+  if (SOLVER_SETTINGS.getDoUseCuda ()
+      && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
   {
     /*
      * Init InternalScheme on GPU
@@ -2040,7 +2061,8 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 Scheme<Type, TCoord, layout_type>::~Scheme ()
 {
 #ifdef CUDA_ENABLED
-  if (SOLVER_SETTINGS.getDoUseCuda ())
+  if (SOLVER_SETTINGS.getDoUseCuda ()
+      && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
   {
     /*
      * Free memory
@@ -2126,7 +2148,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   if (SOLVER_SETTINGS.getDoUsePolinom1BorderCondition ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_ez, sizeof(SourceCallBack)));
@@ -2144,7 +2167,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoUsePolinom2BorderCondition ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ex, sizeof(SourceCallBack)));
@@ -2176,7 +2200,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoUsePolinom3BorderCondition ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_ez, sizeof(SourceCallBack)));
@@ -2194,7 +2219,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoUseSin1BorderCondition ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_sin1_ez, sizeof(SourceCallBack)));
@@ -2239,7 +2265,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   if (SOLVER_SETTINGS.getDoUsePolinom1RightSide ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_jz, sizeof(SourceCallBack)));
@@ -2257,7 +2284,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoUsePolinom2RightSide ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_jx, sizeof(SourceCallBack)));
@@ -2288,7 +2316,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoUsePolinom3RightSide ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_jz, sizeof(SourceCallBack)));
@@ -2307,7 +2336,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   if (SOLVER_SETTINGS.getDoCalculatePolinom1DiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_ez, sizeof(SourceCallBack)));
@@ -2325,7 +2355,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculatePolinom2DiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ex, sizeof(SourceCallBack)));
@@ -2356,7 +2387,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculatePolinom3DiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_ez, sizeof(SourceCallBack)));
@@ -2374,7 +2406,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateSin1DiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_sin1_ez, sizeof(SourceCallBack)));
@@ -2394,7 +2427,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   if (SOLVER_SETTINGS.getDoCalculateExp1ExHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ex_exhy, sizeof(SourceCallBack)));
@@ -2412,7 +2446,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp2ExHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ex_exhy, sizeof(SourceCallBack)));
@@ -2430,7 +2465,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp3ExHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ex_exhy, sizeof(SourceCallBack)));
@@ -2449,7 +2485,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   if (SOLVER_SETTINGS.getDoCalculateExp1ExHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ex_exhz, sizeof(SourceCallBack)));
@@ -2467,7 +2504,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp2ExHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ex_exhz, sizeof(SourceCallBack)));
@@ -2485,7 +2523,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp3ExHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ex_exhz, sizeof(SourceCallBack)));
@@ -2504,7 +2543,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   if (SOLVER_SETTINGS.getDoCalculateExp1EyHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ey_eyhx, sizeof(SourceCallBack)));
@@ -2522,7 +2562,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp2EyHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ey_eyhx, sizeof(SourceCallBack)));
@@ -2540,7 +2581,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp3EyHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ey_eyhx, sizeof(SourceCallBack)));
@@ -2559,7 +2601,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   if (SOLVER_SETTINGS.getDoCalculateExp1EyHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ey_eyhz, sizeof(SourceCallBack)));
@@ -2577,7 +2620,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp2EyHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ey_eyhz, sizeof(SourceCallBack)));
@@ -2595,7 +2639,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp3EyHzDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ey_eyhz, sizeof(SourceCallBack)));
@@ -2614,7 +2659,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   if (SOLVER_SETTINGS.getDoCalculateExp1EzHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ez_ezhx, sizeof(SourceCallBack)));
@@ -2632,7 +2678,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp2EzHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ez_ezhx, sizeof(SourceCallBack)));
@@ -2650,7 +2697,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp3EzHxDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ez_ezhx, sizeof(SourceCallBack)));
@@ -2669,7 +2717,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   if (SOLVER_SETTINGS.getDoCalculateExp1EzHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ez_ezhy, sizeof(SourceCallBack)));
@@ -2687,7 +2736,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp2EzHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ez_ezhy, sizeof(SourceCallBack)));
@@ -2705,7 +2755,8 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
   else if (SOLVER_SETTINGS.getDoCalculateExp3EzHyDiffNorm ())
   {
 #ifdef CUDA_ENABLED
-    if (SOLVER_SETTINGS.getDoUseCuda ())
+    if (SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
       SourceCallBack tmp;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ez_ezhy, sizeof(SourceCallBack)));

@@ -2,6 +2,7 @@
 #define ASSERT_H
 
 #include <cstdio>
+#include <assert.h>
 
 /*
  * CUDA notes.
