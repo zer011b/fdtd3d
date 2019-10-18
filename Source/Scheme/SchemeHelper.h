@@ -44,7 +44,9 @@ public:
                         time_step tStart,
                         time_step N)
   {
-    bool doSaveToPrevStorage = SOLVER_SETTINGS.getDoUseCuda () && scheme->blockCount.get1 () > 1;
+    bool doSaveToPrevStorage = SOLVER_SETTINGS.getDoUseCuda ()
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU
+        && scheme->blockCount.get1 () > 1;
 
     for (grid_coord c1 = 0; c1 < scheme->blockCount.get1 (); ++c1)
     {
@@ -104,7 +106,8 @@ public:
                         time_step N)
   {
     bool doSaveToPrevStorage = SOLVER_SETTINGS.getDoUseCuda ()
-                               && (scheme->blockCount.get1 () > 1 || scheme->blockCount.get2 () > 1);
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU
+        && (scheme->blockCount.get1 () > 1 || scheme->blockCount.get2 () > 1);
 
     for (grid_coord c1 = 0; c1 < scheme->blockCount.get1 (); ++c1)
     {
@@ -167,7 +170,8 @@ public:
                         time_step N)
   {
     bool doSaveToPrevStorage = SOLVER_SETTINGS.getDoUseCuda ()
-                               && (scheme->blockCount.get1 () > 1 || scheme->blockCount.get2 () > 1 || scheme->blockCount.get3 () > 1);
+        && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU
+        && (scheme->blockCount.get1 () > 1 || scheme->blockCount.get2 () > 1 || scheme->blockCount.get3 () > 1);
 
     for (grid_coord c1 = 0; c1 < scheme->blockCount.get1 (); ++c1)
     {

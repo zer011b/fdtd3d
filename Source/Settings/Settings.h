@@ -105,6 +105,8 @@ enum LayoutType
   H_CENTERED
 };
 
+#define NO_GPU (-1)
+
 /**
  * Settings for solver
  */
@@ -123,6 +125,11 @@ private:
    * Type of calculation scheme
    */
   SchemeType schemeType;
+
+  /**
+   * Index of GPU to use on this computational node
+   */
+  int gpuIndexForNode;
 
 #define SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
   fieldType fieldName;
@@ -159,6 +166,7 @@ public:
   Settings ()
     : dimension (0)
     , schemeType (SchemeType::NONE)
+    , gpuIndexForNode (NO_GPU)
 #define SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
     , fieldName ((fieldType) defaultVal)
 #define SETTINGS_ELEM_FIELD_TYPE_INT(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
@@ -234,6 +242,28 @@ public:
   {
     return schemeType;
   } /* Settings::getSchemeType */
+
+  /**
+   * Get value of gpu index for current computational node
+   *
+   * @return value of gpu index for current computational node
+   */
+  CUDA_DEVICE CUDA_HOST
+  int getIndexOfGPUForCurrentNode () const
+  {
+    assert (gpuIndexForNode == NO_GPU || gpuIndexForNode >= 0);
+    return gpuIndexForNode;
+  } /* Settings::getIndexOfGPUForCurrentNode */
+
+  /**
+   * Set value of gpu index for current computational node
+   */
+  CUDA_DEVICE CUDA_HOST
+  void setIndexOfGPUForCurrentNode (int index) /**< new value of index */
+  {
+    assert (index == NO_GPU || index >= 0);
+    gpuIndexForNode = index;
+  } /* Settings::setIndexOfGPUForCurrentNode */
 }; /* Settings */
 
 #ifdef CUDA_ENABLED
