@@ -110,6 +110,33 @@ cd Release/Source
 
 You can find some examples in `./Examples`. See [Input & Output](Docs/Input-Output.md) for details about load and save of files.
 
+## Parallel Mode
+
+To launch multiple processes (MPI) just build with parallel support and:
+```sh
+mpiexec -n <N> ./fdtd3d --cmd-from-file cmd.txt
+```
+
+To launch computations on GPU pass next parameters to `fdtd3d`:
+```sh
+--use-cuda
+--cuda-gpus <gpu_id>
+--num-cuda-threads-x <Nx>
+--num-cuda-threads-y <Ny>
+--num-cuda-threads-z <Nz>
+```
+
+If you want to use both MPI and Cuda, specify GPU id to be used on each computational node, or -1 for CPU computations on the selected node. Buffers should be at least of size `2` in this mode:
+```sh
+--use-cuda
+--cuda-gpus <gpu_id1>,<gpu_id2>,...,<gpu_idN>
+--cuda-buffer-size 2
+--buffer-size 2
+--num-cuda-threads-x <Nx>
+--num-cuda-threads-y <Ny>
+--num-cuda-threads-z <Nz>
+```
+
 # Documentation
 
 Doxygen documentation is available at [Documentation](http://zer011b.github.io/fdtd3d/).
@@ -126,12 +153,10 @@ firefox docs/index.html
 
 You can site the following papers about the techniques used in fdtd3d:
 
-Balykov G. (2017) Parallel FDTD Solver with Optimal Topology and Dynamic Balancing. In: Voevodin V., Sobolev S. (eds) Supercomputing. RuSCDays 2017. Communications in Computer and Information Science, vol 793. Springer, Cham. https://doi.org/10.1007/978-3-319-71255-0_27
+- Balykov G. (2017) Parallel FDTD Solver with Optimal Topology and Dynamic Balancing. In: Voevodin V., Sobolev S. (eds) Supercomputing. RuSCDays 2017. Communications in Computer and Information Science, vol 793. Springer, Cham. https://doi.org/10.1007/978-3-319-71255-0_27
 
-Balykov G. (2019) Parallel FDTD Solver with Static and Dynamic Load Balancing. In: Voevodin V., Sobolev S. (eds) Supercomputing. RuSCDays 2018. Communications in Computer and Information Science, vol 965. Springer, Cham. https://doi.org/10.1007/978-3-030-05807-4_26.
+- Balykov G. (2019) Parallel FDTD Solver with Static and Dynamic Load Balancing. In: Voevodin V., Sobolev S. (eds) Supercomputing. RuSCDays 2018. Communications in Computer and Information Science, vol 965. Springer, Cham. https://doi.org/10.1007/978-3-030-05807-4_26.
 
-# About
-
-Feel free to ask any questions.
+# Third Party
 
 EasyBMP lib is used to output resulting electromagnetic fields. It is downloaded from sourceforge and used as is.
