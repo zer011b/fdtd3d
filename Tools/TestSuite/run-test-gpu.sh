@@ -24,3 +24,11 @@ $CUR_DIR/Tools/TestSuite/suite/$TEST/run.sh $ARGS 1
 check_res
 $CUR_DIR/Tools/TestSuite/suite/$TEST/cleanup.sh $ARGS
 check_res
+
+echo "TESTING GPU+MPI"
+$CUR_DIR/Tools/TestSuite/suite/$TEST/build.sh $ARGS 3
+check_res
+$CUR_DIR/Tools/TestSuite/suite/$TEST/run.sh $ARGS 3
+check_res
+$CUR_DIR/Tools/TestSuite/suite/$TEST/cleanup.sh $ARGS
+check_res
