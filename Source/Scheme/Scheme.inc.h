@@ -1796,7 +1796,11 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
      */
     time_step cudaBuf = 0;
 
-    if (blockCount.calculateTotalCoord () > 1)
+    if (blockCount.calculateTotalCoord () > 1
+#ifdef PARALLEL_GRID
+        || useParallel
+#endif
+        )
     {
       cudaBuf = (time_step) SOLVER_SETTINGS.getCudaBlocksBufferSize ();
     }

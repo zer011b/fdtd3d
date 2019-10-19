@@ -442,17 +442,17 @@ CudaGrid<GridCoordinate1D>::copyFromCPU (const GridCoordinate1D &start, /**< abs
   ASSERT (gridValuesDevicePointers != NULLPTR);
   ASSERT (helperGridValues != NULLPTR);
 
-  startOfBlock = start;
-  endOfBlock = end;
+  startOfBlock = start + cpuGrid->getChunkStartPosition ();
+  endOfBlock = end + cpuGrid->getChunkStartPosition ();
 
   hasLeft = GRID_COORDINATE_1D (1, start.getType1 ());
   hasRight = GRID_COORDINATE_1D (1, start.getType1 ());
 
-  if (start.get1 () == grid_coord (0))
+  if (startOfBlock.get1 () == grid_coord (0))
   {
     hasLeft.set1 (0);
   }
-  if (end.get1 () == cpuGrid->getTotalSize ().get1 ())
+  if (startOfBlock.get1 () == cpuGrid->getTotalSize ().get1 ())
   {
     hasRight.set1 (0);
   }
@@ -575,25 +575,25 @@ CudaGrid<GridCoordinate2D>::copyFromCPU (const GridCoordinate2D &start, /**< abs
   ASSERT (gridValuesDevicePointers != NULLPTR);
   ASSERT (helperGridValues != NULLPTR);
 
-  startOfBlock = start;
-  endOfBlock = end;
+  startOfBlock = start + cpuGrid->getChunkStartPosition ();
+  endOfBlock = end + cpuGrid->getChunkStartPosition ();
 
   hasLeft = GRID_COORDINATE_2D (1, 1, start.getType1 (), start.getType2 ());
   hasRight = GRID_COORDINATE_2D (1, 1, start.getType1 (), start.getType2 ());
 
-  if (start.get1 () == grid_coord (0))
+  if (startOfBlock.get1 () == grid_coord (0))
   {
     hasLeft.set1 (0);
   }
-  if (start.get2 () == grid_coord (0))
+  if (startOfBlock.get2 () == grid_coord (0))
   {
     hasLeft.set2 (0);
   }
-  if (end.get1 () == cpuGrid->getTotalSize ().get1 ())
+  if (endOfBlock.get1 () == cpuGrid->getTotalSize ().get1 ())
   {
     hasRight.set1 (0);
   }
-  if (end.get2 () == cpuGrid->getTotalSize ().get2 ())
+  if (endOfBlock.get2 () == cpuGrid->getTotalSize ().get2 ())
   {
     hasRight.set2 (0);
   }
@@ -742,33 +742,33 @@ CudaGrid<GridCoordinate3D>::copyFromCPU (const GridCoordinate3D &start, /**< abs
   ASSERT (gridValuesDevicePointers != NULLPTR);
   ASSERT (helperGridValues != NULLPTR);
 
-  startOfBlock = start;
-  endOfBlock = end;
+  startOfBlock = start + cpuGrid->getChunkStartPosition ();
+  endOfBlock = end + cpuGrid->getChunkStartPosition ();
 
   hasLeft = GRID_COORDINATE_3D (1, 1, 1, start.getType1 (), start.getType2 (), start.getType3 ());
   hasRight = GRID_COORDINATE_3D (1, 1, 1, start.getType1 (), start.getType2 (), start.getType3 ());
 
-  if (start.get1 () == grid_coord (0))
+  if (startOfBlock.get1 () == grid_coord (0))
   {
     hasLeft.set1 (0);
   }
-  if (start.get2 () == grid_coord (0))
+  if (startOfBlock.get2 () == grid_coord (0))
   {
     hasLeft.set2 (0);
   }
-  if (start.get3 () == grid_coord (0))
+  if (startOfBlock.get3 () == grid_coord (0))
   {
     hasLeft.set3 (0);
   }
-  if (end.get1 () == cpuGrid->getTotalSize ().get1 ())
+  if (endOfBlock.get1 () == cpuGrid->getTotalSize ().get1 ())
   {
     hasRight.set1 (0);
   }
-  if (end.get2 () == cpuGrid->getTotalSize ().get2 ())
+  if (endOfBlock.get2 () == cpuGrid->getTotalSize ().get2 ())
   {
     hasRight.set2 (0);
   }
-  if (end.get3 () == cpuGrid->getTotalSize ().get3 ())
+  if (endOfBlock.get3 () == cpuGrid->getTotalSize ().get3 ())
   {
     hasRight.set3 (0);
   }
