@@ -10,9 +10,13 @@ USED_MODE=$3
 MODE=""
 RUNNER=""
 if [[ "$USED_MODE" -eq "1" ]]; then
-  MODE="--use-cuda --cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
-elif [[ "$USED_MODE" -eq "2" ]]; then
-  MODE=""
+  MODE="$MODE --use-cuda --cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+fi
+if [[ "$USED_MODE" -eq "3" ]]; then
+  MODE="$MODE --use-cuda --cuda-gpus 0,0 --cuda-buffer-size 2 --buffer-size 2 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+fi
+if [[ "$USED_MODE" -eq "2" || "$USED_MODE" -eq "3" ]]; then
+  MODE="$MODE"
   RUNNER="mpirun -n 2"
 fi
 

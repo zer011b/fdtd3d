@@ -28,8 +28,3 @@
 --tfsf-sizey-right 12
 --tfsf-sizez-left 12
 --tfsf-sizez-right 12
-
---cuda-gpus 0
---num-cuda-threads-x 4
---num-cuda-threads-y 4
---num-cuda-threads-z 4
