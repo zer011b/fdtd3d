@@ -452,7 +452,7 @@ CudaGrid<GridCoordinate1D>::copyFromCPU (const GridCoordinate1D &start, /**< abs
   {
     hasLeft.set1 (0);
   }
-  if (startOfBlock.get1 () == cpuGrid->getTotalSize ().get1 ())
+  if (endOfBlock.get1 () == cpuGrid->getTotalSize ().get1 ())
   {
     hasRight.set1 (0);
   }
