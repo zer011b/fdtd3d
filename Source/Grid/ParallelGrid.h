@@ -187,6 +187,19 @@
  *       |/_____________+ Ox
  *
  * All grids corresponding to computational nodes have buffers only on the sides where nodes have neighbors.
+ *
+ * -------- Coordinate systems --------
+ * 1. Total coordinate system is the global coordinate system, considering all computational nodes.
+ * 2. Relative coordinate system starts from the start of the chunk (considering buffers!),
+ *    stored on this computational node.
+ *
+ *    border between nodes
+ *            *
+ *    --------|--------
+ *          bb|
+ *    --------|--------
+ *          *
+ *    start of relative coordinate system, considering buffers
  */
 class ParallelGrid: public ParallelGridBase
 {
@@ -420,6 +433,16 @@ public:
 #ifdef DYNAMIC_GRID
   void Resize (ParallelGridCoordinate);
 #endif /* DYNAMIC_GRID */
+
+  /**
+   * Getter for start position of chunk, assigned to this computational node (not considering buffers!)
+   *
+   * @return start position of chunk, assigned to this computational node (not considering buffers!)
+   */
+  virtual ParallelGridCoordinate getChunkStartPosition () const CXX11_OVERRIDE
+  {
+    return getGroupConst ()->getChunkStartPosition ();
+  } /* getChunkStartPosition */
 
   /**
    * Check whether position corresponds to left buffer or not

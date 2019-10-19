@@ -101,7 +101,7 @@ private:
   ParallelGridCoordinate currentSize;
 
   /**
-   * Absolute start position of chunk of current node
+   * Absolute start position of chunk of current node, including buffers!
    */
   ParallelGridCoordinate posStart;
 

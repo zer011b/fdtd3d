@@ -86,6 +86,8 @@ public:
   virtual FieldValue * getFieldValuePreviousAfterShiftByAbsolutePos (const TCoord &);
   virtual FieldValue * getFieldValueOrNullPreviousAfterShiftByAbsolutePos (const TCoord &);
 
+  virtual TCoord getChunkStartPosition () const;
+
   virtual bool isBufferLeftPosition (const TCoord & pos) const
   {
     return false;

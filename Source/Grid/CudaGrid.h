@@ -16,6 +16,37 @@
  * Difference is that ParallelGrid's sizes and buffers are determined based on virtual topology.
  * CudaGrid size is determined as the size of block, which GPU can fit. CudaGrid buffer always exists for all axes,
  * in contrast to ParallelGrid, which has buffers only for axis, which is spread between processes.
+ *
+ * Grid 6x6       ->  CudaGrid for blockSize (3x3) and bufSize (b,b), S cell is the startOfBlock
+ * -------------  ->  -----------
+ * | | | | | | |  ->  |b|b|b|b|b|
+ * -------------  ->  -----------
+ * | | | | | | |  ->  |b|S| | |b|
+ * -------------  ->  -----------
+ * | | | | | | |  ->  |b| | | |b|
+ * -------------  ->  -----------
+ * | | | | | | |  ->  |b| | | |b|
+ * -------------  ->  -----------
+ * | | | | | | |  ->  |b|b|b|b|b|
+ * -------------  ->  -----------
+ * | | | | | | |  ->
+ * -------------  ->
+ *
+ * For the first block S will be (0,0) and left buffers should be never accessed.
+ * For the second block S will be (3,0), for the third (0,3), and (3,3) for the last block.
+ *
+ * For the block of size (6,6) situation is the same, CudaGrid will have size (6+b,6+b) and buffers should be never used
+ *
+ * -------- Coordinate systems --------
+ * 1. Total coordinate system is the global coordinate system, considering all computational nodes.
+ * 2. Relative coordinate system starts from the start of the GPU chunk (considering buffers!),
+ *    stored in this grid (i.e. at startOfBlock - bufSize). When CudaGrid stores full grid from CPU in sequential mode,
+ *    buffers are empty and total coordinate of left buffer will be -1, but this is ok,
+ *    since buffers should never be used.
+ * 3. Coordinate system of blocks, which is relative to CPU chunk, not considering buffers,
+ *    i.e. starts at getChunkStartPosition(). This is useful, because in this coordinate system both for sequential and
+ *    parallel modes first block has (0,0) coordinates.
+ *    NOTE: values in this coordinate system are only passed to copyToCPU and copyFromCPU!
  */
 template <class TCoord>
 class CudaGrid

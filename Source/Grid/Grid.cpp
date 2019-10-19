@@ -1,5 +1,26 @@
 #include "Grid.h"
 
+template <>
+GridCoordinate1D
+Grid<GridCoordinate1D>::getChunkStartPosition () const
+{
+  return GRID_COORDINATE_1D (0, getSize ().getType1 ());
+}
+
+template <>
+GridCoordinate2D
+Grid<GridCoordinate2D>::getChunkStartPosition () const
+{
+  return GRID_COORDINATE_2D (0, 0, getSize ().getType1 (), getSize ().getType2 ());
+}
+
+template <>
+GridCoordinate3D
+Grid<GridCoordinate3D>::getChunkStartPosition () const
+{
+  return GRID_COORDINATE_3D (0, 0, 0, getSize ().getType1 (), getSize ().getType2 (), getSize ().getType3 ());
+}
+
 /**
  * Get first coordinate from which to perform computations at current step
  *
