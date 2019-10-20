@@ -23,7 +23,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -33,7 +33,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Release, non-Cxx11, no message print build ----
     - stage: build
@@ -44,7 +44,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -54,7 +54,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Release, Cxx11, message print build ----
     - stage: build
@@ -65,7 +65,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -75,7 +75,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Release, non-Cxx11, message print build ----
     - stage: build
@@ -86,7 +86,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -96,7 +96,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- RelWithDebInfo, Cxx11, no message print build ----
     - stage: build
@@ -107,7 +107,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -117,7 +117,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- RelWithDebInfo, non-Cxx11, no message print build ----
     - stage: build
@@ -128,7 +128,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -138,7 +138,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- RelWithDebInfo, Cxx11, message print build ----
     - stage: build
@@ -149,7 +149,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -159,7 +159,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- RelWithDebInfo, non-Cxx11, message print build ----
     - stage: build
@@ -170,7 +170,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -180,7 +180,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Debug, Cxx11, no message print build ----
     - stage: build
@@ -191,7 +191,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -201,7 +201,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Debug, non-Cxx11, no message print build ----
     - stage: build
@@ -212,7 +212,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -222,7 +222,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Debug, Cxx11, message print build ----
     - stage: build
@@ -233,7 +233,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -243,7 +243,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ---- Debug, non-Cxx11, message print build ----
     - stage: build
@@ -254,7 +254,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
     - stage: build
       env:
@@ -264,7 +264,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
 
 # ==== Unit tests stage ====
 # ---- Unit test for ParallelGrid ----
@@ -276,7 +276,7 @@ jobs:
         - LARGE_COORDINATES=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
@@ -285,7 +285,7 @@ jobs:
         - LARGE_COORDINATES=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
@@ -294,7 +294,7 @@ jobs:
         - LARGE_COORDINATES=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
@@ -303,7 +303,7 @@ jobs:
         - LARGE_COORDINATES=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
 
     - stage: unit-tests
       env:
@@ -313,7 +313,7 @@ jobs:
         - LARGE_COORDINATES=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
@@ -322,7 +322,7 @@ jobs:
         - LARGE_COORDINATES=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
@@ -331,7 +331,7 @@ jobs:
         - LARGE_COORDINATES=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
@@ -340,7 +340,7 @@ jobs:
         - LARGE_COORDINATES=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+      - ./Tools/Tests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
 
 # ---- Unit test for Grid ----
     - stage: unit-tests
@@ -348,8 +348,8 @@ jobs:
         - UNIT_TEST_GRID=""
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ON
-      - ./Tools/Tests/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc OFF
+      - ./Tools/Tests/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
+      - ./Tools/Tests/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
 
 # ---- Unit test for Dumpers/Loaders ----
     - stage: unit-tests
@@ -357,8 +357,8 @@ jobs:
         - UNIT_TEST_DUMPERS_LOADERS=""
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ON
-      - ./Tools/Tests/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc OFF
+      - ./Tools/Tests/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
+      - ./Tools/Tests/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
 
 # ---- Unit test for GridCoordinate ----
     - stage: unit-tests
@@ -366,8 +366,8 @@ jobs:
         - UNIT_TEST_COORDINATE=""
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ON
-      - ./Tools/Tests/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc OFF
+      - ./Tools/Tests/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
+      - ./Tools/Tests/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
 
 # ---- Unit test for YeeGridLayout ----
     - stage: unit-tests
@@ -376,14 +376,14 @@ jobs:
         - CXX11=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-layout.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+      - ./Tools/Tests/build-and-run-unit-test-layout.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
     - stage: unit-tests
       env:
         - UNIT_TEST_LAYOUT=""
         - CXX11=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-layout.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+      - ./Tools/Tests/build-and-run-unit-test-layout.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
 
 # ---- Unit test for Clock ----
     - stage: unit-tests
@@ -391,8 +391,8 @@ jobs:
         - UNIT_TEST_CLOCK=""
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ON
-      - ./Tools/Tests/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc OFF
+      - ./Tools/Tests/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
+      - ./Tools/Tests/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
 
 # ---- Unit test for settings ----
     - stage: unit-tests
@@ -400,8 +400,8 @@ jobs:
         - UNIT_TEST_SETTINGS=""
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-settings.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ON
-      - ./Tools/Tests/build-and-run-unit-test-settings.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc OFF
+      - ./Tools/Tests/build-and-run-unit-test-settings.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
+      - ./Tools/Tests/build-and-run-unit-test-settings.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
 
 # ---- Unit test for Approximation ----
     - stage: unit-tests
@@ -409,8 +409,8 @@ jobs:
         - UNIT_TEST_APPROXIMATION=""
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ON
-      - ./Tools/Tests/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc OFF
+      - ./Tools/Tests/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
+      - ./Tools/Tests/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
 
 # ---- Unit test for Complex ----
     - stage: unit-tests
@@ -418,8 +418,8 @@ jobs:
         - UNIT_TEST_COMPLEX=""
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ON
-      - ./Tools/Tests/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc OFF
+      - ./Tools/Tests/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
+      - ./Tools/Tests/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
 
 # ---- Unit test for InternalScheme ----
     - stage: unit-tests
@@ -428,14 +428,14 @@ jobs:
         - CXX11=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
     - stage: unit-tests
       env:
         - UNIT_TEST_INTERNAL_SCHEME=""
         - CXX11=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme.sh ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11}
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
 
 # ==== Unit tests on GPU stage ====
 # ---- Unit test for CudaGrid ----
@@ -445,8 +445,8 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ON
-      - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc OFF
+      - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
+      - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
       #- ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
       #- ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
 
@@ -459,7 +459,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -469,7 +469,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -479,7 +479,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -489,7 +489,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -499,7 +499,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -509,7 +509,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -519,7 +519,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -529,7 +529,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -539,7 +539,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -549,7 +549,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -559,7 +559,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -569,7 +569,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -579,7 +579,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -589,7 +589,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -599,7 +599,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -609,7 +609,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -619,7 +619,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -629,7 +629,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -639,7 +639,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -649,7 +649,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -659,7 +659,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -669,7 +669,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -679,7 +679,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -689,7 +689,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -699,7 +699,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -709,7 +709,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} mpicxx mpicc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
 
 # ==== Test suite stage ====
     - stage: test-suite
