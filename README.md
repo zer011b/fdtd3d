@@ -2,29 +2,13 @@
 
 # fdtd3d
 
-This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP/Cuda) if required. The key idea is building of solver for your specific needs with different components, i.e. concurrency support with enabled MPI, OpenMP or GPU support, parallel buffer types, specific dimension and others.
+This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP/Cuda) if required. The key idea is building of solver for your specific needs with different components, i.e. concurrency support with enabled MPI, OpenMP or GPU support, parallel buffer types, specific dimension and others. OpenMP support is WIP.
 
 For additional info on current project development status and future plans check issues and milestones.
 
-# Build Process
+# Build
 
-Build is done using cmake. Also there are build and run scripts you could find useful.
-
-## Prerequisites
-
-Cuda build requires `cmake >= 3.8`. Cuda builds with older versions of cmake are not supported. To manually build `cmake` run next commands:
-
-```sh
-./install-cmake.sh
-export PATH=`pwd`/Third-party/cmake/bin:$PATH
-```
-
-Non-cuda builds support `cmake >= 3.0.2`, but `CMakeLists.txt` will still require 3.8 version. To build with older versions run next commands:
-```sh
-sed -i 's/cmake_minimum_required(VERSION 3\.8)/cmake_minimum_required(VERSION 3\.0\.2)/' CMakeLists.txt
-```
-
-## Build
+Build is done using cmake:
 
 ```sh
 mkdir Release
@@ -33,47 +17,17 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 make
 ```
 
-## Additional Example
-
-Build command for 3D grid in detail:
-
-```sh
-cmake .. -DCMAKE_BUILD_TYPE=Release -DSOLVER_DIM_MODES=DIM3 -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=OFF \
--DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=ON -DPARALLEL_GRID=OFF -DPARALLEL_BUFFER_DIMENSION=xyz \
--DCXX11_ENABLED=ON -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DLARGE_COORDINATES=OFF
-```
+See [documentation](Docs/Build.md) for specific details.
 
 # Testing
 
-Testing is performed using Travis CI. Open pull request with your changes and it will be automatically tested.
-For details, see .travis.yml.
-
-# Build Flags
-
-Solver incorporates following features which could be set up during build.
-
-```c_cpp
-CMAKE_BUILD_TYPE - build type (Debug, RelWithDebInfo, Release)
-SOLVER_DIM_MODES - dimension modes to include in build (EX_HY;EX_HZ;EY_HX;EY_HZ;EZ_HX;EZ_HY;TEX;TEY;TEZ;TMX;TMY;TMZ;DIM1;DIM2;DIM3;ALL); default value is ALL, which includes all the supported modes
-VALUE_TYPE - use float (f), double (d) or long double (ld) floating point values
-COMPLEX_FIELD_VALUES - use complex values or not (ON of OFF)
-PARALLEL_GRID_DIMENSION - number of dimensions in parallel grid (1, 2 or 3)
-PRINT_MESSAGE - print debug output (ON or OFF)
-PARALLEL_GRID - use parallel grid or not (ON or OFF)
-PARALLEL_BUFFER_DIMENSION - dimension of parallel buffers, i.e. actual coordinate systems (x, y, z, xy, yz, xz, xyz)
-CXX11_ENABLED - allow support of C++11 (ON or OFF)
-CUDA_ENABLED - enable support of GPU (ON or OFF)
-CUDA_ARCH_SM_TYPE - sm type for GPU
-LARGE_COORDINATES - whether to use int64 for grid coordinates or int32 (ON or OFF)
-STD_COMPLEX - use std::complex instead of custom CComplex class (std::complex is not supported with Cuda)
-```
-
-If any of the flags change or some new are added, testing scripts should be updated.
+Testing is performed using Travis CI. Open pull request with your changes and it will be automatically tested. For details, see See [.travis.yml](.travis.yml).
 
 # Launch
 
+Parameters can be passed directly to `fdtd3d` through command line or config file. See [documentation](Docs/Launch.md) for specific details.
+
 ```sh
-cd Release/Source
 # show help
 ./fdtd3d --help
 
@@ -108,35 +62,6 @@ cd Release/Source
 # 0.02
 ```
 
-You can find some examples in `./Examples`. See [Input & Output](Docs/Input-Output.md) for details about load and save of files.
-
-## Parallel Mode
-
-To launch multiple processes (MPI) just build with parallel support and:
-```sh
-mpiexec -n <N> ./fdtd3d --cmd-from-file cmd.txt
-```
-
-To launch computations on GPU pass next parameters to `fdtd3d`:
-```sh
---use-cuda
---cuda-gpus <gpu_id>
---num-cuda-threads-x <Nx>
---num-cuda-threads-y <Ny>
---num-cuda-threads-z <Nz>
-```
-
-If you want to use both MPI and Cuda, specify GPU id to be used on each computational node, or -1 for CPU computations on the selected node. Buffers should be at least of size `2` in this mode:
-```sh
---use-cuda
---cuda-gpus <gpu_id1>,<gpu_id2>,...,<gpu_idN>
---cuda-buffer-size 2
---buffer-size 2
---num-cuda-threads-x <Nx>
---num-cuda-threads-y <Ny>
---num-cuda-threads-z <Nz>
-```
-
 # Documentation
 
 Doxygen documentation is available at [Documentation](http://zer011b.github.io/fdtd3d/).
@@ -149,7 +74,7 @@ doxygen
 firefox docs/index.html
 ```
 
-# How to cite
+# How To Cite
 
 You can site the following papers about the techniques used in fdtd3d:
 
