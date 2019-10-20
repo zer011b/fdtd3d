@@ -1,6 +1,6 @@
 ![fdtd3d](Docs/Images/logo.png)
 
-[![Build Status](https://travis-ci.org/zer011b/fdtd3d.svg?branch=master)](https://travis-ci.org/zer011b/fdtd3d)
+[![Build Status](https://travis-ci.com/zer011b/fdtd3d.svg?branch=master)](https://travis-ci.com/zer011b/fdtd3d)
 
 # fdtd3d
 
