@@ -1731,6 +1731,9 @@ Scheme<Type, TCoord, layout_type>::initBlocks (time_step t_total)
   printf ("blockSize:\n");
   blockSize.print ();
 
+  // TODO: remove this check, when correct block setup is implemented
+  ALWAYS_ASSERT (blockCount.calculateTotalCoord () == 1);
+
   {
 #ifdef CUDA_ENABLED
     if (SOLVER_SETTINGS.getDoUseCuda ())
