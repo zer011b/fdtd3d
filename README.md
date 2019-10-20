@@ -4,7 +4,7 @@
 
 This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP/Cuda) if required. The key idea is building of solver for your specific needs with different components, i.e. concurrency support with enabled MPI, OpenMP or GPU support, parallel buffer types, specific dimension and others. OpenMP support is WIP.
 
-For additional info on current project development status and future plans check issues and milestones.
+For additional info on current project development status and future plans check issues and milestones, design docs are available at [documentation](Docs/Design.md)
 
 # Build
 
