@@ -2339,7 +2339,6 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (FP
                                                                              GridType materialGridType,
                                                                              FPValue materialModifier)
 {
-  // TODO: [possible] move 1D gridValues to 3D gridValues array
   ASSERT (grid != NULLPTR);
   grid_coord coord = grid->calculateIndexFromPosition (pos);
   FieldValue val = *grid->getFieldValue (coord, 1);
