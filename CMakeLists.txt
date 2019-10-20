@@ -12,7 +12,7 @@ option(LARGE_COORDINATES "Use int64 for grid coordinates" OFF)
 option(COMBINED_SENDRECV "Use combined sendrecv" ON)
 option(MPI_CLOCK "Use mpi clock (MPI_Wtime) for clocks" OFF)
 option(LINK_NUMA "Link with NUMA library" OFF)
-option(STD_COMPEX "Use std::complex class instead of custom one" OFF)
+option(STD_COMPLEX "Use std::complex class instead of custom one" OFF)
 
 set(SOLVER_DIM_MODES "ALL" CACHE STRING "Defines FDTD solver dimension modes, which are compiled")
 
@@ -77,12 +77,12 @@ if ("${CUDA_ENABLED}")
   set(CUDA_SEPARABLE_COMPILATION ON)
   set(CUDA_PROPAGATE_HOST_FLAGS ON)
 
-  if ("${STD_COMPEX}")
+  if ("${STD_COMPLEX}")
     message(FATAL_ERROR "std::complex is not supported with Cuda, use STD_COMPLEX=OFF")
   endif ()
 endif ()
 
-if ("${STD_COMPEX}")
+if ("${STD_COMPLEX}")
   add_definitions (-DSTD_COMPLEX)
 endif ()
 
