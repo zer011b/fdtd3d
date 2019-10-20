@@ -6,8 +6,9 @@ addons:
     sources:
     packages:
     - build-essential
-    - mpich
-    - libmpich-dev
+    - openmpi-bin
+    - openmpi-common
+    - libopenmpi-dev
 install: true
 git:
   depth: 3
