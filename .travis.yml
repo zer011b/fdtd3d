@@ -960,4 +960,4 @@ jobs:
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
 
-dist: trusty
+dist: xenial
