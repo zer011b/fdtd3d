@@ -52,10 +52,10 @@ typedef long double FPValue;
 #ifdef STD_COMPLEX
 #include <complex>
 typedef std::complex<FPValue> FieldValue;
-#else /* STD_COMPEX */
+#else /* STD_COMPLEX */
 #include "Complex.h"
 typedef CComplex<FPValue> FieldValue;
-#endif /* !STD_COMPEX */
+#endif /* !STD_COMPLEX */
 #define FIELDVALUE(real,imag) FieldValue(real,imag)
 #else /* COMPLEX_FIELD_VALUES */
 typedef FPValue FieldValue;
