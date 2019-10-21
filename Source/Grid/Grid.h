@@ -157,6 +157,13 @@ Grid<TCoord>::Grid (int storedSteps, /**< number of steps in time for which to s
   : gridValues (storedSteps)
   , gridName (name)
 {
+  ASSERT (storedSteps > 0);
+
+  for (int i = 0; i < gridValues.size (); ++i)
+  {
+    gridValues[i] = NULLPTR;
+  }
+
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with %lu stored steps without size.\n",
     gridName.data (), gridValues.size ());
 } /* Grid<TCoord>::Grid */

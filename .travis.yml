@@ -9,6 +9,9 @@ addons:
     - openmpi-bin
     - openmpi-common
     - libopenmpi-dev
+    - gcc-4.9-base
+    - gcc-4.9
+    - g++-4.9
 install: true
 git:
   depth: 3
@@ -116,9 +119,30 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
+        - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
+    - stage: build
+      env:
+        - BUILD_MODE=RelWithDebInfo
+        - CXX11=ON
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+        - USED_VALUES="d"
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
+    - stage: build
+      env:
+        - BUILD_MODE=RelWithDebInfo
+        - CXX11=ON
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+        - USED_VALUES="ld"
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
 
 # ---- RelWithDebInfo, non-Cxx11, no message print build ----
     - stage: build
@@ -137,9 +161,30 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=OFF
+        - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
+    - stage: build
+      env:
+        - BUILD_MODE=RelWithDebInfo
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+        - USED_VALUES="d"
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
+    - stage: build
+      env:
+        - BUILD_MODE=RelWithDebInfo
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=OFF
+        - USED_VALUES="ld"
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
 
 # ---- RelWithDebInfo, Cxx11, message print build ----
     - stage: build
@@ -158,9 +203,30 @@ jobs:
         - CXX11=ON
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
+        - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
+    - stage: build
+      env:
+        - BUILD_MODE=RelWithDebInfo
+        - CXX11=ON
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=ON
+        - USED_VALUES="d"
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
+    - stage: build
+      env:
+        - BUILD_MODE=RelWithDebInfo
+        - CXX11=ON
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=ON
+        - USED_VALUES="ld"
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
 
 # ---- RelWithDebInfo, non-Cxx11, message print build ----
     - stage: build
@@ -179,9 +245,30 @@ jobs:
         - CXX11=OFF
         - COMPLEX_VALUES=OFF
         - PRINT_MESSAGE=ON
+        - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE}
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
+    - stage: build
+      env:
+        - BUILD_MODE=RelWithDebInfo
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=ON
+        - USED_VALUES="d"
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
+    - stage: build
+      env:
+        - BUILD_MODE=RelWithDebInfo
+        - CXX11=OFF
+        - COMPLEX_VALUES=OFF
+        - PRINT_MESSAGE=ON
+        - USED_VALUES="ld"
+      script:
+      - . Tools/travis-helper.sh
+      - ./Tools/build-test.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${BUILD_MODE} ${CXX11} ${COMPLEX_VALUES} ${PRINT_MESSAGE} ${USED_VALUES}
 
 # ---- Debug, Cxx11, no message print build ----
     - stage: build
@@ -448,8 +535,6 @@ jobs:
       - . Tools/travis-cuda-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
       - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
-      #- ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
-      #- ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
 
 # ---- Unit test for InternalScheme on GPU ----
     - stage: unit-tests-gpu
@@ -460,7 +545,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -470,7 +555,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -480,7 +565,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -490,7 +575,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -500,7 +585,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -510,7 +595,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -520,7 +605,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -530,7 +615,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -540,7 +625,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -550,7 +635,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -560,7 +645,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -570,7 +655,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -580,7 +665,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -590,7 +675,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -600,7 +685,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -610,7 +695,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -620,7 +705,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -630,7 +715,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -640,7 +725,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -650,7 +735,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -660,7 +745,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -670,7 +755,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -680,7 +765,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -690,7 +775,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -700,7 +785,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
     - stage: unit-tests-gpu
       env:
@@ -710,7 +795,7 @@ jobs:
       script:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${MODE} sm_35 0
+      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-4.9 gcc-4.9 ${CXX11} ${MODE} sm_35 0
 
 # ==== Test suite stage ====
     - stage: test-suite

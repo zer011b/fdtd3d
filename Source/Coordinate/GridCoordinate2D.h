@@ -522,6 +522,13 @@ public:
   GridCoordinate2DTemplate<TcoordType, doSignChecks>
   operator* (GridCoordinate2DTemplate<TcoordType, doSignChecks> rhs) const /**< operand */
   {
+#ifdef DEBUG_INFO
+    CoordinateType cct1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ();
+    CoordinateType cct2 = rhs.GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ();
+    ASSERT (cct1 == cct2);
+    ASSERT (getType2 () == rhs.getType2 ());
+#endif /* DEBUG_INFO */
+
     TcoordType coord1 = GridCoordinate1DTemplate<TcoordType, doSignChecks>::get1 ();
     TcoordType rhs1 = rhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get1 ();
     return GridCoordinate2DTemplate<TcoordType, doSignChecks> (coord1 * rhs1, get2 () * rhs.get2 ()

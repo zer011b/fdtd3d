@@ -26,6 +26,9 @@ COMPLEX_FIELD_VALUES=$7
 # ON or OFF
 PRINT_MESSAGE=$8
 
+# f d ld
+USED_VALUES="$9"
+
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
@@ -34,8 +37,9 @@ function build
   PARALLEL_GRID_MODE=$1
   PARALLEL_GRID_DIM=$2
   LIST_OF_BUFFERS="$3"
+  VALUES=$4
 
-  for VALUE_TYPE in f d ld; do
+  for VALUE_TYPE in `echo $VALUES`; do
     for PARALLEL_BUFFER in `echo $LIST_OF_BUFFERS`; do
       if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
         continue
@@ -76,8 +80,11 @@ function build
   done
 }
 
-array3D="x y z xy yz xz xyz"
-build ON 3 "$array3D"
-build OFF 3 "x"
+if [[ "$USED_VALUES" == "" ]]; then
+  USED_VALUES="f d ld"
+fi
+
+build ON 3 "x y z xy yz xz xyz" "$USED_VALUES"
+build OFF 3 "x" "$USED_VALUES"
 
 exit 0
