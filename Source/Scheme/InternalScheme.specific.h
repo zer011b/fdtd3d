@@ -67,9 +67,9 @@ InternalSchemeHelper::allocateGrids (InternalScheme<Type, TCoord, layout_type> *
     storedSteps = 3;
   }
 
-#define GRID_NAME(x, y, steps, group_id) \
+#define GRID_NAME(x, y, steps, time_offset) \
   intScheme->x = intScheme->doNeed ## y ? new Grid<TC> (layout->get ## y ## Size (), steps, #x) : NULLPTR;
-#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
   intScheme->x = new Grid<TC> (layout->get ## y ## Size (), steps, #x);
 #include "Grids2.inc.h"
 #undef GRID_NAME
@@ -188,9 +188,9 @@ InternalSchemeHelperGPU::allocateGridsFromCPU (InternalSchemeGPU<Type, TCoord, l
   typedef TCoord<FPValue, true> TCFP;
   typedef TCoord<FPValue, false> TCSFP;
 
-#define GRID_NAME(x, y, steps, group_id) \
+#define GRID_NAME(x, y, steps, time_offset) \
   intScheme->x = intScheme->doNeed ## y ? new CudaGrid<TC> (blockSize, bufSize, cpuScheme->x) : NULLPTR;
-#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
   intScheme->x = new CudaGrid<TC> (blockSize, bufSize, cpuScheme->x);
 #include "Grids2.inc.h"
 #undef GRID_NAME
@@ -209,11 +209,11 @@ CUDA_HOST
 void
 InternalSchemeHelperGPU::freeGridsFromCPU (InternalSchemeGPU<Type, TCoord, layout_type> *intScheme)
 {
-#define GRID_NAME(x, y, steps, group_id) \
+#define GRID_NAME(x, y, steps, time_offset) \
   delete intScheme->x; \
   intScheme->x = NULLPTR;
-#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
-  GRID_NAME(x, y, steps, group_id)
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
+  GRID_NAME(x, y, steps, time_offset)
 #include "Grids2.inc.h"
 #undef GRID_NAME
 #undef GRID_NAME_NO_CHECK
@@ -231,10 +231,10 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 CUDA_HOST
 InternalSchemeGPU<Type, TCoord, layout_type>::~InternalSchemeGPU ()
 {
-#define GRID_NAME(x, y, steps, group_id) \
+#define GRID_NAME(x, y, steps, time_offset) \
   ASSERT (x == NULLPTR);
-#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
-  GRID_NAME(x, y, steps, group_id)
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
+  GRID_NAME(x, y, steps, time_offset)
 #include "Grids2.inc.h"
 #undef GRID_NAME
 #undef GRID_NAME_NO_CHECK
@@ -253,9 +253,9 @@ InternalSchemeHelperGPU::allocateGridsOnGPU (InternalSchemeGPU<Type, TCoord, lay
   typedef TCoord<FPValue, true> TCFP;
   typedef TCoord<FPValue, false> TCSFP;
 
-#define GRID_NAME(x, y, steps, group_id) \
+#define GRID_NAME(x, y, steps, time_offset) \
   if (gpuScheme->doNeed ## y) { cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->x, sizeof(CudaGrid<TC>))); }
-#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
   cudaCheckErrorCmd (cudaMalloc ((void **) &gpuScheme->x, sizeof(CudaGrid<TC>)));
 #include "Grids2.inc.h"
 #undef GRID_NAME
@@ -274,9 +274,9 @@ CUDA_HOST
 void
 InternalSchemeHelperGPU::freeGridsOnGPU (InternalSchemeGPU<Type, TCoord, layout_type> *gpuScheme)
 {
-#define GRID_NAME(x, y, steps, group_id) \
+#define GRID_NAME(x, y, steps, time_offset) \
   if (gpuScheme->doNeed ## y) { cudaCheckErrorCmd (cudaFree (gpuScheme->x)); gpuScheme->x = NULLPTR; }
-#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
   cudaCheckErrorCmd (cudaFree (gpuScheme->x)); gpuScheme->x = NULLPTR;
 #include "Grids2.inc.h"
 #undef GRID_NAME
@@ -298,9 +298,9 @@ InternalSchemeHelperGPU::copyGridsFromCPU (InternalSchemeGPU<Type, TCoord, layou
                   TCoord<grid_coord, true> start,
                   TCoord<grid_coord, true> end)
 {
-#define GRID_NAME(x, y, steps, group_id) \
+#define GRID_NAME(x, y, steps, time_offset) \
   if (gpuScheme->doNeed ## y) { gpuScheme->x->copyFromCPU (start, end); }
-#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
   gpuScheme->x->copyFromCPU (start, end);
 #include "Grids2.inc.h"
 #undef GRID_NAME
@@ -325,9 +325,9 @@ InternalSchemeHelperGPU::copyGridsToGPU (InternalSchemeGPU<Type, TCoord, layout_
   typedef TCoord<FPValue, true> TCFP;
   typedef TCoord<FPValue, false> TCSFP;
 
-#define GRID_NAME(x, y, steps, group_id) \
+#define GRID_NAME(x, y, steps, time_offset) \
   if (gpuScheme->doNeed ## y) { cudaCheckErrorCmd (cudaMemcpy (gpuScheme->x, intScheme->x, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice)); }
-#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
   cudaCheckErrorCmd (cudaMemcpy (gpuScheme->x, intScheme->x, sizeof(CudaGrid<TC>), cudaMemcpyHostToDevice));
 #include "Grids2.inc.h"
 #undef GRID_NAME

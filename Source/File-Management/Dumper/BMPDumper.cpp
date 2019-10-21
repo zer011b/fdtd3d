@@ -21,7 +21,7 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid,
 
   grid_coord sx = grid->getSize ().get1 ();
   grid_coord sy = 1;
-  
+
   std::string imageReName;
   std::string imageReNameTxt;
   std::string imageImName;
@@ -174,7 +174,7 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid,
 #if defined (MODE_DIM2) || defined (MODE_DIM3)
 
 /**
- * Save grid to file for specific layer for 1D.
+ * Save grid to file for specific layer for 2D.
  */
 template<>
 void
@@ -191,7 +191,7 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid,
 
   grid_coord sx = grid->getSize ().get1 ();
   grid_coord sy = grid->getSize ().get2 ();
-  
+
   std::string imageReName;
   std::string imageReNameTxt;
   std::string imageImName;
@@ -581,14 +581,14 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid,
 #endif /* COMPLEX_FIELD_VALUES */
       }
     }
-    
+
     imageRe.WriteToFile (imageReName.c_str ());
 #ifdef COMPLEX_FIELD_VALUES
     imageIm.WriteToFile (imageImName.c_str ());
     imageMod.WriteToFile (imageModName.c_str ());
 #endif /* COMPLEX_FIELD_VALUES */
   }
-  
+
   std::string imageReName;
   std::string imageReNameTxt;
   std::string imageImName;
@@ -596,7 +596,7 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid,
   std::string imageModName;
   std::string imageModNameTxt;
   setupNames (imageReName, imageReNameTxt, imageImName, imageImNameTxt, imageModName, imageModNameTxt, time_step_back, -1);
-  
+
   fileMaxRe.open (imageReNameTxt.c_str (), std::ios::out);
   ASSERT (fileMaxRe.is_open());
   fileMaxRe << std::setprecision(std::numeric_limits<double>::digits10) << maxPosRe << " " << maxNegRe;

@@ -447,6 +447,9 @@ public:
   GridCoordinate1DTemplate<TcoordType, doSignChecks>
   operator* (GridCoordinate1DTemplate<TcoordType, doSignChecks> rhs) const /**< operand */
   {
+#ifdef DEBUG_INFO
+    ASSERT (getType1 () == rhs.getType1 ());
+#endif /* DEBUG_INFO */
     return GridCoordinate1DTemplate<TcoordType, doSignChecks> (get1 () * rhs.get1 ()
 #ifdef DEBUG_INFO
       , getType1 ()

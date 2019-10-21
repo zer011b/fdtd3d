@@ -1560,10 +1560,10 @@ Scheme<Type, TCoord, layout_type>::estimateCurrentSize ()
    * Estimation is just size of grid plus size of Grid class
    */
 
-#define GRID_NAME(x, y, steps, group_id) \
+#define GRID_NAME(x, y, steps, time_offset) \
   size += intScheme->has ## x () ? intScheme->get ## x ()->getSize ().calculateTotalCoord () * intScheme->get ## x ()->getCountStoredSteps () * sizeof (FieldValue) + sizeof (Grid<TC>) : 0;
-#define GRID_NAME_NO_CHECK(x, y, steps, group_id) \
-  GRID_NAME(x, y, steps, group_id)
+#define GRID_NAME_NO_CHECK(x, y, steps, time_offset) \
+  GRID_NAME(x, y, steps, time_offset)
 #include "Grids2.inc.h"
 #undef GRID_NAME
 

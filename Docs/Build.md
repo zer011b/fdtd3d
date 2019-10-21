@@ -1,6 +1,4 @@
-# Build Process
-
-## Prerequisites
+# Prerequisites
 
 Cuda build requires `cmake >= 3.8`. Cuda builds with older versions of cmake are not supported. To manually build `cmake` run next commands:
 
@@ -14,7 +12,7 @@ Non-cuda builds support `cmake >= 3.0.2`, but `CMakeLists.txt` will still requir
 sed -i 's/cmake_minimum_required(VERSION 3\.8)/cmake_minimum_required(VERSION 3\.0\.2)/' CMakeLists.txt
 ```
 
-## Build Flags
+# Build Flags
 
 Solver incorporates following features which could be set up during build.
 
@@ -37,7 +35,7 @@ STD_COMPLEX - use std::complex instead of custom CComplex class (std::complex is
 If any of the flags change or some new are added, testing scripts should be updated.
 
 
-## Additional Example
+# Additional Example
 
 Build command for 3D grid in detail:
 
@@ -47,11 +45,11 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DSOLVER_DIM_MODES=DIM3 -DVALUE_TYPE=d -DCOM
 -DCXX11_ENABLED=ON -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DLARGE_COORDINATES=OFF
 ```
 
-## MPI+Cuda Build
+# MPI+Cuda Build
 
 To build parallel mode with GPU support (MPI+Cuda) do not use mpicc and mpicxx compiler wrappers, because they do not set `MPI_CXX_INCLUDE_DIRS` and `MPI_CXX_LINK_FLAGS`. These are required to be passed to `nvcc`.
 
-## Build for BlueGene\P
+# Build for BlueGene\P
 
 BlueGene\P doesn't have cmake provided, so it should be built from source. Download cmake source and then do the following
 
@@ -66,9 +64,9 @@ fdtd3d should also be built in bin folder of cmake (why?).
 
 GCC provided for BlueGene\P is heavily outdated (4.1.2), thus, it doesn't support c++11 features and fdtd3d should be built with -DCXX11_ENABLED=OFF.
 
-### Issues
+## Issues
 
-#### IBM XL compilers undefined reference
+### IBM XL compilers undefined reference
 
 mpixlcxx and mpixlcxx_r compilers lead to undefined references during linking (supposed that this is a bug in IBM XL compilers). GCC should be used instead (`/bgsys/drivers/ppcfloor/comm/bin/mpicxx`):
 
@@ -76,7 +74,7 @@ mpixlcxx and mpixlcxx_r compilers lead to undefined references during linking (s
 ../../../../bin/cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DSOLVER_DIM_MODES=DIM3 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=x -DCXX11_ENABLED=OFF -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DDYNAMIC_GRID=OFF -DCOMBINED_SENDRECV=ON -DMPI_CLOCK=OFF -DCMAKE_C_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicc -DCMAKE_CXX_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicxx
 ```
 
-#### cmake linking error
+### cmake linking error
 
 Dynamic mpich libraries are tried to be linked statically (supposed that this is a bug in cmake 3.6). Possible solution is to use newer cmake.
 
@@ -92,4 +90,11 @@ Libs trying to be linked statically:
 Updated command:
 ```sh
 /bgsys/drivers/ppcfloor/comm/bin/mpicxx    -D_FORCE_INLINES -qmaxmem=-1  -O3  -O3 -DNDEBUG   CMakeFiles/fdtd3d.dir/main.cpp.o  -o fdtd3d /bgsys/drivers/V1R4M2_200_2010-100508P/ppc/comm/default/lib/libcxxmpich.cnk.a /bgsys/drivers/V1R4M2_200_2010-100508P/ppc/comm/default/lib/libmpich.cnk.a /bgsys/drivers/V1R4M2_200_2010-100508P/ppc/comm/default/lib/libopa.a -ldcmf.cnk -ldcmfcoll.cnk -lpthread -lSPI.cna /bgsys/drivers/V1R4M2_200_2010-100508P/ppc/gnu-linux/powerpc-bgp-linux/lib/librt.a Kernels/libKernels.a Settings/libSettings.a Coordinate/libCoordinate.a Grid/libGrid.a Layout/libLayout.a File-Management/Loader/libLoader.a File-Management/Dumper/libDumper.a Scheme/libInternalScheme.a Scheme/libScheme.a File-Management/Loader/libLoader.a File-Management/Dumper/libDumper.a File-Management/libFM.a ../Third-party/EasyBMP/libEasyBMP.a Scheme/libInternalScheme.a Grid/libGrid.a Settings/libSettings.a Helpers/libHelpers.a Layout/libLayout.a Kernels/libKernels.a Coordinate/libCoordinate.a
+```
+
+# Build for Tesla CMC
+
+Add this to `cmake` command:
+```
+-DLINK_NUMA=ON
 ```

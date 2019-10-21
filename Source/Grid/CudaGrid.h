@@ -44,7 +44,7 @@
  *    buffers are empty and total coordinate of left buffer will be -1, but this is ok,
  *    since buffers should never be used.
  * 3. Coordinate system of blocks, which is relative to CPU chunk, not considering buffers,
- *    i.e. starts at getChunkStartPosition(). This is useful, because in this coordinate system both for sequential and
+ *    i.e. starts at startOfBlock. This is useful, because in this coordinate system both for sequential and
  *    parallel modes first block has (0,0) coordinates.
  *    NOTE: values in this coordinate system are only passed to copyToCPU and copyFromCPU!
  */
@@ -300,6 +300,7 @@ CudaGrid<TCoord>::~CudaGrid ()
   }
   cudaCheckErrorCmd (cudaFree (d_gridValues));
 
+  delete[] gridValuesDevicePointers;
   delete[] helperGridValues;
 } /* CudaGrid<TCoord>::~CudaGrid */
 
@@ -316,9 +317,7 @@ CudaGrid<TCoord>::shiftInTime ()
 #else
   shift (gridValuesDevicePointers);
 
-#ifdef DEBUG_INFO
   nextShareStep ();
-#endif
 #endif
 } /* CudaGrid<TCoord>::shiftInTime */
 

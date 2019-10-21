@@ -67,9 +67,9 @@ where x,y,z coords are coordinates of the point in grid, value is the value of t
 
 # Input
 
-For all three types of file load is performed in the same manner.
+For all three types of files load is performed in the same manner.
 
-** Be sure to load files with the same size as the grid. Assert will fire if this is not correct. **
+**Be sure to load files with the same size as the grid. Assert will fire if this is not correct.**
 
 For example, to load `eps` use `--load-eps-from-file <filename>` command line argument. Type of file is determined by file extension, i.e. the string after the last dot in filename. In case of `.txt` and `.dat` the file is simply loaded.
 

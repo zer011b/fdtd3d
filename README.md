@@ -23,7 +23,7 @@ See [documentation](Docs/Build.md) for specific details.
 
 # Testing
 
-Testing is performed using Travis CI. Open pull request with your changes and it will be automatically tested. For details, see See [.travis.yml](.travis.yml).
+Testing is performed using Travis CI. Open pull request with your changes and it will be automatically tested. For details, see See [.travis.yml](.travis.yml). Cuda tests are only built but not launched on Travis CI.
 
 # Launch
 
@@ -82,7 +82,7 @@ You can site the following papers about the techniques used in fdtd3d:
 
 - Balykov G. (2017) Parallel FDTD Solver with Optimal Topology and Dynamic Balancing. In: Voevodin V., Sobolev S. (eds) Supercomputing. RuSCDays 2017. Communications in Computer and Information Science, vol 793. Springer, Cham. https://doi.org/10.1007/978-3-319-71255-0_27
 
-- Balykov G. (2019) Parallel FDTD Solver with Static and Dynamic Load Balancing. In: Voevodin V., Sobolev S. (eds) Supercomputing. RuSCDays 2018. Communications in Computer and Information Science, vol 965. Springer, Cham. https://doi.org/10.1007/978-3-030-05807-4_26.
+- Balykov G. (2019) Parallel FDTD Solver with Static and Dynamic Load Balancing. In: Voevodin V., Sobolev S. (eds) Supercomputing. RuSCDays 2018. Communications in Computer and Information Science, vol 965. Springer, Cham. https://doi.org/10.1007/978-3-030-05807-4_26
 
 # Third Party
 

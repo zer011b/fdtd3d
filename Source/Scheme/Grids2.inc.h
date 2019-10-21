@@ -2,6 +2,10 @@
  * Name, Base grid name, Number of time steps stored, Sub-time step i (t+i/2)
  */
 
+/*
+ * NOTE: time offsets for all the grids should be in sync with share process!
+ */
+
 /**
  * Material grids
  */

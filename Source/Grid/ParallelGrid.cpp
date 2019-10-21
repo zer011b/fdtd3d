@@ -43,7 +43,7 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
                             time_step stepLimit, /**< step limit */
                             const ParallelGridCoordinate &curSize,  /**< size of grid for current node, received from layout */
                             int storedSteps, /**< number of steps in time for which to store grid values */
-                            int timeOffset, /**< offset of time step in for t+timeOffset/2, at which grid should be shared */
+                            int timeOffset, /**< offset of time step in form t+timeOffset/2, at which grid should be shared */
                             const char * name) /**< name of grid */
   : ParallelGridBase (storedSteps, name)
 {
