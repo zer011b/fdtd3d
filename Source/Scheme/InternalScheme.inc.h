@@ -310,8 +310,21 @@ namespace InternalSchemeKernelHelpers
     }
     TCoord<grid_coord, true> posAbs = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
 
-    gpuScheme->calculateFieldStepIterationExact<grid_type> (t, posAbs, grid, exactFunc,
-      gpuScheme->getd_norm ()[0], gpuScheme->getd_norm ()[1], gpuScheme->getd_norm ()[2], gpuScheme->getd_norm ()[3], gpuScheme->getd_norm ()[4], gpuScheme->getd_norm ()[5]);
+    FPValue normRe = 0;
+    FPValue normIm = 0;
+    FPValue normMod = 0;
+    FPValue maxRe = 0;
+    FPValue maxIm = 0;
+    FPValue maxMod = 0;
+
+    gpuScheme->calculateFieldStepIterationExact<grid_type> (t, posAbs, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
+
+    atomicAdd (&gpuScheme->getd_norm ()[0], normRe);
+    atomicAdd (&gpuScheme->getd_norm ()[1], normRe);
+    atomicAdd (&gpuScheme->getd_norm ()[2], normIm);
+    atomicAdd (&gpuScheme->getd_norm ()[3], maxRe);
+    atomicAdd (&gpuScheme->getd_norm ()[4], maxIm);
+    atomicAdd (&gpuScheme->getd_norm ()[5], maxMod);
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
