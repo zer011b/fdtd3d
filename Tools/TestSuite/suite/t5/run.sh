@@ -27,6 +27,7 @@ function launch ()
   local size="$1"
   local timesteps="$2"
   local dx="$3"
+  local layout_type="$4"
 
   local lambda="0.02"
 
@@ -34,7 +35,7 @@ function launch ()
 
   $RUNNER ./fdtd3d $MODE --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
     --log-level 0 --use-sin1-border-condition --use-sin1-start-values --calc-sin1-diff-norm \
-    --eps-normed --mu-normed --courant-factor 149896229 &> $output_file
+    --eps-normed --mu-normed --courant-factor 149896229 --layout-type $layout_type &> $output_file
 
   local ret=$?
 
@@ -60,25 +61,26 @@ dx3="0.00025"
 
 function test ()
 {
-  timesteps=$1
+  local timesteps=$1
+  local layout_type="$2"
   local ret=$((0))
 
   timesteps1=$(echo $timesteps | awk '{print $1 + 1}')
-  launch $size1 $timesteps1 $dx1
+  launch $size1 $timesteps1 $dx1 $layout_type
   if [ $? -ne 0 ]; then
     ret=$((1))
   fi
   diff1=$(echo $max_diff)
 
   timesteps2=$(echo $timesteps | awk '{print $1 * 2 + 1}')
-  launch $size2 $timesteps2 $dx2
+  launch $size2 $timesteps2 $dx2 $layout_type
   if [ $? -ne 0 ]; then
     ret=$((1))
   fi
   diff2=$(echo $max_diff)
 
   timesteps3=$(echo $timesteps | awk '{print $1 * 4 + 1}')
-  launch $size3 $timesteps3 $dx3
+  launch $size3 $timesteps3 $dx3 $layout_type
   if [ $? -ne 0 ]; then
     ret=$((1))
   fi
@@ -88,7 +90,7 @@ function test ()
             {
               d1 = $1 / $2;
               d2 = $2 / $3;
-              if (3.5 < d1 && 3.5 < d2)
+              if (3.4 < d1 && 3.4 < d2)
               {
                 print 1;
               }
@@ -105,12 +107,20 @@ function test ()
   return $ret
 }
 
-test 40
+test 40 0
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+test 40 1
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-test 80
+test 80 0
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+test 80 1
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi

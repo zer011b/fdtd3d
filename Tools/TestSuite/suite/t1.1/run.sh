@@ -28,13 +28,14 @@ function launch ()
   local size="$1"
   local timesteps="$2"
   local dx="$3"
+  local layout_type="$4"
 
   local lambda="0.02"
   local length=$(echo $timesteps | awk '{print $1 - 10}')
 
   $RUNNER ./fdtd3d $MODE --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
     --log-level 0 --save-res --save-tfsf-e-incident --save-as-txt --use-tfsf --tfsf-sizex-left 4 --tfsf-sizex-right 4 \
-    --same-size-tfsf --courant-factor 1.0 &>/dev/null
+    --same-size-tfsf --courant-factor 1.0 --layout-type $layout_type &>/dev/null
 
   local ret=$((0))
 
@@ -96,12 +97,20 @@ cd $TEST_DIR
 size="12"
 retval=$((0))
 
-launch $size 251 0.0004
+launch $size 251 0.0004 0
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+launch $size 251 0.0004 1
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-launch $size 501 0.0002
+launch $size 501 0.0002 0
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+launch $size 501 0.0002 1
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi

@@ -22,11 +22,13 @@ fi
 
 function launch ()
 {
+  local layout_type="$1"
   output_file=$(mktemp /tmp/fdtd3d.vacuum1D.XXXXXXXX)
 
   tmp_test_file=$(mktemp /tmp/vacuum1D_ExHz.XXXXXXXX.txt)
   cp ${SOURCE_DIR}/Examples/vacuum1D_ExHz.txt $tmp_test_file
   echo $MODE >> $tmp_test_file
+  echo "--layout-type $layout_type" >> $tmp_test_file
 
   $RUNNER ./fdtd3d --cmd-from-file $tmp_test_file &> $output_file
 
@@ -35,8 +37,10 @@ function launch ()
   val_max=$(cat previous-1_[timestep=100]_[pid=0]_[name=Ex]_[mod].txt | awk '{print $1}')
   val_min=$(cat previous-1_[timestep=100]_[pid=0]_[name=Ex]_[mod].txt | awk '{print $2}')
   is_ok=$(echo $val_max $val_min | awk '
+            function abs(x){return ((x < 0.0) ? -x : x)}
             {
-              if (1.01 <= $1 && $1 <= 1.02 && 0.0 == $2)
+              percent = (abs($1 - 1.0) / 1.0) * 100.0
+              if ($1 <= 1.7 && 0.0 == $2)
               {
                 print 1;
               }
@@ -56,6 +60,7 @@ function launch ()
 
   cp ${SOURCE_DIR}/Examples/vacuum1D_ExHz_scattered.txt $tmp_test_file
   echo $MODE >> $tmp_test_file
+  echo "--layout-type $layout_type" >> $tmp_test_file
 
   $RUNNER ./fdtd3d --cmd-from-file $tmp_test_file &> $output_file
 
@@ -87,7 +92,11 @@ TEST_DIR=$(dirname $(readlink -f $0))
 cd $TEST_DIR
 
 retval=$((0))
-launch
+launch 0
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+launch 1
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
