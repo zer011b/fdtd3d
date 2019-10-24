@@ -27,6 +27,7 @@ function launch ()
   local size="$1"
   local timesteps="$2"
   local dx="$3"
+  local layout_type="$4"
 
   local lambda="0.02"
 
@@ -36,7 +37,7 @@ function launch ()
 
   $RUNNER ./fdtd3d $MODE --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
     --log-level 0 --use-polinom1-border-condition --use-polinom1-start-values \
-    --use-polinom1-right-side --calc-polinom1-diff-norm &> $output_file
+    --use-polinom1-right-side --calc-polinom1-diff-norm --layout-type $layout_type &> $output_file
 
   local max_diff=$(cat $output_file | grep "DIFF NORM Ez" | awk '{if (max < $14) {max = $14}} END{printf "%.20f", max}')
   local is_ok=$(echo $max_diff $accuracy_percent | awk '{if ($1 > $2) {print 0} else {print 1}}')
@@ -60,12 +61,20 @@ dx1="0.001"
 size2="40"
 dx2="0.0005"
 
-launch $size1 101 $dx1
+launch $size1 101 $dx1 0
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+launch $size1 101 $dx1 1
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-launch $size2 201 $dx2
+launch $size2 201 $dx2 0
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+launch $size2 201 $dx2 1
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi

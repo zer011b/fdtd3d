@@ -38,6 +38,7 @@ function launch ()
   local accuracy_percent=${12}
 
   local eps_sphere=${13}
+  local layout_type="${14}"
 
   time_step_before=$((num_time_steps - 1))
 
@@ -47,7 +48,7 @@ function launch ()
     --dx $dz --wavelength $4 --courant-factor 0.5 --log-level 2 --pml-sizex $pmlsize --use-pml \
     --use-tfsf --tfsf-sizex-left $tfsfsize --tfsf-sizex-right 0 \
     --eps-sphere $eps_sphere --eps-sphere-center-x $sphere_center --eps-sphere-radius $sphere_radius \
-    --norm-start-x $norm_start --norm-end-x $norm_end --calc-${exp_type}-ezhy-diff-norm &> $output_file
+    --norm-start-x $norm_start --norm-end-x $norm_end --calc-${exp_type}-ezhy-diff-norm --layout-type $layout_type &> $output_file
 
   local ret=$?
 
@@ -83,17 +84,29 @@ TEST_DIR=$(dirname $(readlink -f $0))
 cd $TEST_DIR
 
 retval=$((0))
-launch 10000 600 0.0001 0.02 50 150 450 150 155 545 exp1 0.12 1
+launch 10000 600 0.0001 0.02 50 150 450 150 155 545 exp1 0.12 1 0
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+launch 10000 600 0.0001 0.02 50 150 450 150 155 545 exp1 0.12 1 1
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-launch 10000 600 0.0001 0.02 50 150 450 150 305 545 exp3 0.12 4
+launch 10000 600 0.0001 0.02 50 150 450 150 305 545 exp3 0.12 4 0
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+launch 10000 600 0.0001 0.02 50 150 450 150 305 545 exp3 0.12 4 1
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-launch 10000 600 0.0001 0.02 50 150 450 150 55 145 exp2 0.17 4
+launch 10000 600 0.0001 0.02 50 150 450 150 55 145 exp2 0.17 4 0
+if [ $? -ne 0 ]; then
+  retval=$((1))
+fi
+launch 10000 600 0.0001 0.02 50 150 450 150 55 145 exp2 0.17 4 1
 if [ $? -ne 0 ]; then
   retval=$((1))
 fi
