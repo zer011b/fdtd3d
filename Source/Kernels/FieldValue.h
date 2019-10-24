@@ -116,4 +116,13 @@ template<class T>
 CUDA_DEVICE CUDA_HOST
 T exponent (T arg);
 
+#ifdef CUDA_ENABLED
+#ifdef __CUDACC__
+#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 600
+#else
+extern __device__ double atomicAdd(double* address, double val);
+#endif
+#endif
+#endif /* CUDA_ENABLED */
+
 #endif /* FIELD_VALUES_H */
