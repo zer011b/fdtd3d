@@ -860,6 +860,17 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
                                                        TC start, /**< start coordinate of chunk to perform computations on */
                                                        TC end) /**< end coordinate of chunk to perform computations on */
 {
+  int processId = 0;
+
+  if (useParallel)
+  {
+#ifdef PARALLEL_GRID
+    processId = ParallelGrid::getParallelCore ()->getProcessId ();
+#else /* PARALLEL_GRID */
+    ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif /* !PARALLEL_GRID */
+  }
+
   // TODO: add metamaterials without pml
   if (!usePML && useMetamaterials)
   {
@@ -1453,78 +1464,82 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       }
     }
 
-#ifdef PARALLEL_GRID
-
-    FPValue normReTotal = FPValue (0);
-    FPValue maxReTotal = FPValue (0);
-
-#ifdef COMPLEX_FIELD_VALUES
-    FPValue normImTotal = FPValue (0);
-    FPValue normModTotal = FPValue (0);
-    FPValue maxImTotal = FPValue (0);
-    FPValue maxModTotal = FPValue (0);
-#endif
-
-    /*
-     * In parallel mode need to share values with all nodes
-     */
-    for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
+    if (useParallel)
     {
-      FPValue curRe = FPValue (0);
-      FPValue curMaxRe = FPValue (0);
+#ifdef PARALLEL_GRID
+      FPValue normReTotal = FPValue (0);
+      FPValue maxReTotal = FPValue (0);
 
 #ifdef COMPLEX_FIELD_VALUES
-      FPValue curIm = FPValue (0);
-      FPValue curMod = FPValue (0);
-      FPValue curMaxIm = FPValue (0);
-      FPValue curMaxMod = FPValue (0);
+      FPValue normImTotal = FPValue (0);
+      FPValue normModTotal = FPValue (0);
+      FPValue maxImTotal = FPValue (0);
+      FPValue maxModTotal = FPValue (0);
 #endif
 
-      if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+      /*
+       * In parallel mode need to share values with all nodes
+       */
+      for (int process = 0; process < ParallelGrid::getParallelCore ()->getTotalProcCount (); ++process)
       {
-        curRe = normRe;
-        curMaxRe = maxRe;
+        FPValue curRe = FPValue (0);
+        FPValue curMaxRe = FPValue (0);
+
 #ifdef COMPLEX_FIELD_VALUES
-        curIm = normIm;
-        curMod = normMod;
-        curMaxIm = maxIm;
-        curMaxMod = maxMod;
+        FPValue curIm = FPValue (0);
+        FPValue curMod = FPValue (0);
+        FPValue curMaxIm = FPValue (0);
+        FPValue curMaxMod = FPValue (0);
 #endif
+
+        if (process == ParallelGrid::getParallelCore ()->getProcessId ())
+        {
+          curRe = normRe;
+          curMaxRe = maxRe;
+#ifdef COMPLEX_FIELD_VALUES
+          curIm = normIm;
+          curMod = normMod;
+          curMaxIm = maxIm;
+          curMaxMod = maxMod;
+#endif
+        }
+
+        MPI_Bcast (&curRe, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+        MPI_Bcast (&curMaxRe, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+#ifdef COMPLEX_FIELD_VALUES
+        MPI_Bcast (&curIm, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+        MPI_Bcast (&curMod, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+        MPI_Bcast (&curMaxIm, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+        MPI_Bcast (&curMaxMod, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+#endif
+
+        normReTotal += curRe;
+        maxReTotal += curMaxRe;
+#ifdef COMPLEX_FIELD_VALUES
+        normImTotal += curIm;
+        normModTotal += curMod;
+        maxImTotal += curMaxIm;
+        maxModTotal += curMaxMod;
+#endif
+
+        MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
       }
 
-      MPI_Bcast (&curRe, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
-      MPI_Bcast (&curMaxRe, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+      normRe = normReTotal;
+      maxRe = maxReTotal;
 #ifdef COMPLEX_FIELD_VALUES
-      MPI_Bcast (&curIm, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
-      MPI_Bcast (&curMod, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
-      MPI_Bcast (&curMaxIm, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
-      MPI_Bcast (&curMaxMod, 1, MPI_FPVALUE, process, ParallelGrid::getParallelCore ()->getCommunicator ());
+      normIm = normImTotal;
+      normMod = normModTotal;
+      maxIm = maxImTotal;
+      maxMod = maxModTotal;
 #endif
-
-      normReTotal += curRe;
-      maxReTotal += curMaxRe;
-#ifdef COMPLEX_FIELD_VALUES
-      normImTotal += curIm;
-      normModTotal += curMod;
-      maxImTotal += curMaxIm;
-      maxModTotal += curMaxMod;
-#endif
-
-      MPI_Barrier (ParallelGrid::getParallelCore ()->getCommunicator ());
+#else /* PARALLEL_GRID */
+      ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
+#endif /* !PARALLEL_GRID */
     }
 
-    normRe = normReTotal;
-    maxRe = maxReTotal;
-#ifdef COMPLEX_FIELD_VALUES
-    normIm = normImTotal;
-    normMod = normModTotal;
-    maxIm = maxImTotal;
-    maxMod = maxModTotal;
-#endif
-#endif /* PARALLEL_GRID */
-
 #ifdef PARALLEL_GRID
-    if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
+    if (processId == 0)
 #endif /* PARALLEL_GRID */
     {
 #ifdef COMPLEX_FIELD_VALUES
@@ -1533,7 +1548,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       normMod = sqrt (normMod / normGrid->getTotalSize ().calculateTotalCoord ());
 
       /*
-       * NOTE: do not change this! test suite depdends on the order of values in output
+       * NOTE: do not change this! test suite depends on the order of values in output
        */
       printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
         normGrid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
@@ -1541,7 +1556,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       normRe = sqrt (normRe / normGrid->getTotalSize ().calculateTotalCoord ());
 
       /*
-       * NOTE: do not change this! test suite depdends on the order of values in output
+       * NOTE: do not change this! test suite depends on the order of values in output
        */
       printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
         normGrid->getName (), t, normRe, normRe * 100.0 / maxRe);
@@ -4311,7 +4326,8 @@ void
 Scheme<Type, TCoord, layout_type>::saveGrids (time_step t)
 {
   int processId = 0;
-  if (SOLVER_SETTINGS.getDoSaveResPerProcess ())
+  if (SOLVER_SETTINGS.getDoSaveResPerProcess ()
+      && useParallel)
   {
 #ifdef PARALLEL_GRID
     processId = ParallelGrid::getParallelCore ()->getProcessId ();
