@@ -992,7 +992,7 @@ jobs:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.2"
@@ -1000,7 +1000,7 @@ jobs:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.3"
@@ -1008,7 +1008,7 @@ jobs:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.4"
@@ -1016,7 +1016,7 @@ jobs:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.5"
@@ -1024,7 +1024,7 @@ jobs:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.6"
@@ -1032,7 +1032,7 @@ jobs:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
 
     - stage: test-suite
       env:
