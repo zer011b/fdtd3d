@@ -1,9 +1,11 @@
 var searchData=
 [
-  ['exp1_5fe',['exp1_e',['../classCallBack.html#a51b61f3c3598b964e65a83bd938d6005',1,'CallBack']]],
-  ['exp1_5fh',['exp1_h',['../classCallBack.html#aea4b175740797d87df72733f280ed398',1,'CallBack']]],
-  ['exp2_5fe',['exp2_e',['../classCallBack.html#a8455f3e2431aa7cf0672fef91ae521bb',1,'CallBack']]],
-  ['exp2_5fh',['exp2_h',['../classCallBack.html#a5aabd72e14f9647350baa502525f1ec6',1,'CallBack']]],
-  ['exp3_5fe',['exp3_e',['../classCallBack.html#ad4662b2189b85979aeda2b6767d7ba5e',1,'CallBack']]],
-  ['exp3_5fh',['exp3_h',['../classCallBack.html#a659a2fad75958c95de3d52ffc86ff0fe',1,'CallBack']]]
+  ['estimatecurrentsize',['estimateCurrentSize',['../classScheme.html#ad768dec83cb62bc0d7c27452bd37006e',1,'Scheme']]],
+  ['exp',['exp',['../classCComplex.html#a334865500fe6a6463c8daa083aa4c938',1,'CComplex']]],
+  ['exp1_5fe',['exp1_e',['../classCallBack.html#a94a7f23bc71dd62b0f89b7a4deff7d0a',1,'CallBack']]],
+  ['exp1_5fh',['exp1_h',['../classCallBack.html#a1a518a5bb76a1fad8428f0c0d1973c9b',1,'CallBack']]],
+  ['exp2_5fe',['exp2_e',['../classCallBack.html#aa1c5e03dc4fe6692e072b769ecf2384f',1,'CallBack']]],
+  ['exp2_5fh',['exp2_h',['../classCallBack.html#a35f9b6b925f4ff06ea360b77e5ef6c6a',1,'CallBack']]],
+  ['exp3_5fe',['exp3_e',['../classCallBack.html#a5410b3d089df856b2c647e35f0f27783',1,'CallBack']]],
+  ['exp3_5fh',['exp3_h',['../classCallBack.html#a7653c164e375a60b8825427977619631',1,'CallBack']]]
 ];

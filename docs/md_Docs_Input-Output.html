@@ -90,40 +90,39 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>For all details see <code>--help</code>.</p>
 <h1>Output</h1>
 <p>To save results use <code>--save-res</code> command line argument, to save materials use <code>--save-materials</code>.</p>
-<h2>Images mode</h2>
-<p>In addition, to perform save to <code>.bmp</code> images add <code>--save-as-bmp</code> command line argument.</p>
-<p>File names are setup in the next manner: <code>&lt;Type time step&gt;[&lt;Time step&gt;]_rank-&lt;Process Id&gt;_&lt;Field name&gt;-&lt;Type&gt;.bmp</code></p>
-<ul>
-<li>Type time step could be one of three: <code>current</code>, <code>previous</code>, <code>previous2</code>.</li>
-<li>Time step is the number of time step, after which results are saved, except for materials, for which time step is always 0.</li>
-<li>Process id is the id of the process, performing saving. Currently, only the process with 0 id is performing saving.</li>
-<li>Field name is the special string for mode plus the name of the field, e.g. <code>Ex</code>, <code>Ey</code>, <code>Ez</code> for grid name, and <code>3D-in-time</code> string for 3D mode, <code>2D-TMz-in-time</code> and <code>2D-TEz-in-time</code> for 2D mode. In case of 3D mode images are saved for each layer orthogonal to specified axis, so name is <code>Ex40</code> for <code>Ex</code> grid and 40 layer.</li>
-<li>Type is one of three: <code>Re</code> for real part, <code>Im</code> for imaginary part, <code>Mod</code> for module.</li>
+<p>To perform save to <code>.bmp</code> images add <code>--save-as-bmp</code> command line argument. To perform save to <code>.dat</code> binary files add <code>--save-as-dat</code> command line argument. To perform save to <code>.txt</code> plain text files add <code>--save-as-txt</code> command line argument.</p>
+<p>File names for <code>.txt</code> and <code>.dat</code> are setup in the next manner: </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;previous-&lt;Time step offset&gt;_[timestep=&lt;Time step&gt;]_[pid=&lt;Process Id&gt;]_[name=&lt;Field name&gt;].{txt,dat,bmp}</div></div><!-- fragment --><ul>
+<li>Time step offset indicates offset of time step from current (i.e. current time step has offset 0, previous time step has offset 1, etc.).</li>
+<li>Time step is the number of time step, after which grids are saved.</li>
+<li>Process id is the id of the process, performing saving.</li>
+<li>Field name is the name of the field, e.g. <code>Ex</code>, <code>Ey</code>, <code>Ez</code>.</li>
 </ul>
-<p>Example for 2D mode: <code>current[300]_rank-0_2D-TMz-in-time-Ez-Mod.bmp</code>. Example for 3D mode: <code>current[300]_rank-0_3D-in-time-Ez40-Mod.bmp</code>.</p>
-<p>Also, for each .bmp image additional .txt file is saved with maximum and minimum values.</p>
-<h3>Additional parameters</h3>
-<ul>
+<p>File names for <code>.bmp</code> are setup in the next manner: </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;previous-&lt;Time step offset&gt;_[timestep=&lt;Time step&gt;]_[pid=&lt;Process Id&gt;]_[name=&lt;Field name&gt;]_[&lt;Type&gt;]&lt;Additional string&gt;.{txt,dat,bmp}</div></div><!-- fragment --><ul>
+<li>Type is one of three: <code>Re</code> for real part, <code>Im</code> for imaginary part, <code>Mod</code> for module.</li>
+<li>In case of 3D mode images are saved for each layer orthogonal to specified axis. Name has to consider coordinate on this axis, thus, additional string from above becomes <code>_[coord=&lt;coord val&gt;]</code>.</li>
+</ul>
+<p>Example for 2D mode <code>.txt</code>: <code>previous-0[timestep=300]_[pid=0]_[name=Ez].txt</code>.</p>
+<p>Example for 3D mode <code>.dat</code>: <code>previous-0[timestep=300]_[pid=0]_[name=Ez].dat</code>.</p>
+<p>Example for 2D mode <code>.bmp</code>: <code>previous-0[timestep=300]_[pid=0]_[name=Ez]_[mod].bmp</code>.</p>
+<p>Example for 3D mode <code>.bmp</code>: <code>previous-0[timestep=300]_[pid=0]_[name=Ez]_[mod]_[coord=40].bmp</code>.</p>
+<h2>Images mode</h2>
+<p>For each .bmp image additional .txt file is saved with maximum and minimum values.</p>
+<p>Additional parameters:</p><ul>
 <li><code>--palette-gray</code> or <code>--palette-rgb</code> for different color schemes</li>
-<li>[WIP] <code>--orth-axis-x</code>, or <code>--orth-axis-y</code>, or <code>--orth-axis-z</code> for orthogonal axis. (default is <code>--orth-axis-z</code>)</li>
-<li>[WIP] start and end coordinates to save or load</li>
+<li><code>--orth-axis-x</code>, or <code>--orth-axis-y</code>, or <code>--orth-axis-z</code> for orthogonal axis. (default is <code>--orth-axis-z</code>)</li>
+<li><code>--save-start-coord-x</code>, etc., for start and end coordinates to save or load</li>
 </ul>
 <h2>Binary mode</h2>
-<p>In addition, to perform save to <code>.dat</code> binary files add <code>--save-as-dat</code> command line argument.</p>
-<p>File names are similar to .bmp, except that there is no <code>Type</code> and field name doesn't have index of layer.</p>
-<p>Example for 3D mode: <code>current[300]_rank-0_3D-in-time-Ez.dat</code>.</p>
-<h3>Format</h3>
 <p>This file is binary and grid values are saved as is.</p>
 <h2>Plain text mode</h2>
-<p>In addition, to perform save to <code>.txt</code> plain text files add <code>--save-as-txt</code> command line argument.</p>
-<p>File names are same as for .dat.</p>
-<p>Example for 3D mode: <code>current[300]_rank-0_3D-in-time-Ez.txt</code>.</p>
-<h3>Format</h3>
 <p>Single line in file has the next format</p>
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;xcoord ycoord zcoord re-value im-value</div></div><!-- fragment --><p>where x,y,z coords are coordinates of the point in grid, value is the value of the component in that point. im-value is absent in non-complex value builds, y and z coords are absent for 1D mode, z coord is missing for 2D mode.</p>
 <h1>Input</h1>
-<p>For all three types of file load is performed in the same manner. Be sure to load files with the same size as the grid.</p>
-<p>For example, to load <code>eps</code> use <code>--load-eps-from-file &lt;filename&gt;</code> command line argument. Type of file is determined by file extension, i.e. the string after the last dot in filename. In case of <code>.txt</code> and <code>.dat</code> the file is simply loaded. However, <code>.bmp</code> mode is the exception here, because in case of 3D mode, there are multiple files. So, the <code>&lt;filename&gt;</code> specified is added additional <code>&lt;Layer index&gt;-&lt;Type&gt;.bmp</code>, e.g. if filename is <code>current[300]_rank-0_3D-in-time-Ez.bmp</code>, then one of the loaded files is <code>current[300]_rank-0_3D-in-time-Ez.bmp40-Re.bmp</code>. </p>
+<p>For all three types of files load is performed in the same manner.</p>
+<p><b>Be sure to load files with the same size as the grid. Assert will fire if this is not correct.</b></p>
+<p>For example, to load <code>eps</code> use <code>--load-eps-from-file &lt;filename&gt;</code> command line argument. Type of file is determined by file extension, i.e. the string after the last dot in filename. In case of <code>.txt</code> and <code>.dat</code> the file is simply loaded.</p>
+<p>However, <code>.bmp</code> mode is the exception here, because there are multiple files for real/imag values and in 3D mode there are different coordinates on orthogonal axis. Latter case is not supported currently, as it is not considered quite useful (i.e. drawing multiple grids by hand in image editor for 3D mode doesn't seem to be common approach).</p>
+<p>To handle former, the <code>&lt;filename&gt;</code> specified is added additional <code>_[real].bmp</code>, <code>_[imag].bmp</code>, e.g. if filename passed as argument is <code>previous-0[timestep=300]_[pid=0]_[name=Ez].bmp</code>, then one of the loaded files is <code>previous-0[timestep=300]_[pid=0]_[name=Ez]_[real].bmp</code>. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

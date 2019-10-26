@@ -86,7 +86,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
@@ -105,21 +104,6 @@ Inheritance diagram for GridFileManager:</div>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:a39bc78cc3a3cdbdb6cabf2fcc988d123"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39bc78cc3a3cdbdb6cabf2fcc988d123"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const time_step &amp;timeStep, GridFileType newType, int process, const char *name)</td></tr>
-<tr class="separator:a39bc78cc3a3cdbdb6cabf2fcc988d123"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae54458cb11b1bedb7a553bbbcbdbb41c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae54458cb11b1bedb7a553bbbcbdbb41c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initManual</b> (const time_step &amp;timeStep, GridFileType newType, int process, const std::string &amp;current, const std::string &amp;previous, const std::string &amp;prevPrevious)</td></tr>
-<tr class="separator:ae54458cb11b1bedb7a553bbbcbdbb41c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91884876bedeafae620a40592ced9227"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a91884876bedeafae620a40592ced9227"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setStep</b> (const time_step &amp;timeStep)</td></tr>
-<tr class="separator:a91884876bedeafae620a40592ced9227"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44b24c0e3657efd5773e08b7c78a9be1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a44b24c0e3657efd5773e08b7c78a9be1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setGridFileType</b> (GridFileType newType)</td></tr>
-<tr class="separator:a44b24c0e3657efd5773e08b7c78a9be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aef2c3bc7eed7dcb367f3d6a3e734a692"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aef2c3bc7eed7dcb367f3d6a3e734a692"></a>
@@ -128,34 +112,73 @@ static FileType&#160;</td><td class="memItemRight" valign="bottom"><b>getFileTyp
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ac10eb25941d1f806205d60f3fd50ec84"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac10eb25941d1f806205d60f3fd50ec84"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setFileNames</b> ()</td></tr>
-<tr class="separator:ac10eb25941d1f806205d60f3fd50ec84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac686a2489d64a2a81da50d258a33ce60"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac686a2489d64a2a81da50d258a33ce60"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setFileNames</b> (int savedSteps, time_step step, int processId, const std::string &amp;customName, FileType ftype)</td></tr>
+<tr class="separator:ac686a2489d64a2a81da50d258a33ce60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a343a24b2191aaf48275777173e0d6d97"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a343a24b2191aaf48275777173e0d6d97"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setCustomFileNames</b> (const std::vector&lt; std::string &gt; &amp;customNames)</td></tr>
+<tr class="separator:a343a24b2191aaf48275777173e0d6d97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4a08fc3cf78d65552375587948ffac7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFileManager.html#af4a08fc3cf78d65552375587948ffac7">GridFileManager</a> ()</td></tr>
+<tr class="separator:af4a08fc3cf78d65552375587948ffac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:ac729bc3288864fe27f49ff84395e3c39"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac729bc3288864fe27f49ff84395e3c39"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>manualFileNames</b></td></tr>
-<tr class="separator:ac729bc3288864fe27f49ff84395e3c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f11a854576ec8af6be295a6b3c3600d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4f11a854576ec8af6be295a6b3c3600d"></a>
-time_step&#160;</td><td class="memItemRight" valign="bottom"><b>step</b></td></tr>
-<tr class="separator:a4f11a854576ec8af6be295a6b3c3600d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a658b483bac7b9009056b9e09a9b9d5bb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a658b483bac7b9009056b9e09a9b9d5bb"></a>
-GridFileType&#160;</td><td class="memItemRight" valign="bottom"><b>type</b></td></tr>
-<tr class="separator:a658b483bac7b9009056b9e09a9b9d5bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac22c8feecc3aaad6f8b9357aad61c6ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac22c8feecc3aaad6f8b9357aad61c6ea"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>processId</b></td></tr>
-<tr class="separator:ac22c8feecc3aaad6f8b9357aad61c6ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5eaa5388ba61c83ea761ca0e3805952"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab5eaa5388ba61c83ea761ca0e3805952"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>cur</b></td></tr>
-<tr class="separator:ab5eaa5388ba61c83ea761ca0e3805952"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f6a94290116342b2bf9931be9a72345"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3f6a94290116342b2bf9931be9a72345"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>customName</b></td></tr>
-<tr class="separator:a3f6a94290116342b2bf9931be9a72345"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6e12eef73435dcf63b3a78fc8c9a128"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGridFileManager.html#ac6e12eef73435dcf63b3a78fc8c9a128">index_of_grid</a></td></tr>
+<tr class="separator:ac6e12eef73435dcf63b3a78fc8c9a128"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84fb373368ef509b7027bee6ef5a2f0a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a84fb373368ef509b7027bee6ef5a2f0a"></a>
+std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>names</b></td></tr>
+<tr class="separator:a84fb373368ef509b7027bee6ef5a2f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for all dumpers/loaders. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="af4a08fc3cf78d65552375587948ffac7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">GridFileManager::GridFileManager </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Protected constructor to save/load all/specific grid time step </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ac6e12eef73435dcf63b3a78fc8c9a128"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int GridFileManager::index_of_grid</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Index of grid time step to save/load: -1: save/load all time steps &gt;=0: save/load specific time step </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>Source/File-Management/<a class="el" href="Commons_8h_source.html">Commons.h</a></li>
 <li>Source/File-Management/Commons.cpp</li>
 </ul>
