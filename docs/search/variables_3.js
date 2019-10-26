@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['incidentwaveangle1',['incidentWaveAngle1',['../classYeeGridLayout.html#ac9980650281c9d806e90dad329c80991',1,'YeeGridLayout']]],
-  ['incidentwaveangle2',['incidentWaveAngle2',['../classYeeGridLayout.html#ac95598f4b79538d87429a11e417f023c',1,'YeeGridLayout']]],
-  ['incidentwaveangle3',['incidentWaveAngle3',['../classYeeGridLayout.html#ac1b1bea1376441cd4e82b4f523f77f29',1,'YeeGridLayout']]],
-  ['isdoublematerialprecision',['isDoubleMaterialPrecision',['../classYeeGridLayout.html#a6a7bf6568a8f1c6b14c7642d1098a504',1,'YeeGridLayout']]]
+  ['gpuindexfornode',['gpuIndexForNode',['../classSettings.html#aefd408b2587a1ec23a47aa4d0bcd6fe7',1,'Settings']]],
+  ['gridname',['gridName',['../classGrid.html#a3c2cc9e202e579f253661790a8434a8f',1,'Grid']]],
+  ['gridstep',['gridStep',['../classINTERNAL__SCHEME__BASE.html#a8c6a08161b8547ce6a1816104ff3b4b5',1,'INTERNAL_SCHEME_BASE']]],
+  ['gridtimestep',['gridTimeStep',['../classINTERNAL__SCHEME__BASE.html#ac3c3c4da7309145fe1e10f5de514f312',1,'INTERNAL_SCHEME_BASE']]],
+  ['gridvalues',['gridValues',['../classGrid.html#a53a688889025b6c4956f9b10fce738a7',1,'Grid']]]
 ];
