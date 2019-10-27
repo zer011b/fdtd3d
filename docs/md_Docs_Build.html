@@ -51,8 +51,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -70,7 +70,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>
@@ -88,7 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <h1>Additional Example</h1>
 <p>Build command for 3D grid in detail:</p>
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;cmake .. -DCMAKE_BUILD_TYPE=Release -DSOLVER_DIM_MODES=DIM3 -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=OFF \</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;-DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=ON -DPARALLEL_GRID=OFF -DPARALLEL_BUFFER_DIMENSION=xyz \</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;-DCXX11_ENABLED=ON -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DLARGE_COORDINATES=OFF</div></div><!-- fragment --><h1>MPI+Cuda Build</h1>
-<p>To build parallel mode with GPU support (MPI+Cuda) do not use mpicc and mpicxx compiler wrappers, because they do not set <code>MPI_CXX_INCLUDE_DIRS</code> and <code>MPI_CXX_LINK_FLAGS</code>. These are required to be passed to <code>nvcc</code>.</p>
+<p>To build parallel mode with GPU support (MPI+Cuda) do not use mpicc and mpicxx compiler wrappers, because they do not set <code>MPI_CXX_INCLUDE_DIRS</code> and <code>MPI_CXX_LIBRARIES</code>. These are required to be passed to <code>nvcc</code>.</p>
 <h1>Build for BlueGene</h1>
 <p>BlueGene doesn't have cmake provided, so it should be built from source. Download cmake source and then do the following</p>
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;./bootstrap</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;make</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;# make install won&#39;t work because of lack of root access for ordinary users</div></div><!-- fragment --><p>fdtd3d should also be built in bin folder of cmake (why?).</p>
