@@ -16,7 +16,7 @@ add_executable (unit-test-settings unit-test-settings.cpp)
 target_link_libraries (unit-test-settings Settings Kernels)
 
 add_executable (unit-test-clock unit-test-clock.cpp)
-target_link_libraries (unit-test-clock Settings Kernels ${MPI_CXX_LINK_FLAGS})
+target_link_libraries (unit-test-clock Settings Kernels ${MPI_CXX_LIBRARIES})
 
 add_executable (unit-test-parallel-grid unit-test-parallel-grid.cpp)
 target_link_libraries (unit-test-parallel-grid Grid Layout)

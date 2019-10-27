@@ -47,7 +47,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DSOLVER_DIM_MODES=DIM3 -DVALUE_TYPE=d -DCOM
 
 # MPI+Cuda Build
 
-To build parallel mode with GPU support (MPI+Cuda) do not use mpicc and mpicxx compiler wrappers, because they do not set `MPI_CXX_INCLUDE_DIRS` and `MPI_CXX_LINK_FLAGS`. These are required to be passed to `nvcc`.
+To build parallel mode with GPU support (MPI+Cuda) do not use mpicc and mpicxx compiler wrappers, because they do not set `MPI_CXX_INCLUDE_DIRS` and `MPI_CXX_LIBRARIES`. These are required to be passed to `nvcc`.
 
 # Build for BlueGene\P
 

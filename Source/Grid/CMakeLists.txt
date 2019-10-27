@@ -15,4 +15,4 @@ if ("${CXX11_ENABLED}")
   target_compile_features (Grid PUBLIC cxx_std_11)
 endif ()
 
-target_link_libraries (Grid Kernels Settings ${MPI_CXX_LINK_FLAGS})
+target_link_libraries (Grid Kernels Settings ${MPI_CXX_LIBRARIES})

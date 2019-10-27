@@ -321,10 +321,11 @@ message ("Project dir: ${PROJECT_SOURCE_DIR}")
 if ("${PARALLEL_GRID}")
   find_package (MPI REQUIRED)
   message ("MPI_CXX_INCLUDE_DIRS: ${MPI_CXX_INCLUDE_DIRS}")
-  set (MPI_CXX_LINK_FLAGS "-lmpi -lmpi_cxx")
   message ("MPI_CXX_LINK_FLAGS: ${MPI_CXX_LINK_FLAGS}")
+  message ("MPI_CXX_LIBRARIES: ${MPI_CXX_LIBRARIES}")
 
   include_directories (${MPI_CXX_INCLUDE_DIRS})
+  set (LINK_FLAGS "${LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
 endif()
 
 message ("Compile flags: ${CMAKE_CXX_FLAGS}")
