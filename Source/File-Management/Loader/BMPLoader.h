@@ -48,17 +48,17 @@ BMPLoader<TCoord>::setupNames (std::string &real, std::string &realtxt,
                                std::string &imag, std::string &imagtxt,
                                std::string &mod, std::string &modtxt, int time_step_back, int coord) const
 {
-  ASSERT (GridFileManager::names[time_step_back].substr (GridFileManager::names[time_step_back].size () - 4, 4) == std::string (".bmp"));
+  ASSERT (this->GridFileManager::names[time_step_back].substr (this->GridFileManager::names[time_step_back].size () - 4, 4) == std::string (".bmp"));
 
-  real = GridFileManager::names[time_step_back];
+  real = this->GridFileManager::names[time_step_back];
   real.resize (real.size () - 4);
   real += std::string ("_[real]");
 
-  imag = GridFileManager::names[time_step_back];
+  imag = this->GridFileManager::names[time_step_back];
   imag.resize (imag.size () - 4);
   imag += std::string ("_[imag]");
 
-  mod = GridFileManager::names[time_step_back];
+  mod = this->GridFileManager::names[time_step_back];
   mod.resize (mod.size () - 4);
   mod += std::string ("_[mod]");
 

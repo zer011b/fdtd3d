@@ -50,7 +50,7 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid,
 #endif /* DEBUG_INFO */
 
   std::ifstream file;
-  file.open (GridFileManager::names[time_step_back == -1 ? 0 : time_step_back].c_str (), std::ios::in | std::ios::binary);
+  file.open (this->GridFileManager::names[time_step_back == -1 ? 0 : time_step_back].c_str (), std::ios::in | std::ios::binary);
   ASSERT (file.is_open());
 
   char memblock[sizeof (FieldValue)];
