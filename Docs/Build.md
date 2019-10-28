@@ -60,9 +60,28 @@ make
 # make install won't work because of lack of root access for ordinary users
 ```
 
-fdtd3d should also be built in bin folder of cmake (why?).
+GCC provided for BlueGene\P is heavily outdated (4.1.2), thus, it doesn't support c++11 features and fdtd3d should be built with -DCXX11_ENABLED=OFF. Also, apply next patch to fdtd3d:
 
-GCC provided for BlueGene\P is heavily outdated (4.1.2), thus, it doesn't support c++11 features and fdtd3d should be built with -DCXX11_ENABLED=OFF.
+```patch
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2dc58ad..838b491 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,6 @@
+-cmake_minimum_required(VERSION 3.8)
++#cmake_minimum_required(VERSION 3.8)
++cmake_policy(SET CMP0057 NEW)
++cmake_policy(SET CMP0012 NEW)
+
+ project (fdtd3d LANGUAGES CXX)
+
+```
+
+Build command:
+```sh
+../../cmake/cmake-3.6.0-rc1/bin/cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DSOLVER_DIM_MODES=DIM3 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=ON -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xyz -DCXX11_ENABLED=OFF -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DDYNAMIC_GRID=OFF -DCOMBINED_SENDRECV=ON -DMPI_CLOCK=OFF -DCMAKE_C_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicc -DCMAKE_CXX_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicxx
+make fdtd3d
+```
 
 ## Issues
 
