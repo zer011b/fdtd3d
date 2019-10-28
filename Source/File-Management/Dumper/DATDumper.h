@@ -50,7 +50,7 @@ DATDumper<TCoord>::writeToFile (Grid<TCoord> *grid,
 #endif /* DEBUG_INFO */
 
   std::ofstream file;
-  file.open (GridFileManager::names[time_step_back == -1 ? 0 : time_step_back].c_str (), std::ios::out | std::ios::binary);
+  file.open (this->GridFileManager::names[time_step_back == -1 ? 0 : time_step_back].c_str (), std::ios::out | std::ios::binary);
   ASSERT (file.is_open());
 
   // Go through all values and write to file.
