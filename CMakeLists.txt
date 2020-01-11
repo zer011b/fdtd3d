@@ -107,6 +107,7 @@ if ("${CUDA_ENABLED}")
     set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O0 -G")
   endif ()
 
+  set (CMAKE_CUDA_FLAGS "-arch ${CUDA_ARCH_SM_TYPE}")
   #set (CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -arch ${CUDA_ARCH_SM_TYPE} -coda ${CUDA_ARCH_SM_TYPE} -x cu -ccbin ${CMAKE_CXX_COMPILER} -Xcompiler -m64 -keep -v")
 endif ()
 
