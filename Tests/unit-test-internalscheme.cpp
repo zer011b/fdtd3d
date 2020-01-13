@@ -1930,6 +1930,8 @@ int main (int argc, char** argv)
   }
 #endif /* CUDA_ENABLED */
 
+  solverSettings.Initialize ();
+
 #if defined (MODE_EX_HY)
   test1D_ExHy<E_CENTERED> ();
   test1D_ExHy<H_CENTERED> ();
