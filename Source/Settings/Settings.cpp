@@ -24,6 +24,8 @@ Settings::Initialize ()
     prepareDeviceSettings ();
   }
 #endif /* CUDA_ENABLED */
+
+  isInitialized = true;
 } /* Settings::Initialize */
 
 /**
@@ -39,6 +41,8 @@ Settings::Uninitialize ()
     freeDeviceSettings ();
   }
 #endif /* CUDA_ENABLED */
+
+  ASSERT (isInitialized);
 } /* Settings::Uninitialize */
 
 /**
@@ -462,8 +466,6 @@ Settings::SetupFromCmd (int argc, /**< number of arguments */
                         char **argv) /**< arguments */
 {
   int status = setFromCmd (argc, argv, true);
-
-  Initialize ();
 
   switch (status)
   {

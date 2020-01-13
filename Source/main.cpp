@@ -46,11 +46,6 @@ static void cudaInfo ()
     printf("  Peak Memory Bandwidth (GB/s): %f\n\n", 2.0*prop.memoryClockRate*(prop.memoryBusWidth/8)/1.0e6);
   }
 }
-
-void cudaInit (int rank)
-{
-  cudaCheckErrorCmd (cudaSetDevice(rank));
-}
 #endif /* CUDA_ENABLED */
 
 #ifdef PARALLEL_GRID
@@ -1146,7 +1141,7 @@ int runMode (int argc, char** argv)
 
       if (idxGPU[rank] != NO_GPU)
       {
-        cudaInit (idxGPU[rank]);
+        cudaCheckErrorCmd (cudaSetDevice(idxGPU[rank]));
       }
 
       if (isParallel)
@@ -1166,6 +1161,8 @@ int runMode (int argc, char** argv)
       cudaThreadsZ = solverSettings.getNumCudaThreadsZ ();
     }
 #endif
+
+    solverSettings.Initialize ();
 
     Scheme<Type, TCoord, layout_type > scheme (yeeLayout,
                                                isParallel,

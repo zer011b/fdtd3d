@@ -131,6 +131,12 @@ private:
    */
   int gpuIndexForNode;
 
+
+  /**
+   * Flag whether settings have been initialized
+   */
+  bool isInitialized;
+
 #define SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
   fieldType fieldName;
 #define SETTINGS_ELEM_FIELD_TYPE_INT(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
@@ -167,6 +173,7 @@ public:
     : dimension (0)
     , schemeType (SchemeType::NONE)
     , gpuIndexForNode (NO_GPU)
+    , isInitialized (false)
 #define SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
     , fieldName ((fieldType) defaultVal)
 #define SETTINGS_ELEM_FIELD_TYPE_INT(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
