@@ -158,7 +158,7 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
 
   for (int i = 0; i < gridValues.size (); ++i)
   {
-    gridValues[i] = new VectorFieldValues (size.calculateTotalCoord ());
+    gridValues[i] = new VectorFieldValues<ParallelGridCoordinate> (size);
   }
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' for proc: %d (of %d) with %lu stored steps with raw size: %llu.\n",
@@ -346,10 +346,9 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
           ParallelGridCoordinate pos (i, j, k COORD_TYPES);
 #endif /* GRID_3D */
 
-          grid_coord coord = calculateIndexFromPosition (pos);
           for (int t = 0; t < gridValues.size (); ++t)
           {
-            buffersSend[bufferDirection][index++] = *getFieldValue (coord, t);
+            buffersSend[bufferDirection][index++] = *getFieldValue (pos, t);
           }
         }
       }
@@ -481,10 +480,9 @@ ParallelGrid::SendReceiveBuffer (BufferPosition bufferDirection) /**< buffer dir
           ParallelGridCoordinate pos (i, j, k COORD_TYPES);
 #endif /* GRID_3D */
 
-          grid_coord coord = calculateIndexFromPosition (pos);
           for (int t = 0; t < gridValues.size (); ++t)
           {
-            setFieldValue (buffersReceive[opposite][index++], coord, t);
+            setFieldValue (buffersReceive[opposite][index++], pos, t);
           }
         }
       }
@@ -556,7 +554,7 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
 {
   ParallelGridBase *grid = placementGrid;
 
-  VectorFieldValues values (getTotalSize ().calculateTotalCoord ());
+  std::vector<FieldValue> values (getTotalSize ().calculateTotalCoord ());
 
   /*
    * Each computational node broadcasts to all others its data
@@ -661,9 +659,7 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
               ParallelGridCoordinate pos (i, j, k COORD_TYPES);
 #endif /* GRID_3D */
 
-              grid_coord coord = calculateIndexFromPosition (pos);
-
-              values[index] = (*gridValues[t])[coord];
+              values[index] = *gridValues[t]->get (pos);
 
               ++index;
 
@@ -715,9 +711,7 @@ ParallelGrid::gatherFullGridPlacement (ParallelGridBase *placementGrid) const
             ParallelGridCoordinate pos (i, j, k COORD_TYPES);
 #endif /* GRID_3D */
 
-            grid_coord coord = grid->calculateIndexFromPosition (pos);
-
-            grid->setFieldValue (values[index], coord, t);
+            grid->setFieldValue (values[index], pos, t);
 
             ++index;
           }

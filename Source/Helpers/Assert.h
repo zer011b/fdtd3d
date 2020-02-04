@@ -13,9 +13,6 @@
  *    be preprocessed for CPU and GPU separately)
  */
 
-/*
- * This function is used to exit and debugging purposes.
- */
 #ifndef __CUDA_ARCH__
 extern void program_fail ();
 #endif /* !__CUDA_ARCH__ */

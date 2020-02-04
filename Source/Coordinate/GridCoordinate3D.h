@@ -442,7 +442,7 @@ public:
     TcoordType coord2 = GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
     TcoordType rhs_c2 = rhs.GridCoordinate2DTemplate<TcoordType, doSignChecks>::get2 ();
 
-    return coord1 != rhs_c1 || coord2 != rhs_c2 || get3 () == rhs.get3 ();
+    return coord1 != rhs_c1 || coord2 != rhs_c2 || get3 () != rhs.get3 ();
   } /* GridCoordinate3DTemplate::operator!= */
 
   /**
@@ -780,6 +780,25 @@ public:
 #endif /* DEBUG_INFO */
       , (FPValue) get3 ());
   } /* GridCoordinate3DTemplate::print */
+
+  /**
+   * Get zero coordinate with the same types
+   *
+   * @return zero coordinate with the same types
+   */
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate3DTemplate<TcoordType, doSignChecks> getZero () const
+  {
+    return GridCoordinate3DTemplate<TcoordType, doSignChecks> (0,
+                                                               0,
+                                                               0
+#ifdef DEBUG_INFO
+                                                               , GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
+                                                               , GridCoordinate2DTemplate<TcoordType, doSignChecks>::getType2 ()
+                                                               , getType3 ()
+#endif /* DEBUG_INFO */
+                                                               );
+  } /* getZero */
 }; /* GridCoordinate3DTemplate */
 
 /**

@@ -38,8 +38,6 @@ std::vector<ParallelGridCoordinate> neighborSendEnd (BUFFER_COUNT);
 
 void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
 {
-  grid_coord coord = grid->calculateIndexFromPosition (pos);
-
   BufferPosition dir = grid->getBufferForPosition (pos);
 
   if (dir == BUFFER_NONE)
@@ -65,7 +63,7 @@ void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
 
   ParallelGridCoordinate sendStart = grid->getSendStart (dir);
 
-  FieldValue cur = *grid->getFieldValue (coord, 0);
+  FieldValue cur = *grid->getFieldValue (pos, 0);
 #ifdef COMPLEX_FIELD_VALUES
   ASSERT (cur.real () == pidSender * multiplier);
   ASSERT (cur.imag () == pidSender * multiplier * imagMult);
@@ -73,7 +71,7 @@ void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
   ASSERT (cur == pidSender * multiplier);
 #endif
 
-  FieldValue prev = *grid->getFieldValue (coord, 1);
+  FieldValue prev = *grid->getFieldValue (pos, 1);
 #ifdef COMPLEX_FIELD_VALUES
   ASSERT (prev.real () == pidSender * multiplier * prevMult);
   ASSERT (prev.imag () == pidSender * multiplier * prevMult * imagMult);
@@ -81,7 +79,7 @@ void checkVal (ParallelGrid *grid, ParallelGridCoordinate pos)
   ASSERT (prev == pidSender * multiplier * prevMult);
 #endif
 
-  FieldValue prevPrev = *grid->getFieldValue (coord, 2);
+  FieldValue prevPrev = *grid->getFieldValue (pos, 2);
 #ifdef COMPLEX_FIELD_VALUES
   ASSERT (prevPrev.real () == pidSender * multiplier * prevPrevMult);
   ASSERT (prevPrev.imag () == pidSender * multiplier * prevPrevMult * imagMult);
@@ -121,8 +119,6 @@ ParallelGrid * initGrid (ParallelGridCoordinate overallSize,
         GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 #endif /* GRID_3D */
 
-        grid_coord index = grid->calculateIndexFromPosition (pos);
-
         ParallelGridCoordinate totalPos = grid->getTotalPosition (pos);
         ParallelGridCoordinate coord;
 
@@ -148,9 +144,9 @@ ParallelGrid * initGrid (ParallelGridCoordinate overallSize,
         fpval *= coord.get3 ();
 #endif /* GRID_3D */
 
-        grid->setFieldValue (FIELDVALUE (fpval, fpval * imagMult), index, 0);
-        grid->setFieldValue (FIELDVALUE (fpval * prevMult, fpval * prevMult * imagMult), index, 1);
-        grid->setFieldValue (FIELDVALUE (fpval * prevPrevMult, fpval * prevPrevMult * imagMult), index, 2);
+        grid->setFieldValue (FIELDVALUE (fpval, fpval * imagMult), pos, 0);
+        grid->setFieldValue (FIELDVALUE (fpval * prevMult, fpval * prevMult * imagMult), pos, 1);
+        grid->setFieldValue (FIELDVALUE (fpval * prevPrevMult, fpval * prevPrevMult * imagMult), pos, 2);
       }
     }
   }
@@ -483,24 +479,22 @@ int main (int argc, char** argv)
         GridCoordinate3D pos (i, j, k, CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 #endif /* GRID_3D */
 
-        grid_coord index = gridTotal->calculateIndexFromPosition (pos);
-
         FPValue fpval;
 
 #ifdef COMPLEX_FIELD_VALUES
 
-        fpval = gridTotal->getFieldValue (index, 0)->real ();
-        ASSERT (fpval * imagMult == gridTotal->getFieldValue (index, 0)->imag ());
-        ASSERT (fpval * prevMult == gridTotal->getFieldValue (index, 1)->real ());
-        ASSERT (fpval * prevMult * imagMult == gridTotal->getFieldValue (index, 1)->imag ());
-        ASSERT (fpval * prevPrevMult == gridTotal->getFieldValue (index, 2)->real ());
-        ASSERT (fpval * prevPrevMult * imagMult == gridTotal->getFieldValue (index, 2)->imag ());
+        fpval = gridTotal->getFieldValue (pos, 0)->real ();
+        ASSERT (fpval * imagMult == gridTotal->getFieldValue (pos, 0)->imag ());
+        ASSERT (fpval * prevMult == gridTotal->getFieldValue (pos, 1)->real ());
+        ASSERT (fpval * prevMult * imagMult == gridTotal->getFieldValue (pos, 1)->imag ());
+        ASSERT (fpval * prevPrevMult == gridTotal->getFieldValue (pos, 2)->real ());
+        ASSERT (fpval * prevPrevMult * imagMult == gridTotal->getFieldValue (pos, 2)->imag ());
 
 #else /* COMPLEX_FIELD_VALUES */
 
-        fpval = *gridTotal->getFieldValue (index, 0);
-        ASSERT (fpval * prevMult == *gridTotal->getFieldValue (index, 1));
-        ASSERT (fpval * prevPrevMult == *gridTotal->getFieldValue (index, 2));
+        fpval = *gridTotal->getFieldValue (pos, 0);
+        ASSERT (fpval * prevMult == *gridTotal->getFieldValue (pos, 1));
+        ASSERT (fpval * prevPrevMult == *gridTotal->getFieldValue (pos, 2));
 
 #endif /* !COMPLEX_FIELD_VALUES */
 

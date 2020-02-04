@@ -54,11 +54,15 @@ void testFunc (TCoord overallSize, int storedSteps, CoordinateType ct1, Coordina
   }
 
   grid.initialize (FIELDVALUE (127, 1982));
-  for (grid_coord i = 0; i < grid.getSize ().calculateTotalCoord (); ++i)
-  {
-    ASSERT (*grid.getFieldValue (i, 0) == FIELDVALUE (127, 1982));
 
-    if (grid.calculatePositionFromIndex (i) == test_coord)
+  typename VectorFieldValues<TCoord>::Iterator iter = grid.begin ();
+  typename VectorFieldValues<TCoord>::Iterator iter_end = grid.end ();
+  for (; iter != iter_end; ++iter)
+  {
+    TCoord pos = iter.getPos ();
+    ASSERT (*grid.getFieldValue (pos, 0) == FIELDVALUE (127, 1982));
+
+    if (pos == test_coord)
     {
       for (int j = 1; j < storedSteps; ++j)
       {
@@ -70,7 +74,7 @@ void testFunc (TCoord overallSize, int storedSteps, CoordinateType ct1, Coordina
     }
   }
 
-  ASSERT (grid.getRaw (0) == grid.getFieldValue (zero, 0));
+  ASSERT (grid.getRaw (0)->get (zero) == grid.getFieldValue (zero, 0));
 }
 
 int main (int argc, char** argv)

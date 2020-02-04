@@ -595,6 +595,21 @@ public:
 #endif /* DEBUG_INFO */
       , (FPValue) get1 ());
   } /* GridCoordinate1DTemplate::print */
+
+  /**
+   * Get zero coordinate with the same types
+   *
+   * @return zero coordinate with the same types
+   */
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate1DTemplate<TcoordType, doSignChecks> getZero () const
+  {
+    return GridCoordinate1DTemplate<TcoordType, doSignChecks> (0
+#ifdef DEBUG_INFO
+                                                               , getType1 ()
+#endif /* DEBUG_INFO */
+                                                               );
+  } /* getZero */
 }; /* GridCoordinate1DTemplate */
 
 /**

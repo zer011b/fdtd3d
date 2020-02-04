@@ -1,7 +1,4 @@
 #include <iostream>
-#include <iomanip>
-#include <limits>
-#include <fstream>
 
 #include "BMPDumper.h"
 
@@ -10,14 +7,14 @@
  */
 template<>
 void
-BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid,
-                                          GridCoordinate1D startCoord,
-                                          GridCoordinate1D endCoord,
-                                          int time_step_back)
+BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid, /**< grid to save */
+                                          GridCoordinate1D startCoord, /**< start saving from this coordinate */
+                                          GridCoordinate1D endCoord, /**< end saving at this coordinate */
+                                          int time_step_back) /**< relative time step at which to save */
 {
   ASSERT (time_step_back >= 0 && time_step_back < grid->getCountStoredSteps ());
-  ASSERT (startCoord >= GRID_COORDINATE_1D (0, startCoord.getType1 ()) && startCoord < grid->getSize ());
-  ASSERT (endCoord > GRID_COORDINATE_1D (0, startCoord.getType1 ()) && endCoord <= grid->getSize ());
+  ASSERT (startCoord >= startCoord.getZero () && startCoord < grid->getSize ());
+  ASSERT (endCoord > startCoord.getZero () && endCoord <= grid->getSize ());
 
   grid_coord sx = grid->getSize ().get1 ();
   grid_coord sy = 1;
@@ -32,144 +29,51 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid,
 
   // Create image for current values and max/min values.
   BMP imageRe;
+  BMP imageIm;
+  BMP imageMod;
+
   imageRe.SetSize (sx, sy);
   imageRe.SetBitDepth (BMPHelper::bitDepth);
 
 #ifdef COMPLEX_FIELD_VALUES
-  BMP imageIm;
   imageIm.SetSize (sx, sy);
   imageIm.SetBitDepth (BMPHelper::bitDepth);
 
-  BMP imageMod;
   imageMod.SetSize (sx, sy);
   imageMod.SetBitDepth (BMPHelper::bitDepth);
 #endif /* COMPLEX_FIELD_VALUES */
 
-#ifdef COMPLEX_FIELD_VALUES
-  FPValue maxPosRe = grid->getFieldValue (startCoord, time_step_back)->real ();
-  FPValue maxNegRe = maxPosRe;
-  std::ofstream fileMaxRe;
+  FPValue maxRe;
+  FPValue minRe;
+  FPValue maxIm;
+  FPValue minIm;
+  FPValue maxMod;
+  FPValue minMod;
 
-  FPValue maxPosIm = grid->getFieldValue (startCoord, time_step_back)->imag ();
-  FPValue maxNegIm = maxPosIm;
-  std::ofstream fileMaxIm;
-
-  FPValue maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
-  FPValue maxNegMod = maxPosMod;
-  std::ofstream fileMaxMod;
-#else /* COMPLEX_FIELD_VALUES */
-  FPValue maxPosRe = *grid->getFieldValue (startCoord, time_step_back);
-  FPValue maxNegRe = maxPosRe;
-  std::ofstream fileMaxRe;
-#endif /* !COMPLEX_FIELD_VALUES */
-
-  // Go through all values and calculate max/min.
-  for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
-  {
-    GridCoordinate1D pos = GRID_COORDINATE_1D (i, grid->getSize ().getType1 ());
-    grid_coord coord = grid->calculateIndexFromPosition (pos);
-
-#ifdef COMPLEX_FIELD_VALUES
-    FPValue valueRe = grid->getFieldValue (coord, time_step_back)->real ();
-    FPValue valueIm = grid->getFieldValue (coord, time_step_back)->imag ();
-    FPValue valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
-#else /* COMPLEX_FIELD_VALUES */
-    FPValue valueRe = *grid->getFieldValue (coord, time_step_back);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-    if (valueRe > maxPosRe)
-    {
-      maxPosRe = valueRe;
-    }
-    if (valueRe < maxNegRe)
-    {
-      maxNegRe = valueRe;
-    }
-
-#ifdef COMPLEX_FIELD_VALUES
-    if (valueIm > maxPosIm)
-    {
-      maxPosIm = valueIm;
-    }
-    if (valueIm < maxNegIm)
-    {
-      maxNegIm = valueIm;
-    }
-
-    if (valueMod > maxPosMod)
-    {
-      maxPosMod = valueMod;
-    }
-    if (valueMod < maxNegMod)
-    {
-      maxNegMod = valueMod;
-    }
-#endif /* COMPLEX_FIELD_VALUES */
-  }
-
-  // Set max (diff between max positive and max negative).
-  const FPValue maxRe = maxPosRe - maxNegRe;
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " FP_MOD ", maxRe pos " FP_MOD ", maxRe " FP_MOD "\n", maxNegRe, maxPosRe, maxRe);
-#ifdef COMPLEX_FIELD_VALUES
-  const FPValue maxIm = maxPosIm - maxNegIm;
-  const FPValue maxMod = maxPosMod - maxNegMod;
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " FP_MOD ", maxIm pos " FP_MOD ", maxIm " FP_MOD "\n", maxNegIm, maxPosIm, maxIm);
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " FP_MOD ", maxMod pos " FP_MOD ", maxMod " FP_MOD "\n", maxNegMod, maxPosMod, maxMod);
-#endif /* COMPLEX_FIELD_VALUES */
+  getMaxValues (maxRe, minRe, maxIm, minIm, maxMod, minMod,
+                grid, startCoord, endCoord, time_step_back);
 
   // Go through all values and set pixels.
   for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
   {
     GridCoordinate1D pos = GRID_COORDINATE_1D (i, grid->getSize ().getType1 ());
-    grid_coord coord = grid->calculateIndexFromPosition (pos);
 
-    // Pixel coordinate.
     grid_coord px = pos.get1 ();
     grid_coord py = 0;
 
-    // Get pixel for image.
-#ifdef COMPLEX_FIELD_VALUES
-    FPValue valueRe = grid->getFieldValue (coord, time_step_back)->real ();
-    FPValue valueIm = grid->getFieldValue (coord, time_step_back)->imag ();
-    FPValue valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
-#else /* COMPLEX_FIELD_VALUES */
-    FPValue valueRe = *grid->getFieldValue (coord, time_step_back);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-    RGBApixel pixelRe = BMPhelper.getPixelFromValue (valueRe, maxNegRe, maxRe);
-#ifdef COMPLEX_FIELD_VALUES
-    RGBApixel pixelIm = BMPhelper.getPixelFromValue (valueIm, maxNegIm, maxIm);
-    RGBApixel pixelMod = BMPhelper.getPixelFromValue (valueMod, maxNegMod, maxMod);
-#endif /* COMPLEX_FIELD_VALUES */
-
-    // Set pixel for current image.
-    imageRe.SetPixel(px, py, pixelRe);
-#ifdef COMPLEX_FIELD_VALUES
-    imageIm.SetPixel(px, py, pixelIm);
-    imageMod.SetPixel(px, py, pixelMod);
-#endif /* COMPLEX_FIELD_VALUES */
+    setPixel (px, py, grid, pos, time_step_back, minRe, maxRe, minIm, maxIm, minMod, maxMod,
+              imageRe, imageIm, imageMod);
   }
 
   imageRe.WriteToFile (imageReName.c_str ());
-  fileMaxRe.open (imageReNameTxt.c_str (), std::ios::out);
-  ASSERT (fileMaxRe.is_open());
-  fileMaxRe << std::setprecision(std::numeric_limits<double>::digits10) << maxPosRe << " " << maxNegRe;
-  fileMaxRe.close();
-
 #ifdef COMPLEX_FIELD_VALUES
   imageIm.WriteToFile (imageImName.c_str ());
-  fileMaxIm.open (imageImNameTxt.c_str (), std::ios::out);
-  ASSERT (fileMaxIm.is_open());
-  fileMaxIm << std::setprecision(std::numeric_limits<double>::digits10) << maxPosIm << " " << maxNegIm;
-  fileMaxIm.close();
-
   imageMod.WriteToFile (imageModName.c_str ());
-  fileMaxMod.open (imageModNameTxt.c_str (), std::ios::out);
-  ASSERT (fileMaxMod.is_open());
-  fileMaxMod << std::setprecision(std::numeric_limits<double>::digits10) << maxPosMod << " " << maxNegMod;
-  fileMaxMod.close();
 #endif /* COMPLEX_FIELD_VALUES */
-}
+
+  writeTxtToFile (maxRe, minRe, maxIm, minIm, maxMod, minMod,
+                  imageReNameTxt, imageImNameTxt, imageModNameTxt);
+} /* BMPDumper::writeToFile */
 
 #if defined (MODE_DIM2) || defined (MODE_DIM3)
 
@@ -178,10 +82,10 @@ BMPDumper<GridCoordinate1D>::writeToFile (Grid<GridCoordinate1D> *grid,
  */
 template<>
 void
-BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid,
-                                          GridCoordinate2D startCoord,
-                                          GridCoordinate2D endCoord,
-                                          int time_step_back)
+BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid, /**< grid to save */
+                                          GridCoordinate2D startCoord, /**< start saving from this coordinate */
+                                          GridCoordinate2D endCoord, /**< end saving at this coordinate */
+                                          int time_step_back) /**< relative time step at which to save */
 {
   ASSERT (time_step_back >= 0 && time_step_back < grid->getCountStoredSteps ());
   ASSERT (startCoord >= GRID_COORDINATE_2D (0, 0, startCoord.getType1 (), startCoord.getType2 ())
@@ -202,93 +106,30 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid,
 
   // Create image for current values and max/min values.
   BMP imageRe;
+  BMP imageIm;
+  BMP imageMod;
+
   imageRe.SetSize (sx, sy);
   imageRe.SetBitDepth (BMPHelper::bitDepth);
 
 #ifdef COMPLEX_FIELD_VALUES
-  BMP imageIm;
   imageIm.SetSize (sx, sy);
   imageIm.SetBitDepth (BMPHelper::bitDepth);
 
-  BMP imageMod;
   imageMod.SetSize (sx, sy);
   imageMod.SetBitDepth (BMPHelper::bitDepth);
 #endif /* COMPLEX_FIELD_VALUES */
 
-#ifdef COMPLEX_FIELD_VALUES
-  FPValue maxPosRe = grid->getFieldValue (startCoord, time_step_back)->real ();
-  FPValue maxNegRe = maxPosRe;
-  std::ofstream fileMaxRe;
-
-  FPValue maxPosIm = grid->getFieldValue (startCoord, time_step_back)->imag ();
-  FPValue maxNegIm = maxPosIm;
-  std::ofstream fileMaxIm;
-
-  FPValue maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
-  FPValue maxNegMod = maxPosMod;
-  std::ofstream fileMaxMod;
-#else /* COMPLEX_FIELD_VALUES */
-  FPValue maxPosRe = *grid->getFieldValue (startCoord, time_step_back);
-  FPValue maxNegRe = maxPosRe;
-  std::ofstream fileMaxRe;
-#endif /* !COMPLEX_FIELD_VALUES */
+  FPValue maxRe;
+  FPValue minRe;
+  FPValue maxIm;
+  FPValue minIm;
+  FPValue maxMod;
+  FPValue minMod;
 
   // Go through all values and calculate max/min.
-  for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
-  {
-    for (grid_coord j = startCoord.get2 (); j < endCoord.get2 (); ++j)
-    {
-      GridCoordinate2D pos = GRID_COORDINATE_2D (i, j, grid->getSize ().getType1 (), grid->getSize ().getType2 ());
-      grid_coord coord = grid->calculateIndexFromPosition (pos);
-
-#ifdef COMPLEX_FIELD_VALUES
-      FPValue valueRe = grid->getFieldValue (coord, time_step_back)->real ();
-      FPValue valueIm = grid->getFieldValue (coord, time_step_back)->imag ();
-      FPValue valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
-#else /* COMPLEX_FIELD_VALUES */
-      FPValue valueRe = *grid->getFieldValue (coord, time_step_back);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-      if (valueRe > maxPosRe)
-      {
-        maxPosRe = valueRe;
-      }
-      if (valueRe < maxNegRe)
-      {
-        maxNegRe = valueRe;
-      }
-
-#ifdef COMPLEX_FIELD_VALUES
-      if (valueIm > maxPosIm)
-      {
-        maxPosIm = valueIm;
-      }
-      if (valueIm < maxNegIm)
-      {
-        maxNegIm = valueIm;
-      }
-
-      if (valueMod > maxPosMod)
-      {
-        maxPosMod = valueMod;
-      }
-      if (valueMod < maxNegMod)
-      {
-        maxNegMod = valueMod;
-      }
-#endif /* COMPLEX_FIELD_VALUES */
-    }
-  }
-
-  // Set max (diff between max positive and max negative).
-  const FPValue maxRe = maxPosRe - maxNegRe;
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " FP_MOD ", maxRe pos " FP_MOD ", maxRe " FP_MOD "\n", maxNegRe, maxPosRe, maxRe);
-#ifdef COMPLEX_FIELD_VALUES
-  const FPValue maxIm = maxPosIm - maxNegIm;
-  const FPValue maxMod = maxPosMod - maxNegMod;
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " FP_MOD ", maxIm pos " FP_MOD ", maxIm " FP_MOD "\n", maxNegIm, maxPosIm, maxIm);
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " FP_MOD ", maxMod pos " FP_MOD ", maxMod " FP_MOD "\n", maxNegMod, maxPosMod, maxMod);
-#endif /* COMPLEX_FIELD_VALUES */
+  getMaxValues (maxRe, minRe, maxIm, minIm, maxMod, minMod,
+                grid, startCoord, endCoord, time_step_back);
 
   // Go through all values and set pixels.
   for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
@@ -296,56 +137,24 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid,
     for (grid_coord j = startCoord.get2 (); j < endCoord.get2 (); ++j)
     {
       GridCoordinate2D pos = GRID_COORDINATE_2D (i, j, grid->getSize ().getType1 (), grid->getSize ().getType2 ());
-      grid_coord coord = grid->calculateIndexFromPosition (pos);
 
-      // Pixel coordinate.
       grid_coord px = pos.get1 ();
       grid_coord py = pos.get2 ();
 
-      // Get pixel for image.
-#ifdef COMPLEX_FIELD_VALUES
-      FPValue valueRe = grid->getFieldValue (coord, time_step_back)->real ();
-      FPValue valueIm = grid->getFieldValue (coord, time_step_back)->imag ();
-      FPValue valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
-#else /* COMPLEX_FIELD_VALUES */
-      FPValue valueRe = *grid->getFieldValue (coord, time_step_back);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-      RGBApixel pixelRe = BMPhelper.getPixelFromValue (valueRe, maxNegRe, maxRe);
-#ifdef COMPLEX_FIELD_VALUES
-      RGBApixel pixelIm = BMPhelper.getPixelFromValue (valueIm, maxNegIm, maxIm);
-      RGBApixel pixelMod = BMPhelper.getPixelFromValue (valueMod, maxNegMod, maxMod);
-#endif /* COMPLEX_FIELD_VALUES */
-
-      // Set pixel for current image.
-      imageRe.SetPixel(px, py, pixelRe);
-#ifdef COMPLEX_FIELD_VALUES
-      imageIm.SetPixel(px, py, pixelIm);
-      imageMod.SetPixel(px, py, pixelMod);
-#endif /* COMPLEX_FIELD_VALUES */
+      setPixel (px, py, grid, pos, time_step_back, minRe, maxRe, minIm, maxIm, minMod, maxMod,
+                imageRe, imageIm, imageMod);
     }
   }
 
   imageRe.WriteToFile (imageReName.c_str ());
-  fileMaxRe.open (imageReNameTxt.c_str (), std::ios::out);
-  ASSERT (fileMaxRe.is_open());
-  fileMaxRe << std::setprecision(std::numeric_limits<double>::digits10) << maxPosRe << " " << maxNegRe;
-  fileMaxRe.close();
-
 #ifdef COMPLEX_FIELD_VALUES
   imageIm.WriteToFile (imageImName.c_str ());
-  fileMaxIm.open (imageImNameTxt.c_str (), std::ios::out);
-  ASSERT (fileMaxIm.is_open());
-  fileMaxIm << std::setprecision(std::numeric_limits<double>::digits10) << maxPosIm << " " << maxNegIm;
-  fileMaxIm.close();
-
   imageMod.WriteToFile (imageModName.c_str ());
-  fileMaxMod.open (imageModNameTxt.c_str (), std::ios::out);
-  ASSERT (fileMaxMod.is_open());
-  fileMaxMod << std::setprecision(std::numeric_limits<double>::digits10) << maxPosMod << " " << maxNegMod;
-  fileMaxMod.close();
 #endif /* COMPLEX_FIELD_VALUES */
-}
+
+  writeTxtToFile (maxRe, minRe, maxIm, minIm, maxMod, minMod,
+                  imageReNameTxt, imageImNameTxt, imageModNameTxt);
+} /* BMPDumper::writeToFile */
 
 #endif /* MODE_DIM2 || MODE_DIM3 */
 
@@ -356,101 +165,29 @@ BMPDumper<GridCoordinate2D>::writeToFile (Grid<GridCoordinate2D> *grid,
  */
 template<>
 void
-BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid,
-                                          GridCoordinate3D startCoord,
-                                          GridCoordinate3D endCoord,
-                                          int time_step_back)
+BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, /**< grid to save */
+                                          GridCoordinate3D startCoord, /**< start saving from this coordinate */
+                                          GridCoordinate3D endCoord, /**< end saving at this coordinate */
+                                          int time_step_back) /**< relative time step at which to save */
 {
   ASSERT (time_step_back >= 0 && time_step_back < grid->getCountStoredSteps ());
-  ASSERT (startCoord >= GRID_COORDINATE_3D (0, 0, 0, startCoord.getType1 (), startCoord.getType2 (), startCoord.getType3 ())
-          && startCoord < grid->getSize ());
-  ASSERT (endCoord > GRID_COORDINATE_3D (0, 0, 0, startCoord.getType1 (), startCoord.getType2 (), startCoord.getType3 ())
-          && endCoord <= grid->getSize ());
+  ASSERT (startCoord >= startCoord.getZero () && startCoord < grid->getSize ());
+  ASSERT (endCoord > startCoord.getZero () && endCoord <= grid->getSize ());
 
   grid_coord sx = grid->getSize ().get1 ();
   grid_coord sy = grid->getSize ().get2 ();
   grid_coord sz = grid->getSize ().get3 ();
 
-#ifdef COMPLEX_FIELD_VALUES
-  FPValue maxPosRe = grid->getFieldValue (startCoord, time_step_back)->real ();
-  FPValue maxNegRe = maxPosRe;
-  std::ofstream fileMaxRe;
-
-  FPValue maxPosIm = grid->getFieldValue (startCoord, time_step_back)->imag ();
-  FPValue maxNegIm = maxPosIm;
-  std::ofstream fileMaxIm;
-
-  FPValue maxPosMod = sqrt (maxNegRe * maxNegRe + maxNegIm * maxNegIm);
-  FPValue maxNegMod = maxPosMod;
-  std::ofstream fileMaxMod;
-#else /* COMPLEX_FIELD_VALUES */
-  FPValue maxPosRe = *grid->getFieldValue (startCoord, time_step_back);
-  FPValue maxNegRe = maxPosRe;
-  std::ofstream fileMaxRe;
-#endif /* !COMPLEX_FIELD_VALUES */
+  FPValue maxRe;
+  FPValue minRe;
+  FPValue maxIm;
+  FPValue minIm;
+  FPValue maxMod;
+  FPValue minMod;
 
   // Go through all values and calculate max/min.
-  for (grid_coord i = startCoord.get1 (); i < endCoord.get1 (); ++i)
-  {
-    for (grid_coord j = startCoord.get2 (); j < endCoord.get2 (); ++j)
-    {
-      for (grid_coord k = startCoord.get3 (); k < endCoord.get3 (); ++k)
-      {
-        GridCoordinate3D pos = GRID_COORDINATE_3D (i, j, k,
-                                                   grid->getSize ().getType1 (),
-                                                   grid->getSize ().getType2 (),
-                                                   grid->getSize ().getType3 ());
-        grid_coord coord = grid->calculateIndexFromPosition (pos);
-
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue valueRe = grid->getFieldValue (coord, time_step_back)->real ();
-        FPValue valueIm = grid->getFieldValue (coord, time_step_back)->imag ();
-        FPValue valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue valueRe = *grid->getFieldValue (coord, time_step_back);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        if (valueRe > maxPosRe)
-        {
-          maxPosRe = valueRe;
-        }
-        if (valueRe < maxNegRe)
-        {
-          maxNegRe = valueRe;
-        }
-
-#ifdef COMPLEX_FIELD_VALUES
-        if (valueIm > maxPosIm)
-        {
-          maxPosIm = valueIm;
-        }
-        if (valueIm < maxNegIm)
-        {
-          maxNegIm = valueIm;
-        }
-
-        if (valueMod > maxPosMod)
-        {
-          maxPosMod = valueMod;
-        }
-        if (valueMod < maxNegMod)
-        {
-          maxNegMod = valueMod;
-        }
-#endif /* COMPLEX_FIELD_VALUES */
-      }
-    }
-  }
-
-  // Set max (diff between max positive and max negative).
-  const FPValue maxRe = maxPosRe - maxNegRe;
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxRe neg " FP_MOD ", maxRe pos " FP_MOD ", maxRe " FP_MOD "\n", maxNegRe, maxPosRe, maxRe);
-#ifdef COMPLEX_FIELD_VALUES
-  const FPValue maxIm = maxPosIm - maxNegIm;
-  const FPValue maxMod = maxPosMod - maxNegMod;
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxIm neg " FP_MOD ", maxIm pos " FP_MOD ", maxIm " FP_MOD "\n", maxNegIm, maxPosIm, maxIm);
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "MaxMod neg " FP_MOD ", maxMod pos " FP_MOD ", maxMod " FP_MOD "\n", maxNegMod, maxPosMod, maxMod);
-#endif /* COMPLEX_FIELD_VALUES */
+  getMaxValues (maxRe, minRe, maxIm, minIm, maxMod, minMod,
+                grid, startCoord, endCoord, time_step_back);
 
   grid_coord coordStart1, coordEnd1;
   grid_coord coordStart2, coordEnd2;
@@ -515,15 +252,16 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid,
     setupNames (imageReName, imageReNameTxt, imageImName, imageImNameTxt, imageModName, imageModNameTxt, time_step_back, coord1);
 
     BMP imageRe;
+    BMP imageIm;
+    BMP imageMod;
+
     imageRe.SetSize (size2, size3);
     imageRe.SetBitDepth (BMPHelper::bitDepth);
 
 #ifdef COMPLEX_FIELD_VALUES
-    BMP imageIm;
     imageIm.SetSize (size2, size3);
     imageIm.SetBitDepth (BMPHelper::bitDepth);
 
-    BMP imageMod;
     imageMod.SetSize (size2, size3);
     imageMod.SetBitDepth (BMPHelper::bitDepth);
 #endif /* COMPLEX_FIELD_VALUES */
@@ -556,29 +294,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid,
                                     grid->getSize ().getType3 ());
         }
 
-        grid_coord coord = grid->calculateIndexFromPosition (pos);
-
-        // Get pixel for image.
-#ifdef COMPLEX_FIELD_VALUES
-        FPValue valueRe = grid->getFieldValue (coord, time_step_back)->real ();
-        FPValue valueIm = grid->getFieldValue (coord, time_step_back)->imag ();
-        FPValue valueMod = sqrt (valueRe * valueRe + valueIm * valueIm);
-#else /* COMPLEX_FIELD_VALUES */
-        FPValue valueRe = *grid->getFieldValue (coord, time_step_back);
-#endif /* !COMPLEX_FIELD_VALUES */
-
-        RGBApixel pixelRe = BMPhelper.getPixelFromValue (valueRe, maxNegRe, maxRe);
-#ifdef COMPLEX_FIELD_VALUES
-        RGBApixel pixelIm = BMPhelper.getPixelFromValue (valueIm, maxNegIm, maxIm);
-        RGBApixel pixelMod = BMPhelper.getPixelFromValue (valueMod, maxNegMod, maxMod);
-#endif /* COMPLEX_FIELD_VALUES */
-
-        // Set pixel for current image.
-        imageRe.SetPixel(coord2, coord3, pixelRe);
-#ifdef COMPLEX_FIELD_VALUES
-        imageIm.SetPixel(coord2, coord3, pixelIm);
-        imageMod.SetPixel(coord2, coord3, pixelMod);
-#endif /* COMPLEX_FIELD_VALUES */
+        setPixel (coord2, coord3, grid, pos, time_step_back, minRe, maxRe, minIm, maxIm, minMod, maxMod,
+                  imageRe, imageIm, imageMod);
       }
     }
 
@@ -597,22 +314,8 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid,
   std::string imageModNameTxt;
   setupNames (imageReName, imageReNameTxt, imageImName, imageImNameTxt, imageModName, imageModNameTxt, time_step_back, -1);
 
-  fileMaxRe.open (imageReNameTxt.c_str (), std::ios::out);
-  ASSERT (fileMaxRe.is_open());
-  fileMaxRe << std::setprecision(std::numeric_limits<double>::digits10) << maxPosRe << " " << maxNegRe;
-  fileMaxRe.close();
-
-#ifdef COMPLEX_FIELD_VALUES
-  fileMaxIm.open (imageImNameTxt.c_str (), std::ios::out);
-  ASSERT (fileMaxIm.is_open());
-  fileMaxIm << std::setprecision(std::numeric_limits<double>::digits10) << maxPosIm << " " << maxNegIm;
-  fileMaxIm.close();
-
-  fileMaxMod.open (imageModNameTxt.c_str (), std::ios::out);
-  ASSERT (fileMaxMod.is_open());
-  fileMaxMod << std::setprecision(std::numeric_limits<double>::digits10) << maxPosMod << " " << maxNegMod;
-  fileMaxMod.close();
-#endif /* COMPLEX_FIELD_VALUES */
-}
+  writeTxtToFile (maxRe, minRe, maxIm, minIm, maxMod, minMod,
+                  imageReNameTxt, imageImNameTxt, imageModNameTxt);
+} /* BMPDumper::writeToFile */
 
 #endif /* MODE_DIM3 */

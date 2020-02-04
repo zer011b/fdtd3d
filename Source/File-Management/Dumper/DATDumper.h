@@ -8,81 +8,73 @@
 
 /**
  * Grid saver to binary files.
- * Template class with coordinate parameter.
  */
 template <class TCoord>
 class DATDumper: public Dumper<TCoord>
 {
-  // Save grid to file for specific layer.
-  void writeToFile (Grid<TCoord> *grid, TCoord, TCoord, int);
-
-  void dumpGridInternal (Grid<TCoord> *grid, TCoord, TCoord, time_step, int);
+  void writeToFile (Grid<TCoord> *, TCoord, TCoord, int);
+  void dumpGridInternal (Grid<TCoord> *, TCoord, TCoord, time_step, int);
 
 public:
 
   virtual ~DATDumper () {}
 
-  // Virtual method for grid saving.
   virtual void dumpGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int, int) CXX11_OVERRIDE;
   virtual void dumpGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int,
                          const std::vector< std::string > &) CXX11_OVERRIDE;
-};
+}; /* DATDumper */
 
 /**
- * ======== Template implementation ========
- */
-
-/**
- * Save grid to file for specific layer.
+ * Write data to file
  */
 template <class TCoord>
 void
-DATDumper<TCoord>::writeToFile (Grid<TCoord> *grid,
-                                TCoord startCoord,
-                                TCoord endCoord,
-                                int time_step_back)
+DATDumper<TCoord>::writeToFile (Grid<TCoord> *grid, /**< grid to save */
+                                TCoord startCoord, /**< start saving from this coordinate */
+                                TCoord endCoord, /**< end saving at this coordinate */
+                                int time_step_back) /**< relative time step at which to save */
 {
   ASSERT ((time_step_back == -1) || (time_step_back >= 0 && time_step_back < grid->getCountStoredSteps ()));
-#ifdef DEBUG_INFO
-  TCoord zero = startCoord - startCoord;
-  ASSERT (startCoord >= zero && startCoord < grid->getSize ());
-  ASSERT (endCoord > zero && endCoord <= grid->getSize ());
-#endif /* DEBUG_INFO */
+  ASSERT (startCoord >= startCoord.getZero () && startCoord < grid->getSize ());
+  ASSERT (endCoord > startCoord.getZero () && endCoord <= grid->getSize ());
 
   std::ofstream file;
   file.open (this->GridFileManager::names[time_step_back == -1 ? 0 : time_step_back].c_str (), std::ios::out | std::ios::binary);
   ASSERT (file.is_open());
 
   // Go through all values and write to file.
-  grid_coord end = grid->getSize().calculateTotalCoord ();
-  for (grid_coord iter = 0; iter < end; ++iter)
+  typename VectorFieldValues<TCoord>::Iterator iter (startCoord, startCoord, endCoord);
+  typename VectorFieldValues<TCoord>::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (startCoord, endCoord);
+  for (; iter != iter_end; ++iter)
   {
-    TCoord pos = grid->calculatePositionFromIndex (iter);
-    if (!(pos >= startCoord && pos < endCoord))
-    {
-      continue;
-    }
+    TCoord pos = iter.getPos ();
 
     if (time_step_back == -1)
     {
       for (int i = 0; i < grid->getCountStoredSteps (); ++i)
       {
-        file.write ((char*) (grid->getFieldValue (iter, i)), sizeof (FieldValue));
+        file.write ((char*) (grid->getFieldValue (pos, i)), sizeof (FieldValue));
       }
     }
     else
     {
-      file.write ((char*) (grid->getFieldValue (iter, time_step_back)), sizeof (FieldValue));
+      file.write ((char*) (grid->getFieldValue (pos, time_step_back)), sizeof (FieldValue));
     }
   }
 
   file.close();
-}
+} /* DATDumper::writeToFile */
 
+/**
+ * Choose scenario of saving of grid
+ */
 template <class TCoord>
 void
-DATDumper<TCoord>::dumpGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
-                                     time_step timeStep, int time_step_back)
+DATDumper<TCoord>::dumpGridInternal (Grid<TCoord> *grid, /**< grid to save */
+                                     TCoord startCoord, /**< start saving from this coordinate */
+                                     TCoord endCoord, /**< end saving at this coordinate */
+                                     time_step timeStep, /**< absolute time step at which to save */
+                                     int time_step_back) /**< relative time step at which to save */
 {
   const TCoord& size = grid->getSize ();
 
@@ -100,33 +92,40 @@ DATDumper<TCoord>::dumpGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoo
   writeToFile (grid, startCoord, endCoord, time_step_back);
 
   std::cout << "Saved. " << std::endl;
-}
+} /* DATDumper::dumpGridInternal */
 
 /**
- * Virtual method for grid saving.
+ * Virtual method for grid saving, which makes file names automatically
  */
 template <class TCoord>
 void
-DATDumper<TCoord>::dumpGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
-                             time_step timeStep, int time_step_back, int pid)
+DATDumper<TCoord>::dumpGrid (Grid<TCoord> *grid, /**< grid to save */
+                             TCoord startCoord, /**< start saving from this coordinate */
+                             TCoord endCoord, /**< end saving at this coordinate */
+                             time_step timeStep, /**< absolute time step at which to save */
+                             int time_step_back, /**< relative time step at which to save */
+                             int pid) /**< pid of process, which does saving */
 {
   GridFileManager::setFileNames (time_step_back, timeStep, pid, std::string (grid->getName ()), FILE_TYPE_DAT);
 
   dumpGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
-}
+} /* DATDumper::dumpGrid */
 
 /**
- * Virtual method for grid saving.
+ * Virtual method for grid saving, which uses custom names
  */
 template <class TCoord>
 void
-DATDumper<TCoord>::dumpGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
-                             time_step timeStep, int time_step_back,
-                             const std::vector< std::string > & customNames)
+DATDumper<TCoord>::dumpGrid (Grid<TCoord> *grid, /**< grid to save */
+                             TCoord startCoord, /**< start saving from this coordinate */
+                             TCoord endCoord, /**< end saving at this coordinate */
+                             time_step timeStep, /**< absolute time step at which to save */
+                             int time_step_back, /**< relative time step at which to save */
+                             const std::vector< std::string > & customNames) /**< custom names of files */
 {
   GridFileManager::setCustomFileNames (customNames);
 
   dumpGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
-}
+} /* DATDumper::dumpGrid */
 
 #endif /* DAT_DUMPER_H */

@@ -8,46 +8,35 @@
 
 /**
  * Grid loader from binary files.
- * Template class with coordinate parameter.
  */
 template <class TCoord>
 class DATLoader: public Loader<TCoord>
 {
-  // Load grid from file for specific layer.
-  void loadFromFile (Grid<TCoord> *grid, TCoord, TCoord, int);
-
-  void loadGridInternal (Grid<TCoord> *grid, TCoord, TCoord, time_step, int);
+  void loadFromFile (Grid<TCoord> *, TCoord, TCoord, int);
+  void loadGridInternal (Grid<TCoord> *, TCoord, TCoord, time_step, int);
 
 public:
 
   virtual ~DATLoader () {}
 
-  // Virtual method for grid loading.
-  virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int, int) CXX11_OVERRIDE;
-  virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int,
+  virtual void loadGrid (Grid<TCoord> *, TCoord, TCoord, time_step, int, int) CXX11_OVERRIDE;
+  virtual void loadGrid (Grid<TCoord> *, TCoord, TCoord, time_step, int,
                          const std::vector< std::string > &) CXX11_OVERRIDE;
-};
+}; /* DATLoader */
 
 /**
- * ======== Template implementation ========
- */
-
-/**
- * Load grid from file for specific layer.
+ * Load data from file
  */
 template <class TCoord>
 void
-DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid,
-                                 TCoord startCoord,
-                                 TCoord endCoord,
-                                 int time_step_back)
+DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid, /**< grid to load */
+                                 TCoord startCoord, /**< start loading from this coordinate */
+                                 TCoord endCoord, /**< end loading at this coordinate */
+                                 int time_step_back) /**< relative time step at which to load */
 {
   ASSERT ((time_step_back == -1) || (time_step_back >= 0 && time_step_back < grid->getCountStoredSteps ()));
-#ifdef DEBUG_INFO
-  TCoord zero = startCoord - startCoord;
-  ASSERT (startCoord >= zero && startCoord < grid->getSize ());
-  ASSERT (endCoord > zero && endCoord <= grid->getSize ());
-#endif /* DEBUG_INFO */
+  ASSERT (startCoord >= startCoord.getZero () && startCoord < grid->getSize ());
+  ASSERT (endCoord > endCoord.getZero () && endCoord <= grid->getSize ());
 
   std::ifstream file;
   file.open (this->GridFileManager::names[time_step_back == -1 ? 0 : time_step_back].c_str (), std::ios::in | std::ios::binary);
@@ -56,14 +45,11 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid,
   char memblock[sizeof (FieldValue)];
 
   // Go through all values and load from file.
-  grid_coord end = grid->getSize().calculateTotalCoord ();
-  for (grid_coord iter = 0; iter < end; ++iter)
+  typename VectorFieldValues<TCoord>::Iterator iter (startCoord, startCoord, endCoord);
+  typename VectorFieldValues<TCoord>::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (startCoord, endCoord);
+  for (; iter != iter_end; ++iter)
   {
-    TCoord pos = grid->calculatePositionFromIndex (iter);
-    if (!(pos >= startCoord && pos < endCoord))
-    {
-      continue;
-    }
+    TCoord pos = iter.getPos ();
 
     if (time_step_back == -1)
     {
@@ -72,7 +58,7 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid,
         file.read (memblock, sizeof (FieldValue));
         ASSERT ((file.rdstate() & std::ifstream::failbit) == 0);
 
-        grid->setFieldValue (*((FieldValue*) memblock), iter, i);
+        grid->setFieldValue (*((FieldValue*) memblock), pos, i);
       }
     }
     else
@@ -80,7 +66,7 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid,
       file.read (memblock, sizeof (FieldValue));
       ASSERT ((file.rdstate() & std::ifstream::failbit) == 0);
 
-      grid->setFieldValue (*((FieldValue*) memblock), iter, time_step_back);
+      grid->setFieldValue (*((FieldValue*) memblock), pos, time_step_back);
     }
   }
 
@@ -88,12 +74,18 @@ DATLoader<TCoord>::loadFromFile (Grid<TCoord> *grid,
   ASSERT ((file.peek (), file.eof()));
 
   file.close();
-}
+} /* DATLoader::loadFromFile */
 
+/**
+ * Choose scenario of loading of grid
+ */
 template <class TCoord>
 void
-DATLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
-                                     time_step timeStep, int time_step_back)
+DATLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, /**< grid to load */
+                                     TCoord startCoord, /**< start loading from this coordinate */
+                                     TCoord endCoord, /**< end loading at this coordinate */
+                                     time_step timeStep, /**< absolute time step at which to load */
+                                     int time_step_back) /**< relative time step at which to load */
 {
   const TCoord& size = grid->getSize ();
 
@@ -111,33 +103,40 @@ DATLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoo
   loadFromFile (grid, startCoord, endCoord, time_step_back);
 
   std::cout << "Loaded. " << std::endl;
-}
+} /* DATLoader::loadGridInternal */
 
 /**
- * Virtual method for grid saving.
+ * Virtual method for grid loading, which makes file names automatically
  */
 template <class TCoord>
 void
-DATLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
-                             time_step timeStep, int time_step_back, int pid)
+DATLoader<TCoord>::loadGrid (Grid<TCoord> *grid, /**< grid to load */
+                             TCoord startCoord, /**< start loading from this coordinate */
+                             TCoord endCoord, /**< end loading at this coordinate */
+                             time_step timeStep, /**< absolute time step at which to load */
+                             int time_step_back, /**< relative time step at which to load */
+                             int pid) /**< pid of process, which does loading */
 {
   GridFileManager::setFileNames (time_step_back, timeStep, pid, std::string (grid->getName ()), FILE_TYPE_DAT);
 
   loadGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
-}
+} /* DATLoader::loadGrid */
 
 /**
- * Virtual method for grid saving.
+ * Virtual method for grid loading, which uses custom names
  */
 template <class TCoord>
 void
-DATLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
-                             time_step timeStep, int time_step_back,
-                             const std::vector< std::string > & customNames)
+DATLoader<TCoord>::loadGrid (Grid<TCoord> *grid, /**< grid to load */
+                             TCoord startCoord, /**< start loading from this coordinate */
+                             TCoord endCoord, /**< end loading at this coordinate */
+                             time_step timeStep, /**< absolute time step at which to load */
+                             int time_step_back, /**< relative time step at which to load */
+                             const std::vector< std::string > & customNames) /**< custom names of files */
 {
   GridFileManager::setCustomFileNames (customNames);
 
   loadGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
-}
+} /* DATLoader::loadGrid */
 
 #endif /* DAT_LOADER_H */

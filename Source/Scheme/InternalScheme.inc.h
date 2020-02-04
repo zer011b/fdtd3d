@@ -488,8 +488,8 @@ public:
     grid_coord coord1 = (grid_coord) coordD1;
     grid_coord coord2 = (grid_coord) coordD2;
 
-    FieldValue val1 = *FieldInc->getFieldValue (coord1, 1);
-    FieldValue val2 = *FieldInc->getFieldValue (coord2, 1);
+    FieldValue val1 = *FieldInc->getFieldValue (GRID_COORDINATE_1D (coord1, FieldInc->getSize ().getType1 ()), 1);
+    FieldValue val2 = *FieldInc->getFieldValue (GRID_COORDINATE_1D (coord2, FieldInc->getSize ().getType1 ()), 1);
 
     return val1 * proportionD1 + val2 * proportionD2;
   }
@@ -2353,8 +2353,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (FP
                                                                              FPValue materialModifier)
 {
   ASSERT (grid != NULLPTR);
-  grid_coord coord = grid->calculateIndexFromPosition (pos);
-  FieldValue val = *grid->getFieldValue (coord, 1);
+  FieldValue val = *grid->getFieldValue (pos, 1);
 
   FieldValue valCa = FIELDVALUE (0, 0);
   FieldValue valCb = FIELDVALUE (0, 0);
@@ -2394,7 +2393,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIteration (FP
   }
 
   FieldValue valNew = calcField (val, prev12, prev11, prev22, prev21, prevRightSide, valCa, valCb, gridStep);
-  grid->setFieldValue (valNew, coord, 0);
+  grid->setFieldValue (valNew, pos, 0);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -2454,14 +2453,13 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPMLM
 {
   ASSERT (grid != NULLPTR);
   ASSERT (gridPML != NULLPTR);
-  grid_coord coord = grid->calculateIndexFromPosition (pos);
 
-  FieldValue cur = *grid->getFieldValue (coord, 0);
-  FieldValue prev = *grid->getFieldValue (coord, 1);
-  FieldValue prevPrev = *grid->getFieldValue (coord, 2);
+  FieldValue cur = *grid->getFieldValue (pos, 0);
+  FieldValue prev = *grid->getFieldValue (pos, 1);
+  FieldValue prevPrev = *grid->getFieldValue (pos, 2);
 
-  FieldValue prevPML = *gridPML->getFieldValue (coord, 1);
-  FieldValue prevPrevPML = *gridPML->getFieldValue (coord, 2);
+  FieldValue prevPML = *gridPML->getFieldValue (pos, 1);
+  FieldValue prevPrevPML = *gridPML->getFieldValue (pos, 2);
 
   FieldValue valb0 = FIELDVALUE (0, 0);
   FieldValue valb1 = FIELDVALUE (0, 0);
@@ -2477,11 +2475,11 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPMLM
     ASSERT (CA1 != NULLPTR);
     ASSERT (CA2 != NULLPTR);
 
-    valb0 = *CB0->getFieldValue (coord, 0);
-    valb1 = *CB1->getFieldValue (coord, 0);
-    valb2 = *CB2->getFieldValue (coord, 0);
-    vala1 = *CA1->getFieldValue (coord, 0);
-    vala2 = *CA2->getFieldValue (coord, 0);
+    valb0 = *CB0->getFieldValue (pos, 0);
+    valb1 = *CB1->getFieldValue (pos, 0);
+    valb2 = *CB2->getFieldValue (pos, 0);
+    vala1 = *CA1->getFieldValue (pos, 0);
+    vala2 = *CA2->getFieldValue (pos, 0);
   }
   else
   {
@@ -2527,7 +2525,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPMLM
   ASSERT (vala2 != FIELDVALUE (0, 0));
 
   FieldValue valNew = calcFieldDrude (cur, prev, prevPrev, prevPML, prevPrevPML, valb0, valb1, valb2, vala1, vala2);
-  gridPML->setFieldValue (valNew, coord, 0);
+  gridPML->setFieldValue (valNew, pos, 0);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -2552,9 +2550,8 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML 
                                                                    FPValue materialModifier)
 {
   ASSERT (gridPML2 != NULLPTR);
-  grid_coord coord = gridPML2->calculateIndexFromPosition (pos);
 
-  FieldValue prevEorH = *gridPML2->getFieldValue (coord, 1);
+  FieldValue prevEorH = *gridPML2->getFieldValue (pos, 1);
   FieldValue curDorB = FIELDVALUE (0, 0);
   FieldValue prevDorB = FIELDVALUE (0, 0);
 
@@ -2565,14 +2562,14 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML 
   if (useMetamaterials)
   {
     ASSERT (gridPML1 != NULLPTR);
-    curDorB = *gridPML1->getFieldValue (coord, 0);
-    prevDorB = *gridPML1->getFieldValue (coord, 1);
+    curDorB = *gridPML1->getFieldValue (pos, 0);
+    prevDorB = *gridPML1->getFieldValue (pos, 1);
   }
   else
   {
     ASSERT (grid != NULLPTR);
-    curDorB = *grid->getFieldValue (coord, 0);
-    prevDorB = *grid->getFieldValue (coord, 1);
+    curDorB = *grid->getFieldValue (pos, 0);
+    prevDorB = *grid->getFieldValue (pos, 1);
   }
 
   if (usePrecomputedGrids)
@@ -2581,9 +2578,9 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML 
     ASSERT (Cb != NULLPTR);
     ASSERT (Cc != NULLPTR);
 
-    valCa = *Ca->getFieldValue (coord, 0);
-    valCb = *Cb->getFieldValue (coord, 0);
-    valCc = *Cc->getFieldValue (coord, 0);
+    valCa = *Ca->getFieldValue (pos, 0);
+    valCb = *Cb->getFieldValue (pos, 0);
+    valCc = *Cc->getFieldValue (pos, 0);
   }
   else
   {
@@ -2619,7 +2616,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationPML 
   ASSERT (valCc != FIELDVALUE (0, 0));
 
   FieldValue valNew = calcFieldFromDOrB (prevEorH, curDorB, prevDorB, valCa, valCb, valCc);
-  gridPML2->setFieldValue (valNew, coord, 0);
+  gridPML2->setFieldValue (valNew, pos, 0);
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -3266,24 +3263,26 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPlaneWaveESteps (time_st
 
   FPValue modifier = gridTimeStep / (relPhaseVelocity * PhysicsConst::Eps0 * gridStep);
 
-  grid_coord cstart = start.get1 ();
-  grid_coord cend = end.get1 ();
+  VectorFieldValues<GridCoordinate1D>::Iterator iter (start, start, end);
+  VectorFieldValues<GridCoordinate1D>::Iterator iter_end = VectorFieldValues<GridCoordinate1D>::Iterator::getEndIterator (start, end);
 
   bool setSource = false;
-  if (cstart == 0)
+  if (start.get1 () == 0)
   {
     setSource = true;
-    cstart = 1;
+    ++iter;
   }
 
-  for (grid_coord i = cstart; i < cend; ++i)
+  for (; iter != iter_end; ++iter)
   {
-    FieldValue valE = *EInc->getFieldValue (i, 1);
-    FieldValue valH1 = *HInc->getFieldValue (i - 1, 1);
-    FieldValue valH2 = *HInc->getFieldValue (i, 1);
+    GridCoordinate1D pos = iter.getPos ();
+
+    FieldValue valE = *EInc->getFieldValue (pos, 1);
+    FieldValue valH1 = *HInc->getFieldValue (GRID_COORDINATE_1D (pos.get1 () - 1, pos.getType1 ()), 1);
+    FieldValue valH2 = *HInc->getFieldValue (pos, 1);
 
     FieldValue val = valE + (valH1 - valH2) * modifier;
-    EInc->setFieldValue (val, i, 0);
+    EInc->setFieldValue (val, pos, 0);
   }
 
   if (setSource)
@@ -3291,17 +3290,16 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPlaneWaveESteps (time_st
     FPValue arg = gridTimeStep * t * 2 * PhysicsConst::Pi * sourceFrequency;
 
 #ifdef COMPLEX_FIELD_VALUES
-    EInc->setFieldValue (FieldValue (sin (arg), cos (arg)), 0, 0);
+    EInc->setFieldValue (FieldValue (sin (arg), cos (arg)), start.getZero (), 0);
 #else /* COMPLEX_FIELD_VALUES */
-    EInc->setFieldValue (sin (arg), 0, 0);
+    EInc->setFieldValue (sin (arg), start.getZero (), 0);
 #endif /* !COMPLEX_FIELD_VALUES */
 
     //printf ("EInc[0] %f \n", valE->getCurValue ());
   }
 
-#ifdef ENABLE_ASSERTS
-  ALWAYS_ASSERT (*EInc->getFieldValue (EInc->getSize ().get1 () - 1, 0) == FieldValueHelpers::getFieldValueRealOnly (0.0));
-#endif
+  ASSERT (*EInc->getFieldValue (GRID_COORDINATE_1D (EInc->getSize ().get1 () - 1, EInc->getSize ().getType1 ()), 0)
+          == FieldValueHelpers::getFieldValueRealOnly (0.0));
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -3314,27 +3312,28 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPlaneWaveHSteps (time_st
 
   FPValue modifier = gridTimeStep / (relPhaseVelocity * PhysicsConst::Mu0 * gridStep);
 
-  grid_coord cstart = start.get1 ();
-  grid_coord cend = end.get1 ();
+  VectorFieldValues<GridCoordinate1D>::Iterator iter (start, start, end);
+  VectorFieldValues<GridCoordinate1D>::Iterator iter_end = VectorFieldValues<GridCoordinate1D>::Iterator::getEndIterator (start, end);
 
-  if (cend == HInc->getSize ().get1 ())
+  if (end == HInc->getSize ())
   {
-    cend--;
+    --iter_end;
   }
 
-  for (grid_coord i = cstart; i < cend; ++i)
+  for (; iter != iter_end; ++iter)
   {
-    FieldValue valH = *HInc->getFieldValue (i, 1);
-    FieldValue valE1 = *EInc->getFieldValue (i, 1);
-    FieldValue valE2 = *EInc->getFieldValue (i + 1, 1);
+    GridCoordinate1D pos = iter.getPos ();
+
+    FieldValue valH = *HInc->getFieldValue (pos, 1);
+    FieldValue valE1 = *EInc->getFieldValue (pos, 1);
+    FieldValue valE2 = *EInc->getFieldValue (GRID_COORDINATE_1D (pos.get1 () + 1, pos.getType1 ()), 1);
 
     FieldValue val = valH + (valE1 - valE2) * modifier;
-    HInc->setFieldValue (val, i, 0);
+    HInc->setFieldValue (val, pos, 0);
   }
 
-#ifdef ENABLE_ASSERTS
-  ALWAYS_ASSERT (*HInc->getFieldValue (HInc->getSize ().get1 () - 2, 0) == FieldValueHelpers::getFieldValueRealOnly (0.0));
-#endif
+  ASSERT (*HInc->getFieldValue (GRID_COORDINATE_1D (HInc->getSize ().get1 () - 2, HInc->getSize ().getType1 ()), 0)
+          == FieldValueHelpers::getFieldValueRealOnly (0.0));
 }
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>

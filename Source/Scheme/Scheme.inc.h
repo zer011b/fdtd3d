@@ -1079,81 +1079,75 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     else
 #endif /* CUDA_ENABLED */
     {
-      for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter (start, start, end);
+      typename VectorFieldValues<TC>::Iterator iter_end = VectorFieldValues<TC>::Iterator::getEndIterator (start, end);
+      for (; iter != iter_end; ++iter)
       {
-        // TODO: check that this loop is optimized out
-        for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+        TC pos = iter.getPos ();
+
+        // TODO: add getTotalPositionDiff here, which will be called before loop
+        TC posAbs = grid->getTotalPosition (pos);
+
+        TCFP coordFP;
+
+        if (rightSideFunc != NULLPTR)
         {
-          // TODO: check that this is optimized out in case 2D mode
-          for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
+          switch (grid_type)
           {
-            TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-
-            // TODO: add getTotalPositionDiff here, which will be called before loop
-            TC posAbs = grid->getTotalPosition (pos);
-
-            TCFP coordFP;
-
-            if (rightSideFunc != NULLPTR)
+            case (static_cast<uint8_t> (GridType::EX)):
             {
-              switch (grid_type)
-              {
-                case (static_cast<uint8_t> (GridType::EX)):
-                {
-                  coordFP = yeeLayout->getExCoordFP (posAbs);
-                  break;
-                }
-                case (static_cast<uint8_t> (GridType::EY)):
-                {
-                  coordFP = yeeLayout->getEyCoordFP (posAbs);
-                  break;
-                }
-                case (static_cast<uint8_t> (GridType::EZ)):
-                {
-                  coordFP = yeeLayout->getEzCoordFP (posAbs);
-                  break;
-                }
-                case (static_cast<uint8_t> (GridType::HX)):
-                {
-                  coordFP = yeeLayout->getHxCoordFP (posAbs);
-                  break;
-                }
-                case (static_cast<uint8_t> (GridType::HY)):
-                {
-                  coordFP = yeeLayout->getHyCoordFP (posAbs);
-                  break;
-                }
-                case (static_cast<uint8_t> (GridType::HZ)):
-                {
-                  coordFP = yeeLayout->getHzCoordFP (posAbs);
-                  break;
-                }
-                default:
-                {
-                  UNREACHABLE;
-                }
-              }
+              coordFP = yeeLayout->getExCoordFP (posAbs);
+              break;
             }
-
-            if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+            case (static_cast<uint8_t> (GridType::EY)):
             {
-              intScheme->template calculateFieldStepIteration<grid_type, true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                 grid, coordFP,
-                                                                 oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
-                                                                 usePML,
-                                                                 gridType, materialGrid, materialGridType,
-                                                                 materialModifier);
+              coordFP = yeeLayout->getEyCoordFP (posAbs);
+              break;
             }
-            else
+            case (static_cast<uint8_t> (GridType::EZ)):
             {
-              intScheme->template calculateFieldStepIteration<grid_type, false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                 grid, coordFP,
-                                                                 oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
-                                                                 usePML,
-                                                                 gridType, materialGrid, materialGridType,
-                                                                 materialModifier);
+              coordFP = yeeLayout->getEzCoordFP (posAbs);
+              break;
+            }
+            case (static_cast<uint8_t> (GridType::HX)):
+            {
+              coordFP = yeeLayout->getHxCoordFP (posAbs);
+              break;
+            }
+            case (static_cast<uint8_t> (GridType::HY)):
+            {
+              coordFP = yeeLayout->getHyCoordFP (posAbs);
+              break;
+            }
+            case (static_cast<uint8_t> (GridType::HZ)):
+            {
+              coordFP = yeeLayout->getHzCoordFP (posAbs);
+              break;
+            }
+            default:
+            {
+              UNREACHABLE;
             }
           }
+        }
+
+        if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+        {
+          intScheme->template calculateFieldStepIteration<grid_type, true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                             grid, coordFP,
+                                                             oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
+                                                             usePML,
+                                                             gridType, materialGrid, materialGridType,
+                                                             materialModifier);
+        }
+        else
+        {
+          intScheme->template calculateFieldStepIteration<grid_type, false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                             grid, coordFP,
+                                                             oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
+                                                             usePML,
+                                                             gridType, materialGrid, materialGridType,
+                                                             materialModifier);
         }
       }
     }
@@ -1271,33 +1265,27 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
         else
 #endif /* CUDA_ENABLED */
         {
-          for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+          typename VectorFieldValues<TC>::Iterator iter (start, start, end);
+          typename VectorFieldValues<TC>::Iterator iter_end = VectorFieldValues<TC>::Iterator::getEndIterator (start, end);
+          for (; iter != iter_end; ++iter)
           {
-            // TODO: check that this loop is optimized out
-            for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-            {
-              // TODO: check that this loop is optimized out
-              for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-              {
-                TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+            TC pos = iter.getPos ();
 
-                if (SOLVER_SETTINGS.getDoUseCaCbPMLMetaGrids ())
-                {
-                  intScheme->template calculateFieldStepIterationPMLMetamaterials<true> (t, pos, grid, gridPML1,
-                    CB0, CB1, CB2, CA1, CA2,
-                    gridType,
-                    materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
-                    materialModifier);
-                }
-                else
-                {
-                  intScheme->template calculateFieldStepIterationPMLMetamaterials<false> (t, pos, grid, gridPML1,
-                    CB0, CB1, CB2, CA1, CA2,
-                    gridType,
-                    materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
-                    materialModifier);
-                }
-              }
+            if (SOLVER_SETTINGS.getDoUseCaCbPMLMetaGrids ())
+            {
+              intScheme->template calculateFieldStepIterationPMLMetamaterials<true> (t, pos, grid, gridPML1,
+                CB0, CB1, CB2, CA1, CA2,
+                gridType,
+                materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
+                materialModifier);
+            }
+            else
+            {
+              intScheme->template calculateFieldStepIterationPMLMetamaterials<false> (t, pos, grid, gridPML1,
+                CB0, CB1, CB2, CA1, CA2,
+                gridType,
+                materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
+                materialModifier);
             }
           }
         }
@@ -1316,29 +1304,23 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       else
 #endif /* CUDA_ENABLED */
       {
-        for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+        typename VectorFieldValues<TC>::Iterator iter (start, start, end);
+        typename VectorFieldValues<TC>::Iterator iter_end = VectorFieldValues<TC>::Iterator::getEndIterator (start, end);
+        for (; iter != iter_end; ++iter)
         {
-          // TODO: check that this loop is optimized out
-          for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-          {
-            // TODO: check that this loop is optimized out
-            for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-            {
-              TC pos = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
+          TC pos = iter.getPos ();
 
-              if (SOLVER_SETTINGS.getDoUseCaCbPMLGrids ())
-              {
-                intScheme->template calculateFieldStepIterationPML<useMetamaterials, true> (t, pos, grid, gridPML1, gridPML2, CaPML, CbPML, CcPML, gridPMLType1,
-                  materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
-                  materialModifier);
-              }
-              else
-              {
-                intScheme->template calculateFieldStepIterationPML<useMetamaterials, false> (t, pos, grid, gridPML1, gridPML2, CaPML, CbPML, CcPML, gridPMLType1,
-                  materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
-                  materialModifier);
-              }
-            }
+          if (SOLVER_SETTINGS.getDoUseCaCbPMLGrids ())
+          {
+            intScheme->template calculateFieldStepIterationPML<useMetamaterials, true> (t, pos, grid, gridPML1, gridPML2, CaPML, CbPML, CcPML, gridPMLType1,
+              materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
+              materialModifier);
+          }
+          else
+          {
+            intScheme->template calculateFieldStepIterationPML<useMetamaterials, false> (t, pos, grid, gridPML1, gridPML2, CaPML, CbPML, CcPML, gridPMLType1,
+              materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
+              materialModifier);
           }
         }
       }
@@ -1366,18 +1348,12 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     else
 #endif
     {
-      for (grid_coord i = startBorder.get1 (); i < endBorder.get1 (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter (startBorder, startBorder, endBorder);
+      typename VectorFieldValues<TC>::Iterator iter_end = VectorFieldValues<TC>::Iterator::getEndIterator (startBorder, endBorder);
+      for (; iter != iter_end; ++iter)
       {
-        // TODO: check that this loop is optimized out
-        for (grid_coord j = startBorder.get2 (); j < endBorder.get2 (); ++j)
-        {
-          // TODO: check that this loop is optimized out
-          for (grid_coord k = startBorder.get3 (); k < endBorder.get3 (); ++k)
-          {
-            TC posAbs = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-            intScheme->template calculateFieldStepIterationBorder<grid_type> (t, posAbs, grid, borderFunc);
-          }
-        }
+        TC posAbs = iter.getPos ();
+        intScheme->template calculateFieldStepIterationBorder<grid_type> (t, posAbs, grid, borderFunc);
       }
     }
   }
@@ -1449,18 +1425,12 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     else
 #endif /* CUDA_ENABLED */
     {
-      for (grid_coord i = startNorm.get1 (); i < endNorm.get1 (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter (startNorm, startNorm, endNorm);
+      typename VectorFieldValues<TC>::Iterator iter_end = VectorFieldValues<TC>::Iterator::getEndIterator (startNorm, endNorm);
+      for (; iter != iter_end; ++iter)
       {
-        // TODO: check that this loop is optimized out
-        for (grid_coord j = startNorm.get2 (); j < endNorm.get2 (); ++j)
-        {
-          // TODO: check that this loop is optimized out
-          for (grid_coord k = startNorm.get3 (); k < endNorm.get3 (); ++k)
-          {
-            TC posAbs = TC::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-            intScheme->template calculateFieldStepIterationExact<grid_type> (t, posAbs, normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
-          }
-        }
+        TC posAbs = iter.getPos ();
+        intScheme->template calculateFieldStepIterationExact<grid_type> (t, posAbs, normGrid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
       }
     }
 
@@ -2856,9 +2826,11 @@ Scheme<Type, TCoord, layout_type>::initMaterialFromFile (GridType gridType, Grid
   if (useParallel)
   {
 #ifdef PARALLEL_GRID
-    for (grid_coord i = 0; i < grid->getSize ().calculateTotalCoord (); ++i)
+    VectorFieldValues<TC>::Iterator iter = grid->begin ();
+    VectorFieldValues<TC>::Iterator iter_end = grid->end ();
+    for (; iter != iter_end; ++iter)
     {
-      TC pos = grid->calculatePositionFromIndex (i);
+      TC pos = iter.getPos ();
       TC posAbs = grid->getTotalPosition (pos);
 
       FieldValue *val = grid->getFieldValue (pos, 0);
@@ -2919,9 +2891,11 @@ Scheme<Type, TCoord, layout_type>::initGridWithInitialVals (GridType gridType, G
     return;
   }
 
-  for (grid_coord i = 0; i < grid->getSize ().calculateTotalCoord (); ++i)
+  typename VectorFieldValues<TC>::Iterator iter = grid->begin ();
+  typename VectorFieldValues<TC>::Iterator iter_end = grid->end ();
+  for (; iter != iter_end; ++iter)
   {
-    TC pos = grid->calculatePositionFromIndex (i);
+    TC pos = iter.getPos ();
     TC posAbs = grid->getTotalPosition (pos);
     TCFP realCoord;
 
@@ -2987,9 +2961,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
   if (SOLVER_SETTINGS.getEpsSphere () != 1)
   {
-    for (grid_coord i = 0; i < intScheme->getEps ()->getSize ().calculateTotalCoord (); ++i)
+    typename VectorFieldValues<TC>::Iterator iter = intScheme->getEps ()->begin ();
+    typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getEps ()->end ();
+    for (; iter != iter_end; ++iter)
     {
-      TC pos = intScheme->getEps ()->calculatePositionFromIndex (i);
+      TC pos = iter.getPos ();
       TCFP posAbs = yeeLayout->getEpsCoordFP (intScheme->getEps ()->getTotalPosition (pos));
       FieldValue *val = intScheme->getEps ()->getFieldValue (pos, 0);
 
@@ -3021,9 +2997,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   }
   if (SOLVER_SETTINGS.getUseEpsAllNorm ())
   {
-    for (grid_coord i = 0; i < intScheme->getEps ()->getSize ().calculateTotalCoord (); ++i)
+    typename VectorFieldValues<TC>::Iterator iter = intScheme->getEps ()->begin ();
+    for (; iter != intScheme->getEps ()->end (); ++iter)
     {
-      FieldValue *val = intScheme->getEps ()->getFieldValue (i, 0);
+      TC pos = iter.getPos ();
+      FieldValue *val = intScheme->getEps ()->getFieldValue (pos, 0);
       *val = FieldValueHelpers::getFieldValueRealOnly (FPValue(1.0) / PhysicsConst::Eps0);
     }
   }
@@ -3033,9 +3011,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
   if (SOLVER_SETTINGS.getMuSphere () != 1)
   {
-    for (grid_coord i = 0; i < intScheme->getMu ()->getSize ().calculateTotalCoord (); ++i)
+    typename VectorFieldValues<TC>::Iterator iter = intScheme->getMu ()->begin ();
+    typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getMu ()->end ();
+    for (; iter != iter_end; ++iter)
     {
-      TC pos = intScheme->getMu ()->calculatePositionFromIndex (i);
+      TC pos = iter.getPos ();
       TCFP posAbs = yeeLayout->getMuCoordFP (intScheme->getMu ()->getTotalPosition (pos));
       FieldValue *val = intScheme->getMu ()->getFieldValue (pos, 0);
 
@@ -3067,9 +3047,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   }
   if (SOLVER_SETTINGS.getUseMuAllNorm ())
   {
-    for (grid_coord i = 0; i < intScheme->getMu ()->getSize ().calculateTotalCoord (); ++i)
+    typename VectorFieldValues<TC>::Iterator iter = intScheme->getMu ()->begin ();
+    for (; iter != intScheme->getMu ()->end (); ++iter)
     {
-      FieldValue *val = intScheme->getMu ()->getFieldValue (i, 0);
+      TC pos = iter.getPos ();
+      FieldValue *val = intScheme->getMu ()->getFieldValue (pos, 0);
       *val = FieldValueHelpers::getFieldValueRealOnly (FPValue(1.0) / PhysicsConst::Mu0);
     }
   }
@@ -3080,9 +3062,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (SOLVER_SETTINGS.getOmegaPESphere () != 0)
     {
-      for (grid_coord i = 0; i < intScheme->getOmegaPE ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getOmegaPE ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getOmegaPE ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getOmegaPE ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
         TCFP posAbs = yeeLayout->getEpsCoordFP (intScheme->getOmegaPE ()->getTotalPosition (pos));
         FieldValue *val = intScheme->getOmegaPE ()->getFieldValue (pos, 0);
 
@@ -3117,9 +3101,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (SOLVER_SETTINGS.getOmegaPMSphere () != 0)
     {
-      for (grid_coord i = 0; i < intScheme->getOmegaPM ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getOmegaPM ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getOmegaPM ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getOmegaPM ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
         TCFP posAbs = yeeLayout->getEpsCoordFP (intScheme->getOmegaPM ()->getTotalPosition (pos));
         FieldValue *val = intScheme->getOmegaPM ()->getFieldValue (pos, 0);
 
@@ -3306,9 +3292,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   {
     if (intScheme->getDoNeedEx ())
     {
-      for (grid_coord i = 0; i < intScheme->getEx ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getEx ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getEx ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getEx ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getExStartDiff () && pos < intScheme->getEx ()->getSize () - yeeLayout->getExEndDiff ()))
         {
@@ -3343,9 +3331,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedEy ())
     {
-      for (grid_coord i = 0; i < intScheme->getEy ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getEy ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getEy ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getEy ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getEyStartDiff () && pos < intScheme->getEy ()->getSize () - yeeLayout->getEyEndDiff ()))
         {
@@ -3380,9 +3370,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedEz ())
     {
-      for (grid_coord i = 0; i < intScheme->getEz ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getEz ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getEz ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getEz ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getEzStartDiff () && pos < intScheme->getEz ()->getSize () - yeeLayout->getEzEndDiff ()))
         {
@@ -3417,9 +3409,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedHx ())
     {
-      for (grid_coord i = 0; i < intScheme->getHx ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getHx ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getHx ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getHx ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getHxStartDiff () && pos < intScheme->getHx ()->getSize () - yeeLayout->getHxEndDiff ()))
         {
@@ -3455,9 +3449,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedHy ())
     {
-      for (grid_coord i = 0; i < intScheme->getHy ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getHy ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getHy ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getHy ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getHyStartDiff () && pos < intScheme->getHy ()->getSize () - yeeLayout->getHyEndDiff ()))
         {
@@ -3493,9 +3489,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedHz ())
     {
-      for (grid_coord i = 0; i < intScheme->getHz ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getHz ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getHz ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getHz ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getHzStartDiff () && pos < intScheme->getHz ()->getSize () - yeeLayout->getHzEndDiff ()))
         {
@@ -3534,9 +3532,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   {
     if (intScheme->getDoNeedEx ())
     {
-      for (grid_coord i = 0; i < intScheme->getEx ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getEx ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getEx ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getEx ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getExStartDiff () && pos < intScheme->getEx ()->getSize () - yeeLayout->getExEndDiff ()))
         {
@@ -3572,9 +3572,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedEy ())
     {
-      for (grid_coord i = 0; i < intScheme->getEy ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getEy ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getEy ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getEy ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getEyStartDiff () && pos < intScheme->getEy ()->getSize () - yeeLayout->getEyEndDiff ()))
         {
@@ -3610,9 +3612,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedEz ())
     {
-      for (grid_coord i = 0; i < intScheme->getEz ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getEz ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getEz ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getEz ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getEzStartDiff () && pos < intScheme->getEz ()->getSize () - yeeLayout->getEzEndDiff ()))
         {
@@ -3648,9 +3652,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedHx ())
     {
-      for (grid_coord i = 0; i < intScheme->getHx ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getHx ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getHx ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getHx ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getHxStartDiff () && pos < intScheme->getHx ()->getSize () - yeeLayout->getHxEndDiff ()))
         {
@@ -3686,9 +3692,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedHy ())
     {
-      for (grid_coord i = 0; i < intScheme->getHy ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getHy ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getHy ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getHy ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getHyStartDiff () && pos < intScheme->getHy ()->getSize () - yeeLayout->getHyEndDiff ()))
         {
@@ -3724,9 +3732,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedHz ())
     {
-      for (grid_coord i = 0; i < intScheme->getHz ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getHz ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getHz ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getHz ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getHzStartDiff () && pos < intScheme->getHz ()->getSize () - yeeLayout->getHzEndDiff ()))
         {
@@ -3767,9 +3777,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
   {
     if (intScheme->getDoNeedEx ())
     {
-      for (grid_coord i = 0; i < intScheme->getEx ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getEx ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getEx ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getEx ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getExStartDiff () && pos < intScheme->getEx ()->getSize () - yeeLayout->getExEndDiff ()))
         {
@@ -3804,9 +3816,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedEy ())
     {
-      for (grid_coord i = 0; i < intScheme->getEy ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getEy ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getEy ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getEy ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getEyStartDiff () && pos < intScheme->getEy ()->getSize () - yeeLayout->getEyEndDiff ()))
         {
@@ -3841,9 +3855,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedEz ())
     {
-      for (grid_coord i = 0; i < intScheme->getEz ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getEz ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getEz ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getEz ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getEzStartDiff () && pos < intScheme->getEz ()->getSize () - yeeLayout->getEzEndDiff ()))
         {
@@ -3878,9 +3894,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedHx ())
     {
-      for (grid_coord i = 0; i < intScheme->getHx ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getHx ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getHx ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getHx ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getHxStartDiff () && pos < intScheme->getHx ()->getSize () - yeeLayout->getHxEndDiff ()))
         {
@@ -3915,9 +3933,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedHy ())
     {
-      for (grid_coord i = 0; i < intScheme->getHy ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getHy ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getHy ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getHy ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getHyStartDiff () && pos < intScheme->getHy ()->getSize () - yeeLayout->getHyEndDiff ()))
         {
@@ -3952,9 +3972,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 
     if (intScheme->getDoNeedHz ())
     {
-      for (grid_coord i = 0; i < intScheme->getHz ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues<TC>::Iterator iter = intScheme->getHz ()->begin ();
+      typename VectorFieldValues<TC>::Iterator iter_end = intScheme->getHz ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TC pos = intScheme->getHz ()->calculatePositionFromIndex (i);
+        TC pos = iter.getPos ();
 
         if (!(pos >= yeeLayout->getHzStartDiff () && pos < intScheme->getHz ()->getSize () - yeeLayout->getHzEndDiff ()))
         {
@@ -4072,11 +4094,12 @@ template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType 
 void
 Scheme<Type, TCoord, layout_type>::makeGridScattered (Grid<TC> *grid, GridType gridType)
 {
-  for (grid_coord i = 0; i < grid->getSize ().calculateTotalCoord (); ++i)
+  typename VectorFieldValues<TC>::Iterator iter = grid->begin ();
+  typename VectorFieldValues<TC>::Iterator iter_end = grid->end ();
+  for (; iter != iter_end; ++iter)
   {
-    FieldValue *val = grid->getFieldValue (i, 1);
-
-    TC pos = grid->calculatePositionFromIndex (i);
+    TC pos = iter.getPos ();
+    FieldValue *val = grid->getFieldValue (pos, 1);
     TC posAbs = grid->getTotalPosition (pos);
 
     TCFP realCoord;

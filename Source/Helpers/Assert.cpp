@@ -3,6 +3,9 @@
 #include <cstdlib>
 #include <execinfo.h>
 
+/**
+ * This function is used to exit and for debugging purposes.
+ */
 void program_fail ()
 {
   const unsigned bufsize = 256;
@@ -29,4 +32,4 @@ void program_fail ()
   free(strings);
 
   exit (1);
-}
+} /* program_fail */

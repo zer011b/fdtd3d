@@ -110,7 +110,7 @@ void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
   Grid<GridCoordinate1D> cpuGrid (overallSize, 2);
   cpuGrid.initialize (FIELDVALUE (17, 1022));
 
-  GridCoordinate1D zero = GRID_COORDINATE_1D (0, overallSize.getType1 ());
+  GridCoordinate1D zero = overallSize.getZero ();
   GridCoordinate1D one = GRID_COORDINATE_1D (1, overallSize.getType1 ());
 
   /*

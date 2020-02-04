@@ -6,16 +6,22 @@
 #include "Assert.h"
 #include "Settings.h"
 
+/**
+ * Types of palette
+ */
 ENUM_CLASS (PaletteType, uint8_t,
-  PALETTE_BLUE_GREEN_RED,
-  PALETTE_GRAY
-);
+  PALETTE_BLUE_GREEN_RED, /**< blue - minimum, green - middle, red - maximum */
+  PALETTE_GRAY /**< black - minimum, white - maximum */
+); /* PaletteType */
 
+/**
+ * Types of orthogonal axis
+ */
 ENUM_CLASS (OrthogonalAxis, uint8_t,
   X,
   Y,
   Z
-);
+); /* OrthogonalAxis */
 
 /**
  * Class to statically include in BMPLoader and BMPDumper.
@@ -25,56 +31,69 @@ class BMPHelper
 {
 private:
 
+  /**
+   * Type of palette
+   */
   PaletteType palette;
 
+  /**
+   * Type of orthogonal axis
+   */
   OrthogonalAxis orthogonalAxis;
 
 public:
 
+  /**
+   * Bit depth for BMP image
+   */
   static int bitDepth;
+
+  /**
+   * Number of degrees of color for BMP image
+   */
   static int numColors;
 
 private:
 
-  FPValue getValueFromPixelBlueGreenRed (const RGBApixel& pixel, const FPValue& maxNeg,
-                                         const FPValue& max);
-  FPValue getValueFromPixelGray (const RGBApixel& pixel, const FPValue& maxNeg,
-                                 const FPValue& max);
-
-  RGBApixel getPixelFromValueBlueGreenRed (const FPValue& value, const FPValue& maxNeg,
-                                           const FPValue& max);
-
-  RGBApixel getPixelFromValueGray (const FPValue& value, const FPValue& maxNeg,
-                                   const FPValue& max);
+  FPValue getValueFromPixelBlueGreenRed (const RGBApixel &, FPValue, FPValue);
+  FPValue getValueFromPixelGray (const RGBApixel &, FPValue, FPValue);
+  RGBApixel getPixelFromValueBlueGreenRed (FPValue, FPValue, FPValue);
+  RGBApixel getPixelFromValueGray (FPValue, FPValue, FPValue);
 
 public:
 
-  BMPHelper (PaletteType colorPalette,
-             OrthogonalAxis orthAxis)
-    : palette (colorPalette)
+  /**
+   * Constructor
+   */
+  BMPHelper (PaletteType colorPalette, /**< color palette */
+             OrthogonalAxis orthAxis) /**< orthogonal axis */
+  : palette (colorPalette)
   , orthogonalAxis (orthAxis)
   {
-  }
+  } /* BMPHelper */
 
-  void initialize (PaletteType colorPalette,
-                   OrthogonalAxis orthAxis)
+  /**
+   * Set color palette and orthogonal axis
+   */
+  void initialize (PaletteType colorPalette, /**< color palette */
+                   OrthogonalAxis orthAxis) /**< orthogonal axis */
   {
     palette = colorPalette;
     orthogonalAxis = orthAxis;
-  }
+  } /* initialize */
 
-  // Return value with values according to colors of pixel.
-  FPValue getValueFromPixel (const RGBApixel& pixel, const FPValue& maxNeg,
-                             const FPValue& max);
+  FPValue getValueFromPixel (const RGBApixel &, FPValue, FPValue);
+  RGBApixel getPixelFromValue (FPValue, FPValue, FPValue);
 
-  // Return pixel with colors according to values of value.
-  RGBApixel getPixelFromValue (const FPValue& value, const FPValue& maxNeg,
-                               const FPValue& max);
-
+  /**
+   * Get orthogonal axis
+   *
+   * @return orthogonal axis
+   */
   OrthogonalAxis getOrthogonalAxis ()
   {
     return orthogonalAxis;
-  }
-};
+  } /* getOrthogonalAxis */
+}; /* BMPHelper */
 
 #endif /* BMP_HELPER_H */

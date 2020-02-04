@@ -81,38 +81,35 @@ static void checkIsTheSame (Grid<GridCoordinate1D> *grid1D,
                                                    grid3D->getSize ().getType1 (),
                                                    grid3D->getSize ().getType2 (),
                                                    grid3D->getSize ().getType3 ());
-        grid_coord coord = grid3D->calculateIndexFromPosition (pos);
 
         FPValue fpval = i * j * k;
         for (int t = 0; t < 3; ++t)
         {
           FieldValue val_old = updateVal (fpval, t);
-          ASSERT (val_old == *grid3D->getFieldValue (coord, t));
+          ASSERT (val_old == *grid3D->getFieldValue (pos, t));
         }
       }
 
       GridCoordinate2D pos = GRID_COORDINATE_2D (i, j,
                                                  grid2D->getSize ().getType1 (),
                                                  grid2D->getSize ().getType2 ());
-      grid_coord coord = grid2D->calculateIndexFromPosition (pos);
 
       FPValue fpval = i * j;
       for (int t = 0; t < 3; ++t)
       {
         FieldValue val_old = updateVal (fpval, t);
-        ASSERT (val_old == *grid2D->getFieldValue (coord, t));
+        ASSERT (val_old == *grid2D->getFieldValue (pos, t));
       }
     }
 
     GridCoordinate1D pos = GRID_COORDINATE_1D (i,
                                                grid1D->getSize ().getType1 ());
-    grid_coord coord = grid1D->calculateIndexFromPosition (pos);
 
     FPValue fpval = i;
     for (int t = 0; t < 3; ++t)
     {
       FieldValue val_old = updateVal (fpval, t);
-      ASSERT (val_old == *grid1D->getFieldValue (coord, t));
+      ASSERT (val_old == *grid1D->getFieldValue (pos, t));
     }
   }
 }
@@ -135,16 +132,13 @@ static void bmp (Grid<GridCoordinate1D> *grid1D,
   BMPLoader<GridCoordinate3D> bmpLoader3D;
   bmpLoader3D.initializeHelper (PaletteType::PALETTE_GRAY, OrthogonalAxis::Z);
 
-  GridCoordinate1D pos1D = GRID_COORDINATE_1D (0, grid1D->getSize ().getType1 ());
+  GridCoordinate1D pos1D = grid1D->getSize ().getZero ();
   bmpDumper1D.dumpGrid (grid1D, pos1D, grid1D->getSize (), 0, -1, 0);
 
-  GridCoordinate2D pos2D = GRID_COORDINATE_2D (0, 0, grid2D->getSize ().getType1 (), grid2D->getSize ().getType2 ());
+  GridCoordinate2D pos2D = grid2D->getSize ().getZero ();
   bmpDumper2D.dumpGrid (grid2D, pos2D, grid2D->getSize (), 0, -1, 0);
 
-  GridCoordinate3D pos3D = GRID_COORDINATE_3D (0, 0, 0,
-                                               grid3D->getSize ().getType1 (),
-                                               grid3D->getSize ().getType2 (),
-                                               grid3D->getSize ().getType3 ());
+  GridCoordinate3D pos3D = grid3D->getSize ().getZero ();
   bmpDumper3D.dumpGrid (grid3D, pos3D, grid3D->getSize (), 0, -1, 0);
 
   bmpLoader1D.loadGrid (grid1D, pos1D, grid1D->getSize (), 0, -1, 0);
@@ -164,16 +158,13 @@ static void dat (Grid<GridCoordinate1D> *grid1D,
   DATLoader<GridCoordinate2D> datLoader2D;
   DATLoader<GridCoordinate3D> datLoader3D;
 
-  GridCoordinate1D pos1D = GRID_COORDINATE_1D (0, grid1D->getSize ().getType1 ());
+  GridCoordinate1D pos1D = grid1D->getSize ().getZero ();
   datDumper1D.dumpGrid (grid1D, pos1D, grid1D->getSize (), 0, -1, 0);
 
-  GridCoordinate2D pos2D = GRID_COORDINATE_2D (0, 0, grid2D->getSize ().getType1 (), grid2D->getSize ().getType2 ());
+  GridCoordinate2D pos2D = grid2D->getSize ().getZero ();
   datDumper2D.dumpGrid (grid2D, pos2D, grid2D->getSize (), 0, -1, 0);
 
-  GridCoordinate3D pos3D = GRID_COORDINATE_3D (0, 0, 0,
-                                               grid3D->getSize ().getType1 (),
-                                               grid3D->getSize ().getType2 (),
-                                               grid3D->getSize ().getType3 ());
+  GridCoordinate3D pos3D = grid3D->getSize ().getZero ()
   datDumper3D.dumpGrid (grid3D, pos3D, grid3D->getSize (), 0, -1, 0);
 
   datLoader1D.loadGrid (grid1D, pos1D, grid1D->getSize (), 0, -1, 0);
@@ -195,16 +186,13 @@ static void txt (Grid<GridCoordinate1D> *grid1D,
   TXTLoader<GridCoordinate2D> txtLoader2D;
   TXTLoader<GridCoordinate3D> txtLoader3D;
 
-  GridCoordinate1D pos1D = GRID_COORDINATE_1D (0, grid1D->getSize ().getType1 ());
+  GridCoordinate1D pos1D = grid1D->getSize ().getZero ()
   txtDumper1D.dumpGrid (grid1D, pos1D, grid1D->getSize (), 0, -1, 0);
 
-  GridCoordinate2D pos2D = GRID_COORDINATE_2D (0, 0, grid2D->getSize ().getType1 (), grid2D->getSize ().getType2 ());
+  GridCoordinate2D pos2D = grid2D->getSize ().getZero ()
   txtDumper2D.dumpGrid (grid2D, pos2D, grid2D->getSize (), 0, -1, 0);
 
-  GridCoordinate3D pos3D = GRID_COORDINATE_3D (0, 0, 0,
-                                               grid3D->getSize ().getType1 (),
-                                               grid3D->getSize ().getType2 (),
-                                               grid3D->getSize ().getType3 ());
+  GridCoordinate3D pos3D = grid3D->getSize ().getZero ()
   txtDumper3D.dumpGrid (grid3D, pos3D, grid3D->getSize (), 0, -1, 0);
 
   txtLoader1D.loadGrid (grid1D, pos1D, grid1D->getSize (), 0, -1, 0);
@@ -249,35 +237,32 @@ int main (int argc, char** argv)
                                                    grid3D.getSize ().getType1 (),
                                                    grid3D.getSize ().getType2 (),
                                                    grid3D.getSize ().getType3 ());
-        grid_coord coord = grid3D.calculateIndexFromPosition (pos);
 
         FPValue fpval = i * j * k;
         for (int t = 0; t < 3; ++t)
         {
-          grid3D.setFieldValue (updateVal (fpval, t), coord, t);
+          grid3D.setFieldValue (updateVal (fpval, t), pos, t);
         }
       }
 
       GridCoordinate2D pos = GRID_COORDINATE_2D (i, j,
                                                  grid2D.getSize ().getType1 (),
                                                  grid2D.getSize ().getType2 ());
-      grid_coord coord = grid2D.calculateIndexFromPosition (pos);
 
       FPValue fpval = i * j;
       for (int t = 0; t < 3; ++t)
       {
-        grid2D.setFieldValue (updateVal (fpval, t), coord, t);
+        grid2D.setFieldValue (updateVal (fpval, t), pos, t);
       }
     }
 
     GridCoordinate1D pos = GRID_COORDINATE_1D (i,
                                                grid1D.getSize ().getType1 ());
-    grid_coord coord = grid1D.calculateIndexFromPosition (pos);
 
     FPValue fpval = i;
     for (int t = 0; t < 3; ++t)
     {
-      grid1D.setFieldValue (updateVal (fpval, t), coord, t);
+      grid1D.setFieldValue (updateVal (fpval, t), pos, t);
     }
   }
 
