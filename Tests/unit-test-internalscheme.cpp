@@ -36,10 +36,11 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
   {
     if (intScheme->getDoNeedEx ())
     {
-      for (grid_coord i = 0; i < intScheme->getEx ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter = intScheme->getEx ()->begin ();
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = intScheme->getEx ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TCoord<grid_coord, true> pos = intScheme->getEx ()->calculatePositionFromIndex (i);
-
+        TCoord<grid_coord, true> pos = iter.getPos ();
         if (!(pos >= intScheme->getYeeLayout ()->getExStartDiff () && pos < intScheme->getEx ()->getSize () - intScheme->getYeeLayout ()->getExEndDiff ()))
         {
           continue;
@@ -52,17 +53,18 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
         FPValue ca = 1.0;
         FPValue cb = intScheme->getGridTimeStep () / (material * PhysicsConst::Eps0 * DX);
 
-        intScheme->getCaEx ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
-        intScheme->getCbEx ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
+        intScheme->getCaEx ()->setFieldValue (FIELDVALUE (ca, 0), pos, 0);
+        intScheme->getCbEx ()->setFieldValue (FIELDVALUE (cb, 0), pos, 0);
       }
     }
 
     if (intScheme->getDoNeedEy ())
     {
-      for (grid_coord i = 0; i < intScheme->getEy ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter = intScheme->getEy ()->begin ();
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = intScheme->getEy ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TCoord<grid_coord, true> pos = intScheme->getEy ()->calculatePositionFromIndex (i);
-
+        TCoord<grid_coord, true> pos = iter.getPos ();
         if (!(pos >= intScheme->getYeeLayout ()->getEyStartDiff () && pos < intScheme->getEy ()->getSize () - intScheme->getYeeLayout ()->getEyEndDiff ()))
         {
           continue;
@@ -75,17 +77,18 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
         FPValue ca = 1.0;
         FPValue cb = intScheme->getGridTimeStep () / (material * PhysicsConst::Eps0 * DX);
 
-        intScheme->getCaEy ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
-        intScheme->getCbEy ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
+        intScheme->getCaEy ()->setFieldValue (FIELDVALUE (ca, 0), pos, 0);
+        intScheme->getCbEy ()->setFieldValue (FIELDVALUE (cb, 0), pos, 0);
       }
     }
 
     if (intScheme->getDoNeedEz ())
     {
-      for (grid_coord i = 0; i < intScheme->getEz ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter = intScheme->getEz ()->begin ();
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = intScheme->getEz ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TCoord<grid_coord, true> pos = intScheme->getEz ()->calculatePositionFromIndex (i);
-
+        TCoord<grid_coord, true> pos = iter.getPos ();
         if (!(pos >= intScheme->getYeeLayout ()->getEzStartDiff () && pos < intScheme->getEz ()->getSize () - intScheme->getYeeLayout ()->getEzEndDiff ()))
         {
           continue;
@@ -98,17 +101,18 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
         FPValue ca = 1.0;
         FPValue cb = intScheme->getGridTimeStep () / (material * PhysicsConst::Eps0 * DX);
 
-        intScheme->getCaEz ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
-        intScheme->getCbEz ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
+        intScheme->getCaEz ()->setFieldValue (FIELDVALUE (ca, 0), pos, 0);
+        intScheme->getCbEz ()->setFieldValue (FIELDVALUE (cb, 0), pos, 0);
       }
     }
 
     if (intScheme->getDoNeedHx ())
     {
-      for (grid_coord i = 0; i < intScheme->getHx ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter = intScheme->getHx ()->begin ();
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = intScheme->getHx ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TCoord<grid_coord, true> pos = intScheme->getHx ()->calculatePositionFromIndex (i);
-
+        TCoord<grid_coord, true> pos = iter.getPos ();
         if (!(pos >= intScheme->getYeeLayout ()->getHxStartDiff () && pos < intScheme->getHx ()->getSize () - intScheme->getYeeLayout ()->getHxEndDiff ()))
         {
           continue;
@@ -121,17 +125,18 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
         FPValue ca = 1.0;
         FPValue cb = intScheme->getGridTimeStep () / (material * PhysicsConst::Mu0 * DX);
 
-        intScheme->getDaHx ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
-        intScheme->getDbHx ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
+        intScheme->getDaHx ()->setFieldValue (FIELDVALUE (ca, 0), pos, 0);
+        intScheme->getDbHx ()->setFieldValue (FIELDVALUE (cb, 0), pos, 0);
       }
     }
 
     if (intScheme->getDoNeedHy ())
     {
-      for (grid_coord i = 0; i < intScheme->getHy ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter = intScheme->getHy ()->begin ();
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = intScheme->getHy ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TCoord<grid_coord, true> pos = intScheme->getHy ()->calculatePositionFromIndex (i);
-
+        TCoord<grid_coord, true> pos = iter.getPos ();
         if (!(pos >= intScheme->getYeeLayout ()->getHyStartDiff () && pos < intScheme->getHy ()->getSize () - intScheme->getYeeLayout ()->getHyEndDiff ()))
         {
           continue;
@@ -144,17 +149,18 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
         FPValue ca = 1.0;
         FPValue cb = intScheme->getGridTimeStep () / (material * PhysicsConst::Mu0 * DX);
 
-        intScheme->getDaHy ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
-        intScheme->getDbHy ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
+        intScheme->getDaHy ()->setFieldValue (FIELDVALUE (ca, 0), pos, 0);
+        intScheme->getDbHy ()->setFieldValue (FIELDVALUE (cb, 0), pos, 0);
       }
     }
 
     if (intScheme->getDoNeedHz ())
     {
-      for (grid_coord i = 0; i < intScheme->getHz ()->getSize ().calculateTotalCoord (); ++i)
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter = intScheme->getHz ()->begin ();
+      typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = intScheme->getHz ()->end ();
+      for (; iter != iter_end; ++iter)
       {
-        TCoord<grid_coord, true> pos = intScheme->getHz ()->calculatePositionFromIndex (i);
-
+        TCoord<grid_coord, true> pos = iter.getPos ();
         if (!(pos >= intScheme->getYeeLayout ()->getHzStartDiff () && pos < intScheme->getHz ()->getSize () - intScheme->getYeeLayout ()->getHzEndDiff ()))
         {
           continue;
@@ -167,8 +173,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
         FPValue ca = 1.0;
         FPValue cb = intScheme->getGridTimeStep () / (material * PhysicsConst::Mu0 * DX);
 
-        intScheme->getDaHz ()->setFieldValue (FIELDVALUE (ca, 0), i, 0);
-        intScheme->getDbHz ()->setFieldValue (FIELDVALUE (cb, 0), i, 0);
+        intScheme->getDaHz ()->setFieldValue (FIELDVALUE (ca, 0), pos, 0);
+        intScheme->getDbHz ()->setFieldValue (FIELDVALUE (cb, 0), pos, 0);
       }
     }
   }
@@ -319,40 +325,36 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        for (; iter != iter_end; ++iter)
         {
-          for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
-          {
-            for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-            {
-              TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-              TCoord<grid_coord, true> posAbs = intScheme->getEx ()->getTotalPosition (pos);
+          TCoord<grid_coord, true> pos = iter.getPos ();
+          TCoord<grid_coord, true> posAbs = intScheme->getEx ()->getTotalPosition (pos);
 
-              if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EX), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getEx (), coordFP,
-                                                                   intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
-                                                                   intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   intScheme->getCaEx (), intScheme->getCbEx (),
-                                                                   false,
-                                                                   GridType::EX, intScheme->getEps (), GridType::EPS,
-                                                                   PhysicsConst::Eps0);
-              }
-              else
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EX), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getEx (), coordFP,
-                                                                   intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
-                                                                   intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   NULLPTR, NULLPTR,
-                                                                   false,
-                                                                   GridType::EX, intScheme->getEps (), GridType::EPS,
-                                                                   PhysicsConst::Eps0);
-              }
-            }
+          if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
+          {
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EX), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getEx (), coordFP,
+                                                               intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
+                                                               intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
+                                                               NULLPTR,
+                                                               intScheme->getCaEx (), intScheme->getCbEx (),
+                                                               false,
+                                                               GridType::EX, intScheme->getEps (), GridType::EPS,
+                                                               PhysicsConst::Eps0);
+          }
+          else
+          {
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EX), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getEx (), coordFP,
+                                                               intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
+                                                               intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
+                                                               NULLPTR,
+                                                               NULLPTR, NULLPTR,
+                                                               false,
+                                                               GridType::EX, intScheme->getEps (), GridType::EPS,
+                                                               PhysicsConst::Eps0);
           }
         }
 
@@ -406,39 +408,35 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        for (; iter != iter_end; ++iter)
         {
-          for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+          TCoord<grid_coord, true> pos = iter.getPos ();
+          TCoord<grid_coord, true> posAbs = intScheme->getEy ()->getTotalPosition (pos);
+          if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
           {
-            for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-            {
-              TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-              TCoord<grid_coord, true> posAbs = intScheme->getEy ()->getTotalPosition (pos);
-              if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EY) , true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getEy (), coordFP,
-                                                                   intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
-                                                                   intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   intScheme->getCaEy (), intScheme->getCbEy (),
-                                                                   false,
-                                                                   GridType::EY, intScheme->getEps (), GridType::EPS,
-                                                                   PhysicsConst::Eps0);
-              }
-              else
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EY) , false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getEy (), coordFP,
-                                                                   intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
-                                                                   intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   NULLPTR, NULLPTR,
-                                                                   false,
-                                                                   GridType::EY, intScheme->getEps (), GridType::EPS,
-                                                                   PhysicsConst::Eps0);
-              }
-            }
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EY) , true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getEy (), coordFP,
+                                                               intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
+                                                               intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
+                                                               NULLPTR,
+                                                               intScheme->getCaEy (), intScheme->getCbEy (),
+                                                               false,
+                                                               GridType::EY, intScheme->getEps (), GridType::EPS,
+                                                               PhysicsConst::Eps0);
+          }
+          else
+          {
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EY) , false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getEy (), coordFP,
+                                                               intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
+                                                               intScheme->getDoNeedHz () ? intScheme->getHz () : NULLPTR,
+                                                               NULLPTR,
+                                                               NULLPTR, NULLPTR,
+                                                               false,
+                                                               GridType::EY, intScheme->getEps (), GridType::EPS,
+                                                               PhysicsConst::Eps0);
           }
         }
 
@@ -492,39 +490,35 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        for (; iter != iter_end; ++iter)
         {
-          for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+          TCoord<grid_coord, true> pos = iter.getPos ();
+          TCoord<grid_coord, true> posAbs = intScheme->getEz ()->getTotalPosition (pos);
+          if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
           {
-            for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-            {
-              TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-              TCoord<grid_coord, true> posAbs = intScheme->getEz ()->getTotalPosition (pos);
-              if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EZ) , true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getEz (), coordFP,
-                                                                   intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
-                                                                   intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   intScheme->getCaEz (), intScheme->getCbEz (),
-                                                                   false,
-                                                                   GridType::EZ, intScheme->getEps (), GridType::EPS,
-                                                                   PhysicsConst::Eps0);
-              }
-              else
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EZ) , false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getEz (), coordFP,
-                                                                   intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
-                                                                   intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   NULLPTR, NULLPTR,
-                                                                   false,
-                                                                   GridType::EZ, intScheme->getEps (), GridType::EPS,
-                                                                   PhysicsConst::Eps0);
-              }
-            }
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EZ) , true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getEz (), coordFP,
+                                                               intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
+                                                               intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
+                                                               NULLPTR,
+                                                               intScheme->getCaEz (), intScheme->getCbEz (),
+                                                               false,
+                                                               GridType::EZ, intScheme->getEps (), GridType::EPS,
+                                                               PhysicsConst::Eps0);
+          }
+          else
+          {
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::EZ) , false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getEz (), coordFP,
+                                                               intScheme->getDoNeedHy () ? intScheme->getHy () : NULLPTR,
+                                                               intScheme->getDoNeedHx () ? intScheme->getHx () : NULLPTR,
+                                                               NULLPTR,
+                                                               NULLPTR, NULLPTR,
+                                                               false,
+                                                               GridType::EZ, intScheme->getEps (), GridType::EPS,
+                                                               PhysicsConst::Eps0);
           }
         }
 
@@ -597,39 +591,35 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        for (; iter != iter_end; ++iter)
         {
-          for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+          TCoord<grid_coord, true> pos = iter.getPos ();
+          TCoord<grid_coord, true> posAbs = intScheme->getHx ()->getTotalPosition (pos);
+          if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
           {
-            for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-            {
-              TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-              TCoord<grid_coord, true> posAbs = intScheme->getHx ()->getTotalPosition (pos);
-              if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HX), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getHx (), coordFP,
-                                                                   intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
-                                                                   intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   intScheme->getDaHx (), intScheme->getDbHx (),
-                                                                   false,
-                                                                   GridType::HX, intScheme->getMu (), GridType::MU,
-                                                                   PhysicsConst::Mu0);
-              }
-              else
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HX), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getHx (), coordFP,
-                                                                   intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
-                                                                   intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   NULLPTR, NULLPTR,
-                                                                   false,
-                                                                   GridType::HX, intScheme->getMu (), GridType::MU,
-                                                                   PhysicsConst::Mu0);
-              }
-            }
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HX), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getHx (), coordFP,
+                                                               intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
+                                                               intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
+                                                               NULLPTR,
+                                                               intScheme->getDaHx (), intScheme->getDbHx (),
+                                                               false,
+                                                               GridType::HX, intScheme->getMu (), GridType::MU,
+                                                               PhysicsConst::Mu0);
+          }
+          else
+          {
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HX), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getHx (), coordFP,
+                                                               intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
+                                                               intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
+                                                               NULLPTR,
+                                                               NULLPTR, NULLPTR,
+                                                               false,
+                                                               GridType::HX, intScheme->getMu (), GridType::MU,
+                                                               PhysicsConst::Mu0);
           }
         }
 
@@ -683,39 +673,35 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        for (; iter != iter_end; ++iter)
         {
-          for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+          TCoord<grid_coord, true> pos = iter.getPos ();
+          TCoord<grid_coord, true> posAbs = intScheme->getHy ()->getTotalPosition (pos);
+          if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
           {
-            for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-            {
-              TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-              TCoord<grid_coord, true> posAbs = intScheme->getHy ()->getTotalPosition (pos);
-              if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HY), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getHy (), coordFP,
-                                                                   intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
-                                                                   intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   intScheme->getDaHy (), intScheme->getDbHy (),
-                                                                   false,
-                                                                   GridType::HY, intScheme->getMu (), GridType::MU,
-                                                                   PhysicsConst::Mu0);
-              }
-              else
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HY), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getHy (), coordFP,
-                                                                   intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
-                                                                   intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   NULLPTR, NULLPTR,
-                                                                   false,
-                                                                   GridType::HY, intScheme->getMu (), GridType::MU,
-                                                                   PhysicsConst::Mu0);
-              }
-            }
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HY), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getHy (), coordFP,
+                                                               intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
+                                                               intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
+                                                               NULLPTR,
+                                                               intScheme->getDaHy (), intScheme->getDbHy (),
+                                                               false,
+                                                               GridType::HY, intScheme->getMu (), GridType::MU,
+                                                               PhysicsConst::Mu0);
+          }
+          else
+          {
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HY), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getHy (), coordFP,
+                                                               intScheme->getDoNeedEz () ? intScheme->getEz () : NULLPTR,
+                                                               intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
+                                                               NULLPTR,
+                                                               NULLPTR, NULLPTR,
+                                                               false,
+                                                               GridType::HY, intScheme->getMu (), GridType::MU,
+                                                               PhysicsConst::Mu0);
           }
         }
 
@@ -769,39 +755,35 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        for (grid_coord i = start3D.get1 (); i < end3D.get1 (); ++i)
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        for (; iter != iter_end; ++iter)
         {
-          for (grid_coord j = start3D.get2 (); j < end3D.get2 (); ++j)
+          TCoord<grid_coord, true> pos = iter.getPos ();
+          TCoord<grid_coord, true> posAbs = intScheme->getHz ()->getTotalPosition (pos);
+          if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
           {
-            for (grid_coord k = start3D.get3 (); k < end3D.get3 (); ++k)
-            {
-              TCoord<grid_coord, true> pos = TCoord<grid_coord, true>::initAxesCoordinate (i, j, k, ct1, ct2, ct3);
-              TCoord<grid_coord, true> posAbs = intScheme->getHz ()->getTotalPosition (pos);
-              if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HZ), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getHz (), coordFP,
-                                                                   intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
-                                                                   intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   intScheme->getDaHz (), intScheme->getDbHz (),
-                                                                   false,
-                                                                   GridType::HZ, intScheme->getMu (), GridType::MU,
-                                                                   PhysicsConst::Mu0);
-              }
-              else
-              {
-                intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HZ), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
-                                                                   intScheme->getHz (), coordFP,
-                                                                   intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
-                                                                   intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
-                                                                   NULLPTR,
-                                                                   NULLPTR, NULLPTR,
-                                                                   false,
-                                                                   GridType::HZ, intScheme->getMu (), GridType::MU,
-                                                                   PhysicsConst::Mu0);
-              }
-            }
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HZ), true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getHz (), coordFP,
+                                                               intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
+                                                               intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
+                                                               NULLPTR,
+                                                               intScheme->getDaHz (), intScheme->getDbHz (),
+                                                               false,
+                                                               GridType::HZ, intScheme->getMu (), GridType::MU,
+                                                               PhysicsConst::Mu0);
+          }
+          else
+          {
+            intScheme->template calculateFieldStepIteration< static_cast<uint8_t> (GridType::HZ), false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+                                                               intScheme->getHz (), coordFP,
+                                                               intScheme->getDoNeedEx () ? intScheme->getEx () : NULLPTR,
+                                                               intScheme->getDoNeedEy () ? intScheme->getEy () : NULLPTR,
+                                                               NULLPTR,
+                                                               NULLPTR, NULLPTR,
+                                                               false,
+                                                               GridType::HZ, intScheme->getMu (), GridType::MU,
+                                                               PhysicsConst::Mu0);
           }
         }
 
@@ -1034,53 +1016,53 @@ void test1D_ExHy ()
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (6, ct1), 0);
 
-    Ex_cmp.setFieldValue (FIELDVALUE (0.21811863445648658, -0.97471655250974043), 7, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.27908260941002716, -0.96196058514825045), 8, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.3386998783352157, -0.93865257984534911), 9, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.39727542433754848, -0.92054926754400479), 10, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.45394742244500197, -0.88752443613856613), 11, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.50918770413007142, -0.8648309348268548), 12, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.21811863445648658, -0.97471655250974043), GRID_COORDINATE_1D (7, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.27908260941002716, -0.96196058514825045), GRID_COORDINATE_1D (8, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.3386998783352157, -0.93865257984534911), GRID_COORDINATE_1D (9, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.39727542433754848, -0.92054926754400479), GRID_COORDINATE_1D (10, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.45394742244500197, -0.88752443613856613), GRID_COORDINATE_1D (11, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.50918770413007142, -0.8648309348268548), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
   {
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
 
-    Ex_cmp.setFieldValue (FIELDVALUE (0.18730018750160604, -0.98158407156284588), 6, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.24860062193325649, -0.96833856882899538), 7, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.30889124387262124, -0.95030658249679933), 8, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.36798765133638245, -0.92960092369467662), 9, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.42561142339127539, -0.90403685184128513), 10, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.48156756328753614, -0.8761776854827098), 11, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0.53562066322056501, -0.84355796057397081), 12, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.18730018750160604, -0.98158407156284588), GRID_COORDINATE_1D (6, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.24860062193325649, -0.96833856882899538), GRID_COORDINATE_1D (7, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.30889124387262124, -0.95030658249679933), GRID_COORDINATE_1D (8, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.36798765133638245, -0.92960092369467662), GRID_COORDINATE_1D (9, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.42561142339127539, -0.90403685184128513), GRID_COORDINATE_1D (10, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.48156756328753614, -0.8761776854827098), GRID_COORDINATE_1D (11, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0.53562066322056501, -0.84355796057397081), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
 #endif /* DOUBLE_VALUES */
 
@@ -1136,53 +1118,53 @@ void test1D_ExHz ()
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (6, ct1), 0);
 
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.21811863445648658, 0.97471655250974043), 7, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.27908260941002716, 0.96196058514825045), 8, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.3386998783352157, 0.93865257984534911), 9, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.39727542433754848, 0.92054926754400479), 10, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.45394742244500197, 0.88752443613856613), 11, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.50918770413007142, 0.8648309348268548), 12, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.21811863445648658, 0.97471655250974043), GRID_COORDINATE_1D (7, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.27908260941002716, 0.96196058514825045), GRID_COORDINATE_1D (8, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.3386998783352157, 0.93865257984534911), GRID_COORDINATE_1D (9, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.39727542433754848, 0.92054926754400479), GRID_COORDINATE_1D (10, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.45394742244500197, 0.88752443613856613), GRID_COORDINATE_1D (11, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.50918770413007142, 0.8648309348268548), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
   {
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
 
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.18730018750160604, 0.98158407156284588), 6, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.24860062193325649, 0.96833856882899538), 7, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.30889124387262124, 0.95030658249679933), 8, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.36798765133638245, 0.92960092369467662), 9, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.42561142339127539, 0.90403685184128513), 10, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.48156756328753614, 0.8761776854827098), 11, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (-0.53562066322056501, 0.84355796057397081), 12, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.18730018750160604, 0.98158407156284588), GRID_COORDINATE_1D (6, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.24860062193325649, 0.96833856882899538), GRID_COORDINATE_1D (7, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.30889124387262124, 0.95030658249679933), GRID_COORDINATE_1D (8, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.36798765133638245, 0.92960092369467662), GRID_COORDINATE_1D (9, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.42561142339127539, 0.90403685184128513), GRID_COORDINATE_1D (10, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.48156756328753614, 0.8761776854827098), GRID_COORDINATE_1D (11, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (-0.53562066322056501, 0.84355796057397081), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ex_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
 #endif /* DOUBLE_VALUES */
 
@@ -1238,53 +1220,53 @@ void test1D_EyHx ()
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (6, ct1), 0);
 
-    Ey_cmp.setFieldValue (FIELDVALUE (0.21811863445648658, -0.97471655250974043), 7, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.27908260941002716, -0.96196058514825045), 8, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.3386998783352157, -0.93865257984534911), 9, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.39727542433754848, -0.92054926754400479), 10, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.45394742244500197, -0.88752443613856613), 11, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.50918770413007142, -0.8648309348268548), 12, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.21811863445648658, -0.97471655250974043), GRID_COORDINATE_1D (7, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.27908260941002716, -0.96196058514825045), GRID_COORDINATE_1D (8, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.3386998783352157, -0.93865257984534911), GRID_COORDINATE_1D (9, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.39727542433754848, -0.92054926754400479), GRID_COORDINATE_1D (10, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.45394742244500197, -0.88752443613856613), GRID_COORDINATE_1D (11, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.50918770413007142, -0.8648309348268548), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
   {
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
 
-    Ey_cmp.setFieldValue (FIELDVALUE (0.18730018750160604, -0.98158407156284588), 6, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.24860062193325649, -0.96833856882899538), 7, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.30889124387262124, -0.95030658249679933), 8, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.36798765133638245, -0.92960092369467662), 9, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.42561142339127539, -0.90403685184128513), 10, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.48156756328753614, -0.8761776854827098), 11, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.53562066322056501, -0.84355796057397081), 12, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.18730018750160604, -0.98158407156284588), GRID_COORDINATE_1D (6, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.24860062193325649, -0.96833856882899538), GRID_COORDINATE_1D (7, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.30889124387262124, -0.95030658249679933), GRID_COORDINATE_1D (8, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.36798765133638245, -0.92960092369467662), GRID_COORDINATE_1D (9, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.42561142339127539, -0.90403685184128513), GRID_COORDINATE_1D (10, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.48156756328753614, -0.8761776854827098), GRID_COORDINATE_1D (11, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.53562066322056501, -0.84355796057397081), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
 #endif /* DOUBLE_VALUES */
 
@@ -1340,53 +1322,53 @@ void test1D_EyHz ()
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (6, ct1), 0);
 
-    Ey_cmp.setFieldValue (FIELDVALUE (0.21811863445648658, -0.97471655250974043), 7, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.27908260941002716, -0.96196058514825045), 8, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.3386998783352157, -0.93865257984534911), 9, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.39727542433754848, -0.92054926754400479), 10, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.45394742244500197, -0.88752443613856613), 11, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.50918770413007142, -0.8648309348268548), 12, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.21811863445648658, -0.97471655250974043), GRID_COORDINATE_1D (7, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.27908260941002716, -0.96196058514825045), GRID_COORDINATE_1D (8, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.3386998783352157, -0.93865257984534911), GRID_COORDINATE_1D (9, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.39727542433754848, -0.92054926754400479), GRID_COORDINATE_1D (10, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.45394742244500197, -0.88752443613856613), GRID_COORDINATE_1D (11, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.50918770413007142, -0.8648309348268548), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
   {
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
 
-    Ey_cmp.setFieldValue (FIELDVALUE (0.18730018750160604, -0.98158407156284588), 6, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.24860062193325649, -0.96833856882899538), 7, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.30889124387262124, -0.95030658249679933), 8, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.36798765133638245, -0.92960092369467662), 9, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.42561142339127539, -0.90403685184128513), 10, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.48156756328753614, -0.8761776854827098), 11, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0.53562066322056501, -0.84355796057397081), 12, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.18730018750160604, -0.98158407156284588), GRID_COORDINATE_1D (6, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.24860062193325649, -0.96833856882899538), GRID_COORDINATE_1D (7, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.30889124387262124, -0.95030658249679933), GRID_COORDINATE_1D (8, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.36798765133638245, -0.92960092369467662), GRID_COORDINATE_1D (9, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.42561142339127539, -0.90403685184128513), GRID_COORDINATE_1D (10, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.48156756328753614, -0.8761776854827098), GRID_COORDINATE_1D (11, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0.53562066322056501, -0.84355796057397081), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ey_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
 #endif /* DOUBLE_VALUES */
 
@@ -1442,53 +1424,53 @@ void test1D_EzHx ()
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (6, ct1), 0);
 
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.21811863445648658, 0.97471655250974043), 7, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.27908260941002716, 0.96196058514825045), 8, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.3386998783352157, 0.93865257984534911), 9, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.39727542433754848, 0.92054926754400479), 10, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.45394742244500197, 0.88752443613856613), 11, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.50918770413007142, 0.8648309348268548), 12, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.21811863445648658, 0.97471655250974043), GRID_COORDINATE_1D (7, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.27908260941002716, 0.96196058514825045), GRID_COORDINATE_1D (8, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.3386998783352157, 0.93865257984534911), GRID_COORDINATE_1D (9, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.39727542433754848, 0.92054926754400479), GRID_COORDINATE_1D (10, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.45394742244500197, 0.88752443613856613), GRID_COORDINATE_1D (11, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.50918770413007142, 0.8648309348268548), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
   {
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
 
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.18730018750160604, 0.98158407156284588), 6, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.24860062193325649, 0.96833856882899538), 7, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.30889124387262124, 0.95030658249679933), 8, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.36798765133638245, 0.92960092369467662), 9, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.42561142339127539, 0.90403685184128513), 10, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.48156756328753614, 0.8761776854827098), 11, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.53562066322056501, 0.84355796057397081), 12, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.18730018750160604, 0.98158407156284588), GRID_COORDINATE_1D (6, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.24860062193325649, 0.96833856882899538), GRID_COORDINATE_1D (7, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.30889124387262124, 0.95030658249679933), GRID_COORDINATE_1D (8, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.36798765133638245, 0.92960092369467662), GRID_COORDINATE_1D (9, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.42561142339127539, 0.90403685184128513), GRID_COORDINATE_1D (10, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.48156756328753614, 0.8761776854827098), GRID_COORDINATE_1D (11, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.53562066322056501, 0.84355796057397081), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
 #endif /* DOUBLE_VALUES */
 
@@ -1544,53 +1526,53 @@ void test1D_EzHy ()
 
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == E_CENTERED)
   {
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 6, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (6, ct1), 0);
 
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.21811863445648658, 0.97471655250974043), 7, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.27908260941002716, 0.96196058514825045), 8, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.3386998783352157, 0.93865257984534911), 9, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.39727542433754848, 0.92054926754400479), 10, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.45394742244500197, 0.88752443613856613), 11, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.50918770413007142, 0.8648309348268548), 12, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.21811863445648658, 0.97471655250974043), GRID_COORDINATE_1D (7, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.27908260941002716, 0.96196058514825045), GRID_COORDINATE_1D (8, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.3386998783352157, 0.93865257984534911), GRID_COORDINATE_1D (9, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.39727542433754848, 0.92054926754400479), GRID_COORDINATE_1D (10, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.45394742244500197, 0.88752443613856613), GRID_COORDINATE_1D (11, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.50918770413007142, 0.8648309348268548), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
   if (SOLVER_SETTINGS.getDoUseTFSF () && layout_type == H_CENTERED)
   {
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 0, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 1, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 2, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 3, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 4, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 5, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (0, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (1, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (2, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (3, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (4, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (5, ct1), 0);
 
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.18730018750160604, 0.98158407156284588), 6, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.24860062193325649, 0.96833856882899538), 7, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.30889124387262124, 0.95030658249679933), 8, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.36798765133638245, 0.92960092369467662), 9, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.42561142339127539, 0.90403685184128513), 10, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.48156756328753614, 0.8761776854827098), 11, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (-0.53562066322056501, 0.84355796057397081), 12, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.18730018750160604, 0.98158407156284588), GRID_COORDINATE_1D (6, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.24860062193325649, 0.96833856882899538), GRID_COORDINATE_1D (7, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.30889124387262124, 0.95030658249679933), GRID_COORDINATE_1D (8, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.36798765133638245, 0.92960092369467662), GRID_COORDINATE_1D (9, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.42561142339127539, 0.90403685184128513), GRID_COORDINATE_1D (10, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.48156756328753614, 0.8761776854827098), GRID_COORDINATE_1D (11, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (-0.53562066322056501, 0.84355796057397081), GRID_COORDINATE_1D (12, ct1), 0);
 
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 13, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 14, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 15, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 16, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 17, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 18, 0);
-    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), 19, 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (13, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (14, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (15, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (16, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (17, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (18, ct1), 0);
+    Ez_cmp.setFieldValue (FIELDVALUE (0, 0), GRID_COORDINATE_1D (19, ct1), 0);
   }
 #endif /* DOUBLE_VALUES */
 

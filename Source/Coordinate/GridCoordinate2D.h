@@ -704,6 +704,23 @@ public:
 #endif /* DEBUG_INFO */
       , (FPValue) get2 ());
   } /* GridCoordinate2DTemplate::print */
+
+  /**
+   * Get zero coordinate with the same types
+   *
+   * @return zero coordinate with the same types
+   */
+  CUDA_DEVICE CUDA_HOST
+  GridCoordinate2DTemplate<TcoordType, doSignChecks> getZero () const
+  {
+    return GridCoordinate2DTemplate<TcoordType, doSignChecks> (0,
+                                                               0
+#ifdef DEBUG_INFO
+                                                               , GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ()
+                                                               , getType2 ()
+#endif /* DEBUG_INFO */
+                                                               );
+  } /* getZero */
 }; /* GridCoordinate2DTemplate */
 
 /**

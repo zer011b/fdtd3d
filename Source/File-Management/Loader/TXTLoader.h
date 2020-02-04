@@ -4,38 +4,97 @@
 #include <iostream>
 #include <fstream>
 
+#include <iomanip>
+#include <limits>
+#include <sstream>
+
 #include "Loader.h"
 
 /**
  * Grid loader from txt files.
- * Template class with coordinate parameter.
  */
 template <class TCoord>
 class TXTLoader: public Loader<TCoord>
 {
-  // Load grid from file for specific layer.
-  void loadFromFile (Grid<TCoord> *grid, TCoord, TCoord, int);
-
-  void loadGridInternal (Grid<TCoord> *grid, TCoord, TCoord, time_step, int);
+  void loadFromFile (Grid<TCoord> *, TCoord, TCoord, int);
+  void loadGridInternal (Grid<TCoord> *, TCoord, TCoord, time_step, int);
+  uint32_t skipIndexes (TCoord, const std::vector<std::string> &);
 
 public:
 
   virtual ~TXTLoader () {}
 
-  // Virtual method for grid loading.
-  virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int, int) CXX11_OVERRIDE;
-  virtual void loadGrid (Grid<TCoord> *grid, TCoord, TCoord, time_step, int,
+  virtual void loadGrid (Grid<TCoord> *, TCoord, TCoord, time_step, int, int) CXX11_OVERRIDE;
+  virtual void loadGrid (Grid<TCoord> *, TCoord, TCoord, time_step, int,
                          const std::vector< std::string > &) CXX11_OVERRIDE;
-};
+}; /* TXTLoader */
 
 /**
- * ======== Template implementation ========
+ * Load data from file
  */
+template<class TCoord>
+void
+TXTLoader<TCoord>::loadFromFile (Grid<TCoord> *grid, /**< grid to load */
+                                 TCoord startCoord, /**< start loading from this coordinate */
+                                 TCoord endCoord, /**< end loading at this coordinate */
+                                 int time_step_back) /**< relative time step at which to load */
+{
+  ASSERT (time_step_back >= 0 && time_step_back < grid->getCountStoredSteps ());
+  ASSERT (startCoord >= startCoord.getZero () && startCoord < grid->getSize ());
+  ASSERT (endCoord > endCoord.getZero () && endCoord <= grid->getSize ());
 
+  std::ifstream file;
+  file.open (this->GridFileManager::names[time_step_back].c_str (), std::ios::in);
+  ASSERT (file.is_open());
+
+  file >> std::setprecision(std::numeric_limits<double>::digits10);
+
+  // Go through all values and write to file.
+  typename VectorFieldValues<TCoord>::Iterator iter (startCoord, startCoord, endCoord);
+  typename VectorFieldValues<TCoord>::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (startCoord, endCoord);
+  for (; iter != iter_end; ++iter)
+  {
+    TCoord pos = iter.getPos ();
+
+    std::string line;
+    std::getline (file, line);
+    ASSERT ((file.rdstate() & std::ifstream::failbit) == 0);
+
+    std::string buf;
+    std::vector<std::string> tokens;
+    std::stringstream ss (line);
+    while (ss >> buf)
+    {
+      tokens.push_back(buf);
+    }
+
+    uint32_t word_index = skipIndexes (pos, tokens);
+
+    FPValue real = STOF (tokens[word_index++].c_str ());
+#ifdef COMPLEX_FIELD_VALUES
+    FPValue imag = STOF (tokens[word_index++].c_str ());
+    grid->setFieldValue (FieldValue (real, imag), pos, time_step_back);
+#else /* COMPLEX_FIELD_VALUES */
+    grid->setFieldValue (FieldValue (real), pos, time_step_back);
+#endif /* !COMPLEX_FIELD_VALUES */
+  }
+
+  // peek next character from file, which should set eof flags
+  ASSERT ((file.peek (), file.eof()));
+
+  file.close();
+} /* TXTLoader::loadFromFile */
+
+/**
+ * Choose scenario of loading of grid
+ */
 template <class TCoord>
 void
-TXTLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
-                                     time_step timeStep, int time_step_back)
+TXTLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, /**< grid to load */
+                                     TCoord startCoord, /**< start loading from this coordinate */
+                                     TCoord endCoord, /**< end loading at this coordinate */
+                                     time_step timeStep, /**< absolute time step at which to load */
+                                     int time_step_back) /**< relative time step at which to load */
 {
   const TCoord& size = grid->getSize ();
 
@@ -66,33 +125,40 @@ TXTLoader<TCoord>::loadGridInternal (Grid<TCoord> *grid, TCoord startCoord, TCoo
   }
 
   std::cout << "Loaded. " << std::endl;
-}
+} /* TXTLoader::loadGridInternal */
 
 /**
- * Virtual method for grid saving.
+ * Virtual method for grid loading, which makes file names automatically
  */
 template <class TCoord>
 void
-TXTLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
-                             time_step timeStep, int time_step_back, int pid)
+TXTLoader<TCoord>::loadGrid (Grid<TCoord> *grid, /**< grid to load */
+                             TCoord startCoord, /**< start loading from this coordinate */
+                             TCoord endCoord, /**< end loading at this coordinate */
+                             time_step timeStep, /**< absolute time step at which to load */
+                             int time_step_back, /**< relative time step at which to load */
+                             int pid) /**< pid of process, which does loading */
 {
   GridFileManager::setFileNames (grid->getCountStoredSteps (), timeStep, pid, std::string (grid->getName ()), FILE_TYPE_TXT);
 
   loadGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
-}
+} /* TXTLoader::loadGrid */
 
 /**
- * Virtual method for grid saving.
+ * Virtual method for grid loading, which uses custom names
  */
 template <class TCoord>
 void
-TXTLoader<TCoord>::loadGrid (Grid<TCoord> *grid, TCoord startCoord, TCoord endCoord,
-                             time_step timeStep, int time_step_back,
-                             const std::vector< std::string > & customNames)
+TXTLoader<TCoord>::loadGrid (Grid<TCoord> *grid, /**< grid to load */
+                             TCoord startCoord, /**< start loading from this coordinate */
+                             TCoord endCoord, /**< end loading at this coordinate */
+                             time_step timeStep, /**< absolute time step at which to load */
+                             int time_step_back, /**< relative time step at which to load */
+                             const std::vector< std::string > & customNames) /**< custom names of files */
 {
   GridFileManager::setCustomFileNames (customNames);
 
   loadGridInternal (grid, startCoord, endCoord, timeStep, time_step_back);
-}
+} /* TXTLoader::loadGrid */
 
 #endif /* TXT_LOADER_H */

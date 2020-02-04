@@ -1,21 +1,29 @@
 #include "Commons.h"
 
+/**
+ * Convert int64 to string
+ */
 #ifdef CXX11_ENABLED
-std::string int64_to_string(int64_t value)
+std::string int64_to_string(int64_t value) /**< value */
 {
   return std::to_string (value);
-}
+} /* int64_to_string */
 #else
-std::string int64_to_string(int64_t value)
+std::string int64_to_string(int64_t value) /**< value */
 {
   char buffer[65];
   snprintf(buffer, sizeof(buffer), "%ld", value);
   return std::string (buffer);
-}
+} /* int64_to_string */
 #endif
 
+/**
+ * Get type of file from its name
+ *
+ * @return type of file
+ */
 FileType
-GridFileManager::getFileType (const std::string &str)
+GridFileManager::getFileType (const std::string &str) /**< file name */
 {
   uint32_t found = str.find_last_of(".");
 
@@ -35,4 +43,5 @@ GridFileManager::getFileType (const std::string &str)
   }
 
   UNREACHABLE;
-}
+  return FILE_TYPE_COUNT;
+} /* GridFileManager::getFileType */

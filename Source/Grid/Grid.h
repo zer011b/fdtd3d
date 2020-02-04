@@ -12,9 +12,822 @@
 #include "Settings.h"
 
 /**
- * Type of vector of points in grid.
+ * Storage of FieldValue in N-dimensional mode
  */
-typedef std::vector<FieldValue> VectorFieldValues;
+template <class TCoord>
+class VectorFieldValues
+{
+}; /* VectorFieldValues */
+
+/**
+ * Storage of FieldValue in 1-dimensional mode
+ */
+template <>
+class VectorFieldValues<GridCoordinate1D>
+{
+  /**
+   * Size of vector
+   */
+  GridCoordinate1D size;
+
+  /**
+   * Pointer to raw data
+   */
+  FieldValue *data;
+
+private:
+
+  /**
+   * Allocate raw buffer
+   */
+  void alloc ()
+  {
+    ASSERT (data == NULLPTR);
+    data = new FieldValue[size.get1 ()];
+  } /* alloc */
+
+  /**
+   * Free raw buffer
+   */
+  void free ()
+  {
+    ASSERT (data != NULLPTR);
+    delete[] data;
+    data = NULLPTR;
+  } /* free */
+
+public:
+
+  /**
+   * Iterator
+   */
+  class Iterator
+  {
+    /**
+     * Current iterator coordinate
+     * Values from start to end allowed, including both (end is used for grid->end())
+     */
+    GridCoordinate1D pos;
+
+    /**
+     * Start iterator coordinate
+     */
+    GridCoordinate1D start;
+
+    /**
+     * End iterator coordinate
+     */
+    GridCoordinate1D end;
+
+  public:
+
+    /**
+     * Constructor
+     */
+    Iterator (const GridCoordinate1D & new_pos, /**< current coordinate */
+              const GridCoordinate1D & new_start, /**< start coordinate */
+              const GridCoordinate1D & new_end) /**< end coordinate */
+    : pos (new_pos)
+    , start (new_start)
+    , end (new_end)
+    {
+      ASSERT (pos >= start)
+      ASSERT (pos <= end);
+    } /* Iterator */
+
+    /**
+     * Pre-increment operator
+     *
+     * @return iterator
+     */
+    Iterator & operator++ ()
+    {
+      ASSERT (pos < end);
+      pos.set1 (pos.get1 () + 1);
+      return *this;
+    } /* operator++ */
+
+    /**
+     * Pre-decrement operator
+     *
+     * @return iterator
+     */
+    Iterator & operator-- ()
+    {
+      ASSERT (pos > start);
+      pos.set1 (pos.get1 () - 1);
+      return *this;
+    } /* operator-- */
+
+    /**
+     * Non-equality comparison
+     *
+     * @return result of comparison
+     */
+    bool operator!= (const Iterator &rhs) const /**< iterator to compare to */
+    {
+      ASSERT (start == rhs.start);
+      ASSERT (end == rhs.end);
+      return pos != rhs.pos;
+    } /* operator!= */
+
+    /**
+     * Get current coordinate of iterator
+     *
+     * @return current coordinate
+     */
+    const GridCoordinate1D & getPos () const
+    {
+      ASSERT (pos >= start);
+      ASSERT (pos < end);
+      return pos;
+    } /* getPos */
+
+    /**
+     * Get end iterator for specified start and end coordinates
+     *
+     * @return end iterator
+     */
+    static Iterator getEndIterator (const GridCoordinate1D &start, /**< start coordinate */
+                                    const GridCoordinate1D &end) /**< end coordinate */
+    {
+      return Iterator (GRID_COORDINATE_1D (end.get1 (), end.getType1 ()), start, end);
+    } /* getEndIterator */
+  }; /* Iterator */
+
+public:
+
+  /**
+   * Constructor
+   */
+  VectorFieldValues<GridCoordinate1D> (const GridCoordinate1D & new_size) /**< size of storage */
+  : size (new_size)
+  , data (NULLPTR)
+  {
+    alloc ();
+  } /* VectorFieldValues */
+
+  /**
+   * Destructor
+   */
+  ~VectorFieldValues<GridCoordinate1D> ()
+  {
+    free ();
+  } /* ~VectorFieldValues */
+
+  /**
+   * Get FieldValue at coordinate
+   *
+   * @return FieldValue
+   */
+  FieldValue * get(const GridCoordinate1D & coord) /**< coordinate */
+  {
+    return &data[coord.get1 ()];
+  } /* get */
+
+  /**
+   * Set FieldValue at coordinate
+   */
+  void set (const GridCoordinate1D & coord, /**< coordinate */
+            const FieldValue & val) /**< field value */
+  {
+    data[coord.get1 ()] = val;
+  } /* set */
+
+  /**
+   * Get size of storage
+   *
+   * @return size of storage
+   */
+  const GridCoordinate1D & getSize () const
+  {
+    return size;
+  } /* getSize */
+
+  /**
+   * Copy raw data
+   */
+  void copy (VectorFieldValues<GridCoordinate1D> *values) /**< raw values to copy */
+  {
+    ASSERT (size == values->size);
+    memcpy (data, values->data, size.get1 () * sizeof (FieldValue));
+  } /* copy */
+
+  /**
+   * Initialize field values with some value
+   */
+  void initialize (const FieldValue & val) /**< value to initialize all field values with */
+  {
+    for (grid_coord i = 0; i < size.get1 (); ++i)
+    {
+      data[i] = val;
+    }
+  } /* initialize */
+
+  /**
+   * Resize raw storage
+   */
+  void resizeAndEmpty (const GridCoordinate1D &new_size) /**< new size */
+  {
+    free ();
+    size = new_size;
+    alloc ();
+  } /* resizeAndEmpty */
+
+  /**
+   * Get begin iterator
+   *
+   * @return begin iterator
+   */
+  Iterator begin () const
+  {
+    return Iterator (size.getZero (), size.getZero (), size);
+  } /* begin */
+
+  /**
+   * Get end iterator
+   *
+   * @return end iterator
+   */
+  Iterator end () const
+  {
+    return Iterator::getEndIterator (size.getZero (), size);
+  } /* end */
+}; /* VectorFieldValues */
+
+/**
+ * Storage of FieldValue in 2-dimensional mode
+ */
+template <>
+class VectorFieldValues<GridCoordinate2D>
+{
+  /**
+   * Size of vector
+   */
+  GridCoordinate2D size;
+
+  /**
+   * Pointer to raw data
+   */
+  FieldValue **data;
+
+private:
+
+  /**
+   * Allocate raw buffer
+   */
+  void alloc ()
+  {
+    ASSERT (data == NULLPTR);
+    data = new FieldValue *[size.get1 ()];
+    for (grid_coord i = 0; i < size.get1 (); ++i)
+    {
+      data[i] = new FieldValue[size.get2 ()];
+    }
+  } /* alloc */
+
+  /**
+   * Free raw buffer
+   */
+  void free ()
+  {
+    ASSERT (data != NULLPTR);
+    for (grid_coord i = 0; i < size.get1 (); ++i)
+    {
+      ASSERT (data[i] != NULLPTR);
+      delete[] data[i];
+      data[i] = NULLPTR;
+    }
+    delete[] data;
+    data = NULLPTR;
+  } /* free */
+
+public:
+
+  /**
+   * Iterator
+   */
+  class Iterator
+  {
+    /**
+     * Current iterator coordinate
+     * Values from start to end allowed, including both (end is used for grid->end())
+     */
+    GridCoordinate2D pos;
+
+    /**
+     * Start iterator coordinate
+     */
+    GridCoordinate2D start;
+
+    /**
+     * End iterator coordinate
+     */
+    GridCoordinate2D end;
+
+  public:
+
+    /**
+     * Constructor
+     */
+    Iterator (const GridCoordinate2D &new_pos, /**< current coordinate */
+              const GridCoordinate2D &new_start, /**< start coordinate */
+              const GridCoordinate2D &new_end) /**< end coordinate */
+    : pos (new_pos)
+    , start (new_start)
+    , end (new_end)
+    {
+      ASSERT (pos >= start)
+      ASSERT (pos <= end);
+    } /* Iterator */
+
+    /**
+     * Pre-increment operator
+     *
+     * @return iterator
+     */
+    Iterator & operator++ ()
+    {
+      ASSERT (pos < end);
+      if (pos.get2 () == end.get2 () - 1)
+      {
+        pos.set2 (start.get2 ());
+        pos.set1 (pos.get1 () + 1);
+      }
+      else
+      {
+        pos.set2 (pos.get2 () + 1);
+      }
+      return *this;
+    } /* operator++ */
+
+    /**
+     * Pre-decrement operator
+     *
+     * @return iterator
+     */
+    Iterator & operator-- ()
+    {
+      ASSERT (pos > start);
+      if (pos.get2 () == start.get2 ())
+      {
+        pos.set2 (end.get2 () - 1);
+        pos.set1 (pos.get1 () - 1);
+      }
+      else
+      {
+        pos.set2 (pos.get2 () - 1);
+      }
+      return *this;
+    } /* operator-- */
+
+    /**
+     * Non-equality comparison
+     *
+     * @return result of comparison
+     */
+    bool operator!= (const Iterator &rhs) const /**< iterator to compare to */
+    {
+      ASSERT (start == rhs.start);
+      ASSERT (end == rhs.end);
+      return pos != rhs.pos;
+    } /* operator!= */
+
+    /**
+     * Get current coordinate of iterator
+     *
+     * @return current coordinate
+     */
+    const GridCoordinate2D & getPos () const
+    {
+      ASSERT (pos >= start);
+      ASSERT (pos < end);
+      return pos;
+    } /* getPos */
+
+    /**
+     * Get end iterator for specified start and end coordinates
+     *
+     * @return end iterator
+     */
+    static Iterator getEndIterator (const GridCoordinate2D &start, /**< start coordinate */
+                                    const GridCoordinate2D &end) /**< end coordinate */
+    {
+      return Iterator (GRID_COORDINATE_2D (end.get1 (), start.get2 (),
+                                           end.getType1 (), end.getType2 ()),
+                       start, end);
+    } /* getEndIterator */
+  }; /* Iterator */
+
+public:
+
+  /**
+   * Constructor
+   */
+  VectorFieldValues<GridCoordinate2D> (const GridCoordinate2D & new_size) /**< size of storage */
+  : size (new_size)
+  , data (NULLPTR)
+  {
+    alloc ();
+  } /* VectorFieldValues */
+
+  /**
+   * Destructor
+   */
+  ~VectorFieldValues<GridCoordinate2D> ()
+  {
+    free ();
+  } /* ~VectorFieldValues */
+
+  /**
+   * Get FieldValue at coordinate
+   *
+   * @return FieldValue
+   */
+  FieldValue * get(const GridCoordinate2D & coord) /**< coordinate */
+  {
+    return &data[coord.get1 ()][coord.get2 ()];
+  } /* get */
+
+  /**
+   * Set FieldValue at coordinate
+   */
+  void set (const GridCoordinate2D & coord, /**< coordinate */
+            const FieldValue & val) /**< field value */
+  {
+    data[coord.get1 ()][coord.get2 ()] = val;
+  } /* set */
+
+  /**
+   * Get size of storage
+   *
+   * @return size of storage
+   */
+  const GridCoordinate2D & getSize () const
+  {
+    return size;
+  } /* getSize */
+
+  /**
+   * Copy raw data
+   */
+  void copy (VectorFieldValues<GridCoordinate2D> *values) /**< raw values to copy */
+  {
+    ASSERT (size == values->size);
+    for (grid_coord i = 0; i < size.get1 (); ++i)
+    {
+      memcpy (data[i], values->data[i], size.get2 () * sizeof (FieldValue));
+    }
+  } /* copy */
+
+  /**
+   * Initialize field values with some value
+   */
+  void initialize (const FieldValue & val) /**< value to initialize all field values with */
+  {
+    for (grid_coord i = 0; i < size.get1 (); ++i)
+    {
+      for (grid_coord j = 0; j < size.get2 (); ++j)
+      {
+        data[i][j] = val;
+      }
+    }
+  } /* initialize */
+
+  /**
+   * Resize raw storage
+   */
+  void resizeAndEmpty (const GridCoordinate2D &new_size) /**< new size */
+  {
+    free ();
+    size = new_size;
+    alloc ();
+  } /* resizeAndEmpty */
+
+  /**
+   * Get begin iterator
+   *
+   * @return begin iterator
+   */
+  Iterator begin () const
+  {
+    return Iterator (size.getZero (), size.getZero (), size);
+  } /* begin */
+
+  /**
+   * Get end iterator
+   *
+   * @return end iterator
+   */
+  Iterator end () const
+  {
+    return Iterator::getEndIterator (size.getZero (), size);
+  } /* end */
+}; /* VectorFieldValues */
+
+/**
+ * Storage of FieldValue in 2-dimensional mode
+ */
+template <>
+class VectorFieldValues<GridCoordinate3D>
+{
+  /**
+   * Size of vector
+   */
+  GridCoordinate3D size;
+
+  /**
+   * Pointer to raw data
+   */
+  FieldValue ***data;
+
+private:
+
+  /**
+   * Allocate raw buffer
+   */
+  void alloc ()
+  {
+    ASSERT (data == NULLPTR);
+    data = new FieldValue **[size.get1 ()];
+    for (grid_coord i = 0; i < size.get1 (); ++i)
+    {
+      data[i] = new FieldValue *[size.get2 ()];
+      for (grid_coord j = 0; j < size.get2 (); ++j)
+      {
+        data[i][j] = new FieldValue [size.get3 ()];
+      }
+    }
+  } /* alloc */
+
+  /**
+   * Free raw buffer
+   */
+  void free ()
+  {
+    ASSERT (data != NULLPTR);
+    for (grid_coord i = 0; i < size.get1 (); ++i)
+    {
+      ASSERT (data[i] != NULLPTR);
+      for (grid_coord j = 0; j < size.get2 (); ++j)
+      {
+        ASSERT (data[i][j] != NULLPTR);
+        delete[] data[i][j];
+        data[i][j] = NULLPTR;
+      }
+      delete[] data[i];
+      data[i] = NULLPTR;
+    }
+    delete[] data;
+    data = NULLPTR;
+  } /* free */
+
+public:
+
+  /**
+   * Iterator
+   */
+  class Iterator
+  {
+    /**
+     * Current iterator coordinate
+     * Values from start to end allowed, including both (end is used for grid->end())
+     */
+    GridCoordinate3D pos;
+
+    /**
+     * Start iterator coordinate
+     */
+    GridCoordinate3D start;
+
+    /**
+     * End iterator coordinate
+     */
+    GridCoordinate3D end;
+
+  public:
+
+    /**
+     * Constructor
+     */
+    Iterator (const GridCoordinate3D &new_pos, /**< current coordinate */
+              const GridCoordinate3D &new_start, /**< start coordinate */
+              const GridCoordinate3D &new_end) /**< end coordinate */
+    : pos (new_pos)
+    , start (new_start)
+    , end (new_end)
+    {
+      ASSERT (pos >= start)
+      ASSERT (pos <= end);
+    } /* Iterator */
+
+    /**
+     * Pre-increment operator
+     *
+     * @return iterator
+     */
+    Iterator & operator++ ()
+    {
+      ASSERT (pos < end);
+      if (pos.get3 () == end.get3 () - 1)
+      {
+        if (pos.get2 () == end.get2 () - 1)
+        {
+          pos.set3 (start.get3 ());
+          pos.set2 (start.get2 ());
+          pos.set1 (pos.get1 () + 1);
+        }
+        else
+        {
+          pos.set3 (start.get3 ());
+          pos.set2 (pos.get2 () + 1);
+        }
+      }
+      else
+      {
+        pos.set3 (pos.get3 () + 1);
+      }
+      return *this;
+    } /* operator++ */
+
+    /**
+     * Pre-decrement operator
+     *
+     * @return iterator
+     */
+    Iterator & operator-- ()
+    {
+      ASSERT (pos > start);
+      if (pos.get3 () == start.get3 ())
+      {
+        if (pos.get2 () == start.get2 ())
+        {
+          pos.set3 (end.get3 () - 1);
+          pos.set2 (end.get2 () - 1);
+          pos.set1 (pos.get1 () - 1);
+        }
+        else
+        {
+          pos.set3 (end.get3 () - 1);
+          pos.set2 (pos.get2 () - 1);
+        }
+      }
+      else
+      {
+        pos.set3 (pos.get3 () - 1);
+      }
+      return *this;
+    } /* operator-- */
+
+    /**
+     * Non-equality comparison
+     *
+     * @return result of comparison
+     */
+    bool operator!= (const Iterator &rhs) const /**< iterator to compare to */
+    {
+      ASSERT (start == rhs.start);
+      ASSERT (end == rhs.end);
+      return pos != rhs.pos;
+    } /* operator!= */
+
+    /**
+     * Get current coordinate of iterator
+     *
+     * @return current coordinate
+     */
+    const GridCoordinate3D & getPos () const
+    {
+      ASSERT (pos >= start);
+      ASSERT (pos < end);
+      return pos;
+    } /* getPos */
+
+    /**
+     * Get end iterator for specified start and end coordinates
+     *
+     * @return end iterator
+     */
+    static Iterator getEndIterator (const GridCoordinate3D &start, /**< start coordinate */
+                                    const GridCoordinate3D &end) /**< end coordinate */
+    {
+      return Iterator (GRID_COORDINATE_3D (end.get1 (), start.get2 (), start.get3 (),
+                                           end.getType1 (), end.getType2 (), end.getType3 ()),
+                       start, end);
+    } /* getEndIterator */
+  }; /* Iterator */
+
+public:
+
+  /**
+   * Constructor
+   */
+  VectorFieldValues<GridCoordinate3D> (const GridCoordinate3D & new_size) /**< size of storage */
+  : size (new_size)
+  , data (NULLPTR)
+  {
+    alloc ();
+  } /* VectorFieldValues */
+
+  /**
+   * Destructor
+   */
+  ~VectorFieldValues<GridCoordinate3D> ()
+  {
+    free ();
+  } /* ~VectorFieldValues */
+
+  /**
+   * Get FieldValue at coordinate
+   *
+   * @return FieldValue
+   */
+  FieldValue * get(const GridCoordinate3D & coord) /**< coordinate */
+  {
+    return &data[coord.get1 ()][coord.get2 ()][coord.get3 ()];
+  } /* get */
+
+  /**
+   * Set FieldValue at coordinate
+   */
+  void set (const GridCoordinate3D & coord, /**< coordinate */
+            const FieldValue & val) /**< field value */
+  {
+    data[coord.get1 ()][coord.get2 ()][coord.get3 ()] = val;
+  } /* set */
+
+  /**
+   * Get size of storage
+   *
+   * @return size of storage
+   */
+  const GridCoordinate3D & getSize () const
+  {
+    return size;
+  } /* getSize */
+
+  /**
+   * Copy raw data
+   */
+  void copy (VectorFieldValues<GridCoordinate3D> *values) /**< raw values to copy */
+  {
+    ASSERT (size == values->size);
+    for (grid_coord i = 0; i < size.get1 (); ++i)
+    {
+      for (grid_coord j = 0; j < size.get2 (); ++j)
+      {
+        memcpy (data[i][j], values->data[i][j], size.get3 () * sizeof (FieldValue));
+      }
+    }
+  } /* copy */
+
+  /**
+   * Initialize field values with some value
+   */
+  void initialize (const FieldValue & val) /**< value to initialize all field values with */
+  {
+    for (grid_coord i = 0; i < size.get1 (); ++i)
+    {
+      for (grid_coord j = 0; j < size.get2 (); ++j)
+      {
+        for (grid_coord k = 0; k < size.get3 (); ++k)
+        {
+          data[i][j][k] = val;
+        }
+      }
+    }
+  } /* initialize */
+
+  /**
+   * Resize raw storage
+   */
+  void resizeAndEmpty (const GridCoordinate3D &new_size) /**< new size */
+  {
+    free ();
+    size = new_size;
+    alloc ();
+  } /* resizeAndEmpty */
+
+  /**
+   * Get begin iterator
+   *
+   * @return begin iterator
+   */
+  Iterator begin () const
+  {
+    return Iterator (size.getZero (), size.getZero (), size);
+  } /* begin */
+
+  /**
+   * Get end iterator
+   *
+   * @return end iterator
+   */
+  Iterator end () const
+  {
+    return Iterator::getEndIterator (size.getZero (), size);
+  } /* end */
+}; /* VectorFieldValues */
 
 /**
  * Non-parallel grid class.
@@ -32,7 +845,7 @@ protected:
   /**
    * Vector of points in grid.
    */
-  std::vector<VectorFieldValues *> gridValues;
+  std::vector<VectorFieldValues<TCoord> *> gridValues;
 
   /**
    * Name of the grid.
@@ -46,7 +859,6 @@ protected:
 protected:
 
   static bool isLegitIndex (const TCoord &, const TCoord &);
-  static grid_coord calculateIndexFromPosition (const TCoord &, const TCoord &);
 
 private:
 
@@ -70,13 +882,9 @@ public:
 
   virtual TCoord getComputationStart (const TCoord &) const;
   virtual TCoord getComputationEnd (const TCoord &) const;
-  TCoord calculatePositionFromIndex (grid_coord) const;
-  grid_coord calculateIndexFromPosition (const TCoord &) const;
 
   void setFieldValue (const FieldValue &, const TCoord &, int);
-  void setFieldValue (const FieldValue &, grid_coord, int);
   FieldValue * getFieldValue (const TCoord &, int);
-  FieldValue * getFieldValue (grid_coord, int);
 
   virtual FieldValue * getFieldValueByAbsolutePos (const TCoord &, int);
   virtual FieldValue * getFieldValueOrNullByAbsolutePos (const TCoord &, int);
@@ -104,7 +912,9 @@ public:
 
   void initialize (const FieldValue &);
 
-  FieldValue * getRaw (int);
+  VectorFieldValues<TCoord> * getRaw (int);
+  typename VectorFieldValues<TCoord>::Iterator begin ();
+  typename VectorFieldValues<TCoord>::Iterator end ();
 
   int getCountStoredSteps () const
   {
@@ -118,10 +928,7 @@ public:
 
     for (int i = 0; i < gridValues.size (); ++i)
     {
-      ASSERT (gridValues[i]->size () == grid->gridValues[i]->size ());
-      ASSERT (gridValues[i]->capacity () == grid->gridValues[i]->capacity ())
-
-      memcpy (&(*gridValues[i])[0], &(*grid->gridValues[i])[0], grid->gridValues[i]->size () * sizeof (FieldValue));
+      gridValues[i]->copy (grid->gridValues[i]);
     }
   }
 }; /* Grid */
@@ -141,7 +948,7 @@ Grid<TCoord>::Grid (const TCoord &s, /**< size of grid */
 
   for (int i = 0; i < gridValues.size (); ++i)
   {
-    gridValues[i] = new VectorFieldValues (size.calculateTotalCoord ());
+    gridValues[i] = new VectorFieldValues<TCoord> (size);
   }
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with %lu stored steps and raw size: %llu.\n",
@@ -194,18 +1001,6 @@ Grid<TCoord>::isLegitIndex (const TCoord& position) const /**< coordinate in gri
 } /* Grid<TCoord>::isLegitIndex */
 
 /**
- * Calculate one-dimensional coordinate from N-dimensional position
- *
- * @return one-dimensional coordinate from N-dimensional position
- */
-template <class TCoord>
-grid_coord
-Grid<TCoord>::calculateIndexFromPosition (const TCoord& position) const /**< coordinate in grid */
-{
-  return calculateIndexFromPosition (position, size);
-} /* Grid<TCoord>::calculateIndexFromPosition */
-
-/**
  * Get size of the grid
  *
  * @return size of the grid
@@ -241,24 +1036,7 @@ Grid<TCoord>::setFieldValue (const FieldValue & value, /**< field point value */
   ASSERT (isLegitIndex (position));
   ASSERT (time_step_back < gridValues.size ());
 
-  grid_coord coord = calculateIndexFromPosition (position);
-
-  setFieldValue (value, coord, time_step_back);
-} /* Grid<TCoord>::setFieldValue */
-
-/**
- * Set field value at coordinate in grid
- */
-template <class TCoord>
-void
-Grid<TCoord>::setFieldValue (const FieldValue & value, /**< field point value */
-                             grid_coord coord, /**< index in grid */
-                             int time_step_back) /**< index of previous time step, starting from current (0) */
-{
-  ASSERT (coord >= 0 && coord < size.calculateTotalCoord ());
-  ASSERT (time_step_back < gridValues.size ());
-
-  (*gridValues[time_step_back])[coord] = value;
+  gridValues[time_step_back]->set (position, value);
 } /* Grid<TCoord>::setFieldValue */
 
 /**
@@ -274,25 +1052,7 @@ Grid<TCoord>::getFieldValue (const TCoord &position, /**< coordinate in grid */
   ASSERT (isLegitIndex (position));
   ASSERT (time_step_back < gridValues.size ());
 
-  grid_coord coord = calculateIndexFromPosition (position);
-
-  return getFieldValue (coord, time_step_back);
-} /* Grid<TCoord>::getFieldValue */
-
-/**
- * Get field point value at coordinate in grid
- *
- * @return field point value
- */
-template <class TCoord>
-FieldValue *
-Grid<TCoord>::getFieldValue (grid_coord coord, /**< index in grid */
-                             int time_step_back) /**< index of previous time step, starting from current (0) */
-{
-  ASSERT (coord >= 0 && coord < size.calculateTotalCoord ());
-  ASSERT (time_step_back < gridValues.size ());
-
-  return &(*gridValues[time_step_back])[coord];
+  return gridValues[time_step_back]->get (position);
 } /* Grid<TCoord>::getFieldValue */
 
 /**
@@ -412,20 +1172,30 @@ void
 Grid<TCoord>::initialize (const FieldValue & cur)
 {
   ASSERT (gridValues.size () > 0);
-
-  for (grid_coord i = 0; i < gridValues[0]->size (); ++i)
-  {
-    (*gridValues[0])[i] = cur;
-  }
+  gridValues[0]->initialize (cur);
 } /* Grid<TCoord>::initialize */
 
 template <class TCoord>
-FieldValue *
+VectorFieldValues<TCoord> *
 Grid<TCoord>::getRaw (int time_step_back)
 {
   ASSERT (time_step_back < gridValues.size ());
 
-  return &(*gridValues[time_step_back])[0];
+  return gridValues[time_step_back];
+}
+
+template <class TCoord>
+typename VectorFieldValues<TCoord>::Iterator
+Grid<TCoord>::begin ()
+{
+  return getRaw (0)->begin ();
+}
+
+template <class TCoord>
+typename VectorFieldValues<TCoord>::Iterator
+Grid<TCoord>::end ()
+{
+  return getRaw (0)->end ();
 }
 
 /**
@@ -440,7 +1210,7 @@ Grid<TCoord>::shiftInTime ()
    */
   ASSERT (gridValues.size () > 0);
 
-  VectorFieldValues *oldest = gridValues[gridValues.size () - 1];
+  VectorFieldValues<TCoord> *oldest = gridValues[gridValues.size () - 1];
 
   for (int i = gridValues.size () - 1; i >= 1; --i)
   {

@@ -579,9 +579,11 @@ public:
     FPValue PMLSizeX = FPValue (PMLSize.get1 ());
     FPValue boundary = PMLSizeX * dx;
 
-    for (grid_coord i = 0; i < sigma->getSize ().calculateTotalCoord (); ++i)
+    typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter = sigma->begin ();
+    typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = sigma->end ();
+    for (; iter != iter_end; ++iter)
     {
-      TCoord<grid_coord, true> pos = sigma->calculatePositionFromIndex (i);
+      TCoord<grid_coord, true> pos = iter.getPos ();
 
       FieldValue valSigma;
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
@@ -619,9 +621,11 @@ public:
     FPValue PMLSizeY = FPValue (PMLSize.get2 ());
     FPValue boundary = PMLSizeY * dx;
 
-    for (grid_coord i = 0; i < sigma->getSize ().calculateTotalCoord (); ++i)
+    typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter = sigma->begin ();
+    typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = sigma->end ();
+    for (; iter != iter_end; ++iter)
     {
-      TCoord<grid_coord, true> pos = sigma->calculatePositionFromIndex (i);
+      TCoord<grid_coord, true> pos = iter.getPos ();
 
       FieldValue valSigma;
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
@@ -659,9 +663,11 @@ public:
     FPValue PMLSizeZ = FPValue (PMLSize.get3 ());
     FPValue boundary = PMLSizeZ * dx;
 
-    for (grid_coord i = 0; i < sigma->getSize ().calculateTotalCoord (); ++i)
+    typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter = sigma->begin ();
+    typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = sigma->end ();
+    for (; iter != iter_end; ++iter)
     {
-      TCoord<grid_coord, true> pos = sigma->calculatePositionFromIndex (i);
+      TCoord<grid_coord, true> pos = iter.getPos ();
 
       FieldValue valSigma;
       TCoord<FPValue, true> posAbs = layout->getEpsCoordFP (sigma->getTotalPosition (pos));
