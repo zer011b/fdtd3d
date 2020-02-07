@@ -568,7 +568,7 @@ public:
     //FPValue val = sigma_max_1 * pow((dist*gridStep/boundary), exponent);
     //printf("SIGMA: val:%.20f, sigma_max_1:%.20f, dist:%.20f, boundary:%.20f\n", val, sigma_max_1, dist, boundary);
 
-    *fieldValue = getFieldValueRealOnly (val);
+    *fieldValue = FieldValueHelpers::getFieldValueRealOnly (val);
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
@@ -604,7 +604,7 @@ public:
       }
       else
       {
-        valSigma = getFieldValueRealOnly (FPValue (0));
+        valSigma = FieldValueHelpers::getFieldValueRealOnly (FPValue (0));
       }
 
       sigma->setFieldValue (valSigma, pos, 0);
@@ -644,7 +644,7 @@ public:
       }
       else
       {
-        valSigma = getFieldValueRealOnly (FPValue (0));
+        valSigma = FieldValueHelpers::getFieldValueRealOnly (FPValue (0));
       }
 
       sigma->setFieldValue (valSigma, pos, 0);
@@ -684,7 +684,7 @@ public:
       }
       else
       {
-        valSigma = getFieldValueRealOnly (FPValue (0));
+        valSigma = FieldValueHelpers::getFieldValueRealOnly (FPValue (0));
       }
 
       sigma->setFieldValue (valSigma, pos, 0);

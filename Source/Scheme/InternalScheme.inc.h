@@ -2921,7 +2921,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
       case GridType::EZ:
       case GridType::DZ:
       {
-        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+        return FieldValueHelpers::getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                   *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                   *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
                                                   *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
@@ -2949,7 +2949,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
         case GridType::EZ:
         case GridType::DZ:
         {
-          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+          return FieldValueHelpers::getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                     *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0)));
         }
         case GridType::HX:
@@ -2959,7 +2959,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
         case GridType::HZ:
         case GridType::BZ:
         {
-          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+          return FieldValueHelpers::getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                     *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                     *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
                                                     *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0)));
@@ -2981,7 +2981,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
         case GridType::EZ:
         case GridType::DZ:
         {
-          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+          return FieldValueHelpers::getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                     *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                     *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
                                                     *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0)));
@@ -2993,7 +2993,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMaterial (const TC &posAbs,
         case GridType::HZ:
         case GridType::BZ:
         {
-          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+          return FieldValueHelpers::getRealOnlyFromFieldValue (yeeLayout->getApproximateMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                     *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0)));
         }
         default:
@@ -3059,7 +3059,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
       case GridType::EZ:
       case GridType::DZ:
       {
-        return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+        return FieldValueHelpers::getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                       *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                       *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
                                                       *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
@@ -3104,7 +3104,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
         case GridType::EZ:
         case GridType::DZ:
         {
-          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+          return FieldValueHelpers::getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                         *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                         *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
                                                         *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
@@ -3119,7 +3119,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
         case GridType::HZ:
         case GridType::BZ:
         {
-          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+          return FieldValueHelpers::getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                         *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                         *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
                                                         *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
@@ -3150,7 +3150,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
         case GridType::EZ:
         case GridType::DZ:
         {
-          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+          return FieldValueHelpers::getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                         *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                         *gridMaterial->getFieldValueByAbsolutePos (absPos21, 0),
                                                         *gridMaterial->getFieldValueByAbsolutePos (absPos22, 0),
@@ -3171,7 +3171,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::getMetaMaterial (const TC &posA
         case GridType::HZ:
         case GridType::BZ:
         {
-          return getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
+          return FieldValueHelpers::getRealOnlyFromFieldValue (yeeLayout->getApproximateMetaMaterial (*gridMaterial->getFieldValueByAbsolutePos (absPos11, 0),
                                                         *gridMaterial->getFieldValueByAbsolutePos (absPos12, 0),
                                                         *gridMaterialOmega->getFieldValueByAbsolutePos (absPos11, 0),
                                                         *gridMaterialOmega->getFieldValueByAbsolutePos (absPos12, 0),
@@ -3300,7 +3300,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPlaneWaveESteps (time_st
   }
 
 #ifdef ENABLE_ASSERTS
-  ALWAYS_ASSERT (*EInc->getFieldValue (EInc->getSize ().get1 () - 1, 0) == getFieldValueRealOnly (0.0));
+  ALWAYS_ASSERT (*EInc->getFieldValue (EInc->getSize ().get1 () - 1, 0) == FieldValueHelpers::getFieldValueRealOnly (0.0));
 #endif
 }
 
@@ -3333,7 +3333,7 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPlaneWaveHSteps (time_st
   }
 
 #ifdef ENABLE_ASSERTS
-  ALWAYS_ASSERT (*HInc->getFieldValue (HInc->getSize ().get1 () - 2, 0) == getFieldValueRealOnly (0.0));
+  ALWAYS_ASSERT (*HInc->getFieldValue (HInc->getSize ().get1 () - 2, 0) == FieldValueHelpers::getFieldValueRealOnly (0.0));
 #endif
 }
 
