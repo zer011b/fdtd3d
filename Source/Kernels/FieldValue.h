@@ -96,8 +96,37 @@ typedef int64_t grid_coord;
  */
 typedef uint32_t time_step;
 
-extern CUDA_DEVICE CUDA_HOST FieldValue getFieldValueRealOnly (FPValue);
-extern CUDA_DEVICE CUDA_HOST FPValue getRealOnlyFromFieldValue (const FieldValue &);
+/**
+ * Helper functions to convert FieldValues. These should be inlined.
+ */
+class FieldValueHelpers
+{
+public:
+
+  /**
+   * Get FieldValue with real part only
+   */
+  CUDA_DEVICE CUDA_HOST static FieldValue getFieldValueRealOnly (FPValue real)
+  {
+#ifdef COMPLEX_FIELD_VALUES
+    return FieldValue (real, 0.0);
+#else /* COMPLEX_FIELD_VALUES*/
+    return FieldValue (real);
+#endif /* !COMPLEX_FIELD_VALUES */
+  } /* getFieldValueRealOnly */
+
+  /**
+   * Get only real part from FieldValue
+   */
+  CUDA_DEVICE CUDA_HOST static FPValue getRealOnlyFromFieldValue (const FieldValue &val)
+  {
+#ifdef COMPLEX_FIELD_VALUES
+    return val.real ();
+#else /* COMPLEX_FIELD_VALUES*/
+    return val;
+#endif /* !COMPLEX_FIELD_VALUES */
+  } /* getRealOnlyFromFieldValue */
+}; /* FieldValueHelpers */
 
 #ifdef FLOAT_VALUES
 #define FPEXACT_ACCURACY (FPValue(0.000001))

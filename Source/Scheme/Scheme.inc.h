@@ -2982,7 +2982,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
 #endif /* !PARALLEL_GRID */
   }
 
-  intScheme->getEps ()->initialize (getFieldValueRealOnly (1.0));
+  intScheme->getEps ()->initialize (FieldValueHelpers::getFieldValueRealOnly (1.0));
   initMaterialFromFile (GridType::EPS, intScheme->getEps (), totalEps);
 
   if (SOLVER_SETTINGS.getEpsSphere () != 1)
@@ -2993,7 +2993,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       TCFP posAbs = yeeLayout->getEpsCoordFP (intScheme->getEps ()->getTotalPosition (pos));
       FieldValue *val = intScheme->getEps ()->getFieldValue (pos, 0);
 
-      FieldValue epsVal = getFieldValueRealOnly (SOLVER_SETTINGS.getEpsSphere ());
+      FieldValue epsVal = FieldValueHelpers::getFieldValueRealOnly (SOLVER_SETTINGS.getEpsSphere ());
 
       FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
 
@@ -3007,7 +3007,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                          center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
                                                          SOLVER_SETTINGS.getEpsSphereRadius () * modifier,
                                                          epsVal,
-                                                         getFieldValueRealOnly (1.0));
+                                                         FieldValueHelpers::getFieldValueRealOnly (1.0));
       }
       else
       {
@@ -3015,7 +3015,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                          center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
                                                          SOLVER_SETTINGS.getEpsSphereRadius () * modifier,
                                                          epsVal,
-                                                         getFieldValueRealOnly (1.0));
+                                                         FieldValueHelpers::getFieldValueRealOnly (1.0));
       }
     }
   }
@@ -3024,11 +3024,11 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     for (grid_coord i = 0; i < intScheme->getEps ()->getSize ().calculateTotalCoord (); ++i)
     {
       FieldValue *val = intScheme->getEps ()->getFieldValue (i, 0);
-      *val = getFieldValueRealOnly (FPValue(1.0) / PhysicsConst::Eps0);
+      *val = FieldValueHelpers::getFieldValueRealOnly (FPValue(1.0) / PhysicsConst::Eps0);
     }
   }
 
-  intScheme->getMu ()->initialize (getFieldValueRealOnly (1.0));
+  intScheme->getMu ()->initialize (FieldValueHelpers::getFieldValueRealOnly (1.0));
   initMaterialFromFile (GridType::MU, intScheme->getMu (), totalMu);
 
   if (SOLVER_SETTINGS.getMuSphere () != 1)
@@ -3039,7 +3039,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
       TCFP posAbs = yeeLayout->getMuCoordFP (intScheme->getMu ()->getTotalPosition (pos));
       FieldValue *val = intScheme->getMu ()->getFieldValue (pos, 0);
 
-      FieldValue muVal = getFieldValueRealOnly (SOLVER_SETTINGS.getMuSphere ());
+      FieldValue muVal = FieldValueHelpers::getFieldValueRealOnly (SOLVER_SETTINGS.getMuSphere ());
 
       FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
 
@@ -3053,7 +3053,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                          center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
                                                          SOLVER_SETTINGS.getMuSphereRadius () * modifier,
                                                          muVal,
-                                                         getFieldValueRealOnly (1.0));
+                                                         FieldValueHelpers::getFieldValueRealOnly (1.0));
       }
       else
       {
@@ -3061,7 +3061,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                          center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
                                                          SOLVER_SETTINGS.getMuSphereRadius () * modifier,
                                                          muVal,
-                                                         getFieldValueRealOnly (1.0));
+                                                         FieldValueHelpers::getFieldValueRealOnly (1.0));
       }
     }
   }
@@ -3070,7 +3070,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
     for (grid_coord i = 0; i < intScheme->getMu ()->getSize ().calculateTotalCoord (); ++i)
     {
       FieldValue *val = intScheme->getMu ()->getFieldValue (i, 0);
-      *val = getFieldValueRealOnly (FPValue(1.0) / PhysicsConst::Mu0);
+      *val = FieldValueHelpers::getFieldValueRealOnly (FPValue(1.0) / PhysicsConst::Mu0);
     }
   }
 
@@ -3086,7 +3086,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         TCFP posAbs = yeeLayout->getEpsCoordFP (intScheme->getOmegaPE ()->getTotalPosition (pos));
         FieldValue *val = intScheme->getOmegaPE ()->getFieldValue (pos, 0);
 
-        FieldValue omegapeVal = getFieldValueRealOnly (SOLVER_SETTINGS.getOmegaPESphere () * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ());
+        FieldValue omegapeVal = FieldValueHelpers::getFieldValueRealOnly (SOLVER_SETTINGS.getOmegaPESphere () * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ());
 
         FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
 
@@ -3100,7 +3100,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                                     center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
                                                                     SOLVER_SETTINGS.getOmegaPESphereRadius () * modifier,
                                                                     omegapeVal,
-                                                                    getFieldValueRealOnly (0.0));
+                                                                    FieldValueHelpers::getFieldValueRealOnly (0.0));
         }
         else
         {
@@ -3108,7 +3108,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                                     center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
                                                                     SOLVER_SETTINGS.getOmegaPESphereRadius () * modifier,
                                                                     omegapeVal,
-                                                                    getFieldValueRealOnly (0.0));
+                                                                    FieldValueHelpers::getFieldValueRealOnly (0.0));
         }
       }
     }
@@ -3123,7 +3123,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
         TCFP posAbs = yeeLayout->getEpsCoordFP (intScheme->getOmegaPM ()->getTotalPosition (pos));
         FieldValue *val = intScheme->getOmegaPM ()->getFieldValue (pos, 0);
 
-        FieldValue omegapmVal = getFieldValueRealOnly (SOLVER_SETTINGS.getOmegaPMSphere () * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ());
+        FieldValue omegapmVal = FieldValueHelpers::getFieldValueRealOnly (SOLVER_SETTINGS.getOmegaPMSphere () * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ());
 
         FPValue modifier = (yeeLayout->getIsDoubleMaterialPrecision () ? 2 : 1);
 
@@ -3137,7 +3137,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                                     center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
                                                                     SOLVER_SETTINGS.getOmegaPMSphereRadius () * modifier,
                                                                     omegapmVal,
-                                                                    getFieldValueRealOnly (0.0));
+                                                                    FieldValueHelpers::getFieldValueRealOnly (0.0));
         }
         else
         {
@@ -3145,7 +3145,7 @@ Scheme<Type, TCoord, layout_type>::initGrids ()
                                                                     center * modifier + TC_FP_COORD (0.5, 0.5, 0.5, ct1, ct2, ct3),
                                                                     SOLVER_SETTINGS.getOmegaPMSphereRadius () * modifier,
                                                                     omegapmVal,
-                                                                    getFieldValueRealOnly (0.0));
+                                                                    FieldValueHelpers::getFieldValueRealOnly (0.0));
         }
       }
     }

@@ -29,8 +29,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
            CoordinateType ct2,
            CoordinateType ct3)
 {
-  intScheme->getEps ()->initialize (getFieldValueRealOnly (1.0));
-  intScheme->getMu ()->initialize (getFieldValueRealOnly (1.0));
+  intScheme->getEps ()->initialize (FieldValueHelpers::getFieldValueRealOnly (1.0));
+  intScheme->getMu ()->initialize (FieldValueHelpers::getFieldValueRealOnly (1.0));
 
   if (SOLVER_SETTINGS.getDoUseCaCbGrids ())
   {

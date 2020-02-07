@@ -231,7 +231,7 @@ CUDA_DEVICE CUDA_HOST
 FPValue
 Approximation::getMaterial (const FieldValue & cur)
 {
-  return getRealOnlyFromFieldValue (cur);
+  return FieldValueHelpers::getRealOnlyFromFieldValue (cur);
 }
 
 CUDA_DEVICE CUDA_HOST
@@ -348,7 +348,7 @@ Approximation::approximateSphereFast (GridCoordinateFP3D midPos,
 
   FPValue diff = d - radius;
 
-  FieldValue eps_vacuum = getFieldValueRealOnly (1.0);
+  FieldValue eps_vacuum = FieldValueHelpers::getFieldValueRealOnly (1.0);
 
   if (diff < -0.5)
   {
