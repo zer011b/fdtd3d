@@ -879,7 +879,6 @@ public:
   virtual TCoord getTotalPosition (const TCoord &) const;
   virtual TCoord getTotalSize () const;
   virtual TCoord getRelativePosition (const TCoord &) const;
-
   virtual TCoord getComputationStart (const TCoord &) const;
   virtual TCoord getComputationEnd (const TCoord &) const;
 
@@ -894,7 +893,10 @@ public:
   virtual FieldValue * getFieldValuePreviousAfterShiftByAbsolutePos (const TCoord &);
   virtual FieldValue * getFieldValueOrNullPreviousAfterShiftByAbsolutePos (const TCoord &);
 
-  virtual TCoord getChunkStartPosition () const;
+  virtual TCoord getChunkStartPosition () const
+  {
+    return getSize ().getZero ();
+  }
 
   virtual bool isBufferLeftPosition (const TCoord & pos) const
   {
@@ -988,6 +990,20 @@ Grid<TCoord>::~Grid ()
   }
 } /* Grid<TCoord>::~Grid */
 
+
+/**
+ * Check whether position is appropriate to get/set value from
+ *
+ * @return flag whether position is appropriate to get/set value from
+ */
+ template <class TCoord>
+ bool
+ Grid<TCoord>::isLegitIndex (const TCoord &position, /**< coordinate in grid */
+                             const TCoord &sizeCoord) /**< size of grid */
+{
+  return position < sizeCoord;
+} /* Grid<GridCoordinate3D>::isLegitIndex */
+
 /**
  * Check whether position is appropriate to get/set value from
  *
@@ -1013,13 +1029,25 @@ Grid<TCoord>::getSize () const
 } /* Grid<TCoord>::getSize */
 
 /**
+ * Get first coordinate from which to perform computations at current step
+ *
+ * @return first coordinate from which to perform computations at current step
+ */
+template <class TCoord>
+TCoord
+Grid<TCoord>::getComputationStart (const TCoord &diffPosStart) const /**< offset from the left border */
+{
+  return getSize ().getZero () + diffPosStart;
+} /* getComputationStart */
+
+/**
  * Get last coordinate until which to perform computations at current step
  *
  * @return last coordinate until which to perform computations at current step
  */
 template <class TCoord>
 TCoord
-Grid<TCoord>::getComputationEnd (const TCoord & diffPosEnd) const
+Grid<TCoord>::getComputationEnd (const TCoord & diffPosEnd) const /**< offset from the right border */
 {
   return getSize () - diffPosEnd;
 } /* Grid<TCoord>::getComputationEnd () */
