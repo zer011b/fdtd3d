@@ -83,7 +83,7 @@ SPECIALIZE_TEMPLATE_3D(InternalScheme, InternalSchemeHelper,
 #ifdef ENABLE_ASSERTS
 #define IDEVICE
 #define ISCHEME InternalScheme
-#include "InternalScheme.cpp.inc"
+#include "InternalScheme.inc.cpp"
 #undef IDEVICE
 #undef ISCHEME
 #endif /* ENABLE_ASSERTS */

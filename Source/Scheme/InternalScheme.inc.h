@@ -3263,19 +3263,19 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPlaneWaveESteps (time_st
 
   FPValue modifier = gridTimeStep / (relPhaseVelocity * PhysicsConst::Eps0 * gridStep);
 
-  VectorFieldValues<GridCoordinate1D>::Iterator iter (start, start, end);
-  VectorFieldValues<GridCoordinate1D>::Iterator iter_end = VectorFieldValues<GridCoordinate1D>::Iterator::getEndIterator (start, end);
+  grid_coord cstart = start.get1 ();
+  grid_coord cend = end.get1 ();
 
   bool setSource = false;
-  if (start.get1 () == 0)
+  if (cstart == 0)
   {
     setSource = true;
-    ++iter;
+    cstart = 1;
   }
 
-  for (; iter != iter_end; ++iter)
+  for (grid_coord i = cstart; i < cend; ++i)
   {
-    GridCoordinate1D pos = iter.getPos ();
+    GridCoordinate1D pos = GRID_COORDINATE_1D (i, start.getType1 ());
 
     FieldValue valE = *EInc->getFieldValue (pos, 1);
     FieldValue valH1 = *HInc->getFieldValue (GRID_COORDINATE_1D (pos.get1 () - 1, pos.getType1 ()), 1);
@@ -3312,17 +3312,17 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPlaneWaveHSteps (time_st
 
   FPValue modifier = gridTimeStep / (relPhaseVelocity * PhysicsConst::Mu0 * gridStep);
 
-  VectorFieldValues<GridCoordinate1D>::Iterator iter (start, start, end);
-  VectorFieldValues<GridCoordinate1D>::Iterator iter_end = VectorFieldValues<GridCoordinate1D>::Iterator::getEndIterator (start, end);
+  grid_coord cstart = start.get1 ();
+  grid_coord cend = end.get1 ();
 
   if (end == HInc->getSize ())
   {
-    --iter_end;
+    cend--;
   }
 
-  for (; iter != iter_end; ++iter)
+  for (grid_coord i = cstart; i < cend; ++i)
   {
-    GridCoordinate1D pos = iter.getPos ();
+    GridCoordinate1D pos = GRID_COORDINATE_1D (i, start.getType1 ());
 
     FieldValue valH = *HInc->getFieldValue (pos, 1);
     FieldValue valE1 = *EInc->getFieldValue (pos, 1);

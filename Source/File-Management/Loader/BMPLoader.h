@@ -54,10 +54,10 @@ public:
  */
 template <class TCoord>
 void
-BMPLoader<TCoord>::loadTxtFromFile (FPValue minRe, /**< minimum real value */
-                                    FPValue maxRe, /**< maximum real value */
-                                    FPValue minIm, /**< minimum imag value */
+BMPLoader<TCoord>::loadTxtFromFile (FPValue maxRe, /**< maximum real value */
+                                    FPValue minRe, /**< minimum real value */
                                     FPValue maxIm, /**< maximum imag value */
+                                    FPValue minIm, /**< minimum imag value */
                                     const std::string &imageReNameTxt, /**< real text file name */
                                     const std::string &imageImNameTxt) /**< imag text file name */
 {
@@ -66,6 +66,7 @@ BMPLoader<TCoord>::loadTxtFromFile (FPValue minRe, /**< minimum real value */
   ASSERT (fileMaxRe.is_open());
   fileMaxRe >> std::setprecision(std::numeric_limits<double>::digits10) >> maxRe >> minRe;
   fileMaxRe.close();
+  ASSERT (maxRe >= minRe);
 
 #ifdef COMPLEX_FIELD_VALUES
   std::ifstream fileMaxIm;
@@ -73,6 +74,7 @@ BMPLoader<TCoord>::loadTxtFromFile (FPValue minRe, /**< minimum real value */
   ASSERT (fileMaxIm.is_open());
   fileMaxIm >> std::setprecision(std::numeric_limits<double>::digits10) >> maxIm >> minIm;
   fileMaxIm.close();
+  ASSERT (maxIm >= minIm);
 #endif /* COMPLEX_FIELD_VALUES */
 } /* BMPLoader::loadTxtFromFile */
 

@@ -15,7 +15,7 @@ SPECIALIZE_TEMPLATE(InternalSchemeGPU, return InternalSchemeHelperGPU,
 #ifdef ENABLE_ASSERTS
 #define IDEVICE CUDA_DEVICE
 #define ISCHEME InternalSchemeGPU
-#include "InternalScheme.cpp.inc"
+#include "InternalScheme.inc.cpp"
 #undef IDEVICE
 #undef ISCHEME
 #endif /* ENABLE_ASSERTS */

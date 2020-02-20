@@ -44,6 +44,10 @@ private:
   {
     ASSERT (data == NULLPTR);
     data = new FieldValue[size.get1 ()];
+    for (grid_coord i = 0; i < size.get1 (); ++i)
+    {
+      data[i] = FIELDVALUE (0, 0);
+    }
   } /* alloc */
 
   /**
@@ -114,10 +118,22 @@ public:
      */
     Iterator & operator-- ()
     {
-      ASSERT (pos > start);
+      ASSERT (pos >= start);
       pos.set1 (pos.get1 () - 1);
       return *this;
     } /* operator-- */
+
+    /**
+     * Equality comparison
+     *
+     * @return result of comparison
+     */
+    bool operator== (const Iterator &rhs) const /**< iterator to compare to */
+    {
+      ASSERT (start == rhs.start);
+      ASSERT (end == rhs.end);
+      return pos == rhs.pos;
+    } /* operator== */
 
     /**
      * Non-equality comparison
@@ -283,6 +299,11 @@ private:
     for (grid_coord i = 0; i < size.get1 (); ++i)
     {
       data[i] = new FieldValue[size.get2 ()];
+
+      for (grid_coord j = 0; j < size.get2 (); ++j)
+      {
+        data[i][j] = FIELDVALUE (0, 0);
+      }
     }
   } /* alloc */
 
@@ -368,7 +389,7 @@ public:
      */
     Iterator & operator-- ()
     {
-      ASSERT (pos > start);
+      ASSERT (pos >= start);
       if (pos.get2 () == start.get2 ())
       {
         pos.set2 (end.get2 () - 1);
@@ -380,6 +401,18 @@ public:
       }
       return *this;
     } /* operator-- */
+
+    /**
+     * Equality comparison
+     *
+     * @return result of comparison
+     */
+    bool operator== (const Iterator &rhs) const /**< iterator to compare to */
+    {
+      ASSERT (start == rhs.start);
+      ASSERT (end == rhs.end);
+      return pos == rhs.pos;
+    } /* operator== */
 
     /**
      * Non-equality comparison
@@ -556,6 +589,11 @@ private:
       for (grid_coord j = 0; j < size.get2 (); ++j)
       {
         data[i][j] = new FieldValue [size.get3 ()];
+
+        for (grid_coord k = 0; k < size.get3 (); ++k)
+        {
+          data[i][j][k] = FIELDVALUE (0, 0);
+        }
       }
     }
   } /* alloc */
@@ -657,7 +695,7 @@ public:
      */
     Iterator & operator-- ()
     {
-      ASSERT (pos > start);
+      ASSERT (pos >= start);
       if (pos.get3 () == start.get3 ())
       {
         if (pos.get2 () == start.get2 ())
@@ -678,6 +716,18 @@ public:
       }
       return *this;
     } /* operator-- */
+
+    /**
+     * Equality comparison
+     *
+     * @return result of comparison
+     */
+    bool operator== (const Iterator &rhs) const /**< iterator to compare to */
+    {
+      ASSERT (start == rhs.start);
+      ASSERT (end == rhs.end);
+      return pos == rhs.pos;
+    } /* operator== */
 
     /**
      * Non-equality comparison
@@ -1002,7 +1052,7 @@ Grid<TCoord>::~Grid ()
                              const TCoord &sizeCoord) /**< size of grid */
 {
   return position < sizeCoord;
-} /* Grid<GridCoordinate3D>::isLegitIndex */
+} /* Grid<TCoord>::isLegitIndex */
 
 /**
  * Check whether position is appropriate to get/set value from
@@ -1038,7 +1088,7 @@ TCoord
 Grid<TCoord>::getComputationStart (const TCoord &diffPosStart) const /**< offset from the left border */
 {
   return getSize ().getZero () + diffPosStart;
-} /* getComputationStart */
+} /* Grid<TCoord>::getComputationStart */
 
 /**
  * Get last coordinate until which to perform computations at current step

@@ -146,6 +146,19 @@ void testFunc (CoordinateType t1, CoordinateType t2, CoordinateType t3,
     }
 
     /*
+     * zero coord
+     */
+    ALWAYS_ASSERT ((coord1D->getZero () == GridCoordinate1DTemplate<TcoordType, doSignChecks> (0, 0, 0, t1, t2, t3)));
+    if (correct2D)
+    {
+      ALWAYS_ASSERT ((coord2D->getZero () == GridCoordinate2DTemplate<TcoordType, doSignChecks> (0, 0, 0, t1, t2, t3)));
+    }
+    if (correct3D)
+    {
+      ALWAYS_ASSERT ((coord3D->getZero () == GridCoordinate3DTemplate<TcoordType, doSignChecks> (0, 0, 0, t1, t2, t3)));
+    }
+
+    /*
      * arithmetic operations and comparison
      */
     *coord1D_1 = *coord1D + *coord1D_1;

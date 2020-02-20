@@ -162,7 +162,7 @@ BMPHelper::getPixelFromValue (FPValue val, /**< value */
     }
     case PaletteType::PALETTE_GRAY:
     {
-      return getPixelFromValueGray (val, max, max);
+      return getPixelFromValueGray (val, min, max);
     }
     default:
     {
