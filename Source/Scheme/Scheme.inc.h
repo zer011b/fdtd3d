@@ -1332,11 +1332,10 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     GridCoordinate3D startBorder;
     GridCoordinate3D endBorder;
 
-    expandTo3DStartEnd (TC::initAxesCoordinate (0, 0, 0, ct1, ct2, ct3),
-                        grid->getTotalSize (),
-                        startBorder,
-                        endBorder,
-                        ct1, ct2, ct3);
+    TC startB = grid->getTotalSize ().getZero ();
+    TC endB = grid->getTotalSize ();
+
+    expandTo3DStartEnd (startB, endB, startBorder, endBorder, ct1, ct2, ct3);
 
 #ifdef CUDA_ENABLED
     if (SOLVER_SETTINGS.getDoUseCuda ()
@@ -1348,8 +1347,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     else
 #endif
     {
-      typename VectorFieldValues<TC>::Iterator iter (startBorder, startBorder, endBorder);
-      typename VectorFieldValues<TC>::Iterator iter_end = VectorFieldValues<TC>::Iterator::getEndIterator (startBorder, endBorder);
+      typename VectorFieldValues<TC>::Iterator iter (startB, startB, endB);
+      typename VectorFieldValues<TC>::Iterator iter_end = VectorFieldValues<TC>::Iterator::getEndIterator (startB, endB);
       for (; iter != iter_end; ++iter)
       {
         TC posAbs = iter.getPos ();
@@ -1371,11 +1370,10 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     GridCoordinate3D startNorm;
     GridCoordinate3D endNorm;
 
-    expandTo3DStartEnd (TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3),
-                        grid->getTotalSize () - TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3),
-                        startNorm,
-                        endNorm,
-                        ct1, ct2, ct3);
+    TC startN = TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+    TC endN = grid->getTotalSize () - TC::initAxesCoordinate (1, 1, 1, ct1, ct2, ct3);
+
+    expandTo3DStartEnd (startN, endN, startNorm, endNorm, ct1, ct2, ct3);
 
     if (SOLVER_SETTINGS.getExactSolutionCompareStartX () != 0)
     {
@@ -1403,6 +1401,9 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       endNorm.set3 (SOLVER_SETTINGS.getExactSolutionCompareEndZ ());
     }
 
+    startN = TC::initAxesCoordinate (startNorm.get1 (), startNorm.get2 (), startNorm.get3 (), ct1, ct2, ct3);
+    endN = TC::initAxesCoordinate (endNorm.get1 (), endNorm.get2 (), endNorm.get3 (), ct1, ct2, ct3);
+
     Grid<TC> *normGrid = grid;
     if (usePML)
     {
@@ -1425,8 +1426,8 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     else
 #endif /* CUDA_ENABLED */
     {
-      typename VectorFieldValues<TC>::Iterator iter (startNorm, startNorm, endNorm);
-      typename VectorFieldValues<TC>::Iterator iter_end = VectorFieldValues<TC>::Iterator::getEndIterator (startNorm, endNorm);
+      typename VectorFieldValues<TC>::Iterator iter (startN, startN, endN);
+      typename VectorFieldValues<TC>::Iterator iter_end = VectorFieldValues<TC>::Iterator::getEndIterator (startN, endN);
       for (; iter != iter_end; ++iter)
       {
         TC posAbs = iter.getPos ();
@@ -2826,8 +2827,8 @@ Scheme<Type, TCoord, layout_type>::initMaterialFromFile (GridType gridType, Grid
   if (useParallel)
   {
 #ifdef PARALLEL_GRID
-    VectorFieldValues<TC>::Iterator iter = grid->begin ();
-    VectorFieldValues<TC>::Iterator iter_end = grid->end ();
+    typename VectorFieldValues<TC>::Iterator iter = grid->begin ();
+    typename VectorFieldValues<TC>::Iterator iter_end = grid->end ();
     for (; iter != iter_end; ++iter)
     {
       TC pos = iter.getPos ();

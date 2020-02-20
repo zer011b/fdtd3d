@@ -325,8 +325,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (ExStart, ExStart, ExEnd);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues< TCoord<grid_coord, true> >::Iterator::getEndIterator (ExStart, ExEnd);
         for (; iter != iter_end; ++iter)
         {
           TCoord<grid_coord, true> pos = iter.getPos ();
@@ -408,8 +408,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (EyStart, EyStart, EyEnd);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues< TCoord<grid_coord, true> >::Iterator::getEndIterator (EyStart, EyEnd);
         for (; iter != iter_end; ++iter)
         {
           TCoord<grid_coord, true> pos = iter.getPos ();
@@ -490,8 +490,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (EzStart, EzStart, EzEnd);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues< TCoord<grid_coord, true> >::Iterator::getEndIterator (EzStart, EzEnd);
         for (; iter != iter_end; ++iter)
         {
           TCoord<grid_coord, true> pos = iter.getPos ();
@@ -591,8 +591,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (HxStart, HxStart, HxEnd);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues< TCoord<grid_coord, true> >::Iterator::getEndIterator (HxStart, HxEnd);
         for (; iter != iter_end; ++iter)
         {
           TCoord<grid_coord, true> pos = iter.getPos ();
@@ -673,8 +673,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (HyStart, HyStart, HyEnd);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues< TCoord<grid_coord, true> >::Iterator::getEndIterator (HyStart, HyEnd);
         for (; iter != iter_end; ++iter)
         {
           TCoord<grid_coord, true> pos = iter.getPos ();
@@ -755,8 +755,8 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
       else
 #endif /* CUDA_ENABLED */
       {
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (start, start, end);
-        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues<TCoord>::Iterator::getEndIterator (start, end);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter (HzStart, HzStart, HzEnd);
+        typename VectorFieldValues< TCoord<grid_coord, true> >::Iterator iter_end = VectorFieldValues< TCoord<grid_coord, true> >::Iterator::getEndIterator (HzStart, HzEnd);
         for (; iter != iter_end; ++iter)
         {
           TCoord<grid_coord, true> pos = iter.getPos ();

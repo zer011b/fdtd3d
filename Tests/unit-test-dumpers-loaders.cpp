@@ -164,7 +164,7 @@ static void dat (Grid<GridCoordinate1D> *grid1D,
   GridCoordinate2D pos2D = grid2D->getSize ().getZero ();
   datDumper2D.dumpGrid (grid2D, pos2D, grid2D->getSize (), 0, -1, 0);
 
-  GridCoordinate3D pos3D = grid3D->getSize ().getZero ()
+  GridCoordinate3D pos3D = grid3D->getSize ().getZero ();
   datDumper3D.dumpGrid (grid3D, pos3D, grid3D->getSize (), 0, -1, 0);
 
   datLoader1D.loadGrid (grid1D, pos1D, grid1D->getSize (), 0, -1, 0);
@@ -186,13 +186,13 @@ static void txt (Grid<GridCoordinate1D> *grid1D,
   TXTLoader<GridCoordinate2D> txtLoader2D;
   TXTLoader<GridCoordinate3D> txtLoader3D;
 
-  GridCoordinate1D pos1D = grid1D->getSize ().getZero ()
+  GridCoordinate1D pos1D = grid1D->getSize ().getZero ();
   txtDumper1D.dumpGrid (grid1D, pos1D, grid1D->getSize (), 0, -1, 0);
 
-  GridCoordinate2D pos2D = grid2D->getSize ().getZero ()
+  GridCoordinate2D pos2D = grid2D->getSize ().getZero ();
   txtDumper2D.dumpGrid (grid2D, pos2D, grid2D->getSize (), 0, -1, 0);
 
-  GridCoordinate3D pos3D = grid3D->getSize ().getZero ()
+  GridCoordinate3D pos3D = grid3D->getSize ().getZero ();
   txtDumper3D.dumpGrid (grid3D, pos3D, grid3D->getSize (), 0, -1, 0);
 
   txtLoader1D.loadGrid (grid1D, pos1D, grid1D->getSize (), 0, -1, 0);

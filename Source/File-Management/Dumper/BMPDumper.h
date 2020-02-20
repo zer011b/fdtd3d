@@ -59,12 +59,12 @@ public:
  */
 template <class TCoord>
 void
-BMPDumper<TCoord>::writeTxtToFile (FPValue minRe, /**< minimum real value */
-                                   FPValue maxRe, /**< maximum real value */
-                                   FPValue minIm, /**< minimum imag value */
+BMPDumper<TCoord>::writeTxtToFile (FPValue maxRe, /**< maximum real value */
+                                   FPValue minRe, /**< minimum real value */
                                    FPValue maxIm, /**< maximum imag value */
-                                   FPValue minMod, /**< minimum module value */
+                                   FPValue minIm, /**< minimum imag value */
                                    FPValue maxMod, /**< maximum module value */
+                                   FPValue minMod, /**< minimum module value */
                                    const std::string &imageReNameTxt, /**< real text file name */
                                    const std::string &imageImNameTxt, /**< imag text file name */
                                    const std::string &imageModNameTxt) /**< module text file name */
@@ -75,17 +75,20 @@ BMPDumper<TCoord>::writeTxtToFile (FPValue minRe, /**< minimum real value */
   std::ofstream fileMaxMod;
 #endif /* COMPLEX_FIELD_VALUES */
 
+  ASSERT (maxRe >= minRe);
   fileMaxRe.open (imageReNameTxt.c_str (), std::ios::out);
   ASSERT (fileMaxRe.is_open());
   fileMaxRe << std::setprecision(std::numeric_limits<double>::digits10) << maxRe << " " << minRe;
   fileMaxRe.close();
 
 #ifdef COMPLEX_FIELD_VALUES
+  ASSERT (maxIm >= minIm);
   fileMaxIm.open (imageImNameTxt.c_str (), std::ios::out);
   ASSERT (fileMaxIm.is_open());
   fileMaxIm << std::setprecision(std::numeric_limits<double>::digits10) << maxIm << " " << minIm;
   fileMaxIm.close();
 
+  ASSERT (maxMod >= minMod);
   fileMaxMod.open (imageModNameTxt.c_str (), std::ios::out);
   ASSERT (fileMaxMod.is_open());
   fileMaxMod << std::setprecision(std::numeric_limits<double>::digits10) << maxMod << " " << minMod;

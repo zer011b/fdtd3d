@@ -160,10 +160,9 @@ void testFunc1D (GridCoordinate1D overallSize, GridCoordinate1D bufSize)
     grid_coord index = cudaGrid.calculateIndexFromPosition (pos);
 
     GridCoordinate1D posCPU = GRID_COORDINATE_1D (i - bufSize.get1 (), overallSize.getType1 ());
-    grid_coord coord = cpuGrid.calculateIndexFromPosition (posCPU);
 
-    ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 0) == FIELDVALUE (17, 1022) + FIELDVALUE (index * 23, index * 17));
-    ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 1) == FIELDVALUE (17, 1022));
+    ALWAYS_ASSERT (*cpuGrid.getFieldValue (posCPU, 0) == FIELDVALUE (17, 1022) + FIELDVALUE (index * 23, index * 17));
+    ALWAYS_ASSERT (*cpuGrid.getFieldValue (posCPU, 1) == FIELDVALUE (17, 1022));
   }
 
   {
@@ -268,10 +267,9 @@ void testFunc2D (GridCoordinate2D overallSize, GridCoordinate2D bufSize)
       GridCoordinate2D posCPU = GRID_COORDINATE_2D (i - bufSize.get1 (), j - bufSize.get2 (),
                                                     overallSize.getType1 (),
                                                     overallSize.getType2 ());
-      grid_coord coord = cpuGrid.calculateIndexFromPosition (posCPU);
 
-      ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 0) == FIELDVALUE (17, 1022) + FIELDVALUE (index * 23, index * 17));
-      ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 1) == FIELDVALUE (17, 1022));
+      ALWAYS_ASSERT (*cpuGrid.getFieldValue (posCPU, 0) == FIELDVALUE (17, 1022) + FIELDVALUE (index * 23, index * 17));
+      ALWAYS_ASSERT (*cpuGrid.getFieldValue (posCPU, 1) == FIELDVALUE (17, 1022));
     }
   }
 
@@ -381,10 +379,9 @@ void testFunc3D (GridCoordinate3D overallSize, GridCoordinate3D bufSize)
                                                       overallSize.getType1 (),
                                                       overallSize.getType2 (),
                                                       overallSize.getType3 ());
-        grid_coord coord = cpuGrid.calculateIndexFromPosition (posCPU);
 
-        ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 0) == FIELDVALUE (17, 1022) + FIELDVALUE (index * 23, index * 17));
-        ALWAYS_ASSERT (*cpuGrid.getFieldValue (coord, 1) == FIELDVALUE (17, 1022));
+        ALWAYS_ASSERT (*cpuGrid.getFieldValue (posCPU, 0) == FIELDVALUE (17, 1022) + FIELDVALUE (index * 23, index * 17));
+        ALWAYS_ASSERT (*cpuGrid.getFieldValue (posCPU, 1) == FIELDVALUE (17, 1022));
       }
     }
   }
