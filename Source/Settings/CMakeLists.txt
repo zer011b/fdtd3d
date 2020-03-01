@@ -1,5 +1,3 @@
-message ("Settings build.")
-
 file(GLOB_RECURSE SETTINGS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB_RECURSE CUDA_SETTINGS_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cu")
 
@@ -9,10 +7,6 @@ if ("${CUDA_ENABLED}")
   set_target_properties (Settings PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 else ()
   add_library (Settings ${SETTINGS_SOURCES})
-endif ()
-
-if ("${CXX11_ENABLED}")
-  target_compile_features (Settings PUBLIC cxx_std_11)
 endif ()
 
 target_link_libraries (Settings Helpers)
