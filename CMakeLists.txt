@@ -6,7 +6,6 @@ option(PRINT_MESSAGE "Print all messages" OFF)
 option(PARALLEL_GRID "Use parallel grid" OFF)
 option(DYNAMIC_GRID "Use dynamic grid" OFF)
 option(CUDA_ENABLED "Cuda support enabled" OFF)
-option(CXX11_ENABLED "C++11 support enabled" OFF)
 option(COMPLEX_FIELD_VALUES "Complex field values" OFF)
 option(LARGE_COORDINATES "Use int64 for grid coordinates" OFF)
 option(COMBINED_SENDRECV "Use combined sendrecv" ON)
@@ -284,9 +283,21 @@ endif ()
 
 set (BUILD_FLAGS "")
 
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag(-std=c++11 COMPILER_SUPPORTS_CXX11)
+if (COMPILER_SUPPORTS_CXX11)
+  if ("${CXX11_ENABLED}" STREQUAL "")
+    set(CXX11_ENABLED ON)
+  endif ()
+else ()
+  set(CXX11_ENABLED OFF)
+endif ()
 if ("${CXX11_ENABLED}")
+  message ("C++11: ON.")
   add_definitions (-DCXX11_ENABLED)
-  set (BUILD_FLAGS "${BUILD_FLAGS} -std=c++11")
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_CXX_EXTENSIONS OFF)
 endif ()
 
 if ("${LINK_NUMA}")
@@ -314,9 +325,6 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 endif ()
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BUILD_FLAGS} ${WARNING_FLAGS}")
-
-###### Project fdtd ######
-message ("Project dir: ${PROJECT_SOURCE_DIR}")
 
 # Include MPI
 if ("${PARALLEL_GRID}")

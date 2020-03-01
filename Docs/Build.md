@@ -25,7 +25,6 @@ PARALLEL_GRID_DIMENSION - number of dimensions in parallel grid (1, 2 or 3)
 PRINT_MESSAGE - print debug output (ON or OFF)
 PARALLEL_GRID - use parallel grid or not (ON or OFF)
 PARALLEL_BUFFER_DIMENSION - dimension of parallel buffers, i.e. actual coordinate systems (x, y, z, xy, yz, xz, xyz)
-CXX11_ENABLED - allow support of C++11 (ON or OFF)
 CUDA_ENABLED - enable support of GPU (ON or OFF)
 CUDA_ARCH_SM_TYPE - sm type for GPU
 LARGE_COORDINATES - whether to use int64 for grid coordinates or int32 (ON or OFF)
@@ -42,7 +41,7 @@ Build command for 3D grid in detail:
 ```sh
 cmake .. -DCMAKE_BUILD_TYPE=Release -DSOLVER_DIM_MODES=DIM3 -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=OFF \
 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=ON -DPARALLEL_GRID=OFF -DPARALLEL_BUFFER_DIMENSION=xyz \
--DCXX11_ENABLED=ON -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DLARGE_COORDINATES=OFF
+-DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DLARGE_COORDINATES=OFF
 ```
 
 # MPI+Cuda Build
@@ -60,7 +59,7 @@ make
 # make install won't work because of lack of root access for ordinary users
 ```
 
-GCC provided for BlueGene\P is heavily outdated (4.1.2), thus, it doesn't support c++11 features and fdtd3d should be built with -DCXX11_ENABLED=OFF. Also, apply next patch to fdtd3d:
+GCC provided for BlueGene\P is heavily outdated (4.1.2), thus, it doesn't support c++11 features. Also, apply next patch to fdtd3d:
 
 ```patch
 diff --git a/CMakeLists.txt b/CMakeLists.txt
@@ -79,7 +78,7 @@ index 2dc58ad..838b491 100644
 
 Build command:
 ```sh
-../../cmake/cmake-3.6.0-rc1/bin/cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DSOLVER_DIM_MODES=DIM3 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=ON -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xyz -DCXX11_ENABLED=OFF -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DDYNAMIC_GRID=OFF -DCOMBINED_SENDRECV=ON -DMPI_CLOCK=OFF -DCMAKE_C_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicc -DCMAKE_CXX_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicxx
+../../cmake/cmake-3.6.0-rc1/bin/cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DSOLVER_DIM_MODES=DIM3 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=ON -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=xyz -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DDYNAMIC_GRID=OFF -DCOMBINED_SENDRECV=ON -DMPI_CLOCK=OFF -DCMAKE_C_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicc -DCMAKE_CXX_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicxx
 make fdtd3d
 ```
 
@@ -90,7 +89,7 @@ make fdtd3d
 mpixlcxx and mpixlcxx_r compilers lead to undefined references during linking (supposed that this is a bug in IBM XL compilers). GCC should be used instead (`/bgsys/drivers/ppcfloor/comm/bin/mpicxx`):
 
 ```sh
-../../../../bin/cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DSOLVER_DIM_MODES=DIM3 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=x -DCXX11_ENABLED=OFF -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DDYNAMIC_GRID=OFF -DCOMBINED_SENDRECV=ON -DMPI_CLOCK=OFF -DCMAKE_C_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicc -DCMAKE_CXX_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicxx
+../../../../bin/cmake .. -DCMAKE_BUILD_TYPE=Release -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DSOLVER_DIM_MODES=DIM3 -DPARALLEL_GRID_DIMENSION=3 -DPRINT_MESSAGE=OFF -DPARALLEL_GRID=ON -DPARALLEL_BUFFER_DIMENSION=x -DCUDA_ENABLED=OFF -DCUDA_ARCH_SM_TYPE=sm_50 -DDYNAMIC_GRID=OFF -DCOMBINED_SENDRECV=ON -DMPI_CLOCK=OFF -DCMAKE_C_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicc -DCMAKE_CXX_COMPILER=/bgsys/drivers/ppcfloor/comm/bin/mpicxx
 ```
 
 ### cmake linking error

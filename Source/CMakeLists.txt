@@ -1,10 +1,7 @@
-message ("Source build.")
-
 include_directories ("${PROJECT_SOURCE_DIR}/Source/Helpers")
 add_subdirectory (Helpers)
 
 include_directories ("${PROJECT_SOURCE_DIR}/Source/Physics")
-add_subdirectory (Physics)
 
 include_directories ("${PROJECT_SOURCE_DIR}/Source/Kernels")
 add_subdirectory (Kernels)
@@ -36,10 +33,6 @@ if ("${CUDA_ENABLED}")
   set_target_properties (fdtd3d PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 else ()
   add_executable (fdtd3d main.cpp)
-endif ()
-
-if ("${CXX11_ENABLED}")
-  target_compile_features (fdtd3d PUBLIC cxx_std_11)
 endif ()
 
 target_link_libraries (fdtd3d Scheme)
