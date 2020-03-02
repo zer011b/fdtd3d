@@ -531,7 +531,6 @@ jobs:
       - . Tools/travis-helper.sh
       - . Tools/travis-cuda-helper.sh
       - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
-      - ./Tools/Tests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
 
 # ---- Unit test for InternalScheme on GPU ----
     - stage: unit-tests-gpu
@@ -547,27 +546,7 @@ jobs:
     - stage: unit-tests-gpu
       env:
         - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
-        - MODE=EX_HY
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
         - CXX11=ON
-        - MODE=EX_HZ
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
         - MODE=EX_HZ
       script:
       - . Tools/travis-helper.sh
@@ -587,27 +566,7 @@ jobs:
     - stage: unit-tests-gpu
       env:
         - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
-        - MODE=EY_HX
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
         - CXX11=ON
-        - MODE=EY_HZ
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
         - MODE=EY_HZ
       script:
       - . Tools/travis-helper.sh
@@ -627,27 +586,7 @@ jobs:
     - stage: unit-tests-gpu
       env:
         - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
-        - MODE=EZ_HX
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
         - CXX11=ON
-        - MODE=EZ_HY
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
         - MODE=EZ_HY
       script:
       - . Tools/travis-helper.sh
@@ -667,27 +606,7 @@ jobs:
     - stage: unit-tests-gpu
       env:
         - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
-        - MODE=TEX
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
         - CXX11=ON
-        - MODE=TEY
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
         - MODE=TEY
       script:
       - . Tools/travis-helper.sh
@@ -707,27 +626,7 @@ jobs:
     - stage: unit-tests-gpu
       env:
         - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
-        - MODE=TEZ
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
         - CXX11=ON
-        - MODE=TMX
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
         - MODE=TMX
       script:
       - . Tools/travis-helper.sh
@@ -747,16 +646,6 @@ jobs:
     - stage: unit-tests-gpu
       env:
         - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
-        - MODE=TMY
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
         - CXX11=ON
         - MODE=TMZ
       script:
@@ -767,27 +656,7 @@ jobs:
     - stage: unit-tests-gpu
       env:
         - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
-        - MODE=TMZ
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
         - CXX11=ON
-        - MODE=DIM3
-      script:
-      - . Tools/travis-helper.sh
-      - . Tools/travis-cuda-helper.sh
-      - ./Tools/Tests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=OFF
         - MODE=DIM3
       script:
       - . Tools/travis-helper.sh
