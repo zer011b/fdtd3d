@@ -116,3 +116,21 @@ Add this to `cmake` command:
 ```
 -DLINK_NUMA=ON
 ```
+
+# Cross build for Raspberry Pi
+
+Download Raspbian image file (https://www.raspberrypi.org/downloads/raspbian/) and create rootfs:
+
+```
+mkdir /mnt/rpi
+mount -o ro,loop,offset=<offset> -t auto <path_to_image> /mnt/rpi
+```
+
+To get offset run:
+```
+fdisk -l <path_to_image> | grep "Linux" | awk '{print $2 * 512}'
+```
+
+Then pass `-DCMAKE_TOOLCHAIN_FILE=<path_to_arm-gcc-toolchain.cmake>`.
+
+By default, Raspberry Pi cmake toolchain file is configured to use rootfs files from `/mnt/rpi`. Note that rootfs should match image installed on your Raspberry Pi.
