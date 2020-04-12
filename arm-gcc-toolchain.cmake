@@ -21,9 +21,11 @@ add_link_options("-L${CROSS_ROOTFS}/usr/lib/gcc/${TOOLCHAIN}/${TOOLCHAIN_VERSION
 add_link_options("-L${CROSS_ROOTFS}/usr/lib/${TOOLCHAIN}/")
 add_link_options("-L${CROSS_ROOTFS}/lib/${TOOLCHAIN}/")
 
-add_compile_options(-mthumb)
-add_compile_options(-mfpu=vfpv3)
+add_compile_options(-march=armv8-a+crc+simd)
+add_compile_options(-mtune=cortex-a72)
+add_compile_options(-mfpu=crypto-neon-fp-armv8)
 add_compile_options(-mfloat-abi=hard)
+add_compile_options(-mthumb)
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
