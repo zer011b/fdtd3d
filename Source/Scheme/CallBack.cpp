@@ -264,40 +264,40 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::sin1_hy (GridCoordinateFP3D coord, FP
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_ex_exhy (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeZLeft () - FPValue (2.5);
+  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeLeftZ () - FPValue (2.5);
   return - exp1_e (coord.get3 (), t, z0);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_hy_exhy (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeZLeft () - FPValue (2.5);
+  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeLeftZ () - FPValue (2.5);
   return - exp1_h (coord.get3 (), t, z0);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_ex_exhy (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeZLeft () - FPValue (2.5);
+  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeLeftZ () - FPValue (2.5);
   FPValue zb = SOLVER_SETTINGS.getEpsSphereCenterZ () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return - exp2_e (coord.get3 (), t, z0, zb);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_hy_exhy (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeZLeft () - FPValue (2.5);
+  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeLeftZ () - FPValue (2.5);
   FPValue zb = SOLVER_SETTINGS.getEpsSphereCenterZ () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return - exp2_h (coord.get3 (), t, z0, zb);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_ex_exhy (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeZLeft () - FPValue (2.5);
+  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeLeftZ () - FPValue (2.5);
   FPValue zb = SOLVER_SETTINGS.getEpsSphereCenterZ () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return - exp3_e (coord.get3 (), t, z0, zb);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_hy_exhy (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeZLeft () - FPValue (2.5);
+  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeLeftZ () - FPValue (2.5);
   FPValue zb = SOLVER_SETTINGS.getEpsSphereCenterZ () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return - exp3_h (coord.get3 (), t, z0, zb);
 }
@@ -308,40 +308,40 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_hy_exhy (GridCoordinateFP3D coor
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_ex_exhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeYLeft () - FPValue (2.5);
+  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeLeftY () - FPValue (2.5);
   return exp1_e (coord.get2 (), t, y0);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_hz_exhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeYLeft () - FPValue (2.5);
+  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeLeftY () - FPValue (2.5);
   return - exp1_h (coord.get2 (), t, y0);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_ex_exhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeYLeft () - FPValue (2.5);
+  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeLeftY () - FPValue (2.5);
   FPValue yb = SOLVER_SETTINGS.getEpsSphereCenterY () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return exp2_e (coord.get2 (), t, y0, yb);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_hz_exhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeYLeft () - FPValue (2.5);
+  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeLeftY () - FPValue (2.5);
   FPValue yb = SOLVER_SETTINGS.getEpsSphereCenterY () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return - exp2_h (coord.get2 (), t, y0, yb);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_ex_exhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeYLeft () - FPValue (2.5);
+  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeLeftY () - FPValue (2.5);
   FPValue yb = SOLVER_SETTINGS.getEpsSphereCenterY () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return exp3_e (coord.get2 (), t, y0, yb);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_hz_exhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeYLeft () - FPValue (2.5);
+  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeLeftY () - FPValue (2.5);
   FPValue yb = SOLVER_SETTINGS.getEpsSphereCenterY () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return - exp3_h (coord.get2 (), t, y0, yb);
 }
@@ -357,7 +357,7 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_ey_eyhx (GridCoordinateFP3D coor
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_hx_eyhx (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeZLeft () - FPValue (2.5);
+  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeLeftZ () - FPValue (2.5);
   return exp1_h (coord.get3 (), t, z0);
 }
 
@@ -368,7 +368,7 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_ey_eyhx (GridCoordinateFP3D coor
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_hx_eyhx (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeZLeft () - FPValue (2.5);
+  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeLeftZ () - FPValue (2.5);
   FPValue zb = SOLVER_SETTINGS.getEpsSphereCenterZ () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return exp2_h (coord.get3 (), t, z0, zb);
 }
@@ -380,7 +380,7 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_ey_eyhx (GridCoordinateFP3D coor
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_hx_eyhx (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeZLeft () - FPValue (2.5);
+  FPValue z0 = SOLVER_SETTINGS.getTFSFSizeLeftZ () - FPValue (2.5);
   FPValue zb = SOLVER_SETTINGS.getEpsSphereCenterZ () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return exp3_h (coord.get3 (), t, z0, zb);
 }
@@ -391,40 +391,40 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_hx_eyhx (GridCoordinateFP3D coor
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_ey_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeXLeft () - FPValue (2.5);
+  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeLeftX () - FPValue (2.5);
   return - exp1_e (coord.get1 (), t, x0);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_hz_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeXLeft () - FPValue (2.5);
+  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeLeftX () - FPValue (2.5);
   return - exp1_h (coord.get1 (), t, x0);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_ey_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeXLeft () - FPValue (2.5);
+  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeLeftX () - FPValue (2.5);
   FPValue xb = SOLVER_SETTINGS.getEpsSphereCenterX () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return - exp2_e (coord.get1 (), t, x0, xb);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_hz_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeXLeft () - FPValue (2.5);
+  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeLeftX () - FPValue (2.5);
   FPValue xb = SOLVER_SETTINGS.getEpsSphereCenterX () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return - exp2_h (coord.get1 (), t, x0, xb);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_ey_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeXLeft () - FPValue (2.5);
+  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeLeftX () - FPValue (2.5);
   FPValue xb = SOLVER_SETTINGS.getEpsSphereCenterX () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return - exp3_e (coord.get1 (), t, x0, xb);
 }
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_hz_eyhz (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeXLeft () - FPValue (2.5);
+  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeLeftX () - FPValue (2.5);
   FPValue xb = SOLVER_SETTINGS.getEpsSphereCenterX () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return - exp3_h (coord.get1 (), t, x0, xb);
 }
@@ -440,7 +440,7 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_ez_ezhx (GridCoordinateFP3D coor
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_hx_ezhx (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeYLeft () - FPValue (2.5);
+  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeLeftY () - FPValue (2.5);
   return exp1_h (coord.get2 (), t, y0);
 }
 
@@ -451,7 +451,7 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_ez_ezhx (GridCoordinateFP3D coor
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_hx_ezhx (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeYLeft () - FPValue (2.5);
+  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeLeftY () - FPValue (2.5);
   FPValue yb = SOLVER_SETTINGS.getEpsSphereCenterY () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return exp2_h (coord.get2 (), t, y0, yb);
 }
@@ -463,7 +463,7 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_ez_ezhx (GridCoordinateFP3D coor
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_hx_ezhx (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeYLeft () - FPValue (2.5);
+  FPValue y0 = SOLVER_SETTINGS.getTFSFSizeLeftY () - FPValue (2.5);
   FPValue yb = SOLVER_SETTINGS.getEpsSphereCenterY () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return exp3_h (coord.get2 (), t, y0, yb);
 }
@@ -474,7 +474,7 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_hx_ezhx (GridCoordinateFP3D coor
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_ez_ezhy (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeXLeft () - FPValue (2.5);
+  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeLeftX () - FPValue (2.5);
   return exp1_e (coord.get1 (), t, x0);
 }
 
@@ -485,7 +485,7 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp1_hy_ezhy (GridCoordinateFP3D coor
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_ez_ezhy (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeXLeft () - FPValue (2.5);
+  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeLeftX () - FPValue (2.5);
   FPValue xb = SOLVER_SETTINGS.getEpsSphereCenterX () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return exp2_e (coord.get1 (), t, x0, xb);
 }
@@ -497,7 +497,7 @@ CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp2_hy_ezhy (GridCoordinateFP3D coor
 
 CUDA_DEVICE CUDA_HOST FieldValue CallBack::exp3_ez_ezhy (GridCoordinateFP3D coord, FPValue t)
 {
-  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeXLeft () - FPValue (2.5);
+  FPValue x0 = SOLVER_SETTINGS.getTFSFSizeLeftX () - FPValue (2.5);
   FPValue xb = SOLVER_SETTINGS.getEpsSphereCenterX () - SOLVER_SETTINGS.getEpsSphereRadius ();
   return exp3_e (coord.get1 (), t, x0, xb);
 }

@@ -60,13 +60,13 @@ function build
           exit 1
         fi
 
-        ./Tests/unit-test-internalscheme --time-steps 10 --point-source-pos-x 10 --point-source-pos-y 10 --point-source-pos-z 10 --point-source-ex
+        ./Tests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex
 
         if [[ "$?" -ne "0" ]]; then
           exit 1
         fi
 
-        ./Tests/unit-test-internalscheme --time-steps 10 --point-source-pos-x 10 --point-source-pos-y 10 --point-source-pos-z 10 --point-source-ex --use-ca-cb
+        ./Tests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex --use-ca-cb
 
         if [[ "$?" -ne "0" ]]; then
           exit 1

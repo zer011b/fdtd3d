@@ -641,8 +641,8 @@ initSettings_EX_HY (GridCoordinate1D &overallSize, GridCoordinate1D &pmlSize, Gr
 {
   overallSize = GRID_COORDINATE_1D (solverSettings.getSizeZ (), CoordinateType::Z);
   pmlSize = GRID_COORDINATE_1D (solverSettings.getPMLSizeZ (), CoordinateType::Z);
-  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeZLeft (), CoordinateType::Z);
-  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeZRight (), CoordinateType::Z);
+  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeLeftZ (), CoordinateType::Z);
+  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeRightZ (), CoordinateType::Z);
 }
 template <>
 void
@@ -673,8 +673,8 @@ initSettings_EX_HZ (GridCoordinate1D &overallSize, GridCoordinate1D &pmlSize, Gr
 {
   overallSize = GRID_COORDINATE_1D (solverSettings.getSizeY (), CoordinateType::Y);
   pmlSize = GRID_COORDINATE_1D (solverSettings.getPMLSizeY (), CoordinateType::Y);
-  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeYLeft (), CoordinateType::Y);
-  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeYRight (), CoordinateType::Y);
+  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeLeftY (), CoordinateType::Y);
+  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeRightY (), CoordinateType::Y);
 }
 template <>
 void
@@ -705,8 +705,8 @@ initSettings_EY_HX (GridCoordinate1D &overallSize, GridCoordinate1D &pmlSize, Gr
 {
   overallSize = GRID_COORDINATE_1D (solverSettings.getSizeZ (), CoordinateType::Z);
   pmlSize = GRID_COORDINATE_1D (solverSettings.getPMLSizeZ (), CoordinateType::Z);
-  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeZLeft (), CoordinateType::Z);
-  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeZRight (), CoordinateType::Z);
+  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeLeftZ (), CoordinateType::Z);
+  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeRightZ (), CoordinateType::Z);
 }
 template <>
 void
@@ -737,8 +737,8 @@ initSettings_EY_HZ (GridCoordinate1D &overallSize, GridCoordinate1D &pmlSize, Gr
 {
   overallSize = GRID_COORDINATE_1D (solverSettings.getSizeX (), CoordinateType::X);
   pmlSize = GRID_COORDINATE_1D (solverSettings.getPMLSizeX (), CoordinateType::X);
-  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeXLeft (), CoordinateType::X);
-  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeXRight (), CoordinateType::X);
+  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeLeftX (), CoordinateType::X);
+  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeRightX (), CoordinateType::X);
 }
 template <>
 void
@@ -769,8 +769,8 @@ initSettings_EZ_HX (GridCoordinate1D &overallSize, GridCoordinate1D &pmlSize, Gr
 {
   overallSize = GRID_COORDINATE_1D (solverSettings.getSizeY (), CoordinateType::Y);
   pmlSize = GRID_COORDINATE_1D (solverSettings.getPMLSizeY (), CoordinateType::Y);
-  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeYLeft (), CoordinateType::Y);
-  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeYRight (), CoordinateType::Y);
+  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeLeftY (), CoordinateType::Y);
+  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeRightY (), CoordinateType::Y);
 }
 template <>
 void
@@ -801,8 +801,8 @@ initSettings_EZ_HY (GridCoordinate1D &overallSize, GridCoordinate1D &pmlSize, Gr
 {
   overallSize = GRID_COORDINATE_1D (solverSettings.getSizeX (), CoordinateType::X);
   pmlSize = GRID_COORDINATE_1D (solverSettings.getPMLSizeX (), CoordinateType::X);
-  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeXLeft (), CoordinateType::X);
-  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeXRight (), CoordinateType::X);
+  tfsfSizeLeft = GRID_COORDINATE_1D (solverSettings.getTFSFSizeLeftX (), CoordinateType::X);
+  tfsfSizeRight = GRID_COORDINATE_1D (solverSettings.getTFSFSizeRightX (), CoordinateType::X);
 }
 template <>
 void
@@ -833,8 +833,8 @@ initSettings_TEX (GridCoordinate2D &overallSize, GridCoordinate2D &pmlSize, Grid
 {
   overallSize = GRID_COORDINATE_2D (solverSettings.getSizeY (), solverSettings.getSizeZ (), CoordinateType::Y, CoordinateType::Z);
   pmlSize = GRID_COORDINATE_2D (solverSettings.getPMLSizeY (), solverSettings.getPMLSizeZ (), CoordinateType::Y, CoordinateType::Z);
-  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeYLeft (), solverSettings.getTFSFSizeZLeft (), CoordinateType::Y, CoordinateType::Z);
-  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeYRight (), solverSettings.getTFSFSizeZRight (), CoordinateType::Y, CoordinateType::Z);
+  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeLeftY (), solverSettings.getTFSFSizeLeftZ (), CoordinateType::Y, CoordinateType::Z);
+  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeRightY (), solverSettings.getTFSFSizeRightZ (), CoordinateType::Y, CoordinateType::Z);
 }
 template <>
 void
@@ -865,8 +865,8 @@ initSettings_TEY (GridCoordinate2D &overallSize, GridCoordinate2D &pmlSize, Grid
 {
   overallSize = GRID_COORDINATE_2D (solverSettings.getSizeX (), solverSettings.getSizeZ (), CoordinateType::X, CoordinateType::Z);
   pmlSize = GRID_COORDINATE_2D (solverSettings.getPMLSizeX (), solverSettings.getPMLSizeZ (), CoordinateType::X, CoordinateType::Z);
-  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeXLeft (), solverSettings.getTFSFSizeZLeft (), CoordinateType::X, CoordinateType::Z);
-  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeXRight (), solverSettings.getTFSFSizeZRight (), CoordinateType::X, CoordinateType::Z);
+  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeLeftX (), solverSettings.getTFSFSizeLeftZ (), CoordinateType::X, CoordinateType::Z);
+  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeRightX (), solverSettings.getTFSFSizeRightZ (), CoordinateType::X, CoordinateType::Z);
 }
 template <>
 void
@@ -897,8 +897,8 @@ initSettings_TEZ (GridCoordinate2D &overallSize, GridCoordinate2D &pmlSize, Grid
 {
   overallSize = GRID_COORDINATE_2D (solverSettings.getSizeX (), solverSettings.getSizeY (), CoordinateType::X, CoordinateType::Y);
   pmlSize = GRID_COORDINATE_2D (solverSettings.getPMLSizeX (), solverSettings.getPMLSizeY (), CoordinateType::X, CoordinateType::Y);
-  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeXLeft (), solverSettings.getTFSFSizeYLeft (), CoordinateType::X, CoordinateType::Y);
-  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeXRight (), solverSettings.getTFSFSizeYRight (), CoordinateType::X, CoordinateType::Y);
+  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeLeftX (), solverSettings.getTFSFSizeLeftY (), CoordinateType::X, CoordinateType::Y);
+  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeRightX (), solverSettings.getTFSFSizeRightY (), CoordinateType::X, CoordinateType::Y);
 }
 template <>
 void
@@ -929,8 +929,8 @@ initSettings_TMX (GridCoordinate2D &overallSize, GridCoordinate2D &pmlSize, Grid
 {
   overallSize = GRID_COORDINATE_2D (solverSettings.getSizeY (), solverSettings.getSizeZ (), CoordinateType::Y, CoordinateType::Z);
   pmlSize = GRID_COORDINATE_2D (solverSettings.getPMLSizeY (), solverSettings.getPMLSizeZ (), CoordinateType::Y, CoordinateType::Z);
-  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeYLeft (), solverSettings.getTFSFSizeZLeft (), CoordinateType::Y, CoordinateType::Z);
-  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeYRight (), solverSettings.getTFSFSizeZRight (), CoordinateType::Y, CoordinateType::Z);
+  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeLeftY (), solverSettings.getTFSFSizeLeftZ (), CoordinateType::Y, CoordinateType::Z);
+  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeRightY (), solverSettings.getTFSFSizeRightZ (), CoordinateType::Y, CoordinateType::Z);
 }
 template <>
 void
@@ -961,8 +961,8 @@ initSettings_TMY (GridCoordinate2D &overallSize, GridCoordinate2D &pmlSize, Grid
 {
   overallSize = GRID_COORDINATE_2D (solverSettings.getSizeX (), solverSettings.getSizeZ (), CoordinateType::X, CoordinateType::Z);
   pmlSize = GRID_COORDINATE_2D (solverSettings.getPMLSizeX (), solverSettings.getPMLSizeZ (), CoordinateType::X, CoordinateType::Z);
-  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeXLeft (), solverSettings.getTFSFSizeZLeft (), CoordinateType::X, CoordinateType::Z);
-  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeXRight (), solverSettings.getTFSFSizeZRight (), CoordinateType::X, CoordinateType::Z);
+  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeLeftX (), solverSettings.getTFSFSizeLeftZ (), CoordinateType::X, CoordinateType::Z);
+  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeRightX (), solverSettings.getTFSFSizeRightZ (), CoordinateType::X, CoordinateType::Z);
 }
 template <>
 void
@@ -993,8 +993,8 @@ initSettings_TMZ (GridCoordinate2D &overallSize, GridCoordinate2D &pmlSize, Grid
 {
   overallSize = GRID_COORDINATE_2D (solverSettings.getSizeX (), solverSettings.getSizeY (), CoordinateType::X, CoordinateType::Y);
   pmlSize = GRID_COORDINATE_2D (solverSettings.getPMLSizeX (), solverSettings.getPMLSizeY (), CoordinateType::X, CoordinateType::Y);
-  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeXLeft (), solverSettings.getTFSFSizeYLeft (), CoordinateType::X, CoordinateType::Y);
-  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeXRight (), solverSettings.getTFSFSizeYRight (), CoordinateType::X, CoordinateType::Y);
+  tfsfSizeLeft = GRID_COORDINATE_2D (solverSettings.getTFSFSizeLeftX (), solverSettings.getTFSFSizeLeftY (), CoordinateType::X, CoordinateType::Y);
+  tfsfSizeRight = GRID_COORDINATE_2D (solverSettings.getTFSFSizeRightX (), solverSettings.getTFSFSizeRightY (), CoordinateType::X, CoordinateType::Y);
 }
 template <>
 void
@@ -1027,9 +1027,9 @@ initSettings_DIM3 (GridCoordinate3D &overallSize, GridCoordinate3D &pmlSize, Gri
                                     CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
   pmlSize = GRID_COORDINATE_3D (solverSettings.getPMLSizeX (), solverSettings.getPMLSizeY (), solverSettings.getPMLSizeZ (),
                                 CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-  tfsfSizeLeft = GRID_COORDINATE_3D (solverSettings.getTFSFSizeXLeft (), solverSettings.getTFSFSizeYLeft (), solverSettings.getTFSFSizeZLeft (),
+  tfsfSizeLeft = GRID_COORDINATE_3D (solverSettings.getTFSFSizeLeftX (), solverSettings.getTFSFSizeLeftY (), solverSettings.getTFSFSizeLeftZ (),
                                      CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
-  tfsfSizeRight = GRID_COORDINATE_3D (solverSettings.getTFSFSizeXRight (), solverSettings.getTFSFSizeYRight (), solverSettings.getTFSFSizeZRight (),
+  tfsfSizeRight = GRID_COORDINATE_3D (solverSettings.getTFSFSizeRightX (), solverSettings.getTFSFSizeRightY (), solverSettings.getTFSFSizeRightZ (),
                                       CoordinateType::X, CoordinateType::Y, CoordinateType::Z);
 }
 template <>

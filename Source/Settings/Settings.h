@@ -147,6 +147,10 @@ private:
   SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
   SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
+#define SETTINGS_ELEM_FIELD_TYPE_COORDINATE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
+  SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName ## X, getterName ## X, fieldType, defaultVal, cmdArg, description) \
+  SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName ## Y, getterName ## Y, fieldType, defaultVal, cmdArg, description) \
+  SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName ## Z, getterName ## Z, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description)
 #include "Settings.inc.h"
@@ -157,6 +161,8 @@ private:
   CUDA_HOST int setFromCmd (int, char **, bool);
   CUDA_HOST int loadCmdFromFile (std::string);
   CUDA_HOST int saveCmdToFile (int, char **, std::string);
+
+  CUDA_HOST void parseCoordinate (char *, int &, int &, int &);
 
 #ifdef CUDA_ENABLED
   CUDA_HOST void prepareDeviceSettings ();
@@ -184,6 +190,10 @@ public:
     SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
     SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
+#define SETTINGS_ELEM_FIELD_TYPE_COORDINATE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
+    SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName ## X, getterName ## X, fieldType, defaultVal, cmdArg, description) \
+    SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName ## Y, getterName ## Y, fieldType, defaultVal, cmdArg, description) \
+    SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName ## Z, getterName ## Z, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description)
 #include "Settings.inc.h"
@@ -214,6 +224,10 @@ public:
   }
 #define SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
   SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description)
+#define SETTINGS_ELEM_FIELD_TYPE_COORDINATE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
+  SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName ## X, getterName ## X, fieldType, defaultVal, cmdArg, description) \
+  SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName ## Y, getterName ## Y, fieldType, defaultVal, cmdArg, description) \
+  SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName ## Z, getterName ## Z, fieldType, defaultVal, cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description)
 #include "Settings.inc.h"

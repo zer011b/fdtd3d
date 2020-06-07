@@ -3,7 +3,7 @@
 
 --time-steps 100
 
---sizez 40
+--size z:40
 
 --1d-eyhx
 
@@ -21,9 +21,9 @@
 --save-as-txt
 --palette-rgb
 
---pml-sizez 10
+--pml-size z:10
 --use-pml
 
 --use-tfsf
---tfsf-sizez-left 12
---tfsf-sizez-right 12
+--tfsf-size-left z:12
+--tfsf-size-right z:12

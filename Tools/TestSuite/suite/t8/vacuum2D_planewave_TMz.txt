@@ -2,8 +2,7 @@
 
 --time-steps 30
 
---sizex 30
---sizey 30
+--size x:30,y:30
 
 --2d-tmz
 
@@ -21,12 +20,9 @@
 --save-as-txt
 --palette-rgb
 
---pml-sizex 5
---pml-sizey 5
+--pml-size x:5,y:5
 --use-pml
 
 --use-tfsf
---tfsf-sizex-left 10
---tfsf-sizex-right 10
---tfsf-sizey-left 10
---tfsf-sizey-right 10
+--tfsf-size-left x:10,y:10
+--tfsf-size-right x:10,y:10

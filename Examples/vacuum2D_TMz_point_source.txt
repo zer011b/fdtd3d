@@ -2,8 +2,7 @@
 
 --time-steps 100
 
---sizex 200
---sizey 200
+--size x:200,y:200
 
 --2d-tmz
 
@@ -20,10 +19,8 @@
 --save-as-bmp
 --palette-rgb
 
---pml-sizex 20
---pml-sizey 20
+--pml-size x:20,y:20
 --use-pml
 
---point-source-pos-x 100
---point-source-pos-y 100
+--point-source x:100,y:100
 --point-source-ez

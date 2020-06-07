@@ -10,10 +10,10 @@ USED_MODE=$3
 MODE=""
 RUNNER=""
 if [[ "$USED_MODE" -eq "1" ]]; then
-  MODE="$MODE --use-cuda --cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+  MODE="$MODE --use-cuda --cuda-gpus 0 --num-cuda-threads x:4,y:4,z:4"
 fi
 if [[ "$USED_MODE" -eq "3" ]]; then
-  MODE="$MODE --use-cuda --cuda-gpus 0,0 --cuda-buffer-size 2 --buffer-size 2 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+  MODE="$MODE --use-cuda --cuda-gpus 0,0 --cuda-buffer-size 2 --buffer-size 2 --num-cuda-threads x:4,y:4,z:4"
 fi
 if [[ "$USED_MODE" -eq "2" || "$USED_MODE" -eq "3" ]]; then
   MODE="$MODE"
@@ -44,11 +44,11 @@ function launch ()
 
   output_file=$(mktemp /tmp/fdtd3d.vacuum3D.XXXXXXXX)
 
-  $RUNNER ./fdtd3d $MODE --time-steps $num_time_steps --sizey $sizez --1d-ezhx --angle-teta 90 --angle-phi 90 --angle-psi 90 \
-    --dx $dz --wavelength $4 --courant-factor 0.5 --log-level 2 --pml-sizey $pmlsize --use-pml \
-    --use-tfsf --tfsf-sizey-left $tfsfsize --tfsf-sizey-right 0 \
-    --eps-sphere $eps_sphere --eps-sphere-center-y $sphere_center --eps-sphere-radius $sphere_radius \
-    --norm-start-y $norm_start --norm-end-y $norm_end --calc-${exp_type}-ezhx-diff-norm --layout-type $layout_type &> $output_file
+  $RUNNER ./fdtd3d $MODE --time-steps $num_time_steps --size y:$sizez --1d-ezhx --angle-teta 90 --angle-phi 90 --angle-psi 90 \
+    --dx $dz --wavelength $4 --courant-factor 0.5 --log-level 2 --pml-size y:$pmlsize --use-pml \
+    --use-tfsf --tfsf-size-left y:$tfsfsize --tfsf-size-right y:0 \
+    --eps-sphere $eps_sphere --eps-sphere-center y:$sphere_center --eps-sphere-radius $sphere_radius \
+    --norm-start y:$norm_start --norm-end y:$norm_end --calc-${exp_type}-ezhx-diff-norm --layout-type $layout_type &> $output_file
 
   local ret=$?
 

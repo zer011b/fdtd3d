@@ -10,10 +10,10 @@ USED_MODE=$3
 MODE=""
 RUNNER=""
 if [[ "$USED_MODE" -eq "1" ]]; then
-  MODE="$MODE --use-cuda --cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+  MODE="$MODE --use-cuda --cuda-gpus 0 --num-cuda-threads x:4,y:4,z:4"
 fi
 if [[ "$USED_MODE" -eq "3" ]]; then
-  MODE="$MODE --use-cuda --cuda-gpus 0,0 --cuda-buffer-size 2 --buffer-size 2 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+  MODE="$MODE --use-cuda --cuda-gpus 0,0 --cuda-buffer-size 2 --buffer-size 2 --num-cuda-threads x:4,y:4,z:4"
 fi
 if [[ "$USED_MODE" -eq "2" || "$USED_MODE" -eq "3" ]]; then
   MODE="$MODE"
@@ -33,7 +33,7 @@ function launch ()
 
   output_file=$(mktemp /tmp/fdtd3d.$size.$dx.XXXXXXXX)
 
-  $RUNNER ./fdtd3d $MODE --time-steps $timesteps --sizex $size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
+  $RUNNER ./fdtd3d $MODE --time-steps $timesteps --size x:$size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
     --log-level 0 --use-sin1-border-condition --use-sin1-start-values --calc-sin1-diff-norm \
     --eps-normed --mu-normed --courant-factor 149896229 --layout-type $layout_type &> $output_file
 

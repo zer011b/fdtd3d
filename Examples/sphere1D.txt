@@ -2,7 +2,7 @@
 
 --time-steps 10000
 
---sizez 600
+--size z:600
 
 --1d-exhy
 
@@ -22,15 +22,15 @@
 --save-as-txt
 --palette-rgb
 
---pml-sizez 50
+--pml-size z:50
 --use-pml
 
 --use-tfsf
---tfsf-sizez-left 150
---tfsf-sizez-right 0
+--tfsf-size-left z:150
+--tfsf-size-right z:0
 
 --eps-sphere 4
---eps-sphere-center-z 450
+--eps-sphere-center z:450
 --eps-sphere-radius 150
 #--save-scattered-field-res
 
@@ -38,6 +38,6 @@
 #--interm-save-step 50
 #--save-scattered--field-interm
 
---norm-start-z 305
---norm-end-z 545
+--norm-start z:305
+--norm-end z:545
 --calc-exp3-diff-norm
