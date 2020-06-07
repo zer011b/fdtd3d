@@ -37,7 +37,7 @@ Parameters can be passed directly to `fdtd3d` through command line or config fil
 ./fdtd3d --version
 
 # example of launch command for 3D build
-./fdtd3d --load-eps-from-file /tmp/eps.txt --save-res --time-steps 10 --sizex 80 --same-size --use-tfsf \
+./fdtd3d --load-eps-from-file /tmp/eps.txt --save-res --time-steps 10 --size x:80 --same-size --use-tfsf \
          --3d --angle-phi 0 --use-pml --dx 0.0005 --wavelength 0.02 --save-cmd-to-file cmd.txt
 
 # example of the same launch with command line file
@@ -45,23 +45,17 @@ Parameters can be passed directly to `fdtd3d` through command line or config fil
 
 # cmd.txt file has the next format
 #
-# --load-eps-from-file
-# /tmp/eps.txt
+# --load-eps-from-file /tmp/eps.txt
 # --save-res
-# --time-steps
-# 1
-# --sizex
-# 80
+# --time-steps 1
+# --size x:80
 # --same-size
 # --use-tfsf
 # --3d
-# --angle-phi
-# 0
+# --angle-phi 0
 # --use-pml
-# --dx
-# 0.0005
-# --wavelength
-# 0.02
+# --dx 0.0005
+# --wavelength 0.02
 ```
 
 # Documentation

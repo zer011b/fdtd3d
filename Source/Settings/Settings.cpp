@@ -46,6 +46,58 @@ Settings::Uninitialize ()
 } /* Settings::Uninitialize */
 
 /**
+ * Parse coordinate in x:int,y:int,z:int format
+ */
+CUDA_HOST
+void
+Settings::parseCoordinate (char *str, /**< string to parse */
+                           int &xval, /**< out: x value */
+                           int &yval, /**< out: y value */
+                           int &zval) /**< out: z value */
+{
+  char *coordStr = str;
+  int i = 0;
+  while (coordStr[i] != '\0')
+  {
+    bool isEnd = false;
+
+    while (coordStr[i] != ',' && coordStr[i] != '\0')
+    {
+      ++i;
+    }
+
+    if (coordStr[i] == '\0')
+    {
+      isEnd = true;
+    }
+    coordStr[i] = '\0';
+
+    ASSERT (coordStr[1] == ':');
+    int val = STOI (coordStr+2);
+
+    if (coordStr[0] == 'x' || coordStr[0] == 'X')
+    {
+      xval = val;
+    }
+    else if (coordStr[0] == 'y' || coordStr[0] == 'Y')
+    {
+      yval = val;
+    }
+    else if (coordStr[0] == 'z' || coordStr[0] == 'Z')
+    {
+      zval = val;
+    }
+
+    if (!isEnd)
+    {
+      ++i;
+      coordStr += i;
+      i = 0;
+    }
+  }
+} /* Settings::parseCoordinate */
+
+/**
  * Parse single command line argument
  *
  * @return exit code
@@ -61,7 +113,7 @@ Settings::parseArg (int &index, /**< out: current argument index */
 
   if (strcmp (argv[index], "--help") == 0)
   {
-    printf ("fdtd3d is an open source 1D, 2D, 3D FDTD electromagnetics solver with MPI, OpenMP [NYI] and CUDA [WIP] support.\n");
+    printf ("fdtd3d is an open source 1D, 2D, 3D FDTD electromagnetics solver with MPI, OpenMP [NYI] and CUDA support.\n");
     printf ("Usage: fdtd3d [options]\n\n");
     printf ("Options:\n");
 
@@ -75,6 +127,8 @@ Settings::parseArg (int &index, /**< out: current argument index */
     printf ("  %s <string> (default: %s)\n\t%s\n", cmdArg, defaultVal, description);
 #define SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
     printf ("  %s <int> (default: %d)\n\t%s\n", cmdArg, defaultVal, description);
+#define SETTINGS_ELEM_FIELD_TYPE_COORDINATE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
+    printf ("  %s x:<int>,y:<int>,z:<int> (at least one coordinate should be present, default: %d)\n\t%s\n", cmdArg, defaultVal, description);
 #define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description) \
     printf ("  %s\n\t%s\n", cmdArg, description);
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description) \
@@ -149,6 +203,19 @@ Settings::parseArg (int &index, /**< out: current argument index */
       } \
     } \
   }
+#define SETTINGS_ELEM_FIELD_TYPE_COORDINATE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
+  else if (strcmp (argv[index], cmdArg) == 0) \
+  { \
+    ++index; \
+    ASSERT (index >= 0 && index < argc); \
+    int xval = defaultVal; \
+    int yval = defaultVal; \
+    int zval = defaultVal; \
+    parseCoordinate (argv[index], xval, yval, zval); \
+    fieldName ## X = (fieldType) xval; \
+    fieldName ## Y = (fieldType) yval; \
+    fieldName ## Z = (fieldType) zval; \
+  }
 #define SETTINGS_ELEM_OPTION_TYPE_NONE(cmdArg, description)
 #define SETTINGS_ELEM_OPTION_TYPE_STRING(cmdArg, description)
 #include "Settings.inc.h"
@@ -163,8 +230,8 @@ Settings::parseArg (int &index, /**< out: current argument index */
   }
   else if (strcmp (argv[index], "--same-size-tfsf") == 0)
   {
-    tfsfSizeZLeft = tfsfSizeYLeft = tfsfSizeXLeft;
-    tfsfSizeZRight = tfsfSizeYRight = tfsfSizeXRight;
+    tfsfSizeLeftZ = tfsfSizeLeftY = tfsfSizeLeftX;
+    tfsfSizeRightZ = tfsfSizeRightY = tfsfSizeRightX;
   }
   else if (strcmp (argv[index], "--same-size-ntff") == 0)
   {

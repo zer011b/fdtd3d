@@ -49,7 +49,7 @@ For each .bmp image additional .txt file is saved with maximum and minimum value
 Additional parameters:
 - `--palette-gray` or `--palette-rgb` for different color schemes
 - `--orth-axis-x`, or `--orth-axis-y`, or `--orth-axis-z` for orthogonal axis. (default is `--orth-axis-z`)
-- `--save-start-coord-x`, etc., for start and end coordinates to save or load
+- `--save-start-coord`, etc., for start and end coordinates to save or load
 
 ## Binary mode
 

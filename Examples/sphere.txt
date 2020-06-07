@@ -2,12 +2,7 @@
 
 --time-steps
 300
---sizex
-100
---sizey
-100
---sizez
-70
+--size x:100,y:100,z:70
 --3d
 --angle-phi
 0
@@ -24,25 +19,18 @@
 --save-as-bmp
 --palette-rgb
 --orth-axis-z
---save-start-coord-x 0
---save-end-coord-x 100
---save-start-coord-y 0
---save-end-coord-y 100
---save-start-coord-z 10
---save-end-coord-z 30
+--save-start-coord x:0,y:0,z:10
+--save-end-coord x:100,y:100,z:30
 --manual-save-coords
 --save-scattered-field-res
 
---pml-sizex
-10
+--pml-size x:10
 --same-size-pml
 --use-tfsf
---tfsf-sizex-left 12
---tfsf-sizex-right 12
+--tfsf-size-left x:12
+--tfsf-size-right x:12
 --same-size-tfsf
 --eps-sphere 4
---eps-sphere-center-x 50
---eps-sphere-center-y 50
---eps-sphere-center-z 35
+--eps-sphere-center x:50,y:50,z:35
 --eps-sphere-radius 20
 --sphere-accuracy 100

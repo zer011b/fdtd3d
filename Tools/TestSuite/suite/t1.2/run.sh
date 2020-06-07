@@ -10,10 +10,10 @@ USED_MODE=$3
 MODE=""
 RUNNER=""
 if [[ "$USED_MODE" -eq "1" ]]; then
-  MODE="$MODE --use-cuda --cuda-gpus 0 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+  MODE="$MODE --use-cuda --cuda-gpus 0 --num-cuda-threads x:4,y:4,z:4"
 fi
 if [[ "$USED_MODE" -eq "3" ]]; then
-  MODE="$MODE --use-cuda --cuda-gpus 0,0 --cuda-buffer-size 2 --buffer-size 2 --num-cuda-threads-x 4 --num-cuda-threads-y 4 --num-cuda-threads-z 4"
+  MODE="$MODE --use-cuda --cuda-gpus 0,0 --cuda-buffer-size 2 --buffer-size 2 --num-cuda-threads x:4,y:4,z:4"
 fi
 if [[ "$USED_MODE" -eq "2" || "$USED_MODE" -eq "3" ]]; then
   MODE="$MODE"
@@ -33,8 +33,8 @@ function launch ()
   local lambda="0.02"
   local length=$(echo $timesteps | awk '{print $1 - 10}')
 
-  $RUNNER ./fdtd3d $MODE --time-steps $timesteps --sizex $size --same-size --2d-tez --angle-phi 90 --angle-psi 0 --dx $dx --wavelength $lambda \
-    --log-level 0 --save-res --save-tfsf-e-incident --save-as-txt --use-tfsf --tfsf-sizex-left 4 --tfsf-sizex-right 4 \
+  $RUNNER ./fdtd3d $MODE --time-steps $timesteps --size x:$size --same-size --2d-tez --angle-phi 90 --angle-psi 0 --dx $dx --wavelength $lambda \
+    --log-level 0 --save-res --save-tfsf-e-incident --save-as-txt --use-tfsf --tfsf-size-left x:4 --tfsf-size-right x:4 \
     --same-size-tfsf --courant-factor 1.0 --layout-type $layout_type &>/dev/null
 
   local ret=$((0))

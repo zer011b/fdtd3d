@@ -2,10 +2,7 @@
 
 --time-steps
 1
---sizex
-100
---sizey
-100
+--size x:100,y:100
 --2d-tmz
 --angle-phi
 0
@@ -21,16 +18,14 @@
 --save-as-bmp
 --palette-rgb
 --orth-axis-z
---pml-sizex
-10
+--pml-size x:10
 --same-size-pml
 --use-tfsf
---tfsf-sizex-left 12
---tfsf-sizex-right 12
+--tfsf-size-left x:12
+--tfsf-size-right x:12
 --same-size-tfsf
 --eps-sphere 4
---eps-sphere-center-x 50
---eps-sphere-center-y 50
+--eps-sphere-center x:50,y:50
 --eps-sphere-radius 20
 --sphere-accuracy 1000
 --save-scattered-field-res

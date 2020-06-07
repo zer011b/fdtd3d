@@ -3,7 +3,7 @@
 
 --time-steps 100
 
---sizey 40
+--size y:40
 
 --1d-ezhx
 
@@ -22,5 +22,5 @@
 --palette-rgb
 
 --use-tfsf
---tfsf-sizey-left 12
---tfsf-sizey-right 12
+--tfsf-size-left y:12
+--tfsf-size-right y:12

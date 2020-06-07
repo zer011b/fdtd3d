@@ -3,8 +3,7 @@
 
 --time-steps 100
 
---sizey 40
---sizez 40
+--size y:40,z:40
 
 --2d-tmx
 
@@ -23,12 +22,9 @@
 --orth-axis-x
 --palette-rgb
 
---pml-sizey 10
---pml-sizez 10
+--pml-size y:10,z:10
 --use-pml
 
 --use-tfsf
---tfsf-sizey-left 12
---tfsf-sizey-right 12
---tfsf-sizez-left 12
---tfsf-sizez-right 12
+--tfsf-size-left y:12,z:12
+--tfsf-size-right y:12,z:12

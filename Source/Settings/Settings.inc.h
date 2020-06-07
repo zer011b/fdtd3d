@@ -43,37 +43,26 @@ SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL(logLevel, getLogLevel, LogLevelType, LOG_LEVE
 /*
  * Size of calculation area
  */
-SETTINGS_ELEM_FIELD_TYPE_INT(sizeX, getSizeX, grid_coord, 100, "--sizex", "Size of calculation area by x coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(sizeY, getSizeY, grid_coord, 100, "--sizey", "Size of calculation area by y coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(sizeZ, getSizeZ, grid_coord, 100, "--sizez", "Size of calculation area by z coordinate")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(size, getSize, grid_coord, 100, "--size", "Size of calculation area")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size", "Use size of calculation area by x coordinate for y and z coordinates too")
 
 /*
  * Size of PML area
  */
-SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeX, getPMLSizeX, grid_coord, 2, "--pml-sizex", "Size of PML area by x coordinate. PML of this size will be applied to both left and right borders of area by x coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeY, getPMLSizeY, grid_coord, 2, "--pml-sizey", "Size of PML area by y coordinate. PML of this size will be applied to both left and right borders of area by y coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(pmlSizeZ, getPMLSizeZ, grid_coord, 2, "--pml-sizez", "Size of PML area by z coordinate. PML of this size will be applied to both left and right borders of area by z coordinate")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(pmlSize, getPMLSize, grid_coord, 2, "--pml-size", "Size of PML area. PML of this size will be applied to both left and right borders of area")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-pml", "Use size of PML area by x coordinate for y and z coordinates too")
 
 /*
  * Size of tfsf area
  */
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeXLeft, getTFSFSizeXLeft, grid_coord, 4, "--tfsf-sizex-left", "Size of TF/SF scattered area by x coordinate (left). Border of TF/SF will be placed at this distance from left border of area by x coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeXRight, getTFSFSizeXRight, grid_coord, 4, "--tfsf-sizex-right", "Size of TF/SF scattered area by x coordinate (right). Border of TF/SF will be placed at this distance from right border of area by x coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeYLeft, getTFSFSizeYLeft, grid_coord, 4, "--tfsf-sizey-left", "Size of TF/SF scattered area by y coordinate (left). Border of TF/SF will be placed at this distance from left border of area by y coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeYRight, getTFSFSizeYRight, grid_coord, 4, "--tfsf-sizey-right", "Size of TF/SF scattered area by y coordinate (right). Border of TF/SF will be placed at this distance from right border of area by y coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeZLeft, getTFSFSizeZLeft, grid_coord, 4, "--tfsf-sizez-left", "Size of TF/SF scattered area by z coordinate (left). Border of TF/SF will be placed at this distance from left border of area by z coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(tfsfSizeZRight, getTFSFSizeZRight, grid_coord, 4, "--tfsf-sizez-right", "Size of TF/SF scattered area by z coordinate (right). Border of TF/SF will be placed at this distance from right border of area by z coordinate")
-
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(tfsfSizeLeft, getTFSFSizeLeft, grid_coord, 4, "--tfsf-size-left", "Size of TF/SF scattered area (left). Border of TF/SF will be placed at this distance from left border of area")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(tfsfSizeRight, getTFSFSizeRight, grid_coord, 4, "--tfsf-size-right", "Size of TF/SF scattered area (right). Border of TF/SF will be placed at this distance from right border of area")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-tfsf", "Use size of TF/SF scattered area by x coordinate for y and z coordinates too")
 
 /*
  * Size of ntff area
  */
-SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeX, getNTFFSizeX, grid_coord, 3, "--ntff-sizex", "Size of NTFF area by x coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by x coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeY, getNTFFSizeY, grid_coord, 3, "--ntff-sizey", "Size of NTFF area by y coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by y coordinate")
-SETTINGS_ELEM_FIELD_TYPE_INT(ntffSizeZ, getNTFFSizeZ, grid_coord, 3, "--ntff-sizez", "Size of NTFF area by z coordinate. Border of NTFF will be placed at this distance from both left and right borders of area by z coordinate")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(ntffSize, getNTFFSize, grid_coord, 3, "--ntff-size", "Size of NTFF area. Border of NTFF will be placed at this distance from both left and right borders of area")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-ntff", "Use size of NTFF area by x coordinate for y and z coordinates too")
 
 SETTINGS_ELEM_FIELD_TYPE_INT(ntffDiff, getNTFFDiff, grid_coord, 1, "--ntff-diff", "Value to vary border of NTFF area.")
@@ -96,9 +85,7 @@ SETTINGS_ELEM_FIELD_TYPE_FLOAT(incidentWaveAngle3, getIncidentWaveAngle3, FPValu
  */
 SETTINGS_ELEM_FIELD_TYPE_INT(bufferSize, getBufferSize, int, 1, "--buffer-size", "Size of buffer for parallel grid")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseManualVirtualTopology, getDoUseManualVirtualTopology, bool, false, "--manual-topology", "Use manual topology for parallel grid")
-SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeX, getTopologySizeX, int, 1, "--topology-sizex", "Size by x coordinate of virtual topology")
-SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeY, getTopologySizeY, int, 1, "--topology-sizey", "Size by y coordinate of virtual topology")
-SETTINGS_ELEM_FIELD_TYPE_INT(topologySizeZ, getTopologySizeZ, int, 1, "--topology-sizez", "Size by z coordinate of virtual topology")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(topologySize, getTopologySize, int, 1, "--topology-size", "Size of virtual topology")
 SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-topology", "Use size of topology by x coordinate for y and z coordinates too")
 
 /*
@@ -107,9 +94,7 @@ SETTINGS_ELEM_OPTION_TYPE_NONE("--same-size-topology", "Use size of topology by 
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCuda, getDoUseCuda, bool, false, "--use-cuda", "Use cuda")
 SETTINGS_ELEM_FIELD_TYPE_INT(cudaBlocksBufferSize, getCudaBlocksBufferSize, int, 1, "--cuda-buffer-size", "Size of buffer for blocks for cuda grid")
 SETTINGS_ELEM_FIELD_TYPE_STRING(cudaGPUs, getCudaGPUs, std::string, "0", "--cuda-gpus", "Indexes of GPUs to use in computations (in format <id0>,<id1>,<id2>, eg. --cuda-gpus 0,1,2. Use -1 to disable GPU computations on selected computational node)")
-SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsX, getNumCudaThreadsX, int, 4, "--num-cuda-threads-x", "Number of GPU threads by x coordinate to use in computations")
-SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsY, getNumCudaThreadsY, int, 4, "--num-cuda-threads-y", "Number of GPU threads by y coordinate to use in computations")
-SETTINGS_ELEM_FIELD_TYPE_INT(numCudaThreadsZ, getNumCudaThreadsZ, int, 4, "--num-cuda-threads-z", "Number of GPU threads by z coordinate to use in computations")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(numCudaThreads, getNumCudaThreads, int, 4, "--num-cuda-threads", "Number of GPU threads to use in computations")
 
 /*
  * Computation mode flags
@@ -169,13 +154,8 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp1EzHyDiffNorm, getDoCalculateExp1EzH
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp2EzHyDiffNorm, getDoCalculateExp2EzHyDiffNorm, bool, false, "--calc-exp2-ezhy-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp2")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doCalculateExp3EzHyDiffNorm, getDoCalculateExp3EzHyDiffNorm, bool, false, "--calc-exp3-ezhy-diff-norm", "[USE IN TEST SUITE ONLY] Calculate test norm of difference with exact solution: Exp3")
 
-SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareStartX, getExactSolutionCompareStartX, grid_coord, 0, "--norm-start-x", "Start of norm calculation area by Ox axis")
-SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareStartY, getExactSolutionCompareStartY, grid_coord, 0, "--norm-start-y", "Start of norm calculation area by Oy axis")
-SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareStartZ, getExactSolutionCompareStartZ, grid_coord, 0, "--norm-start-z", "Start of norm calculation area by Oz axis")
-
-SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareEndX, getExactSolutionCompareEndX, grid_coord, 0, "--norm-end-x", "End of norm calculation area by Ox axis")
-SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareEndY, getExactSolutionCompareEndY, grid_coord, 0, "--norm-end-y", "End of norm calculation area by Oy axis")
-SETTINGS_ELEM_FIELD_TYPE_INT(exactSolutionCompareEndZ, getExactSolutionCompareEndZ, grid_coord, 0, "--norm-end-z", "End of norm calculation area by Oz axis")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(exactSolutionCompareStart, getExactSolutionCompareStart, grid_coord, 0, "--norm-start", "Start of norm calculation area")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(exactSolutionCompareEnd, getExactSolutionCompareEnd, grid_coord, 0, "--norm-end", "End of norm calculation area")
 
 /*
  * NTFF
@@ -212,12 +192,8 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveTFSFEInc, getDoSaveTFSFEInc, bool, false, "-
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveTFSFHInc, getDoSaveTFSFHInc, bool, false, "--save-tfsf-h-incident", "Save TF/SF HInc")
 
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseManualStartEndDumpCoord, getDoUseManualStartEndDumpCoord, bool, false, "--manual-save-coords", "Use manual save start and end coordinates")
-SETTINGS_ELEM_FIELD_TYPE_INT(saveStartCoordX, getSaveStartCoordX, int, 0, "--save-start-coord-x", "Start x coordinate to save from")
-SETTINGS_ELEM_FIELD_TYPE_INT(saveStartCoordY, getSaveStartCoordY, int, 0, "--save-start-coord-y", "Start y coordinate to save from")
-SETTINGS_ELEM_FIELD_TYPE_INT(saveStartCoordZ, getSaveStartCoordZ, int, 0, "--save-start-coord-z", "Start z coordinate to save from")
-SETTINGS_ELEM_FIELD_TYPE_INT(saveEndCoordX, getSaveEndCoordX, int, 0, "--save-end-coord-x", "End x coordinate to save from")
-SETTINGS_ELEM_FIELD_TYPE_INT(saveEndCoordY, getSaveEndCoordY, int, 0, "--save-end-coord-y", "End y coordinate to save from")
-SETTINGS_ELEM_FIELD_TYPE_INT(saveEndCoordZ, getSaveEndCoordZ, int, 0, "--save-end-coord-z", "End z coordinate to save from")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(saveStartCoord, getSaveStartCoord, int, 0, "--save-start-coord", "Start coordinate to save from")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(saveEndCoord, getSaveEndCoord, int, 0, "--save-end-coord", "End coordinate to save from")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doSaveWithoutPML, getDoSaveWithoutPML, bool, false, "--save-no-pml", "Save without PML")
 
 /*
@@ -236,28 +212,20 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(useMuAllNorm, getUseMuAllNorm, bool, false, "--mu-
 SETTINGS_ELEM_FIELD_TYPE_INT(sphereAccuracy, getSphereAccuracy, int, 100, "--sphere-accuracy", "Sphere approximation accuracy (number of points per grid step)")
 
 SETTINGS_ELEM_FIELD_TYPE_FLOAT(epsSphere, getEpsSphere, FPValue, 1.0, "--eps-sphere", "Permittivity of Eps material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterX, getEpsSphereCenterX, int, 0, "--eps-sphere-center-x", "Center position by x coordinate of Eps material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterY, getEpsSphereCenterY, int, 0, "--eps-sphere-center-y", "Center position by y coordinate of Eps material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereCenterZ, getEpsSphereCenterZ, int, 0, "--eps-sphere-center-z", "Center position by z coordinate of Eps material sphere")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(epsSphereCenter, getEpsSphereCenter, grid_coord, 0, "--eps-sphere-center", "Center position of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(epsSphereRadius, getEpsSphereRadius, int, 0, "--eps-sphere-radius", "Radius of Eps material sphere")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseStairApproximation, getDoUseStairApproximation, bool, false, "--stair-sphere-approx", "Use stair sphere approximation")
 
 SETTINGS_ELEM_FIELD_TYPE_FLOAT(muSphere, getMuSphere, FPValue, 1.0, "--mu-sphere", "Permittivity of Mu material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(muSphereCenterX, getMuSphereCenterX, int, 0, "--mu-sphere-center-x", "Center position by x coordinate of Mu material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(muSphereCenterY, getMuSphereCenterY, int, 0, "--mu-sphere-center-y", "Center position by y coordinate of Mu material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(muSphereCenterZ, getMuSphereCenterZ, int, 0, "--mu-sphere-center-z", "Center position by z coordinate of Mu material sphere")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(muSphereCenter, getMuSphereCenter, grid_coord, 0, "--mu-sphere-center", "Center position of Mu material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(muSphereRadius, getMuSphereRadius, int, 0, "--mu-sphere-radius", "Radius of Mu material sphere")
 
 SETTINGS_ELEM_FIELD_TYPE_FLOAT(omegaPESphere, getOmegaPESphere, FPValue, 0.0, "--omegape-sphere", "Electric plasma frequency material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereCenterX, getOmegaPESphereCenterX, int, 0, "--omegape-sphere-center-x", "Center position by x coordinate of electric plasma frequency material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereCenterY, getOmegaPESphereCenterY, int, 0, "--omegape-sphere-center-y", "Center position by y coordinate of electric plasma frequency material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereCenterZ, getOmegaPESphereCenterZ, int, 0, "--omegape-sphere-center-z", "Center position by z coordinate of electric plasma frequency material sphere")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(omegaPESphereCenter, getOmegaPESphereCenter, grid_coord, 0, "--omegape-sphere-center", "Center position of electric plasma frequency material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(omegaPESphereRadius, getOmegaPESphereRadius, int, 0, "--omegape-sphere-radius", "Radius of electric plasma frequency material sphere")
 
 SETTINGS_ELEM_FIELD_TYPE_FLOAT(omegaPMSphere, getOmegaPMSphere, FPValue, 0.0, "--omegapm-sphere", "Magnetic plasma frequency material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(omegaPMSphereCenterX, getOmegaPMSphereCenterX, int, 0, "--omegapm-sphere-center-x", "Center position by x coordinate of magnetic plasma frequency material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(omegaPMSphereCenterY, getOmegaPMSphereCenterY, int, 0, "--omegapm-sphere-center-y", "Center position by y coordinate of magnetic plasma frequency material sphere")
-SETTINGS_ELEM_FIELD_TYPE_INT(omegaPMSphereCenterZ, getOmegaPMSphereCenterZ, int, 0, "--omegapm-sphere-center-z", "Center position by z coordinate of magnetic plasma frequency material sphere")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(omegaPMSphereCenter, getOmegaPMSphereCenter, grid_coord, 0, "--omegapm-sphere-center", "Center position of magnetic plasma frequency material sphere")
 SETTINGS_ELEM_FIELD_TYPE_INT(omegaPMSphereRadius, getOmegaPMSphereRadius, int, 0, "--omegapm-sphere-radius", "Radius of magnetic plasma frequency material sphere")
 
 /*
@@ -295,9 +263,7 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doUseOrthAxisZ, getDoUseOrthAxisZ, bool, false, "-
 /*
  * Point source
  */
-SETTINGS_ELEM_FIELD_TYPE_INT(pointSourcePositionX, getPointSourcePositionX, grid_coord, 0, "--point-source-pos-x", "Point source position by Ox axis")
-SETTINGS_ELEM_FIELD_TYPE_INT(pointSourcePositionY, getPointSourcePositionY, grid_coord, 0, "--point-source-pos-y", "Point source position by Oy axis")
-SETTINGS_ELEM_FIELD_TYPE_INT(pointSourcePositionZ, getPointSourcePositionZ, grid_coord, 0, "--point-source-pos-z", "Point source position by Oz axis")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(pointSource, getPointSource, grid_coord, 0, "--point-source", "Point source position")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceEx, getDoUsePointSourceEx, bool, false, "--point-source-ex", "Point source Ex")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceEy, getDoUsePointSourceEy, bool, false, "--point-source-ey", "Point source Ey")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceEz, getDoUsePointSourceEz, bool, false, "--point-source-ez", "Point source Ez")
@@ -308,9 +274,7 @@ SETTINGS_ELEM_FIELD_TYPE_NONE(doUsePointSourceHz, getDoUsePointSourceHz, bool, f
 /*
  * Current source
  */
-SETTINGS_ELEM_FIELD_TYPE_INT(currentSourcePositionX, getCurrentSourcePositionX, grid_coord, 0, "--current-source-pos-x", "Current source position by Ox axis")
-SETTINGS_ELEM_FIELD_TYPE_INT(currentSourcePositionY, getCurrentSourcePositionY, grid_coord, 0, "--current-source-pos-y", "Current source position by Oy axis")
-SETTINGS_ELEM_FIELD_TYPE_INT(currentSourcePositionZ, getCurrentSourcePositionZ, grid_coord, 0, "--current-source-pos-z", "Current source position by Oz axis")
+SETTINGS_ELEM_FIELD_TYPE_COORDINATE(currentSource, getCurrentSource, grid_coord, 0, "--current-source", "Current source position")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCurrentSourceJx, getDoUseCurrentSourceJx, bool, false, "--current-source-jx", "Current source Jx")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCurrentSourceJy, getDoUseCurrentSourceJy, bool, false, "--current-source-jy", "Current source Jy")
 SETTINGS_ELEM_FIELD_TYPE_NONE(doUseCurrentSourceJz, getDoUseCurrentSourceJz, bool, false, "--current-source-jz", "Current source Jz")
@@ -362,3 +326,4 @@ SETTINGS_ELEM_OPTION_TYPE_STRING("--save-cmd-to-file", "Save command line to fil
 #undef SETTINGS_ELEM_FIELD_TYPE_FLOAT
 #undef SETTINGS_ELEM_FIELD_TYPE_STRING
 #undef SETTINGS_ELEM_FIELD_TYPE_LOG_LEVEL
+#undef SETTINGS_ELEM_FIELD_TYPE_COORDINATE

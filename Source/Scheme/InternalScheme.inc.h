@@ -2410,9 +2410,9 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::calculateFieldStepIterationCurr
                                                                              GridType materialGridType,
                                                                              FPValue materialModifier)
 {
-  TC pos = TC::initAxesCoordinate (SOLVER_SETTINGS.getCurrentSourcePositionX (),
-                                   SOLVER_SETTINGS.getCurrentSourcePositionY (),
-                                   SOLVER_SETTINGS.getCurrentSourcePositionZ (),
+  TC pos = TC::initAxesCoordinate (SOLVER_SETTINGS.getCurrentSourceX (),
+                                   SOLVER_SETTINGS.getCurrentSourceY (),
+                                   SOLVER_SETTINGS.getCurrentSourceZ (),
                                    ct1, ct2, ct3);
   TC posAbs = grid->getTotalPosition (pos);
 
@@ -2856,9 +2856,9 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::performPointSourceCalc (time_st
 
   ASSERT (grid != NULLPTR);
 
-  TC pos = TC::initAxesCoordinate (SOLVER_SETTINGS.getPointSourcePositionX (),
-                                   SOLVER_SETTINGS.getPointSourcePositionY (),
-                                   SOLVER_SETTINGS.getPointSourcePositionZ (),
+  TC pos = TC::initAxesCoordinate (SOLVER_SETTINGS.getPointSourceX (),
+                                   SOLVER_SETTINGS.getPointSourceY (),
+                                   SOLVER_SETTINGS.getPointSourceZ (),
                                    ct1, ct2, ct3);
 
   FieldValue* pointVal = grid->getFieldValueOrNullByAbsolutePos (pos, 0);
