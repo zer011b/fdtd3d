@@ -77,3 +77,13 @@ Everything else is same as for arm32, except that `arm64-gcc-toolchain.cmake` sh
 ### Alternative: debotstrap ubuntu rootfs
 
 Another way is to create rootfs with all required libs from scratch: https://wiki.ubuntu.com/ARM/RootfsFromScratch/QemuDebootstrap.
+
+# Troubleshooting
+
+## Non-standard system paths
+
+For systems with non-standard path `-L<path>` option might not be enough to find libararies, since `-L` specifies search dirs only for explicitly specified libs (i.e. through `-l<libname>` in command line).
+
+Dependencies of these libs are searched in default paths. To add custom paths for dependencies search add `-Wl,--rpath-link=<path>`. Option `--rpath-link` is enough and `--rpath` is not required since linker on the target system should know about its system paths already. For more details, see: https://linux.die.net/man/1/ld.
+
+If cross toolchain, which targets specific system, is used, then there should be no problem with non-standard paths.
