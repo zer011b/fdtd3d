@@ -4,9 +4,9 @@
 
 # fdtd3d
 
-This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP/Cuda) if required. The key idea is building of solver for your specific needs with different components, i.e. concurrency support with enabled MPI, OpenMP or GPU support, parallel buffer types, specific dimension and others. OpenMP support is WIP.
+This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP/Cuda) if required and for different architectures (x64, Arm, Arm64). The key idea is building of solver for your specific needs with different components, i.e. concurrency support with enabled MPI, OpenMP or GPU support, parallel buffer types, specific dimension and others. OpenMP support is WIP.
 
-For additional info on current project development status and future plans check issues and milestones, design docs are available at [documentation](Docs/Design.md)
+For additional info on current project development status and future plans check issues and milestones, design docs are available at [documentation](Docs/Design.md).
 
 # Build
 
@@ -23,7 +23,7 @@ See [documentation](Docs/Build.md) for specific details.
 
 # Testing
 
-Testing is performed using Travis CI. Open pull request with your changes and it will be automatically tested. For details, see See [.travis.yml](.travis.yml). Cuda tests are only built but not launched on Travis CI.
+Testing is performed using Travis CI. Open pull request with your changes and it will be automatically tested. For details, see [.travis.yml](.travis.yml). Cuda tests are only built but not launched on Travis CI.
 
 # Launch
 
