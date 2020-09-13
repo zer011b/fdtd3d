@@ -23,7 +23,7 @@ See [documentation](Docs/Build.md) for specific details.
 
 # Testing
 
-Testing is performed using Travis CI. Open pull request with your changes and it will be automatically tested. For details, see [.travis.yml](.travis.yml). Cuda tests are only built but not launched on Travis CI.
+See [documentation](Docs/Testing.md) for specific details.
 
 # Launch
 
