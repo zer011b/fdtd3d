@@ -1214,13 +1214,13 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       FieldValue current = FIELDVALUE (0, 0);
 
 #ifdef COMPLEX_FIELD_VALUES
-      current = FieldValue (cos (intScheme->getGridTimeStep () * (timestep-1) * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ()),
-                             -sin (intScheme->getGridTimeStep () * (timestep-1) * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ()));
+      current = FieldValue (cos (intScheme->getGridTimeStep () * (timestep-1) * FPValue(2) * PhysicsConst::Pi * intScheme->getSourceFrequency ()),
+                             -sin (intScheme->getGridTimeStep () * (timestep-1) * FPValue(2) * PhysicsConst::Pi * intScheme->getSourceFrequency ()));
 #else /* COMPLEX_FIELD_VALUES */
-      current = sin (intScheme->getGridTimeStep () * timestep * 2 * PhysicsConst::Pi * intScheme->getSourceFrequency ());
+      current = sin (intScheme->getGridTimeStep () * timestep * FPValue(2) * PhysicsConst::Pi * intScheme->getSourceFrequency ());
 #endif /* !COMPLEX_FIELD_VALUES */
 
-      current = current * PhysicsConst::Mu0 / intScheme->getGridTimeStep () / 2.0;
+      current = current * PhysicsConst::Mu0 / intScheme->getGridTimeStep () / FPValue(2.0);
 
 #ifdef CUDA_ENABLED
       if (SOLVER_SETTINGS.getDoUseCuda ()

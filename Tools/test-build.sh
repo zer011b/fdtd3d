@@ -67,11 +67,6 @@ if [[ "$CUDA_MODE_VALUES" == "" ]]; then
   CUDA_MODE_VALUES="ON,sm_35 ON,sm_50 OFF,sm"
 fi
 
-STD_COMPLEX_VALUES="$1"; shift
-if [[ "$STD_COMPLEX_VALUES" == "" ]]; then
-  STD_COMPLEX_VALUES="ON OFF"
-fi
-
 SOLVER_DIM_MODES_VALUES="$1"; shift
 if [[ "$SOLVER_DIM_MODES_VALUES" == "" ]]; then
   SOLVER_DIM_MODES_VALUES="DIM1 EX_HY EX_HZ EY_HX EY_HZ EZ_HX EZ_HY DIM2 TEX TEY TEZ TMX TMY TMZ DIM3 ALL"
@@ -88,7 +83,6 @@ for PRINT_MESSAGE in $PRINT_MESSAGE_VALUES; do
 for VALUE_TYPE in $VALUE_TYPE_VALUES; do
 for PARALLEL_MODE in $PARALLEL_MODE_VALUES; do
 for CUDA_MODE in $CUDA_MODE_VALUES; do
-for STD_COMPLEX in $STD_COMPLEX_VALUES; do
 for SOLVER_DIM_MODES in $SOLVER_DIM_MODES_VALUES; do
 
   PARALLEL_GRID=$(echo $PARALLEL_MODE | awk -F ',' '{print $1}')
@@ -102,11 +96,11 @@ for SOLVER_DIM_MODES in $SOLVER_DIM_MODES_VALUES; do
   CMAKE_CXX_COMPILER=$(echo $COMPILERS | awk -F ',' '{print $2}')
 
   # Exceptions
-  if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
+  if [ "${VALUE_TYPE}" == "ld" ] && [ "${CUDA_ENABLED}" == "ON" ]; then
     continue
   fi
 
-  if [ "${STD_COMPLEX}" == "ON" ] && [ "${COMPLEX_FIELD_VALUES}" == "OFF" ]; then
+  if [ "${CMAKE_BUILD_TYPE}" == "Debug" ] && [ "${CUDA_ENABLED}" == "ON" ] && [ "${SOLVER_DIM_MODES}" == "ALL" ]; then
     continue
   fi
 
@@ -123,7 +117,6 @@ for SOLVER_DIM_MODES in $SOLVER_DIM_MODES_VALUES; do
     -DCUDA_ARCH_SM_TYPE=${CUDA_ARCH_SM_TYPE} \
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} \
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} \
-    -DSTD_COMPLEX=${STD_COMPLEX} \
     -DSOLVER_DIM_MODES=${SOLVER_DIM_MODES}
 
   # TODO: add next flags to testing:
@@ -146,7 +139,6 @@ for SOLVER_DIM_MODES in $SOLVER_DIM_MODES_VALUES; do
   fi
 
   echo "Build successful"
-done
 done
 done
 done

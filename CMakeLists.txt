@@ -11,7 +11,6 @@ option(LARGE_COORDINATES "Use int64 for grid coordinates" OFF)
 option(COMBINED_SENDRECV "Use combined sendrecv" ON)
 option(MPI_CLOCK "Use mpi clock (MPI_Wtime) for clocks" OFF)
 option(LINK_NUMA "Link with NUMA library" OFF)
-option(STD_COMPLEX "Use std::complex class instead of custom one" OFF)
 
 set(SOLVER_DIM_MODES "ALL" CACHE STRING "Defines FDTD solver dimension modes, which are compiled")
 
@@ -75,14 +74,6 @@ if ("${CUDA_ENABLED}")
   enable_language (CUDA)
   set(CUDA_SEPARABLE_COMPILATION ON)
   set(CUDA_PROPAGATE_HOST_FLAGS ON)
-
-  if ("${STD_COMPLEX}")
-    message(FATAL_ERROR "std::complex is not supported with Cuda, use STD_COMPLEX=OFF")
-  endif ()
-endif ()
-
-if ("${STD_COMPLEX}")
-  add_definitions (-DSTD_COMPLEX)
 endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
@@ -132,10 +123,6 @@ elseif ("${VALUE_TYPE}" STREQUAL "d")
   message ("Floating point values: double.")
   add_definitions (-DDOUBLE_VALUES)
 elseif ("${VALUE_TYPE}" STREQUAL "ld")
-  if ("${COMPLEX_FIELD_VALUES}")
-    message(FATAL_ERROR "Complex long double values are not supported")
-  endif ()
-
   if ("${CUDA_ENABLED}")
     message(FATAL_ERROR "Long double values are not supported with Cuda")
   endif ()
