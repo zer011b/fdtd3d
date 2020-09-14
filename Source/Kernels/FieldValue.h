@@ -49,13 +49,8 @@ typedef long double FPValue;
  * Type of field values
  */
 #ifdef COMPLEX_FIELD_VALUES
-#ifdef STD_COMPLEX
-#include <complex>
-typedef std::complex<FPValue> FieldValue;
-#else /* STD_COMPLEX */
 #include "Complex.h"
 typedef CComplex<FPValue> FieldValue;
-#endif /* !STD_COMPLEX */
 #define FIELDVALUE(real,imag) FieldValue(real,imag)
 #else /* COMPLEX_FIELD_VALUES */
 typedef FPValue FieldValue;

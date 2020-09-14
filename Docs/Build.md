@@ -28,7 +28,6 @@ PARALLEL_BUFFER_DIMENSION - dimension of parallel buffers, i.e. actual coordinat
 CUDA_ENABLED - enable support of GPU (ON or OFF)
 CUDA_ARCH_SM_TYPE - sm type for GPU
 LARGE_COORDINATES - whether to use int64 for grid coordinates or int32 (ON or OFF)
-STD_COMPLEX - use std::complex instead of custom CComplex class (std::complex is not supported with Cuda)
 ```
 
 If any of the flags change or some new are added, testing scripts should be updated.
