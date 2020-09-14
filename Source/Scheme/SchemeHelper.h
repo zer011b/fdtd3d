@@ -1184,9 +1184,9 @@ SchemeHelper::ntffN3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
       sum_teta += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
-                   + (Hy1 + Hy2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1);
+                   + (Hy1 + Hy2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * FPValue(-1) * FPValue(x0==rightNTFF.get1 ()?1:-1);
 
-      sum_phi += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (-1) * (x0==rightNTFF.get1 ()?1:-1);
+      sum_phi += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * FPValue(-1) * FPValue(x0==rightNTFF.get1 ()?1:-1);
     }
   }
 
@@ -1370,9 +1370,9 @@ SchemeHelper::ntffN3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
       sum_teta += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                   + (Hx1 + Hx2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (y0==rightNTFF.get2 ()?1:-1);
+                   + (Hx1 + Hx2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * FPValue(y0==rightNTFF.get2 ()?1:-1);
 
-      sum_phi += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (-1) * (y0==rightNTFF.get2 ()?1:-1);
+      sum_phi += ((Hz1 + Hz2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * FPValue(-1) * FPValue(y0==rightNTFF.get2 ()?1:-1);
     }
   }
 
@@ -1556,10 +1556,10 @@ SchemeHelper::ntffN3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
       sum_teta += (-(Hy1 + Hy2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                   + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1);
+                   + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * FPValue(z0==rightNTFF.get3 ()?1:-1);
 
       sum_phi += ((Hy1 + Hy2)/FPValue(2.0) * FPValue (sin (anglePhi))
-                  + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1);
+                  + (Hx1 + Hx2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * FPValue(z0==rightNTFF.get3 ()?1:-1);
     }
   }
 
@@ -1725,9 +1725,9 @@ SchemeHelper::ntffL3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
       sum_teta += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))
-                   + (Ey1 + Ey2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (x0==rightNTFF.get1 ()?1:-1);
+                   + (Ey1 + Ey2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * FPValue(x0==rightNTFF.get1 ()?1:-1);
 
-      sum_phi += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (x0==rightNTFF.get1 ()?1:-1);
+      sum_phi += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * FPValue(x0==rightNTFF.get1 ()?1:-1);
     }
   }
 
@@ -1893,9 +1893,9 @@ SchemeHelper::ntffL3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
       sum_teta += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                   + (Ex1 + Ex2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * (-1) * (y0==rightNTFF.get2 ()?1:-1);
+                   + (Ex1 + Ex2)/FPValue(2.0) * FPValue (sin (angleTeta))) * exponent * SQR (gridStep) * FPValue(-1) * FPValue(y0==rightNTFF.get2 ()?1:-1);
 
-      sum_phi += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (y0==rightNTFF.get2 ()?1:-1);
+      sum_phi += ((Ez1 + Ez2)/FPValue(2.0) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * FPValue(y0==rightNTFF.get2 ()?1:-1);
     }
   }
 
@@ -2061,10 +2061,10 @@ SchemeHelper::ntffL3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
       FieldValue exponent (cos(k*arg), sin(k*arg));
 
       sum_teta += ((Ey1 + Ey2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (cos (anglePhi))
-                   - (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * (z0==rightNTFF.get3 ()?1:-1);
+                   - (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (angleTeta)) * FPValue (sin (anglePhi))) * exponent * SQR (gridStep) * FPValue(z0==rightNTFF.get3 ()?1:-1);
 
       sum_phi += ((Ey1 + Ey2)/FPValue(2.0) * FPValue (sin (anglePhi))
-                  + (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * (-1) * (z0==rightNTFF.get3 ()?1:-1);
+                  + (Ex1 + Ex2)/FPValue(2.0) * FPValue (cos (anglePhi))) * exponent * SQR (gridStep) * FPValue(-1) * FPValue(z0==rightNTFF.get3 ()?1:-1);
     }
   }
 
