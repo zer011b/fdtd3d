@@ -10,7 +10,7 @@
 typedef float FPValue;
 
 #ifdef COMPLEX_FIELD_VALUES
-#define MPI_FPVALUE MPI_COMPLEX
+#define MPI_FPVALUE MPI_C_FLOAT_COMPLEX
 #else /* COMPLEX_FIELD_VALUES */
 #define MPI_FPVALUE MPI_FLOAT
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -23,7 +23,7 @@ typedef float FPValue;
 typedef double FPValue;
 
 #ifdef COMPLEX_FIELD_VALUES
-#define MPI_FPVALUE MPI_DOUBLE_COMPLEX
+#define MPI_FPVALUE MPI_C_DOUBLE_COMPLEX
 #else /* COMPLEX_FIELD_VALUES */
 #define MPI_FPVALUE MPI_DOUBLE
 #endif /* !COMPLEX_FIELD_VALUES */
@@ -36,7 +36,7 @@ typedef double FPValue;
 typedef long double FPValue;
 
 #ifdef COMPLEX_FIELD_VALUES
-#define MPI_FPVALUE MPI_LONG_DOUBLE_COMPLEX
+#define MPI_FPVALUE MPI_C_LONG_DOUBLE_COMPLEX
 #else /* COMPLEX_FIELD_VALUES */
 #define MPI_FPVALUE MPI_LONG_DOUBLE
 #endif /* !COMPLEX_FIELD_VALUES */
