@@ -690,11 +690,11 @@ public:
 #ifdef DEBUG_INFO
       "%s : "
 #endif /* DEBUG_INFO */
-      "%f, "
+      FP_MOD ", "
 #ifdef DEBUG_INFO
       "%s : "
 #endif /* DEBUG_INFO */
-      "%f ).\n"
+      FP_MOD " ).\n"
 #ifdef DEBUG_INFO
       , coordinateTypeNames[static_cast<uint8_t> (GridCoordinate1DTemplate<TcoordType, doSignChecks>::getType1 ())]
 #endif /* DEBUG_INFO */

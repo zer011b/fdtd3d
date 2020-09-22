@@ -3358,9 +3358,9 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::initScheme (FPValue dx, FPValue
   sourceWaveLengthNumerical = 2 * PhysicsConst::Pi / k;
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "initScheme: "
-                                      "\n\tphase velocity relation -> %f "
-                                      "\n\tphase velosity 0 -> %f "
-                                      "\n\tphase velocity -> %f "
+                                      "\n\tphase velocity relation -> " FP_MOD " "
+                                      "\n\tphase velosity 0 -> " FP_MOD " "
+                                      "\n\tphase velocity -> " FP_MOD " "
                                       "\n\tanalytical wave number -> %.20f "
                                       "\n\tnumerical wave number -> %.20f"
                                       "\n\tanalytical wave length -> %.20f"
