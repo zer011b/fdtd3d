@@ -589,7 +589,7 @@ public:
 #ifdef DEBUG_INFO
       "%s : "
 #endif /* DEBUG_INFO */
-      "%f ).\n"
+      FP_MOD " ).\n"
 #ifdef DEBUG_INFO
       , coordinateTypeNames[static_cast<uint8_t> (getType1 ())]
 #endif /* DEBUG_INFO */
