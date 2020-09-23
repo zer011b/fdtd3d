@@ -860,13 +860,9 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
                                                        TC start, /**< start coordinate of chunk to perform computations on */
                                                        TC end) /**< end coordinate of chunk to perform computations on */
 {
-  int processId = 0;
-
   if (useParallel)
   {
-#ifdef PARALLEL_GRID
-    processId = ParallelGrid::getParallelCore ()->getProcessId ();
-#else /* PARALLEL_GRID */
+#ifndef PARALLEL_GRID
     ASSERT_MESSAGE ("Solver is not compiled with support of parallel grid. Recompile it with -DPARALLEL_GRID=ON.");
 #endif /* !PARALLEL_GRID */
   }
@@ -1510,7 +1506,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
     }
 
 #ifdef PARALLEL_GRID
-    if (processId == 0)
+    if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
 #endif /* PARALLEL_GRID */
     {
 #ifdef COMPLEX_FIELD_VALUES
@@ -1578,9 +1574,10 @@ void
 Scheme<Type, TCoord, layout_type>::setupBlocksForGPU (TC &blockCount, TC &blockSize)
 {
   int device = 0;
+  USED(device);
   cudaCheckErrorCmd (cudaGetDevice (&device));
 
-  cudaDeviceProp prop;
+  cudaDeviceProp prop = {0};
   cudaCheckErrorCmd (cudaGetDeviceProperties (&prop, device));
 
   uint64_t size = (uint64_t) prop.totalGlobalMem;
@@ -2144,7 +2141,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzBorder (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_hy, sizeof(SourceCallBack)));
@@ -2163,7 +2160,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ex, sizeof(SourceCallBack)));
       intScheme->setCallbackExBorder (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ey, sizeof(SourceCallBack)));
@@ -2196,7 +2193,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzBorder (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_hy, sizeof(SourceCallBack)));
@@ -2215,7 +2212,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_sin1_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzBorder (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_sin1_hy, sizeof(SourceCallBack)));
@@ -2261,7 +2258,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_jz, sizeof(SourceCallBack)));
       intScheme->setCallbackJz (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_my, sizeof(SourceCallBack)));
@@ -2280,7 +2277,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_jx, sizeof(SourceCallBack)));
       intScheme->setCallbackJx (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_jy, sizeof(SourceCallBack)));
@@ -2312,7 +2309,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_jz, sizeof(SourceCallBack)));
       intScheme->setCallbackJz (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_my, sizeof(SourceCallBack)));
@@ -2332,7 +2329,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom1_hy, sizeof(SourceCallBack)));
@@ -2351,7 +2348,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ex, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom2_ey, sizeof(SourceCallBack)));
@@ -2383,7 +2380,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_polinom3_hy, sizeof(SourceCallBack)));
@@ -2402,7 +2399,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_sin1_ez, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_sin1_hy, sizeof(SourceCallBack)));
@@ -2423,7 +2420,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ex_exhy, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hy_exhy, sizeof(SourceCallBack)));
@@ -2442,7 +2439,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ex_exhy, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hy_exhy, sizeof(SourceCallBack)));
@@ -2461,7 +2458,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ex_exhy, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hy_exhy, sizeof(SourceCallBack)));
@@ -2481,7 +2478,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ex_exhz, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hz_exhz, sizeof(SourceCallBack)));
@@ -2500,7 +2497,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ex_exhz, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hz_exhz, sizeof(SourceCallBack)));
@@ -2519,7 +2516,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ex_exhz, sizeof(SourceCallBack)));
       intScheme->setCallbackExExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hz_exhz, sizeof(SourceCallBack)));
@@ -2539,7 +2536,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ey_eyhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hx_eyhx, sizeof(SourceCallBack)));
@@ -2558,7 +2555,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ey_eyhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hx_eyhx, sizeof(SourceCallBack)));
@@ -2577,7 +2574,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ey_eyhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hx_eyhx, sizeof(SourceCallBack)));
@@ -2597,7 +2594,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ey_eyhz, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hz_eyhz, sizeof(SourceCallBack)));
@@ -2616,7 +2613,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ey_eyhz, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hz_eyhz, sizeof(SourceCallBack)));
@@ -2635,7 +2632,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ey_eyhz, sizeof(SourceCallBack)));
       intScheme->setCallbackEyExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hz_eyhz, sizeof(SourceCallBack)));
@@ -2655,7 +2652,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ez_ezhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hx_ezhx, sizeof(SourceCallBack)));
@@ -2674,7 +2671,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ez_ezhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hx_ezhx, sizeof(SourceCallBack)));
@@ -2693,7 +2690,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ez_ezhx, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hx_ezhx, sizeof(SourceCallBack)));
@@ -2713,7 +2710,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_ez_ezhy, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp1_hy_ezhy, sizeof(SourceCallBack)));
@@ -2732,7 +2729,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_ez_ezhy, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp2_hy_ezhy, sizeof(SourceCallBack)));
@@ -2751,7 +2748,7 @@ Scheme<Type, TCoord, layout_type>::initCallBacks ()
     if (SOLVER_SETTINGS.getDoUseCuda ()
         && SOLVER_SETTINGS.getIndexOfGPUForCurrentNode () != NO_GPU)
     {
-      SourceCallBack tmp;
+      SourceCallBack tmp = NULLPTR;
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_ez_ezhy, sizeof(SourceCallBack)));
       intScheme->setCallbackEzExact (tmp);
       cudaCheckErrorCmd (cudaMemcpyFromSymbol (&tmp, d_exp3_hy_ezhy, sizeof(SourceCallBack)));

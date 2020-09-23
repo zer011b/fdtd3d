@@ -1034,7 +1034,7 @@ public:
     InternalSchemeKernelHelpers::calculateFieldStepIterationExactKernel<Type, TCoord, layout_type, grid_type> <<< blocks, threads >>>
       (d_gpuScheme, start3D, end3D, t, grid, exactFunc, ct1, ct2, ct3);
     cudaCheckError ();
-    FPValue buf[6];
+    FPValue buf[6] = {0};
     cudaCheckErrorCmd (cudaMemcpy (buf, gpuScheme->d_norm, 6 * sizeof(FPValue), cudaMemcpyDeviceToHost));
     normRe = buf[0];
     normIm = buf[1];

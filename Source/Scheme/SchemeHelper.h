@@ -1034,8 +1034,8 @@ SchemeHelper::ntffN3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
   FPValue diffy0 = yeeLayout->getSize ().get2 () / 2;
   FPValue diffz0 = yeeLayout->getSize ().get3 () / 2;
 
-  CoordinateType ct1, ct2, ct3;
 #ifdef DEBUG_INFO
+  CoordinateType ct1, ct2, ct3;
   ct1 = leftNTFF.getType1 ();
   ct2 = leftNTFF.getType2 ();
   ct3 = leftNTFF.getType3 ();
@@ -1220,8 +1220,8 @@ SchemeHelper::ntffN3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
   FPValue diffy0 = yeeLayout->getSize ().get2 () / 2;
   FPValue diffz0 = yeeLayout->getSize ().get3 () / 2;
 
-  CoordinateType ct1, ct2, ct3;
 #ifdef DEBUG_INFO
+  CoordinateType ct1, ct2, ct3;
   ct1 = leftNTFF.getType1 ();
   ct2 = leftNTFF.getType2 ();
   ct3 = leftNTFF.getType3 ();
@@ -1406,8 +1406,8 @@ SchemeHelper::ntffN3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
   FPValue diffy0 = yeeLayout->getSize ().get2 () / 2;
   FPValue diffz0 = yeeLayout->getSize ().get3 () / 2;
 
-  CoordinateType ct1, ct2, ct3;
 #ifdef DEBUG_INFO
+  CoordinateType ct1, ct2, ct3;
   ct1 = leftNTFF.getType1 ();
   ct2 = leftNTFF.getType2 ();
   ct3 = leftNTFF.getType3 ();
@@ -1593,8 +1593,8 @@ SchemeHelper::ntffL3D_x (grid_coord x0, FPValue angleTeta, FPValue anglePhi,
   FPValue diffy0 = yeeLayout->getSize ().get2 () / 2;
   FPValue diffz0 = yeeLayout->getSize ().get3 () / 2;
 
-  CoordinateType ct1, ct2, ct3;
 #ifdef DEBUG_INFO
+  CoordinateType ct1, ct2, ct3;
   ct1 = leftNTFF.getType1 ();
   ct2 = leftNTFF.getType2 ();
   ct3 = leftNTFF.getType3 ();
@@ -1761,8 +1761,8 @@ SchemeHelper::ntffL3D_y (grid_coord y0, FPValue angleTeta, FPValue anglePhi,
   FPValue diffy0 = yeeLayout->getSize ().get2 () / 2;
   FPValue diffz0 = yeeLayout->getSize ().get3 () / 2;
 
-  CoordinateType ct1, ct2, ct3;
 #ifdef DEBUG_INFO
+  CoordinateType ct1, ct2, ct3;
   ct1 = leftNTFF.getType1 ();
   ct2 = leftNTFF.getType2 ();
   ct3 = leftNTFF.getType3 ();
@@ -1929,8 +1929,8 @@ SchemeHelper::ntffL3D_z (grid_coord z0, FPValue angleTeta, FPValue anglePhi,
   FPValue diffy0 = yeeLayout->getSize ().get2 () / 2;
   FPValue diffz0 = yeeLayout->getSize ().get3 () / 2;
 
-  CoordinateType ct1, ct2, ct3;
 #ifdef DEBUG_INFO
+  CoordinateType ct1, ct2, ct3;
   ct1 = leftNTFF.getType1 ();
   ct2 = leftNTFF.getType2 ();
   ct3 = leftNTFF.getType3 ();
