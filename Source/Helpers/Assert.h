@@ -53,6 +53,7 @@ extern void program_fail ();
 #define DPRINTF(...)
 #endif /* !PRINT_MESSAGE */
 
+#define USED(var) (void)var
 
 #ifdef ENABLE_ASSERTS
 /*

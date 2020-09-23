@@ -27,7 +27,7 @@ int cudaThreadsZ = 8;
 #ifdef CUDA_ENABLED
 static void cudaInfo ()
 {
-  int cudaDevicesCount;
+  int cudaDevicesCount = 0;
 
   cudaCheckErrorCmd (cudaGetDeviceCount (&cudaDevicesCount));
 
