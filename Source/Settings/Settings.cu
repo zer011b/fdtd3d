@@ -18,7 +18,8 @@ Settings::prepareDeviceSettings ()
   cudaCheckErrorCmd (cudaMemcpyToSymbol (cudaSolverSettings, &d_cudaSolverSettings, sizeof (Settings*), 0, cudaMemcpyHostToDevice));
 
 #ifdef ENABLE_ASSERTS
-  Settings *d_tmp;
+  Settings *d_tmp = NULLPTR;
+  USED(d_tmp);
   cudaCheckErrorCmd (cudaMemcpyFromSymbol (&d_tmp, cudaSolverSettings, sizeof(Settings *), 0, cudaMemcpyDeviceToHost));
   Settings *tmp2 = (Settings *) malloc (sizeof (Settings));
   cudaCheckErrorCmd (cudaMemcpy (tmp2, d_tmp, sizeof(Settings), cudaMemcpyDeviceToHost));
