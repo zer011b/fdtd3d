@@ -1003,8 +1003,8 @@ Grid<TCoord>::Grid (const TCoord &s, /**< size of grid */
     gridValues[i] = new VectorFieldValues<TCoord> (size);
   }
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with %lu stored steps and raw size: %llu.\n",
-    gridName.data (), gridValues.size (), (unsigned long long)size.calculateTotalCoord ());
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with %" PRIu32 " stored steps and raw size: %" PRIu64 ".\n",
+    gridName.data (), (uint32_t) gridValues.size (), (uint64_t)size.calculateTotalCoord ());
 } /* Grid<TCoord>::Grid */
 
 /**
