@@ -39,7 +39,7 @@ Scheme<Type, TCoord, layout_type>::performNStepsForBlock (time_step tStart, /**<
   {
     if (processId == 0)
     {
-      DPRINTF (LOG_LEVEL_STAGES, "Calculating time step %u...\n", t);
+      DPRINTF (LOG_LEVEL_STAGES, "Calculating time step " TS_MOD "...\n", t);
     }
 
     TC ExStart, ExEnd;
@@ -1517,7 +1517,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       /*
        * NOTE: do not change this! test suite depends on the order of values in output
        */
-      printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
+      printf ("-> DIFF NORM %s. Timestep " TS_MOD ". Value = ( " FP_MOD_ACC " , " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% , " FP_MOD_ACC " %% ), module = " FP_MOD_ACC " = ( " FP_MOD_ACC " %% )\n",
         normGrid->getName (), t, normRe, normIm, normRe * 100.0 / maxRe, normIm * 100.0 / maxIm, normMod, normMod * 100.0 / maxMod);
 #else
       normRe = sqrt (normRe / normGrid->getTotalSize ().calculateTotalCoord ());
@@ -1525,7 +1525,7 @@ Scheme<Type, TCoord, layout_type>::calculateFieldStep (time_step t, /**< time st
       /*
        * NOTE: do not change this! test suite depends on the order of values in output
        */
-      printf ("-> DIFF NORM %s. Timestep %u. Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
+      printf ("-> DIFF NORM %s. Timestep " TS_MOD ". Value = ( " FP_MOD_ACC " ) = ( " FP_MOD_ACC " %% )\n",
         normGrid->getName (), t, normRe, normRe * 100.0 / maxRe);
 #endif
     }
@@ -1583,7 +1583,7 @@ Scheme<Type, TCoord, layout_type>::setupBlocksForGPU (TC &blockCount, TC &blockS
   uint64_t size = (uint64_t) prop.totalGlobalMem;
 
   uint64_t requiredSize = estimateCurrentSize ();
-  printf ("Estimated current size: %lu byte.\n", requiredSize);
+  printf ("Estimated current size: %" PRIu64 " byte.\n", requiredSize);
 
   if (requiredSize < size)
   {

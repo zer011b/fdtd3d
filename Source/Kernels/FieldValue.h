@@ -79,10 +79,12 @@ typedef FPValue FieldValue;
 #ifndef LARGE_COORDINATES
 typedef int32_t grid_coord;
 #define MPI_COORD MPI_INT
+#define C_MOD "%" PRId32
 //#define MAX_COORD (2048*1048576) // 2^31, coord should be less than this
 #else /* !LARGE_COORDINATES */
 typedef int64_t grid_coord;
 #define MPI_COORD MPI_LONG_LONG_INT
+#define C_MOD "%" PRId64
 //#define MAX_COORD (8*1048576*1048576*1048576) // 2^63, coord should be less than this
 #endif /* LARGE_COORDINATES */
 
@@ -90,6 +92,7 @@ typedef int64_t grid_coord;
  * Type of timestep
  */
 typedef uint32_t time_step;
+#define TS_MOD "%" PRIu32
 
 /**
  * Helper functions to convert FieldValues. These should be inlined.

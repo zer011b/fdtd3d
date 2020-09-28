@@ -36,8 +36,8 @@ int main (int argc, char** argv)
   MPI_Comm_rank (MPI_COMM_WORLD, &rank);
   MPI_Comm_size (MPI_COMM_WORLD, &numProcs);
 
-  printf ("X: PID %d of %d, grid size (%llu, %llu, %llu)\n",
-    rank, numProcs, (unsigned long long)gridSizeX, (unsigned long long)gridSizeY, (unsigned long long)gridSizeZ);
+  printf ("X: PID %d of %d, grid size (" C_MOD ", " C_MOD ", " C_MOD ")\n",
+    rank, numProcs, gridSizeX, gridSizeY, gridSizeZ);
 
   printf ("Start process %d of %d\n", rank, numProcs);
 
@@ -243,7 +243,7 @@ int main (int argc, char** argv)
     {
       if (ParallelGrid::getParallelCore ()->getProcessId () == 0)
       {
-        printf ("Try rebalance on step %u, steps elapsed after previous %u\n", t, SHARE_TIME_STEP);
+        printf ("Try rebalance on step " TS_MOD ", steps elapsed after previous " TS_MOD "\n", t, SHARE_TIME_STEP);
       }
 
       if (yeeLayout.Rebalance (SHARE_TIME_STEP))

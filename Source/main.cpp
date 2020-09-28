@@ -42,7 +42,7 @@ static void cudaInfo ()
     printf("  Max threads per multiprocessor: %d\n", prop.maxThreadsPerMultiProcessor);
     printf("  Memory Clock Rate (KHz): %d\n", prop.memoryClockRate);
     printf("  Memory Bus Width (bits): %d\n", prop.memoryBusWidth);
-    printf("  Total global mem: %llu\n", (long long unsigned) prop.totalGlobalMem);
+    printf("  Total global mem: %" PRIu64 "\n", (uint64_t) prop.totalGlobalMem);
     printf("  Peak Memory Bandwidth (GB/s): %f\n\n", 2.0*prop.memoryClockRate*(prop.memoryBusWidth/8)/1.0e6);
   }
 }

@@ -180,17 +180,17 @@ int main (int argc, char** argv)
   MPI_Comm_size (MPI_COMM_WORLD, &numProcs);
 
 #if defined (GRID_1D) || defined (GRID_2D) || defined (GRID_3D)
-  DPRINTF (LOG_LEVEL_STAGES, "X: PID %d of %d, grid size x: %llu\n", rank, numProcs, (unsigned long long)gridSizeX);
+  DPRINTF (LOG_LEVEL_STAGES, "X: PID %d of %d, grid size x: " C_MOD "\n", rank, numProcs, gridSizeX);
   ASSERT (gridSizeX % numProcs == 0);
 #endif /* GRID_1D || GRID_2D || GRID_3D */
 
 #if defined (GRID_2D) || defined (GRID_3D)
-  DPRINTF (LOG_LEVEL_STAGES, "Y: PID %d of %d, grid size y: %llu\n", rank, numProcs, (unsigned long long)gridSizeY);
+  DPRINTF (LOG_LEVEL_STAGES, "Y: PID %d of %d, grid size y: " C_MOD "\n", rank, numProcs, gridSizeY);
   ASSERT (gridSizeY % numProcs == 0);
 #endif /* GRID_2D || GRID_3D */
 
 #if defined (GRID_3D)
-  DPRINTF (LOG_LEVEL_STAGES, "Z: PID %d of %d, grid size x: %llu\n", rank, numProcs, (unsigned long long)gridSizeZ);
+  DPRINTF (LOG_LEVEL_STAGES, "Z: PID %d of %d, grid size x: " C_MOD "\n", rank, numProcs, gridSizeZ);
   ASSERT (gridSizeZ % numProcs == 0);
 #endif /* GRID_3D */
 

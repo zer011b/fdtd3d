@@ -1003,8 +1003,8 @@ Grid<TCoord>::Grid (const TCoord &s, /**< size of grid */
     gridValues[i] = new VectorFieldValues<TCoord> (size);
   }
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with %" PRIu32 " stored steps and raw size: %" PRIu64 ".\n",
-    gridName.data (), (uint32_t) gridValues.size (), (uint64_t)size.calculateTotalCoord ());
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with " C_MOD " stored steps and raw size: " C_MOD ".\n",
+    gridName.data (), (grid_coord) gridValues.size (), size.calculateTotalCoord ());
 } /* Grid<TCoord>::Grid */
 
 /**
@@ -1023,8 +1023,8 @@ Grid<TCoord>::Grid (int storedSteps, /**< number of steps in time for which to s
     gridValues[i] = NULLPTR;
   }
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with %lu stored steps without size.\n",
-    gridName.data (), gridValues.size ());
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' with " C_MOD " stored steps without size.\n",
+    gridName.data (), (grid_coord) gridValues.size ());
 } /* Grid<TCoord>::Grid */
 
 /**

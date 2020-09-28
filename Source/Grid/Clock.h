@@ -201,7 +201,7 @@ public:
 #ifdef MPI_CLOCK
     printf ("Clock: %f seconds.\n", value);
 #else /* MPI_CLOCK */
-    printf ("Clock: %lu seconds, %lu nanoseconds.\n", (uint64_t) value.tv_sec, (uint64_t) value.tv_nsec);
+    printf ("Clock: %" PRIu64 " seconds, %" PRIu64 " nanoseconds.\n", (uint64_t) value.tv_sec, (uint64_t) value.tv_nsec);
 #endif /* !MPI_CLOCK */
   } /* print */
 

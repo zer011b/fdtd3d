@@ -206,7 +206,7 @@ void test (InternalScheme<Type, TCoord, layout_type> *intScheme,
 
   for (time_step t = 0; t < SOLVER_SETTINGS.getNumTimeSteps (); ++t)
   {
-    DPRINTF (LOG_LEVEL_NONE, "calculating time step %d\n", t);
+    DPRINTF (LOG_LEVEL_NONE, "calculating time step " TS_MOD "\n", t);
 
     FPValue timestep = 0;
 

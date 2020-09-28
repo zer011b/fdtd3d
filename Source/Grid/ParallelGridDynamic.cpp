@@ -137,12 +137,12 @@ ParallelGrid::Resize (ParallelGridCoordinate newCurrentNodeSize) /**< new size o
 
   delete totalGrid;
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Rebalanced grid '%s' for proc: %d (of %d) from raw size: %llu, to raw size %llu. Done\n",
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Rebalanced grid '%s' for proc: %d (of %d) from raw size: " C_MOD ", to raw size " C_MOD ". Done\n",
            gridName.data (),
            parallelGridCore->getProcessId (),
            parallelGridCore->getTotalProcCount (),
-           (unsigned long long)oldSize.calculateTotalCoord (),
-           (unsigned long long)currentSize.calculateTotalCoord ());
+           oldSize.calculateTotalCoord (),
+           currentSize.calculateTotalCoord ());
 
   /*
    * TODO: check if this share is needed (looks like it's used only for buffers initialiation, which can be done without share)
