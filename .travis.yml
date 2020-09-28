@@ -24,7 +24,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -34,7 +34,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ---- Release, non-Cxx11, no message print build ----
     - stage: build
@@ -45,7 +45,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -55,7 +55,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ---- Release, Cxx11, message print build ----
     - stage: build
@@ -66,7 +66,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -76,7 +76,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ---- Release, non-Cxx11, message print build ----
     - stage: build
@@ -87,7 +87,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -97,7 +97,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ---- RelWithDebInfo, Cxx11, no message print build ----
     - stage: build
@@ -109,7 +109,7 @@ jobs:
         - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -120,7 +120,7 @@ jobs:
         - USED_VALUES="d"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -131,7 +131,7 @@ jobs:
         - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -142,7 +142,7 @@ jobs:
         - USED_VALUES="d"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ---- RelWithDebInfo, non-Cxx11, no message print build ----
     - stage: build
@@ -154,7 +154,7 @@ jobs:
         - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -165,7 +165,7 @@ jobs:
         - USED_VALUES="d"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -176,7 +176,7 @@ jobs:
         - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -187,7 +187,7 @@ jobs:
         - USED_VALUES="d"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ---- RelWithDebInfo, Cxx11, message print build ----
     - stage: build
@@ -199,7 +199,7 @@ jobs:
         - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -210,7 +210,7 @@ jobs:
         - USED_VALUES="d"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -221,7 +221,7 @@ jobs:
         - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -232,7 +232,7 @@ jobs:
         - USED_VALUES="d"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ---- RelWithDebInfo, non-Cxx11, message print build ----
     - stage: build
@@ -244,7 +244,7 @@ jobs:
         - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -255,7 +255,7 @@ jobs:
         - USED_VALUES="d"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -266,7 +266,7 @@ jobs:
         - USED_VALUES="f"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -277,7 +277,7 @@ jobs:
         - USED_VALUES="d"
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "${USED_VALUES}" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ---- Debug, Cxx11, no message print build ----
     - stage: build
@@ -288,7 +288,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -298,7 +298,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ---- Debug, non-Cxx11, no message print build ----
     - stage: build
@@ -309,7 +309,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -319,7 +319,7 @@ jobs:
         - PRINT_MESSAGE=OFF
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ---- Debug, Cxx11, message print build ----
     - stage: build
@@ -330,7 +330,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -340,7 +340,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ---- Debug, non-Cxx11, message print build ----
     - stage: build
@@ -351,7 +351,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
     - stage: build
       env:
@@ -361,7 +361,7 @@ jobs:
         - PRINT_MESSAGE=ON
       script:
       - . Tools/travis-helper.sh
-      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL"
+      - ./Tools/test-build.sh ${HOME_DIR} ${BUILD_DIR} "gcc,g++" "${BUILD_MODE}" "${CXX11}" "${COMPLEX_VALUES}" "${PRINT_MESSAGE}" "f d" "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "OFF,sm" "ALL" ""
 
 # ==== Unit tests stage ====
 # ---- Unit test for ParallelGrid ----
