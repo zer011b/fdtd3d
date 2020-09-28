@@ -109,11 +109,11 @@ ParallelGridGroup::ParallelGridGroupConstructor ()
 
   gatherStartPosition ();
 
-  DPRINTF (LOG_LEVEL_FULL, "New parallel group for #%d process: %llu x %llu x %llu.\n",
+  DPRINTF (LOG_LEVEL_FULL, "New parallel group for #%d process: " C_MOD " x " C_MOD " x " C_MOD ".\n",
           parallelGridCore->getProcessId (),
-          (unsigned long long)currentSize.get1 (),
-          (unsigned long long)currentSize.get2 (),
-          (unsigned long long)currentSize.get3 ());
+          currentSize.get1 (),
+          currentSize.get2 (),
+          currentSize.get3 ());
 } /* ParallelGridGroup::ParallelGridGroupConstructor */
 
 /**
@@ -290,25 +290,25 @@ void ParallelGridGroup::gatherStartPosition ()
         && state)
     {
 #ifdef GRID_1D
-      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (%llu) for grid '%s' for proc %d (of %d)\n",
-               (unsigned long long)startx,
+      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (" C_MOD ") for grid '%s' for proc %d (of %d)\n",
+               startx,
                groupName.data (),
                parallelGridCore->getProcessId (),
                parallelGridCore->getTotalProcCount ());
 #endif /* GRID_1D */
 #ifdef GRID_2D
-      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (%llu, %llu) for grid '%s' for proc %d (of %d)\n",
-               (unsigned long long)startx,
-               (unsigned long long)starty,
+      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (" C_MOD ", " C_MOD ") for grid '%s' for proc %d (of %d)\n",
+               startx,
+               starty,
                groupName.data (),
                parallelGridCore->getProcessId (),
                parallelGridCore->getTotalProcCount ());
 #endif /* GRID_2D */
 #ifdef GRID_3D
-      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (%llu, %llu, %llu) for grid '%s' for proc %d (of %d)\n",
-               (unsigned long long)startx,
-               (unsigned long long)starty,
-               (unsigned long long)startz,
+      DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "Start pos (" C_MOD ", " C_MOD ", " C_MOD ") for grid '%s' for proc %d (of %d)\n",
+               startx,
+               starty,
+               startz,
                groupName.data (),
                parallelGridCore->getProcessId (),
                parallelGridCore->getTotalProcCount ());

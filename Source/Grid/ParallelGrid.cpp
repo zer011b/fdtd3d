@@ -161,12 +161,12 @@ ParallelGrid::ParallelGrid (const ParallelGridCoordinate &totSize, /**< total si
     gridValues[i] = new VectorFieldValues<ParallelGridCoordinate> (size);
   }
 
-  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' for proc: %d (of %d) with %lu stored steps with raw size: %llu.\n",
+  DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "New grid '%s' for proc: %d (of %d) with " C_MOD " stored steps with raw size: " C_MOD ".\n",
            gridName.data (),
            parallelGridCore->getProcessId (),
            parallelGridCore->getTotalProcCount (),
-           gridValues.size (),
-           (unsigned long long)size.calculateTotalCoord ());
+           (grid_coord)gridValues.size (),
+           size.calculateTotalCoord ());
 } /* ParallelGrid::ParallelGrid */
 
 /**
@@ -178,10 +178,10 @@ ParallelGrid::SendRawBuffer (BufferPosition buffer, /**< buffer's position to se
 {
   VectorBuffers &buffersSend = getGroup ()->getBuffersSend ();
 
-  DPRINTF (LOG_LEVEL_FULL, "\tSend RAW. PID=#%d. Direction TO=%s, size=%lu.\n",
+  DPRINTF (LOG_LEVEL_FULL, "\tSend RAW. PID=#%d. Direction TO=%s, size=" C_MOD ".\n",
            parallelGridCore->getProcessId (),
            BufferPositionNames[buffer],
-           buffersSend[buffer].size ());
+           (grid_coord) buffersSend[buffer].size ());
 
   FieldValue* rawBuffer = buffersSend[buffer].data ();
 
@@ -204,10 +204,10 @@ ParallelGrid::ReceiveRawBuffer (BufferPosition buffer, /**< buffer's position to
 {
   VectorBuffers &buffersReceive = getGroup ()->getBuffersReceive ();
 
-  DPRINTF (LOG_LEVEL_FULL, "\t\tReceive RAW. PID=#%d. Direction FROM=%s, size=%lu.\n",
+  DPRINTF (LOG_LEVEL_FULL, "\t\tReceive RAW. PID=#%d. Direction FROM=%s, size=" C_MOD ".\n",
            parallelGridCore->getProcessId (),
            BufferPositionNames[buffer],
-           buffersReceive[buffer].size ());
+           (grid_coord)buffersReceive[buffer].size ());
 
   MPI_Status status;
 
@@ -236,12 +236,12 @@ ParallelGrid::SendReceiveRawBuffer (BufferPosition bufferSend, /**< buffer's pos
   VectorBuffers &buffersSend = getGroup ()->getBuffersSend ();
   VectorBuffers &buffersReceive = getGroup ()->getBuffersReceive ();
 
-  DPRINTF (LOG_LEVEL_FULL, "\t\tSend/Receive RAW. PID=#%d. Directions TO=%s FROM=%s. Size TO=%lu FROM=%lu.\n",
+  DPRINTF (LOG_LEVEL_FULL, "\t\tSend/Receive RAW. PID=#%d. Directions TO=%s FROM=%s. Size TO=" C_MOD " FROM=" C_MOD ".\n",
            parallelGridCore->getProcessId (),
            BufferPositionNames[bufferSend],
            BufferPositionNames[bufferReceive],
-           buffersSend[bufferSend].size (),
-           buffersReceive[bufferReceive].size ());
+           (grid_coord)buffersSend[bufferSend].size (),
+           (grid_coord)buffersReceive[bufferReceive].size ());
 
   MPI_Status status;
 

@@ -3358,16 +3358,16 @@ INTERNAL_SCHEME_BASE<Type, TCoord, layout_type>::initScheme (FPValue dx, FPValue
   sourceWaveLengthNumerical = 2 * PhysicsConst::Pi / k;
 
   DPRINTF (LOG_LEVEL_STAGES_AND_DUMP, "initScheme: "
-                                      "\n\tphase velocity relation -> " FP_MOD " "
-                                      "\n\tphase velosity 0 -> " FP_MOD " "
-                                      "\n\tphase velocity -> " FP_MOD " "
-                                      "\n\tanalytical wave number -> %.20f "
-                                      "\n\tnumerical wave number -> %.20f"
-                                      "\n\tanalytical wave length -> %.20f"
-                                      "\n\tnumerical wave length -> %.20f"
-                                      "\n\tnumerical grid step -> %.20f"
-                                      "\n\tnumerical time step -> %.20f"
-                                      "\n\tfrequency -> %.20f"
+                                      "\n\tphase velocity relation -> " FP_MOD_ACC " "
+                                      "\n\tphase velosity 0 -> " FP_MOD_ACC " "
+                                      "\n\tphase velocity -> " FP_MOD_ACC " "
+                                      "\n\tanalytical wave number -> " FP_MOD_ACC " "
+                                      "\n\tnumerical wave number -> " FP_MOD_ACC " "
+                                      "\n\tanalytical wave length -> " FP_MOD_ACC " "
+                                      "\n\tnumerical wave length -> " FP_MOD_ACC " "
+                                      "\n\tnumerical grid step -> " FP_MOD_ACC " "
+                                      "\n\tnumerical time step -> " FP_MOD_ACC " "
+                                      "\n\tfrequency -> " FP_MOD_ACC " "
                                       "\n",
            relPhaseVelocity, phaseVelocity0, phaseVelocity, 2*PhysicsConst::Pi/sourceWaveLength, k,
            sourceWaveLength, sourceWaveLengthNumerical, gridStep, gridTimeStep, sourceFrequency);
