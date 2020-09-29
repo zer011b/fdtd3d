@@ -12,7 +12,7 @@ std::string int64_to_string(int64_t value) /**< value */
 std::string int64_to_string(int64_t value) /**< value */
 {
   char buffer[65];
-  snprintf(buffer, sizeof(buffer), "%ld", value);
+  snprintf(buffer, sizeof(buffer), "%" PRId64, value);
   return std::string (buffer);
 } /* int64_to_string */
 #endif
