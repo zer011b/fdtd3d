@@ -60,7 +60,7 @@ function build
           exit 1
         fi
 
-        ./Tests/unit-test-coordinate
+        ./Source/UnitTests/unit-test-coordinate
 
         res=$(echo $?)
 

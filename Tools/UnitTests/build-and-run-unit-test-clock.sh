@@ -24,17 +24,18 @@ function build
   for VALUE_TYPE in f d ld; do
     for COMPLEX_FIELD_VALUES in ON OFF; do
       for LARGE_COORDINATES in ON OFF; do
+      for MPI_CLOCK in ON OFF; do
 
         if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
           continue
         fi
 
-        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=Debug \
           -DVALUE_TYPE=${VALUE_TYPE} \
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
           -DPARALLEL_GRID_DIMENSION=3 \
-          -DPRINT_MESSAGE=OFF \
-          -DPARALLEL_GRID=OFF \
+          -DPRINT_MESSAGE=ON \
+          -DPARALLEL_GRID=ON \
           -DPARALLEL_BUFFER_DIMENSION=x \
           -DCXX11_ENABLED=${CXX11_ENABLED} \
           -DCUDA_ENABLED=OFF \
@@ -44,7 +45,7 @@ function build
           -DCMAKE_C_COMPILER=${C_COMPILER} \
           -DDYNAMIC_GRID=OFF \
           -DCOMBINED_SENDRECV=OFF \
-          -DMPI_CLOCK=OFF
+          -DMPI_CLOCK=${MPI_CLOCK}
 
         res=$(echo $?)
 
@@ -52,7 +53,7 @@ function build
           exit 1
         fi
 
-        make unit-test-internalscheme
+        make unit-test-clock
 
         res=$(echo $?)
 
@@ -60,30 +61,14 @@ function build
           exit 1
         fi
 
-        ./Tests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex
+        ./Source/UnitTests/unit-test-clock
 
-        if [[ "$?" -ne "0" ]]; then
+        res=$(echo $?)
+
+        if [[ res -ne 0 ]]; then
           exit 1
         fi
-
-        ./Tests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex --use-ca-cb
-
-        if [[ "$?" -ne "0" ]]; then
-          exit 1
-        fi
-
-        ./Tests/unit-test-internalscheme --time-steps 200 --use-tfsf
-
-        if [[ "$?" -ne "0" ]]; then
-          exit 1
-        fi
-
-        ./Tests/unit-test-internalscheme --time-steps 200 --use-tfsf --use-ca-cb
-
-        if [[ "$?" -ne "0" ]]; then
-          exit 1
-        fi
-
+      done
       done
     done
   done

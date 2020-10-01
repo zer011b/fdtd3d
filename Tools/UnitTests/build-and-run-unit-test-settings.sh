@@ -29,11 +29,11 @@ function build
           continue
         fi
 
-        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=Debug \
           -DVALUE_TYPE=${VALUE_TYPE} \
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
           -DPARALLEL_GRID_DIMENSION=3 \
-          -DPRINT_MESSAGE=OFF \
+          -DPRINT_MESSAGE=ON \
           -DPARALLEL_GRID=OFF \
           -DPARALLEL_BUFFER_DIMENSION=x \
           -DCXX11_ENABLED=${CXX11_ENABLED} \
@@ -52,7 +52,7 @@ function build
           exit 1
         fi
 
-        make unit-test-dumpers-loaders
+        make unit-test-settings
 
         res=$(echo $?)
 
@@ -60,7 +60,7 @@ function build
           exit 1
         fi
 
-        ./Tests/unit-test-dumpers-loaders
+        ./Source/UnitTests/unit-test-settings
 
         res=$(echo $?)
 
