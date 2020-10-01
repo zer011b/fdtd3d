@@ -340,4 +340,3 @@ include_directories ("${PROJECT_SOURCE_DIR}/Third-party/EasyBMP/source")
 add_subdirectory (${PROJECT_SOURCE_DIR}/Third-party/EasyBMP)
 
 add_subdirectory (Source)
-add_subdirectory (Tests)

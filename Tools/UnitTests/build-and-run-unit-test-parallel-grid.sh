@@ -68,17 +68,17 @@ function build
         fi
 
         if [[ "$PARALLEL_BUFFER" = "x" ]]; then
-          mpirun -n 2 ./Tests/unit-test-parallel-grid
+          mpirun -n 2 ./Source/UnitTests/unit-test-parallel-grid
         elif [[ "$PARALLEL_BUFFER" = "y" ]]; then
-          mpirun -n 2 ./Tests/unit-test-parallel-grid
+          mpirun -n 2 ./Source/UnitTests/unit-test-parallel-grid
         elif [[ "$PARALLEL_BUFFER" = "z" ]]; then
-          mpirun -n 2 ./Tests/unit-test-parallel-grid
+          mpirun -n 2 ./Source/UnitTests/unit-test-parallel-grid
         elif [[ "$PARALLEL_BUFFER" = "xy" ]]; then
-          mpirun -n 4 ./Tests/unit-test-parallel-grid
+          mpirun -n 4 ./Source/UnitTests/unit-test-parallel-grid
         elif [[ "$PARALLEL_BUFFER" = "yz" ]]; then
-          mpirun -n 4 ./Tests/unit-test-parallel-grid
+          mpirun -n 4 ./Source/UnitTests/unit-test-parallel-grid
         elif [[ "$PARALLEL_BUFFER" = "xz" ]]; then
-          mpirun -n 4 ./Tests/unit-test-parallel-grid
+          mpirun -n 4 ./Source/UnitTests/unit-test-parallel-grid
         fi
 
         res=$(echo $?)
@@ -88,19 +88,19 @@ function build
         fi
 
         if [[ "$PARALLEL_BUFFER" = "x" ]]; then
-          mpirun -n 4 ./Tests/unit-test-parallel-grid
+          mpirun -n 4 ./Source/UnitTests/unit-test-parallel-grid
         elif [[ "$PARALLEL_BUFFER" = "y" ]]; then
-          mpirun -n 4 ./Tests/unit-test-parallel-grid
+          mpirun -n 4 ./Source/UnitTests/unit-test-parallel-grid
         elif [[ "$PARALLEL_BUFFER" = "z" ]]; then
-          mpirun -n 4 ./Tests/unit-test-parallel-grid
+          mpirun -n 4 ./Source/UnitTests/unit-test-parallel-grid
         elif [[ "$PARALLEL_BUFFER" = "xy" ]]; then
-          mpirun -n 16 ./Tests/unit-test-parallel-grid
+          mpirun -n 16 ./Source/UnitTests/unit-test-parallel-grid
         elif [[ "$PARALLEL_BUFFER" = "yz" ]]; then
-          mpirun -n 16 ./Tests/unit-test-parallel-grid
+          mpirun -n 16 ./Source/UnitTests/unit-test-parallel-grid
         elif [[ "$PARALLEL_BUFFER" = "xz" ]]; then
-          mpirun -n 16 ./Tests/unit-test-parallel-grid
+          mpirun -n 16 ./Source/UnitTests/unit-test-parallel-grid
         elif [[ "$PARALLEL_BUFFER" = "xyz" ]]; then
-          mpirun -n 8 ./Tests/unit-test-parallel-grid
+          mpirun -n 8 ./Source/UnitTests/unit-test-parallel-grid
         fi
 
         res=$(echo $?)

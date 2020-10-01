@@ -24,7 +24,6 @@ function build
   for VALUE_TYPE in f d ld; do
     for COMPLEX_FIELD_VALUES in ON OFF; do
       for LARGE_COORDINATES in ON OFF; do
-      for MPI_CLOCK in ON OFF; do
 
         if [ "${VALUE_TYPE}" == "ld" ] && [ "${COMPLEX_FIELD_VALUES}" == "ON" ]; then
           continue
@@ -35,7 +34,7 @@ function build
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
           -DPARALLEL_GRID_DIMENSION=3 \
           -DPRINT_MESSAGE=ON \
-          -DPARALLEL_GRID=ON \
+          -DPARALLEL_GRID=OFF \
           -DPARALLEL_BUFFER_DIMENSION=x \
           -DCXX11_ENABLED=${CXX11_ENABLED} \
           -DCUDA_ENABLED=OFF \
@@ -45,7 +44,7 @@ function build
           -DCMAKE_C_COMPILER=${C_COMPILER} \
           -DDYNAMIC_GRID=OFF \
           -DCOMBINED_SENDRECV=OFF \
-          -DMPI_CLOCK=${MPI_CLOCK}
+          -DMPI_CLOCK=OFF
 
         res=$(echo $?)
 
@@ -53,7 +52,7 @@ function build
           exit 1
         fi
 
-        make unit-test-clock
+        make unit-test-approximation
 
         res=$(echo $?)
 
@@ -61,14 +60,13 @@ function build
           exit 1
         fi
 
-        ./Tests/unit-test-clock
+        ./Source/UnitTests/unit-test-approximation
 
         res=$(echo $?)
 
         if [[ res -ne 0 ]]; then
           exit 1
         fi
-      done
       done
     done
   done

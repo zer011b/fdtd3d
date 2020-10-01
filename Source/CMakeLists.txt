@@ -28,6 +28,8 @@ add_subdirectory (Scheme)
 
 add_subdirectory (Tools)
 
+add_subdirectory (UnitTests)
+
 if ("${CUDA_ENABLED}")
   add_executable (fdtd3d main.cu)
   set_target_properties (fdtd3d PROPERTIES CUDA_SEPARABLE_COMPILATION ON)

@@ -29,11 +29,11 @@ function build
           continue
         fi
 
-        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=Debug \
+        cmake ${HOME_DIR} -DCMAKE_BUILD_TYPE=RelWithDebInfo \
           -DVALUE_TYPE=${VALUE_TYPE} \
           -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
           -DPARALLEL_GRID_DIMENSION=3 \
-          -DPRINT_MESSAGE=ON \
+          -DPRINT_MESSAGE=OFF \
           -DPARALLEL_GRID=OFF \
           -DPARALLEL_BUFFER_DIMENSION=x \
           -DCXX11_ENABLED=${CXX11_ENABLED} \
@@ -52,7 +52,7 @@ function build
           exit 1
         fi
 
-        make unit-test-settings
+        make unit-test-internalscheme
 
         res=$(echo $?)
 
@@ -60,13 +60,30 @@ function build
           exit 1
         fi
 
-        ./Tests/unit-test-settings
+        ./Source/UnitTests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex
 
-        res=$(echo $?)
-
-        if [[ res -ne 0 ]]; then
+        if [[ "$?" -ne "0" ]]; then
           exit 1
         fi
+
+        ./Source/UnitTests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex --use-ca-cb
+
+        if [[ "$?" -ne "0" ]]; then
+          exit 1
+        fi
+
+        ./Source/UnitTests/unit-test-internalscheme --time-steps 200 --use-tfsf
+
+        if [[ "$?" -ne "0" ]]; then
+          exit 1
+        fi
+
+        ./Source/UnitTests/unit-test-internalscheme --time-steps 200 --use-tfsf --use-ca-cb
+
+        if [[ "$?" -ne "0" ]]; then
+          exit 1
+        fi
+
       done
     done
   done

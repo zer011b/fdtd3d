@@ -52,7 +52,7 @@ function build
           exit 1
         fi
 
-        make unit-test-grid
+        make unit-test-dumpers-loaders
 
         res=$(echo $?)
 
@@ -60,7 +60,7 @@ function build
           exit 1
         fi
 
-        ./Tests/unit-test-grid
+        ./Source/UnitTests/unit-test-dumpers-loaders
 
         res=$(echo $?)
 
