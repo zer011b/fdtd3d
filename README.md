@@ -6,7 +6,13 @@
 
 This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP/Cuda) if required and for different architectures (x64, Arm, Arm64). The key idea is building of solver for your specific needs with different components, i.e. concurrency support with enabled MPI, OpenMP or GPU support, parallel buffer types, specific dimension and others. OpenMP support is WIP.
 
-For additional info on current project development status and future plans check issues and milestones, design docs are available at [documentation](Docs/Design.md).
+For additional info on current project development status and future plans check issues and milestones, design docs are available at [documentation](Docs/Design.md). Also, doxygen documentation can be generated from config in `./Doxyfile`:
+
+```sh
+sudo apt-get install doxygen
+doxygen
+firefox docs/index.html
+```
 
 # Build
 
@@ -56,18 +62,6 @@ Parameters can be passed directly to `fdtd3d` through command line or config fil
 # --use-pml
 # --dx 0.0005
 # --wavelength 0.02
-```
-
-# Documentation
-
-Doxygen documentation is available at [Documentation](http://zer011b.github.io/fdtd3d/).
-
-To generate it manually from config in `./Doxyfile` run next commands:
-
-```sh
-sudo apt-get install doxygen
-doxygen
-firefox docs/index.html
 ```
 
 # How To Cite
