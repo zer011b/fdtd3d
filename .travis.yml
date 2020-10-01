@@ -683,7 +683,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t1.2"
@@ -691,7 +691,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -700,7 +700,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t2.2"
@@ -708,7 +708,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t2.3"
@@ -716,7 +716,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -725,7 +725,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -734,7 +734,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t4.2"
@@ -742,7 +742,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t4.3"
@@ -750,7 +750,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -759,7 +759,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -768,7 +768,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.2"
@@ -776,7 +776,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.3"
@@ -784,7 +784,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.4"
@@ -792,7 +792,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.5"
@@ -800,7 +800,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.6"
@@ -808,7 +808,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.7"
@@ -816,7 +816,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.8"
@@ -824,7 +824,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.9"
@@ -832,7 +832,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.10"
@@ -840,7 +840,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.11"
@@ -848,7 +848,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.12"
@@ -856,7 +856,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.13"
@@ -864,7 +864,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -873,7 +873,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.2"
@@ -881,7 +881,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.3"
@@ -889,7 +889,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.4"
@@ -897,7 +897,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.5"
@@ -905,7 +905,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.6"
@@ -913,7 +913,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -922,6 +922,6 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tools/TestSuite/run-test.sh $TEST $CUR_DIR/Tools/TestSuite $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
 dist: xenial
