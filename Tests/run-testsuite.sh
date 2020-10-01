@@ -19,18 +19,18 @@ SOURCE_DIR=$CUR_DIR
 echo "==== Test suite: RUN ===="
 
 test_num=$((1))
-test_count=$(ls $CUR_DIR/Tools/TestSuite/suite | wc -l)
+test_count=$(ls $CUR_DIR/Tests/suite | wc -l)
 
 echo "Test suite size: $test_count"
 echo "========================="
 echo ""
 
-for testdir in `ls $CUR_DIR/Tools/TestSuite/suite`; do
+for testdir in `ls $CUR_DIR/Tests/suite`; do
   percent_before=$(echo $test_num $test_count | awk '{val=100.0*($1-1)/$2; print val}')
 
   echo "$test_num. Testing <$testdir> ($percent_before%):"
 
-  $CUR_DIR/Tools/TestSuite/run-test.sh $testdir $CUR_DIR/Tools/TestSuite $SOURCE_DIR &> /dev/null
+  $CUR_DIR/Tests/run-test.sh $testdir $CUR_DIR/Tests $SOURCE_DIR &> /dev/null
   check_res
 
   echo "OK!"
