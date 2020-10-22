@@ -95,6 +95,11 @@ for SOLVER_DIM_MODES in $SOLVER_DIM_MODES_VALUES; do
   PARALLEL_GRID_DIMENSION=$(echo $PARALLEL_MODE | awk -F ',' '{print $2}')
   PARALLEL_BUFFER_DIMENSION=$(echo $PARALLEL_MODE | awk -F ',' '{print $3}')
 
+  MPI_CLOCK="OFF"
+  if [ "$PARALLEL_GRID" == "ON" ]; then
+    MPI_CLOCK="ON"
+  fi
+
   CUDA_ENABLED=$(echo $CUDA_MODE | awk -F ',' '{print $1}')
   CUDA_ARCH_SM_TYPE=$(echo $CUDA_MODE | awk -F ',' '{print $2}')
 
@@ -124,6 +129,7 @@ for SOLVER_DIM_MODES in $SOLVER_DIM_MODES_VALUES; do
     -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} \
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} \
     -DSOLVER_DIM_MODES=${SOLVER_DIM_MODES} \
+    -DMPI_CLOCK=${MPI_CLOCK} \
     ${TOOLCHAIN}
 
   # TODO: add next flags to testing:
