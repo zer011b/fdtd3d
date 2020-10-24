@@ -369,75 +369,16 @@ jobs:
       env:
         - UNIT_TEST_PARALLEL_GRID=""
         - CXX11=ON
-        - COMPLEX_VALUES=ON
-        - LARGE_COORDINATES=ON
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
-    - stage: unit-tests
-      env:
-        - UNIT_TEST_PARALLEL_GRID=""
-        - CXX11=ON
-        - COMPLEX_VALUES=OFF
-        - LARGE_COORDINATES=ON
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+      - ./Tools/UnitTests/native/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ${CXX11}
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
         - CXX11=OFF
-        - COMPLEX_VALUES=ON
-        - LARGE_COORDINATES=ON
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
-    - stage: unit-tests
-      env:
-        - UNIT_TEST_PARALLEL_GRID=""
-        - CXX11=OFF
-        - COMPLEX_VALUES=OFF
-        - LARGE_COORDINATES=ON
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
-
-    - stage: unit-tests
-      env:
-        - UNIT_TEST_PARALLEL_GRID=""
-        - CXX11=ON
-        - COMPLEX_VALUES=ON
-        - LARGE_COORDINATES=OFF
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
-    - stage: unit-tests
-      env:
-        - UNIT_TEST_PARALLEL_GRID=""
-        - CXX11=ON
-        - COMPLEX_VALUES=OFF
-        - LARGE_COORDINATES=OFF
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
-    - stage: unit-tests
-      env:
-        - UNIT_TEST_PARALLEL_GRID=""
-        - CXX11=OFF
-        - COMPLEX_VALUES=ON
-        - LARGE_COORDINATES=OFF
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
-    - stage: unit-tests
-      env:
-        - UNIT_TEST_PARALLEL_GRID=""
-        - CXX11=OFF
-        - COMPLEX_VALUES=OFF
-        - LARGE_COORDINATES=OFF
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11} ${COMPLEX_VALUES} ${LARGE_COORDINATES}
+      - ./Tools/UnitTests/native/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ${CXX11}
 
 # ---- Unit test for Grid ----
     - stage: unit-tests
@@ -445,8 +386,10 @@ jobs:
         - UNIT_TEST_GRID=""
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
-      - ./Tools/UnitTests/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo OFF
 
 # ---- Unit test for Dumpers/Loaders ----
     - stage: unit-tests
@@ -454,8 +397,10 @@ jobs:
         - UNIT_TEST_DUMPERS_LOADERS=""
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
-      - ./Tools/UnitTests/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-dumpers-loaders.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo OFF
 
 # ---- Unit test for GridCoordinate ----
     - stage: unit-tests
@@ -463,24 +408,19 @@ jobs:
         - UNIT_TEST_COORDINATE=""
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
-      - ./Tools/UnitTests/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-coordinate.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo OFF
 
 # ---- Unit test for YeeGridLayout ----
     - stage: unit-tests
       env:
         - UNIT_TEST_LAYOUT=""
-        - CXX11=ON
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-layout.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
-    - stage: unit-tests
-      env:
-        - UNIT_TEST_LAYOUT=""
-        - CXX11=OFF
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-layout.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
+      - ./Tools/UnitTests/native/build-and-run-unit-test-layout.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-layout.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo OFF
 
 # ---- Unit test for Clock ----
     - stage: unit-tests
@@ -488,8 +428,10 @@ jobs:
         - UNIT_TEST_CLOCK=""
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
-      - ./Tools/UnitTests/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo OFF
 
 # ---- Unit test for settings ----
     - stage: unit-tests
@@ -497,8 +439,10 @@ jobs:
         - UNIT_TEST_SETTINGS=""
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-settings.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
-      - ./Tools/UnitTests/build-and-run-unit-test-settings.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-settings.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-settings.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-settings.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-settings.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo OFF
 
 # ---- Unit test for Approximation ----
     - stage: unit-tests
@@ -506,8 +450,10 @@ jobs:
         - UNIT_TEST_APPROXIMATION=""
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
-      - ./Tools/UnitTests/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-approximation.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo OFF
 
 # ---- Unit test for Complex ----
     - stage: unit-tests
@@ -515,165 +461,52 @@ jobs:
         - UNIT_TEST_COMPLEX=""
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
-      - ./Tools/UnitTests/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug OFF
+      - ./Tools/UnitTests/native/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-complex.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo OFF
 
 # ---- Unit test for InternalScheme ----
     - stage: unit-tests
       env:
         - UNIT_TEST_INTERNAL_SCHEME=""
-        - CXX11=ON
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
-    - stage: unit-tests
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME=""
-        - CXX11=OFF
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc ${CXX11}
+      - ./Tools/UnitTests/native/build-and-run-unit-test-internalscheme.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON
+      - ./Tools/UnitTests/native/build-and-run-unit-test-internalscheme.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo OFF
 
 # ==== Unit tests on GPU stage ====
 # ---- Unit test for CudaGrid ----
-    - stage: unit-tests-gpu
+    - stage: unit-tests-gpu-build-only
       env:
         - UNIT_TEST_CUDA_GRID=""
       script:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-cuda-grid.sh 0 ${HOME_DIR} ${BUILD_DIR} g++ gcc ON
+      - ./Tools/TravisCI/travis-timer.sh &
+      - ./Tools/UnitTests/cuda/build-and-run-unit-test-cuda-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON ON 0 sm_50 0
+      - ./Tools/UnitTests/cuda/build-and-run-unit-test-cuda-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON OFF 0 sm_50 0
 
 # ---- Unit test for InternalScheme on GPU ----
-    - stage: unit-tests-gpu
+    - stage: unit-tests-gpu-build-only
       env:
         - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=EX_HY
+        - COMPLEX_FIELD_VALUES=ON
       script:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
+      - ./Tools/TravisCI/travis-timer.sh &
+      - ./Tools/UnitTests/cuda/build-and-run-unit-test-internalscheme-cuda.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON ${COMPLEX_FIELD_VALUES} 0 sm_50 0
 
-    - stage: unit-tests-gpu
+    - stage: unit-tests-gpu-build-only
       env:
         - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=EX_HZ
+        - COMPLEX_FIELD_VALUES=OFF
       script:
       - . Tools/TravisCI/travis-helper.sh
       - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=EY_HX
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=EY_HZ
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=EZ_HX
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=EZ_HY
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=TEX
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=TEY
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=TEZ
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=TMX
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=TMY
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=TMZ
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
-
-    - stage: unit-tests-gpu
-      env:
-        - UNIT_TEST_INTERNAL_SCHEME_GPU=""
-        - CXX11=ON
-        - MODE=DIM3
-      script:
-      - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
-      - ./Tools/UnitTests/build-and-run-unit-test-internalscheme-cuda.sh 0 ${HOME_DIR} ${BUILD_DIR} g++-6 gcc-6 ${CXX11} ${MODE} sm_35 0
+      - ./Tools/TravisCI/travis-timer.sh &
+      - ./Tools/UnitTests/cuda/build-and-run-unit-test-internalscheme-cuda.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON ${COMPLEX_FIELD_VALUES} 0 sm_50 0
 
 # ==== Test suite stage ====
     - stage: test-suite
@@ -681,7 +514,6 @@ jobs:
         - TEST="t1.1"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -689,7 +521,6 @@ jobs:
         - TEST="t1.2"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
@@ -698,7 +529,6 @@ jobs:
         - TEST="t2.1"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -706,7 +536,6 @@ jobs:
         - TEST="t2.2"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -714,7 +543,6 @@ jobs:
         - TEST="t2.3"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
@@ -723,7 +551,6 @@ jobs:
         - TEST="t3"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
@@ -732,7 +559,6 @@ jobs:
         - TEST="t4.1"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -740,7 +566,6 @@ jobs:
         - TEST="t4.2"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -748,7 +573,6 @@ jobs:
         - TEST="t4.3"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
@@ -757,7 +581,6 @@ jobs:
         - TEST="t5"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
@@ -766,7 +589,6 @@ jobs:
         - TEST="t6.1"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -774,7 +596,6 @@ jobs:
         - TEST="t6.2"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -782,7 +603,6 @@ jobs:
         - TEST="t6.3"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -790,7 +610,6 @@ jobs:
         - TEST="t6.4"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -798,7 +617,6 @@ jobs:
         - TEST="t6.5"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -806,7 +624,6 @@ jobs:
         - TEST="t6.6"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -814,7 +631,6 @@ jobs:
         - TEST="t6.7"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -822,7 +638,6 @@ jobs:
         - TEST="t6.8"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -830,7 +645,6 @@ jobs:
         - TEST="t6.9"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -838,7 +652,6 @@ jobs:
         - TEST="t6.10"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -846,7 +659,6 @@ jobs:
         - TEST="t6.11"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -854,7 +666,6 @@ jobs:
         - TEST="t6.12"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -862,7 +673,6 @@ jobs:
         - TEST="t6.13"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
@@ -871,7 +681,6 @@ jobs:
         - TEST="t7.1"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -879,7 +688,6 @@ jobs:
         - TEST="t7.2"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -887,7 +695,6 @@ jobs:
         - TEST="t7.3"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -895,7 +702,6 @@ jobs:
         - TEST="t7.4"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -903,7 +709,6 @@ jobs:
         - TEST="t7.5"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
@@ -911,7 +716,6 @@ jobs:
         - TEST="t7.6"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
@@ -920,7 +724,6 @@ jobs:
         - TEST="t8"
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - . Tools/TravisCI/travis-cuda-helper.sh
       - export CUR_DIR=`pwd`
       - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 

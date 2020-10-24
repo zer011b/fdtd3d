@@ -1,0 +1,93 @@
+#!/bin/bash
+
+# Test all unit tests for native arch (i.e. no cross-arch/cuda launch)
+#
+# To test all unit tests:
+#   ./test-units.sh <home_dir> <build_dir> "" "" "" "" "" ""
+#
+# To test scpecific unit test in all configurations
+#   ./test-units.sh <home_dir> <build_dir> "<test_sh_path>" "" "" "" "" ""
+#
+# To test cuda unit tests:
+#   ./test-units.sh <home_dir> <build_dir> "" "" "" "" "0,sm_50" "1"
+
+set -ex
+
+# Home directory of project where root CMakeLists.txt is located
+HOME_DIR=$1; shift
+if [[ "$HOME_DIR" == "" ]]; then
+  echo "HOME_DIR is required"
+  exit 1
+fi
+
+# Build directory of unit test
+BUILD_DIR=$1; shift
+if [[ "$BUILD_DIR" == "" ]]; then
+  echo "BUILD_DIR is required"
+  exit 1
+fi
+
+SCRIPTS_VALUES="$1"; shift
+
+COMPILERS_VALUES="$1"; shift
+if [[ "$COMPILERS_VALUES" == "" ]]; then
+  COMPILERS_VALUES="gcc,g++"
+fi
+
+CMAKE_BUILD_TYPE_VALUES="$1"; shift
+if [[ "$CMAKE_BUILD_TYPE_VALUES" == "" ]]; then
+  CMAKE_BUILD_TYPE_VALUES="RelWithDebInfo Debug"
+fi
+
+CXX11_ENABLED_VALUES="$1"; shift
+if [[ "$CXX11_ENABLED_VALUES" == "" ]]; then
+  CXX11_ENABLED_VALUES="ON OFF"
+fi
+
+CUDA_DEVICE_VALUES="$1"; shift
+CUDA_DO_LAUNCH="$1"; shift
+
+if [[ "$CUDA_DEVICE_VALUES" != "" && "$CUDA_DO_LAUNCH" != "" ]]; then
+  echo "Testing cuda unit tests"
+  COMPLEX_FIELD_VALUES_VALUES="ON OFF"
+  if [[ "$SCRIPTS_VALUES" == "" ]]; then
+    SCRIPTS_VALUES=$(find ${HOME_DIR}/Tools/UnitTests/cuda/ -name "*.sh")
+  fi
+else
+  CUDA_DEVICE_VALUES="_"
+  CUDA_DO_LAUNCH="_"
+  COMPLEX_FIELD_VALUES_VALUES="_"
+  if [[ "$SCRIPTS_VALUES" == "" ]]; then
+    SCRIPTS_VALUES=$(find ${HOME_DIR}/Tools/UnitTests/native/ -name "*.sh")
+  fi
+fi
+
+for SCRIPT in $SCRIPTS_VALUES; do
+for COMPILERS in $COMPILERS_VALUES; do
+for CMAKE_BUILD_TYPE in $CMAKE_BUILD_TYPE_VALUES; do
+for CXX11_ENABLED in $CXX11_ENABLED_VALUES; do
+for CUDA_DEVICE in $CUDA_DEVICE_VALUES; do
+for COMPLEX_FIELD_VALUES in $COMPLEX_FIELD_VALUES_VALUES; do
+
+  CMAKE_C_COMPILER=$(echo $COMPILERS | awk -F ',' '{print $1}')
+  CMAKE_CXX_COMPILER=$(echo $COMPILERS | awk -F ',' '{print $2}')
+
+  CUDA_DEVICE_ID=$(echo $CUDA_DEVICE | awk -F ',' '{print $1}')
+  CUDA_DEVICE_ARCH=$(echo $CUDA_DEVICE | awk -F ',' '{print $2}')
+
+  ${SCRIPT} ${HOME_DIR} ${BUILD_DIR} ${CMAKE_CXX_COMPILER} ${CMAKE_C_COMPILER} ${CMAKE_BUILD_TYPE} ${CXX11_ENABLED} ${COMPLEX_FIELD_VALUES} ${CUDA_DEVICE_ID} ${CUDA_DEVICE_ARCH} ${CUDA_DO_LAUNCH}
+
+  res=$(echo $?)
+  if [[ res -ne 0 ]]; then
+    echo "Unit test failed"
+    exit 2
+  fi
+
+  echo "Unit test successful"
+
+done
+done
+done
+done
+done
+done

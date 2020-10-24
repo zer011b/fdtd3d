@@ -32,12 +32,12 @@ if [[ "$COMPILERS_VALUES" == "" ]]; then
   COMPILERS_VALUES="gcc,g++"
 fi
 
-CMAKE_BUILD_TYPE_VALUES=$1; shift
+CMAKE_BUILD_TYPE_VALUES="$1"; shift
 if [[ "$CMAKE_BUILD_TYPE_VALUES" == "" ]]; then
   CMAKE_BUILD_TYPE_VALUES="Release RelWithDebInfo Debug"
 fi
 
-CXX11_ENABLED_VALUES=$1; shift
+CXX11_ENABLED_VALUES="$1"; shift
 if [[ "$CXX11_ENABLED_VALUES" == "" ]]; then
   CXX11_ENABLED_VALUES="ON OFF"
 fi
@@ -73,6 +73,7 @@ if [[ "$SOLVER_DIM_MODES_VALUES" == "" ]]; then
 fi
 
 TOOLCHAIN_FILE_PATH="$1"; shift
+TOOLCHAIN=""
 if [[ "$TOOLCHAIN_FILE_PATH" != "" ]]; then
   echo "Testing cross build"
   TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE_PATH"
