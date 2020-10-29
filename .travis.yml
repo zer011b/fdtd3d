@@ -371,14 +371,14 @@ jobs:
         - CXX11=ON
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/native/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ${CXX11}
+      - ./Tools/UnitTests/mpi/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ${CXX11}
     - stage: unit-tests
       env:
         - UNIT_TEST_PARALLEL_GRID=""
         - CXX11=OFF
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/native/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ${CXX11}
+      - ./Tools/UnitTests/mpi/build-and-run-unit-test-parallel-grid.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ${CXX11}
 
 # ---- Unit test for Grid ----
     - stage: unit-tests
@@ -428,10 +428,10 @@ jobs:
         - UNIT_TEST_CLOCK=""
       script:
       - . Tools/TravisCI/travis-helper.sh
-      - ./Tools/UnitTests/native/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug ON
-      - ./Tools/UnitTests/native/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug OFF
-      - ./Tools/UnitTests/native/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON
-      - ./Tools/UnitTests/native/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo OFF
+      - ./Tools/UnitTests/mpi/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug ON
+      - ./Tools/UnitTests/mpi/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc Debug OFF
+      - ./Tools/UnitTests/mpi/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo ON
+      - ./Tools/UnitTests/mpi/build-and-run-unit-test-clock.sh ${HOME_DIR} ${BUILD_DIR} g++ gcc RelWithDebInfo OFF
 
 # ---- Unit test for settings ----
     - stage: unit-tests
@@ -681,43 +681,49 @@ jobs:
         - TEST="t7.1"
       script:
       - . Tools/TravisCI/travis-helper.sh
+      - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.2"
       script:
       - . Tools/TravisCI/travis-helper.sh
+      - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.3"
       script:
       - . Tools/TravisCI/travis-helper.sh
+      - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.4"
       script:
       - . Tools/TravisCI/travis-helper.sh
+      - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.5"
       script:
       - . Tools/TravisCI/travis-helper.sh
+      - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.6"
       script:
       - . Tools/TravisCI/travis-helper.sh
+      - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - travis_wait 40 $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:

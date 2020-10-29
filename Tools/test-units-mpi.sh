@@ -26,7 +26,7 @@ fi
 
 SCRIPTS_VALUES="$1"; shift
 if [[ "$SCRIPTS_VALUES" == "" ]]; then
-  SCRIPTS_VALUES=$(find ${HOME_DIR}/Tools/UnitTests/native/ -name "*.sh")
+  SCRIPTS_VALUES=$(find ${HOME_DIR}/Tools/UnitTests/mpi/ -name "*.sh")
 fi
 
 COMPILERS_VALUES="$1"; shift

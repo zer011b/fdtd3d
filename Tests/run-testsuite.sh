@@ -1,6 +1,16 @@
 #!/bin/bash
 
+# To test all tests from test suite:
+#   ./Tests/run-testsuite.sh ""
+
 set -ex
+
+# 0 for native tests, 1 for cuda tests
+MODE=$1
+SCRIPT="run-test.sh"
+if [ "$MODE" == "1" ]; then
+  SCRIPT="run-test-gpu.sh"
+fi
 
 # check exit code
 function check_res ()
@@ -30,7 +40,7 @@ for testdir in `ls $CUR_DIR/Tests/suite`; do
 
   echo "$test_num. Testing <$testdir> ($percent_before%):"
 
-  $CUR_DIR/Tests/run-test.sh $testdir $CUR_DIR/Tests $SOURCE_DIR &> /dev/null
+  $CUR_DIR/Tests/$SCRIPT $testdir $CUR_DIR/Tests $SOURCE_DIR &> /dev/null
   check_res
 
   echo "OK!"
