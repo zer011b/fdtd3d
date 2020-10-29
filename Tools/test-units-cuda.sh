@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Test all unit tests for native arch (i.e. no cross-arch/cuda launch)
+# Test all unit tests for cuda
 #
 # To test all unit tests:
-#   ./test-units.sh <home_dir> <build_dir> "" "" "" ""
+#   ./test-units.sh <home_dir> <build_dir> "" "" "" "" "" "" ""
 #
 # To test scpecific unit test in all configurations
-#   ./test-units.sh <home_dir> <build_dir> "<test_sh_path>" "" "" ""
+#   ./test-units.sh <home_dir> <build_dir> "<test_sh_path>" "" "" "" "" "" ""
 
 set -ex
 
@@ -26,7 +26,7 @@ fi
 
 SCRIPTS_VALUES="$1"; shift
 if [[ "$SCRIPTS_VALUES" == "" ]]; then
-  SCRIPTS_VALUES=$(find ${HOME_DIR}/Tools/UnitTests/native/ -name "*.sh")
+  SCRIPTS_VALUES=$(find ${HOME_DIR}/Tools/UnitTests/cuda/ -name "*.sh")
 fi
 
 COMPILERS_VALUES="$1"; shift
@@ -44,10 +44,27 @@ if [[ "$CXX11_ENABLED_VALUES" == "" ]]; then
   CXX11_ENABLED_VALUES="ON OFF"
 fi
 
+COMPLEX_FIELD_VALUES_VALUES="$1"; shift
+if [[ "$COMPLEX_FIELD_VALUES_VALUES" == "" ]]; then
+  COMPLEX_FIELD_VALUES_VALUES="ON OFF"
+fi
+
+CUDA_DEVICE_VALUES="$1"; shift
+if [[ "$CUDA_DEVICE_VALUES" == "" ]]; then
+  CUDA_DEVICE_VALUES="0,sm_50"
+fi
+
+CUDA_DO_LAUNCH="$1"; shift
+if [[ "$CUDA_DO_LAUNCH" == "" ]]; then
+  CUDA_DO_LAUNCH="0"
+fi
+
 for SCRIPT in $SCRIPTS_VALUES; do
 for COMPILERS in $COMPILERS_VALUES; do
 for CMAKE_BUILD_TYPE in $CMAKE_BUILD_TYPE_VALUES; do
 for CXX11_ENABLED in $CXX11_ENABLED_VALUES; do
+for CUDA_DEVICE in $CUDA_DEVICE_VALUES; do
+for COMPLEX_FIELD_VALUES in $COMPLEX_FIELD_VALUES_VALUES; do
 
   CMAKE_C_COMPILER=$(echo $COMPILERS | awk -F ',' '{print $1}')
   CMAKE_CXX_COMPILER=$(echo $COMPILERS | awk -F ',' '{print $2}')
@@ -55,7 +72,7 @@ for CXX11_ENABLED in $CXX11_ENABLED_VALUES; do
   CUDA_DEVICE_ID=$(echo $CUDA_DEVICE | awk -F ',' '{print $1}')
   CUDA_DEVICE_ARCH=$(echo $CUDA_DEVICE | awk -F ',' '{print $2}')
 
-  ${SCRIPT} ${HOME_DIR} ${BUILD_DIR} ${CMAKE_CXX_COMPILER} ${CMAKE_C_COMPILER} ${CMAKE_BUILD_TYPE} ${CXX11_ENABLED}
+  ${SCRIPT} ${HOME_DIR} ${BUILD_DIR} ${CMAKE_CXX_COMPILER} ${CMAKE_C_COMPILER} ${CMAKE_BUILD_TYPE} ${CXX11_ENABLED} ${COMPLEX_FIELD_VALUES} ${CUDA_DEVICE_ID} ${CUDA_DEVICE_ARCH} ${CUDA_DO_LAUNCH}
 
   res=$(echo $?)
   if [[ res -ne 0 ]]; then
@@ -65,6 +82,8 @@ for CXX11_ENABLED in $CXX11_ENABLED_VALUES; do
 
   echo "Unit test successful"
 
+done
+done
 done
 done
 done
