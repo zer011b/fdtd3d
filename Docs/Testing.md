@@ -102,10 +102,20 @@ Next command should be finished successfully for x64 cuda architecture:
 
 Next command should be finished successfully for each architecture:
 ```sh
-./Tests/run-testsuite.sh 0
+./Tests/run-testsuite.sh 0 0
+```
+
+Next command should be finished successfully for x64 mpi architecture:
+```sh
+./Tests/run-testsuite.sh 1 0
 ```
 
 Next command should be finished successfully for x64 cuda architecture:
 ```sh
-./Tests/run-testsuite.sh 1
+./Tests/run-testsuite.sh 0 1
+```
+
+Next command should be finished successfully for x64 cuda/mpi architecture:
+```sh
+./Tests/run-testsuite.sh 1 1
 ```
