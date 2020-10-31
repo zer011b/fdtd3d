@@ -515,14 +515,14 @@ jobs:
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t1.2"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -530,21 +530,21 @@ jobs:
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t2.2"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t2.3"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -552,7 +552,7 @@ jobs:
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -560,21 +560,21 @@ jobs:
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t4.2"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t4.3"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -582,7 +582,7 @@ jobs:
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -590,91 +590,91 @@ jobs:
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.2"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.3"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.4"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.5"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.6"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.7"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.8"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.9"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.10"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.11"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.12"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t6.13"
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -683,7 +683,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.2"
@@ -691,7 +691,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.3"
@@ -699,7 +699,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.4"
@@ -707,7 +707,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.5"
@@ -715,7 +715,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
     - stage: test-suite
       env:
         - TEST="t7.6"
@@ -723,7 +723,7 @@ jobs:
       - . Tools/TravisCI/travis-helper.sh
       - ./Tools/TravisCI/travis-timer.sh &
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
 
     - stage: test-suite
       env:
@@ -731,6 +731,6 @@ jobs:
       script:
       - . Tools/TravisCI/travis-helper.sh
       - export CUR_DIR=`pwd`
-      - $CUR_DIR/Tests/run-test.sh $TEST $CUR_DIR/Tests $CUR_DIR
+      - $CUR_DIR/Tests/run-test.sh $TEST 1 0 $CUR_DIR/Tests $CUR_DIR
 
 dist: xenial

@@ -5,12 +5,10 @@
 
 set -ex
 
-# 0 for native tests, 1 for cuda tests
-MODE=$1
-SCRIPT="run-test.sh"
-if [ "$MODE" == "1" ]; then
-  SCRIPT="run-test-gpu.sh"
-fi
+# 1 to test MPI
+TEST_MPI=$1; shift
+# 1 to test in CUDA mode
+CUDA_MODE=$1; shift
 
 # check exit code
 function check_res ()
@@ -40,7 +38,7 @@ for testdir in `ls $CUR_DIR/Tests/suite`; do
 
   echo "$test_num. Testing <$testdir> ($percent_before%):"
 
-  $CUR_DIR/Tests/$SCRIPT $testdir $CUR_DIR/Tests $SOURCE_DIR &> /dev/null
+  $CUR_DIR/Tests/run-test.sh $testdir $TEST_MPI $CUDA_MODE $CUR_DIR/Tests $SOURCE_DIR &> /dev/null
   check_res
 
   echo "OK!"
