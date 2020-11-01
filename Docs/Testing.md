@@ -107,7 +107,7 @@ Next command should be finished successfully for each architecture:
 
 Next command should be finished successfully for x64 mpi architecture:
 ```sh
-./Tests/run-testsuite.sh 1 0
+./Tests/run-testsuite.sh 1 0 mpicc mpicxx
 ```
 
 Next command should be finished successfully for x64 cuda architecture:
@@ -117,5 +117,5 @@ Next command should be finished successfully for x64 cuda architecture:
 
 Next command should be finished successfully for x64 cuda/mpi architecture:
 ```sh
-./Tests/run-testsuite.sh 1 1
+./Tests/run-testsuite.sh 1 1 mpicc mpicxx
 ```

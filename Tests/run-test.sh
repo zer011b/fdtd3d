@@ -23,36 +23,36 @@ function check_res ()
 
 if [ "$CUDA_MODE" == "1" ]; then
   echo "TESTING GPU"
-  $CUR_DIR/Tests/suite/$TEST/build.sh $ARGS 1
+  $CUR_DIR/Tests/suite/$TEST/build.sh 1 $ARGS
   check_res
-  $CUR_DIR/Tests/suite/$TEST/run.sh $ARGS 1
+  $CUR_DIR/Tests/suite/$TEST/run.sh 1 $ARGS
   check_res
   $CUR_DIR/Tests/suite/$TEST/cleanup.sh $ARGS
   check_res
 
   if [ "$TEST_MPI" == "1" ]; then
     echo "TESTING GPU+PARALLEL"
-    $CUR_DIR/Tests/suite/$TEST/build.sh $ARGS 3
+    $CUR_DIR/Tests/suite/$TEST/build.sh 3 $ARGS
     check_res
-    $CUR_DIR/Tests/suite/$TEST/run.sh $ARGS 3
+    $CUR_DIR/Tests/suite/$TEST/run.sh 3 $ARGS
     check_res
     $CUR_DIR/Tests/suite/$TEST/cleanup.sh $ARGS
     check_res
   fi
 else
   echo "TESTING SEQUENTIAL"
-  $CUR_DIR/Tests/suite/$TEST/build.sh $ARGS 0
+  $CUR_DIR/Tests/suite/$TEST/build.sh 0 $ARGS
   check_res
-  $CUR_DIR/Tests/suite/$TEST/run.sh $ARGS 0
+  $CUR_DIR/Tests/suite/$TEST/run.sh 0 $ARGS
   check_res
   $CUR_DIR/Tests/suite/$TEST/cleanup.sh $ARGS
   check_res
 
   if [ "$TEST_MPI" == "1" ]; then
     echo "TESTING PARALLEL"
-    $CUR_DIR/Tests/suite/$TEST/build.sh $ARGS 2
+    $CUR_DIR/Tests/suite/$TEST/build.sh 2 $ARGS
     check_res
-    $CUR_DIR/Tests/suite/$TEST/run.sh $ARGS 2
+    $CUR_DIR/Tests/suite/$TEST/run.sh 2 $ARGS
     check_res
     $CUR_DIR/Tests/suite/$TEST/cleanup.sh $ARGS
     check_res
