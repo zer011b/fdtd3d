@@ -330,10 +330,10 @@ message ("Link flags: ${LINK_FLAGS}")
 
 
 if (NOT EXISTS "${PROJECT_SOURCE_DIR}/Third-party/EasyBMP/source")
-  execute_process (COMMAND wget http://prdownloads.sourceforge.net/easybmp/EasyBMP_1.06.zip)
-  execute_process (COMMAND mkdir ${PROJECT_SOURCE_DIR}/Third-party/EasyBMP/source)
-  execute_process (COMMAND unzip EasyBMP_1.06.zip -d ${PROJECT_SOURCE_DIR}/Third-party/EasyBMP/source)
-  execute_process (COMMAND rm EasyBMP_1.06.zip)
+  execute_process (COMMAND wget https://github.com/zer011b/EasyBMP/archive/v1.6.zip -O ${PROJECT_SOURCE_DIR}/Third-party/EasyBMP/EasyBMP.zip)
+  execute_process (COMMAND unzip ${PROJECT_SOURCE_DIR}/Third-party/EasyBMP/EasyBMP.zip -d ${PROJECT_SOURCE_DIR}/Third-party/EasyBMP)
+  execute_process (COMMAND mv ${PROJECT_SOURCE_DIR}/Third-party/EasyBMP/EasyBMP-1.6/source ${PROJECT_SOURCE_DIR}/Third-party/EasyBMP/)
+  execute_process (COMMAND rm -rf ${PROJECT_SOURCE_DIR}/Third-party/EasyBMP/EasyBMP.zip ${PROJECT_SOURCE_DIR}/Third-party/EasyBMP/EasyBMP-1.6/)
 endif ()
 
 include_directories ("${PROJECT_SOURCE_DIR}/Third-party/EasyBMP/source")
