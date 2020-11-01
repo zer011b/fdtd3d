@@ -2,10 +2,11 @@
 
 set -e
 
-BASE_DIR=$1
-SOURCE_DIR=$2
-
-USED_MODE=$3
+USED_MODE=$1
+BASE_DIR=$2
+SOURCE_DIR=$3
+C_COMPILER=$4
+CXX_COMPILER=$5
 
 MODE="-DSOLVER_DIM_MODES=EY_HX"
 if [[ "$USED_MODE" -eq "1" || "$USED_MODE" -eq "3" ]]; then
@@ -19,6 +20,13 @@ if [[ "$USED_MODE" -eq "0" || "$USED_MODE" -eq "2" ]]; then
   MODE="$MODE -DCMAKE_BUILD_TYPE=RelWithDebInfo"
 elif [[ "$USED_MODE" -eq "1" || "$USED_MODE" -eq "3" ]]; then
   MODE="$MODE -DCMAKE_BUILD_TYPE=Debug"
+fi
+
+if [ "$C_COMPILER" != "" ]; then
+  MODE="$MODE -DCMAKE_C_COMPILER=$C_COMPILER"
+fi
+if [ "$CXX_COMPILER" != "" ]; then
+  MODE="$MODE -DCMAKE_CXX_COMPILER=$CXX_COMPILER"
 fi
 
 TEST_DIR=$(dirname $(readlink -f $0))

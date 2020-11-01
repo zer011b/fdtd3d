@@ -12,6 +12,8 @@ Non-cuda builds support `cmake >= 3.0.2`, but `CMakeLists.txt` will still requir
 sed -i 's/cmake_minimum_required(VERSION 3\.8)/cmake_minimum_required(VERSION 3\.0\.2)/' CMakeLists.txt
 ```
 
+Other required tools: `unzip`.
+
 # Build Flags
 
 Solver incorporates following features which could be set up during build.
