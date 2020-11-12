@@ -95,7 +95,7 @@ Next command should be finished successfully for x64 mpi architecture:
 
 Next command should be finished successfully for x64 cuda architecture:
 ```sh
-./Tools/test-units-cuda.sh <home_dir> <build_dir> "" "" "" "" "" "" ""
+./Tools/test-units-cuda.sh <home_dir> <build_dir> "" "" "RelWithDebInfo" "" "" "" ""
 ```
 
 ## 3. Test suite
