@@ -82,8 +82,34 @@ Another way is to create rootfs with all required libs from scratch: https://wik
 
 ## Non-standard system paths
 
-For systems with non-standard path `-L<path>` option might not be enough to find libararies, since `-L` specifies search dirs only for explicitly specified libs (i.e. through `-l<libname>` in command line).
+For systems with non-standard paths (like `/lib64/`) `-L<path>` option might not be enough to find libararies, since `-L` specifies search dirs only for explicitly specified libs (i.e. through `-l<libname>` in command line).
 
 Dependencies of these libs are searched in default paths. To add custom paths for dependencies search add `-Wl,--rpath-link=<path>`. Option `--rpath-link` is enough and `--rpath` is not required since linker on the target system should know about its system paths already. For more details, see: https://linux.die.net/man/1/ld.
 
 If cross toolchain, which targets specific system, is used, then there should be no problem with non-standard paths.
+
+# Custom toolchain
+
+There's always a solution to build/use a custom toolchain for your specific target (e.g. custom toolchain for Raspberry Pi). This will solve most of the problems related to passing correct compiler options, because correct rootfs and paths will already be incorporated in such toolchain.
+
+# Manual invocation of cross compiler
+
+For reference, to compile simple main.cpp using custom rootfs next command can be used.
+
+Clang:
+```sh
+clang++ --target=aarch64-linux-gnu -isystem <rootfs/ipath> --sysroot=<rootfs> --gcc-toolchain=<rootfs/toolchainpath> -B<rootfs/crtbeginpath> -L<rootfs/linkpaths> -Wl,--rpath-link=<rootfs/linkpaths> main.cpp
+```
+
+GCC:
+```sh
+aarch64-linux-gnu-g++ -isystem <rootfs/ipath> --sysroot=<rootfs> -B<rootfs/crt1path> -L<rootfs/linkpaths> -Wl,--rpath-link=<rootfs/linkpaths> main.cpp
+```
+
+For standard rootfs layout this should work fine. Yet, for both GCC and Clang there might be problems with linker because of `-Bprefix` option, if it is specified incorrectly for some non-standard rootfs.
+```
+GCC -> /lib/ld-linux.so: No such file or directory.
+Clang -> /usr/bin/aarch64-linux-gnu-ld: cannot find crtbegin.o: No such file or directory
+```
+
+So, be sure to specify `-Bprefix` correctly, for example for GCC it should be `/usr/lib` or `/usr/lib64` (i.e. path where `crt1.o` is located), and for Clang it should point to location of `crtbegin.o`. If `-Bprefix` is not used, default compiler libraries, include and data files (e.g. `crt1.o`) will be found instead of the ones from rootfs. To check that correct files are used `-Wl,--verbose` option can be used.
