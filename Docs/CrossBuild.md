@@ -109,7 +109,7 @@ And for final verification run `file /mnt/rpi/usr/lib/arm-linux-gnueabihf/libdl.
 
 To fix all such symlinks run (on rootfs mounted with write access):
 ```sh
-for file in `find /mnt/rpi -name "*.so"`; do
+for file in `find /mnt/rpi -name "*.so*"`; do
   target=$(file $file | grep broken | awk '{print $6}')
   if [ "$target" != "" ]; then
     sudo rm $file
