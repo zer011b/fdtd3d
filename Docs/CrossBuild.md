@@ -88,6 +88,36 @@ Dependencies of these libs are searched in default paths. To add custom paths fo
 
 If cross toolchain, which targets specific system, is used, then there should be no problem with non-standard paths.
 
+## Broken symlinks
+
+Sometimes symlinks get broken in rootfs. For example, next error message probably means that symlinks are broken:
+```
+warning: Using 'dlopen' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/mnt/rpi/usr/lib/arm-linux-gnueabihf/libdl.a(dlopen.o): In function `dlopen':
+(.text+0xc): undefined reference to `__dlopen'
+```
+
+This can be then verified by addition of `-Wl,--verbose` option to linker options, it will show:
+```
+attempt to open /mnt/rpi/usr/lib/arm-linux-gnueabihf/libdl.so failed
+```
+
+And for final verification run `file /mnt/rpi/usr/lib/arm-linux-gnueabihf/libdl.so`:
+```
+/mnt/rpi/usr/lib/arm-linux-gnueabihf/libdl.so: broken symbolic link to /lib/arm-linux-gnueabihf/libdl.so.2
+```
+
+To fix all such symlinks run (on rootfs mounted with write access):
+```sh
+for file in `find /mnt/rpi -name "*.so"`; do
+  target=$(file $file | grep broken | awk '{print $6}')
+  if [ "$target" != "" ]; then
+    sudo rm $file
+    sudo ln -s /mnt/rpi/$target $file
+  fi
+done
+```
+
 # Custom toolchain
 
 There's always a solution to build/use a custom toolchain for your specific target (e.g. custom toolchain for Raspberry Pi). This will solve most of the problems related to passing correct compiler options, because correct rootfs and paths will already be incorporated in such toolchain.
