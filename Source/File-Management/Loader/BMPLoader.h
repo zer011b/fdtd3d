@@ -48,7 +48,7 @@ private:
   void loadPixel (grid_coord, grid_coord, Grid<TCoord> *, TCoord, time_step,
                   FPValue, FPValue, FPValue, FPValue,
                   const BMP &, const BMP &);
-  void loadTxtFromFile (FPValue, FPValue, FPValue, FPValue,
+  void loadTxtFromFile (FPValue &, FPValue &, FPValue &, FPValue &,
                         const std::string &, const std::string &);
 
 public:
@@ -74,10 +74,10 @@ public:
  */
 template <class TCoord>
 void
-BMPLoader<TCoord>::loadTxtFromFile (FPValue maxRe, /**< maximum real value */
-                                    FPValue minRe, /**< minimum real value */
-                                    FPValue maxIm, /**< maximum imag value */
-                                    FPValue minIm, /**< minimum imag value */
+BMPLoader<TCoord>::loadTxtFromFile (FPValue &maxRe, /**< maximum real value */
+                                    FPValue &minRe, /**< minimum real value */
+                                    FPValue &maxIm, /**< maximum imag value */
+                                    FPValue &minIm, /**< minimum imag value */
                                     const std::string &imageReNameTxt, /**< real text file name */
                                     const std::string &imageImNameTxt) /**< imag text file name */
 {
