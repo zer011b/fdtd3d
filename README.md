@@ -1,6 +1,10 @@
 ![fdtd3d](Docs/Images/logo.png)
 
-[![Build Status](https://travis-ci.com/zer011b/fdtd3d.svg?branch=master)](https://travis-ci.com/zer011b/fdtd3d)
+[![Build Status](https://github.com/zer011b/fdtd3d/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/build.yml/)
+
+[![Unit Tests Status](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test.yml/)
+
+[![Test Suite Status](https://github.com/zer011b/fdtd3d/actions/workflows/test-suite.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/test-suite.yml/)
 
 # fdtd3d
 
