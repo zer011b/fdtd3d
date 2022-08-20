@@ -1,6 +1,6 @@
 # I. CI Testing
 
-Testing for pull requests is performed using Travis CI: open pull request with your changes and it will be automatically tested. For details, see [.travis.yml](../.travis.yml). Cuda tests are only built but not launched on Travis CI.
+Testing for pull requests is performed using github actions CI: open pull request with your changes and it will be automatically tested. For details, see [build.yml](../.github/workflows/build.yml), [unit-test.yml](../.github/workflows/unit-test.yml) and [test-suite.yml](../.github/workflows/test-suite.yml). Cuda tests are only built but not launched on github actions CI.
 
 # II. Manual Testing
 
