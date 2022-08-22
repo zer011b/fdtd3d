@@ -22,7 +22,6 @@
 #define CLOCK_H
 
 #include "Assert.h"
-//#include "FieldValue.h"
 #include "Settings.h"
 
 #ifdef MPI_CLOCK
@@ -45,6 +44,13 @@ class Clock
    */
   ClockValue value;
 
+#ifdef DEBUG_INFO
+  /**
+   * Flag whether clock is initialized
+   */
+  bool isInitialized;
+#endif /* DEBUG_INFO */
+
 public:
 
   /**
@@ -54,7 +60,9 @@ public:
    */
   const ClockValue & getVal () const
   {
-    ASSERT (!isZero ());
+#ifdef DEBUG_INFO
+    ASSERT (getIsInitialized());
+#endif /* DEBUG_INFO */
 
     return value;
   } /* getVal */
@@ -65,6 +73,10 @@ public:
   void setVal (const ClockValue &val) /**< new value of clock */
   {
     value = val;
+
+#ifdef DEBUG_INFO
+    isInitialized = true;
+#endif /* DEBUG_INFO */
   } /* setVal */
 
   /**
@@ -74,7 +86,9 @@ public:
    */
   DOUBLE getFP () const
   {
-    ASSERT (!isZero ());
+#ifdef DEBUG_INFO
+    ASSERT (getIsInitialized());
+#endif /* DEBUG_INFO */
 
 #ifdef MPI_CLOCK
     DOUBLE val = value;
@@ -92,6 +106,11 @@ public:
    */
   Clock operator+ (const Clock &rhs) const /**< operand */
   {
+#ifdef DEBUG_INFO
+    ASSERT (getIsInitialized());
+    ASSERT (rhs.getIsInitialized());
+#endif /* DEBUG_INFO */
+
     Clock clock;
 
 #ifdef MPI_CLOCK
@@ -99,6 +118,10 @@ public:
 #else /* MPI_CLOCK */
     timespec_sum (&value, &rhs.value, &clock.value);
 #endif /* !MPI_CLOCK */
+
+#ifdef DEBUG_INFO
+    clock.isInitialized = true;
+#endif /* DEBUG_INFO */
 
     return clock;
   } /* operator+ */
@@ -110,6 +133,11 @@ public:
    */
   Clock & operator+= (const Clock &rhs) /**< operand */
   {
+#ifdef DEBUG_INFO
+    ASSERT (getIsInitialized());
+    ASSERT (rhs.getIsInitialized());
+#endif /* DEBUG_INFO */
+
 #ifdef MPI_CLOCK
     value += rhs.value;
 #else /* MPI_CLOCK */
@@ -126,6 +154,11 @@ public:
    */
   Clock operator- (const Clock &rhs) const /**< operand */
   {
+#ifdef DEBUG_INFO
+    ASSERT (getIsInitialized());
+    ASSERT (rhs.getIsInitialized());
+#endif /* DEBUG_INFO */
+
     Clock clock;
 
     ASSERT (operator>=(rhs));
@@ -135,6 +168,10 @@ public:
 #else /* MPI_CLOCK */
     timespec_diff (&value, &rhs.value, &clock.value);
 #endif /* !MPI_CLOCK */
+
+#ifdef DEBUG_INFO
+    clock.isInitialized = true;
+#endif /* DEBUG_INFO */
 
     return clock;
   } /* operator- */
@@ -146,6 +183,11 @@ public:
    */
   bool operator>= (const Clock &rhs) const /**< operand */
   {
+#ifdef DEBUG_INFO
+    ASSERT (getIsInitialized());
+    ASSERT (rhs.getIsInitialized());
+#endif /* DEBUG_INFO */
+
 #ifdef MPI_CLOCK
     return value >= rhs.value;
 #else /* MPI_CLOCK */
@@ -161,6 +203,11 @@ public:
    */
   bool operator> (const Clock &rhs) const /**< operand */
   {
+#ifdef DEBUG_INFO
+    ASSERT (getIsInitialized());
+    ASSERT (rhs.getIsInitialized());
+#endif /* DEBUG_INFO */
+
 #ifdef MPI_CLOCK
     return value > rhs.value;
 #else /* MPI_CLOCK */
@@ -176,6 +223,11 @@ public:
    */
   bool operator<= (const Clock &rhs) const /**< operand */
   {
+#ifdef DEBUG_INFO
+    ASSERT (getIsInitialized());
+    ASSERT (rhs.getIsInitialized());
+#endif /* DEBUG_INFO */
+
 #ifdef MPI_CLOCK
     return value <= rhs.value;
 #else /* MPI_CLOCK */
@@ -191,6 +243,11 @@ public:
    */
   bool operator< (const Clock &rhs) const /**< operand */
   {
+#ifdef DEBUG_INFO
+    ASSERT (getIsInitialized());
+    ASSERT (rhs.getIsInitialized());
+#endif /* DEBUG_INFO */
+
 #ifdef MPI_CLOCK
     return value < rhs.value;
 #else /* MPI_CLOCK */
@@ -206,6 +263,10 @@ public:
    */
   bool isZero () const
   {
+#ifdef DEBUG_INFO
+    ASSERT (getIsInitialized());
+#endif /* DEBUG_INFO */
+
 #ifdef MPI_CLOCK
     return value == DOUBLE (0);
 #else /* MPI_CLOCK */
@@ -214,10 +275,43 @@ public:
   } /* isZero */
 
   /**
+   * Set clock to zero
+   */
+  void setZero ()
+  {
+#ifdef MPI_CLOCK
+    value = DOUBLE (0);
+#else /* MPI_CLOCK */
+    value.tv_sec = 0;
+    value.tv_nsec = 0;
+#endif /* !MPI_CLOCK */
+
+#ifdef DEBUG_INFO
+    isInitialized = true;
+#endif /* DEBUG_INFO */
+  } /* setZero */
+
+#ifdef DEBUG_INFO
+  /**
+   * Check whether clock is initialized
+   *
+   * @return true if clock is initialized
+   */
+  bool getIsInitialized () const
+  {
+    return isInitialized;
+  } /* getIsInitialized */
+#endif /* DEBUG_INFO */
+
+  /**
    * Print clock to console
    */
   void print ()
   {
+#ifdef DEBUG_INFO
+    ASSERT (getIsInitialized());
+#endif /* DEBUG_INFO */
+
 #ifdef MPI_CLOCK
     printf ("Clock: %f seconds.\n", value);
 #else /* MPI_CLOCK */
@@ -236,6 +330,10 @@ public:
     value.tv_sec = 0;
     value.tv_nsec = 0;
 #endif /* !MPI_CLOCK */
+
+#ifdef DEBUG_INFO
+    isInitialized = false;
+#endif /* DEBUG_INFO */
   } /* Clock */
 
   /**
@@ -259,6 +357,10 @@ public:
     ASSERT (status == 0);
 #endif /* !MPI_CLOCK */
 
+#ifdef DEBUG_INFO
+    clock.isInitialized = true;
+#endif /* DEBUG_INFO */
+
     return clock;
   } /* getNewClock */
 
@@ -267,6 +369,11 @@ public:
    */
   static Clock average (const Clock &lhs, const Clock &rhs)
   {
+#ifdef DEBUG_INFO
+    ASSERT (lhs.getIsInitialized());
+    ASSERT (rhs.getIsInitialized());
+#endif /* DEBUG_INFO */
+
     Clock clock;
 
 #ifdef MPI_CLOCK
@@ -274,6 +381,10 @@ public:
 #else /* MPI_CLOCK */
     timespec_avg (&lhs.value, &rhs.value, &clock.value);
 #endif /* !MPI_CLOCK */
+
+#ifdef DEBUG_INFO
+    clock.isInitialized = true;
+#endif /* DEBUG_INFO */
 
     return clock;
   } /* average */
@@ -351,7 +462,7 @@ private:
     {
       return -1;
     }
-  } /* timespec_diff */
+  } /* timespec_cmp */
 #endif /* !MPI_CLOCK */
 
 }; /* Clock */
