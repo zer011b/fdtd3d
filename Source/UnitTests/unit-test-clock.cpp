@@ -53,20 +53,23 @@ int main (int argc, char** argv)
 #endif /* PARALLEL_GRID */
 
   Clock clock_1;
-  ASSERT (clock_1.isZero ());
+  ASSERT (!clock_1.getIsInitialized ());
+  clock_1.setZero();
+  ASSERT (clock_1.getIsInitialized ());
 
   Clock clock_2;
-  ASSERT ((clock_1 + clock_2).isZero ());
+  ASSERT (!clock_2.getIsInitialized ());
+  clock_2.setZero();
+  ASSERT (clock_2.getIsInitialized ());
 
   Clock clock_3 = Clock::getNewClock ();
+  ASSERT (clock_3.getIsInitialized ());
   clock_3.print ();
   clock_2.setVal (clock_3.getVal ());
-  ASSERT (!clock_3.isZero ());
   ASSERT ((clock_3 + clock_1).getFP () == clock_3.getFP ());
   ASSERT ((clock_3 - clock_1).getFP () == clock_3.getFP ());
   ASSERT (clock_3 >= clock_3);
-  ASSERT (clock_3 > clock_1);
-  ASSERT (clock_1 < clock_3);
+  ASSERT (clock_3 >= clock_1);
   ASSERT (clock_1 <= clock_3);
 
 #ifdef MPI_CLOCK
@@ -87,6 +90,7 @@ int main (int argc, char** argv)
   {}
 
   Clock clock_4 = Clock::getNewClock ();
+  ASSERT (clock_4.getIsInitialized ());
   clock_4.print ();
   ASSERT (!clock_4.isZero ());
   ASSERT (clock_4 >= clock_3);
@@ -96,7 +100,20 @@ int main (int argc, char** argv)
   ASSERT (clock_4.getFP () >= clock_3.getFP ());
 
   Clock clock_5 = clock_4 - clock_3;
+  ASSERT (clock_5.getIsInitialized ());
+  ASSERT (!clock_5.isZero ());
   Clock clock_6 = clock_4 + clock_3;
+  ASSERT (clock_6.getIsInitialized ());
+  ASSERT (!clock_6.isZero ());
+
+  ASSERT (clock_5 > clock_1);
+  ASSERT (clock_5 >= clock_1);
+  ASSERT (clock_6 > clock_1);
+  ASSERT (clock_6 >= clock_1);
+  ASSERT (clock_5 <= clock_4);
+  ASSERT (clock_6 >= clock_4);
+  ASSERT (clock_6 > clock_3);
+  ASSERT (clock_6 >= clock_3);
 
   /*
    * FP values can't be compared in the next manner due to not enough accuracy of fp value
@@ -104,19 +121,6 @@ int main (int argc, char** argv)
    * ASSERT (clock_5.getFP () == clock_4.getFP () - clock_3.getFP ());
    * ASSERT (clock_6.getFP () == clock_4.getFP () + clock_3.getFP ());
   */
-  ASSERT (!clock_5.isZero ());
-  ASSERT (!clock_6.isZero ());
-  ASSERT (clock_5 > clock_1);
-  ASSERT (clock_5 >= clock_1);
-  ASSERT (clock_6 > clock_1);
-  ASSERT (clock_6 >= clock_1);
-  ASSERT (clock_5 < clock_4);
-  ASSERT (clock_5 <= clock_4);
-  ASSERT (clock_6 > clock_4);
-  ASSERT (clock_6 >= clock_4);
-  ASSERT (clock_6 > clock_3);
-  ASSERT (clock_6 >= clock_3);
-
 #ifdef MPI_CLOCK
   ASSERT (clock_5.getVal () == clock_4.getVal () - clock_3.getVal ());
   ASSERT (clock_6.getVal () == clock_4.getVal () + clock_3.getVal ());
@@ -150,6 +154,9 @@ int main (int argc, char** argv)
 #endif /* !MPI_CLOCK */
 
   Clock clock_7 = Clock::average (clock_3, clock_4);
+  ASSERT (clock_7.getIsInitialized ());
+  ASSERT (!clock_7.isZero ());
+
 #ifdef MPI_CLOCK
   ASSERT (clock_7.getVal () == (clock_3.getVal () + clock_4.getVal ()) / DOUBLE (2));
 #else /* MPI_CLOCK */
@@ -162,7 +169,10 @@ int main (int argc, char** argv)
    * Manually creted clocks
    */
   Clock clock_8;
+  ASSERT (!clock_8.getIsInitialized ());
   Clock clock_9;
+  ASSERT (!clock_9.getIsInitialized ());
+
 #ifdef MPI_CLOCK
   ClockValue val8 = 1234.5678;
   ClockValue val9 = 4234.5878;
@@ -176,12 +186,15 @@ int main (int argc, char** argv)
 #endif /* !MPI_CLOCK */
 
   clock_8.setVal (val8);
+  ASSERT (clock_8.getIsInitialized ());
   clock_9.setVal (val9);
+  ASSERT (clock_9.getIsInitialized ());
 
 #ifdef MPI_CLOCK
   ASSERT ((clock_9 - clock_8).getVal () == val9 - val8);
 #else /* MPI_CLOCK */
   Clock diff89 = clock_9 - clock_8;
+  ASSERT (diff89.getIsInitialized ());
   ASSERT (diff89.getVal ().tv_sec == 3000);
   ASSERT (diff89.getVal ().tv_nsec == 20000000);
 #endif /* !MPI_CLOCK */
