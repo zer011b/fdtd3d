@@ -4,6 +4,8 @@
 
 [![Unit Tests Status](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test.yml/)
 
+[![Cuda Unit Tests Status](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test-cuda.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test-cuda.yml/)
+
 [![Test Suite Status](https://github.com/zer011b/fdtd3d/actions/workflows/test-suite.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/test-suite.yml/)
 
 # fdtd3d
