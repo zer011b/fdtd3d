@@ -81,11 +81,11 @@ function build
     fi
 
     if [[ "$PARALLEL_BUFFER" = "x" ]]; then
-      mpirun -n 2 ./Source/UnitTests/unit-test-parallel-grid
+      mpirun -n 2 --oversubscribe ./Source/UnitTests/unit-test-parallel-grid
     elif [[ "$PARALLEL_BUFFER" = "y" ]]; then
-      mpirun -n 2 ./Source/UnitTests/unit-test-parallel-grid
+      mpirun -n 2 --oversubscribe ./Source/UnitTests/unit-test-parallel-grid
     elif [[ "$PARALLEL_BUFFER" = "z" ]]; then
-      mpirun -n 2 ./Source/UnitTests/unit-test-parallel-grid
+      mpirun -n 2 --oversubscribe ./Source/UnitTests/unit-test-parallel-grid
     elif [[ "$PARALLEL_BUFFER" = "xy" ]]; then
       mpirun -n 4 --oversubscribe ./Source/UnitTests/unit-test-parallel-grid
     elif [[ "$PARALLEL_BUFFER" = "yz" ]]; then

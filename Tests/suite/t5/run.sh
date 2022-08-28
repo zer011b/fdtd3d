@@ -36,7 +36,7 @@ if [[ "$USED_MODE" -eq "3" ]]; then
 fi
 if [[ "$USED_MODE" -eq "2" || "$USED_MODE" -eq "3" ]]; then
   MODE="$MODE"
-  RUNNER="mpirun -n 2"
+  RUNNER="mpirun -n 2 --oversubscribe"
 fi
 
 accuracy_percent="0.00001"
