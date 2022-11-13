@@ -1,0 +1,30 @@
+# Plane wave launched in vacuum with eps set from bmp image, TMz
+
+--time-steps 1000
+
+--size x:100,y:100
+
+--2d-tmz
+
+--angle-teta 90
+--angle-phi 0
+--angle-psi 90
+
+--dx 0.0005
+--wavelength 0.02
+
+--log-level 2
+
+--save-res
+--save-as-bmp
+--orth-axis-z
+--palette-gray
+
+--pml-size x:10,y:10
+--use-pml
+
+--use-tfsf
+--tfsf-size-left x:12,y:12
+--tfsf-size-right x:12,y:12
+
+--load-eps-from-file ../Examples/previous-0_[timestep=0]_[pid=0]_[name=Eps].bmp
