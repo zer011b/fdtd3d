@@ -25,7 +25,7 @@ set(CMAKE_SYSTEM_PROCESSOR aarch64)
 
 set(TOOLCHAIN "aarch64-linux-gnu")
 set(TOOLCHAIN_VERSION "7")
-set(CROSS_ROOTFS "/mnt/rpi")
+set(CROSS_ROOTFS "$ENV{ROOTFS}")
 
 set(CMAKE_C_COMPILER /usr/bin/clang)
 set(CMAKE_CXX_COMPILER /usr/bin/clang++)

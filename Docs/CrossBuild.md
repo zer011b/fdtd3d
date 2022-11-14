@@ -1,10 +1,45 @@
-# Cross build for Raspberry Pi (arm32)
+# Cross Build
 
-Download Raspbian image file (https://www.raspberrypi.org/downloads/raspbian/) and create rootfs:
+First, generate rootfs (see below). Then simply pass `-DCMAKE_TOOLCHAIN_FILE=<path_to_toolchain.cmake>` option during cmake build and set `ROOTFS` env variable:
+```sh
+mkdir Build
+cd Build
+ROOTFS=`pwd`/rootfs/<arch> cmake .. -DCMAKE_TOOLCHAIN_FILE=<path_to_toolchain.cmake>
+make fdtd3d
+```
+
+You can find all available toolchain files in root of fdtd3d repo. Note that each toolchain file is configured to use rootfs specified by `ROOTFS` env variable. Also note that rootfs should match image installed on your target system. One more note: `TOOLCHAIN_VERSION` in toolchain file should be updated to match your rootfs.
+
+To check that correct libs from rootfs have been linked, add this to toolchain file:
+```cmake
+add_link_options("-Wl,--verbose")
+```
+
+# Rootfs generation
+
+## Using script, Ubuntu rootfs generation
+
+You can use `create-ubuntu-rootfs.sh` script to generate ubuntu rootfs for different architectures.
+
+To generate rootfs for ubuntu 20.04 armhf:
+```sh
+sudo ./create-ubuntu-rootfs.sh armhf focal
+```
+
+To generate rootfs for ubuntu 18.04 arm64:
+```sh
+sudo ./create-ubuntu-roofs.sh arm64 bionic
+```
+
+And so on. By default `./rootfs/<arch>` directory is created for rootfs if nothing is passed in third argument of `create-ubuntu-rootfs`.
+
+## Manually from image, Raspbian rootfs for Raspberry Pi (arm32)
+
+Download Raspbian image file (https://www.raspberrypi.org/downloads/raspbian/) and create rootfs in `ROOTFS` directory:
 
 ```sh
-mkdir /mnt/rpi
-mount -o ro,loop,offset=<offset> -t auto <path_to_image> /mnt/rpi
+mkdir $ROOTFS
+mount -o ro,loop,offset=<offset> -t auto <path_to_image> $ROOTFS
 ```
 
 To get offset run:
@@ -19,16 +54,7 @@ cp /usr/lib/gcc/arm-linux-gnueabihf/8/crtendS.o /usr/lib/arm-linux-gnueabihf/
 cp /usr/lib/gcc/arm-linux-gnueabihf/8/crtbeginS.o /usr/lib/arm-linux-gnueabihf/
 ```
 
-Then pass `-DCMAKE_TOOLCHAIN_FILE=<path_to_arm-gcc-toolchain.cmake>`.
-
-By default, Raspberry Pi cmake toolchain file is configured to use rootfs files from `/mnt/rpi`. Note that rootfs should match image installed on your Raspberry Pi.
-
-To check that correct libs from rootfs have been linked, add this to toolchain file:
-```cmake
-add_link_options("-Wl,--verbose")
-```
-
-# Cross build for Raspberry Pi (arm64)
+## Manually from image, Ubuntu Server rootfs for Raspberry Pi (arm64)
 
 Raspbian is 32bit, download Ubuntu Server instead (https://ubuntu.com/download/raspberry-pi). Not all required libs are preinstalled in image, so install them manually.
 
@@ -50,8 +76,8 @@ apt install gcc g++ build-essential
 
 Symlinks are absolute which leads to unresolved paths and strange errors like:
 ```
-/usr/lib/gcc-cross/aarch64-linux-gnu/9/../../../../aarch64-linux-gnu/bin/ld: /mnt/rpi/usr/lib/aarch64-linux-gnu//libm.a(s_sin.o): relocation R_AARCH64_ADR_PREL_PG_HI21 against symbol `__stack_chk_guard@@GLIBC_2.17' which may bind externally can not be used when making a shared object; recompile with -fPIC
-/usr/lib/gcc-cross/aarch64-linux-gnu/9/../../../../aarch64-linux-gnu/bin/ld: /mnt/rpi/usr/lib/aarch64-linux-gnu//libm.a(s_sin.o)(.text+0xc): unresolvable R_AARCH64_ADR_PREL_PG_HI21 relocation against symbol `__stack_chk_guard@@GLIBC_2.17'
+/usr/lib/gcc-cross/aarch64-linux-gnu/9/../../../../aarch64-linux-gnu/bin/ld: $ROOTFS/usr/lib/aarch64-linux-gnu//libm.a(s_sin.o): relocation R_AARCH64_ADR_PREL_PG_HI21 against symbol `__stack_chk_guard@@GLIBC_2.17' which may bind externally can not be used when making a shared object; recompile with -fPIC
+/usr/lib/gcc-cross/aarch64-linux-gnu/9/../../../../aarch64-linux-gnu/bin/ld: $ROOTFS/usr/lib/aarch64-linux-gnu//libm.a(s_sin.o)(.text+0xc): unresolvable R_AARCH64_ADR_PREL_PG_HI21 relocation against symbol `__stack_chk_guard@@GLIBC_2.17'
 ```
 
 Make copies instead of symlinks:
@@ -72,9 +98,7 @@ cp /usr/lib/gcc/aarch64-linux-gnu/7/crtendS.o /usr/lib/aarch64-linux-gnu/
 cp /usr/lib/gcc/aarch64-linux-gnu/7/crtbeginS.o /usr/lib/aarch64-linux-gnu/
 ```
 
-Everything else is same as for arm32, except that `arm64-gcc-toolchain.cmake` should be used.
-
-### Alternative: debotstrap ubuntu rootfs
+## Manyally, debotstrap some rootfs
 
 Another way is to create rootfs with all required libs from scratch: https://wiki.ubuntu.com/ARM/RootfsFromScratch/QemuDebootstrap.
 
@@ -93,29 +117,34 @@ If cross toolchain, which targets specific system, is used, then there should be
 Sometimes symlinks get broken in rootfs. For example, next error message probably means that symlinks are broken:
 ```
 warning: Using 'dlopen' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
-/mnt/rpi/usr/lib/arm-linux-gnueabihf/libdl.a(dlopen.o): In function `dlopen':
+$ROOTFS/usr/lib/arm-linux-gnueabihf/libdl.a(dlopen.o): In function `dlopen':
 (.text+0xc): undefined reference to `__dlopen'
 ```
 
 This can be then verified by addition of `-Wl,--verbose` option to linker options, it will show:
 ```
-attempt to open /mnt/rpi/usr/lib/arm-linux-gnueabihf/libdl.so failed
+attempt to open $ROOTFS/usr/lib/arm-linux-gnueabihf/libdl.so failed
 ```
 
-And for final verification run `file /mnt/rpi/usr/lib/arm-linux-gnueabihf/libdl.so`:
+And for final verification run `file $ROOTFS/usr/lib/arm-linux-gnueabihf/libdl.so`:
 ```
-/mnt/rpi/usr/lib/arm-linux-gnueabihf/libdl.so: broken symbolic link to /lib/arm-linux-gnueabihf/libdl.so.2
+$ROOTFS/usr/lib/arm-linux-gnueabihf/libdl.so: broken symbolic link to /lib/arm-linux-gnueabihf/libdl.so.2
 ```
 
 To fix all such symlinks run (on rootfs mounted with write access):
 ```sh
-for file in `find /mnt/rpi -name "*.so*"`; do
+for file in `find $ROOTFS -name "*.so*"`; do
   target=$(file $file | grep broken | awk '{print $6}')
   if [ "$target" != "" ]; then
     sudo rm $file
-    sudo ln -s /mnt/rpi/$target $file
+    sudo ln -s $ROOTFS/$target $file
   fi
 done
+```
+
+Alternatively, use `symlinks` tool:
+```sh
+sudo chroot $ROOTFS symlinks -cr /usr
 ```
 
 # Custom toolchain
@@ -143,3 +172,5 @@ Clang -> /usr/bin/aarch64-linux-gnu-ld: cannot find crtbegin.o: No such file or 
 ```
 
 So, be sure to specify `-Bprefix` correctly, for example for GCC it should be `/usr/lib` or `/usr/lib64` (i.e. path where `crt1.o` is located), and for Clang it should point to location of `crtbegin.o`. If `-Bprefix` is not used, default compiler libraries, include and data files (e.g. `crt1.o`) will be found instead of the ones from rootfs. To check that correct files are used `-Wl,--verbose` option can be used.
+
+Some more notes: https://maskray.me/blog/2022-08-28-march-mcpu-mtune
