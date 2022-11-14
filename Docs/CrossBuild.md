@@ -98,7 +98,7 @@ cp /usr/lib/gcc/aarch64-linux-gnu/7/crtendS.o /usr/lib/aarch64-linux-gnu/
 cp /usr/lib/gcc/aarch64-linux-gnu/7/crtbeginS.o /usr/lib/aarch64-linux-gnu/
 ```
 
-## Manyally, debotstrap some rootfs
+## Manually, debotstrap some rootfs
 
 Another way is to create rootfs with all required libs from scratch: https://wiki.ubuntu.com/ARM/RootfsFromScratch/QemuDebootstrap.
 
@@ -173,4 +173,6 @@ Clang -> /usr/bin/aarch64-linux-gnu-ld: cannot find crtbegin.o: No such file or 
 
 So, be sure to specify `-Bprefix` correctly, for example for GCC it should be `/usr/lib` or `/usr/lib64` (i.e. path where `crt1.o` is located), and for Clang it should point to location of `crtbegin.o`. If `-Bprefix` is not used, default compiler libraries, include and data files (e.g. `crt1.o`) will be found instead of the ones from rootfs. To check that correct files are used `-Wl,--verbose` option can be used.
 
-Some more notes: https://maskray.me/blog/2022-08-28-march-mcpu-mtune
+Some more notes: https://maskray.me/blog/2022-08-28-march-mcpu-mtune.
+
+Some notes on RISC-V options compilation: https://www.sifive.com/blog/all-aboard-part-1-compiler-args.
