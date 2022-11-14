@@ -25,7 +25,7 @@ set(CMAKE_SYSTEM_PROCESSOR armv7l)
 
 set(TOOLCHAIN "arm-linux-gnueabihf")
 set(TOOLCHAIN_VERSION "8")
-set(CROSS_ROOTFS "/mnt/rpi")
+set(CROSS_ROOTFS "$ENV{ROOTFS}")
 
 set(CMAKE_C_COMPILER /usr/bin/arm-linux-gnueabihf-gcc)
 set(CMAKE_CXX_COMPILER /usr/bin/arm-linux-gnueabihf-g++)
