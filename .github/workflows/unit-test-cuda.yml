@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Ubuntu
         run: |
-          sudo apt-get install nvidia-cuda-toolkit
+          sudo apt-get install nvidia-graphics-drivers-470-server openjdk-8-jre-headless nvidia-cuda-toolkit
           # Check if installation is successful by running the next line
           nvcc -V
       - name: Build and Run
