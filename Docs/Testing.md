@@ -1,6 +1,6 @@
 # I. CI Testing
 
-Testing for pull requests is performed using github actions CI: open pull request with your changes and it will be automatically tested. For details, see [build.yml](../.github/workflows/build.yml), [unit-test.yml](../.github/workflows/unit-test.yml) and [test-suite.yml](../.github/workflows/test-suite.yml). Cuda tests are only built but not launched on github actions CI.
+Testing for pull requests is performed using github actions CI: open pull request with your changes and it will be automatically tested. For details, see [build.yml](../.github/workflows/build.yml), [unit-test.yml](../.github/workflows/unit-test.yml) and [test-suite.yml](../.github/workflows/test-suite.yml). Cuda tests are only built but not launched in github actions CI, in other cases github actions CI is enough for release testing. For arm, arm64, riscv64 testing is done under qemu.
 
 # II. Manual Testing
 
@@ -29,12 +29,13 @@ fdtd3d tests consists of three parts:
 
 # III. Release testing
 
-CI for master branch handles common build and tests combinations, however, it doesn't cover all available build options, architectures and test launches. So, before release, full testing is performed for all supported platforms. For all test scenarios only GCC compiler is used, but versions may vary.
+CI for master branch handles common build and tests combinations, however, it doesn't cover all available build options, architectures and test launches. Yet, difference is not that critical (mostly in solver dimensions modes), so, manual testing before release is needed only for cuda (unit tests and test suite launch). For all test scenarios only GCC compiler is used, but versions may vary.
 
 **Currently supported CPU architectures:**
 - x64
 - aarch32(armhf)
 - aarch64
+- riscv64
 
 **Currently supported platforms:**
 - x64, sequential
@@ -43,6 +44,7 @@ CI for master branch handles common build and tests combinations, however, it do
 - x64, with cuda and mpi
 - aarch32(armhf), sequential
 - aarch64, sequential
+- riscv64, sequential
 
 ## 1. Tests of build
 
@@ -55,47 +57,57 @@ However, even this might take too much time. Only next combinations are tested f
 
 #### x64, sequential, mpi and cuda testing:
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "" ""
-./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "ON,3,xyz" "OFF,sm" "" ""
-./Tools/test-build.sh <home_dir> <build_dir> "" "Release Debug" "" "" "" "" "OFF,1,x" "ON,sm_35" "" ""
-./Tools/test-build.sh <home_dir> <build_dir> "" "Release Debug" "" "" "" "" "ON,3,xyz" "ON,sm_35" "" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "ON,3,xyz" "OFF,sm" "ALL" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "Release Debug" "ON" "" "" "" "OFF,1,x" "ON,sm_35" "ALL" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "Release Debug" "ON" "" "" "" "ON,3,xyz" "ON,sm_35" "ALL" ""
 ```
 
 #### x64, aarch32(armhf) cross build, sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "arm-linux-gnueabihf-gcc,arm-linux-gnueabihf-g++" "" "" "" "" "" "OFF,1,x" "OFF,sm" "" "arm-gcc-toolchain.cmake"
+./Tools/test-build.sh <home_dir> <build_dir> "arm-linux-gnueabihf-gcc,arm-linux-gnueabihf-g++" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" "arm-gcc-toolchain.cmake"
 ```
 
 #### x64, aarch64 cross build, sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "aarch64-linux-gnu-gcc,aarch64-linux-gnu-g++" "" "" "" "" "" "OFF,1,x" "OFF,sm" "" "arm64-gcc-toolchain.cmake"
+./Tools/test-build.sh <home_dir> <build_dir> "aarch64-linux-gnu-gcc,aarch64-linux-gnu-g++" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" "arm64-gcc-toolchain.cmake"
 ```
 
-#### aarch32(armhf), sequential
+#### x64, riscv64 cross build, sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "" ""
+./Tools/test-build.sh <home_dir> <build_dir> "riscv64-linux-gnu-gcc,riscv64-linux-gnu-g++" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" "riscv64-gcc-toolchain.cmake"
 ```
 
-#### aarch64, sequential
+#### OPTIONAL: aarch32(armhf), sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
+```
+
+#### OPTIONAL: aarch64, sequential
+```sh
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
+```
+
+#### OPTIONAL: riscv64, sequential
+```sh
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
 ```
 
 ## 2. Unit tests
 
 Next command should be finished successfully for each architecture:
 ```sh
- ./Tools/test-units.sh <home_dir> <build_dir> "" "" "" ""
+ ./Tools/test-units.sh <home_dir> <build_dir> "" "" "" "" "" "" ""
 ```
 
 Next command should be finished successfully for x64 mpi architecture:
 ```sh
- ./Tools/test-units-mpi.sh <home_dir> <build_dir> "" "mpicc,mpicxx" "" ""
+ ./Tools/test-units-mpi.sh <home_dir> <build_dir> "" "mpicc,mpicxx" "" "" "" ""
 ```
 
 Next command should be finished successfully for x64 cuda architecture:
 ```sh
-./Tools/test-units-cuda.sh <home_dir> <build_dir> "" "" "RelWithDebInfo" "" "" "" ""
+./Tools/test-units-cuda.sh <home_dir> <build_dir> "" "" "RelWithDebInfo" "ON" "" "f d" "" ""
 ```
 
 ## 3. Test suite

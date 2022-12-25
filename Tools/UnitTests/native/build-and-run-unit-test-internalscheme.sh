@@ -40,63 +40,95 @@ BUILD_TYPE=$5
 # Whether build with cxx11 or not
 CXX11_ENABLED=$6
 
-mkdir -p ${BUILD_DIR}
-cd ${BUILD_DIR}
+# Whether use complex values or not
+COMPLEX_FIELD_VALUES=$7
+
+# Type of values
+VALUE_TYPE=$8
+
+# Toolchain file
+TOOLCHAIN_FILE_PATH=$9
+TOOLCHAIN=""
+if [[ "$TOOLCHAIN_FILE_PATH" != "" ]]; then
+  echo "Testing cross build"
+  TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE_PATH"
+fi
 
 function build
 {
-  for VALUE_TYPE in f d ld; do
-  for COMPLEX_FIELD_VALUES in ON OFF; do
+  rm -rf ${BUILD_DIR}
+  mkdir -p ${BUILD_DIR}
+  pushd ${BUILD_DIR}
 
-    cmake ${HOME_DIR} \
-      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-      -DVALUE_TYPE=${VALUE_TYPE} \
-      -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
-      -DPRINT_MESSAGE=ON \
-      -DCXX11_ENABLED=${CXX11_ENABLED} \
-      -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-      -DCMAKE_C_COMPILER=${C_COMPILER}
+  cmake ${HOME_DIR} \
+    -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+    -DVALUE_TYPE=${VALUE_TYPE} \
+    -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
+    -DPRINT_MESSAGE=ON \
+    -DCXX11_ENABLED=${CXX11_ENABLED} \
+    -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
+    -DCMAKE_C_COMPILER=${C_COMPILER} \
+    ${TOOLCHAIN}
 
-    res=$(echo $?)
+  res=$(echo $?)
 
-    if [[ res -ne 0 ]]; then
-      exit 1
-    fi
+  if [[ res -ne 0 ]]; then
+    exit 1
+  fi
 
-    make unit-test-internalscheme
+  make unit-test-internalscheme
 
-    res=$(echo $?)
+  res=$(echo $?)
 
-    if [[ res -ne 0 ]]; then
-      exit 1
-    fi
+  if [[ res -ne 0 ]]; then
+    exit 1
+  fi
 
+  if [[ "$TOOLCHAIN_FILE_PATH" != "" ]]; then
+    file ./Source/UnitTests/unit-test-internalscheme
+    sudo rm -rf ${ROOTFS}/fdtd3d
+    sudo mkdir -p ${ROOTFS}/fdtd3d
+    sudo cp ./Source/UnitTests/unit-test-internalscheme ${ROOTFS}/fdtd3d
+    sudo chroot ${ROOTFS} /fdtd3d/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex
+  else
     ./Source/UnitTests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex
+  fi
 
-    if [[ "$?" -ne "0" ]]; then
-      exit 1
-    fi
+  if [[ "$?" -ne "0" ]]; then
+    exit 1
+  fi
 
+  if [[ "$TOOLCHAIN_FILE_PATH" != "" ]]; then
+    sudo chroot ${ROOTFS} /fdtd3d/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex --use-ca-cb
+  else
     ./Source/UnitTests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex --use-ca-cb
+  fi
 
-    if [[ "$?" -ne "0" ]]; then
-      exit 1
-    fi
+  if [[ "$?" -ne "0" ]]; then
+    exit 1
+  fi
 
+  if [[ "$TOOLCHAIN_FILE_PATH" != "" ]]; then
+    sudo chroot ${ROOTFS} /fdtd3d/unit-test-internalscheme --time-steps 200 --use-tfsf
+  else
     ./Source/UnitTests/unit-test-internalscheme --time-steps 200 --use-tfsf
+  fi
 
-    if [[ "$?" -ne "0" ]]; then
-      exit 1
-    fi
+  if [[ "$?" -ne "0" ]]; then
+    exit 1
+  fi
 
+  if [[ "$TOOLCHAIN_FILE_PATH" != "" ]]; then
+    sudo chroot ${ROOTFS} /fdtd3d/unit-test-internalscheme --time-steps 200 --use-tfsf --use-ca-cb
+  else
     ./Source/UnitTests/unit-test-internalscheme --time-steps 200 --use-tfsf --use-ca-cb
+  fi
 
-    if [[ "$?" -ne "0" ]]; then
-      exit 1
-    fi
+  if [[ "$?" -ne "0" ]]; then
+    exit 1
+  fi
 
-  done
-  done
+  popd
 }
 
 build

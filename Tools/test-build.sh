@@ -99,9 +99,6 @@ if [[ "$TOOLCHAIN_FILE_PATH" != "" ]]; then
   TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE_PATH"
 fi
 
-mkdir -p ${BUILD_DIR}
-cd ${BUILD_DIR}
-
 for COMPILERS in $COMPILERS_VALUES; do
 for CMAKE_BUILD_TYPE in $CMAKE_BUILD_TYPE_VALUES; do
 for CXX11_ENABLED in $CXX11_ENABLED_VALUES; do
@@ -111,6 +108,10 @@ for VALUE_TYPE in $VALUE_TYPE_VALUES; do
 for PARALLEL_MODE in $PARALLEL_MODE_VALUES; do
 for CUDA_MODE in $CUDA_MODE_VALUES; do
 for SOLVER_DIM_MODES in $SOLVER_DIM_MODES_VALUES; do
+
+  rm -rf ${BUILD_DIR}
+  mkdir -p ${BUILD_DIR}
+  pushd ${BUILD_DIR}
 
   PARALLEL_GRID=$(echo $PARALLEL_MODE | awk -F ',' '{print $1}')
   PARALLEL_GRID_DIMENSION=$(echo $PARALLEL_MODE | awk -F ',' '{print $2}')
@@ -173,6 +174,8 @@ for SOLVER_DIM_MODES in $SOLVER_DIM_MODES_VALUES; do
   fi
 
   echo "Build successful"
+
+  popd
 done
 done
 done

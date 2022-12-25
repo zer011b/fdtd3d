@@ -40,18 +40,23 @@ BUILD_TYPE=$5
 # Whether build with cxx11 or not
 CXX11_ENABLED=$6
 
-mkdir -p ${BUILD_DIR}
-cd ${BUILD_DIR}
+# Whether use complex values or not
+COMPLEX_FIELD_VALUES=$7
+
+# Type of values
+VALUE_TYPE=$8
 
 function build
 {
   PARALLEL_GRID_DIM=$1
   LIST_OF_BUFFERS="$2"
 
-  for VALUE_TYPE in f d ld; do
   for PARALLEL_BUFFER in `echo $LIST_OF_BUFFERS`; do
   for COMBINED_SENDRECV in ON OFF; do
-  for COMPLEX_FIELD_VALUES in ON OFF; do
+
+    rm -rf ${BUILD_DIR}
+    mkdir -p ${BUILD_DIR}
+    pushd ${BUILD_DIR}
 
     cmake ${HOME_DIR} \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
@@ -122,8 +127,7 @@ function build
       exit 1
     fi
 
-  done
-  done
+    popd
   done
   done
 }

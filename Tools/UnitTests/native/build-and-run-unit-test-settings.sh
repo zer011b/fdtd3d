@@ -40,47 +40,67 @@ BUILD_TYPE=$5
 # Whether build with cxx11 or not
 CXX11_ENABLED=$6
 
-mkdir -p ${BUILD_DIR}
-cd ${BUILD_DIR}
+# Whether use complex values or not
+COMPLEX_FIELD_VALUES=$7
+
+# Type of values
+VALUE_TYPE=$8
+
+# Toolchain file
+TOOLCHAIN_FILE_PATH=$9
+TOOLCHAIN=""
+if [[ "$TOOLCHAIN_FILE_PATH" != "" ]]; then
+  echo "Testing cross build"
+  TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE_PATH"
+fi
 
 function build
 {
-  for VALUE_TYPE in f d ld; do
-  for COMPLEX_FIELD_VALUES in ON OFF; do
+  rm -rf ${BUILD_DIR}
+  mkdir -p ${BUILD_DIR}
+  pushd ${BUILD_DIR}
 
-    cmake ${HOME_DIR} \
-      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-      -DVALUE_TYPE=${VALUE_TYPE} \
-      -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
-      -DPRINT_MESSAGE=ON \
-      -DCXX11_ENABLED=${CXX11_ENABLED} \
-      -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-      -DCMAKE_C_COMPILER=${C_COMPILER}
+  cmake ${HOME_DIR} \
+    -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+    -DVALUE_TYPE=${VALUE_TYPE} \
+    -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
+    -DPRINT_MESSAGE=ON \
+    -DCXX11_ENABLED=${CXX11_ENABLED} \
+    -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
+    -DCMAKE_C_COMPILER=${C_COMPILER} \
+    ${TOOLCHAIN}
 
-    res=$(echo $?)
+  res=$(echo $?)
 
-    if [[ res -ne 0 ]]; then
-      exit 1
-    fi
+  if [[ res -ne 0 ]]; then
+    exit 1
+  fi
 
-    make unit-test-settings
+  make unit-test-settings
 
-    res=$(echo $?)
+  res=$(echo $?)
 
-    if [[ res -ne 0 ]]; then
-      exit 1
-    fi
+  if [[ res -ne 0 ]]; then
+    exit 1
+  fi
 
+  if [[ "$TOOLCHAIN_FILE_PATH" != "" ]]; then
+    file ./Source/UnitTests/unit-test-settings
+    sudo rm -rf ${ROOTFS}/fdtd3d
+    sudo mkdir -p ${ROOTFS}/fdtd3d
+    sudo cp ./Source/UnitTests/unit-test-settings ${ROOTFS}/fdtd3d
+    sudo chroot ${ROOTFS} /fdtd3d/unit-test-settings
+  else
     ./Source/UnitTests/unit-test-settings
+  fi
 
-    res=$(echo $?)
+  res=$(echo $?)
 
-    if [[ res -ne 0 ]]; then
-      exit 1
-    fi
+  if [[ res -ne 0 ]]; then
+    exit 1
+  fi
 
-  done
-  done
+  popd
 }
 
 build
