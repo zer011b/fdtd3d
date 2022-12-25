@@ -43,78 +43,80 @@ CXX11_ENABLED=$6
 # Whether use complex values or not
 COMPLEX_FIELD_VALUES=$7
 
+# Type of values
+VALUE_TYPE=$8
+
 # Cuda device id
-DEVICE=$8
+DEVICE=$9
 
 # Cuda arch
-ARCH=$9
+ARCH=${10}
 
 # Whether to launch test or not
-DO_LAUNCH=${10}
-
-mkdir -p ${BUILD_DIR}
-cd ${BUILD_DIR}
+DO_LAUNCH=${11}
 
 function build
 {
-  for VALUE_TYPE in f d; do
+  rm -rf ${BUILD_DIR}
+  mkdir -p ${BUILD_DIR}
+  pushd ${BUILD_DIR}
 
-    cmake ${HOME_DIR} \
-      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-      -DVALUE_TYPE=${VALUE_TYPE} \
-      -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
-      -DPRINT_MESSAGE=ON \
-      -DCXX11_ENABLED=${CXX11_ENABLED} \
-      -DCUDA_ENABLED=ON \
-      -DCUDA_ARCH_SM_TYPE=${ARCH} \
-      -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-      -DCMAKE_C_COMPILER=${C_COMPILER}
+  cmake ${HOME_DIR} \
+    -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+    -DVALUE_TYPE=${VALUE_TYPE} \
+    -DCOMPLEX_FIELD_VALUES=${COMPLEX_FIELD_VALUES} \
+    -DPRINT_MESSAGE=ON \
+    -DCXX11_ENABLED=${CXX11_ENABLED} \
+    -DCUDA_ENABLED=ON \
+    -DCUDA_ARCH_SM_TYPE=${ARCH} \
+    -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
+    -DCMAKE_C_COMPILER=${C_COMPILER}
 
-    res=$(echo $?)
+  res=$(echo $?)
 
-    if [[ res -ne 0 ]]; then
+  if [[ res -ne 0 ]]; then
+    exit 1
+  fi
+
+  make unit-test-internalscheme
+
+  res=$(echo $?)
+
+  if [[ res -ne 0 ]]; then
+    exit 1
+  fi
+
+  if [[ DO_LAUNCH -ne 0 ]]; then
+    ./Source/UnitTests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex \
+      --cuda-gpus $DEVICE --num-cuda-threads x:4,y:4,z:4 --use-cuda
+
+    if [[ "$?" -ne "0" ]]; then
       exit 1
     fi
 
-    make unit-test-internalscheme
+    ./Source/UnitTests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex --use-ca-cb \
+      --cuda-gpus $DEVICE --num-cuda-threads x:4,y:4,z:4 --use-cuda
 
-    res=$(echo $?)
-
-    if [[ res -ne 0 ]]; then
+    if [[ "$?" -ne "0" ]]; then
       exit 1
     fi
 
-    if [[ DO_LAUNCH -ne 0 ]]; then
-      ./Source/UnitTests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex \
-        --cuda-gpus $DEVICE --num-cuda-threads x:4,y:4,z:4 --use-cuda
+    ./Source/UnitTests/unit-test-internalscheme --time-steps 200 --use-tfsf \
+      --cuda-gpus $DEVICE --num-cuda-threads x:4,y:4,z:4 --use-cuda
 
-      if [[ "$?" -ne "0" ]]; then
-        exit 1
-      fi
-
-      ./Source/UnitTests/unit-test-internalscheme --time-steps 10 --point-source x:10,y:10,z:10 --point-source-ex --use-ca-cb \
-        --cuda-gpus $DEVICE --num-cuda-threads x:4,y:4,z:4 --use-cuda
-
-      if [[ "$?" -ne "0" ]]; then
-        exit 1
-      fi
-
-      ./Source/UnitTests/unit-test-internalscheme --time-steps 200 --use-tfsf \
-        --cuda-gpus $DEVICE --num-cuda-threads x:4,y:4,z:4 --use-cuda
-
-      if [[ "$?" -ne "0" ]]; then
-        exit 1
-      fi
-
-      ./Source/UnitTests/unit-test-internalscheme --time-steps 200 --use-tfsf --use-ca-cb \
-        --cuda-gpus $DEVICE --num-cuda-threads x:4,y:4,z:4 --use-cuda
-
-      if [[ "$?" -ne "0" ]]; then
-        exit 1
-      fi
+    if [[ "$?" -ne "0" ]]; then
+      exit 1
     fi
 
-  done
+    ./Source/UnitTests/unit-test-internalscheme --time-steps 200 --use-tfsf --use-ca-cb \
+      --cuda-gpus $DEVICE --num-cuda-threads x:4,y:4,z:4 --use-cuda
+
+    if [[ "$?" -ne "0" ]]; then
+      exit 1
+    fi
+  fi
+
+  popd
 }
 
 build

@@ -23,10 +23,10 @@
 # Test all unit tests for cuda
 #
 # To test all unit tests:
-#   ./test-units.sh <home_dir> <build_dir> "" "" "" "" "" "" ""
+#   ./test-units-cuda.sh <home_dir> <build_dir> "" "" "" "" "" "" "" ""
 #
 # To test scpecific unit test in all configurations
-#   ./test-units.sh <home_dir> <build_dir> "<test_sh_path>" "" "" "" "" "" ""
+#   ./test-units-cuda.sh <home_dir> <build_dir> "<test_sh_path>" "" "" "" "" "" "" ""
 
 set -ex
 
@@ -69,6 +69,11 @@ if [[ "$COMPLEX_FIELD_VALUES_VALUES" == "" ]]; then
   COMPLEX_FIELD_VALUES_VALUES="ON OFF"
 fi
 
+VALUE_TYPE_VALUES="$1"; shift
+if [[ "$VALUE_TYPE_VALUES" == "" ]]; then
+  VALUE_TYPE_VALUES="f d ld"
+fi
+
 CUDA_DEVICE_VALUES="$1"; shift
 if [[ "$CUDA_DEVICE_VALUES" == "" ]]; then
   CUDA_DEVICE_VALUES="0,sm_50"
@@ -85,6 +90,7 @@ for CMAKE_BUILD_TYPE in $CMAKE_BUILD_TYPE_VALUES; do
 for CXX11_ENABLED in $CXX11_ENABLED_VALUES; do
 for CUDA_DEVICE in $CUDA_DEVICE_VALUES; do
 for COMPLEX_FIELD_VALUES in $COMPLEX_FIELD_VALUES_VALUES; do
+for VALUE_TYPE in $VALUE_TYPE_VALUES; do
 
   CMAKE_C_COMPILER=$(echo $COMPILERS | awk -F ',' '{print $1}')
   CMAKE_CXX_COMPILER=$(echo $COMPILERS | awk -F ',' '{print $2}')
@@ -92,7 +98,7 @@ for COMPLEX_FIELD_VALUES in $COMPLEX_FIELD_VALUES_VALUES; do
   CUDA_DEVICE_ID=$(echo $CUDA_DEVICE | awk -F ',' '{print $1}')
   CUDA_DEVICE_ARCH=$(echo $CUDA_DEVICE | awk -F ',' '{print $2}')
 
-  ${SCRIPT} ${HOME_DIR} ${BUILD_DIR} ${CMAKE_CXX_COMPILER} ${CMAKE_C_COMPILER} ${CMAKE_BUILD_TYPE} ${CXX11_ENABLED} ${COMPLEX_FIELD_VALUES} ${CUDA_DEVICE_ID} ${CUDA_DEVICE_ARCH} ${CUDA_DO_LAUNCH}
+  ${SCRIPT} ${HOME_DIR} ${BUILD_DIR} ${CMAKE_CXX_COMPILER} ${CMAKE_C_COMPILER} ${CMAKE_BUILD_TYPE} ${CXX11_ENABLED} ${COMPLEX_FIELD_VALUES} ${VALUE_TYPE} ${CUDA_DEVICE_ID} ${CUDA_DEVICE_ARCH} ${CUDA_DO_LAUNCH}
 
   res=$(echo $?)
   if [[ res -ne 0 ]]; then
@@ -102,6 +108,7 @@ for COMPLEX_FIELD_VALUES in $COMPLEX_FIELD_VALUES_VALUES; do
 
   echo "Unit test successful"
 
+done
 done
 done
 done

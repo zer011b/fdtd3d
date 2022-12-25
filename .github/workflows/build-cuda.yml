@@ -1,0 +1,39 @@
+name: CI-build-cuda
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_mode: [Release, Debug]
+        complex_values: [ON, OFF]
+        print_message: [ON, OFF]
+        used_values: [f, d]
+    runs-on: ubuntu-latest
+    name: Build x64 ubuntu 22.04 cuda BUILD_MODE=${{ matrix.build_mode }}, COMPLEX_VALUES=${{ matrix.complex_values }}, PRINT_MESSAGE=${{ matrix.print_message }}, USED_VALUES=${{ matrix.used_values }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Ubuntu
+        run: |
+          sudo apt install openmpi-bin openmpi-common libopenmpi-dev nvidia-cuda-toolkit
+          # Check if installation is successful by running the next line
+          nvcc -V
+      - name: Build
+        run: |
+          ./Tools/test-build.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "gcc,g++" ${{ matrix.build_mode }} "ON" ${{ matrix.complex_values }} ${{ matrix.print_message }} ${{ matrix.used_values }} "OFF,1,x ON,1,x ON,2,x ON,2,y ON,2,xy ON,3,x ON,3,y ON,3,z ON,3,xy ON,3,yz ON,3,xz ON,3,xyz" "ON,sm_50" "ALL" ""
