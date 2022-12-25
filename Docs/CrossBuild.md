@@ -19,7 +19,7 @@ add_link_options("-Wl,--verbose")
 
 ## Using script, Ubuntu rootfs generation
 
-You can use `create-ubuntu-rootfs.sh` script to generate ubuntu rootfs for different architectures.
+You can use `create-ubuntu-rootfs.sh` script to generate ubuntu rootfs for different architectures. Prerequisite: `apt install qemu-user-static debootstrap`.
 
 To generate rootfs for ubuntu 20.04 armhf:
 ```sh

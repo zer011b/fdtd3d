@@ -9,3 +9,6 @@ Build*/
 *.patch
 
 OldVersion/
+
+# Rootfs
+rootfs

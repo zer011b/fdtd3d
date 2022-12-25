@@ -1,10 +1,8 @@
 ![fdtd3d](Docs/Images/logo.png)
 
-[![Build Status](https://github.com/zer011b/fdtd3d/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/build.yml/)
+[![Build Status](https://github.com/zer011b/fdtd3d/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/build.yml/) [![Build Status](https://github.com/zer011b/fdtd3d/actions/workflows/build-arm.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/build-arm.yml/) [![Build Status](https://github.com/zer011b/fdtd3d/actions/workflows/build-arm64.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/build-arm64.yml/) [![Build Status](https://github.com/zer011b/fdtd3d/actions/workflows/build-riscv64.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/build-riscv64.yml/)
 
-[![Unit Tests Status](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test.yml/)
-
-[![Cuda Unit Tests Status](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test-cuda.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test-cuda.yml/)
+[![Unit Tests Status](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test.yml/) [![Cuda Unit Tests Status](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test-cuda.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/unit-test-cuda.yml/)
 
 [![Test Suite Status](https://github.com/zer011b/fdtd3d/actions/workflows/test-suite.yml/badge.svg?branch=master)](https://github.com/zer011b/fdtd3d/actions/workflows/test-suite.yml/)
 
