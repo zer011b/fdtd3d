@@ -1,6 +1,6 @@
 # I. CI Testing
 
-Testing for pull requests is performed using github actions CI: open pull request with your changes and it will be automatically tested. For details, see [build.yml](../.github/workflows/build.yml), [unit-test.yml](../.github/workflows/unit-test.yml) and [test-suite.yml](../.github/workflows/test-suite.yml). Cuda tests are only built but not launched in github actions CI, in other cases github actions CI is enough for release testing. For arm, arm64, riscv64 testing is done under qemu.
+Testing for pull requests is performed using github actions CI: open pull request with your changes and it will be automatically tested. For details, see [build.yml](../.github/workflows/build.yml), [unit-test.yml](../.github/workflows/unit-test.yml) and [test-suite.yml](../.github/workflows/test-suite.yml). Cuda tests are only built but not launched in github actions CI, in other cases github actions CI is enough for release testing. For arm, arm64, riscv64, ppc64el testing is done under qemu.
 
 # II. Manual Testing
 
@@ -36,6 +36,7 @@ CI for master branch handles common build and tests combinations, however, it do
 - aarch32(armhf)
 - aarch64
 - riscv64
+- ppc64el
 
 **Currently supported platforms:**
 - x64, sequential
@@ -45,6 +46,7 @@ CI for master branch handles common build and tests combinations, however, it do
 - aarch32(armhf), sequential
 - aarch64, sequential
 - riscv64, sequential
+- ppc64el, sequential
 
 ## 1. Tests of build
 
@@ -78,6 +80,11 @@ However, even this might take too much time. Only next combinations are tested f
 ./Tools/test-build.sh <home_dir> <build_dir> "riscv64-linux-gnu-gcc,riscv64-linux-gnu-g++" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" "riscv64-gcc-toolchain.cmake"
 ```
 
+#### x64, ppc64el cross build, sequential
+```sh
+./Tools/test-build.sh <home_dir> <build_dir> "powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" "ppc64el-gcc-toolchain.cmake"
+```
+
 #### OPTIONAL: aarch32(armhf), sequential
 ```sh
 ./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
@@ -89,6 +96,11 @@ However, even this might take too much time. Only next combinations are tested f
 ```
 
 #### OPTIONAL: riscv64, sequential
+```sh
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
+```
+
+#### OPTIONAL: ppc64el, sequential
 ```sh
 ./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
 ```

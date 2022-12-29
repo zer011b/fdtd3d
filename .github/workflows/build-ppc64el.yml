@@ -1,0 +1,39 @@
+name: CI-build-ppc64el
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_mode: [Release, RelWithDebInfo, Debug]
+        cxx11: [ON, OFF]
+    runs-on: ubuntu-latest
+    name: Build ppc64el ubuntu 22.04 BUILD_MODE=${{ matrix.build_mode }}, CXX11=${{ matrix.cxx11 }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Ubuntu
+        run: |
+          sudo apt install gcc-powerpc64le-linux-gnu g++-powerpc64le-linux-gnu qemu-user-static debootstrap
+      - name: Build
+        run: |
+          export ROOTFS=${GITHUB_WORKSPACE}/rootfs/ppc64el
+          sudo ./create-ubuntu-rootfs.sh ppc64el jammy
+          TOOLCHAIN_VER=$(ls $ROOTFS/usr/include/c++/)
+          sed -i "s,set(TOOLCHAIN_VERSION \"9\"),set(TOOLCHAIN_VERSION \"$TOOLCHAIN_VER\")," ppc64el-gcc-toolchain.cmake
+          ./Tools/test-build.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++" ${{ matrix.build_mode }} ${{ matrix.cxx11 }} "ON OFF" "ON OFF" "f d" "OFF,1,x" "OFF,sm" "ALL" "ppc64el-gcc-toolchain.cmake"
