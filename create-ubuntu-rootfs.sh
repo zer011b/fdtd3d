@@ -30,8 +30,8 @@ set -e
 
 # Architecture of rootfs
 ARCH=$1; shift
-if [ "$ARCH" != "arm64" ] && [ "$ARCH" != "armhf" ] && [ "$ARCH" != "riscv64" ]; then
-  echo "Only next architectures are supported: arm64, armhf, riscv64."
+if [ "$ARCH" != "arm64" ] && [ "$ARCH" != "armhf" ] && [ "$ARCH" != "riscv64" ] && [ "$ARCH" != "ppc64el" ]; then
+  echo "Only next architectures are supported: arm64, armhf, riscv64, ppc64el."
   exit 1
 fi
 
