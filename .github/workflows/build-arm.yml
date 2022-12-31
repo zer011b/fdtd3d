@@ -36,4 +36,4 @@ jobs:
           sudo ./create-ubuntu-rootfs.sh armhf jammy
           TOOLCHAIN_VER=$(ls $ROOTFS/usr/include/c++/)
           sed -i "s,set(TOOLCHAIN_VERSION \"8\"),set(TOOLCHAIN_VERSION \"$TOOLCHAIN_VER\")," arm-gcc-toolchain.cmake
-          ./Tools/test-build.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "arm-linux-gnueabihf-gcc,arm-linux-gnueabihf-g++" ${{ matrix.build_mode }} ${{ matrix.cxx11 }} "ON OFF" "ON OFF" "f d" "OFF,1,x" "OFF,sm" "ALL" "arm-gcc-toolchain.cmake"
+          ./Tools/test-build.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "arm-linux-gnueabihf-gcc,arm-linux-gnueabihf-g++" ${{ matrix.build_mode }} ${{ matrix.cxx11 }} "" "" "f d" "OFF,1,x" "OFF,sm" "ALL" "arm-gcc-toolchain.cmake"

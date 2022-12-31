@@ -36,4 +36,4 @@ jobs:
           sudo ./create-ubuntu-rootfs.sh ppc64el jammy
           TOOLCHAIN_VER=$(ls $ROOTFS/usr/include/c++/)
           sed -i "s,set(TOOLCHAIN_VERSION \"9\"),set(TOOLCHAIN_VERSION \"$TOOLCHAIN_VER\")," ppc64el-gcc-toolchain.cmake
-          ./Tools/test-build.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++" ${{ matrix.build_mode }} ${{ matrix.cxx11 }} "ON OFF" "ON OFF" "f d" "OFF,1,x" "OFF,sm" "ALL" "ppc64el-gcc-toolchain.cmake"
+          ./Tools/test-build.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++" ${{ matrix.build_mode }} ${{ matrix.cxx11 }} "" "" "f d" "OFF,1,x" "OFF,sm" "ALL" "ppc64el-gcc-toolchain.cmake"
