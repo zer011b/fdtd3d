@@ -35,7 +35,7 @@ jobs:
           sudo ./create-ubuntu-rootfs.sh riscv64 jammy
           TOOLCHAIN_VER=$(ls $ROOTFS/usr/include/c++/)
           sed -i "s,set(TOOLCHAIN_VERSION \"9\"),set(TOOLCHAIN_VERSION \"$TOOLCHAIN_VER\")," riscv64-gcc-toolchain.cmake
-          ./Tools/test-units.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "${GITHUB_WORKSPACE}/Tools/UnitTests/native/build-and-run-unit-test-${{ matrix.name }}.sh" "riscv64-linux-gnu-gcc,riscv64-linux-gnu-g++" "" "" "" "" "riscv64-gcc-toolchain.cmake"
+          ./Tools/test-units.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "${GITHUB_WORKSPACE}/Tools/UnitTests/native/build-and-run-unit-test-${{ matrix.name }}.sh" "riscv64-linux-gnu-gcc,riscv64-linux-gnu-g++" "" "" "" "f d" "riscv64-gcc-toolchain.cmake"
 
   unit-test-matrix-relwithdebinfo:
     strategy:
@@ -57,4 +57,4 @@ jobs:
           sudo ./create-ubuntu-rootfs.sh riscv64 jammy
           TOOLCHAIN_VER=$(ls $ROOTFS/usr/include/c++/)
           sed -i "s,set(TOOLCHAIN_VERSION \"9\"),set(TOOLCHAIN_VERSION \"$TOOLCHAIN_VER\")," riscv64-gcc-toolchain.cmake
-          ./Tools/test-units.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "${GITHUB_WORKSPACE}/Tools/UnitTests/native/build-and-run-unit-test-${{ matrix.name }}.sh" "riscv64-linux-gnu-gcc,riscv64-linux-gnu-g++" "RelWithDebInfo" "${{ matrix.cxx11 }}" "${{ matrix.complex_values }}" "" "riscv64-gcc-toolchain.cmake"
+          ./Tools/test-units.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "${GITHUB_WORKSPACE}/Tools/UnitTests/native/build-and-run-unit-test-${{ matrix.name }}.sh" "riscv64-linux-gnu-gcc,riscv64-linux-gnu-g++" "RelWithDebInfo" "${{ matrix.cxx11 }}" "${{ matrix.complex_values }}" "f d" "riscv64-gcc-toolchain.cmake"

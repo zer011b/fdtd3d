@@ -29,7 +29,7 @@ fdtd3d tests consists of three parts:
 
 # III. Release testing
 
-CI for master branch handles common build and tests combinations, however, it doesn't cover all available build options, architectures and test launches. Yet, difference is not that critical (mostly in solver dimensions modes), so, manual testing before release is needed only for cuda (unit tests and test suite launch). For all test scenarios only GCC compiler is used, but versions may vary.
+CI for master branch handles common build and tests combinations, however, it doesn't cover all available build options, architectures and test launches. Yet, difference is not that critical (mostly in solver dimensions modes, plus long double floating point precision), so, manual testing before release is needed only for cuda (unit tests and test suite launch). For all test scenarios only GCC compiler is used, but versions may vary.
 
 **Currently supported CPU architectures:**
 - x64
@@ -59,50 +59,50 @@ However, even this might take too much time. Only next combinations are tested f
 
 #### x64, sequential, mpi and cuda testing:
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
-./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "ON,3,xyz" "OFF,sm" "ALL" ""
-./Tools/test-build.sh <home_dir> <build_dir> "" "Release Debug" "ON" "" "" "" "OFF,1,x" "ON,sm_35" "ALL" ""
-./Tools/test-build.sh <home_dir> <build_dir> "" "Release Debug" "ON" "" "" "" "ON,3,xyz" "ON,sm_35" "ALL" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "f d" "OFF,1,x" "OFF,sm" "ALL" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "f d" "ON,3,xyz" "OFF,sm" "ALL" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "Release Debug" "ON" "" "" "f d" "OFF,1,x" "ON,sm_35" "ALL" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "Release Debug" "ON" "" "" "f d" "ON,3,xyz" "ON,sm_35" "ALL" ""
 ```
 
 #### x64, aarch32(armhf) cross build, sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "arm-linux-gnueabihf-gcc,arm-linux-gnueabihf-g++" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" "arm-gcc-toolchain.cmake"
+./Tools/test-build.sh <home_dir> <build_dir> "arm-linux-gnueabihf-gcc,arm-linux-gnueabihf-g++" "" "" "" "" "f d" "OFF,1,x" "OFF,sm" "ALL" "arm-gcc-toolchain.cmake"
 ```
 
 #### x64, aarch64 cross build, sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "aarch64-linux-gnu-gcc,aarch64-linux-gnu-g++" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" "arm64-gcc-toolchain.cmake"
+./Tools/test-build.sh <home_dir> <build_dir> "aarch64-linux-gnu-gcc,aarch64-linux-gnu-g++" "" "" "" "" "f d" "OFF,1,x" "OFF,sm" "ALL" "arm64-gcc-toolchain.cmake"
 ```
 
 #### x64, riscv64 cross build, sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "riscv64-linux-gnu-gcc,riscv64-linux-gnu-g++" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" "riscv64-gcc-toolchain.cmake"
+./Tools/test-build.sh <home_dir> <build_dir> "riscv64-linux-gnu-gcc,riscv64-linux-gnu-g++" "" "" "" "" "f d" "OFF,1,x" "OFF,sm" "ALL" "riscv64-gcc-toolchain.cmake"
 ```
 
 #### x64, ppc64el cross build, sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" "ppc64el-gcc-toolchain.cmake"
+./Tools/test-build.sh <home_dir> <build_dir> "powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++" "" "" "" "" "f d" "OFF,1,x" "OFF,sm" "ALL" "ppc64el-gcc-toolchain.cmake"
 ```
 
 #### OPTIONAL: aarch32(armhf), sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "f d" "OFF,1,x" "OFF,sm" "ALL" ""
 ```
 
 #### OPTIONAL: aarch64, sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "f d" "OFF,1,x" "OFF,sm" "ALL" ""
 ```
 
 #### OPTIONAL: riscv64, sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "f d" "OFF,1,x" "OFF,sm" "ALL" ""
 ```
 
 #### OPTIONAL: ppc64el, sequential
 ```sh
-./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "" "OFF,1,x" "OFF,sm" "ALL" ""
+./Tools/test-build.sh <home_dir> <build_dir> "" "" "" "" "" "f d" "OFF,1,x" "OFF,sm" "ALL" ""
 ```
 
 ## 2. Unit tests

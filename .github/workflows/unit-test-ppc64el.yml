@@ -35,16 +35,16 @@ jobs:
           sudo ./create-ubuntu-rootfs.sh ppc64el jammy
           TOOLCHAIN_VER=$(ls $ROOTFS/usr/include/c++/)
           sed -i "s,set(TOOLCHAIN_VERSION \"9\"),set(TOOLCHAIN_VERSION \"$TOOLCHAIN_VER\")," ppc64el-gcc-toolchain.cmake
-          ./Tools/test-units.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "${GITHUB_WORKSPACE}/Tools/UnitTests/native/build-and-run-unit-test-${{ matrix.name }}.sh" "powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++" "" "" "" "" "ppc64el-gcc-toolchain.cmake"
+          ./Tools/test-units.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "${GITHUB_WORKSPACE}/Tools/UnitTests/native/build-and-run-unit-test-${{ matrix.name }}.sh" "powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++" "" "" "" "f d" "ppc64el-gcc-toolchain.cmake"
 
-  unit-test-matrix-relwithdebinfo:
+  unit-test-layout:
     strategy:
       matrix:
-        name: [layout, internalscheme]
         cxx11: [ON, OFF]
         complex_values: [ON, OFF]
+        value_type: [f, d]
     runs-on: ubuntu-latest
-    name: Unit test ppc64el ubuntu 22.04 for ${{ matrix.name }}
+    name: Unit test ppc64el ubuntu 22.04 for layout
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -57,4 +57,25 @@ jobs:
           sudo ./create-ubuntu-rootfs.sh ppc64el jammy
           TOOLCHAIN_VER=$(ls $ROOTFS/usr/include/c++/)
           sed -i "s,set(TOOLCHAIN_VERSION \"7\"),set(TOOLCHAIN_VERSION \"$TOOLCHAIN_VER\")," ppc64el-gcc-toolchain.cmake
-          ./Tools/test-units.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "${GITHUB_WORKSPACE}/Tools/UnitTests/native/build-and-run-unit-test-${{ matrix.name }}.sh" "powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++" "RelWithDebInfo" "${{ matrix.cxx11 }}" "${{ matrix.complex_values }}" "" "ppc64el-gcc-toolchain.cmake"
+          ./Tools/test-units.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "${GITHUB_WORKSPACE}/Tools/UnitTests/native/build-and-run-unit-test-layout.sh" "powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++" "RelWithDebInfo" "${{ matrix.cxx11 }}" "${{ matrix.complex_values }}" "${{ matrix.value_type }}" "ppc64el-gcc-toolchain.cmake"
+
+  unit-test-internalscheme:
+    strategy:
+      matrix:
+        cxx11: [ON, OFF]
+        complex_values: [ON, OFF]
+    runs-on: ubuntu-latest
+    name: Unit test ppc64el ubuntu 22.04 for internalscheme
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Ubuntu
+        run: |
+          sudo apt install gcc-powerpc64le-linux-gnu g++-powerpc64le-linux-gnu qemu-user-static debootstrap
+      - name: Build and Run
+        run: |
+          export ROOTFS=${GITHUB_WORKSPACE}/rootfs/ppc64el
+          sudo ./create-ubuntu-rootfs.sh ppc64el jammy
+          TOOLCHAIN_VER=$(ls $ROOTFS/usr/include/c++/)
+          sed -i "s,set(TOOLCHAIN_VERSION \"7\"),set(TOOLCHAIN_VERSION \"$TOOLCHAIN_VER\")," ppc64el-gcc-toolchain.cmake
+          ./Tools/test-units.sh ${GITHUB_WORKSPACE} ${GITHUB_WORKSPACE}/Build "${GITHUB_WORKSPACE}/Tools/UnitTests/native/build-and-run-unit-test-internalscheme.sh" "powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++" "RelWithDebInfo" "${{ matrix.cxx11 }}" "${{ matrix.complex_values }}" "f d" "ppc64el-gcc-toolchain.cmake"
