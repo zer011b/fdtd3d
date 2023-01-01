@@ -24,7 +24,7 @@ jobs:
         cxx11: [ON, OFF]
         complex_values: [ON, OFF]
         print_message: [ON, OFF]
-        used_values: [f, d]
+        used_values: [f, d, ld]
     runs-on: ubuntu-latest
     name: Build x64 ubuntu 22.04 BUILD_MODE=${{ matrix.build_mode }}, CXX11=${{ matrix.cxx11 }}, COMPLEX_VALUES=${{ matrix.complex_values }}, PRINT_MESSAGE=${{ matrix.print_message }}, USED_VALUES=${{ matrix.used_values }}
     steps:
