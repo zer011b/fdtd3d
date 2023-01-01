@@ -9,11 +9,11 @@ Tests launched: `Example/vacuum3D.txt`, `Example/vacuum3D_scattered.txt`
 
 Amplitude mode. Red is the 1.0 amplitude in total field area, blue is 0.0 amplitude in scattered field area.
 
-![Amplitude](__current[300]_rank-0_Ez20-Mod.bmp)
+![Amplitude](current[300]_rank-0_Ez20-Mod.bmp)
 
 Real part:
 
-![Real part](__current[300]_rank-0_Ez20-Re.bmp)
+![Real part](current[300]_rank-0_Ez20-Re.bmp)
 
 # Result vacuum3D_scattered
 
