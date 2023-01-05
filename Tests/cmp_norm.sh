@@ -22,6 +22,8 @@
 
 #set -ex
 
+export LC_NUMERIC=C
+
 input_cpu="$1"
 input_gpu="$2"
 

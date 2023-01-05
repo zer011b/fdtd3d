@@ -27,6 +27,7 @@ BASE_DIR=$2
 SOURCE_DIR=$3
 C_COMPILER=$4
 CXX_COMPILER=$5
+TOOLCHAIN=$6
 
 MODE="-DSOLVER_DIM_MODES=EZ_HY"
 if [[ "$USED_MODE" -eq "1" || "$USED_MODE" -eq "3" ]]; then
@@ -44,9 +45,17 @@ fi
 
 if [ "$C_COMPILER" != "" ]; then
   MODE="$MODE -DCMAKE_C_COMPILER=$C_COMPILER"
+else
+  C_COMPILER="gcc"
 fi
 if [ "$CXX_COMPILER" != "" ]; then
   MODE="$MODE -DCMAKE_CXX_COMPILER=$CXX_COMPILER"
+else
+  CXX_COMPILER="g++"
+fi
+
+if [ "$TOOLCHAIN" != "" ]; then
+  MODE="$MODE -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN"
 fi
 
 TEST_DIR=$(dirname $(readlink -f $0))

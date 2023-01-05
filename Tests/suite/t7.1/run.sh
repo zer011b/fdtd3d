@@ -22,12 +22,18 @@
 
 set -e
 
+export LC_NUMERIC=C
+
 USED_MODE=$1
 BASE_DIR=$2
 SOURCE_DIR=$3
+C_COMPILER=$4
+CXX_COMPILER=$5
+TOOLCHAIN=$6
 
 MODE=""
 RUNNER=""
+
 if [[ "$USED_MODE" -eq "1" ]]; then
   MODE="$MODE --use-cuda --cuda-gpus 0 --num-cuda-threads x:4,y:4,z:4"
 fi
@@ -37,6 +43,14 @@ fi
 if [[ "$USED_MODE" -eq "2" || "$USED_MODE" -eq "3" ]]; then
   MODE="$MODE"
   RUNNER="mpirun -n 2 --oversubscribe"
+fi
+
+if [[ "$TOOLCHAIN" != "" ]]; then
+  RUNNER="sudo chroot ${ROOTFS} $RUNNER"
+  RUNPATH="/fdtd3d/"
+else
+  RUNNER="$RUNNER"
+  RUNPATH="./"
 fi
 
 function launch ()
@@ -63,7 +77,7 @@ function launch ()
 
   output_file=$(mktemp /tmp/fdtd3d.vacuum3D.XXXXXXXX)
 
-  $RUNNER ./fdtd3d $MODE --time-steps $num_time_steps --size z:$sizez --1d-exhy --angle-teta 0 --angle-phi 0 --angle-psi 90 \
+  $RUNNER "$RUNPATH"fdtd3d $MODE --time-steps $num_time_steps --size z:$sizez --1d-exhy --angle-teta 0 --angle-phi 0 --angle-psi 90 \
     --dx $dz --wavelength $4 --courant-factor 0.5 --log-level 2 --pml-size z:$pmlsize --use-pml \
     --use-tfsf --tfsf-size-left z:$tfsfsize --tfsf-size-right z:0 \
     --eps-sphere $eps_sphere --eps-sphere-center z:$sphere_center --eps-sphere-radius $sphere_radius \
@@ -101,6 +115,12 @@ function launch ()
 CUR_DIR=`pwd`
 TEST_DIR=$(dirname $(readlink -f $0))
 cd $TEST_DIR
+
+if [[ "$TOOLCHAIN" != "" ]]; then
+  sudo rm -rf ${ROOTFS}/fdtd3d
+  sudo mkdir -p ${ROOTFS}/fdtd3d
+  sudo cp ./fdtd3d ${ROOTFS}/fdtd3d/
+fi
 
 retval=$((0))
 launch 10000 600 0.0001 0.02 50 150 450 150 155 545 exp1 0.12 1 0

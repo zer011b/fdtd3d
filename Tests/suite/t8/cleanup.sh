@@ -31,7 +31,6 @@ cd $TEST_DIR
 
 rm fdtd3d*
 rm -rf build
-rm -rf previous-*
 
 cd $CUR_DIR
 
