@@ -22,12 +22,18 @@
 
 set -e
 
+export LC_NUMERIC=C
+
 USED_MODE=$1
 BASE_DIR=$2
 SOURCE_DIR=$3
+C_COMPILER=$4
+CXX_COMPILER=$5
+TOOLCHAIN=$6
 
 MODE=""
 RUNNER=""
+
 if [[ "$USED_MODE" -eq "1" ]]; then
   MODE="$MODE --use-cuda --cuda-gpus 0 --num-cuda-threads x:4,y:4,z:4"
 fi
@@ -39,22 +45,37 @@ if [[ "$USED_MODE" -eq "2" || "$USED_MODE" -eq "3" ]]; then
   RUNNER="mpirun -n 2 --oversubscribe"
 fi
 
+if [[ "$TOOLCHAIN" != "" ]]; then
+  RUNNER="sudo chroot ${ROOTFS} $RUNNER"
+  RUNNER_NATIVE="sudo chroot ${ROOTFS}"
+  RUNPATH="/fdtd3d/"
+  RESPATH="${ROOTFS}/"
+  RUNNER_RES="sudo"
+else
+  RUNNER="$RUNNER"
+  RUNNER_NATIVE=""
+  RUNPATH="./"
+  RESPATH="./"
+  RUNNER_RES=""
+fi
+
 function launch ()
 {
   local layout_type="$1"
   output_file=$(mktemp /tmp/fdtd3d.vacuum1D.XXXXXXXX)
 
-  tmp_test_file=$(mktemp /tmp/vacuum1D_EyHz.XXXXXXXX.txt)
-  cp ${SOURCE_DIR}/Examples/vacuum1D_EyHz.txt $tmp_test_file
-  echo $MODE >> $tmp_test_file
-  echo "--layout-type $layout_type" >> $tmp_test_file
+  tmp_test_file=$($RUNNER_NATIVE mktemp /tmp/vacuum1D_EyHz.XXXXXXXX.txt)
+  cp ${SOURCE_DIR}/Examples/vacuum1D_EyHz.txt tmp.txt
+  echo $MODE >> tmp.txt
+  echo "--layout-type $layout_type" >> tmp.txt
+  $RUNNER_RES cp tmp.txt "$ROOTFS"$tmp_test_file
 
-  $RUNNER ./fdtd3d --cmd-from-file $tmp_test_file &> $output_file
+  $RUNNER "$RUNPATH"fdtd3d --cmd-from-file $tmp_test_file &> $output_file
 
   local ret=$?
 
-  val_max=$(cat previous-1_[timestep=100]_[pid=0]_[name=Ey]_[mod].txt | awk '{print $1}')
-  val_min=$(cat previous-1_[timestep=100]_[pid=0]_[name=Ey]_[mod].txt | awk '{print $2}')
+  val_max=$($RUNNER_RES cat "$RESPATH"previous-1_[timestep=100]_[pid=0]_[name=Ey]_[mod].txt | awk '{print $1}')
+  val_min=$($RUNNER_RES cat "$RESPATH"previous-1_[timestep=100]_[pid=0]_[name=Ey]_[mod].txt | awk '{print $2}')
   is_ok=$(echo $val_max $val_min | awk '
             function abs(x){return ((x < 0.0) ? -x : x)}
             {
@@ -77,16 +98,17 @@ function launch ()
     return $ret
   fi
 
-  cp ${SOURCE_DIR}/Examples/vacuum1D_EyHz_scattered.txt $tmp_test_file
-  echo $MODE >> $tmp_test_file
-  echo "--layout-type $layout_type" >> $tmp_test_file
+  cp ${SOURCE_DIR}/Examples/vacuum1D_EyHz_scattered.txt tmp.txt
+  echo $MODE >> tmp.txt
+  echo "--layout-type $layout_type" >> tmp.txt
+  $RUNNER_RES cp tmp.txt "$ROOTFS"$tmp_test_file
 
-  $RUNNER ./fdtd3d --cmd-from-file $tmp_test_file &> $output_file
+  $RUNNER "$RUNPATH"fdtd3d --cmd-from-file $tmp_test_file &> $output_file
 
   ret=$?
 
-  val_max=$(cat previous-1_[timestep=100]_[pid=0]_[name=Ey]_[mod].txt | awk '{print $1}')
-  val_min=$(cat previous-1_[timestep=100]_[pid=0]_[name=Ey]_[mod].txt | awk '{print $2}')
+  val_max=$($RUNNER_RES cat "$RESPATH"previous-1_[timestep=100]_[pid=0]_[name=Ey]_[mod].txt | awk '{print $1}')
+  val_min=$($RUNNER_RES cat "$RESPATH"previous-1_[timestep=100]_[pid=0]_[name=Ey]_[mod].txt | awk '{print $2}')
   is_ok=$(echo $val_max $val_min | awk '
             {
               if (0.0 <= $1 && $1 <= 1e-14 && 0.0 == $2)
@@ -103,12 +125,20 @@ function launch ()
     ret=$((2))
   fi
 
+  $RUNNER_RES rm "$RESPATH"previous-*
+
   return $ret
 }
 
 CUR_DIR=`pwd`
 TEST_DIR=$(dirname $(readlink -f $0))
 cd $TEST_DIR
+
+if [[ "$TOOLCHAIN" != "" ]]; then
+  sudo rm -rf ${ROOTFS}/fdtd3d
+  sudo mkdir -p ${ROOTFS}/fdtd3d
+  sudo cp ./fdtd3d ${ROOTFS}/fdtd3d/
+fi
 
 retval=$((0))
 launch 0

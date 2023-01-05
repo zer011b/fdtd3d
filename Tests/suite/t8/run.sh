@@ -22,12 +22,18 @@
 
 set -e
 
+export LC_NUMERIC=C
+
 USED_MODE=$1
 BASE_DIR=$2
 SOURCE_DIR=$3
+C_COMPILER=$4
+CXX_COMPILER=$5
+TOOLCHAIN=$6
 
 MODE=""
 RUNNER=""
+
 if [[ "$USED_MODE" -eq "1" ]]; then
   MODE="$MODE --use-cuda --cuda-gpus 0 --num-cuda-threads x:4,y:4,z:4"
 fi
@@ -37,6 +43,20 @@ fi
 if [[ "$USED_MODE" -eq "2" || "$USED_MODE" -eq "3" ]]; then
   MODE="$MODE"
   RUNNER="mpirun -n 2 --oversubscribe"
+fi
+
+if [[ "$TOOLCHAIN" != "" ]]; then
+  RUNNER="sudo chroot ${ROOTFS} $RUNNER"
+  RUNNER_NATIVE="sudo chroot ${ROOTFS}"
+  RUNPATH="/fdtd3d/"
+  RESPATH="${ROOTFS}/"
+  RUNNER_RES="sudo"
+else
+  RUNNER="$RUNNER"
+  RUNNER_NATIVE=""
+  RUNPATH="./"
+  RESPATH="./"
+  RUNNER_RES=""
 fi
 
 timestep="30"
@@ -49,14 +69,15 @@ function launch ()
 
   output_file=$(mktemp /tmp/fdtd3d.vacuum3D.XXXXXXXX)
 
-  tmp_test_file=$(mktemp /tmp/vacuum2D_planewave_TMz.XXXXXXXX.txt)
-  cp vacuum2D_planewave_TMz.txt $tmp_test_file
-  echo $MODE >> $tmp_test_file
-  echo "--layout-type $layout_type" >> $tmp_test_file
+  tmp_test_file=$($RUNNER_NATIVE mktemp /tmp/vacuum2D_planewave_TMz.XXXXXXXX.txt)
+  cp vacuum2D_planewave_TMz.txt tmp.txt
+  echo $MODE >> tmp.txt
+  echo "--layout-type $layout_type" >> tmp.txt
+  $RUNNER_RES cp tmp.txt "$ROOTFS"$tmp_test_file
 
-  $RUNNER ./fdtd3d${binary_prefix} --cmd-from-file $tmp_test_file &> $output_file
+  $RUNNER "$RUNPATH"fdtd3d${binary_prefix} --cmd-from-file $tmp_test_file &> $output_file
 
-  mv previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt.$binary_prefix
+  $RUNNER_RES mv "$RESPATH"previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt "$RESPATH"previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt.$binary_prefix
 
   local ret=$?
 
@@ -91,6 +112,13 @@ CUR_DIR=`pwd`
 TEST_DIR=$(dirname $(readlink -f $0))
 cd $TEST_DIR
 
+if [[ "$TOOLCHAIN" != "" ]]; then
+  sudo rm -rf ${ROOTFS}/fdtd3d
+  sudo mkdir -p ${ROOTFS}/fdtd3d
+  sudo cp ./fdtd3d_complex ${ROOTFS}/fdtd3d/
+  sudo cp ./fdtd3d_real ${ROOTFS}/fdtd3d/
+fi
+
 filename_complex="previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt._complex"
 filename_real="previous-1_[timestep=$timestep]_[pid=0]_[name=Ez].txt._real"
 
@@ -106,7 +134,10 @@ if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-cmp $filename_complex $filename_real
+$RUNNER_RES cp "$RESPATH"$filename_complex ./txt._complex
+$RUNNER_RES cp "$RESPATH"$filename_real ./txt._real
+cmp ./txt._complex ./txt._real
+$RUNNER_RES rm "$RESPATH"previous-*
 
 launch _complex 1
 if [ $? -ne 0 ]; then
@@ -118,7 +149,10 @@ if [ $? -ne 0 ]; then
   retval=$((1))
 fi
 
-cmp $filename_complex $filename_real
+$RUNNER_RES cp "$RESPATH"$filename_complex ./txt._complex
+$RUNNER_RES cp "$RESPATH"$filename_real ./txt._real
+cmp ./txt._complex ./txt._real
+$RUNNER_RES rm "$RESPATH"previous-*
 
 cd $CUR_DIR
 

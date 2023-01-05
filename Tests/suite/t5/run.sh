@@ -22,12 +22,18 @@
 
 set -e
 
+export LC_NUMERIC=C
+
 USED_MODE=$1
 BASE_DIR=$2
 SOURCE_DIR=$3
+C_COMPILER=$4
+CXX_COMPILER=$5
+TOOLCHAIN=$6
 
 MODE=""
 RUNNER=""
+
 if [[ "$USED_MODE" -eq "1" ]]; then
   MODE="$MODE --use-cuda --cuda-gpus 0 --num-cuda-threads x:4,y:4,z:4"
 fi
@@ -37,6 +43,14 @@ fi
 if [[ "$USED_MODE" -eq "2" || "$USED_MODE" -eq "3" ]]; then
   MODE="$MODE"
   RUNNER="mpirun -n 2 --oversubscribe"
+fi
+
+if [[ "$TOOLCHAIN" != "" ]]; then
+  RUNNER="sudo chroot ${ROOTFS} $RUNNER"
+  RUNPATH="/fdtd3d/"
+else
+  RUNNER="$RUNNER"
+  RUNPATH="./"
 fi
 
 accuracy_percent="0.00001"
@@ -52,7 +66,7 @@ function launch ()
 
   output_file=$(mktemp /tmp/fdtd3d.$size.$dx.XXXXXXXX)
 
-  $RUNNER ./fdtd3d $MODE --time-steps $timesteps --size x:$size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
+  $RUNNER "$RUNPATH"fdtd3d $MODE --time-steps $timesteps --size x:$size --same-size --3d --angle-phi 0 --dx $dx --wavelength $lambda \
     --log-level 0 --use-sin1-border-condition --use-sin1-start-values --calc-sin1-diff-norm \
     --eps-normed --mu-normed --courant-factor 149896229 --layout-type $layout_type &> $output_file
 
@@ -66,6 +80,12 @@ function launch ()
 CUR_DIR=`pwd`
 TEST_DIR=$(dirname $(readlink -f $0))
 cd $TEST_DIR
+
+if [[ "$TOOLCHAIN" != "" ]]; then
+  sudo rm -rf ${ROOTFS}/fdtd3d
+  sudo mkdir -p ${ROOTFS}/fdtd3d
+  sudo cp ./fdtd3d ${ROOTFS}/fdtd3d/
+fi
 
 retval=$((0))
 
