@@ -41,7 +41,7 @@ set(CUDA_ARCH_SM_TYPE "sm_20" CACHE STRING "Defines cuda gpu arch")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORCE_INLINES")
 
-add_definitions (-DSOLVER_VERSION=1.1)
+add_definitions (-DSOLVER_VERSION=1.2)
 
 # All the supported solver modes
 list (APPEND SUPPORTED_DIM_MODES_1D "DIM1" "EX_HY" "EX_HZ" "EY_HX" "EY_HZ" "EZ_HX" "EZ_HY")
