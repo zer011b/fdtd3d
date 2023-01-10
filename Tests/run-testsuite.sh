@@ -30,8 +30,7 @@ TEST_MPI=$1; shift
 # 1 to test in CUDA mode
 CUDA_MODE=$1; shift
 
-C_COMPILER=$1
-CXX_COMPILER=$2
+ARGS=$@
 
 # check exit code
 function check_res ()
@@ -61,7 +60,7 @@ for testdir in `ls $CUR_DIR/Tests/suite`; do
 
   echo "$test_num. Testing <$testdir> ($percent_before%):"
 
-  $CUR_DIR/Tests/run-test.sh $testdir $TEST_MPI $CUDA_MODE $CUR_DIR/Tests $SOURCE_DIR $C_COMPILER $CXX_COMPILER &> /dev/null
+  $CUR_DIR/Tests/run-test.sh $testdir $TEST_MPI $CUDA_MODE $CUR_DIR/Tests $SOURCE_DIR $ARGS &> /dev/null
   check_res
 
   echo "OK!"
