@@ -21,7 +21,7 @@
 #ifndef CUDA_GRID_H
 #define CUDA_GRID_H
 
-#include "Assert.h"
+#include "PAssert.h"
 #include "FieldValue.h"
 #include "GridCoordinate3D.h"
 #include "Settings.h"

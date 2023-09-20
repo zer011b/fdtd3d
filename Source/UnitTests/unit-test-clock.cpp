@@ -24,7 +24,7 @@
 
 #include <iostream>
 
-#include "Assert.h"
+#include "PAssert.h"
 #include "Clock.h"
 
 #ifdef PARALLEL_GRID

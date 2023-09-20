@@ -18,11 +18,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef ASSERT_H
-#define ASSERT_H
+#ifndef PASSERT_H
+#define PASSERT_H
 
 #include <cstdio>
-#include <assert.h>
+#include <cassert>
 
 /*
  * CUDA notes.
@@ -217,4 +217,4 @@ typedef double DOUBLE;
 
 #include "CudaInclude.h"
 
-#endif /* ASSERT_H */
+#endif /* PASSERT_H */

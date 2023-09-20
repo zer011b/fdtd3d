@@ -18,7 +18,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "Assert.h"
+#include "PAssert.h"
 
 #include <cstdlib>
 #include <execinfo.h>

@@ -24,7 +24,7 @@
 
 #include <iostream>
 
-#include "Assert.h"
+#include "PAssert.h"
 #include "GridCoordinate3D.h"
 
 #ifndef CXX11_ENABLED
