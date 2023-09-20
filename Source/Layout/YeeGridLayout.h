@@ -22,7 +22,7 @@
 #define YEE_GRID_LAYOUT_H
 
 #include "Approximation.h"
-#include "Assert.h"
+#include "PAssert.h"
 #include "GridLayout.h"
 #include "PhysicsConst.h"
 

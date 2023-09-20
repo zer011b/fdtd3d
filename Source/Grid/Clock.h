@@ -21,7 +21,7 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
-#include "Assert.h"
+#include "PAssert.h"
 #include "Settings.h"
 
 #ifdef MPI_CLOCK

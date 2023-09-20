@@ -34,7 +34,7 @@
 
 #include <iostream>
 
-#include "Assert.h"
+#include "PAssert.h"
 #include "Settings.h"
 
 #ifndef PARALLEL_GRID

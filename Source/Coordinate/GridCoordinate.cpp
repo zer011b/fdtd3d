@@ -19,7 +19,7 @@
  */
 
 #include "GridCoordinate3D.h"
-#include "Assert.h"
+#include "PAssert.h"
 
 const char * coordinateTypeNames[] =
 {

@@ -19,7 +19,7 @@
  */
 
 #include "Approximation.h"
-#include "Assert.h"
+#include "PAssert.h"
 #include "PhysicsConst.h"
 
 #include <cmath>
