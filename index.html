@@ -1,54 +1,191 @@
 <!doctype html>
 <html>
-	<head>
-		<title>Line Chart</title>
-		<script src="Chart.js"></script>
-	</head>
-	<body>
-		<div style="width:30%">
-			<div>
-				<canvas id="canvas" height="450" width="600"></canvas>
-			</div>
-		</div>
+  <head>
+    <title>fdtd3d performance benchmark</title>
+      <script src="chart.umd.js"></script>
+    <style>
+      code {
+        font-family: monospace;
+        font-size: 130%;
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="width: 80%; margin-left: auto; margin-right: auto">
+      <canvas id="canvas_score" height="400" width="1600"></canvas>
+    </div>
+    <div style="width: 80%; margin-left: auto; margin-right: auto">
+      <canvas id="canvas_time" height="600" width="1600"></canvas>
+    </div>
+    <div style="width: 80%; margin-left: auto; margin-right: auto">
+      <canvas id="canvas_binsize" height="600" width="1600"></canvas>
+    </div>
+    <div style="width: 80%; margin-left: auto; margin-right: auto">
+      <h1>I. Devices</h1>
+      #1. PC i9-9900K 64 Gb, x64: Intel Core i9-9900K, 8 core (16-threads) (x64), 64 Gb RAM, Ubuntu 20.04.6 Desktop (Linux 5.4.0 kernel), GCC 9.4.0, OpenMPI 4.0.3, "powersave" scaling governor (cpu freq increases from 800000 to 3600000 on load)<br>
+      #2. Raspberry Pi 4 4Gb, Arm64: Broadcom BCM2711, Quad core Cortex-A72 (ARM v8), 4Gb RAM, 64bit Ubuntu 22.04.4 Desktop (Linux 5.15.0 kernel), GCC 11.4.0, OpenMPI 4.1.2, "performance" scaling governor, cpu freq 1500000, fan/screen/keyboard/mouse attached, 5V 2A power adapter<br>
+      #3. StarFive VisionFive 8Gb, RISC-V: StarFive JH7100, Dual core SiFive U74 (RV64GC=rv64imafdc_zicsr_zifencei), 8 Gb RAM, Ubuntu 23.10 Server (Linux 6.5.0 kernel), GCC 13.2.0, OpenMPI X.X.X, scaling governor not available, default cpu freq, fan attached, 5V 2A power adapter<br>
 
+      <h1>II. Notes</h1>
+      1. benchmark: vacuum, 3d 50x50x50, 300 time steps, total field scattered field 26x26x26, pml 30x30x30, no saving of result to disk, use Ca/Cb<br>
+      2. 20 measurements for all cases, 20% of lowest and 20% of highest are discarded<br>
+      3. for all measurements below 99% confidence interval is shown<br>
+      4. sequentual build:<br>
+      <code>cmake .. -DCMAKE_BUILD_TYPE=Release -DSOLVER_DIM_MODES=DIM3 -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DPRINT_MESSAGE=ON -DPARALLEL_GRID=OFF</code><br>
+      <code>make fdtd3d</code><br>
+      5. parallel build for X topology:<br>
+      <code>cmake .. -DCMAKE_BUILD_TYPE=Release -DSOLVER_DIM_MODES=DIM3 -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DPRINT_MESSAGE=ON -DPARALLEL_GRID=ON -DPARALLEL_GRID_DIMENSION=3 -DPARALLEL_BUFFER_DIMENSION=x -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_C_COMPILER=mpicc</code><br>
+      <code>make fdtd3d</code><br>
+      6. parallel build for XY topology:<br>
+      <code>cmake .. -DCMAKE_BUILD_TYPE=Release -DSOLVER_DIM_MODES=DIM3 -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DPRINT_MESSAGE=ON -DPARALLEL_GRID=ON -DPARALLEL_GRID_DIMENSION=3 -DPARALLEL_BUFFER_DIMENSION=xy -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_C_COMPILER=mpicc</code><br>
+      <code>make fdtd3d</code><br>
+      7. parallel build for XYZ topology:<br>
+      <code>cmake .. -DCMAKE_BUILD_TYPE=Release -DSOLVER_DIM_MODES=DIM3 -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DPRINT_MESSAGE=ON -DPARALLEL_GRID=ON -DPARALLEL_GRID_DIMENSION=3 -DPARALLEL_BUFFER_DIMENSION=xyz -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_C_COMPILER=mpicc</code><br>
+      <code>make fdtd3d</code><br>
+      8. run sequential:<br>
+      <code>./fdtd3d --time-steps 300 --size x:50,y:50,z:50 --3d --angle-teta 0 --angle-phi 0 --angle-psi 0 --dx 0.0005 --wavelength 0.02 --log-level 0 --use-ca-cb --use-ca-cb-pml --pml-size x:10,y:10,z:10 --use-pml --use-tfsf --tfsf-size-left x:12,y:12,z:12 --tfsf-size-right x:12,y:12,z:12</code><br>
+      9. run parallel with N processes:<br>
+      <code>mpiexec -n N ./fdtd3d --time-steps 300 --size x:50,y:50,z:50 --3d --angle-teta 0 --angle-phi 0 --angle-psi 0 --dx 0.0005 --wavelength 0.02 --log-level 0 --use-ca-cb --use-ca-cb-pml --pml-size x:10,y:10,z:10 --use-pml --use-tfsf --tfsf-size-left x:12,y:12,z:12 --tfsf-size-right x:12,y:12,z:12</code><br>
+      10. SCORE is calculated as: number_of_timesteps*100/execution_time_in_seconds<br>
 
-	<script>
-		var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
-		var lineChartData = {
-			labels : ["January","February","March","April","May","June","July"],
-			datasets : [
-				{
-					label: "My First dataset",
-					fillColor : "rgba(220,220,220,0.2)",
-					strokeColor : "rgba(220,220,220,1)",
-					pointColor : "rgba(220,220,220,1)",
-					pointStrokeColor : "#fff",
-					pointHighlightFill : "#fff",
-					pointHighlightStroke : "rgba(220,220,220,1)",
-					data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
-				},
-				{
-					label: "My Second dataset",
-					fillColor : "rgba(151,187,205,0.2)",
-					strokeColor : "rgba(151,187,205,1)",
-					pointColor : "rgba(151,187,205,1)",
-					pointStrokeColor : "#fff",
-					pointHighlightFill : "#fff",
-					pointHighlightStroke : "rgba(151,187,205,1)",
-					data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
-				}
-			]
+      <h1>III. Raw data</h1>
 
-		}
+      <h2>Release 1.2</h2>
+      - [Sequential] #1 PC i9-9900K x64: <code>16.0042 +- 0.0214422 seconds, binary size: 869592 byte</code><br>
+      - [Best] #1 PC i9-9900K x64 (MPI, XYZ toplogy, 8 processes): <code>3.6075 +- 0.00865463 seconds, binary size: 1074488 byte</code><br>
+      - [Sequential] #2 Raspberry Pi 4 Arm64: <code>61.7725 +- 0.564082 seconds, binary size: 735344 byte</code><br>
+      - [Best] #2 Raspberry Pi 4 Arm64 (MPI, XY topology, 4 processes): <code>28.1033 +- 0.132836 seconds, binary size: 913320 byte</code><br>
+      - [Sequential] #3 StarFive VisionFive RV64GC: <code>496.644 +- 2.85636 seconds, binary size: 686624 byte</code><br>
+      - [Best] #3 StarFive VisionFive RV64GC (MPI, X topology, 2 processes): <code>289.362 +- 0.722665 seconds, 834440 byte</code><br>
+      <h2>Release 1.1</h2>
+      - [Sequential] #1 PC i9-9900K x64: <code>16 +- 0.0341937 seconds, binary size: 869592 byte</code><br>
+      - [Best] #1 PC i9-9900K x64 (MPI, XYZ topology, 8 processes): <code>3.61083 +- 0.00710943 seconds, binary size: 1074480</code><br>
+      - [Sequential] #2 Raspberry Pi 4 Arm64: <code>61.6625 +- 0.431186 seconds, binary size: 735344 byte</code><br>
+      - [Best] #2 Raspberry Pi 4 Arm64 (MPI, XY topology, 4 processes): <code>28.4108 +- 0.0975764 seconds, binary size: 913312</code><br>
+      - [Best][Sequential] #3 StarFive VisionFive RV64GC: not supported<br>
+      <h2>Release 1.0</h2>
+      - [Sequential] #1 PC i9-9900K x64: <code>17.9 +- 0.0305838 seconds, binary size: 924048 byte</code><br>
+      - [Best] #1 PC i9-9900K x64 (MPI, XYZ topology, 8 processes): <code>3.82167 +- 0.00643503 seconds, binary size: 1134176 byte</code><br>
+      - [Best][Sequential] #2 Raspberry Pi 4 Arm64: not supported<br>
+      - [Best][Sequential] #3 StarFive VisionFive RV64GC: not supported<br>
+    </div>
 
-	window.onload = function(){
-		var ctx = document.getElementById("canvas").getContext("2d");
-		window.myLine = new Chart(ctx).Line(lineChartData, {
-			responsive: true
-		});
-	}
+  <script>
+    function getRandomColor() {
+      return "rgba(" + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + ",0.8)";
+    }
+    function getNameForGraph(data) {
+      return data.name + " " + data.arch + " " + data.compiler;
+    }
+    function getNameForGraphWithRelease(data, perfData) {
+      return getNameForGraph(data) + ", " + perfData.name;
+    }
+    function getScore(value) {
+      return 300 * 100 / value;
+    }
+    function getDatasetElement(name, data) {
+      return {
+        label: name,
+        borderColor: "rgbs(0,0,0,1.0)",
+        backgroundColor: getRandomColor(),
+        borderWidth: 2,
+        pointHoverRadius: 10,
+        data: data
+      };
+    }
+    function getBarChart(ctx, data, title) {
+      return new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: title,
+              font: { size: 30 }
+            }
+          },
+        }
+      });
+    }
 
+    var data = [
+      { name: "#1 PC i9-9900K", arch: "x64", compiler: "GCC (sequential)", perfData: [
+        { name: "1.0 release", time: 17.9, diff: 0.0305838, binsize: 924048 },
+        { name: "1.1 release", time: 16, diff: 0.0341937, binsize: 869592 },
+        { name: "1.2 release", time: 16.0042, diff: 0.0214422, binsize: 869592 }, ] },
+      { name: "#1 PC i9-9900K", arch: "x64", compiler: "MPI (XYZ topology, 8 processes)", perfData: [
+        { name: "1.0 release", time: 3.82167, diff: 0.00643503, binsize: 1134176 },
+        { name: "1.1 release", time: 3.61083, diff: 0.00710943, binsize: 1074480 },
+        { name: "1.2 release", time: 3.6075, diff: 0.00865463, binsize: 1074488 }, ] },
+      { name: "#2 Raspberry Pi 4", arch: "Arm64", compiler: "GCC (sequential)", perfData: [
+        { name: "1.1 release", time: 61.6625, diff: 0.431186, binsize: 735344 },
+        { name: "1.2 release", time: 61.7725, diff: 0.564082, binsize: 735344 }, ] },
+      { name: "#2 Raspberry Pi 4", arch: "Arm64", compiler: "MPI (XY topology, 4 processes)", perfData: [
+        { name: "1.1 release", time: 28.4108, diff: 0.0975764, binsize: 913312 },
+        { name: "1.2 release", time: 28.1033, diff: 0.132836, binsize: 913320 }, ] },
+      { name: "#3 StarFive VisionFive", arch: "RV64GC", compiler: "GCC (sequential)", perfData: [
+        { name: "1.2 release", time: 496.644, diff: 2.85636, binsize: 686624 }, ] },
+      { name: "#3 StarFive VisionFive", arch: "RV64GC", compiler: "MPI (X topology, 2 processes)", perfData: [
+        { name: "1.2 release", time: 289.362, diff: 0.722665, binsize: 834440 }, ] },
+    ]
 
-	</script>
-	</body>
+    shownReleases = ["1.2 release", "1.1 release", "1.0 release"];
+    latestRelease = "1.2 release";
+
+    var perfBinSize = {
+      labels: shownReleases,
+      datasets: []
+    }
+
+    var perfTime = {
+      labels: shownReleases,
+      datasets: []
+    }
+
+    var perfScore = {
+      labels: ["SCORE"],
+      datasets: []
+    }
+
+    for (let i = 0; i < data.length; i++) {
+      timeData = []
+      binsizeData = []
+
+      for (let j = 0; j < shownReleases.length; j++) {
+        for (let k = 0; k < data[i].perfData.length; k++) {
+          if (data[i].perfData[k].name == shownReleases[j]) {
+            timeData.push(data[i].perfData[k].time);
+            binsizeData.push(Math.round(data[i].perfData[k].binsize / 1024));
+            break;
+          }
+        }
+      }
+
+      for (let j = 0; j < data[i].perfData.length; j++) {
+        if (latestRelease == data[i].perfData[j].name) {
+          perfScore.datasets.push(getDatasetElement(getNameForGraphWithRelease(data[i], data[i].perfData[j]), [getScore(data[i].perfData[j].time)]));
+          break;
+        }
+      }
+
+      perfBinSize.datasets.push(getDatasetElement(getNameForGraph(data[i]), binsizeData));
+      perfTime.datasets.push(getDatasetElement(getNameForGraph(data[i]), timeData));
+    }
+
+    window.onload = function() {
+      var canvas_score = document.getElementById("canvas_score");
+      window.perfScore = getBarChart(canvas_score.getContext("2d"), perfScore, "fdtd3d performance benchmark (score, the higher the better)");
+
+      var canvas_time = document.getElementById("canvas_time");
+      window.perfTime = getBarChart(canvas_time.getContext("2d"), perfTime, "fdtd3d performance benchmark (seconds, the smaller the better)");
+
+      var canvas_binsize = document.getElementById("canvas_binsize");
+      window.perfBinSize = getBarChart(canvas_binsize.getContext("2d"), perfBinSize, "fdtd3d binary size (Kb, the smaller the better)");
+    }
+  </script>
+  </body>
 </html>
