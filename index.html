@@ -27,6 +27,7 @@
       #2. Raspberry Pi 4 4Gb, Arm64: Broadcom BCM2711, Quad core Cortex-A72 (ARM v8), 4Gb RAM, 64bit Ubuntu 22.04.4 Desktop (Linux 5.15.0 kernel), GCC 11.4.0, OpenMPI 4.1.2, "performance" scaling governor, cpu freq 1500000, fan/screen/keyboard/mouse attached, 5V 2A power adapter<br>
       #3. StarFive VisionFive 8Gb, RISC-V: StarFive JH7100, Dual core SiFive U74 (RV64GC=rv64imafdc_zicsr_zifencei), 8 Gb RAM, Ubuntu 23.10 Server (Linux 6.5.0 kernel), GCC 13.2.0, OpenMPI X.X.X, scaling governor not available, default cpu freq, fan attached, 5V 2A power adapter<br>
       #4. Raspberry Pi 4 4Gb, Arm32 (hardfp): Broadcom BCM2711, Quad core Cortex-A72 (ARM v8), 4Gb RAM, 64bit Ubuntu 22.04.4 Desktop (Linux 5.15.0 kernel) with 32bit rootfs, GCC 11.4.0, OpenMPI 4.1.2, "performance" scaling governor, cpu freq 1500000, fan attached, 5V 2A power adapter<br>
+      #5. StarFive VisionFive 2 8Gb, RISC-V: StarFive JH7110, Quad core SiFive U74 (RV64GC=rv64imafdc_zicsr_zifencei), 8 Gb RAM, Debian Bookwork from StarFive (Linux 6.1.31 kernel), GCC 12.2.0, OpenMPI 4.1.4, "performance" scaling governor, cpu freq 1500000, fan attached, 5V 2A power adapter<br>
 
       <h1>II. Notes</h1>
       1. benchmark: vacuum, 3d 50x50x50, 300 time steps, total field scattered field 26x26x26, pml 30x30x30, no saving of result to disk, use Ca/Cb<br>
@@ -60,6 +61,8 @@
       - [Sequential] #3 StarFive VisionFive RV64GC: <code>496.644 +- 2.85636 seconds, binary size: 686624 byte</code><br>
       - [Best] #3 StarFive VisionFive RV64GC (MPI, X topology, 2 processes): <code>289.362 +- 0.722665 seconds, binary size: 834440 byte</code><br>
       - [Sequential] #4 Raspberry Pi 4 Arm32 (hardfp): <code>74.4635 +- 0.532851 seconds, binary size: 598244 byte</code><br>
+      - [Sequential] #5 StarFive VisionFive 2 RV64GC: <code>177.729 +- 0.12831 seconds, binary size: 621944 byte</code><br>
+      - [Best] #5 StarFive VisionFive 2 RV64GC (MPI, XY topology, 4 processes): <code>53.2233 +- 0.0573871 seconds, binary size: 774488 byte</code><br>
       <h2>Release 1.1</h2>
       - [Sequential] #1 PC i9-9900K x64: <code>16 +- 0.0341937 seconds, binary size: 869592 byte</code><br>
       - [Best] #1 PC i9-9900K x64 (MPI, XYZ topology, 8 processes): <code>3.61083 +- 0.00710943 seconds, binary size: 1074480</code><br>
@@ -67,12 +70,14 @@
       - [Best] #2 Raspberry Pi 4 Arm64 (MPI, XY topology, 4 processes): <code>28.4108 +- 0.0975764 seconds, binary size: 913312</code><br>
       - [Best][Sequential] #3 StarFive VisionFive RV64GC: not supported<br>
       - [Sequential] #4 Raspberry Pi 4 Arm32 (hardfp): <code>74.853 +- 0.41344 seconds, binary size: 598244 byte</code><br>
+      - [Best][Sequential] #5 StarFive VisionFive 2 RV64GC: not supported<br>
       <h2>Release 1.0</h2>
       - [Sequential] #1 PC i9-9900K x64: <code>17.9 +- 0.0305838 seconds, binary size: 924048 byte</code><br>
       - [Best] #1 PC i9-9900K x64 (MPI, XYZ topology, 8 processes): <code>3.82167 +- 0.00643503 seconds, binary size: 1134176 byte</code><br>
       - [Best][Sequential] #2 Raspberry Pi 4 Arm64: not supported<br>
       - [Best][Sequential] #3 StarFive VisionFive RV64GC: not supported<br>
       - [Best][Sequential] #4 Raspberry Pi 4 Arm32 (hardfp): not supported<br>
+      - [Best][Sequential] #5 StarFive VisionFive 2 RV64GC: not supported<br>
     </div>
 
   <script>
@@ -137,7 +142,12 @@
         { name: "1.2 release", time: 289.362, diff: 0.722665, binsize: 834440 }, ] },
       { name: "#4 Raspberry Pi 4", arch: "Arm32 (hardfp)", compiler: "GCC (sequential)", perfData: [
         { name: "1.1 release", time: 74.853, diff: 0.41344, binsize: 598244 },
-        { name: "1.2 release", time: 74.4635, diff: 0.532851, binsize: 598244 }, ] }
+        { name: "1.2 release", time: 74.4635, diff: 0.532851, binsize: 598244 }, ] },
+      { name: "#5 StarFive VisionFive 2", arch: "RV64GC", compiler: "GCC (sequential)", perfData: [
+        { name: "1.2 release", time: 177.729, diff: 0.12831, binsize: 621944 }, ] },
+      { name: "#5 StarFive VisionFive 2", arch: "RV64GC", compiler: "MPI (XY topology, 4 processes)", perfData: [
+        { name: "1.2 release", time: 53.2233, diff: 0.0573871, binsize: 774488 }, ] },
+
     ]
 
     shownReleases = ["1.2 release", "1.1 release", "1.0 release"];
