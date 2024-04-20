@@ -209,13 +209,16 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, /**< gri
   getMaxValues (maxRe, minRe, maxIm, minIm, maxMod, minMod,
                 grid, startCoord, endCoord, time_step_back);
 
-  grid_coord coordStart1, coordEnd1;
-  grid_coord coordStart2, coordEnd2;
-  grid_coord coordStart3, coordEnd3;
+  grid_coord coordStart1 = 0;
+  grid_coord coordEnd1 = 0;
+  grid_coord coordStart2 = 0;
+  grid_coord coordEnd2 = 0;
+  grid_coord coordStart3 = 0;
+  grid_coord coordEnd3 = 0;
 
-  grid_coord size1;
-  grid_coord size2;
-  grid_coord size3;
+  grid_coord size1 = 0;
+  grid_coord size2 = 0;
+  grid_coord size3 = 0;
 
   if (BMPhelper.getOrthogonalAxis () == OrthogonalAxis::X)
   {
@@ -258,6 +261,10 @@ BMPDumper<GridCoordinate3D>::writeToFile (Grid<GridCoordinate3D> *grid, /**< gri
     coordStart3 = startCoord.get2 ();
     coordEnd3 = endCoord.get2 ();
     size3 = sy;
+  }
+  else
+  {
+    UNREACHABLE;
   }
 
   // Create image for current values and max/min values.
