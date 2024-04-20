@@ -18,7 +18,7 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-file(GLOB_RECURSE FILE_MANAGER_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB FILE_MANAGER_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
 add_library (FM ${FILE_MANAGER_SOURCES})
 target_link_libraries (FM EasyBMP Helpers)
