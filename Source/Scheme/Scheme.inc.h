@@ -4558,7 +4558,7 @@ Scheme<Type, TCoord, layout_type>::saveNTFF (bool isReverse, time_step t)
     rightNTFF = rightNTFF - stepNTFF;
 
     std::ofstream outfile;
-    std::ostream *outs;
+    std::ostream *outs = NULLPTR;
     const char *strName;
     FPValue start;
     FPValue end;
