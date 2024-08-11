@@ -68,6 +68,10 @@ Parameters can be passed directly to `fdtd3d` through command line or config fil
 # --wavelength 0.02
 ```
 
+# Performance Benchmark
+
+`fdtd3d` can be used as a performance benchmark. See https://zer011b.github.io/fdtd3d/ for more details and some performance results on different architectures and in different modes.
+
 # How To Cite
 
 You can site the following papers about the techniques used in fdtd3d:
