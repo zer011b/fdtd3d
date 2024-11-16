@@ -118,6 +118,33 @@ Add this to `cmake` command:
 -DLINK_NUMA=ON
 ```
 
-# Cross build for ARM
+# Cross build
 
 See [cross build](CrossBuild.md).
+
+# Benchmark build
+
+Sequentual build
+```sh
+cmake .. -DCMAKE_BUILD_TYPE=Release -DSOLVER_DIM_MODES=DIM3 -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DPRINT_MESSAGE=ON -DPARALLEL_GRID=OFF
+make fdtd3dbench
+```
+
+# WebAssembly build
+
+Steps:
+- Add `emcmake` before `cmake` command
+- Increase inital memory size with `-s INITIAL_MEMORY=134217728`
+- Set `-g2` debuggability level
+- Add `emmake` before `make` command
+- In order to generate htlm directly, change `CMAKE_EXECUTABLE_SUFFIX` to `.html` in /usr/share/emscripten/cmake/Modules/Platform/Emscripten.cmake
+
+For example:
+```sh
+mkdir Release
+cd Release
+emcmake cmake .. -DCMAKE_CXX_FLAGS="-g2" -DCMAKE_EXE_LINKER_FLAGS="-s INITIAL_MEMORY=134217728" -DCMAKE_BUILD_TYPE=Release -DSOLVER_DIM_MODES=DIM3 -DVALUE_TYPE=d -DCOMPLEX_FIELD_VALUES=ON -DPRINT_MESSAGE=ON -DPARALLEL_GRID=OFF
+emmake make fdtd3dbench
+```
+
+This will create `fdtd3d.js`, `fdtd3d.wasm` and `fdtd3d.html`.
