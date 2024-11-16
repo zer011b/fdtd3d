@@ -21,13 +21,17 @@
 #include "PAssert.h"
 
 #include <cstdlib>
+
+#ifdef HAVE_EXECINFO_H
 #include <execinfo.h>
+#endif // HAVE_EXECINFO_H
 
 /**
  * This function is used to exit and for debugging purposes.
  */
 void program_fail ()
 {
+#ifdef HAVE_EXECINFO_H
   const unsigned bufsize = 256;
   int nptrs;
   void *buffer[bufsize];
@@ -50,6 +54,7 @@ void program_fail ()
   }
 
   free(strings);
+#endif // HAVE_EXECINFO
 
   exit (1);
 } /* program_fail */
