@@ -78,8 +78,7 @@ void initParallel (ParallelYeeGridLayout<Type, layout_type> **yeeLayout,
                    ParallelGridCoordinate overallSize,
                    ParallelGridCoordinate pmlSize,
                    ParallelGridCoordinate tfsfSizeLeft,
-                   ParallelGridCoordinate tfsfSizeRight,
-                   int argc, char** argv)
+                   ParallelGridCoordinate tfsfSizeRight)
 {
   ParallelGridCoordinate topology (solverSettings.getTopologySizeX (),
                                    solverSettings.getTopologySizeY (),
@@ -125,15 +124,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ex
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), GridCoordinate1DTemplate, H_CENTERED> **layout,
@@ -144,15 +142,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ex
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHy)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_EX_HY */
@@ -166,15 +163,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ex
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), GridCoordinate1DTemplate, H_CENTERED> **layout,
@@ -185,15 +181,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ex
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_ExHz)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_EX_HZ */
@@ -207,15 +202,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ey
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), GridCoordinate1DTemplate, H_CENTERED> **layout,
@@ -226,15 +220,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ey
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHx)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_EY_HX */
@@ -248,15 +241,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ey
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), GridCoordinate1DTemplate, H_CENTERED> **layout,
@@ -267,15 +259,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ey
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EyHz)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_EY_HZ */
@@ -289,15 +280,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ez
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), GridCoordinate1DTemplate, H_CENTERED> **layout,
@@ -308,15 +298,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ez
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHx)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_EZ_HX */
@@ -330,15 +319,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ez
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), GridCoordinate1DTemplate, H_CENTERED> **layout,
@@ -349,15 +337,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_Ez
                    GridCoordinate1D overallSize,
                    GridCoordinate1D pmlSize,
                    GridCoordinate1D tfsfSizeLeft,
-                   GridCoordinate1D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate1D tfsfSizeRight)
 {
 #ifdef GRID_1D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim1_EzHy)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                  skipProcess, overallSize, pmlSize,
-                                                                                 tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                 tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_EZ_HY */
@@ -371,15 +358,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), GridCoordinate2DTemplate, H_CENTERED> **layout,
@@ -390,15 +376,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEx)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_TEX */
@@ -412,15 +397,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), GridCoordinate2DTemplate, H_CENTERED> **layout,
@@ -431,15 +415,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEy)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_TEY */
@@ -453,15 +436,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), GridCoordinate2DTemplate, H_CENTERED> **layout,
@@ -472,15 +454,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TE
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TEz)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_TEZ */
@@ -494,15 +475,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), GridCoordinate2DTemplate, H_CENTERED> **layout,
@@ -513,15 +493,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMx)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_TMX */
@@ -535,15 +514,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), GridCoordinate2DTemplate, H_CENTERED> **layout,
@@ -554,15 +532,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMy)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_TMY */
@@ -576,15 +553,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), GridCoordinate2DTemplate, H_CENTERED> **layout,
@@ -595,15 +571,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TM
                    GridCoordinate2D overallSize,
                    GridCoordinate2D pmlSize,
                    GridCoordinate2D tfsfSizeLeft,
-                   GridCoordinate2D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate2D tfsfSizeRight)
 {
 #ifdef GRID_2D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim2_TMz)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                                 skipProcess, overallSize, pmlSize,
-                                                                                tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                                tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_TMZ */
@@ -617,15 +592,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)),
                    GridCoordinate3D overallSize,
                    GridCoordinate3D pmlSize,
                    GridCoordinate3D tfsfSizeLeft,
-                   GridCoordinate3D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate3D tfsfSizeRight)
 {
 #ifdef GRID_3D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim3)), E_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                             skipProcess, overallSize, pmlSize,
-                                                                            tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                            tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTemplate, H_CENTERED> **layout,
@@ -636,15 +610,14 @@ void initParallel (YeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)),
                    GridCoordinate3D overallSize,
                    GridCoordinate3D pmlSize,
                    GridCoordinate3D tfsfSizeLeft,
-                   GridCoordinate3D tfsfSizeRight,
-                   int argc, char** argv)
+                   GridCoordinate3D tfsfSizeRight)
 {
 #ifdef GRID_3D
   ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), H_CENTERED> **pLayout =
     (ParallelYeeGridLayout<(static_cast<SchemeType_t> (SchemeType::Dim3)), H_CENTERED> **) layout;
   initParallel<(static_cast<SchemeType_t> (SchemeType::Dim3)), H_CENTERED> (pLayout, parallelGridCore, rank, numProcs,
                                                                             skipProcess, overallSize, pmlSize,
-                                                                            tfsfSizeLeft, tfsfSizeRight, argc, argv);
+                                                                            tfsfSizeLeft, tfsfSizeRight);
 #endif
 }
 #endif /* MODE_DIM3 */
@@ -1075,7 +1048,7 @@ initSettings<(static_cast<SchemeType_t> (SchemeType::Dim3)), GridCoordinate3DTem
 #endif /* MODE_DIM3 */
 
 template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type>
-int runMode (int argc, char** argv)
+int runMode (int argc, const char * const * argv)
 {
   int rank = 0;
   int numProcs = 1;
@@ -1098,7 +1071,14 @@ int runMode (int argc, char** argv)
   bool isParallel = false;
 
 #if defined (PARALLEL_GRID)
-  MPI_Init(&argc, &argv);
+  char **argv2 = new char *[argc];
+  for (int i = 0; i < argc; ++i)
+  {
+    argv2[i] = new char[strlen(argv[i]) + 1];
+    strcpy (argv2[i], argv[i]);
+  }
+
+  MPI_Init(&argc, &argv2);
 
 #ifdef MPI_CLOCK
   DPRINTF (LOG_LEVEL_1, "MPI_Wtime resolution %.10f (seconds)\n", MPI_Wtick ());
@@ -1113,7 +1093,7 @@ int runMode (int argc, char** argv)
   {
     ALWAYS_ASSERT ((TCoord<grid_coord, false>::dimension == ParallelGridCoordinateTemplate<grid_coord, false>::dimension));
 
-    initParallel (&yeeLayout, &parallelGridCore, &rank, &numProcs, &skipProcess, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight, argc, argv);
+    initParallel (&yeeLayout, &parallelGridCore, &rank, &numProcs, &skipProcess, overallSize, pmlSize, tfsfSizeLeft, tfsfSizeRight);
   }
   else
 #endif
@@ -1211,12 +1191,20 @@ int runMode (int argc, char** argv)
       delete parallelGridCore;
 
       MPI_Barrier (MPI_COMM_WORLD);
-      MPI_Finalize ();
     }
 #else
     UNREACHABLE;
 #endif
   }
+
+#if defined (PARALLEL_GRID)
+  MPI_Finalize ();
+  for (int i = 0; i < argc; ++i)
+  {
+    delete[] argv2[i];
+  }
+  delete[] argv2;
+#endif
 
   if (rank == 0)
   {
@@ -1281,8 +1269,33 @@ int runMode (int argc, char** argv)
   return EXIT_OK;
 }
 
+#ifdef PREDEFINED_ARGS
+int main ()
+#else
 int main (int argc, char** argv)
+#endif
 {
+#ifdef PREDEFINED_ARGS
+  int argc = 28;
+  const char* argv[] = {"fdtd3dbench",
+                        "--time-steps", "300",
+                        "--size", "x:50,y:50,z:50",
+                        "--3d",
+                        "--angle-teta", "0",
+                        "--angle-phi", "0",
+                        "--angle-psi", "0",
+                        "--dx", "0.0005",
+                        "--wavelength", "0.02",
+                        "--log-level", "0",
+                        "--use-ca-cb",
+                        "--use-ca-cb-pml",
+                        "--pml-size", "x:10,y:10,z:10",
+                        "--use-pml",
+                        "--use-tfsf",
+                        "--tfsf-size-left", "x:12,y:12,z:12",
+                        "--tfsf-size-right", "x:12,y:12,z:12"};
+#endif
+
   solverSettings.SetupFromCmd (argc, argv);
 
   int exit_code = EXIT_OK;

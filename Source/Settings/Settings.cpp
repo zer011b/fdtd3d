@@ -20,6 +20,7 @@
 
 #include "Settings.h"
 
+#include <alloca.h>
 #include <string.h>
 #include <fstream>
 #include <cstring>
@@ -70,12 +71,14 @@ Settings::Uninitialize ()
  */
 CUDA_HOST
 void
-Settings::parseCoordinate (char *str, /**< string to parse */
+Settings::parseCoordinate (const char *str, /**< string to parse */
                            int &xval, /**< out: x value */
                            int &yval, /**< out: y value */
                            int &zval) /**< out: z value */
 {
-  char *coordStr = str;
+  const char *coordStr = str;
+  const int tmpBufSize = 16;
+  char * tmpCoordStr = (char *) alloca (tmpBufSize);
   int i = 0;
   while (coordStr[i] != '\0')
   {
@@ -90,20 +93,23 @@ Settings::parseCoordinate (char *str, /**< string to parse */
     {
       isEnd = true;
     }
-    coordStr[i] = '\0';
 
-    ASSERT (coordStr[1] == ':');
-    int val = STOI (coordStr+2);
+    ASSERT (i < tmpBufSize);
+    strncpy (tmpCoordStr, coordStr, i);
+    tmpCoordStr[i] = '\0';
 
-    if (coordStr[0] == 'x' || coordStr[0] == 'X')
+    ASSERT (tmpCoordStr[1] == ':');
+    int val = STOI (tmpCoordStr+2);
+
+    if (tmpCoordStr[0] == 'x' || tmpCoordStr[0] == 'X')
     {
       xval = val;
     }
-    else if (coordStr[0] == 'y' || coordStr[0] == 'Y')
+    else if (tmpCoordStr[0] == 'y' || tmpCoordStr[0] == 'Y')
     {
       yval = val;
     }
-    else if (coordStr[0] == 'z' || coordStr[0] == 'Z')
+    else if (tmpCoordStr[0] == 'z' || tmpCoordStr[0] == 'Z')
     {
       zval = val;
     }
@@ -126,7 +132,7 @@ CUDA_HOST
 int
 Settings::parseArg (int &index, /**< out: current argument index */
                     int argc, /**< total number of indexes */
-                    char **argv, /**< vector of cmd args */
+                    const char * const * argv, /**< vector of cmd args */
                     bool isCmd) /**< flag, whether argumens are passed through actual command line */
 {
   ASSERT (index >= 0 && index < argc);
@@ -370,7 +376,7 @@ Settings::parseArg (int &index, /**< out: current argument index */
 CUDA_HOST
 int
 Settings::setFromCmd (int argc, /**< number of arguments */
-                      char **argv, /**< arguments */
+                      const char * const * argv, /**< arguments */
                       bool isCmd) /**< flag, whether argumens are passed through actual command line */
 {
   if (argc == (isCmd ? 1 : 0))
@@ -519,7 +525,7 @@ Settings::loadCmdFromFile (std::string fileName) /**< name of file to load from 
 CUDA_HOST
 int
 Settings::saveCmdToFile (int argc, /**< number of arguments */
-                         char **argv, /**< arguments */
+                         const char * const * argv, /**< arguments */
                          std::string fileName) /**< name of file to save to */
 {
   printf ("Saving command line to file %s\n", fileName.c_str ());
@@ -550,7 +556,7 @@ Settings::saveCmdToFile (int argc, /**< number of arguments */
 CUDA_HOST
 void
 Settings::SetupFromCmd (int argc, /**< number of arguments */
-                        char **argv) /**< arguments */
+                        const char * const *argv) /**< arguments */
 {
   int status = setFromCmd (argc, argv, true);
 

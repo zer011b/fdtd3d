@@ -177,12 +177,12 @@ private:
 
 private:
 
-  CUDA_HOST int parseArg (int &, int, char **, bool);
-  CUDA_HOST int setFromCmd (int, char **, bool);
+  CUDA_HOST int parseArg (int &, int, const char * const *, bool);
+  CUDA_HOST int setFromCmd (int, const char * const *, bool);
   CUDA_HOST int loadCmdFromFile (std::string);
-  CUDA_HOST int saveCmdToFile (int, char **, std::string);
+  CUDA_HOST int saveCmdToFile (int, const char * const *, std::string);
 
-  CUDA_HOST void parseCoordinate (char *, int &, int &, int &);
+  CUDA_HOST void parseCoordinate (const char *, int &, int &, int &);
 
 #ifdef CUDA_ENABLED
   CUDA_HOST void prepareDeviceSettings ();
@@ -226,7 +226,7 @@ public:
   CUDA_HOST void Uninitialize ();
 
   CUDA_HOST
-  void SetupFromCmd (int, char **);
+  void SetupFromCmd (int, const char * const *);
 
 #define SETTINGS_ELEM_FIELD_TYPE_NONE(fieldName, getterName, fieldType, defaultVal, cmdArg, description) \
   CUDA_DEVICE CUDA_HOST fieldType getterName () \

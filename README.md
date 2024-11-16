@@ -8,7 +8,7 @@
 
 # fdtd3d
 
-This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP/Cuda) if required and for different architectures (x64, Arm, Arm64, RISC-V, PowerPC). The key idea is building of solver for your specific needs with different components, i.e. concurrency support with enabled MPI, OpenMP or GPU support, parallel buffer types, specific dimension and others. OpenMP support is WIP.
+This is an open-source implementation of FDTD Maxwell's equations solver for different dimensions (1, 2 or 3) with support of concurrency (MPI/OpenMP/Cuda) if required and for different architectures (x64, Arm, Arm64, RISC-V, PowerPC, Wasm). The key idea is building of solver for your specific needs with different components, i.e. concurrency support with enabled MPI, OpenMP or GPU support, parallel buffer types, specific dimension and others. OpenMP support is WIP.
 
 For additional info on current project development status and future plans check issues and milestones, design docs are available at [documentation](Docs/Design.md). Also, doxygen documentation can be generated from config in `./Doxyfile`:
 
@@ -26,7 +26,7 @@ Build is done using cmake:
 mkdir Release
 cd Release
 cmake .. -DCMAKE_BUILD_TYPE=Release
-make
+make fdtd3d
 ```
 
 See [documentation](Docs/Build.md) for specific details.
