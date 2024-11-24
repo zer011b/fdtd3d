@@ -72,9 +72,26 @@
             //text = text.replace(/</g, "&lt;");
             //text = text.replace(/>/g, "&gt;");
             //text = text.replace('\n', '<br>', 'g');
+            var execTimeStrStart = "Total time = ";
+            var execTimeStrEnd = " seconds";
+            var execTimeStart = text.indexOf(execTimeStrStart);
+            var execTime = 0;
+            if (execTimeStart != -1) {
+              execTimeStart += execTimeStrStart.length;
+              var execTimeEnd = text.indexOf(execTimeStrEnd);
+              if (execTimeEnd != -1) {
+                execTime = text.substring(execTimeStart, execTimeEnd);
+              }
+            }
+
             console.log(text);
             if (element) {
               element.value += text + "\n";
+              if (execTime != 0) {
+                var score = "SCORE: " + 300*100/execTime + "\n";
+                element.value += score;
+                console.log(score);
+              }
               element.scrollTop = element.scrollHeight; // focus on bottom
             }
           };
