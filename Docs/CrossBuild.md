@@ -17,9 +17,9 @@ add_link_options("-Wl,--verbose")
 
 # Rootfs generation
 
-## Using script, Ubuntu rootfs generation
+## Using script, Ubuntu/Debian rootfs generation
 
-You can use `create-ubuntu-rootfs.sh` script to generate ubuntu rootfs for different architectures. Prerequisite: `apt install qemu-user-static debootstrap`.
+You can use `create-ubuntu-rootfs.sh` and `create-debian-rootfs.sh` scripts to generate ubuntu/debian rootfs for different architectures. Prerequisite: `apt install qemu-user-static debootstrap`.
 
 To generate rootfs for ubuntu 20.04 armhf:
 ```sh
@@ -28,10 +28,15 @@ sudo ./create-ubuntu-rootfs.sh armhf focal
 
 To generate rootfs for ubuntu 18.04 arm64:
 ```sh
-sudo ./create-ubuntu-roofs.sh arm64 bionic
+sudo ./create-ubuntu-rootfs.sh arm64 bionic
 ```
 
-And so on. By default `./rootfs/<arch>` directory is created for rootfs if nothing is passed in third argument of `create-ubuntu-rootfs`.
+To generate rootfs for debian sid loongarch64:
+```sh
+sudo ./create-debian-rootfs.sh loongarch64 sid
+```
+
+And so on. By default `./rootfs/<arch>` directory is created for rootfs if nothing is passed in third argument of `create-ubuntu-rootfs` and `create-debian-rootfs`.
 
 ## Manually from image, Raspbian rootfs for Raspberry Pi (arm32)
 
@@ -106,20 +111,20 @@ Another way is to create rootfs with all required libs from scratch: https://wik
 
 ## `chroot failed: no such file or directory`
 
-Debootstrap might fail with smth like `chroot failed: no such file or directory` during rootfs generation when it needs to continue setup in rootfs. 
+Debootstrap might fail with smth like `chroot failed: no such file or directory` during rootfs generation when it needs to continue setup in rootfs.
 Or same can happen during manual chroot `sudo chroot ./rootfs/<arch> /bin/bash`, which also fails with same error as debootstrap even though `/bin/bash` is present in rootfs.
 
-To fix this first check that `qemu-<arch>-static` is copied from `/usr/bin/` on host to `/usr/bin` in rootfs. If it's not copied, do that manually. 
+To fix this first check that `qemu-<arch>-static` is copied from `/usr/bin/` on host to `/usr/bin` in rootfs. If it's not copied, do that manually.
 
 If this doesn't solve the problem, this means that binfmt was misconfigured for some reason. To verify this try `sudo chroot ./rootfs/<arch> /usr/bin/qemu-<arch>-static /bin/bash`, and if it works, the problem is indeed with binfmt.
 
-1. First check that binfmt is enabled with `cat /proc/sys/fs/binfmt_misc/status`. 
+1. First check that binfmt is enabled with `cat /proc/sys/fs/binfmt_misc/status`.
 2. Then check that config for required arch is present with `cat /proc/sys/fs/binfmt_misc/qemu-<arch>` or `update-binfmts --display`, and that this arch is enabled.
 3. Even if both are present and seem correct, there migt be misconfiguration (i.e. binfmt arch config is outdated). To update config follow next steps (example for RISC-V from https://wiki.debian.org/RISC-V#Manual_qemu-user_installation):
 
 ```sh
 $ cat >/tmp/qemu-riscv64 <<EOF
-package qemu-user-static 
+package qemu-user-static
 type magic
 offset 0
 magic \x7f\x45\x4c\x46\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xf3\x00
