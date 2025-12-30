@@ -30,15 +30,15 @@ set -e
 
 # Architecture of rootfs
 ARCH=$1; shift
-if [ "$ARCH" != "arm64" ] && [ "$ARCH" != "armhf" ] && [ "$ARCH" != "riscv64" ] && [ "$ARCH" != "ppc64el" ]; then
-  echo "Only next architectures are supported: arm64, armhf, riscv64, ppc64el."
+if [ "$ARCH" != "arm64" ] && [ "$ARCH" != "armhf" ] && [ "$ARCH" != "riscv64" ] && [ "$ARCH" != "ppc64el" ] && [ "$ARCH" != "s390x" ]; then
+  echo "Only next architectures are supported: arm64, armhf, riscv64, ppc64el, s390x."
   exit 1
 fi
 
 # Version
 VERSION=$1; shift
-if [ "$VERSION" != "trusty" ] && [ "$VERSION" != "xenial" ] && [ "$VERSION" != "bionic" ] && [ "$VERSION" != "focal" ] && [ "$VERSION" != "jammy" ]; then
-  echo "Only next ubuntu versions are supported: 14.04 (trusty), 16.04 (xenial), 18.04 (bionic), 20.04 (focal), 22.04 (jammy)"
+if [ "$VERSION" != "trusty" ] && [ "$VERSION" != "xenial" ] && [ "$VERSION" != "bionic" ] && [ "$VERSION" != "focal" ] && [ "$VERSION" != "jammy" ] && [ "$VERSION" != "noble" ]; then
+  echo "Only next ubuntu versions are supported: 14.04 (trusty), 16.04 (xenial), 18.04 (bionic), 20.04 (focal), 22.04 (jammy), 24.04 (noble)"
   exit 1
 fi
 
