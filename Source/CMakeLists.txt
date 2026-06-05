@@ -50,7 +50,13 @@ add_subdirectory (Tools)
 
 add_subdirectory (UnitTests)
 
-if ("${CUDA_ENABLED}")
+if ("${USE_HIP}")
+  add_executable (fdtd3d main.cu)
+  set_source_files_properties (main.cu PROPERTIES LANGUAGE HIP)
+  set_target_properties (fdtd3d PROPERTIES
+    HIP_ARCHITECTURES "${CMAKE_HIP_ARCHITECTURES}"
+    HIP_SEPARABLE_COMPILATION ON)
+elseif ("${CUDA_ENABLED}")
   add_executable (fdtd3d main.cu)
   set_target_properties (fdtd3d PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 else ()

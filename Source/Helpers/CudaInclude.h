@@ -24,6 +24,8 @@
 #ifdef CUDA_ENABLED
 #ifdef CUDA_SOURCES
 
+#include "cuda_to_hip.h"
+
 enum CudaExitStatus
 {
   CUDA_OK,

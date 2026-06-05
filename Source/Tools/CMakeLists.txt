@@ -18,5 +18,15 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+if ("${USE_HIP}")
+  set_source_files_properties(converter.cpp PROPERTIES LANGUAGE HIP)
+endif()
+
 add_executable (fdtd3d-convert converter.cpp)
 target_link_libraries (fdtd3d-convert Dumper Loader Settings Grid)
+
+if ("${USE_HIP}")
+  set_target_properties(fdtd3d-convert PROPERTIES
+    HIP_ARCHITECTURES "${CMAKE_HIP_ARCHITECTURES}"
+    HIP_SEPARABLE_COMPILATION ON)
+endif()
