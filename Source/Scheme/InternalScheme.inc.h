@@ -28,7 +28,7 @@ namespace InternalSchemeKernelHelpers
                                      time_step t)
   {
     ASSERT (blockIdx.x == 0 && blockDim.x == 1 && threadIdx.x == 0);
-    gpuScheme->performPointSourceCalc<grid_type> (t);
+    gpuScheme->template performPointSourceCalc<grid_type> (t);
   }
 
   /**
@@ -121,7 +121,7 @@ namespace InternalSchemeKernelHelpers
 
     if (usePrecomputedGrids)
     {
-      gpuScheme->calculateFieldStepIteration<grid_type, true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+      gpuScheme->template calculateFieldStepIteration<grid_type, true> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                          grid, coordFP,
                                                          oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
                                                          usePML,
@@ -130,7 +130,7 @@ namespace InternalSchemeKernelHelpers
     }
     else
     {
-      gpuScheme->calculateFieldStepIteration<grid_type, false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
+      gpuScheme->template calculateFieldStepIteration<grid_type, false> (timestep, pos, posAbs, diff11, diff12, diff21, diff22,
                                                          grid, coordFP,
                                                          oppositeGrid1, oppositeGrid2, rightSideFunc, Ca, Cb,
                                                          usePML,
@@ -162,7 +162,7 @@ namespace InternalSchemeKernelHelpers
 
     if (usePrecomputedGrids)
     {
-      gpuScheme->calculateFieldStepIterationCurrent<grid_type, true> (current,
+      gpuScheme->template calculateFieldStepIterationCurrent<grid_type, true> (current,
                                                                       grid, Ca, Cb,
                                                                       usePML,
                                                                       gridType, materialGrid, materialGridType,
@@ -170,7 +170,7 @@ namespace InternalSchemeKernelHelpers
     }
     else
     {
-      gpuScheme->calculateFieldStepIterationCurrent<grid_type, false> (current,
+      gpuScheme->template calculateFieldStepIterationCurrent<grid_type, false> (current,
                                                                       grid, Ca, Cb,
                                                                       usePML,
                                                                       gridType, materialGrid, materialGridType,
@@ -217,14 +217,14 @@ namespace InternalSchemeKernelHelpers
 
     if (usePrecomputedGrids)
     {
-      gpuScheme->calculateFieldStepIterationPMLMetamaterials<true> (t, pos, grid, gridPML, CB0, CB1, CB2, CA1, CA2,
+      gpuScheme->template calculateFieldStepIterationPMLMetamaterials<true> (t, pos, grid, gridPML, CB0, CB1, CB2, CA1, CA2,
         gridType,
         materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
         materialModifier);
     }
     else
     {
-      gpuScheme->calculateFieldStepIterationPMLMetamaterials<false> (t, pos, grid, gridPML, CB0, CB1, CB2, CA1, CA2,
+      gpuScheme->template calculateFieldStepIterationPMLMetamaterials<false> (t, pos, grid, gridPML, CB0, CB1, CB2, CA1, CA2,
         gridType,
         materialGrid1, materialGridType1, materialGrid2, materialGridType2, materialGrid3, materialGridType3,
         materialModifier);
@@ -269,13 +269,13 @@ namespace InternalSchemeKernelHelpers
 
     if (usePrecomputedGrids)
     {
-      gpuScheme->calculateFieldStepIterationPML<useMetamaterials, true> (t, pos, grid, gridPML1, gridPML2, Ca, Cb, Cc,
+      gpuScheme->template calculateFieldStepIterationPML<useMetamaterials, true> (t, pos, grid, gridPML1, gridPML2, Ca, Cb, Cc,
         gridPMLType1, materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
         materialModifier);
     }
     else
     {
-      gpuScheme->calculateFieldStepIterationPML<useMetamaterials, false> (t, pos, grid, gridPML1, gridPML2, Ca, Cb, Cc,
+      gpuScheme->template calculateFieldStepIterationPML<useMetamaterials, false> (t, pos, grid, gridPML1, gridPML2, Ca, Cb, Cc,
         gridPMLType1, materialGrid1, materialGridType1, materialGrid4, materialGridType4, materialGrid5, materialGridType5,
         materialModifier);
     }
@@ -304,7 +304,7 @@ namespace InternalSchemeKernelHelpers
     }
     TCoord<grid_coord, true> posAbs = TCoord<grid_coord, true>::initAxesCoordinate (pos3D.get1 (), pos3D.get2 (), pos3D.get3 (), ct1, ct2, ct3);
 
-    gpuScheme->calculateFieldStepIterationBorder<grid_type> (t, posAbs, grid, borderFunc);
+    gpuScheme->template calculateFieldStepIterationBorder<grid_type> (t, posAbs, grid, borderFunc);
   }
 
   template <SchemeType_t Type, template <typename, bool> class TCoord, LayoutType layout_type, uint8_t grid_type>
@@ -337,7 +337,7 @@ namespace InternalSchemeKernelHelpers
     FPValue maxIm = 0;
     FPValue maxMod = 0;
 
-    gpuScheme->calculateFieldStepIterationExact<grid_type> (t, posAbs, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
+    gpuScheme->template calculateFieldStepIterationExact<grid_type> (t, posAbs, grid, exactFunc, normRe, normIm, normMod, maxRe, maxIm, maxMod);
 
     atomicAdd (&gpuScheme->getd_norm ()[0], normRe);
     atomicAdd (&gpuScheme->getd_norm ()[1], normRe);

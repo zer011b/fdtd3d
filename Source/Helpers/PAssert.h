@@ -33,10 +33,38 @@
  *    be preprocessed for CPU and GPU separately)
  */
 
+/*
+ * HIP compiles __device__ functions during both host and device passes for semantic
+ * checking. Unlike NVCC, __HIP_DEVICE_COMPILE__ is only set during the device pass.
+ * We must provide both host and device-compatible versions of program_fail, callable
+ * from __host__ __device__ functions.
+ */
+#if defined(__HIPCC__)
+/* HIP path: unified __host__ __device__ wrapper to assert(0) on both sides */
+extern void program_fail ();  /* Host-only, declared for pure-host code (defined in PAssert.cpp) */
+__host__ __device__ inline void program_fail_hd ()
+{
+#if defined(__HIP_DEVICE_COMPILE__)
+  assert(0);
+#else
+  program_fail();
+#endif
+}
+#define PROGRAM_FAIL program_fail_hd()
+#if defined(__HIP_DEVICE_COMPILE__)
+#define SOLVER_SETTINGS (*cudaSolverSettings)
+#define PROGRAM_FAIL_EXIT
+#define PROGRAM_OK_EXIT *retval = CUDA_OK; return;
+#else
+#define SOLVER_SETTINGS solverSettings
+#define PROGRAM_FAIL_EXIT
+#define PROGRAM_OK_EXIT
+#endif
+#elif defined(__CUDACC__)
+/* NVCC path: original logic */
 #ifndef __CUDA_ARCH__
 extern void program_fail ();
 #endif /* !__CUDA_ARCH__ */
-
 #ifdef __CUDA_ARCH__
 #define PROGRAM_FAIL assert(0)
 #define SOLVER_SETTINGS (*cudaSolverSettings)
@@ -49,19 +77,40 @@ extern void program_fail ();
 #define PROGRAM_FAIL_EXIT
 #define PROGRAM_OK_EXIT
 #endif /* !__CUDA_ARCH__ */
+#else
+/* CPU-only path */
+extern void program_fail ();
+#define PROGRAM_FAIL program_fail()
+#define SOLVER_SETTINGS solverSettings
+#define PROGRAM_FAIL_EXIT
+#define PROGRAM_OK_EXIT
+#endif
 
-#ifdef __CUDACC__
+#if defined(__CUDACC__) || defined(__HIPCC__)
 #define CUDA_DEVICE __device__
 #define CUDA_HOST __host__
-#else /* __CUDACC__ */
+#else /* __CUDACC__ || __HIPCC__ */
 #define CUDA_DEVICE
 #define CUDA_HOST
-#endif /* !__CUDACC__ */
+#endif /* !__CUDACC__ && !__HIPCC__ */
 
 /*
- * Printf used for logging
+ * Printf used for logging.
+ *
+ * HIP note: DPRINTF accesses SOLVER_SETTINGS, which differs between host (solverSettings)
+ * and device (cudaSolverSettings). When HIP compiles __device__ functions during the host
+ * pass for semantic analysis, referencing host-only variables causes errors. For HIP, we
+ * skip the log-level check and always print when PRINT_MESSAGE is enabled. This is slightly
+ * more verbose but avoids the cross-compilation host/device symbol visibility issue.
  */
 #if PRINT_MESSAGE
+#if defined(__HIPCC__)
+/* HIP: always print, bypassing SOLVER_SETTINGS to avoid host/device symbol issues */
+#define DPRINTF(logLevel, ...) \
+  { \
+    printf (__VA_ARGS__); \
+  }
+#else
 #define DPRINTF(logLevel, ...) \
   { \
     if (SOLVER_SETTINGS.getLogLevel () >= logLevel) \
@@ -69,6 +118,7 @@ extern void program_fail ();
       printf (__VA_ARGS__); \
     } \
   }
+#endif
 #else /* PRINT_MESSAGE */
 #define DPRINTF(...)
 #endif /* !PRINT_MESSAGE */
