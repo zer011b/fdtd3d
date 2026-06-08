@@ -20,7 +20,11 @@
 
 #include "Settings.h"
 
+#ifdef _WIN32
+#include <malloc.h>   /* alloca on Windows */
+#else
 #include <alloca.h>
+#endif
 #include <string.h>
 #include <fstream>
 #include <cstring>
