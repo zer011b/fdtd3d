@@ -24,6 +24,20 @@
 #include "PAssert.h"
 #include "Settings.h"
 
+#ifndef MPI_CLOCK
+#include <time.h>
+#ifdef _WIN32
+/* Windows lacks clock_gettime/CLOCK_MONOTONIC; shim via timespec_get */
+#ifndef CLOCK_MONOTONIC
+#define CLOCK_MONOTONIC 1
+static inline int clock_gettime (int, struct timespec *ts)
+{
+  return timespec_get (ts, TIME_UTC) != 0 ? 0 : -1;
+}
+#endif
+#endif
+#endif
+
 #ifdef MPI_CLOCK
 #ifndef PARALLEL_GRID
 #error Parallel Grid should be used with mpi clock

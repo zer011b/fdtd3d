@@ -21,7 +21,20 @@
 #include <iostream>
 
 #include <ctime>
+#ifdef _WIN32
+#include <time.h>
+/* gettimeofday shim for Windows using timespec_get */
+struct timeval { long tv_sec; long tv_usec; };
+static inline int gettimeofday(struct timeval *tv, void *) {
+  struct timespec ts;
+  timespec_get(&ts, TIME_UTC);
+  tv->tv_sec  = (long)ts.tv_sec;
+  tv->tv_usec = (long)(ts.tv_nsec / 1000);
+  return 0;
+}
+#else
 #include <sys/time.h>
+#endif
 
 #if defined (PARALLEL_GRID)
 #include "ParallelGrid.h"
