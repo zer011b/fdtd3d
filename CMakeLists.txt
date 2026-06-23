@@ -94,11 +94,9 @@ endif ()
 if ("${USE_HIP}")
   # HIP build for AMD GPUs: set CUDA_ENABLED to reuse the GPU code paths
   set(CUDA_ENABLED ON)
+  # enable_language(HIP) honors an explicit -DCMAKE_HIP_ARCHITECTURES, otherwise
+  # auto-detects the host GPU(s), and errors on a no-GPU build host.
   enable_language (HIP)
-  # Default to gfx90a if CMAKE_HIP_ARCHITECTURES is not set
-  if(NOT DEFINED CMAKE_HIP_ARCHITECTURES OR CMAKE_HIP_ARCHITECTURES STREQUAL "")
-    set(CMAKE_HIP_ARCHITECTURES "gfx90a")
-  endif()
   add_definitions(-DUSE_HIP)
 elseif ("${CUDA_ENABLED}")
   enable_language (CUDA)
